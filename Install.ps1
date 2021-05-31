@@ -18,29 +18,31 @@ Class _File
 
     _Content([String]$Base)
     {
-        $This.Content = Invoke-WebRequest -Uri "$Base\$($This.Type)\$($This.Name)?raw=true" -UseBasicParsing -Verbose | % Content
+        $This.Content = Invoke-WebRequest -Uri "$Base\$($This.Type)\$($This.Name)?raw=true" -UseBasicParsing | % Content
     }
 
     _Write()
     {
         If ( $This.Name -match "\.+(jpg|jpeg|png|bmp|ico)" )
         {
-            Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -Encoding Byte -Verbose
+            Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -Encoding Byte
         }
 
         Else
         {
-            Set-Content -Path $This.Path -Value $This.Content -Verbose
+            Set-Content -Path $This.Path -Value $This.Content
         }
     }
 }
 
 Class _Install
 {
-    [String]        $Root = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy"
-    [String]        $Base = "github.com/mcc85s/FightingEntropy/blob/main"
-    [String[]]     $Names = ("Classes Control Functions Graphics" -Split " ")
-    [Hashtable]     $Hash = @{
+    [String]           $Root = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy"
+    [String]           $Base = "github.com/mcc85s/FightingEntropy/blob/main"
+    [String[]]        $Names = ("Classes Control Functions Graphics" -Split " ")
+    [String]           $GUID = "ccd91f81-eec0-4a77-9fe2-0447245a9f54"
+    [String]        $Version = "2021.6.0"
+    Hidden [Hashtable] $Hash = @{
         
         Classes   = ("Manifest Hive Root Install Module OS Info RestObject Host FirewallRule Drive Drives ViperBomb File Cache Icons",
         "Shortcut Brand Branding DNSSuffix DomainName ADLogin ADConnection FEDCPromo Certificate Company Key RootVar Share Source",
@@ -100,7 +102,7 @@ Class _Install
 
             ForEach ( $Item in $Object )
             {
-                Write-Host "Downloading $Type [$I/$($Object.Count)]"
+                Write-Host "Downloading $Type [$I/$($Object.Count)] $($Item.Name)"
                 $Item._Content($This.Base)
                 $I ++
             }
@@ -120,7 +122,7 @@ Class _Install
 
             ForEach ( $Item in $Object )
             {
-                Write-Host "Writing $Type [$I/$($Object.Count)]"
+                Write-Host "Writing $Type [$I/$($Object.Count)] $($Item.Name)"
                 $Item._Write()
                 $I++
             }
