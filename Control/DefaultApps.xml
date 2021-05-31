@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DefaultAssociations>
+  <Association Identifier=".aac" ProgId="mplayerc64.aac" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".ac3" ProgId="mplayerc64.ac3" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".aif" ProgId="mplayerc64.aif" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".aifc" ProgId="mplayerc64.aifc" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".aiff" ProgId="mplayerc64.aiff" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".alac" ProgId="mplayerc64.alac" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".amr" ProgId="mplayerc64.amr" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".aob" ProgId="mplayerc64.aob" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".ape" ProgId="mplayerc64.ape" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".caf" ProgId="mplayerc64.caf" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".cda" ProgId="mplayerc64.cda" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".dts" ProgId="mplayerc64.dts" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".epub" ProgId="AppXvepbp3z66accmsd0x877zbbxjctkpr6t" ApplicationName="Microsoft Edge" />
+  <Association Identifier=".flac" ProgId="mplayerc64.flac" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".htm" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
+  <Association Identifier=".html" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
+  <Association Identifier=".m3u" ProgId="mplayerc64.m3u" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".m4a" ProgId="mplayerc64.m4a" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".mid" ProgId="mplayerc64.mid" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".midi" ProgId="mplayerc64.midi" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".mka" ProgId="mplayerc64.mka" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".mlp" ProgId="mplayerc64.mlp" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".MP2" ProgId="WMP11.AssocFile.MP3" ApplicationName="Windows Media Player" />
+  <Association Identifier=".mp3" ProgId="mplayerc64.mp3" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".mpc" ProgId="mplayerc64.mpc" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".mpl" ProgId="mplayerc64.mpl" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".oga" ProgId="mplayerc64.oga" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".ogg" ProgId="mplayerc64.ogg" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".opus" ProgId="mplayerc64.opus" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".pdf" ProgId="AppXd4nrz8ff68srnhf9t5a8sbjyar1cr723" ApplicationName="Microsoft Edge" />
+  <Association Identifier=".ra" ProgId="mplayerc64.ra" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".ram" ProgId="mplayerc64.ram" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".spx" ProgId="mplayerc64.spx" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".tak" ProgId="mplayerc64.tak" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".tif" ProgId="PhotoViewer.FileAssoc.Tiff" ApplicationName="Windows Photo Viewer" />
+  <Association Identifier=".tiff" ProgId="PhotoViewer.FileAssoc.Tiff" ApplicationName="Windows Photo Viewer" />
+  <Association Identifier=".tta" ProgId="mplayerc64.tta" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".txt" ProgId="txtfile" ApplicationName="Notepad" />
+  <Association Identifier=".url" ProgId="IE.AssocFile.URL" ApplicationName="Internet Browser" />
+  <Association Identifier=".wav" ProgId="mplayerc64.wav" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".website" ProgId="IE.AssocFile.WEBSITE" ApplicationName="Internet Explorer" />
+  <Association Identifier=".wma" ProgId="mplayerc64.wma" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier=".wv" ProgId="mplayerc64.wv" ApplicationName="MPC-HC (x64)" />
+  <Association Identifier="http" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
+  <Association Identifier="https" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
+  <Association Identifier="mailto" ProgId="ChromeHTML" ApplicationName="Google Chrome" />
+</DefaultAssociations>
