@@ -1,1 +1,6 @@
-
+background.jpg
+banner.png
+icon.ico
+OEMbg.jpg
+OEMlogo.bmp
+sdplogo.png
