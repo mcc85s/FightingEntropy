@@ -1,36 +1,80 @@
-Function Install-FEModule
+$base = "github.com/mcc85s/FightingEntropy"
+
+[Net.ServicePointManager]::SecurityProtocol = 3072
+
+Class _File
 {
-    [CmdLetBinding()]
-    Param(
-    
-    [ValidateSet("2021.6.0")]
-    [Parameter(Mandatory)]
-    [String]$Version)
+    [String] $Type
+    [String] $Name
+    [String] $Path
 
-    [Net.ServicePointManager]::SecurityProtocol = 3072
-    $Install = @( )
-    
-    ForEach ( $Item in "OS Root Manifest RestObject Hive Install" -Split " " )
+    _File([String]$Name,[String]$Type,[String]$Root)
     {
-        $Install += Invoke-RestMethod https://raw.githubusercontent.com/mcc85sx/FightingEntropy/master/$Version/Classes/_$Item.ps1
+        $This.Name    = $Name
+        $This.Type    = $Type
+        $This.Path    = "$Root\$Name"
     }
-    
-    Invoke-Expression ( $Install -join "`n" )
-    
-    [_Install]::New($Version)
-    
-    Set-ExecutionPolicy Bypass -Scope Process -Force
-    Add-Type -AssemblyName PresentationFramework
-    Import-Module FightingEntropy
 
-    $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut("$Env:Public\Desktop\FightingEntropy.lnk")
-
-    $Item.TargetPath   = "powershell"
-    $Item.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command `"Add-Type -AssemblyName PresentationFramework;Import-Module FightingEntropy;`$Module = Get-FEModule;`$Module`""
-    $Item.Description  = "Beginning the fight against identity theft and cybercriminal activities."
-    $Item.IconLocation = Get-FEModule -Graphics | ? Name -match icon.ico | % Fullname
-
-    $Item.Save()
+    Content([String]$Base)
+    {
+        Invoke-WebRequest -Uri "$Base\$($This.Type)\$($This.Name)?raw=true" -OutFile $This.Path -Verbose
+    }
 }
 
-$Install = Install-FEModule -Version 2021.6.0
+Class _Install
+{
+    [String]        $Root = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy"
+    [String]        $Base = "github.com/mcc85s/FightingEntropy/blob/main"
+    [String[]]     $Names = ("Classes Control Functions Graphics" -Split " ")
+    [Object[]]   $Classes
+    [Object[]]   $Control
+    [Object[]] $Functions
+    [Object[]]  $Graphics
+
+    [String[]] List([String]$Type)
+    {
+        Return @( IRM "$($This.Base)/$Type/index.txt?raw=true" ) -Split "`n" | ? Length -gt 0
+    }
+
+    _Install()
+    {
+        $Path = $Null
+
+        ForEach ( $X in $This.Root.Split("\"))
+        {
+            If ( $Path -eq $Null )
+            {
+                $Path = $X
+            }
+
+            Else
+            {
+                $Path = "$Path\$X"
+            }
+
+            If (!(Test-Path $Path))
+            {
+                New-Item $Path -ItemType Directory -Verbose
+            }
+        }
+
+        ForEach ( $Name in $This.Names )
+        {
+            $Path = "$($This.Root)\$Name"
+
+            If (!(Test-Path $Path))
+            {
+                New-Item $Path -ItemType Directory -Verbose
+            }
+
+            $This.$Name = $This.List($Name) | % { [_File]::New($_,$Name,$Path) }
+        }
+
+        ForEach ( $Object in $This.Classes, $This.Control, $This.Functions, $This.Graphics )
+        {
+            $Object.Content($This.Base)
+        }
+    }
+}
+
+$Install = [_Install]::New()
