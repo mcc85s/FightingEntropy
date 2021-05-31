@@ -1,4 +1,4 @@
-﻿Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Jason Adkinson from Pluralsight
+Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Jason Adkinson from Pluralsight
 {
     [CmdletBinding()]Param(
     [Parameter(Mandatory)]
