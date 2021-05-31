@@ -1,4 +1,5 @@
-$base = "github.com/mcc85s/FightingEntropy"
+$base             = "github.com/mcc85s/FightingEntropy"
+$SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol 
 
 [Net.ServicePointManager]::SecurityProtocol = 3072
 
@@ -7,6 +8,7 @@ Class _File
     [String] $Type
     [String] $Name
     [String] $Path
+    Hidden [String] $URL
     [Object] $Content
 
     _File([String]$Name,[String]$Type,[String]$Root)
@@ -18,7 +20,8 @@ Class _File
 
     _Content([String]$Base)
     {
-        $This.Content = Invoke-WebRequest -Uri "$Base\$($This.Type)\$($This.Name)?raw=true" -UseBasicParsing | % Content
+        $This.URL     = "$Base\$($This.Type)\$($This.Name)?raw=true"
+        $This.Content = Invoke-WebRequest -Uri $This.URL -UseBasicParsing | % Content
     }
 
     _Write()
@@ -41,7 +44,13 @@ Class _Install
     [String]           $Base = "github.com/mcc85s/FightingEntropy/blob/main"
     [String[]]        $Names = ("Classes Control Functions Graphics" -Split " ")
     [String]           $GUID = "ccd91f81-eec0-4a77-9fe2-0447245a9f54"
+    [String]        $Default
+    [String]           $Main
     [String]        $Version = "2021.6.0"
+    [String]          $Trunk
+    [String]        $ModPath
+    [String]        $ManPath
+
     Hidden [Hashtable] $Hash = @{
         
         Classes   = ("Manifest Hive Root Install Module OS Info RestObject Host FirewallRule Drive Drives ViperBomb File Cache Icons",
@@ -131,6 +140,70 @@ Class _Install
         }
     }
 
+    Write()
+    {
+        $Module        = @( )
+        $Module       += "# Downloaded from {0}" -f $This.Base
+        $Module       += "# {0}" -f $This.Root
+        $Module       += "# {0}" -f $This.Version
+
+        $Module       += "# <Classes>"
+
+        $This.Classes    | % { 
+
+            $Module   += "# <{0}/{1}>" -f $_.Type, $_.Name
+            $Module   += "# {0}" -f $_.Path
+            $Module   += $_.Content
+            $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
+        }
+
+        $Module       += "# </Classes>"
+        $Module       += "# <Functions>"
+
+        $This.Functions  | % { 
+
+            $Module   += "# <{0}/{1}>" -f $_.Type, $_.Name
+            $Module   += "# {0}" -f $_.Path
+            $Module   += $_.Content
+            $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
+        }
+
+        $Module       += "# </Functions>"
+        $Module         += "Write-Theme `"Loaded Module [+] FightingEntropy [$($This.Version)]`" 10,3,15,0"
+
+        $This.Default    = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" }
+        $This.Main       = $This.Default,"FightingEntropy" -join "\"
+        $This.Trunk      = $This.Main, $This.Version -join "\"
+        $This.ModPath    = $This.Trunk, "FightingEntropy.psm1" -join "\"
+        $This.ManPath    = $This.Trunk, "FightingEntropy.psd1" -join "\"
+
+        If ( !(Test-Path $This.Main))
+        {
+            New-Item $This.Main -ItemType Directory -Verbose
+        }
+
+        If ( !(Test-Path $This.Trunk))
+        {
+            New-Item $This.Trunk -ItemType Directory -Verbose
+        }
+
+        Set-Content -Path $This.ModPath -Value $Module -Verbose
+
+        $Item                    = @{  
+        
+            GUID                 = $This.GUID
+            Path                 = $This.ManPath
+            ModuleVersion        = $This.Version
+            Copyright            = "(c) 2021 mcc85sx. All rights reserved."
+            CompanyName          = "Secure Digits Plus LLC" 
+            Author               = "mcc85sx / Michael C. Cook Sr."
+            Description          = "Beginning the fight against Identity Theft, and Cybercriminal Activities"
+            RootModule           = $This.ModPath   
+        }
+        
+        New-ModuleManifest @Item
+    }
+
     _Install()
     {
         $This.Build()
@@ -147,9 +220,12 @@ Class _Install
             $This.$Name = $This.Hash.$Name | % { [_File]::New($_,$Name,$Path) }
         }
 
-        $This.Gather() 
+        $This.Gather()
         $This.Save()
+        $This.Write()
     }
 }
 
 $Install = [_Install]::New()
+
+[Net.ServicePointManager]::SecurityProtocol = $SecurityProtocol
