@@ -235,10 +235,7 @@ Function FightingEntropy
         _Gather()
         {
             $O = 1
-            ForEach ( $Object in $This.Classes, 
-                                 $This.Control, 
-                                 $This.Functions, 
-                                 $This.Graphics )
+            ForEach ( $Object in $This.Classes, $This.Control, $This.Functions, $This.Graphics )
             {
                 $Type = "Classes Control Functions Graphics".Split(" ")[$O-1]
                 Write-Host "Gathering $Type [$O/4]"
@@ -258,10 +255,7 @@ Function FightingEntropy
         _Save()
         {
             $O = 1
-            ForEach ( $Object in $This.Classes, 
-                                 $This.Control, 
-                                 $This.Functions, 
-                                 $This.Graphics )
+            ForEach ( $Object in $This.Classes, $This.Control, $This.Functions, $This.Graphics )
             {
                 $Type = "Classes Control Functions Graphics".Split(" ")[$O-1]
                 Write-Host "Saving $Type [$O/4]"
@@ -309,19 +303,20 @@ Function FightingEntropy
             $Module       += "# </Functions>"
             $Module         += "Write-Theme `"Loaded Module [+] FightingEntropy [$($This.Version)]`" 10,3,15,0"
 
-            If ( !(Test-Path $This.Main))
+            If (!(Test-Path $This.Main))
             {
                 New-Item $This.Main -ItemType Directory -Verbose
             }
 
-            If ( !(Test-Path $This.Trunk))
+            If (!(Test-Path $This.Trunk))
             {
                 New-Item $This.Trunk -ItemType Directory -Verbose
             }
 
             Set-Content -Path $This.ModPath -Value $Module -Verbose
 
-            @{  GUID                 = $This.GUID
+            @{  
+                GUID                 = $This.GUID
                 Path                 = $This.ManPath
                 ModuleVersion        = $This.Version
                 Copyright            = $This.Copyright
@@ -329,27 +324,34 @@ Function FightingEntropy
                 Author               = $This.Author
                 Description          = $This.Description
                 RootModule           = $This.ModPath
-                RequiredAssemblies   = "PresentationFramework" 
-            
+                RequiredAssemblies   = "PresentationFramework"
             }                        | % { New-ModuleManifest @_ }
         }
 
         _Module([String]$Version)
         {
-            $This.Version    = $Version
-            $This.Path       = $Env:ProgramData, $This.Company, $This.Name -join "\"
-            $This.Registry   = [_Registry]::New($This.Company, $This.Name, $Version, $This.OS.Type)
-            $This.Default    = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" }
-            $This.Main       = $This.Default + "\FightingEntropy"
-            $This.Trunk      = $This.Main    + "\$Version"
-            $This.ModPath    = $This.Trunk   + "\FightingEntropy.psm1"
-            $This.ManPath    = $This.Trunk   + "\FightingEntropy.psd1"
+            $This.Version            = $Version
+
+            $This.Path               = $Env:ProgramData, $This.Company, $This.Name -join "\"
+            Write-Host ("   Module: [{0}]" -f $This.Path)
+
+            $This.Registry           = [_Registry]::New($This.Company, $This.Name, $Version, $This.OS.Type)
+            Write-Host (" Registry: [{0}]" -f $This.Registry.Path)
+
+            $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" }
+            $This.Main               = $This.Default + "\FightingEntropy"
+            $This.Trunk              = $This.Main    + "\$Version"
+            $This.ModPath            = $This.Trunk   + "\FightingEntropy.psm1"
+            $This.ManPath            = $This.Trunk   + "\FightingEntropy.psd1"
+
+            Write-Host "[+] Module Staging complete"
 
             $This._Build()
 
             ForEach ( $Item in "Classes","Control","Functions","Graphics")
             {
-                $This.$Item  = $This.Manifest.$Item | % { [_File]::New($_,$Item,"$($This.Path)\$Item")}
+                Write-Host "Prestaging [$Item]"
+                $This.$Item          = $This.Manifest.$Item | % { [_File]::New($_,$Item,"$($This.Path)\$Item") }
             }
 
             $This._Gather()
