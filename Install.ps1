@@ -364,3 +364,4 @@ Function FightingEntropy
 }
 
 $Module = FightingEntropy
+$Module
