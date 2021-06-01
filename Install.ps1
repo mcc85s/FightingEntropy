@@ -39,7 +39,15 @@ Function FightingEntropy
         {
             If ( $This.Name -match "\.+(jpg|jpeg|png|bmp|ico)" )
             {
-                Set-Content -Path $This.Path -Value ([Byte[]]$This.Content)
+                If ( $PSVersionTable.PSVersion.Major -le 5 )
+                {
+                    Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -Encoding Byte
+                }
+                
+                Else
+                {
+                    Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -AsByteStream
+                }
             }
 
             Else
@@ -332,7 +340,7 @@ Function FightingEntropy
             $This.Registry           = [_Registry]::New($This.Path,$This.Company, $This.Name, $Version, $This.OS.Type)
             Write-Host (" Registry: [{0}]" -f $This.Registry.Path)
 
-            $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" }
+            $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" } | Select-Object -First 1
             $This.Main               = $This.Default + "\FightingEntropy"
             $This.Trunk              = $This.Main    + "\$Version"
             $This.ModPath            = $This.Trunk   + "\FightingEntropy.psm1"
