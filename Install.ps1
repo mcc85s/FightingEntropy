@@ -262,7 +262,7 @@ Function FightingEntropy
                 ForEach ( $Item in $Object )
                 {
                     Write-Host "Writing $Type [$I/$($Object.Count)] $($Item.Name)"
-                    $Item._Write()
+                    $Item._Write($This.OS.Major)
                     $I++
                 }
 
