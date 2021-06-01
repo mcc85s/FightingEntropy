@@ -1,5 +1,3 @@
-$Install | Select-Object Base, Name, Description, Author, Company, Copyright, GUID, Version, Default, Main, Trunk, Modpath, Manpath, Path
-
 Function FightingEntropy
 {
     [Net.ServicePointManager]::SecurityProtocol = 3072
@@ -132,7 +130,7 @@ Function FightingEntropy
 
     Class _Registry
     {
-        [String[]]        $Order = ("Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Status Type" -Split " ")
+        [String[]]        $Order = ("Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status Type" -Split " ")
         [String]           $Base
         [String]           $Name
         [String]    $Description
@@ -154,11 +152,8 @@ Function FightingEntropy
         [String]         $Status
         [String]           $Type
 
-        _Registry(
-        [String]$Base, [String]$Name, [String]$Description, 
-                                        [String]$Author, [String]$Company, [String]$Copyright, [String]$GUID, 
-                                        [String]$Version, [String]$Default, [String]$Main, [String]$Trunk,
-                                        [String]$ModPath, [String]$ManPath, [String]$Path, [String]$Type)
+        _Registry([String]$Base, [String]$Name, [String]$Description, [String]$Author, [String]$Company, [String]$Copyright, [String]$GUID, 
+        [String]$Version, [String]$Default, [String]$Main, [String]$Trunk, [String]$ModPath, [String]$ManPath, [String]$Path, [String]$Type)
         {
             $This.Base           = $Base
             $This.Name           = $Name
