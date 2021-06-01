@@ -35,11 +35,15 @@ Function FightingEntropy
             $This.Content = Invoke-WebRequest -Uri $This.URL -UseBasicParsing | % Content
         }
 
-        _Write()
+        _Write([UInt32]$PSVersion)
         {
             If ( $This.Name -match "\.+(jpg|jpeg|png|bmp|ico)" )
             {
-                Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -AsByteStream
+                Switch([UInt32]($PSVersion -le 5))
+                {
+                    0 { Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -AsByteStream  }
+                    1 { Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -Encoding Byte }
+                }
             }
 
             Else
