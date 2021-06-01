@@ -132,7 +132,7 @@ Function FightingEntropy
         [String] $Date
         [String] $Path
         [String] $RegPath
-        [String] $Provider
+        [String] $Company
         [String] $Status
         [String] $Type
         [String] $Version
@@ -141,7 +141,7 @@ Function FightingEntropy
         {
             $This.Name        = $Name
             $This.Date        = Get-Date -UFormat "%Y_%m%d-%H%M%S"
-            $This.Provider    = $Company
+            $This.Company     = $Company
             $This.Status      = "Initialized"
             $This.Type        = $Type
             $This.Version     = $Version
@@ -158,7 +158,7 @@ Function FightingEntropy
                 }
             }
 
-            ForEach ( $Key in "Date Name Path Provider Status Type Version" -Split " " )
+            ForEach ( $Key in "Date Name Path Company Status Type Version" -Split " " )
             {
                 If ((Get-ItemProperty $This.RegPath ).$Key -ne $This.$Key )
                 {
@@ -183,7 +183,7 @@ Function FightingEntropy
         [String]     $Company = "Secure Digits Plus LLC"
         [String]   $Copyright = "(c) 2021 (mcc85s/mcc85sx/sdp). All rights reserved."
         [String]        $GUID = "ccd91f81-eec0-4a77-9fe2-0447245a9f54"
-        [String]     $Version 
+        [String]     $Version = ""
         [Object]          $OS = [_OS]::New()
         [Object]    $Manifest = [_Manifest]::New()
         [Object]    $Registry
@@ -198,6 +198,7 @@ Function FightingEntropy
         [Object[]]   $Control
         [Object[]] $Functions
         [Object[]]  $Graphics
+        [Object]        $Role
 
         _Build()
         {
@@ -356,7 +357,7 @@ Function FightingEntropy
             $This._Save()
             $This._Write()
 
-            $This.Tree = Get-ChildItem $This.Path -Recurse
+            $This.Tree                = Get-ChildItem $This.Path -Recurse
         }
     }
     
