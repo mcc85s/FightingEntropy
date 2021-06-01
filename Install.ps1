@@ -39,7 +39,7 @@ Function FightingEntropy
         {
             If ( $This.Name -match "\.+(jpg|jpeg|png|bmp|ico)" )
             {
-                Set-Content -Path $This.Path -Value ([Byte[]]$This.Content)
+                Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -Encoding Byte
             }
 
             Else
@@ -127,12 +127,13 @@ Function FightingEntropy
         [String] $Name
         [String] $Date
         [String] $Path
+        [String] $RegPath
         [String] $Provider
         [String] $Status
         [String] $Type
         [String] $Version
 
-        _Registry([String]$Company,[String]$Name,[String]$Version,[String]$Type)
+        _Registry([String]$Path,[String]$Company,[String]$Name,[String]$Version,[String]$Type)
         {
             $This.Name        = $Name
             $This.Date        = Get-Date -UFormat "%Y_%m%d-%H%M%S"
@@ -140,18 +141,19 @@ Function FightingEntropy
             $This.Status      = "Initialized"
             $This.Type        = $Type
             $This.Version     = $Version
-            $This.Path        = $Null
+            $This.Path        = $Path
+            $This.RegPath     = $Null
 
             ForEach ( $Item in $Company, $Name, $Version )
             {
-                If (!($This.Path))
+                If (!($This.RegPath))
                 {
-                    $This.Path = "HKLM:\Software\Policies\$Item"
+                    $This.RegPath = "HKLM:\Software\Policies\$Item"
                 }
 
                 Else
                 {
-                    $This.Path = $This.Path, $Item -join "\"
+                    $This.RegPath = $This.RegPath, $Item -join "\"
                 }
 
                 If (!(Test-Path $This.Path))
@@ -162,10 +164,10 @@ Function FightingEntropy
 
             ForEach ( $Key in "Date Name Path Provider Status Type Version".Split(" ") )
             {
-                If ((Get-ItemProperty $This.Path ).$Key -ne $This.$Key )
+                If ((Get-ItemProperty $This.RegPath ).$Key -ne $This.$Key )
                 {
                     Write-Host "[+] $Key set to [$($This.$Key)]"
-                    Set-ItemProperty $This.Path -Name $Key -Value $This.$Key
+                    Set-ItemProperty $This.RegPath -Name $Key -Value $This.$Key
                 }
 
                 Else 
@@ -335,10 +337,10 @@ Function FightingEntropy
             $This.Path               = $Env:ProgramData, $This.Company, $This.Name -join "\"
             Write-Host ("   Module: [{0}]" -f $This.Path)
 
-            $This.Registry           = [_Registry]::New($This.Company, $This.Name, $Version, $This.OS.Type)
+            $This.Registry           = [_Registry]::New($This.Path,$This.Company, $This.Name, $Version, $This.OS.Type)
             Write-Host (" Registry: [{0}]" -f $This.Registry.Path)
 
-            $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" } | Select-Object -First 1
+            $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" }
             $This.Main               = $This.Default + "\FightingEntropy"
             $This.Trunk              = $This.Main    + "\$Version"
             $This.ModPath            = $This.Trunk   + "\FightingEntropy.psm1"
