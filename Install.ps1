@@ -233,4 +233,5 @@ Function FightingEntropy
     [Net.ServicePointManager]::SecurityProtocol = $SecurityProtocol
 }
 
-FightingEntropy
+$Install = FightingEntropy
+$Install 
