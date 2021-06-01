@@ -52,6 +52,8 @@ Function FightingEntropy
         [String]          $Trunk
         [String]        $ModPath
         [String]        $ManPath
+        [String]        $RegPath
+        [String]       $DataPath
 
         Hidden [Hashtable] $Hash = @{
 
