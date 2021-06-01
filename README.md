@@ -1,9 +1,9 @@
 # FightingEntropy 
-[Install]
+<h1>[Install]</h1>
 
     IRM github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | IEX
     
-[Remove]
+<h1>[Remove]</h1>
     
     IRM github.com/mcc85s/FightingEntropy/blob/main/Remove.ps1?raw=true | IEX
     
