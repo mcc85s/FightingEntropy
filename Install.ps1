@@ -39,15 +39,7 @@ Function FightingEntropy
         {
             If ( $This.Name -match "\.+(jpg|jpeg|png|bmp|ico)" )
             {
-                If ( $PSVersionTable.PSVersion.Major -le 5 )
-                {
-                    Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -Encoding Byte
-                }
-                
-                Else
-                {
-                    Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -AsByteStream
-                }
+                Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -AsByteStream
             }
 
             Else
