@@ -1,8 +1,21 @@
-$RegPath  = 'HKLM:\software\Policies\Secure Digits Plus LLC\FightingEntropy'
-$Version  = Get-ChildItem $RegPath | % PSChildName | Select-Object -Last 1
+$Name     = "FightingEntropy"
+$Version  = "2021.6.0"
+$Company  = "Secure Digits Plus LLC"
+$Default  = $Env:PSModulePath -Split ";" | ? { (Test-Path $_) -and (Get-ChildItem $_ | ? Name -match FightingEntropy })
+If (!$Default)
+{
+    Write-Host "[!] Missing module"
+}
+$RegPath  = "HKLM:\Software\Policies\$Company\$Name\$Version"
+If (!(Test-Path $RegPath))
+{
+    Write-Host "[!] Missing registry"
+}
+
+$RegValue = Get-ItemProperty $RegPath -EA 0
+$ModPath  = "$Default\FightingEntropy"
+$DataPath = "$Env:ProgramData\$Company\$Name"
 $Trunk    = Get-ItemProperty "$RegPath\$Version"
-$DataPath = $Trunk.Path
-$ModPath  = "$($Env:PSModulePath -Split ";" | ? { (Test-Path $_) -and (Get-ChildItem $_ | ? Name -match FightingEntropy)})\FightingEntropy"
 
 "Classes","Control","Functions","Graphics" | % {
 
@@ -10,4 +23,4 @@ $ModPath  = "$($Env:PSModulePath -Split ";" | ? { (Test-Path $_) -and (Get-Child
 }
 
 Remove-Item "$ModPath\$Version" -Recurse -Force -Verbose
-Remove-Item "$RegPath\$Version" -Recurse -Force -Verbose
+Remove-Item $RegPath -Recurse -Force -Verbose
