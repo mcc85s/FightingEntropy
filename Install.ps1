@@ -1,9 +1,18 @@
 Function FightingEntropy
 {
-    $base             = "github.com/mcc85s/FightingEntropy"
-    $SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol 
-
     [Net.ServicePointManager]::SecurityProtocol = 3072
+
+    Class _Enum
+    {
+        [String] $Name
+        [Object] $Value
+
+        _Enum([String]$Name,[Object]$Value)
+        {
+            $This.Name  = $Name
+            $This.Value = $Value
+        }
+    }
 
     Class _File
     {
@@ -22,7 +31,7 @@ Function FightingEntropy
 
         _Content([String]$Base)
         {
-            $This.URL     = "$Base\$($This.Type)\$($This.Name)?raw=true"
+            $This.URL     = "$Base/$($This.Type)/$($This.Name)?raw=true"
             $This.Content = Invoke-WebRequest -Uri $This.URL -UseBasicParsing | % Content
         }
 
@@ -51,24 +60,12 @@ Function FightingEntropy
 
         _OS()
         {
-            $This.Env   = Get-ChildItem Env:\
-            $This.Var   = Get-ChildItem Variable:\
-            $This.PS    = Get-Item Variable:\PSVersionTable | % Value
-            $This.Ver   = Get-Item Variable:\PSVersionTable | % Value | % PSVersion
+            $This.Env   = Get-ChildItem Env:\      | % { [_Enum]::New($_.Key,$_.Value) }
+            $This.Var   = Get-ChildItem Variable:\ | % { [_Enum]::New($_.Name,$_.Value) }
+            $This.PS    = $This.Var | ? Name -eq PSVersionTable | % Value | % GetEnumerator | % { [_Enum]::New($_.Name,$_.Value) }
+            $This.Ver   = $This.PS | ? Name -eq PSVersion | % Value
             $This.Major = $This.Ver.Major
             $This.Type  = $This.GetOSType()
-        }
-
-        [Object] GetItem([String]$Item)
-        {
-            $Return = @{ }
-
-            ForEach ( $X in ( Get-Item -Path $Item | % GetEnumerator ) )
-            { 
-                $Return.Add($X.Name,$X.Value)
-            }
-
-            Return $Return
         }
 
         [String] GetWinType()
@@ -143,10 +140,11 @@ Function FightingEntropy
             $This.Status      = "Initialized"
             $This.Type        = $Type
             $This.Version     = $Version
+            $This.Path        = $Null
 
             ForEach ( $Item in $Company, $Name, $Version )
             {
-                If ( $This.Path -eq $Null )
+                If (!($This.Path))
                 {
                     $This.Path = "HKLM:\Software\Policies\$Item"
                 }
@@ -166,7 +164,13 @@ Function FightingEntropy
             {
                 If ((Get-ItemProperty $This.Path ).$Key -ne $This.$Key )
                 {
-                    Set-ItemProperty $This.Path -Name $Key -Value $This.$Key -Verbose
+                    Write-Host "[+] $Key set to [$($This.$Key)]"
+                    Set-ItemProperty $This.Path -Name $Key -Value $This.$Key
+                }
+
+                Else 
+                {
+                    Write-Host "[!] $Key already set to [$($This.$Key)]"
                 }
             }
         }
@@ -176,8 +180,10 @@ Function FightingEntropy
     {
         [String]        $Base = "github.com/mcc85s/FightingEntropy/blob/main"
         [String]        $Name = "FightingEntropy"
+        [String] $Description = "Beginning the fight against Identity Theft, and Cybercriminal Activities"
         [String]      $Author = "Michael C. Cook Sr."
         [String]     $Company = "Secure Digits Plus LLC"
+        [String]   $Copyright = "(c) 2021 (mcc85s/mcc85sx/sdp). All rights reserved."
         [String]        $GUID = "ccd91f81-eec0-4a77-9fe2-0447245a9f54"
         [String]     $Version 
         [Object]          $OS = [_OS]::New()
@@ -198,10 +204,10 @@ Function FightingEntropy
         _Build()
         {
             $_Path = $Null
-
+        
             ForEach ( $Item in $This.Path.Split("\") )
             {
-                If ( $_Path -eq $Null )
+                If (!($_Path))
                 {
                     $_Path = $Item
                 }
@@ -216,17 +222,17 @@ Function FightingEntropy
                     New-Item $_Path -ItemType Directory -Verbose
                 }
             }
-
-            "Classes","Control","Functions","Graphics" | % { 
-
-                If (!(Test-Path "$_Path\$_"))
+        
+            ForEach ( $Item in "Classes","Control","Functions","Graphics" )
+            { 
+                If (!(Test-Path "$_Path\$Item"))
                 {
-                    New-Item "$_Path\$_" -ItemType Directory -Verbose
+                    New-Item "$_Path\$Item" -ItemType Directory -Verbose
                 }
             }
         }
 
-        Gather()
+        _Gather()
         {
             $O = 1
             ForEach ( $Object in $This.Classes, 
@@ -249,7 +255,7 @@ Function FightingEntropy
             }
         }
 
-        Save()
+        _Save()
         {
             $O = 1
             ForEach ( $Object in $This.Classes, 
@@ -272,11 +278,11 @@ Function FightingEntropy
             }
         }
 
-        Write()
+        _Write()
         {
             $Module        = @( )
             $Module       += "# Downloaded from {0}" -f $This.Base
-            $Module       += "# {0}" -f $This.Root
+            $Module       += "# {0}" -f $This.Path
             $Module       += "# {0}" -f $This.Version
 
             $Module       += "# <Classes>"
@@ -289,90 +295,72 @@ Function FightingEntropy
                 $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
             }
 
-                $Module       += "# </Classes>"
-                $Module       += "# <Functions>"
+            $Module       += "# </Classes>"
+            $Module       += "# <Functions>"
 
-                $This.Functions  | % { 
+            $This.Functions  | % { 
 
-                    $Module   += "# <{0}/{1}>" -f $_.Type, $_.Name
-                    $Module   += "# {0}" -f $_.Path
-                    $Module   += $_.Content
-                    $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
-                }
-
-                $Module       += "# </Functions>"
-                $Module         += "Write-Theme `"Loaded Module [+] FightingEntropy [$($This.Version)]`" 10,3,15,0"
-
-                $This.Default    = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" }
-                $This.Main       = $This.Default,"FightingEntropy" -join "\"
-                $This.Trunk      = $This.Main, $This.Version -join "\"
-                $This.ModPath    = $This.Trunk, "FightingEntropy.psm1" -join "\"
-                $This.ManPath    = $This.Trunk, "FightingEntropy.psd1" -join "\"
-
-                If ( !(Test-Path $This.Main))
-                {
-                    New-Item $This.Main -ItemType Directory -Verbose
-                }
-
-                If ( !(Test-Path $This.Trunk))
-                {
-                    New-Item $This.Trunk -ItemType Directory -Verbose
-                }
-
-                Set-Content -Path $This.ModPath -Value $Module -Verbose
-
-                $Item                    = @{  
-
-                    GUID                 = $This.GUID
-                    Path                 = $This.ManPath
-                    ModuleVersion        = $This.Version
-                    Copyright            = "(c) 2021 mcc85sx. All rights reserved."
-                    CompanyName          = "Secure Digits Plus LLC" 
-                    Author               = "mcc85sx / Michael C. Cook Sr."
-                    Description          = "Beginning the fight against Identity Theft, and Cybercriminal Activities"
-                    RootModule           = $This.ModPath   
-                }
-
-                New-ModuleManifest @Item
+                $Module   += "# <{0}/{1}>" -f $_.Type, $_.Name
+                $Module   += "# {0}" -f $_.Path
+                $Module   += $_.Content
+                $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
             }
+
+            $Module       += "# </Functions>"
+            $Module         += "Write-Theme `"Loaded Module [+] FightingEntropy [$($This.Version)]`" 10,3,15,0"
+
+            If ( !(Test-Path $This.Main))
+            {
+                New-Item $This.Main -ItemType Directory -Verbose
+            }
+
+            If ( !(Test-Path $This.Trunk))
+            {
+                New-Item $This.Trunk -ItemType Directory -Verbose
+            }
+
+            Set-Content -Path $This.ModPath -Value $Module -Verbose
+
+            @{  GUID                 = $This.GUID
+                Path                 = $This.ManPath
+                ModuleVersion        = $This.Version
+                Copyright            = $This.Copyright
+                CompanyName          = $This.Company
+                Author               = $This.Author
+                Description          = $This.Description
+                RootModule           = $This.ModPath
+                RequiredAssemblies   = "PresentationFramework" 
+            
+            }                        | % { New-ModuleManifest @_ }
+        }
 
         _Module([String]$Version)
         {
             $This.Version    = $Version
-            $This.Path       = $Env:ProgramData,$This.Company,$This.Name,$Version -join "\"
-            $This.Registry   = [_Registry]::New($This.Company,$This.Name,$Version,$This.OS.Type)
+            $This.Path       = $Env:ProgramData, $This.Company, $This.Name -join "\"
+            $This.Registry   = [_Registry]::New($This.Company, $This.Name, $Version, $This.OS.Type)
             $This.Default    = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" }
-            $This.Main       = $This.Default,"FightingEntropy" -join "\"
-            $This.Trunk      = $This.Main, $Version -join "\"
-            $This.ModPath    = $This.Trunk, "FightingEntropy.psm1" -join "\"
-            $This.ManPath    = $This.Trunk, "FightingEntropy.psd1" -join "\"
+            $This.Main       = $This.Default + "\FightingEntropy"
+            $This.Trunk      = $This.Main    + "\$Version"
+            $This.ModPath    = $This.Trunk   + "\FightingEntropy.psm1"
+            $This.ManPath    = $This.Trunk   + "\FightingEntropy.psd1"
 
             $This._Build()
 
-            ForEach ( $Name in "Classes","Control","Functions","Graphics" )
+            ForEach ( $Item in "Classes","Control","Functions","Graphics")
             {
-                $_Path = "$($This.Path)\$Name"
-
-                If (!(Test-Path $_Path))
-                {
-                    New-Item $_Path -ItemType Directory -Verbose
-                }
-
-                $This.$Name = $This.Manifest.$Name | % { [_File]::New($_,$Name,$_Path) }
+                $This.$Item  = $This.Manifest.$Item | % { [_File]::New($_,$Item,"$($This.Path)\$Item")}
             }
 
-            $This.Gather()
-            $This.Save()
-            $This.Write()
+            $This._Gather()
+            $This._Save()
+            $This._Write()
 
             $This.Tree = Get-ChildItem $This.Path -Recurse
         }
     }
-
+    
     [_Module]::New("2021.6.0")
-
-    [Net.ServicePointManager]::SecurityProtocol = $SecurityProtocol
 }
 
-$Install = FightingEntropy
-$Install 
+$Module = FightingEntropy
