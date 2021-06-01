@@ -142,27 +142,19 @@ Function FightingEntropy
             $This.Type        = $Type
             $This.Version     = $Version
             $This.Path        = $Path
-            $This.RegPath     = $Null
+            $This.RegPath     = "HKLM:\Software\Policies"
 
             ForEach ( $Item in $Company, $Name, $Version )
             {
-                If (!($This.RegPath))
-                {
-                    $This.RegPath = "HKLM:\Software\Policies\$Item"
-                }
+                $This.RegPath = $This.RegPath, $Item -join "\"
 
-                Else
+                If (!(Test-Path $This.RegPath))
                 {
-                    $This.RegPath = $This.RegPath, $Item -join "\"
-                }
-
-                If (!(Test-Path $This.Path))
-                {
-                    New-Item -Path (Split-Path $This.Path) -Name $Item -Verbose
+                    New-Item -Path (Split-Path $This.RegPath) -Name $Item -Verbose
                 }
             }
 
-            ForEach ( $Key in "Date Name Path Provider Status Type Version".Split(" ") )
+            ForEach ( $Key in "Date Name Path Provider Status Type Version" -Split " " )
             {
                 If ((Get-ItemProperty $This.RegPath ).$Key -ne $This.$Key )
                 {
