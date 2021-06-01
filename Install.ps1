@@ -1,3 +1,5 @@
+$Install | Select-Object Base, Name, Description, Author, Company, Copyright, GUID, Version, Default, Main, Trunk, Modpath, Manpath, Path
+
 Function FightingEntropy
 {
     [Net.ServicePointManager]::SecurityProtocol = 3072
@@ -104,6 +106,8 @@ Function FightingEntropy
 
     Class _Manifest
     {
+        [String[]]      $Names = "Classes","Control","Functions","Graphics"
+
         [String[]]    $Classes = @(("Manifest Hive Root Install Module OS Info RestObject Host FirewallRule Drive Drives ViperBomb File Cache Icons",
                 "Shortcut Brand Branding DNSSuffix DomainName ADLogin ADConnection FEDCPromo Certificate Company Key RootVar Share Source",
                 "Target ServerDependency ServerFeature ServerFeatures IISFeatures IIS Image Images Updates Role Win32_Client Win32_Server",
@@ -128,29 +132,48 @@ Function FightingEntropy
 
     Class _Registry
     {
-        [String] $Name
-        [String] $Date
-        [String] $Path
-        [String] $RegPath
-        [String] $Company
-        [String] $Status
-        [String] $Type
-        [String] $Version
+        [String[]]        $Order = ("Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Status Type" -Split " ")
+        [String]           $Base
+        [String]           $Name
+        [String]    $Description
+        [String]         $Author
+        [String]        $Company
+        [String]      $Copyright
+        [String]           $GUID
+        [String]        $Version
+        [String]           $Date
+        
+        [String]        $RegPath
+        [String]        $Default
+        [String]           $Main
+        [String]          $Trunk
+        [String]        $ModPath
+        [String]        $ManPath
+        [String]           $Path
+        
+        [String]         $Status
+        [String]           $Type
 
-        _Registry([String]$Path,[String]$Company,[String]$Name,[String]$Version,[String]$Type)
+        _Registry(
+        [String]$Base, [String]$Name, [String]$Description, 
+                                        [String]$Author, [String]$Company, [String]$Copyright, [String]$GUID, 
+                                        [String]$Version, [String]$Default, [String]$Main, [String]$Trunk,
+                                        [String]$ModPath, [String]$ManPath, [String]$Path, [String]$Type)
         {
-            $This.Name        = $Name
-            $This.Date        = Get-Date -UFormat "%Y_%m%d-%H%M%S"
-            $This.Company     = $Company
-            $This.Status      = "Initialized"
-            $This.Type        = $Type
-            $This.Version     = $Version
-            $This.Path        = $Path
-            $This.RegPath     = "HKLM:\Software\Policies"
+            $This.Base           = $Base
+            $This.Name           = $Name
+            $This.Description    = $Description
+            $This.Author         = $Author
+            $This.Company        = $Company
+            $This.Copyright      = $Copyright
+            $This.GUID           = $GUID
+            $This.Version        = $Version
+            $This.Date           = Get-Date -UFormat "%Y_%m%d-%H%M%S"
+            $This.RegPath        = "HKLM:\Software\Policies"
 
             ForEach ( $Item in $Company, $Name, $Version )
             {
-                $This.RegPath = $This.RegPath, $Item -join "\"
+                $This.RegPath    = $This.RegPath, $Item -join "\"
 
                 If (!(Test-Path $This.RegPath))
                 {
@@ -158,7 +181,17 @@ Function FightingEntropy
                 }
             }
 
-            ForEach ( $Key in "Date Name Path Company Status Type Version" -Split " " )
+            $This.Default        = $Default
+            $This.Main           = $Main
+            $This.Trunk          = $Trunk
+            $This.ModPath        = $ModPath
+            $This.ManPath        = $ManPath
+
+            $This.Path           = $Path
+            $This.Type           = $Type
+            $This.Status         = "Initialized"
+
+            ForEach ( $Key in $This.Order )
             {
                 If ((Get-ItemProperty $This.RegPath ).$Key -ne $This.$Key )
                 {
@@ -334,14 +367,16 @@ Function FightingEntropy
             $This.Path               = $Env:ProgramData, $This.Company, $This.Name -join "\"
             Write-Host ("   Module: [{0}]" -f $This.Path)
 
-            $This.Registry           = [_Registry]::New($This.Path,$This.Company, $This.Name, $Version, $This.OS.Type)
-            Write-Host (" Registry: [{0}]" -f $This.Registry.Path)
-
             $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" } | Select-Object -First 1
             $This.Main               = $This.Default + "\FightingEntropy"
             $This.Trunk              = $This.Main    + "\$Version"
             $This.ModPath            = $This.Trunk   + "\FightingEntropy.psm1"
             $This.ManPath            = $This.Trunk   + "\FightingEntropy.psd1"
+
+            $This.Registry           = [_Registry]::New($This.Base, $This.Name, $This.Description, 
+                                        $This.Author, $This.Company, $This.Copyright, $This.GUID, 
+                                        $This.Version, $This.Default, $This.Main, $This.Trunk,
+                                        $This.ModPath, $This.ManPath, $This.Path, $This.OS.Type )
 
             Write-Host "[+] Module Staging complete"
 
@@ -357,7 +392,8 @@ Function FightingEntropy
             $This._Save()
             $This._Write()
 
-            $This.Tree                = Get-ChildItem $This.Path -Recurse
+            $This.Tree                = Get-ChildItem $This.Path | ? Name -in $This.Manifest.Names
+            $This.Role                = $This.OS.Type
         }
     }
     
