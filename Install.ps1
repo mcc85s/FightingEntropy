@@ -338,7 +338,7 @@ Function FightingEntropy
             $This.Registry           = [_Registry]::New($This.Company, $This.Name, $Version, $This.OS.Type)
             Write-Host (" Registry: [{0}]" -f $This.Registry.Path)
 
-            $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" }
+            $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" } | Select-Object -First 1
             $This.Main               = $This.Default + "\FightingEntropy"
             $This.Trunk              = $This.Main    + "\$Version"
             $This.ModPath            = $This.Trunk   + "\FightingEntropy.psm1"
