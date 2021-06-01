@@ -15,7 +15,7 @@ If (!(Test-Path $RegPath))
 $RegValue = Get-ItemProperty $RegPath -EA 0
 $ModPath  = "$Default\FightingEntropy"
 $DataPath = "$Env:ProgramData\$Company\$Name"
-$Trunk    = Get-ItemProperty "$RegPath\$Version"
+$Trunk    = Get-ItemProperty $RegPath
 
 "Classes","Control","Functions","Graphics" | % {
 
