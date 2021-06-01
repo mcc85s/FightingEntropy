@@ -39,7 +39,7 @@ Function FightingEntropy
         {
             If ( $This.Name -match "\.+(jpg|jpeg|png|bmp|ico)" )
             {
-                Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -Encoding Byte
+                Set-Content -Path $This.Path -Value ([Byte[]]$This.Content)
             }
 
             Else
