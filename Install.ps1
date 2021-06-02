@@ -405,12 +405,8 @@ Function FightingEntropy
 }
 
 $Install = FightingEntropy
+$Line    = (@("-")*120 -join "")
 
-(@("-")*120 -join ""),
-"[ Installation Details (stored under variable `$Install) ]",
-(@("-")*120 -join ""),
+$Line, "[ Installation Details (stored under variable `$Install) ]", $Line
 $Install
-(@("-")*120 -join ""),
-"[ Command (Get-FEModule) provides an extension of the above information ]",
-(@("-")*120 -join "")
-
+$Line, "[ Command (Get-FEModule) provides an extension of the above information ]", $Line
