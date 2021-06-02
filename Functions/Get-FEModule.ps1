@@ -72,6 +72,48 @@ Function Get-FEModule
                 $This.Role        = Get-FERole
             }
             
+            Report()
+            {
+                $This.Prime()
+                $This.HostInfo()
+                $This.ProcessInfo()
+                $This.NetworkInfo()
+                $This.ServiceInfo()
+            }
+            
+            [Object] HostInfo()
+            {
+                Write-Host "[Host Information]"
+                $This.Role | Select-Object Name, DNS, NetBIOS, Hostname, Username, Principal, IsAdmin, Caption, Version, Build, ReleaseID, Code, SKU, Chassis
+            }
+            
+            [Object[]] ProcessInfo()
+            {
+                Write-Host "[Process Information]"
+                $This.Role.Process
+            }
+            
+            [Object[]] NetworkInfo()
+            {
+                Write-Host "[Network Information]"
+                $This.Role.Network.Interface | Format-Table
+                
+                Write-Host "[Active Network]"
+                $This.Role.Network.Network | Format-Table
+                
+                Write-Host "[Network Statistics]"
+                $This.Role.Network.Netstat | Format-Table
+                
+                Write-Host "[Network Host Map]"
+                $This.Role.Network.Hostmap
+            }
+            
+            [Object[]] ServiceInfo()
+            {
+                Write-Host "[Services Information]"
+                $This.Role.Services.Output | Format-Table
+            }
+            
             Prime()
             {
                 Write-Host "[~] Processes [~]"
@@ -82,8 +124,6 @@ Function Get-FEModule
 
                 Write-Host "[~] Services [~]"
                 $This.Role.GetServices()
-                
-                
             }
         }
         
