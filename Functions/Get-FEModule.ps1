@@ -40,6 +40,7 @@ Function Get-FEModule
             [Object]      $Status
             [Object]        $Type
             [Object]        $Role
+            Hidden [Object] $Report
 
             _Module([Object]$ID)
             {
@@ -79,40 +80,40 @@ Function Get-FEModule
                 Write-Host (@("-")*120 -join '')
             }
             
-            Report()
+            GetReport()
             {
-                $Report = @{ 
+                $This.Report = @{ 
                 
                     HostInfo     = $This.Role | Select-Object Name, DNS, NetBIOS, Hostname, Username, Principal, IsAdmin, Caption, 
-                                                              Version, Build, ReleaseID, Code, SKU, Chassis
-                    ProcessInfo  = $This.Role | Select-Object Process
+                                                              Version, Build, ReleaseID, Code, SKU, Chassis | Format-List
+                    ProcessInfo  = $This.Role.Process           | Format-Table
                     NetInterface = $This.Role.Network.Interface | Format-Table
-                    NetActive    = $This.Role.Network.Network | Format-Table
-                    NetStat      = $This.Role.Network.Netstat | Format-Table
-                    Hostmap      = $This.Role.Network.Hostmap
-                    ServiceInfo  = $This.Role.Service.Output | Format-Table
+                    NetActive    = $This.Role.Network.Active    | Format-Table
+                    NetStat      = $This.Role.Network.Netstat   | Format-Table
+                    Hostmap      = $This.Role.Network.Hostmap   | Format-Table
+                    ServiceInfo  = $This.Role.Service.Output    | Format-Table
                 }
                 
-                $This.Section("Host information")
-                Write-Host $Report.HostInfo
+                $This.Section("Host info")
+                $This.Report.HostInfo.GetEnumerator() | % { Write-Host ("{0}{1}: {2}" -f (@(" ")*(20-$_.Name.Length) -join ''),$_.Name, $_.Value) }
                 
-                $This.Section("Process information")
-                Write-Host $Report.ProcessInfo
+                $This.Section("Process info")
+                $This.Report.ProcessInfo    | % { Write-Host $_ }
                 
-                $This.Section("Network information")
-                Write-Host $Report.NetInterface
+                $This.Section("Network interface(s)")
+                $This.Report.NetInterface   | % { Write-Host $_ }
                 
                 $This.Section("Active interface(s)")
-                Write-Host $Report.NetActive
+                $This.Report.NetActive      | % { Write-Host $_ }
                 
                 $This.Section("Connection statistics")
-                Write-Host $Report.NetStat
+                $This.Report.NetStat        | % { Write-Host $_ }
                 
                 $This.Section("Network host(s)")
-                Write-Host $Report.Hostmap
+                $This.Report.Hostmap        | % { Write-Host $_ }
                 
-                $This.Section("Services Information")
-                Write-Host $Report.ServiceInfo
+                $This.Section("Service info")
+                $This.Report.ServiceInfo    | % { Write-Host $_ }
             }
             
             Prime()
@@ -128,7 +129,7 @@ Function Get-FEModule
                 Write-Host "[~] Services [~]"
                 $This.Role.GetServices()
                 
-                $This.Report()
+                $This.GetReport()
             }
         }
         
