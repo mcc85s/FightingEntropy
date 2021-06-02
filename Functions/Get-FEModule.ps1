@@ -72,45 +72,35 @@ Function Get-FEModule
                 $This.Role        = Get-FERole
             }
             
+            Section([String]$Label)
+            {
+                Write-Host (@("-")*120 -join '')
+                Write-Host "[ $Label ]"
+                Write-Host (@("-")*120 -join '')
+            }
+            
             Report()
             {
-                $This.Prime()
-                $This.HostInfo()
-                $This.ProcessInfo()
-                $This.NetworkInfo()
-                $This.ServiceInfo()
-            }
             
-            HostInfo()
-            {
-                Write-Host "[Host Information]"
+                $This.Section("Host information")
                 $This.Role | Select-Object Name, DNS, NetBIOS, Hostname, Username, Principal, IsAdmin, Caption, Version, Build, ReleaseID, Code, SKU, Chassis
-            }
-            
-            ProcessInfo()
-            {
-                Write-Host "[Process Information]"
+                
+                $This.Section("Process information")
                 $This.Role.Process
-            }
-            
-            NetworkInfo()
-            {
-                Write-Host "[Network Information]"
+                
+                $This.Section("Network information")
                 $This.Role.Network.Interface | Format-Table
                 
-                Write-Host "[Active Network]"
+                $This.Section("Active interface(s)")
                 $This.Role.Network.Network | Format-Table
                 
-                Write-Host "[Network Statistics]"
+                $This.Section("Connection statistics")
                 $This.Role.Network.Netstat | Format-Table
                 
-                Write-Host "[Network Host Map]"
+                $This.Section("Network host(s)")
                 $This.Role.Network.Hostmap
-            }
-            
-            ServiceInfo()
-            {
-                Write-Host "[Services Information]"
+                
+                $This.Section("[Services Information]")
                 $This.Role.Services.Output | Format-Table
             }
             
@@ -124,6 +114,8 @@ Function Get-FEModule
 
                 Write-Host "[~] Services [~]"
                 $This.Role.GetServices()
+                
+                $This.Report()
             }
         }
         
