@@ -262,6 +262,9 @@ Function Get-FEModule
             
             Prime()
             {
+                Write-Theme -Flag
+                Start-Sleep 1
+                
                 Write-Theme "Priming FEModule API [(Processes, Network, Services)]"
                 Write-Host $This.Line
 
@@ -301,6 +304,9 @@ Function Get-FEModule
                 Start-Sleep 1
                 
                 $This.ServiceInfo()
+                Start-Sleep 1
+                
+                Write-Theme -Banner
                 Start-Sleep 1
             }
         }
