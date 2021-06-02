@@ -1,37 +1,33 @@
-$Name     = "FightingEntropy"
-$Version  = "2021.6.0"
-$Company  = "Secure Digits Plus LLC"
-$RegPath  = "HKLM:\Software\Policies\$Company\$Name\$Version"
-$ID       = Get-Item $RegPath -EA 0
+$Name       = "FightingEntropy"
+$Version    = "2021.6.0"
+$Company    = "Secure Digits Plus LLC"
 
-# [Registry path values]
-$RegPath  = $ID.RegPath
-
-If (!$RegPath)
-{
-    Write-Host "[!] Registry path null [!]"
-}
-
-ElseIf(!(Test-Path $RegPath))
+$RegPath    = "HKLM:\Software\Policies\$Company\$Name\$Version"
+If(!(Test-Path $RegPath))
 {
     Write-Host "[!] Registry path invalid [!]"
 }
-
 Else
 {
-    Remove-Item $RegPath -Recurse -Force -Verbose
+    $ID      = Get-ItemProperty $RegPath
+    If(-not $ID)
+    {
+        Write-Host "[!] Registry properties missing [!]"
+    }
+    Else
+    {
+        $Main    = $ID.Main
+        $ModPath = $ID.Trunk
+        Remove-Item $RegPath -Recurse -Force -Verbose
+     }
 }
 
-# [Module path values]
-$Main     = $ID.Main
-$ModPath  = $ID.Trunk
-
-If(!$ModPath)
+If(-not $ModPath)
 {
     Write-Host "[!] Module path null [!]"
 }
 
-ElseIf (!(Test-Path $Trunk))
+ElseIf (!(Test-Path $ModPath))
 {
     Write-Host "[!] Module path invalid [!]"
 }
