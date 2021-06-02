@@ -8,6 +8,10 @@ If (!$Default)
 {
     Write-Host "[!] Missing module"
 }
+Else
+{
+    Remove-Item "$Default\FightingEntropy\$Version" -Recurse -Force -Verbose
+}
 
 # [Registry Path]
 $RegPath  = "HKLM:\Software\Policies\$Company\$Name\$Version"
@@ -15,9 +19,12 @@ If (!(Test-Path $RegPath))
 {
     Write-Host "[!] Missing registry"
 }
+Else
+{
+    Remove-Item $RegPath
+}
 
 # [Property Value]
-$RegValue = Get-ItemProperty $RegPath -EA 0
 $ModPath  = "$Default\FightingEntropy"
 $DataPath = "$Env:ProgramData\$Company\$Name"
 $Trunk    = Get-ItemProperty $RegPath
