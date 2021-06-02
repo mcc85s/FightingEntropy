@@ -305,6 +305,8 @@ Function Get-FEModule
                 
                 $This.ServiceInfo()
                 Start-Sleep 1
+                
+                Write-Host " "
             }
         }
         
