@@ -81,19 +81,19 @@ Function Get-FEModule
                 $This.ServiceInfo()
             }
             
-            [Object] HostInfo()
+            HostInfo()
             {
                 Write-Host "[Host Information]"
                 $This.Role | Select-Object Name, DNS, NetBIOS, Hostname, Username, Principal, IsAdmin, Caption, Version, Build, ReleaseID, Code, SKU, Chassis
             }
             
-            [Object[]] ProcessInfo()
+            ProcessInfo()
             {
                 Write-Host "[Process Information]"
                 $This.Role.Process
             }
             
-            [Object[]] NetworkInfo()
+            NetworkInfo()
             {
                 Write-Host "[Network Information]"
                 $This.Role.Network.Interface | Format-Table
@@ -108,7 +108,7 @@ Function Get-FEModule
                 $This.Role.Network.Hostmap
             }
             
-            [Object[]] ServiceInfo()
+            ServiceInfo()
             {
                 Write-Host "[Services Information]"
                 $This.Role.Services.Output | Format-Table
