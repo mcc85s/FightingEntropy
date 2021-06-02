@@ -6,7 +6,7 @@ Function Get-FEInfo
         [Object]          $CS = (Get-CimInstance -ClassName Win32_ComputerSystem)
         [Object]         $Env = (Get-ChildItem Env:\)
 
-        [Hashtable]     $Hash = @{ 
+        Hidden [Hashtable] $Hash = @{ 
 
             Edition           = ("10240,Threshold 1,Release To Manufacturing;10586,Threshold 2,November {1};14393,{0} 1,Anniversary {1};15063," + 
                                  "{0} 2,{2} {1};16299,{0} 3,Fall {2} {1};17134,{0} 4,April 2018 {1};17763,{0} 5,October 2018 {1};18362,19H1,Ma" + 
@@ -28,7 +28,7 @@ Function Get-FEInfo
                                  ",-,-,-,-,-,-,-,{1} Embedded Handheld,-,-,-,-,{1} IoT Core") -f "Edition","Windows","Server","Enterprise" -Split ","
         }
 
-        [Object]      $VTable = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion')
+        Hidden [Object] $VTable = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion')
         [String]     $Caption
         [Object]     $Version
         [String]       $Build
