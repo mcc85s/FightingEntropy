@@ -71,6 +71,20 @@ Function Get-FEModule
                 $This.Type        = $This.OS.Type
                 $This.Role        = Get-FERole
             }
+            
+            Prime()
+            {
+                Write-Host "[~] Processes [~]"
+                $This.Role.GetProcesses()
+
+                Write-Host "[~] Network [~]"
+                $This.Role.GetNetwork()
+
+                Write-Host "[~] Services [~]"
+                $This.Role.GetServices()
+                
+                
+            }
         }
         
         $Name      = "FightingEntropy"
