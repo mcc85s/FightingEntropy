@@ -81,14 +81,14 @@ Function Get-FEModule
             Throw "Installation not found"
         }
         
-        $Item = Get-Item $Default
-        If (!$Item)
+        $Item      = Get-Item $Default
+        If (-not $Item)
         {
             Throw "Registry not found"
         }
         
-        $Child = Get-ChildItem $Default
-        If (!$Child)
+        $Child     = Get-ChildItem $Default
+        If (-not $Child)
         {
             Throw "No version detected"
         }
@@ -98,8 +98,8 @@ Function Get-FEModule
             $Child = $Child[-1]
         }
         
-        $Child     = Get-ItemProperty $Child.GetValue("RegPath")
-        $Mod       = [_Module]::New($Child)
+        $RegPath   = Get-ItemProperty $Child.GetValue("RegPath")
+        $Mod       = [_Module]::New($RegPath)
         
         Switch ($PSCmdLet.ParameterSetName)
         {   
