@@ -81,27 +81,38 @@ Function Get-FEModule
             
             Report()
             {
-            
+                $Report = @{ 
+                
+                    HostInfo     = $This.Role | Select-Object Name, DNS, NetBIOS, Hostname, Username, Principal, IsAdmin, Caption, 
+                                                              Version, Build, ReleaseID, Code, SKU, Chassis
+                    ProcessInfo  = $This.Role | Select-Object Process
+                    NetInterface = $This.Role.Network.Interface | Format-Table
+                    NetActive    = $This.Role.Network.Network | Format-Table
+                    NetStat      = $This.Role.Network.Netstat | Format-Table
+                    Hostmap      = $This.Role.Network.Hostmap
+                    ServiceInfo  = $This.Role.Service.Output | Format-Table
+                }
+                
                 $This.Section("Host information")
-                $This.Role | Select-Object Name, DNS, NetBIOS, Hostname, Username, Principal, IsAdmin, Caption, Version, Build, ReleaseID, Code, SKU, Chassis
+                $Report.HostInfo
                 
                 $This.Section("Process information")
-                $This.Role.Process
+                $Report.ProcessInfo
                 
                 $This.Section("Network information")
-                $This.Role.Network.Interface | Format-Table
+                $Report.NetInterface
                 
                 $This.Section("Active interface(s)")
-                $This.Role.Network.Network | Format-Table
+                $Report.NetActive
                 
                 $This.Section("Connection statistics")
-                $This.Role.Network.Netstat | Format-Table
+                $Report.NetStat
                 
                 $This.Section("Network host(s)")
-                $This.Role.Network.Hostmap
+                $Report.Hostmap
                 
                 $This.Section("[Services Information]")
-                $This.Role.Services.Output | Format-Table
+                $Report.ServiceInfo
             }
             
             Prime()
