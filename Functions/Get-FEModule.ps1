@@ -20,9 +20,9 @@ Function Get-FEModule
             [String]   $Copyright
             [String]        $GUID
             [String]     $Version
+            [String]        $Date
             [Object]          $OS
             [Object]    $Manifest
-            [Object]    $Registry
             [Object]     $RegPath
             [String]     $Default
             [String]        $Main
@@ -31,17 +31,18 @@ Function Get-FEModule
             [String]     $ManPath
             [String]        $Path
             [Object]        $Tree
+
             [Object[]]   $Classes
             [Object[]]   $Control
             [Object[]] $Functions
             [Object[]]  $Graphics
+
             [Object]      $Status
+            [Object]        $Type
             [Object]        $Role
 
-            _Module([String]$Path)
+            _Module([Object]$ID)
             {
-                $ID               = Get-ItemProperty $Path
-                $This.Registry    = $ID
                 $This.Base        = $ID.Base
                 $This.Name        = $ID.Name
                 $This.Description = $ID.Description
@@ -51,6 +52,8 @@ Function Get-FEModule
                 $This.GUID        = $ID.GUID
                 $This.Version     = $ID.Version
                 $This.Date        = $ID.Date
+                $This.OS          = Get-FEOS
+                $This.Manifest    = Get-FEManifest
                 $This.RegPath     = $ID.RegPath
                 $This.Default     = $ID.Default
                 $This.Main        = $ID.Main
@@ -59,6 +62,14 @@ Function Get-FEModule
                 $This.ManPath     = $ID.ManPath
                 $This.Path        = $ID.Path
                 $This.Status      = $ID.Status
+
+                $This.Tree        = Get-ChildItem $This.Path | ? Name -in $This.Manifest.Names
+                $This.Classes     = $This.Tree | ? Name -eq Classes  | Get-ChildItem
+                $This.Control     = $This.Tree | ? Name -eq Control  | Get-ChildItem
+                $This.Functions   = $This.Tree | ? Name -eq Functions| Get-ChildItem
+                $This.Graphics    = $This.Tree | ? Name -eq Graphics | Get-ChildItem
+                $This.Type        = $This.OS.Type
+                $This.Role        = Get-FERole
             }
         }
         
@@ -87,6 +98,7 @@ Function Get-FEModule
             $Child = $Child[-1]
         }
         
+        $Child     = Get-ItemProperty $Child.GetValue("RegPath")
         $Mod       = [_Module]::New($Child)
         
         Switch ($PSCmdLet.ParameterSetName)
