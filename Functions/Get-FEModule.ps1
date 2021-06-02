@@ -10,6 +10,28 @@ Function Get-FEModule
         [Parameter( ParameterSetName        = "Graphics"    )][Switch]     $Graphics , 
         [Parameter( ParameterSetName        = "Role"        )][Switch]         $Role )
         
+        Class _Process
+        {
+            [String]      $NPM
+            [String]       $PM
+            [String]       $WS
+            [String]      $CPU
+            [String]       $ID
+            [String]       $SI
+            [String]     $Name
+            
+            _Process([Object]$Process)
+            {
+                $This.NPM  = "{0:n2}" -f ($Process.NonpagedSystemMemorySize/1KB)
+                $This.PM   = "{0:n2}" -f ($Process.PagedMemorySize/1MB)
+                $This.WS   = "{0:n2}" -f ($Process.WorkingSet/1MB)
+                $This.CPU  = "{0:n2}" -f $Process.TotalProcessorTime.TotalSeconds
+                $This.ID   = $Process.Id
+                $This.SI   = $Process.SessionID
+                $This.Name = $Process.ProcessName
+            }
+        }
+        
         Class _Module
         {
             [String]        $Base
@@ -75,50 +97,168 @@ Function Get-FEModule
             
             Section([String]$Label)
             {
+                Write-Host " "
                 Write-Host (@("-")*120 -join '')
                 Write-Host "[$Label]"
                 Write-Host (@("-")*120 -join '')
+                Write-Host " "
             }
             
-            GetReport()
+            HostInfo()
             {
-                $This.Report = @{ 
-                
-                    HostInfo     = $This.Role | Select-Object Name, DNS, NetBIOS, Hostname, Username, Principal, IsAdmin, Caption, 
-                                                              Version, Build, ReleaseID, Code, SKU, Chassis
-                    ProcessInfo  = $This.Role.Process
-                    NetInterface = $This.Role.Network.Interface
-                    NetActive    = $This.Role.Network.Active
-                    NetStat      = $This.Role.Network.Netstat
-                    Hostmap      = $This.Role.Network.Hostmap
-                    ServiceInfo  = $This.Role.Service.Output
+                Write-Theme "Host info"
+                $This.Report.HostInfo = @( )
+
+                ForEach ( $Item in "Name DNS NetBIOS Hostname Username Principal IsAdmin Caption Version Build ReleaseID Code SKU Chassis" -Split " " )
+                {
+                    $Info = ("{0}{1}: {2}" -f $Item, (@(" ")*(20-$Item.Length) -join ''), $This.Role.$Item)
+                    Write-Host $Info
+                    $This.Report.HostInfo += $Info
                 }
-                
-                $This.Section("Host info")
-                $This.Report.HostInfo    | Format-List
-                
-                $This.Section("Process info")
-                $This.Report.ProcessInfo | Format-Table
-                
-                $This.Section("Network interface(s)")
-                $This.Report.NetInterface  | Format-Table
-                
-                $This.Section("Active interface(s)")
-                $This.Report.NetActive | Format-Table
-                
-                $This.Section("Connection statistics")
-                $This.Report.NetStat | Format-Table
-                
-                $This.Section("Network host(s)")
-                $This.Report.Hostmap | Format-Table
-                
-                $This.Section("Service info")
-                $This.Report.ServiceInfo | Format-Table
+                Write-Host " "
+            }
+            
+            ProcessInfo()
+            {
+                Write-Theme "Process info"
+                $This.Report.ProcessInfo = @( )
+
+                Write-Host "[     NPM] [      PM] [      WS] [       CPU] [     ID] [  SI] [                        ProcessName]"
+                Write-Host (@("-") * 120 -join '' )
+                Get-Process | % { [_Process]::New($_) } | % { 
+
+                    $0 = ( @(" ") * (  8 -  $_.NPM.ToString().Length ) -join '' )
+                    $1 = ( @(" ") * (  8 -   $_.PM.ToString().Length ) -join '' )
+                    $2 = ( @(" ") * (  8 -   $_.WS.ToString().Length ) -join '' )
+                    $3 = ( @(" ") * ( 10 -  $_.CPU.ToString().Length ) -join '' )
+                    $4 = ( @(" ") * (  7 -   $_.ID.ToString().Length ) -join '' )
+                    $5 = ( @(" ") * (  4 -   $_.SI.ToString().Length ) -join '' )
+                    $6 = ( @(" ") * ( 35 - $_.Name.ToString().Length ) -join '' )
+
+                    $Info = ("[$0{0}] [$1{1}] [$2{2}] [$3{3}] [$4{4}] [$5{5}] [$6{6}]" -f $_.NPM,$_.PM,$_.WS,$_.CPU,$_.ID,$_.SI,$_.Name )
+                    Write-Host $Info
+                    $This.Report.ProcessInfo += $Info
+                }
+                Write-Host " "
+            }
+            
+            NetInterfaceInfo()
+            {
+                Write-Theme "Network interface(s)"
+                $This.Report.NetInterfaceInfo = @( )
+
+                ForEach ( $Interface in $This.Role.Network.Interface )
+                {
+                    Write-Host "[ ($($Interface.Description)) ]"
+                    Write-Host " "
+                    ForEach ( $Item in "Hostname Alias Index Description Status MacAddress Vendor" -Split " " )
+                    {
+                        Write-Host ("{0}{1}: {2}" -f $Item, (@(" ")*(20-$Item.Length) -join ''), $Interface.$Item)
+                    }
+                    Write-Host " "
+                }
+                Write-Host " "
+            }
+
+            NetActiveInfo()
+            {
+                Write-Theme "Active interface(s)"
+                ForEach ( $Interface in $This.Role.Network.Active )
+                {
+                    Write-Host "[ ($($Interface.Description)) ]"
+                    Write-Host " "
+                    ForEach ( $Item in "Hostname Alias Index Description Status MacAddress Vendor" -Split " " )
+                    {
+                        Write-Host ("{0}{1}: {2}" -f $Item, (@(" ")*(20-$Item.Length) -join ''), $Interface.$Item)
+                    }
+                    Write-Host " "
+                }
+                Write-Host " "
+            }
+
+            NetStatInfo()
+            {
+                Write-Theme "Connection statistics"
+                $This.Report.NetstatInfo = @( )
+
+                $This.Role.Network.RefreshNetStat()
+                Write-Host "[ Proto] [                LocalAddress] [    LPort] [               RemoteAddress] [    RPort] [     State] [ Direction]"
+                $This.Role.Network.Netstat | % { 
+                    
+                    $0 = (@(" ")*(7-$_.Protocol.ToString().Length) -join '')
+                    $1 = (@(" ")*(30-$_.LocalAddress.ToString().Length) -join '')
+                    $2 = (@(" ")*(11-$_.LocalPort.ToString().Length) -join '')
+                    $3 = (@(" ")*(30-$_.RemoteAddress.ToString().Length) -join '')
+                    $4 = (@(" ")*(11-$_.RemotePort.ToString().Length) -join '')
+                    $5 = (@(" ")*(12-$_.State.ToString().Length) -join '')
+                    $6 = (@(" ")*(12-$_.Direction.ToString().Length) -join '')
+
+                    $Info = ("$0{0} $1{1} $2{2} $3{3} $4{4} $5{5} $6{6}" -f $_.Protocol,$_.LocalAddress,$_.LocalPort,$_.RemoteAddress,$_.RemotePort,$_.State,$_.Direction)
+                    Write-Host $Info
+                    $This.Report.NetStatInfo += $Info
+                }
+                Write-Host " "
+            }
+
+            NetHostmapInfo()
+            {
+                Write-Theme "Network host(s)"
+                $This.Report.NetHostmapInfo      = @( )
+                $This.Role.Network.Hostmap       | % { 
+
+                    $Info += ("{0}{1}: {2}" -f (@(" ")*(30-$_.IPAddress.Length) -join ''), $_.IPAddress, $_.Hostname)
+                    Write-Host $Info
+                    $This.Report.NetHostmapInfo += $Info
+                }
+            }
+
+            ServiceInfo()
+            {
+                Write-Theme "Service info"
+                $This.Report.ServiceInfo         = @( )
+
+                $This.Role.Service.Output        | % {
+
+                    $IDName = $_.Name
+                    $IDInfo = $_.DisplayName
+
+                    If ( $IDName.Length -gt 44 )
+                    {
+                        $IDName = "$($IDName[0..41] -join '')..."
+                    }
+
+                    If ( $IDInfo.Length -gt 44 )
+                    {
+                        $IDInfo = "$($IDInfo[0..41] -join '')..."
+                    }
+
+                    $0 = (@(" ")*( 3-$_.Index.ToString().Length) -join "")
+                    $1 = (@(" ")*(45- $IDName.Length) -join "")
+                    $2 = (@(" ")* 2 -join "")
+                    $3 = (@(" ")*(8-$_.StartMode.ToString().Length) -join "")
+                    $4 = (@(" ")*(8-$_.State.ToString().Length) -join "")
+                    $5 = (@(" ")*(45-$IDInfo.Length) -join "")
+
+                    $Info = ("[$0{0}] $1{1} $2{2} $3{3} $4{4} $5{5}" -f $_.Index, $IDName, [Int]$_.Scope, $_.StartMode, $_.State, $IDInfo)
+                    Write-Host $Info
+                    $This.Report.ServiceInfo += $Info
+                }
             }
             
             Prime()
             {
-                $This.Section("Priming module API)")
+                Write-Theme "Priming module API"
+
+                $This.Report         = @{
+
+                    HostInfo         = @( )
+                    ProcessInfo      = @( )
+                    NetInterfaceInfo = @( )
+                    NetActiveInfo    = @( )
+                    NetStatInfo      = @( )
+                    NetHostmapInfo   = @( )
+                    ServiceInfo      = @( )
+                }
                 
                 Write-Host "[~] Processes [~]"
                 $This.Role.GetProcesses()
@@ -128,8 +268,13 @@ Function Get-FEModule
 
                 Write-Host "[~] Services [~]"
                 $This.Role.GetServices()
-                
-                $This.GetReport()
+
+                $Module.HostInfo()
+                $Module.ProcessInfo()
+                $Module.NetInterfaceInfo()
+                $Module.NetActiveInfo()
+                $Module.NetStatInfo()
+                $Module.ServiceInfo()
             }
         }
         
