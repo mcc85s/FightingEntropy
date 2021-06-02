@@ -21,18 +21,18 @@ If (!(Test-Path $RegPath))
 }
 Else
 {
-    Remove-Item $RegPath
+    Remove-Item $RegPath -Recurse -Force -Verbose
 }
 
-# [Property Value]
-$ModPath  = "$Default\FightingEntropy"
-$DataPath = "$Env:ProgramData\$Company\$Name"
-$Trunk    = Get-ItemProperty $RegPath
+# [Module path]
+$ModPath = $Default\FightingEntropy 
 
-"Classes","Control","Functions","Graphics" | % {
-
-    Remove-Item "$DataPath\$_" -Recurse -Force -Verbose
+If (!(Test-Path $ModPath))
+{
+    Write-Host "[!] Missing module path"
 }
 
-Remove-Item "$ModPath\$Version" -Recurse -Force -Verbose
-Remove-Item $RegPath -Recurse -Force -Verbose
+Remove-Item $ModPath -Recurse -Force -Verbose
+
+# [Data path]
+Remove-Item "$Env:ProgramData\$Company\$Name" -Recurse -Force
