@@ -217,9 +217,9 @@ Function Get-FEModule
                 Write-Host $This.Line
                 
                 $This.Report.NetHostmapInfo      = @( )
-                $This.Role.Network.Hostmap | Select-Object -Unique | % { 
-
-                    $Info += ("{0}{1}: {2}" -f (@(" ")*(30-$_.IPAddress.ToString().Length) -join ''), $_.IPAddress.ToString(), $_.Hostname)
+                ForEach ( $Item in $This.Role.Network.Hostmap )
+                { 
+                    $Info += ("{0}{1}: {2}" -f (@(" ")*(30-$Item.IPAddress.ToString().Length) -join ''), $Item.IPAddress, $Item.Hostname)
                     Write-Host $Info
                     $This.Report.NetHostmapInfo += $Info
                 }
