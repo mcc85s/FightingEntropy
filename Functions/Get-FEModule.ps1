@@ -95,25 +95,25 @@ Function Get-FEModule
                 }
                 
                 $This.Section("Host info")
-                $This.Report.HostInfo       | % { Write-Host $_ }
+                $This.Report.HostInfo
                 
                 $This.Section("Process info")
-                $This.Report.ProcessInfo    | % { Write-Host $_ }
+                $This.Report.ProcessInfo 
                 
                 $This.Section("Network interface(s)")
-                $This.Report.NetInterface   | % { Write-Host $_ }
+                $This.Report.NetInterface 
                 
                 $This.Section("Active interface(s)")
-                $This.Report.NetActive      | % { Write-Host $_ }
+                $This.Report.NetActive
                 
                 $This.Section("Connection statistics")
-                $This.Report.NetStat        | % { Write-Host $_ }
+                $This.Report.NetStat
                 
                 $This.Section("Network host(s)")
-                $This.Report.Hostmap        | % { Write-Host $_ }
+                $This.Report.Hostmap
                 
                 $This.Section("Service info")
-                $This.Report.ServiceInfo    | % { Write-Host $_ }
+                $This.Report.ServiceInfo
             }
             
             Prime()
