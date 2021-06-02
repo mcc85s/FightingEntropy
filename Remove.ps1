@@ -3,7 +3,7 @@ $Version  = "2021.6.0"
 $Company  = "Secure Digits Plus LLC"
 
 # [Default Path]
-$Default  = $Env:PSModulePath -Split ";" | ? { (Test-Path $_) -and (Get-ChildItem $_ | ? Name -match FightingEntropy) }
+$Default  = $Env:PSModulePath -Split ";" | ? { (Test-Path $_) -and (Get-ChildItem $_ | ? Name -match FightingEntropy) } | Select-Object -Last 1
 If (!$Default)
 {
     Write-Host "[!] Missing module"
