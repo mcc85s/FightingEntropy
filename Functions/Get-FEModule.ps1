@@ -75,7 +75,7 @@ Function Get-FEModule
             Section([String]$Label)
             {
                 Write-Host (@("-")*120 -join '')
-                Write-Host "[ $Label ]"
+                Write-Host "[$Label]"
                 Write-Host (@("-")*120 -join '')
             }
             
@@ -94,29 +94,30 @@ Function Get-FEModule
                 }
                 
                 $This.Section("Host information")
-                $Report.HostInfo
+                Write-Host $Report.HostInfo
                 
                 $This.Section("Process information")
-                $Report.ProcessInfo
+                Write-Host $Report.ProcessInfo
                 
                 $This.Section("Network information")
-                $Report.NetInterface
+                Write-Host $Report.NetInterface
                 
                 $This.Section("Active interface(s)")
-                $Report.NetActive
+                Write-Host $Report.NetActive
                 
                 $This.Section("Connection statistics")
-                $Report.NetStat
+                Write-Host $Report.NetStat
                 
                 $This.Section("Network host(s)")
-                $Report.Hostmap
+                Write-Host $Report.Hostmap
                 
-                $This.Section("[Services Information]")
-                $Report.ServiceInfo
+                $This.Section("Services Information")
+                Write-Host $Report.ServiceInfo
             }
             
             Prime()
             {
+                $This.Section(
                 Write-Host "[~] Processes [~]"
                 $This.Role.GetProcesses()
 
