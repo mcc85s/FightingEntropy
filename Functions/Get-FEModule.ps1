@@ -63,6 +63,7 @@ Function Get-FEModule
             [Object]        $Type
             [Object]        $Role
             Hidden [Object] $Report
+            Hidden [Object] $Line = (@(" ")*120 -join '')
 
             _Module([Object]$ID)
             {
@@ -107,6 +108,8 @@ Function Get-FEModule
             HostInfo()
             {
                 Write-Theme "Host info"
+                Write-Host $This.Line
+                
                 $This.Report.HostInfo = @( )
 
                 ForEach ( $Item in "Name DNS NetBIOS Hostname Username Principal IsAdmin Caption Version Build ReleaseID Code SKU Chassis" -Split " " )
@@ -121,6 +124,8 @@ Function Get-FEModule
             ProcessInfo()
             {
                 Write-Theme "Process info"
+                Write-Host $This.Line
+                
                 $This.Report.ProcessInfo = @( )
 
                 Write-Host "[     NPM] [      PM] [      WS] [       CPU] [     ID] [  SI] [                        ProcessName]"
@@ -145,6 +150,8 @@ Function Get-FEModule
             NetInterfaceInfo()
             {
                 Write-Theme "Network interface(s)"
+                Write-Host $This.Line
+                
                 $This.Report.NetInterfaceInfo = @( )
 
                 ForEach ( $Interface in $This.Role.Network.Interface )
@@ -163,6 +170,8 @@ Function Get-FEModule
             NetActiveInfo()
             {
                 Write-Theme "Active interface(s)"
+                Write-Host $This.Line
+                
                 ForEach ( $Interface in $This.Role.Network.Active )
                 {
                     Write-Host "[ ($($Interface.Description)) ]"
@@ -179,6 +188,8 @@ Function Get-FEModule
             NetStatInfo()
             {
                 Write-Theme "Connection statistics"
+                Write-Host $This.Line
+                
                 $This.Report.NetstatInfo = @( )
 
                 $This.Role.Network.RefreshNetStat()
@@ -203,6 +214,8 @@ Function Get-FEModule
             NetHostmapInfo()
             {
                 Write-Theme "Network host(s)"
+                Write-Host $This.Line
+                
                 $This.Report.NetHostmapInfo      = @( )
                 $This.Role.Network.Hostmap       | % { 
 
@@ -215,6 +228,8 @@ Function Get-FEModule
             ServiceInfo()
             {
                 Write-Theme "Service info"
+                Write-Host $This.Line
+                
                 $This.Report.ServiceInfo         = @( )
 
                 $This.Role.Service.Output        | % {
@@ -247,7 +262,8 @@ Function Get-FEModule
             
             Prime()
             {
-                Write-Theme "Priming module API"
+                Write-Theme "Priming FEModule API [(Processes, Network, Services)]"
+                Write-Host $This.Line
 
                 $This.Report         = @{
 
