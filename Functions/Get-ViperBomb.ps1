@@ -6,7 +6,7 @@ Function Get-ViperBomb
     Class _ViperBombConfig
     {
         [String]               $Name = "FightingEntropy/ViperBomb"
-        [String]            $Version = "2021.4.0"
+        [String]            $Version = "2021.6.0"
         [String]            $Release = "Development"
         [String]           $Provider = "Secure Digits Plus LLC"
         [String]                $URL = "https://github.com/mcc85sx/FightingEntropy"
