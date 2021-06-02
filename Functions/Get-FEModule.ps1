@@ -117,7 +117,8 @@ Function Get-FEModule
             
             Prime()
             {
-                $This.Section(
+                $This.Section("Priming module API)")
+                
                 Write-Host "[~] Processes [~]"
                 $This.Role.GetProcesses()
 
