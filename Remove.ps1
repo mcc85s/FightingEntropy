@@ -1,38 +1,44 @@
 $Name     = "FightingEntropy"
 $Version  = "2021.6.0"
 $Company  = "Secure Digits Plus LLC"
+$ID       = Get-ItemProperty HKLM:\Software\Policies\$Company\$Name\$Version
 
-# [Default Path]
-$Default  = $Env:PSModulePath -Split ";" | ? { (Test-Path $_) -and (Get-ChildItem $_ | ? Name -match FightingEntropy) } | Select-Object -Last 1
-If (!$Default)
-{
-    Write-Host "[!] Missing module"
-}
-Else
-{
-    Remove-Item "$Default\FightingEntropy\$Version" -Recurse -Force -Verbose
-}
+# [Registry path values]
+$RegPath  = $ID.RegPath
 
-# [Registry Path]
-$RegPath  = "HKLM:\Software\Policies\$Company\$Name\$Version"
 If (!(Test-Path $RegPath))
 {
     Write-Host "[!] Missing registry"
 }
+
 Else
 {
     Remove-Item $RegPath -Recurse -Force -Verbose
 }
 
-# [Module path]
-$ModPath = "$Default\FightingEntropy\$Version"
+# [Module path values]
+$Main     = $ID.Main
+$ModPath  = $ID.Trunk
 
-If (!(Test-Path $ModPath))
+If (!(Test-Path $Trunk))
 {
-    Write-Host "[!] Missing module path"
+    Write-Host "[!] Module not found [!]"
 }
 
-Remove-Item $ModPath -Recurse -Force -Verbose
+Else
+{
+    Remove-Item $ModPath -Recurse -Force -Verbose
+}
 
-# [Data path]
-Remove-Item "$Env:ProgramData\$Company\$Name" -Recurse -Force
+# [Data path values]
+$DataPath = "$Env:ProgramData\$Company\$Name"
+
+If (!(Test-Path $DataPath))
+{
+    Write-Host "[!] Missing data path [!]"
+}
+
+Else
+{
+    Remove-Item $DataPath -Recurse -Force -Verbose
+}
