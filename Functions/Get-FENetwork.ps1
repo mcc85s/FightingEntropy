@@ -755,7 +755,7 @@ Function Get-FENetwork
         Hidden [Object]             $Nbt
         Hidden [Object]             $Arp
         [Object]              $Interface
-        [Object]                $Network
+        [Object]                 $Active
         [Object]                $NetStat
         [Object]                $HostMap
         [Object]                $NbtScan
@@ -817,7 +817,7 @@ Function Get-FENetwork
                 $This.Interface[$I].Load($xNbt,$xArp)
             }
 
-            $This.Network = $This.Interface | ? { $_.IPV4.Gateway }
+            $This.Active = $This.Interface | ? { $_.IPV4.Gateway }
 
             $This.RefreshIPv4Scan()
             $This.RefreshNetStat()
@@ -832,17 +832,17 @@ Function Get-FENetwork
 
         RefreshIPv4Scan()
         {
-            If (!$This.Network)
+            If (!$This.Active)
             {
-                Throw "No available network found"
+                Throw "No active network(s) found"
             }
 
             Else
             {                
                 $This.Hostmap = @( )
-                ForEach ( $Item in $This.Network.IPv4.ScanV4() )
+                ForEach ( $Item in $This.Active.IPv4.ScanV4() )
                 {
-                    $This.Network.Arp | ? IpAddress -match $Item.IpAddress | % { $_.HostName = $Item.Hostname }
+                    $This.Active.Arp | ? IpAddress -match $Item.IpAddress | % { $_.HostName = $Item.Hostname }
                     
                     If ( $Item.IPAddress -notin $This.Hostmap.IPAddress )
                     {
