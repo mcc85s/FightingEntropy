@@ -269,12 +269,23 @@ Function Get-FEModule
                 Write-Host "[~] Services [~]"
                 $This.Role.GetServices()
 
-                $Module.HostInfo()
-                $Module.ProcessInfo()
-                $Module.NetInterfaceInfo()
-                $Module.NetActiveInfo()
-                $Module.NetStatInfo()
-                $Module.ServiceInfo()
+                $This.HostInfo()
+                Start-Sleep 1
+                
+                $This.ProcessInfo()
+                Start-Sleep 1
+                
+                $This.NetInterfaceInfo()
+                Start-Sleep 1
+
+                $This.NetActiveInfo()
+                Start-Sleep 1
+                
+                $This.NetStatInfo()
+                Start-Sleep 1
+                
+                $This.ServiceInfo()
+                Start-Sleep 1
             }
         }
         
