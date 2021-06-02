@@ -124,11 +124,11 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     {
         [String[]]        $Names = ("Certificate ADLogin NewAccount FENetwork FEDCPromo FEDCFound FERoot FEShare FEService MBWin10 ClientRegistration Test" -Split " ")
         [Object]       $Glossary = [_XamlGlossary]::New().Output
-        [Object]            $GFX = [_XamlGFX]::New("C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics")
+        [Object]            $GFX = [_XamlGFX]::New("C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics")
         [Object]           $Xaml = @{ 
 
         ADLogin                  = @'
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://AD Login" Width="420" Height="280" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://AD Login" Width="420" Height="280" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="GroupBox" x:Key="xGroupBox">
             <Setter Property="TextBlock.TextAlignment" Value="Center"/>
@@ -169,7 +169,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     </Window.Resources>
     <Grid>
         <Grid.Background>
-            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\background.jpg"/>
+            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
         </Grid.Background>
         <GroupBox Style="{StaticResource xGroupBox}" Width="380" Height="220" Margin="5" VerticalAlignment="Center">
             <Grid>
@@ -214,7 +214,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 </Window>
 '@
             Certificate          = @'
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Certificate Info" Width="380" Height="260" Topmost="True" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Certificate Info" Width="380" Height="260" Topmost="True" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="GroupBox" x:Key="xGroupBox">
             <Setter Property="Margin" Value="10"/>
@@ -251,7 +251,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     </Window.Resources>
     <Grid>
         <Grid.Background>
-            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\background.jpg"/>
+            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
         </Grid.Background>
         <GroupBox Header="Company Information / Certificate Generation" Style="{StaticResource xGroupBox}" Width="330" Height="200" VerticalAlignment="Top">
             <Grid>
@@ -280,7 +280,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 </Window>
 '@
             FENetwork = @'
-            <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Network Utility" Height="800" Width="1000" Topmost="True" BorderBrush="Black" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+            <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Network Utility" Height="800" Width="1000" Topmost="True" BorderBrush="Black" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="Label">
             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -379,7 +379,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     </Window.Resources>
     <Grid>
         <Grid.Background>
-            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\background.jpg"/>
+            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
         </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
@@ -519,7 +519,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 '@
 
             FEDCFound            = @'
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Found" Width="550" Height="260" HorizontalAlignment="Center" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\icon.ico" WindowStartupLocation="CenterScreen">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Found" Width="550" Height="260" HorizontalAlignment="Center" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="GroupBox" x:Key="xGroupBox">
             <Setter Property="Margin" Value="10"/>
@@ -558,7 +558,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     </Window.Resources>
     <Grid>
         <Grid.Background>
-            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\background.jpg"/>
+            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
         </Grid.Background>
         <GroupBox Style="{StaticResource xGroupBox}">
             <Grid Margin="5">
@@ -588,7 +588,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 '@
 
             FEDCPromo            = @'
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Promotion" Width="800" Height="800" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Promotion" Width="800" Height="800" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="GroupBox" x:Key="xGroupBox">
             <Setter Property="Margin" Value="5"/>
@@ -636,7 +636,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     </Window.Resources>
     <Grid>
         <Grid.Background>
-            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\background.jpg"/>
+            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
         </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="24"/>
@@ -652,7 +652,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
         </Menu>
         <Grid Grid.Row="1">
             <Grid.Background>
-                <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\background.jpg"/>
+                <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
             </Grid.Background>
             <GroupBox Style="{StaticResource xGroupBox}">
                 <Grid Margin="5">
@@ -851,7 +851,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 '@
 
             FERoot               = @'
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Root Installation" Width="640" Height="500" Topmost="True" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Root Installation" Width="640" Height="500" Topmost="True" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="GroupBox" x:Key="xGroupBox">
             <Setter Property="TextBlock.TextAlignment" Value="Center"/>
@@ -904,13 +904,13 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     </Window.Resources>
     <Grid>
         <Grid.Background>
-            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\background.jpg"/>
+            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
         </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="250"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Image Grid.Row="0" Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\banner.png"/>
+        <Image Grid.Row="0" Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\banner.png"/>
         <GroupBox Grid.Row="1" Style="{StaticResource xGroupBox}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -938,7 +938,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 '@
 
             FEService            = @'
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://ViperBomb Services" Height="800" Width="800" Topmost="True" BorderBrush="Black" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://ViperBomb Services" Height="800" Width="800" Topmost="True" BorderBrush="Black" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="Label">
             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -1019,7 +1019,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     </Window.Resources>
     <Grid>
         <Grid.Background>
-            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\background.jpg"/>
+            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
         </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
@@ -1334,7 +1334,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 </Window>
 '@
             FEShare              = @'
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="750" Topmost="True" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="750" Topmost="True" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="GroupBox" x:Key="xGroupBox">
             <Setter Property="TextBlock.TextAlignment" Value="Center"/>
@@ -1418,9 +1418,9 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
         <Grid.Background>
-            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\background.jpg"/>
+            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
         </Grid.Background>
-        <Image Grid.Row="0" Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\banner.png"/>
+        <Image Grid.Row="0" Source="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\banner.png"/>
         <TabControl Grid.Row="1" Width="600" Background="{x:Null}" BorderBrush="Black" Foreground="{x:Null}" HorizontalAlignment="Center">
             <TabControl.Resources>
                 <Style TargetType="TabItem">
@@ -2147,7 +2147,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 '@
 
             NewAccount           = @'
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New User" Width="400" Height="360" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New User" Width="400" Height="360" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="GroupBox" x:Key="xGroupBox">
             <Setter Property="TextBlock.TextAlignment" Value="Center"/>
@@ -2188,7 +2188,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     </Window.Resources>
     <Grid>
         <Grid.Background>
-            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\background.jpg"/>
+            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
         </Grid.Background>
         <GroupBox Style="{StaticResource xGroupBox}" Width="380" Height="300" Margin="5" VerticalAlignment="Center">
             <Grid>
@@ -2255,7 +2255,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 '@
 
             ClientRegistration = @'
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Client Registration" Width="800" Height="520" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2021.4.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Client Registration" Width="800" Height="520" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="TextBox" x:Key="_TextBox">
             <Setter Property="Height" Value="30"/>
