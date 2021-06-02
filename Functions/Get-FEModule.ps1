@@ -95,7 +95,7 @@ Function Get-FEModule
                 }
                 
                 $This.Section("Host info")
-                $This.Report.HostInfo.GetEnumerator() | % { Write-Host ("{0}{1}: {2}" -f (@(" ")*(20-$_.Name.Length) -join ''),$_.Name, $_.Value) }
+                $This.Report.HostInfo       | % { Write-Host $_ }
                 
                 $This.Section("Process info")
                 $This.Report.ProcessInfo    | % { Write-Host $_ }
