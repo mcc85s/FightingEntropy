@@ -303,6 +303,9 @@ Function Get-FEModule
                 $This.NetStatInfo()
                 Start-Sleep 1
                 
+                $This.NetHostmapInfo()
+                Start-Sleep 1
+                
                 $This.ServiceInfo()
                 Start-Sleep 1
                 
