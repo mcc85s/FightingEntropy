@@ -4,15 +4,24 @@ Function Get-FEManifest
     {
         [String[]]      $Names = "Classes","Control","Functions","Graphics"
 
-        [String[]]    $Classes = @(("Manifest Hive Root Install Module OS Info RestObject Host FirewallRule Drive Drives ViperBomb File Cache Icons",
+        [String[]]    $Classes = @(("FirewallRule Drive Drives ViperBomb File Cache Icons",
                 "Shortcut Brand Branding DNSSuffix DomainName ADLogin ADConnection FEDCPromo Certificate Company Key RootVar Share Source",
-                "Target ServerDependency ServerFeature ServerFeatures IISFeatures IIS Image Images Updates Role Win32_Client Win32_Server",
-                "UnixBSD RHELCentOS DCFound" -join ' ') -Split " " | % { "_$_.ps1" })
+                "Target ServerDependency ServerFeature ServerFeatures IISFeatures IIS Image Images Updates DCFound" -join ' ') -Split " " | % { "_$_.ps1" })
 
         [String[]]    $Control = "Computer.png DefaultApps.xml $( "FE","MDT","PSD" | % { "$_`Client","$_`Server" } | % { "$_`Mod.xml" } )" -Split " "
 
         [String[]]  $Functions = ("Add-ACL","Complete-IISServer","Export-Ini","Get-Certificate","Get-DiskInfo","Get-FEDCPromo","Get-FEDCPromoProfile",
-                "Get-FEHive","Get-FEHost","Get-FEImage","Get-FEManifest","Get-FEModule","Get-FENetwork","Get-FEOS","Get-FEService","Get-FEShare",
+                "Get-FEHive",
+                "Get-FEHost",
+                "Get-FEImage",
+                "Get-FEManifest",
+                "Get-FERole",
+                "Get-FEInfo",
+                "Get-FEModule",
+                "Get-FENetwork",
+                "Get-FEOS",
+                "Get-FEService",
+                "Get-FEShare",
                 "Get-MadBomb","Get-MDTModule","Get-ServerDependency","Get-ViperBomb","Get-XamlWindow","Import-FEImage","Install-FEModule",
                 "Install-IISServer","New-ACLObject","New-Company","New-EnvironmentKey","New-FEImage","New-FEShare","Remove-FEModule","Remove-FEShare",
                 "Show-ToastNotification","Update-FEShare","Write-Theme","Get-MDTOData","New-FEDeploymentShare","Start-VMGroup",
