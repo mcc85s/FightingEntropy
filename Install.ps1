@@ -404,5 +404,6 @@ Function FightingEntropy
     [_Module]::New("2021.6.0")
 }
 
-$Module = FightingEntropy
-$Module
+$Install = FightingEntropy
+$Install
+"Installation details stored under variable `$Install"
