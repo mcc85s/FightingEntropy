@@ -217,9 +217,15 @@ Function Get-FEModule
                 Write-Host $This.Line
                 
                 $This.Report.NetHostmapInfo      = @( )
-                ForEach ( $Item in $This.Role.Network.Hostmap )
+                ForEach ( $X in 0..($This.Role.Network.Hostmap.Count - 1) )
                 { 
-                    $Info += ("{0}{1}: {2}" -f (@(" ")*(30-$Item.IPAddress.ToString().Length) -join ''), $Item.IPAddress, $Item.Hostname)
+                    $Item = $This.Role.Network.Hostmap[$X]
+                    If (!$Item.Hostname)
+                    {
+                        $Item.Hostname = "<host unknown/unnamed>"
+                    }
+                    
+                    $Info = ("{0}{1}: {2}" -f (@(" ")*(30-$Item.IPAddress.ToString().Length) -join ''), $Item.IPAddress, $Item.Hostname)
                     Write-Host $Info
                     $This.Report.NetHostmapInfo += $Info
                 }
