@@ -85,13 +85,13 @@ Function Get-FEModule
                 $This.Report = @{ 
                 
                     HostInfo     = $This.Role | Select-Object Name, DNS, NetBIOS, Hostname, Username, Principal, IsAdmin, Caption, 
-                                                              Version, Build, ReleaseID, Code, SKU, Chassis | Format-List
-                    ProcessInfo  = $This.Role.Process           | Format-Table
-                    NetInterface = $This.Role.Network.Interface | Format-Table
-                    NetActive    = $This.Role.Network.Active    | Format-Table
-                    NetStat      = $This.Role.Network.Netstat   | Format-Table
-                    Hostmap      = $This.Role.Network.Hostmap   | Format-Table
-                    ServiceInfo  = $This.Role.Service.Output    | Format-Table
+                                                              Version, Build, ReleaseID, Code, SKU, Chassis
+                    ProcessInfo  = $This.Role.Process
+                    NetInterface = $This.Role.Network.Interface
+                    NetActive    = $This.Role.Network.Active
+                    NetStat      = $This.Role.Network.Netstat
+                    Hostmap      = $This.Role.Network.Hostmap
+                    ServiceInfo  = $This.Role.Service.Output
                 }
                 
                 $This.Section("Host info")
