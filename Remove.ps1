@@ -25,7 +25,7 @@ Else
 }
 
 # [Module path]
-$ModPath = $Default\FightingEntropy 
+$ModPath = "$Default\FightingEntropy\$Version"
 
 If (!(Test-Path $ModPath))
 {
