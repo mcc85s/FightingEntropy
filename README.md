@@ -83,7 +83,7 @@
     Mainly because (driving around/living) in an RV that has "crime fighting" in it's name?
     You're gonna be tempted to knock out some bad guys left and right.
 
-    The lifetime supply of iced peas don't sound so ridiculous now, do they?
+    A lifetime supply of iced peas doesn't sound so ridiculous now, does it?
 
     It'll set you back a good 200K+ for the "My Briefcase" (Roaming RV Edition)
     AKA "Crime Fighting Lab". <- That's the official DMV Registration Code for now.
@@ -92,11 +92,13 @@
     Think about how much crime you could stop with this thing.
 
     Pretty sure Scruff McGruff will be proud of however much crime you take a bite out of.
+    
     Whether you get the RV, the backpack, or the lunchbox.
-    -
-    But, for people who found their way to FightingEntropy...?
-    You don't just stop at taking a bite out of crime there, Scruff McGruff.
+    Or... all three.
+    
+    For the people who found their way to FightingEntropy...?
+    You don't just stop at taking a little bite out of crime there, Scruff McGruff...
 
-    Nah, cause sometimes...? You have to kick the crap out of it too.
+    Nah, cause sometimes... you have to kick the crap out of it too.
 
     Show crime who the boss is.
