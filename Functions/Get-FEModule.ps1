@@ -209,10 +209,10 @@ Function Get-FEModule
                 $This.Role.Network.Netstat | % { 
                     
                     $0 = (@(" ")*(7-$_.Protocol.ToString().Length) -join '')
-                    $1 = (@(" ")*(30-$_.LocalAddress.ToString().Length) -join '')
-                    $2 = (@(" ")*(11-$_.LocalPort.ToString().Length) -join '')
-                    $3 = (@(" ")*(30-$_.RemoteAddress.ToString().Length) -join '')
-                    $4 = (@(" ")*(11-$_.RemotePort.ToString().Length) -join '')
+                    $1 = (@(" ")*(45-$_.LocalAddress.ToString().Length) -join '')
+                    $2 = (@(" ")*(6-$_.LocalPort.ToString().Length) -join '')
+                    $3 = (@(" ")*(45-$_.RemoteAddress.ToString().Length) -join '')
+                    $4 = (@(" ")*(6-$_.RemotePort.ToString().Length) -join '')
                     $5 = (@(" ")*(12-$_.State.ToString().Length) -join '')
                     $6 = (@(" ")*(12-$_.Direction.ToString().Length) -join '')
 
@@ -265,7 +265,7 @@ Function Get-FEModule
                         $IDInfo = "$($IDInfo[0..41] -join '')..."
                     }
 
-                    $0 = (@(" ")*( 3-$_.Index.ToString().Length) -join "")
+                    $0 = (@(" ")*( 4-$_.Index.ToString().Length) -join "")
                     $1 = (@(" ")*(45- $IDName.Length) -join "")
                     $2 = (@(" ")* 2 -join "")
                     $3 = (@(" ")*(8-$_.StartMode.ToString().Length) -join "")
