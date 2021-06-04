@@ -73,7 +73,6 @@ Function Write-Theme
         }
     }
 
-
     Class _Track
     {
         Hidden [String[]]      $Faces = [_Faces]::New().Faces
@@ -169,12 +168,7 @@ Function Write-Theme
                 $This.Mask[3+$X].ForegroundColor       = 1
             }
         }
-
-        Draw()
-        {
-            $This.Draw(@(10,12,15,0))
-        }
-
+        
         Draw([Object]$Palette)
         {
             ForEach ( $X in 0..($This.Mask.Count - 1))
@@ -209,38 +203,85 @@ Function Write-Theme
             {
                 "(\[\])" 
                 {
-                    $This.Height = $IP.Count - 1
-                    ForEach ( $Item in 0..($IP.Count - 1) )
+                    $This.Height = $IP.Count
+                    $Z = $Null
+                    ForEach ( $X in 0..($IP.Count - 1) )
                     {
-                        If ( $IP[$Item].Length -eq 0 )
+                        If ( $IP[$X].ToString().Length -eq 0 )
                         {
-                            $IP[$Item] = (@(" ")*88 -join '')
+                            $Z = (@(" ")*88 -join '')
+                            $This.Stack += $Z
                         }
 
-                        $This.Stack += $IP[$Item]
+                        ElseIf ($IP[$X].ToString().Length -in 1..88 )
+                        {
+                            $Z = ("{0}{1}" -f $IP[$X],(@(" ")*(88-$IP[$X].ToString().Length) -join ''))
+                            $This.Stack += $Z
+                        }
+
+                        Else
+                        {
+                            $Total    = $IP[$X].ToString().Length 
+                            $Rem      = $Total % 88
+                            $Ct       = ($Total - $Rem)/88
+                            $X        = -1
+                            $Temp     = @{ }
+
+                            ForEach ( $I in 0..$Total )
+                            {     
+                                Switch([UInt32]($I % 88 -eq 0))
+                                {
+                                    0
+                                    {
+                                        $Temp[$X] += $Total[$I]
+                                    }
+
+                                    1
+                                    {
+                                        $X ++
+                                        $Temp.Add($X,"")
+                                        $Temp[$X] += $Total[$I]
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
                 Hashtable
                 {
-                    $This.Height = $IP.Keys.Count + 1
-                    $Width       = $IP.Keys | Sort-Object Length | Select-Object -Last 1 | % { $_.Length }
+                    $Z               = $Null
+                    $This.Height     = $IP.Keys.Count + 1
+                    $Width           = $IP.Keys | Sort-Object Length | Select-Object -Last 1 | % { $_.Length }
                     $IP.GetEnumerator() | % { 
                         
-                        $This.Stack += ("{0}{1}: {2}" -f (@(" ")*($Width-$_.Name.Length) -join ''),$_.Name, $_.Value) 
+                        $Z           = ("{0}{1}: {2}" -f (@(" ")*($Width-$_.Name.Length) -join ''),$_.Name, $_.Value)
+                        $This.Stack += $Z
                     }
 
-                    $This.Stack += " "
+                    $Z               = (@(" ")*88 -join '')
+                    $This.Stack     += $Z
                 }
 
                 Default 
                 {
-                    $This.Height = 1
-                    If ( $IP.Length -eq 0 )
+                    $Z              = $Null
+                    $This.Height    = 1
+                    If ( $IP.ToString().Length -eq 0 )
                     {
-                        $IP = (@(" ")*88 -join '')
+                        $Z          = (@(" ")*88 -join '')
                     }
-                    $This.Stack += $IP
+
+                    ElseIf ($IP.ToString().Length -in 1,2,3)
+                    {
+                        $Z          = ("{0}{1}" -f $IP.ToString(),(@(" ")*(4-$IP.ToString().Length) -join ''))
+                    }
+                    Else
+                    {
+                        $Z          = $IP.ToString()
+                    }
+
+                    $This.Stack    += $Z
                 }
             }
 
@@ -268,7 +309,20 @@ Function Write-Theme
                     {
                         $X     = 88 * $I
                         $Y     = @( $X + ( 88 - 1 ); $X + ( $R - 1 ) )[$I -eq $C]
-                        $Temp += $Line[$X..$Y] -join ''
+                        $Z     = $Null
+
+                        If ( $I -ne $C )
+                        {
+                            $Z = $Line[@($X..$Y)] -join ''
+                        }
+
+                        Else
+                        {
+                            $String = $Line.Substring($X)
+                            $Z = ("{0}{1}" -f $String,(@(" ")*(88-$String.Length) -join ''))
+                        }
+
+                        $Temp += $Z
                     }
                 }
 
@@ -309,19 +363,18 @@ Function Write-Theme
 
                 1
                 {
-                    $This.Stand += [_Object]::New($Object)
+                    $This.Stand = [_Object]::New($Object)
                 }
             }
 
-            $This.Type  = @("Line","Block")[$This.Stand.Stack.Count -gt 1]
-
+            $This.Type  = @("Line","Block")[$This.Stand.Count -gt 1]
             $This.Stack = @( )
 
             If ( $This.Stand.Stack.Count -gt 1 )
             {
                 $This.Theme = [_Theme]::New(2)
 
-                ForEach ($X in 0..($This.Stand.Stack.Count - 1))
+                ForEach ( $X in 0..($This.Stand.Stack.Count - 1))
                 {
                     $This.Stack += $This.Stand.Stack[$X]
                 }
@@ -376,17 +429,17 @@ Function Write-Theme
                             $Track_.LoadBody($T,$This.Stack[$I])
                             $Track_.Index = $C
                             $This.Track.Add($C,$Track_)
-                                $C ++
-                            }
+                            $C ++
+                        }
 
-                            If ($T -ne 7)
-                            {
-                                $Track_       = [_Track]::New(6)
-                                $Track_.LoadBody(6," ")
-                                $Track_.Index = $C
-                                $This.Track.Add($C,$Track_)
-                                $C ++
-                            }
+                        If ($This.Stack.Count % 2 -eq 1 )
+                        {
+                            $Track_       = [_Track]::New(6)
+                            $Track_.LoadBody(6," ")
+                            $Track_.Index = $C
+                            $This.Track.Add($C,$Track_)
+                            $C ++
+                        }
                     }
 
                     $This.Theme.Footer
@@ -400,9 +453,45 @@ Function Write-Theme
             }
         }
 
+        Clean()
+        {
+            Switch($This.Theme.Name)
+            {
+                Function
+                {
+                    $This.Track[3].Mask[     2].Object = "\__["
+                    $This.Track[3].Mask[    26].Object = "]__/"
+                }
+    
+                Action
+                {
+                    $This.Track[2].Mask[     2].Object = "/¯¯["
+                    ForEach ( $Mask in $This.Track[2].Mask[ 2..26] )
+                    {
+                        If ( $Mask.Object -match "(____|\]_+)" )
+                        {
+                            $Mask.Object = "    " 
+                        }
+                    }
+                }
+
+                Section
+                {
+                    $This.Track[ 3].Mask[     2].Object = "\__["
+                    $This.Track[ 3].Mask[    26].Object = "___/"
+
+                    $Total = $This.Track.Count
+                    $This.Track[$Total-6].Mask[    28].Object = "___/"
+                    $This.Track[$Total-2].Mask[     2].Object = "\__["
+                    $This.Track[$Total-2].Mask[    26].Object = "___/"
+                }
+            }
+        }
+
         Draw([Object]$Palette)
         {
             $This.Build()
+            $This.Clean()
 
             ForEach ( $X in 0..($This.Track.Count - 1 ) )
             {
