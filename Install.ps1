@@ -215,7 +215,7 @@ Function FightingEntropy
     {
         [String]        $Base = "github.com/mcc85s/FightingEntropy/blob/main"
         [String]        $Name = "FightingEntropy"
-        [String] $Description = "Beginning the fight against Identity Theft, and Cybercriminal Activities"
+        [String] $Description = "Beginning the fight against ID theft, and cybercrime"
         [String]      $Author = "Michael C. Cook Sr."
         [String]     $Company = "Secure Digits Plus LLC"
         [String]   $Copyright = "(c) 2021 (mcc85s/mcc85sx/sdp). All rights reserved."
