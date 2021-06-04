@@ -30,6 +30,24 @@ Function Get-FEModule
                 $This.SI   = $Process.SessionID
                 $This.Name = $Process.ProcessName
             }
+
+            [String] X([UInt32]$Width,[Object]$Value)
+            {
+                If ( $Value.Length -le 0 )
+                {
+                    $Value = "0"
+                }
+
+                Return ("[{0}{1}]" -f ( @(" ") * ( $Width - $Value.Length ) -join '' ), $Value)
+
+            }
+
+            [String] ToString()
+            {
+                Return @($This.X(10,$This.NPM),$This.X(10,$This.PM),$This.X(10,$This.WS),
+                         $This.X(10,$This.CPU),$This.X(6,$This.ID),$This.X( 6,$This.SI),
+                         $This.X(44,$This.Name))
+            }
         }
         
         Class _Module
@@ -130,20 +148,14 @@ Function Get-FEModule
 
                 Write-Host "[     NPM] [      PM] [      WS] [       CPU] [     ID] [  SI] [                        ProcessName]"
                 Write-Host (@("-") * 120 -join '' )
-                Get-Process | % { [_Process]::New($_) } | % { 
-
-                    $0 = ( @(" ") * (  8 -  $_.NPM.ToString().Length ) -join '' )
-                    $1 = ( @(" ") * (  8 -   $_.PM.ToString().Length ) -join '' )
-                    $2 = ( @(" ") * (  8 -   $_.WS.ToString().Length ) -join '' )
-                    $3 = ( @(" ") * ( 10 -  $_.CPU.ToString().Length ) -join '' )
-                    $4 = ( @(" ") * (  7 -   $_.ID.ToString().Length ) -join '' )
-                    $5 = ( @(" ") * (  4 -   $_.SI.ToString().Length ) -join '' )
-                    $6 = ( @(" ") * ( 35 - $_.Name.ToString().Length ) -join '' )
-
-                    $Info = ("[$0{0}] [$1{1}] [$2{2}] [$3{3}] [$4{4}] [$5{5}] [$6{6}]" -f $_.NPM,$_.PM,$_.WS,$_.CPU,$_.ID,$_.SI,$_.Name )
-                    Write-Host $Info
+                
+                Get-Process | % { 
+                    
+                    $Info = [_Process]::New($_)
+                    Write-Host $Info.ToString()
                     $This.Report.ProcessInfo += $Info
                 }
+                
                 Write-Host " "
             }
             
