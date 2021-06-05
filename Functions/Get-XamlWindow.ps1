@@ -2574,6 +2574,18 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                     </DataGrid>
                 </GroupBox>
             </TabItem>
+            <TabItem Header="Processes">
+                
+            </TabItem>
+            <TabItem Header="Network">
+                
+            </TabItem>
+            <TabItem Header="Services">
+                
+            </TabItem>
+            <TabItem Header="Preferences">
+                
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>
