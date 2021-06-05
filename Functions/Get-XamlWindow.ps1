@@ -2411,7 +2411,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 </Window>
 '@
             FEModule = @"
-            <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             Title="[FightingEntropy(π)][(2021.6.0)]"
             Height="450" 
@@ -2499,16 +2499,36 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                     <Grid Margin="5">
                         <TabControl>
                             <TabItem Header="Classes">
-                                <ListBox Name="ManifestClasses"/>
+                                <DataGrid Name="ManifestClasses">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding URL}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
                             </TabItem>
                             <TabItem Header="Control">
-                                <ListBox Name="ManifestControl"/>
+                                <DataGrid Name="ManifestControl">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding URL}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
                             </TabItem>
                             <TabItem Header="Functions">
-                                <ListBox Name="ManifestFunctions"/>
+                                <DataGrid Name="ManifestFunctions">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding URL}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
                             </TabItem>
                             <TabItem Header="Graphics">
-                                <ListBox Name="ManifestGraphics"/>
+                                <DataGrid Name="ManifestGraphics">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding URL}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
                             </TabItem>
                         </TabControl>
                     </Grid>
