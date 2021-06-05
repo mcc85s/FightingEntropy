@@ -2,7 +2,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 {
     [CmdletBinding()]Param(
     [Parameter(Mandatory)]
-    [ValidateSet("Certificate","ADLogin","NewAccount","FENetwork","FEDCPromo","FEDCFound","FERoot","FEShare","FEService","MBWin10","ClientRegistration","Test")]
+    [ValidateSet("Certificate","ADLogin","NewAccount","FENetwork","FEDCPromo","FEDCFound","FERoot","FEShare","FEService","MBWin10","ClientRegistration","FEModule","Test")]
     [String]$Type,
     [Parameter()]
     [Switch]$Return)
@@ -122,7 +122,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     
     Class _XamlObject
     {
-        [String[]]        $Names = ("Certificate ADLogin NewAccount FENetwork FEDCPromo FEDCFound FERoot FEShare FEService MBWin10 ClientRegistration Test" -Split " ")
+        [String[]]        $Names = ("Certificate ADLogin NewAccount FENetwork FEDCPromo FEDCFound FERoot FEShare FEService MBWin10 ClientRegistration FEModule Test" -Split " ")
         [Object]       $Glossary = [_XamlGlossary]::New().Output
         [Object]            $GFX = [_XamlGFX]::New("C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics")
         [Object]           $Xaml = @{ 
@@ -2410,6 +2410,174 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
     </Grid>
 </Window>
 '@
+            FEModule = @"
+            <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            Title="[FightingEntropy(π)][(2021.6.0)]"
+            Height="450" 
+            Width="800"
+            Topmost="True" 
+            ResizeMode="NoResize" 
+            Icon="C:\ProgramData\Secure Digits Plus LLC\Graphics\icon.ico" 
+            HorizontalAlignment="Center" 
+            WindowStartupLocation="CenterScreen"
+            FontFamily="Consolas"
+            Background="LightYellow">
+    <Window.Resources>
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="DarkBlue"/>
+            <Setter Property="BorderBrush" Value="Red"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="Label" x:Key="lLabel">
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="VerticalContentAlignment" Value="Bottom"/>
+        </Style>
+        <Style TargetType="Label" x:Key="rLabel">
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Bottom"/>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="AlternationCount" Value="2"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="IsTabStop" Value="True"/>
+            <Setter Property="IsTextSearchEnabled" Value="True"/>
+            <Setter Property="SelectionMode" Value="Extended"/>
+        </Style>
+        <Style TargetType="DataGridRow">
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="#FFFFFFFF"/>
+                </Trigger>
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#FFC2FAFD"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="LightYellow"/>
+        </Grid.Background>
+        <TabControl Margin="5">
+            <TabItem Header="Module">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" Header="[Module information]">
+                        <DataGrid Name="ModuleInfo">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                <DataGridTextColumn Header="Value" Width="*" Binding="{Binding Value}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="1" Header="[OS information]">
+                        <DataGrid Name="OSInfo">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                <DataGridTextColumn Header="Value" Width="*" Binding="{Binding Value}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Manifest">
+                <GroupBox Header="[Manifest information]">
+                    <Grid Margin="5">
+                        <TabControl>
+                            <TabItem Header="Classes">
+                                <ListBox Name="ManifestClasses"/>
+                            </TabItem>
+                            <TabItem Header="Control">
+                                <ListBox Name="ManifestControl"/>
+                            </TabItem>
+                            <TabItem Header="Functions">
+                                <ListBox Name="ManifestFunctions"/>
+                            </TabItem>
+                            <TabItem Header="Graphics">
+                                <ListBox Name="ManifestGraphics"/>
+                            </TabItem>
+                        </TabControl>
+                    </Grid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Registry">
+                <GroupBox Header="[Registry information]">
+                    <DataGrid Name="RegistryInfo">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                            <DataGridTextColumn Header="Value" Width="*" Binding="{Binding Value}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Tree">
+                <GroupBox Header="[Tree information]">
+                    <Grid Margin="5">
+                        <TabControl>
+                            <TabItem Header="Classes">
+                                <DataGrid Name="TreeClasses">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Path" Width="*" Binding="{Binding FullName}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </TabItem>
+                            <TabItem Header="Control">
+                                <DataGrid Name="TreeControl">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Path" Width="*" Binding="{Binding FullName}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </TabItem>
+                            <TabItem Header="Functions">
+                                <DataGrid Name="TreeFunctions">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Path" Width="*" Binding="{Binding FullName}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </TabItem>
+                            <TabItem Header="Graphics">
+                                <DataGrid Name="TreeGraphics">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Path" Width="*" Binding="{Binding FullName}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </TabItem>
+                        </TabControl>
+                    </Grid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Role">
+                <GroupBox Header="[Role information]">
+                    <DataGrid Name="RoleInfo">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                            <DataGridTextColumn Header="Value" Width="*" Binding="{Binding Value}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
+"@
             Test = ''
 
         }
