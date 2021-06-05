@@ -2460,7 +2460,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                     <Setter Property="Background" Value="#FFFFFFFF"/>
                 </Trigger>
                 <Trigger Property="AlternationIndex" Value="1">
-                    <Setter Property="Background" Value="#FFC2FAFD"/>
+                    <Setter Property="Background" Value="#FFDBEEF0"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
