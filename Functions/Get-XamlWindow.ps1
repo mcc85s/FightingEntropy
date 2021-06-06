@@ -2421,15 +2421,14 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
             Icon="C:\ProgramData\Secure Digits Plus LLC\Graphics\icon.ico" 
             HorizontalAlignment="Center" 
             WindowStartupLocation="CenterScreen"
-            FontFamily="Consolas"
-            Background="LightYellow">
+            FontFamily="Consolas">
     <Window.Resources>
         <Style TargetType="GroupBox">
             <Setter Property="Margin" Value="5"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="DarkBlue"/>
-            <Setter Property="BorderBrush" Value="Red"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="Green"/>
             <Setter Property="Background" Value="White"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -2453,14 +2452,17 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
             <Setter Property="IsTabStop" Value="True"/>
             <Setter Property="IsTextSearchEnabled" Value="True"/>
             <Setter Property="SelectionMode" Value="Extended"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
         </Style>
         <Style TargetType="DataGridRow">
             <Style.Triggers>
                 <Trigger Property="AlternationIndex" Value="0">
-                    <Setter Property="Background" Value="#FFFFFFFF"/>
+                    <Setter Property="Background" Value="White"/>
                 </Trigger>
                 <Trigger Property="AlternationIndex" Value="1">
-                    <Setter Property="Background" Value="#FFDBEEF0"/>
+                    <Setter Property="Background" Value="AliceBlue"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -2505,7 +2507,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                             <TabItem Header="Classes">
                                 <DataGrid Name="ManifestClasses">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}"/>
                                         <DataGridTextColumn Header="URL" Width="*" Binding="{Binding Value}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -2513,7 +2515,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                             <TabItem Header="Control">
                                 <DataGrid Name="ManifestControl">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}"/>
                                         <DataGridTextColumn Header="URL" Width="*" Binding="{Binding Value}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -2521,7 +2523,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                             <TabItem Header="Functions">
                                 <DataGrid Name="ManifestFunctions">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}"/>
                                         <DataGridTextColumn Header="URL" Width="*" Binding="{Binding Value}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -2529,7 +2531,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                             <TabItem Header="Graphics">
                                 <DataGrid Name="ManifestGraphics">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}"/>
                                         <DataGridTextColumn Header="URL" Width="*" Binding="{Binding Value}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -2555,7 +2557,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                             <TabItem Header="Classes">
                                 <DataGrid Name="TreeClasses">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}"/>
                                         <DataGridTextColumn Header="Path" Width="*" Binding="{Binding FullName}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -2563,7 +2565,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                             <TabItem Header="Control">
                                 <DataGrid Name="TreeControl">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}"/>
                                         <DataGridTextColumn Header="Path" Width="*" Binding="{Binding FullName}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -2571,7 +2573,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                             <TabItem Header="Functions">
                                 <DataGrid Name="TreeFunctions">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}"/>
                                         <DataGridTextColumn Header="Path" Width="*" Binding="{Binding FullName}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -2579,7 +2581,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                             <TabItem Header="Graphics">
                                 <DataGrid Name="TreeGraphics">
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                                        <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}"/>
                                         <DataGridTextColumn Header="Path" Width="*" Binding="{Binding FullName}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -2619,12 +2621,12 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                         <GroupBox Header="[Interface panel]">
                             <DataGrid Name="InterfaceList">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Hostname" Width="17*" Binding="{Binding Hostname}"/>
-                                    <DataGridTextColumn Header="Alias" Width="15*" Binding="{Binding Alias}"/>
-                                    <DataGridTextColumn Header="Index" Width="60" Binding="{Binding Index}"/>
-                                    <DataGridTextColumn Header="Description" Width="36*" Binding="{Binding Description}"/>
-                                    <DataGridTextColumn Header="Status" Width="80" Binding="{Binding Status}"/>
-                                    <DataGridTextColumn Header="MacAddress" Width="12*" Binding="{Binding MacAddress}"/>
+                                    <DataGridTextColumn Header="Hostname" Width="200" Binding="{Binding Hostname}"/>
+                                    <DataGridTextColumn Header="Alias" Width="150" Binding="{Binding Alias}"/>
+                                    <DataGridTextColumn Header="#" Width="25" Binding="{Binding Index}"/>
+                                    <DataGridTextColumn Header="Description" Width="150" Binding="{Binding Description}"/>
+                                    <DataGridTextColumn Header="Status" Width="60" Binding="{Binding Status}"/>
+                                    <DataGridTextColumn Header="MacAddress" Width="120" Binding="{Binding MacAddress}"/>
                                     <DataGridTextColumn Header="Vendor" Width="7.5*" Binding="{Binding Vendor}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
@@ -2634,9 +2636,9 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                         <GroupBox Header="[Active interface panel]">
                             <DataGrid Name="ActiveList">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Hostname" Width="17*" Binding="{Binding Hostname}"/>
-                                    <DataGridTextColumn Header="Alias" Width="15*" Binding="{Binding Alias}"/>
-                                    <DataGridTextColumn Header="Index" Width="60" Binding="{Binding Index}"/>
+                                    <DataGridTextColumn Header="Hostname" Width="200" Binding="{Binding Hostname}"/>
+                                    <DataGridTextColumn Header="Alias" Width="150" Binding="{Binding Alias}"/>
+                                    <DataGridTextColumn Header="#" Width="25" Binding="{Binding Index}"/>
                                     <DataGridTextColumn Header="Description" Width="36*" Binding="{Binding Description}"/>
                                     <DataGridTextColumn Header="Status" Width="80" Binding="{Binding Status}"/>
                                     <DataGridTextColumn Header="MacAddress" Width="12*" Binding="{Binding MacAddress}"/>
@@ -2649,13 +2651,13 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                         <GroupBox Header="[Connection stats]">
                             <DataGrid Name="ConnectionList">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Protocol" Width="*" Binding="{Binding Protocol}"/>
-                                    <DataGridTextColumn Header="LocalAddress" Width="*" Binding="{Binding LocalAddress}"/>
-                                    <DataGridTextColumn Header="LocalPort" Width="*" Binding="{Binding LocalPort}"/>
-                                    <DataGridTextColumn Header="RemoteAddress" Width="*" Binding="{Binding RemoteAddress}"/>
-                                    <DataGridTextColumn Header="RemotePort" Width="*" Binding="{Binding RemotePort}"/>
+                                    <DataGridTextColumn Header="Proto" Width="60" Binding="{Binding Protocol}"/>
+                                    <DataGridTextColumn Header="L.Address" Width="200" Binding="{Binding LocalAddress}"/>
+                                    <DataGridTextColumn Header="L.Port" Width="60" Binding="{Binding LocalPort}"/>
+                                    <DataGridTextColumn Header="R.Address" Width="200" Binding="{Binding RemoteAddress}"/>
+                                    <DataGridTextColumn Header="R.Port" Width="60" Binding="{Binding RemotePort}"/>
                                     <DataGridTextColumn Header="State" Width="*" Binding="{Binding State}"/>
-                                    <DataGridTextColumn Header="Direction" Width="*" Binding="{Binding Direction}"/>
+                                    <DataGridTextColumn Header="In/Out" Width="*" Binding="{Binding Direction}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </GroupBox>
@@ -2664,9 +2666,9 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                         <GroupBox Header="[Host stats]">
                             <DataGrid Name="HostList">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Index" Width="*" Binding="{Binding Index}"/>
-                                    <DataGridTextColumn Header="IPAddress" Width="*" Binding="{Binding IPAddress}"/>
-                                    <DataGridTextColumn Header="Hostname" Width="*" Binding="{Binding Hostname}"/>
+                                    <DataGridTextColumn Header="#" Width="25" Binding="{Binding Index}"/>
+                                    <DataGridTextColumn Header="IPAddress" Width="240" Binding="{Binding IPAddress}"/>
+                                    <DataGridTextColumn Header="Hostname" Width="240" Binding="{Binding Hostname}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </GroupBox>
@@ -2677,10 +2679,10 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                 <GroupBox Header="Services">
                     <DataGrid Name="ServiceList">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
-                            <DataGridTextColumn Header="Index" Width="*" Binding="{Binding Index}"/>
-                            <DataGridTextColumn Header="Status" Width="*" Binding="{Binding Status}"/>
-                            <DataGridTextColumn Header="StartType" Width="*" Binding="{Binding StartMode}"/>
+                            <DataGridTextColumn Header="#" Width="30" Binding="{Binding Index}"/>
+                            <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                            <DataGridTextColumn Header="Status" Width="50" Binding="{Binding Status}"/>
+                            <DataGridTextColumn Header="StartType" Width="70" Binding="{Binding StartMode}"/>
                             <DataGridTextColumn Header="DisplayName" Width="*" Binding="{Binding DisplayName}"/>
                             <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}"/>
                         </DataGrid.Columns>
