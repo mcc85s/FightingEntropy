@@ -2411,7 +2411,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 </Window>
 '@
             FEModule = @"
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             Title="[FightingEntropy(π)][(2021.6.0)]"
             Height="450" 
@@ -2595,10 +2595,29 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                 </GroupBox>
             </TabItem>
             <TabItem Header="Processes">
-                
+                <GroupBox Header="[Running processes]">
+                    <DataGrid Name="ProcessInfo">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="NPM(K)" Width="60" Binding="{Binding NPM}"/>
+                            <DataGridTextColumn Header="PM(M)" Width="60" Binding="{Binding PM}"/>
+                            <DataGridTextColumn Header="WS(M)" Width="60" Binding="{Binding WS}"/>
+                            <DataGridTextColumn Header="CPU(s)" Width="60" Binding="{Binding CPU}"/>
+                            <DataGridTextColumn Header="ID" Width="50" Binding="{Binding ID}"/>
+                            <DataGridTextColumn Header="SI" Width="50" Binding="{Binding SI}"/>
+                            <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
             </TabItem>
             <TabItem Header="Network">
-                
+                <TabControl>
+                    <TabItem Header="Total Interface(s)"/>
+                    <TabItem Header="Active Interface(s)"/>
+                    <TabItem Header="Connection statistics"/>
+                    <TabItem Header="Network Host(s)"/>
+
+
+                </TabControl>
             </TabItem>
             <TabItem Header="Services">
                 
