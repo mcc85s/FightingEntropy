@@ -2411,7 +2411,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
 </Window>
 '@
             FEModule = @"
-            <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             Title="[FightingEntropy(π)][(2021.6.0)]"
             Height="450" 
@@ -2463,6 +2463,10 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                     <Setter Property="Background" Value="#FFDBEEF0"/>
                 </Trigger>
             </Style.Triggers>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Height" Value="30"/>
         </Style>
     </Window.Resources>
     <Grid>
@@ -2611,16 +2615,78 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
             </TabItem>
             <TabItem Header="Network">
                 <TabControl>
-                    <TabItem Header="Total Interface(s)"/>
-                    <TabItem Header="Active Interface(s)"/>
-                    <TabItem Header="Connection statistics"/>
-                    <TabItem Header="Network Host(s)"/>
-
-
+                    <TabItem Header="Total Interface(s)">
+                        <GroupBox Header="[Interface panel]">
+                            <DataGrid Name="InterfaceList">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Hostname" Width="17*" Binding="{Binding Hostname}"/>
+                                    <DataGridTextColumn Header="Alias" Width="15*" Binding="{Binding Alias}"/>
+                                    <DataGridTextColumn Header="Index" Width="60" Binding="{Binding Index}"/>
+                                    <DataGridTextColumn Header="Description" Width="36*" Binding="{Binding Description}"/>
+                                    <DataGridTextColumn Header="Status" Width="80" Binding="{Binding Status}"/>
+                                    <DataGridTextColumn Header="MacAddress" Width="12*" Binding="{Binding MacAddress}"/>
+                                    <DataGridTextColumn Header="Vendor" Width="7.5*" Binding="{Binding Vendor}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </TabItem>
+                    <TabItem Header="Active Interface(s)">
+                        <GroupBox Header="[Active interface panel]">
+                            <DataGrid Name="ActiveList">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Hostname" Width="17*" Binding="{Binding Hostname}"/>
+                                    <DataGridTextColumn Header="Alias" Width="15*" Binding="{Binding Alias}"/>
+                                    <DataGridTextColumn Header="Index" Width="60" Binding="{Binding Index}"/>
+                                    <DataGridTextColumn Header="Description" Width="36*" Binding="{Binding Description}"/>
+                                    <DataGridTextColumn Header="Status" Width="80" Binding="{Binding Status}"/>
+                                    <DataGridTextColumn Header="MacAddress" Width="12*" Binding="{Binding MacAddress}"/>
+                                    <DataGridTextColumn Header="Vendor" Width="7.5*" Binding="{Binding Vendor}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </TabItem>
+                    <TabItem Header="Connection statistics">
+                        <GroupBox Header="[Connection stats]">
+                            <DataGrid Name="ConnectionList">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Protocol" Width="*" Binding="{Binding Protocol}"/>
+                                    <DataGridTextColumn Header="LocalAddress" Width="*" Binding="{Binding LocalAddress}"/>
+                                    <DataGridTextColumn Header="LocalPort" Width="*" Binding="{Binding LocalPort}"/>
+                                    <DataGridTextColumn Header="RemoteAddress" Width="*" Binding="{Binding RemoteAddress}"/>
+                                    <DataGridTextColumn Header="RemotePort" Width="*" Binding="{Binding RemotePort}"/>
+                                    <DataGridTextColumn Header="State" Width="*" Binding="{Binding State}"/>
+                                    <DataGridTextColumn Header="Direction" Width="*" Binding="{Binding Direction}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </TabItem>
+                    <TabItem Header="Network Host(s)">
+                        <GroupBox Header="[Host stats]">
+                            <DataGrid Name="HostList">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Index" Width="*" Binding="{Binding Index}"/>
+                                    <DataGridTextColumn Header="IPAddress" Width="*" Binding="{Binding IPAddress}"/>
+                                    <DataGridTextColumn Header="Hostname" Width="*" Binding="{Binding Hostname}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </TabItem>
                 </TabControl>
             </TabItem>
             <TabItem Header="Services">
-                
+                <GroupBox Header="Services">
+                    <DataGrid Name="ServiceList">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Index" Width="*"  Binding="{Binding Index}"/>
+                            <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
+                            <DataGridTextColumn Header="Index" Width="*" Binding="{Binding Index}"/>
+                            <DataGridTextColumn Header="Status" Width="*" Binding="{Binding Status}"/>
+                            <DataGridTextColumn Header="StartType" Width="*" Binding="{Binding StartType}"/>
+                            <DataGridTextColumn Header="DisplayName" Width="*" Binding="{Binding DisplayName}"/>
+                            <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
             </TabItem>
             <TabItem Header="Preferences">
                 
