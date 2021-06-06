@@ -352,7 +352,7 @@ Function Get-FEModule
         {
             $This.Window                 = Get-XamlWindow -Type FEModule
             $This.IO                     = $This.Window.IO
-            
+            $This.IO.Title               = "[FightingEntropy({0})][(2021.6.0)]" -f [Char]960
             $This.Module                 = [_Module]::New((Get-ItemProperty $RegPath))
 
             $This.Prime()
