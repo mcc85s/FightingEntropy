@@ -2506,7 +2506,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                                 <DataGrid Name="ManifestClasses">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
-                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding URL}"/>
+                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding Value}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </TabItem>
@@ -2514,7 +2514,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                                 <DataGrid Name="ManifestControl">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
-                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding URL}"/>
+                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding Value}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </TabItem>
@@ -2522,7 +2522,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                                 <DataGrid Name="ManifestFunctions">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
-                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding URL}"/>
+                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding Value}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </TabItem>
@@ -2530,7 +2530,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                                 <DataGrid Name="ManifestGraphics">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
-                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding URL}"/>
+                                        <DataGridTextColumn Header="URL" Width="*" Binding="{Binding Value}"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </TabItem>
@@ -2677,11 +2677,10 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
                 <GroupBox Header="Services">
                     <DataGrid Name="ServiceList">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Index" Width="*"  Binding="{Binding Index}"/>
                             <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
                             <DataGridTextColumn Header="Index" Width="*" Binding="{Binding Index}"/>
                             <DataGridTextColumn Header="Status" Width="*" Binding="{Binding Status}"/>
-                            <DataGridTextColumn Header="StartType" Width="*" Binding="{Binding StartType}"/>
+                            <DataGridTextColumn Header="StartType" Width="*" Binding="{Binding StartMode}"/>
                             <DataGridTextColumn Header="DisplayName" Width="*" Binding="{Binding DisplayName}"/>
                             <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}"/>
                         </DataGrid.Columns>
