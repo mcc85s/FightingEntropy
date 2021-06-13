@@ -1,4 +1,4 @@
-Function Get-Certificate
+Function Get-FECertificate
 {
     [CmdLetBinding()]Param(
         [String]$Organization = "Default",
