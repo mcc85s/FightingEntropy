@@ -10,7 +10,7 @@ Function Get-FEManifest
 
         [String[]]    $Control = "Computer.png DefaultApps.xml $( "FE","MDT","PSD" | % { "$_`Client","$_`Server" } | % { "$_`Mod.xml" } )" -Split " "
 
-        [String[]]  $Functions = ("Add-ACL","Complete-IISServer","Export-Ini","Get-Certificate","Get-DiskInfo","Get-FEDCPromo","Get-FEDCPromoProfile",
+        [String[]]  $Functions = ("Add-ACL","Complete-IISServer","Export-Ini","Get-FECertificate","Get-DiskInfo","Get-FEDCPromo","Get-FEDCPromoProfile",
                 "Get-FEHive",
                 "Get-FEHost",
                 "Get-FEImage",
