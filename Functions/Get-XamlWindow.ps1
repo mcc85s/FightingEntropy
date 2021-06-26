@@ -2418,7 +2418,7 @@ Function Get-XamlWindow # // Originally based on Dr. Weltner's work, but also Ja
             Width="800"
             Topmost="True" 
             ResizeMode="NoResize" 
-            Icon="C:\ProgramData\Secure Digits Plus LLC\Graphics\icon.ico" 
+            Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" 
             HorizontalAlignment="Center" 
             WindowStartupLocation="CenterScreen"
             FontFamily="Consolas">
