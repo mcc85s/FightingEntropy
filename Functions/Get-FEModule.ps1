@@ -560,7 +560,5 @@ Function Get-FEModule
             Graphics  {$Mod.Graphics}
             Role      {$Mod.Role}
         }
-
-        $Mod
     }
 }
