@@ -80,7 +80,7 @@ Function Get-FERole
         
         }
     
-        GetChocolatey()
+        Choco()
         {
             Invoke-Expression ( Invoke-RestMethod https://chocolatey.org/install.ps1 )
         }
@@ -164,6 +164,11 @@ Function Get-FERole
         GetFeatures()
         {
         
+        }
+        
+        Choco()
+        {
+            Invoke-Expression ( Invoke-RestMethod https://chocolatey.org/install.ps1 )
         }
     }
 
