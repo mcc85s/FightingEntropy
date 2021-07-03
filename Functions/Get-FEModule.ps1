@@ -20,7 +20,6 @@ Function Get-FEModule
         [String]       $ID
         [String]       $SI
         [String]     $Name
-            
         _Process([Object]$Process)
         {
             $This.NPM  = "{0:n2}" -f ($Process.NonpagedSystemMemorySize/1KB)
@@ -31,7 +30,6 @@ Function Get-FEModule
             $This.SI   = $Process.SessionID
             $This.Name = $Process.ProcessName
         }
-
         [String] X([UInt32]$Width,[Object]$Value)
         {
             If ( $Value.Length -le 0 )
@@ -40,9 +38,7 @@ Function Get-FEModule
             }
 
             Return ("[{0}{1}]" -f ( @(" ") * ( $Width - $Value.Length ) -join '' ), $Value)
-
         }
-
         [String] ToString()
         {
             Return @($This.X(10,$This.NPM),$This.X(10,$This.PM),$This.X(10,$This.WS),
@@ -72,18 +68,15 @@ Function Get-FEModule
         [String]     $ManPath
         [String]        $Path
         [Object]        $Tree
-
         [Object[]]   $Classes
         [Object[]]   $Control
         [Object[]] $Functions
         [Object[]]  $Graphics
-
         [Object]      $Status
         [Object]        $Type
         [Object]        $Role
         Hidden [Object] $Report
         Hidden [Object] $Line = (@(" ")*120 -join '')
-
         _Module([Object]$ID)
         {
             $This.Base        = $ID.Base
@@ -105,7 +98,6 @@ Function Get-FEModule
             $This.ManPath     = $ID.ManPath
             $This.Path        = $ID.Path
             $This.Status      = $ID.Status
-
             $This.Tree        = Get-ChildItem $This.Path | ? Name -in $This.Manifest.Names
             $This.Classes     = $This.Tree | ? Name -eq Classes  | Get-ChildItem
             $This.Control     = $This.Tree | ? Name -eq Control  | Get-ChildItem
@@ -114,7 +106,6 @@ Function Get-FEModule
             $This.Type        = $This.OS.Type
             $This.Role        = Get-FERole
         }
-            
         Section([String]$Label)
         {
             Write-Host " "
@@ -122,8 +113,7 @@ Function Get-FEModule
             Write-Host "[$Label]"
             Write-Host (@("-")*120 -join '')
             Write-Host " "
-        }
-            
+        }  
         HostInfo()
         {
             Write-Theme "Host info"
@@ -139,8 +129,7 @@ Function Get-FEModule
             }
 
             Write-Host " "
-        }
-            
+        } 
         ProcessInfo()
         {
             Write-Theme "Process info"
@@ -160,7 +149,6 @@ Function Get-FEModule
             
             Write-Host " "
         }
-        
         NetInterfaceInfo()
         {
             Write-Theme "Network interface(s)"
@@ -180,7 +168,6 @@ Function Get-FEModule
             }
             Write-Host " "
         }
-
         NetActiveInfo()
         {
             Write-Theme "Active interface(s)"
@@ -198,7 +185,6 @@ Function Get-FEModule
             }
             Write-Host " "
         }
-
         NetStatInfo()
         {
             Write-Theme "Connection statistics"
@@ -224,7 +210,6 @@ Function Get-FEModule
             }
             Write-Host " "
         }
-
         NetHostmapInfo()
         {
             Write-Theme "Network host(s)"
@@ -244,7 +229,6 @@ Function Get-FEModule
                 $This.Report.NetHostmapInfo += $Info
             }
         }
-
         ServiceInfo()
         {
             Write-Theme "Service info"
@@ -279,7 +263,6 @@ Function Get-FEModule
                 $This.Report.ServiceInfo += $Info
             }
         }
-        
         Prime()
         {                
             Write-Theme "Priming FEModule API [(Processes, Network, Services)]"
@@ -334,7 +317,6 @@ Function Get-FEModule
     {
         [String]$Name
         [String]$Value
-
         _NVList([String]$Name,[String]$Value)
         {
             $This.Name  = $Name
@@ -347,7 +329,6 @@ Function Get-FEModule
         [Object] $Window
         [Object]     $IO
         [Object] $Module
-
         _GUI([String]$RegPath)
         {
             $This.Window                 = Get-XamlWindow -Type FEModule
@@ -357,7 +338,6 @@ Function Get-FEModule
 
             $This.Prime()
         }
-
         ModuleInfo()
         {
             $This.IO.ModuleInfo.ItemsSource = @( )
@@ -367,7 +347,6 @@ Function Get-FEModule
                 $This.IO.ModuleInfo.ItemsSource += [_NVList]::New($Item,$This.Module.$Item)
             }
         }
-
         OSInfo()
         {
             $This.IO.OSInfo.ItemsSource = @( )
@@ -379,7 +358,6 @@ Function Get-FEModule
 
             $This.IO.OSInfo.ItemsSource | ? Name -match Ver | % { $_.Name = "PSVersion" }
         }
-
         ManifestInfo()
         {
             ForEach ( $Item in "Classes Control Functions Graphics" -Split " " )
@@ -392,7 +370,6 @@ Function Get-FEModule
                 }
             }
         }
-
         RegistryInfo()
         {
             $This.IO.RegistryInfo.ItemsSource = @( )
@@ -403,7 +380,6 @@ Function Get-FEModule
                 $This.IO.RegistryInfo.ItemsSource += [_NVList]::New($Item,$Reg.$Item)
             }
         }
-
         TreeInfo()
         {
             ForEach ( $Item in "Classes Control Functions Graphics" -Split " " )
@@ -416,7 +392,6 @@ Function Get-FEModule
                 }
             }
         }
-
         RoleInfo()
         {
             $This.IO.RoleInfo.ItemsSource = @( )
@@ -426,7 +401,6 @@ Function Get-FEModule
                 $This.IO.RoleInfo.ItemsSource += [_NVList]::New($Item,$This.Module.Role.$Item)
             }
         }
-
         ProcessInfo()
         {
             $This.IO.ProcessInfo.ItemsSource = @( )
@@ -436,7 +410,6 @@ Function Get-FEModule
                 $This.IO.ProcessInfo.ItemsSource += $Item
             }
         }
-
         InterfaceListInfo()
         {
             $This.IO.InterfaceList.ItemsSource = @( )
@@ -446,7 +419,6 @@ Function Get-FEModule
                 $This.IO.InterfaceList.ItemsSource += $Item
             }
         }
-
         ActiveListInfo()
         {
             $This.IO.ActiveList.ItemsSource = @( )
@@ -456,7 +428,6 @@ Function Get-FEModule
                 $This.IO.ActiveList.ItemsSource += $Item
             }
         }
-
         ConnectionListInfo()
         {
             $This.IO.ConnectionList.ItemsSource = @( )
@@ -466,7 +437,6 @@ Function Get-FEModule
                 $This.IO.ConnectionList.ItemsSource += $Item
             }
         }
-
         HostListInfo()
         {
             $This.IO.HostList.ItemsSource = @( )
@@ -476,7 +446,6 @@ Function Get-FEModule
                 $This.IO.HostList.ItemsSource += $Item
             }
         }
-
         ServiceListInfo()
         {
             $This.IO.ServiceList.ItemsSource = @( ) 
@@ -486,7 +455,6 @@ Function Get-FEModule
                 $This.IO.ServiceList.ItemsSource += $Item
             }
         }
-
         Prime()
         {
             $This.Module.Role | % { 
@@ -538,27 +506,14 @@ Function Get-FEModule
     
     $RegPath   = Get-ItemProperty $Child.GetValue("RegPath")
     
-    If ( $PSCmdLet.ParameterSetName -eq "GUI" )
+    Switch($PSCmdLet.ParameterSetName)
     {
-        $Mod       = [_GUI]::New($RegPath.RegPath)
-
-        $Mod.Window.Invoke()
-
-        $Mod
-    }
-    
-    If ( $PSCmdLet.ParameterSetName -ne "GUI" )
-    {
-        $Mod       = [_Module]::New($RegPath)
-        
-        Switch ($PSCmdLet.ParameterSetName)
-        {   
-            Default   {$Mod}
-            Classes   {$Mod.Classes}
-            Functions {$Mod.Functions}
-            Control   {$Mod.Control}
-            Graphics  {$Mod.Graphics}
-            Role      {$Mod.Role}
-        }
+        Default   {[_Module]::New($RegPath)}
+        Classes   {[_Module]::New($RegPath).Classes}
+        Functions {[_Module]::New($RegPath).Functions}
+        Control   {[_Module]::New($RegPath).Control}
+        Graphics  {[_Module]::New($RegPath).Graphics}
+        Role      {[_Module]::New($RegPath).Role}
+        GUI       {[_GUI]::New($RegPath.RegPath);$Mod.Window.Invoke()}
     }
 }
