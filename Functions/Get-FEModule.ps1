@@ -514,6 +514,6 @@ Function Get-FEModule
         Control   {[_Module]::New($RegPath).Control}
         Graphics  {[_Module]::New($RegPath).Graphics}
         Role      {[_Module]::New($RegPath).Role}
-        GUI       {[_GUI]::New($RegPath.RegPath);$Mod.Window.Invoke()}
+        GUI       {[_GUI]::New($RegPath.RegPath).Window.Invoke()}
     }
 }
