@@ -1,4 +1,4 @@
-Function FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare/FEDeploymentShare.ps1
+Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare/FEDeploymentShare.ps1
 {
     # Load Assemblies
     Add-Type -AssemblyName PresentationFramework
