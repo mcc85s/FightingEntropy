@@ -402,6 +402,14 @@ Function FightingEntropy
     }
     
     [_Module]::New("2021.6.0")
+    
+    $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut("$Env:Public\Desktop\FightingEntropy.lnk")
+
+    $Item.TargetPath   = "powershell"
+    $Item.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command `"Add-Type -AssemblyName PresentationFramework;Import-Module FightingEntropy;`$Module = Get-FEModule;`$Module`""
+    $Item.Description  = "Beginning the fight against identity theft and cybercriminal activities."
+    $Item.IconLocation = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico"
+    $Item.Save()
 }
 
 $Install = FightingEntropy
@@ -410,3 +418,5 @@ $Line    = (@("-")*120 -join "")
 $Line, "[ Installation Details (stored under variable `$Install) ]"
 $Install
 $Line, "[ Command (Get-FEModule) provides an extension of the above information ]", $Line
+
+
