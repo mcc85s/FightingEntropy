@@ -8,21 +8,20 @@ Function Write-Theme # Cross Platform
         [Switch]$Banner,
         [Parameter(ParameterSetName=2,Mandatory,Position=0)]
         [Switch]$Flag,
-        [Parameter(,Position=1)]
-        [UInt32[]]$Palette = @(10,12,15,0)
+        [Parameter(Position=1)]
+        [UInt32[]]$Palette = @(10,12,15,0),
+        [Parameter()][Switch]$Out
     )
 
-    Class _Block 
+    Class Block
     {
         [String]              $Name
         [Int32]              $Index
         [Object]            $Object
-    
         [Int32]    $ForegroundColor
         [Int32]    $BackgroundColor
         [Int32]          $NoNewLine = 1
-    
-        _Block([Int32]$Index,[String]$Object,[Int32]$ForegroundColor,[Int32]$BackgroundColor)
+        Block([Int32]$Index,[String]$Object,[Int32]$ForegroundColor,[Int32]$BackgroundColor)
         {
             $This.Name              = $Index
             $This.Index             = $Index
@@ -32,72 +31,45 @@ Function Write-Theme # Cross Platform
         }
     }
 
-    Class _Faces
+    Class Face
     {
-        [Object]          $Faces
-        [Hashtable]        $Hash = @{
-    
-             0 =  32, 32, 32, 32
-             1 =  95, 95, 95, 95
-             2 = 175,175,175,175
-             3 =  45, 45, 45, 45
-             4 =  32, 32, 32, 47
-             5 =  92, 32, 32, 32
-             6 =  32, 32, 32, 92
-             7 =  47, 32, 32, 32
-             8 =  92, 95, 95, 47
-             9 =  47,175,175, 92
-            10 =  47,175,175,175
-            11 = 175,175,175, 92
-            12 =  92, 95, 95, 95
-            13 =  95, 95, 95, 47
-            14 =  91, 32, 95, 95
-            15 =  95, 95, 32, 93
-            16 =  42, 32, 32, 32
-            17 =  32, 32, 42, 32
-            18 =  32, 32, 32, 42
-            19 =  32, 42, 32, 32
-            20 =  91, 61, 61, 93
-            21 =  91, 45, 45, 93
-            22 = 175,175,175, 93
-            23 =  91,175,175,175
-            24 =  32, 32, 32, 93
-            25 =  91, 95, 95, 95
-            26 =  95, 95, 95, 93
-        }
-
-        _Faces()
+        Static [Object]    $Mask = @{  0 =  32, 32, 32, 32;  1 =  95, 95, 95, 95;  2 = 175,175,175,175;  3 =  45, 45, 45, 45;
+                                       4 =  32, 32, 32, 47;  5 =  92, 32, 32, 32;  6 =  32, 32, 32, 92;  7 =  47, 32, 32, 32;
+                                       8 =  92, 95, 95, 47;  9 =  47,175,175, 92; 10 =  47,175,175,175; 11 = 175,175,175, 92; 
+                                      12 =  92, 95, 95, 95; 13 =  95, 95, 95, 47; 14 =  91, 32, 95, 95; 15 =  95, 95, 32, 93; 
+                                      16 =  42, 32, 32, 32; 17 =  32, 32, 42, 32; 18 =  32, 32, 32, 42; 19 =  32, 42, 32, 32; 
+                                      20 =  91, 61, 61, 93; 21 =  91, 45, 45, 93; 22 = 175,175,175, 93; 23 =  91,175,175,175;
+                                      24 =  32, 32, 32, 93; 25 =  91, 95, 95, 95; 26 =  95, 95, 95, 93 }
+        [Object]           $Faces
+        Face()
         {
-            $This.Faces = @( )
-
-            ForEach ( $I in 0..( $This.Hash.Count - 1 ) )
+            $This.Faces = @( ) 
+            
+            ForEach ( $X in 0..([Face]::Mask.Count - 1 ))
             {
-                $This.Faces += ( [Char[]]$This.Hash[$I] -join '' )
+                $This.Faces += ([Char[]][Face]::Mask[$X] -join '')
             }
         }
     }
 
-    Class _Track
+    Class Track
     {
-        Hidden [String[]]      $Faces = [_Faces]::New().Faces
-    
+        Hidden [String[]]      $Faces = [Face]::New().Faces
         Hidden [String]         $Name
         [Int32]                $Index
         Hidden [String[]]     $Object
         Hidden [Int32[]]  $Foreground
         Hidden [Int32[]]  $Background
         [Object]                $Mask
-    
         GetMask()
         {
             $This.Mask                 = @( )
             ForEach ( $I in 0..( $This.Object.Count - 1 ) )
             {
-                $This.Mask            += [_Block]::New($This.Index,$This.Object[$I],$This.Foreground[$I],$This.Background[$I])
+                $This.Mask            += [Block]::New($This.Index,$This.Object[$I],$This.Foreground[$I],$This.Background[$I])
             }
         }
-
-        _Track([Int32]$Index)
+        Track([Int32]$Index)
         {
             $This.Index                = $Index
             $This.Name                 = $Index
@@ -106,8 +78,7 @@ Function Write-Theme # Cross Platform
             $This.Background           = @(0)*30
             $This.GetMask()
         }
-    
-        _Track([Int32]$Index,[String]$Mask,[String]$Foreground,[String]$Background)
+        Track([Int32]$Index,[String]$Mask,[String]$Foreground,[String]$Background)
         {
             $This.Index                = $Index
             $This.Name                 = $Index
@@ -116,7 +87,6 @@ Function Write-Theme # Cross Platform
             $This.Background           = Invoke-Expression $Background
             $This.GetMask()
         }
-    
         LoadBody([UInt32]$Even,[String]$Load)
         {
             If ( $Load.Length -eq 0 )
@@ -142,7 +112,6 @@ Function Write-Theme # Cross Platform
             $This.Mask[-2].Object = @("   \","   /")[$Even % 2]
             $This.Mask[-1].Object = @("\   ","/   ")[$Even % 2]
         }
-
         LoadLine([String]$Load)
         {
             If ( $Load.Length -eq 0 )
@@ -172,7 +141,6 @@ Function Write-Theme # Cross Platform
                 $This.Mask[3+$X].ForegroundColor       = 1
             }
         }
-        
         Draw([Object]$Palette)
         {
             ForEach ( $X in 0..($This.Mask.Count - 1))
@@ -192,13 +160,12 @@ Function Write-Theme # Cross Platform
         }
     }
 
-    Class _Object
+    Class ThemeObject
     {
         [String] $Type
         [String] $Height
         [Object] $Stack
-
-        _Object([Object]$IP)
+        ThemeObject([Object]$IP)
         {
             $This.Type  = $IP.GetType()
             $This.Stack = @( )
@@ -267,7 +234,7 @@ Function Write-Theme # Cross Platform
                     $This.Stack     += $Z
                 }
 
-                Default 
+                Default
                 {
                     $Z              = $Null
                     $This.Height    = 1
@@ -291,12 +258,10 @@ Function Write-Theme # Cross Platform
 
             $This.Justify()
         }
-
         [String] ToString()
         {
             Return $This.Type
         }
-
         Justify()
         {
             $Temp = @( )
@@ -345,9 +310,8 @@ Function Write-Theme # Cross Platform
             }
         }
     }
-
     
-    Class _Theme
+    Class Theme
     {
         [ValidateSet(0,1,2)]
         Hidden [Int32]      $Mode
@@ -357,10 +321,8 @@ Function Write-Theme # Cross Platform
         [Int32]             $Body
         [Int32]           $Footer
         [Int32[]]         $Colors = @(10,12,15,0)
-    
-        Hidden [String[]]$Faces = [_Faces]::New().Faces
-    
-        Hidden [String[]]$String
+        Hidden [String[]]  $Faces = [Face]::New().Faces
+        Hidden [String[]] $String
         Hidden [String[]]$String_ =(("0;1;@(0)*25;1;1;0 4;9;12;@(1)*23;13;9;8;7 6;8;10;@(2)*23;11;8;10;0 0;11;12;14;@(1)*21;15;13" + 
                                      ";10;0;0 0;0;@(2)*25;0;0;0 0;1;0;@(1)*25;0;0 4;9;8;10;@(2)*23;11;12;0 6;8;10;14;@(1)*21;15;0" +
                                      ";13;9;5 0;11;12;@(1)*23;13;9;8;7 0;0;@(2)*25;0;2;0 6;8;10;@(2)*23;11;8;9;5 4;9;12;14;@(1)*2" + 
@@ -370,13 +332,10 @@ Function Write-Theme # Cross Platform
         Hidden [String[]]$Fore_ = (( "@(0)*30 0;1;@(0)*25;1;1;0 0;1;@(1)*25;1;0;0 0;0;1;@(2)*23;1;0;0;0 @(0)*30 @(0)*30 0;1;0;@(1)" +
                                     "*25;0;0 0;1;1;@(2)*23;1;1;1;0 0;0;@(1)*25;0;1;0 @(0)*30 0;@(1)*28;0 0;1;1;@(2)*23;1;0;1;0 0;" +
                                     "1;@(0)*26;0;0 @(0)*30 @(0)*30 @(0)*28;1;0 0;1;@(0)*25;1;1;0").Split(" ") | % { "@($_)" })
-    
         Hidden [String[]]$Back
         Hidden [String[]]$Back_ = (0..16 | % { "@({0})" -f ( @(0)*30 -join ',' ) })
-    
         [Object[]]       $Track
-    
-        _Theme([Int32]$Slot)
+        Theme([Int32]$Slot)
         {
             $This.Name   = "Function Action Section Table Test".Split(" ")[$Slot]
             $This.Span   = @{ 0 = 0..4; 1 = 5..9; 2 = @( 0..1+10..16+2..4 ); 3 = $Null; 4 = $Null }[$Slot]
@@ -390,12 +349,12 @@ Function Write-Theme # Cross Platform
     
             $This.Track   = @( ForEach ( $I in 0..( $This.String.Count - 1 ) )
             {
-                [_Track]::New($I,$This.String[$I],$This.Fore[$I],$This.Back[$I])
+                [Track]::New($I,$This.String[$I],$This.Fore[$I],$This.Back[$I])
             })
         }
     }
 
-    Class _Stack
+    Class Stack
     {
         [Object] $Item
         [Object] $Stand
@@ -403,8 +362,7 @@ Function Write-Theme # Cross Platform
         [Object] $Theme
         [Object] $Stack
         [Object] $Track
-
-        _Stack([Object]$Object)
+        Stack([Object]$Object)
         {
             $This.Item  = $Object
             $This.Stand = @( )
@@ -415,13 +373,13 @@ Function Write-Theme # Cross Platform
                 {
                     ForEach ( $X in 0..($Object.Count - 1 ) )
                     {
-                        $This.Stand += [_Object]::New($Object[$X])
+                        $This.Stand += [ThemeObject]::New($Object[$X])
                     }
                 }
 
                 1
                 {
-                    $This.Stand = [_Object]::New($Object)
+                    $This.Stand = [ThemeObject]::New($Object)
                 }
             }
 
@@ -430,7 +388,7 @@ Function Write-Theme # Cross Platform
 
             If ( $This.Stand.Stack.Count -gt 1 )
             {
-                $This.Theme = [_Theme]::New(2)
+                $This.Theme = [Theme]::New(2)
 
                 ForEach ( $X in 0..($This.Stand.Stack.Count - 1))
                 {
@@ -445,11 +403,13 @@ Function Write-Theme # Cross Platform
                     Default { 0 } "(\[\W\])" { 1 }
                 }
 
-                $This.Theme = [_Theme]::New($Slot)
+                $This.Theme = [Theme]::New($Slot)
                 $This.Stack = $Object
             }
-        }
 
+            $This.Build()
+            $This.Clean()
+        }
         Build()
         {
             $This.Track = @{ }
@@ -483,7 +443,7 @@ Function Write-Theme # Cross Platform
                         ForEach ( $I in 0..($This.Stack.Count - 1 ))
                         {
                             $T            = @(6,7)[$I % 2]
-                            $Track_       = [_Track]::New($T)
+                            $Track_       = [Track]::New($T)
                             $Track_.LoadBody($T,$This.Stack[$I])
                             $Track_.Index = $C
                             $This.Track.Add($C,$Track_)
@@ -492,7 +452,7 @@ Function Write-Theme # Cross Platform
 
                         If ($This.Stack.Count % 2 -eq 1 )
                         {
-                            $Track_       = [_Track]::New(6)
+                            $Track_       = [Track]::New(6)
                             $Track_.LoadBody(7,"    ")
                             $Track_.Index = $C
                             $This.Track.Add($C,$Track_)
@@ -510,7 +470,6 @@ Function Write-Theme # Cross Platform
                 }
             }
         }
-
         Clean()
         {
             Switch($This.Theme.Name)
@@ -545,23 +504,25 @@ Function Write-Theme # Cross Platform
                 }
             }
         }
-
         Draw([Object]$Palette)
         {
-            $This.Build()
-            $This.Clean()
-
             ForEach ( $X in 0..($This.Track.Count - 1 ) )
             {
                 $This.Track[$X].Draw($Palette)
             }
         }
+        [String[]] Out()
+        {
+            Return @( ForEach ( $X in 0..($This.Track.Count - 1 ) )
+            {
+                $This.Track[$X].Mask.Object -join ''
+            } )
+        }
     }
 
-    Class _Banner
+    Class Banner
                 {
-                    Hidden [String[]] $Faces   = [_Faces]::New().Faces
-            
+                    Hidden [String[]] $Faces   = [Face]::New().Faces
                     Hidden [String[]] $String_ = (( "0;1;@(0)*25;1;1;0 4;9;12;@(1)*23;13;9;8;7 6;8;10;@(2)*23;11;8;9;5 4;9;12;14;@(1)*21;15;13;9;8;7 " + 
                                                     "6;8;10;@(2)*24;0;11;5 4;10;@(0)*26;4;7 6;5;0;0;@(1)*22;0;0;6;5 4;7;0;13;@(9;8)*5;10;11;@(8;9)*5;" + 
                                                     "12;0;4;7 6;5;4;9;8;9;8;10;@(2)*14;11;8;9;8;9;5;6;5 4;7;6;8;9;8;10;@(0)*16;11;8;9;8;7;4;7 6;5;4;9" + 
@@ -570,25 +531,21 @@ Function Write-Theme # Cross Platform
                                                     ";4;9;8;9;12;@(0)*16;13;9;8;9;5;6;5 4;7;6;8;9;8;9;12;@(1)*14;13;9;8;9;8;7;4;7 6;5;0;11;@(8;9)*5;1" + 
                                                     "2;13;@(9;8)*5;10;0;6;5 4;7;0;0;@(2)*22;0;0;13;7 6;12;@(0)*25;13;9;5 4;9;12;@(1)*23;13;9;8;7 6;8;" +
                                                     "10;@(2)*23;11;8;10;0 0;11;12;14;@(1)*21;15;13;10;0;0 0;0;@(2)*25;0;0;0" ) -Split " " | % { "@($_)" })
-            
                     Hidden [String[]] $Fore_   = ((("{0} 10;12;@(10)*25;12;12;10 10;@(12)*28;10 10;12;12;@(15)*23;12;10;12;10 10;12;@(10)*28 {0} {0} " +
                                                     "@(10)*4;@(12)*22;@(10)*4 @(10)*3;@(12)*4;@(10)*16;@(12)*4;@(10)*3 {1} {2} {2} {2} {2} {2} {2} {1" +
                                                     "} @(10)*3;@(12)*4;@(10)*16;@(12)*4;@(10)*3 @(10)*4;@(12)*22;@(10)*4 {0} @(10)*28;12;10 10;12;@(10" +
                                                     ")*25;12;12;10 10;@(12)*27;10;10 10;10;12;@(15)*23;12;10;10;10 {0}") -f "@(10)*30", ("@(10)*3;@(1" + 
                                                     "2)*3;10;@(15)*16;10;@(12)*3;@(10)*3"), "@(10)*3;@(12)*2;10;@(15)*18;10;@(12)*2;@(10)*3").Split(" ") | % { 
                                                     "@($_)" })
-            
                     Hidden [String[]] $Back_   = @("@(0)*30") * 25
-            
                     [Object] $Track
-            
-                    _Banner()
+                    Banner()
                     {
                         $This.Track            = @( )
             
                         ForEach ( $I in 0..24 )
                         {
-                            $This.Track += [_Track]::new($I,$This.String_[$I],$This.Fore_[$I],$This.Back_[$I])
+                            $This.Track += [Track]::new($I,$This.String_[$I],$This.Fore_[$I],$This.Back_[$I])
                             $This.Track[$I].Mask[-1].NoNewLine = 0
                         }
             
@@ -608,7 +565,6 @@ Function Write-Theme # Cross Platform
                             $This.Track[14].Mask[10+$I].Object = "----;----;----;----;----;----;----;----;----;----".Split(";")[$I]
                         }
                     }
-            
                     Draw()
                     {
                         ForEach ( $I in 0..( $This.Track.Count - 1 ) )
@@ -628,11 +584,9 @@ Function Write-Theme # Cross Platform
                     }
                 }
 
-
-                Class _Flag
+                Class Flag
                 {
-                    Hidden [String[]] $Faces   = [_Faces]::New().Faces
-            
+                    Hidden [String[]] $Faces   = [Face]::New().Faces
                     Hidden [String[]] $String_ = (( "0;1;@(0)*25;1;1;0 4;9;12;@(1)*23;13;9;8;7 6;8;10;@(2)*23;11;8;9;5 4;9;12;14;@(1)*21;15;13;9;8;7 " +
                                                     "6;8;10;@(2)*24;0;11;5 4;10;@(0)*26;4;7 6,5,0,0;@(1)*22;0,0,6,5 4,7,0,4,10;@(2)*8;22,23;@(2)*10;1" + 
                                                     "1,5,0,4,7 6,5,0,6,5,16,17,0,16,17,0,16,17,24,25;@(1)*10;13,7,0,6,5 4,7,0,4,7,18,0,19,18,0,19,18," + 
@@ -651,14 +605,12 @@ Function Write-Theme # Cross Platform
                                                     "14;20,2,2,11,5,0,4,7 6,5,0,6,12,1,1,20;@(1)*14;20,1,1,13,7,0,6,5 4,7,0,0;@(2)*22;0,0,13,7 6;12;@" + 
                                                     "(0)*25;13;9;5 4;9;12;@(1)*23;13;9;8;7 6;8;10;@(2)*23;11;8;10;0 0;11;12;14;@(1)*21;15;13;10;0;0 0" + 
                                                     ";0;@(2)*25;0;0;0" ) -Split " " | % { "@($_)" })
-            
                     Hidden [String[]] $Fore_   = ((("{0} 10;12;@(10)*25;12;12;10 10;@(12)*28;10 10;12;12;@(15)*23;12;10;12;10 10;12;@(10)*28 {0} {1}" +
                                                     " {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {1} {2} {2} {2} {2} {3} {3} {3} {3} {4" + 
                                                     "} {4} {4} @(10)*3;@(15)*24;@(10)*3 @(10)*28;12;10 10;12;@(10)*25;12;12;10 10;@(12)*27;10;10 10;" + 
                                                     "10;12;@(15)*23;12;10;10;10 {0}") -f "@(10)*30","@(10)*3;@(15)*24;@(10)*3",("@(10)*3;@(15)*9;@(1" + 
                                                     "0)*6;@(15)*9;@(10)*3"),"@(10)*3;@(15)*5;@(10)*14;@(15)*5;@(10)*3",("@(10)*3;@(15)*4;@(10)*16;@(" + 
                                                     "15)*4;@(10)*3")) -Split " " | % { "@($_)" })
-            
                     Hidden [String[]] $Back_   = ((("{0} {0} {0} {0} {0} {0} {0} {1} {1} {2} {2} {1} {1} {2} {2} {1} {1} {2} {2} {1} {1} @(0)*4;@(15" + 
                                                     ")*22;@(0)*4 {3} @(0)*4;@(12)*8;@(0)*6;@(12)*8;@(0)*4 @(0)*4;@(12)*8;@(0)*6;@(12)*8;@(0)*4 {3} @(" + 
                                                     "0)*4;@(15)*4;@(0)*14;@(15)*4;@(0)*4 @(0)*4;@(12)*4;@(0)*14;@(12)*4;@(0)*4 @(0)*4;@(12)*4;@(0)*14" + 
@@ -666,13 +618,10 @@ Function Write-Theme # Cross Platform
                                                     "*4;@(12)*3;@(0)*16;@(12)*3;@(0)*4 @(0)*4;@(12)*3;@(0)*16;@(12)*3;@(0)*4 {0} {0} {0} {0} {0} {0}") -f 
                                                     "@(0)*30","@(0)*4;@(9)*10;@(12)*12;@(0)*4","@(0)*4;@(9)*10;@(15)*12;@(0)*4",("@(0)*4;@(15)*8;@(0)" + 
                                                     "*6;@(15)*8;@(0)*4")) -Split " " | % { "@($_)" })
-            
                     Hidden [String[]] $Date_    = (Get-Date -UFormat "_[ %m/%d/%Y ]_").ToCharArray()
                     Hidden [String[]] $Date
-            
                     [Object] $Track
-            
-                    _Flag()
+                    Flag()
                     {
                         $This.Track            = @( )
                         $This.Date             = @( ForEach ( $I in 0..( $This.Date_.count - 1 ) )
@@ -686,7 +635,7 @@ Function Write-Theme # Cross Platform
             
                         ForEach ( $I in 0..38 )
                         {
-                            $This.Track += [_Track]::new($I,$This.String_[$I],$This.Fore_[$I],$This.Back_[$I])
+                            $This.Track += [Track]::new($I,$This.String_[$I],$This.Fore_[$I],$This.Back_[$I])
                             $This.Track[$I].Mask[-1].NoNewLine = 0
                         }
             
@@ -714,7 +663,6 @@ Function Write-Theme # Cross Platform
                             $This.Track[28].Mask[11+$I].Object = "___[; Sec;ure ;Digi;ts P;lus ;LLC ;]___".Split(";")[$I]
                         }
                     }
-            
                     Draw()
                     {
                         ForEach ( $I in 0..( $This.Track.Count - 1 ) )
@@ -734,21 +682,31 @@ Function Write-Theme # Cross Platform
                     }
                 }
 
-    Switch($PSCmdLet.ParameterSetName)
+    $Item = Switch($PSCmdLet.ParameterSetName)
     {
         0 
         {  
-            [_Stack]::New($InputObject).Draw($Palette)
+            [Stack]::New($InputObject)
         }
 
         1 
         { 
-            [_Banner]::New().Draw()
+            [Banner]::New()
         }
         
         2 
         {   
-            [_Flag]::New().Draw()
+            [Flag]::New()
         }
+    }
+
+    If ($Out)
+    {
+        $Item.Out()
+    }
+
+    Else
+    {
+        $Item.Draw($Palette)
     }
 }
