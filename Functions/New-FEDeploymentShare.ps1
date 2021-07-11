@@ -137,62 +137,72 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
     Class Scope
     {
         [String]$Network
+        Hidden [UInt32[]]$Network_
         [String]$Netmask
-        Hidden [String[]]$Wildcard
+        Hidden [UInt32[]]$Netmask_
+        [UInt32]$HostCount
+        [Object]$HostObject
         [String]$Start
         [String]$End
         [String]$Range
         [String]$Broadcast
-        Scope([String]$Network,[String]$Netmask,[String]$Wildcard)
+        Scope([String]$Network,[String]$Netmask)
         {
-            $This.Network  = $Network
-            $This.Netmask  = $Netmask
-            $This.Wildcard = $Wildcard -Split ","
+            $This.Network    = $Network
+            $This.Network_   = $Network -Split "\."
+            $This.Netmask    = $Netmask
+            $This.Netmask_   = $Netmask -Split "\."
 
-            $NetworkSplit  = $Network  -Split "\."
-            $NetmaskSplit  = $Netmask  -Split "\."
-            $xStart         = @{ }
-            $xEnd           = @{ }
-            $xRange         = @{ }
-            $xBroadcast     = @{ }
-
-            ForEach ( $I in 0..3 )
-            {
-                $WC = $This.Wildcard[$I]
-                $NS = [Int32]$NetworkSplit[$I]
-
-                Switch($WC)
+            $WC             = ForEach ( $X in 0..3 )
+            { 
+                Switch($This.Netmask_[$X])
                 {
-                    1
-                    {
-                        $xStart.Add($I,$NS)
-                        $xEnd.Add($I,$NS)
-                        $xRange.Add($I,"$NS")
-                        $xBroadcast.Add($I,$NS)
-                    }
+                    255 { 1 } 0 { 256 } Default { 256 - $This.Netmask_[$X] }
+                }
+            }
 
-                    256
-                    {
-                        $xStart.Add($I,0)
-                        $xEnd.Add($I,255)
-                        $xRange.Add($I,"0..255")
-                        $xBroadcast.Add($I,255)
-                    }
+            $This.HostCount = (Invoke-Expression ($WC -join "*")) - 2
+            $SRange = @{}
 
-                    Default
+            ForEach ( $X in 0..3 )
+            {
+                $SRange.Add($X,@(Switch($WC[$X])
+                {
+                    1 { $This.Network_[$X] }
+                    Default 
                     {
-                        $xStart.Add($I,$NS)
-                        $xEnd.Add($I,$NS+($WC-1))
-                        $xRange.Add($I,"$($NS)..$($NS+($WC-1))")
-                        $xBroadcast.Add($I,$NS+($WC-1))
+                        "{0}..{1}" -f $This.Network_[$X],(([UInt32]$This.Network_[$X] + (256-$This.Netmask_[$X]))-1)
+                    }
+                    256 { "0..255" }
+                }))
+            }
+
+            $This.Range      = @( 0..3 | % { $SRange[$_] }) -join '/'
+
+            $XRange          = @{ }
+
+            ForEach ( $0 in $SRange[0] | Invoke-Expression )
+            {
+                ForEach ( $1 in $SRange[1] | Invoke-Expression )
+                {
+                    ForEach ( $2 in $SRange[2] | Invoke-Expression )
+                    {
+                        ForEach ( $3 in $SRange[3] | Invoke-Expression )
+                        {
+                            $XRange.Add($XRange.Count,"$0.$1.$2.$3")
+                        }
                     }
                 }
             }
 
-            $This.Start = $xStart[0..3] -join '.'
-            $This.End   = $xEnd[0..3] -join '.'
-            $This.Range = $xRange[0..3] -join '/'
-            $This.Broadcast = $xBroadcast[0..3] -join '.'
+            $This.HostObject = @( 0..($XRange.Count-1) | % { $XRange[$_] } )
+            $This.Start     = $This.HostObject[1]
+            $This.End       = $This.HostObject[-2]
+            $This.Broadcast = $This.HostObject[-1]
+        }
+        [String] ToString()
+        {
+            Return @($This.Network)
         }
     }
     
@@ -294,7 +304,7 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
                 }
             }
 
-            $This.Stack = 0..( $Contain.Count - 1 ) | % { [Scope]::New($Contain[$_],$This.Netmask,$Wildcard) }
+            $This.Stack = 0..( $Contain.Count - 1 ) | % { [Scope]::New($Contain[$_],$This.Netmask) }
         }
     }
     
@@ -369,8 +379,8 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
             # Zip
             $Return.Add(3,$This.Postal)
 
-            $This.SiteLink = $Return[0..3] -join "-"
-            $This.SiteName = "{0}.{1}" -f ($Return[0..3] -join "."),$This.CommonName
+            $This.SiteLink = ($Return[0..3] -join "-").ToUpper()
+            $This.SiteName = ("{0}.{1}" -f ($Return[0..3] -join "."),$This.CommonName).ToLower()
         }
     }
 
@@ -442,7 +452,7 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
             $This.Gateway = @( )
             ForEach ($X in 0..($This.Sitemap.Count - 1))
             {
-                $This.Gateway += [Site]::New($This.Sitemap[$X],$This.Network[$X])
+                $This.Gateway += [Site]::New($This.Sitemap[$X],$This.Stack[$X])
             }
         }
         [Object] NewCertificate()
@@ -820,7 +830,6 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         [String] $Architecture
         [String] $InstallationType
         [String] $SourceImagePath
-
         WimFile([UInt32]$Rank,[String]$Image)
         {
             If ( ! ( Test-Path $Image ) )
@@ -896,7 +905,7 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
     Class FEDeploymentShareGUI
     {
         [String] $Tab = @"
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Topmost="True" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Topmost="True" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="GroupBox" x:Key="xGroupBox">
             <Setter Property="TextBlock.TextAlignment" Value="Center"/>
@@ -1473,12 +1482,11 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
     </GroupBox>
 </Window>
 "@
-    FEDeploymentShareGUI()
-    {
-    
+        FEDeploymentShareGUI()
+        {
+        
+        }
     }
-}
-
 
     # Controller class
     Class Main
@@ -1626,6 +1634,19 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
             [DGList]::New( $Item, [Bool]( Get-ItemProperty $Slot[0] | ? DisplayName -match $Slot[1] | ? DisplayVersion -ge $Slot[2] ) )
         }
     )
+
+    If ( $Xaml.IO.Services.Items | ? Name -eq MDT | ? Value -eq $True )
+    {   
+        $MDT     = Get-ItemProperty HKLM:\Software\Microsoft\Deployment* | % Install_Dir | % TrimEnd \
+        Import-Module "$MDT\Bin\MicrosoftDeploymentToolkit.psd1"
+
+        If (Get-MDTPersistentDrive)
+        {
+            $Persist = Restore-MDTPersistentDrive
+        }
+
+        $Xaml.IO.DSDriveName.Text = ("FE{0:d3}" -f @($Persist.Count + 1))
+    }
 
     # Domain Tab
     $Xaml.IO.GetSitename.Add_Click(
@@ -2122,6 +2143,14 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         $Xaml.IO.DSRootPath.Text = $Item.SelectedPath
     })
 
+    $Xaml.IO.DSRootPath.Add_TextChanged(
+    {
+        If ( $Xaml.IO.DSRootPath.Text -ne "" )
+        {
+            $Xaml.IO.DSShareName.Text = ("{0}$" -f $Xaml.IO.DSRootPath.Text.Split("(\/|\.)")[-1] )
+        }
+    })
+
     $Xaml.IO.DSInitialize.Add_Click(
     {
         If ( $Xaml.IO.Services.Items | ? Name -eq MDT | ? Value -ne $True )
@@ -2163,8 +2192,8 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         {
             Write-Theme "Creating [~] Deployment Share"
 
-            $MDT     = Get-ItemProperty HKLM:\Software\Microsoft\Deployment* | % Install_Dir | % TrimEnd \
-            Import-Module "$MDT\Bin\MicrosoftDeploymentToolkit.psd1"
+            #$MDT     = Get-ItemProperty HKLM:\Software\Microsoft\Deployment* | % Install_Dir | % TrimEnd \
+            #Import-Module "$MDT\Bin\MicrosoftDeploymentToolkit.psd1"
         }
 
         If (Get-MDTPersistentDrive)
@@ -2460,8 +2489,10 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
     })
 
     # Set initial TextBox values
-    $Xaml.IO.NetBIOSName.Text = $Env:UserDomain
-    $Xaml.IO.DNSName.Text     = @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+    $Xaml.IO.NetBIOSName.Text   = $Env:UserDomain
+    $Xaml.IO.DNSName.Text       = @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+    $Xaml.IO.DSDescription.Text = "[FightingEntropy({0})][(2021.7.0)]" -f [char]960
+    $Xaml.IO.DSLMUsername.Text  = "Administrator"
     
     $Xaml.Invoke()
 }
