@@ -1,4 +1,4 @@
-Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare/FEDeploymentShare.ps1
+Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare/FEDeploymentShare.ps1
 {
     # Load Assemblies
     Add-Type -AssemblyName PresentationFramework
@@ -2464,5 +2464,4 @@ Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob
     $Xaml.IO.DNSName.Text     = @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
     
     $Xaml.Invoke()
-
 }
