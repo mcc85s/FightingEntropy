@@ -1,4 +1,4 @@
-Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare/FEDeploymentShare.ps1
+Function New-FEDeploymentShare
 {
     # Load Assemblies
     Add-Type -AssemblyName PresentationFramework
@@ -305,6 +305,32 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
             }
 
             $This.Stack = 0..( $Contain.Count - 1 ) | % { [Scope]::New($Contain[$_],$This.Netmask) }
+        }
+    }
+
+    Class Topography
+    {
+        Hidden [String[]] $Enum = "True","False"
+        [String] $SiteLink
+        [String] $SiteName
+        [UInt32] $Exists
+        [Object] $DistinguishedName
+        Topography([Object]$SM)
+        {
+            $This.Sitelink = $SM.Sitelink
+            $This.Sitename = $SM.Sitename
+            $Tmp           = Get-ADReplicationSite -Filter * | ? Name -match $SM.SiteLink
+            If (!$Tmp)
+            {
+                $This.Exists = 0
+            }
+
+            Else
+            {
+                $This.Exists = 1
+            }
+
+            $This.DistinguishedName = $Tmp.DistinguishedName
         }
     }
     
@@ -906,517 +932,426 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
     {
         [String] $Tab = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Topmost="True" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
-    <Window.Resources>
-        <Style TargetType="GroupBox" x:Key="xGroupBox">
-            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="GroupBox">
-                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">
-                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="Button">
-            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="FontWeight" Value="Medium"/>
-            <Setter Property="Padding" Value="10"/>
-            <Setter Property="Margin" Value="10"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border CornerRadius="10" Background="#007bff" BorderBrush="Black" BorderThickness="3">
-                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="TabItem">
-            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="FontWeight" Value="Medium"/>
-            <Setter Property="Padding" Value="10"/>
-            <Setter Property="Margin" Value="10"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
-                        <Border CornerRadius="10" Background="#007bff" BorderBrush="Black" BorderThickness="3">
-                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <Style TargetType="TextBox">
-            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="TextWrapping" Value="Wrap"/>
-            <Setter Property="Height" Value="24"/>
-        </Style>
-        <Style TargetType="DataGrid">
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="AutoGenerateColumns" Value="False"/>
-            <Setter Property="AlternationCount" Value="2"/>
-            <Setter Property="HeadersVisibility" Value="Column"/>
-            <Setter Property="CanUserResizeRows" Value="False"/>
-            <Setter Property="CanUserAddRows" Value="False"/>
-            <Setter Property="IsTabStop" Value="True" />
-            <Setter Property="IsTextSearchEnabled" Value="True"/>
-            <Setter Property="IsReadOnly" Value="True"/>
-            <Setter Property="TextBlock.HorizontalAlignment" Value="Left"/>
-        </Style>
-        <Style TargetType="DataGridRow">
-            <Setter Property="TextBlock.HorizontalAlignment" Value="Left"/>
-            <Style.Triggers>
-                <Trigger Property="AlternationIndex" Value="0">
-                    <Setter Property="Background" Value="White"/>
-                </Trigger>
-                <Trigger Property="AlternationIndex" Value="1">
-                    <Setter Property="Background" Value="#FFCDF7F7"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <Style TargetType="DataGridColumnHeader">
-            <Setter Property="FontSize"   Value="12"/>
-            <Setter Property="FontWeight" Value="Normal"/>
-        </Style>
-        <Style TargetType="DataGridCell">
-            <Setter Property="TextBlock.TextAlignment" Value="Left" />
-        </Style>
-        <Style TargetType="PasswordBox">
-            <Setter Property="Height" Value="24"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="TextBlock.HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="Margin" Value="5"/>
-            <Setter Property="PasswordChar" Value="*"/>
-        </Style>
-        <Style TargetType="ComboBox">
-            <Setter Property="Margin" Value="10"/>
-            <Setter Property="Height" Value="24"/>
-        </Style>
-    </Window.Resources>
-    <GroupBox Style="{StaticResource xGroupBox}" Grid.Row="0" Margin="10" Padding="10" Foreground="Black" Background="White">
-        <TabControl Grid.Row="1" Background="{x:Null}" BorderBrush="Black" Foreground="{x:Null}">
-            <TabControl.Resources>
-                <Style TargetType="TabItem">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="TabItem">
-                                <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Gainsboro" CornerRadius="4,4,0,0" Margin="2,0">
-                                    <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="10,2"/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="Border" Property="Background" Value="LightSkyBlue"/>
-                                    </Trigger>
-                                    <Trigger Property="IsSelected" Value="False">
-                                        <Setter TargetName="Border" Property="Background" Value="GhostWhite"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </TabControl.Resources>
-            <TabItem Header="Configuration">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="200"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <GroupBox Grid.Row="0" Header="[Snapshot]">
-                        <DataGrid Name="Services">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name"      Binding="{Binding Name}"  Width="150"/>
-                                <DataGridTextColumn Header="Installed/Meets minimum requirements" Binding="{Binding Value}" Width="*"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </GroupBox>
-                    <GroupBox Grid.Row="1" Header="[Services]">
-                        <TabControl>
-                            <TabItem Header="DHCP">
-                                <GroupBox Header="Dynamic Host Control Protocol"/>
-                            </TabItem>
-                            <TabItem Header="DNS">
-                                <GroupBox Header="Domain Name Service"/>
-                            </TabItem>
-                            <TabItem Header="ADDS">
-                                <GroupBox Header="Active Directory Directory Service"/>
-                            </TabItem>
-                            <TabItem Header="WDS">
-                                <GroupBox Header="Windows Deployment Services"/>
-                            </TabItem>
-                            <TabItem Header="MDT">
-                                <GroupBox Header="Microsoft Deployment Toolkit"/>
-                            </TabItem>
-                            <TabItem Header="WinADK">
-                                <GroupBox Header="Windows Assessment and Deployment Toolkit"/>
-                            </TabItem>
-                            <TabItem Header="WinPE">
-                                <GroupBox Header="Windows Preinstallation Environment Kit"/>
-                            </TabItem>
-                            <TabItem Header="IIS">
-                                <GroupBox Header="Internet Information Services">
-                                    <Grid VerticalAlignment="Top">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                            <ColumnDefinition Width="2*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <ComboBox Name="IISInstall" Grid.Column="0" Margin="10" Height="24">
-                                            <ComboBoxItem Content="No" IsSelected="True"/>
-                                            <ComboBoxItem Content="Yes"/>
-                                        </ComboBox>
-                                        <TextBox Grid.Column="1" Name="IISServerName" IsEnabled="False"/>
-                                        <TextBox Grid.Column="2" Name="IISAppPoolName" IsEnabled="False"/>
-                                        <TextBox Grid.Column="3" Name="IISVirtualHostName" IsEnabled="False"/>
-                                    </Grid>
-                                </GroupBox>
-                            </TabItem>
-                        </TabControl>
-                    </GroupBox>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Domain" BorderBrush="{x:Null}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="80"/>
-                        <RowDefinition Height="160"/>
-                        <RowDefinition Height="80"/>
-                        <RowDefinition Height="200"/>
-                        <RowDefinition Height="80"/>
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="120"/>
-                        </Grid.ColumnDefinitions>
-                        <GroupBox Grid.Column="0" Header="[Organization]">
-                            <TextBox Name="Organization"/>
-                        </GroupBox>
-                        <GroupBox Grid.Column="1" Header="[Common Name]">
-                            <TextBox Name="CommonName"/>
-                        </GroupBox>
-                        <Button Grid.Column="2" Name="GetSitename" Content="Get Sitename"/>
-                    </Grid>
-                    <GroupBox Grid.Row="1" Header="[Sitemap (Aggregate)]">
-                        <DataGrid Name="Sitemap"
-                                  ScrollViewer.CanContentScroll="True"
-                                  ScrollViewer.IsDeferredScrollingEnabled="True"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Location" Binding='{Binding Location}' Width="100"/>
-                                <DataGridTextColumn Header="Region"   Binding='{Binding Region}' Width="60"/>
-                                <DataGridTextColumn Header="Country"  Binding='{Binding Country}' Width="60"/>
-                                <DataGridTextColumn Header="Postal"   Binding='{Binding Postal}' Width="60"/>
-                                <DataGridTextColumn Header="SiteLink" Binding='{Binding SiteLink}' Width="120"/>
-                                <DataGridTextColumn Header="TimeZone" Binding='{Binding TimeZone}' Width="120"/>
-                                <DataGridTextColumn Header="SiteName" Binding='{Binding SiteName}' Width="Auto"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </GroupBox>
-                    <Grid Grid.Row="2" Margin="5">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="120"/>
-                        </Grid.ColumnDefinitions>
-                        <GroupBox Grid.Column="0" Header="[US Zip Code]">
-                            <TextBox Name="AddSitenameZip"/>
-                        </GroupBox>
-                        <GroupBox Grid.Column="1" Header="[US Town]" IsEnabled="False">
-                            <TextBox Name="AddSitenameTown"/>
-                        </GroupBox>
-                        <Button Grid.Column="2" Name="AddSitename" Content="Add Sitename"/>
-                    </Grid>
-                    <GroupBox Grid.Row="3" Header="[Sitename (Selected)]">
-                        <DataGrid Name="Sitename">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name"  Binding='{Binding Name}'  Width="125"/>
-                                <DataGridTextColumn Header="Value" Binding='{Binding Value}' Width="*"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </GroupBox>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Network" BorderBrush="{x:Null}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="80"/>
-                        <RowDefinition Height="160"/>
-                        <RowDefinition Height="20"/>
-                        <RowDefinition Height="120"/>
-                        <RowDefinition Height="80"/>
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="100"/>
-                        </Grid.ColumnDefinitions>
-                        <GroupBox Grid.Row="0" Header="[Network (Designation)]">
-                            <TextBox Grid.Column="0" Name="StackText"/>
-                        </GroupBox>
-                        <Button Grid.Column="1" Name="StackLoad" Content="Load" IsEnabled="False"/>
-                    </Grid>
-                    <GroupBox Grid.Row="1" Header="[Network (Stack)]">
-                        <DataGrid Name="Stack"
-                                  ScrollViewer.CanContentScroll="True" 
-                                  ScrollViewer.IsDeferredScrollingEnabled="True"
-                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Network"   Binding="{Binding Network}"   Width="*"/>
-                                <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="*"/>
-                                <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="*"/>
-                                <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="*"/>
-                                <DataGridTextColumn Header="Range"     Binding="{Binding Range}"     Width="*"/>
-                                <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="Auto"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </GroupBox>
-                    <GroupBox Grid.Row="3" Header="[Network (Selected)]">
-                        <DataGrid Name="Control" 
-                                  ScrollViewer.CanContentScroll="True"
-                                  ScrollViewer.IsDeferredScrollingEnabled="True"                                        
-                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Network"   Binding="{Binding Network}"   Width="*"/>
-                                <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="*"/>
-                                <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="*"/>
-                                <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="*"/>
-                                <DataGridTextColumn Header="Range"     Binding="{Binding Range}"     Width="*"/>
-                                <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="Auto"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </GroupBox>
-                    <Grid Grid.Row="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="2*"/>
-                        </Grid.ColumnDefinitions>
-                        <GroupBox Grid.Column="0" Header="[NetBIOS Name]">
-                            <TextBox Name="NetBIOSName"/>
-                        </GroupBox>
-                        <GroupBox Grid.Column="1" Header="[DNS Name]">
-                            <TextBox Name="DNSName"/>
-                        </GroupBox>
-                    </Grid>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Imaging" BorderBrush="{x:Null}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="80"/>
-                        <RowDefinition Height="120"/>
-                        <RowDefinition Height="60"/>
-                        <RowDefinition Height="120"/>
-                        <RowDefinition Height="60"/>
-                        <RowDefinition Height="120"/>
-                        <RowDefinition Height="80"/>
-                        <RowDefinition Height="70"/>
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="100"/>
-                        </Grid.ColumnDefinitions>
-                        <GroupBox Header="[ISO Path (Source Directory)]">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Button Name="IsoSelect" Grid.Column="0" Content="Select"/>
-                                <TextBox Name="IsoPath"  Grid.Column="1"/>
-                            </Grid>
-                        </GroupBox>
-                        <Button Name="IsoScan" Grid.Column="1" Content="Scan"/>
-                    </Grid>
-                    <Grid Grid.Row="1">
-                        <GroupBox Header="[ISO List (Detected)]">
-                            <DataGrid Name="IsoList">
+        <Window.Resources>
+            <Style TargetType="GroupBox" x:Key="xGroupBox">
+                <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="GroupBox">
+                            <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">
+                                <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="10" Background="#007bff" BorderBrush="Black" BorderThickness="3">
+                                <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="TabItem">
+                <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Border CornerRadius="10" Background="#007bff" BorderBrush="Black" BorderThickness="3">
+                                <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="Margin" Value="5"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="Height" Value="24"/>
+            </Style>
+            <Style TargetType="DataGrid">
+                <Setter Property="Margin" Value="5"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="AutoGenerateColumns" Value="False"/>
+                <Setter Property="AlternationCount" Value="2"/>
+                <Setter Property="HeadersVisibility" Value="Column"/>
+                <Setter Property="CanUserResizeRows" Value="False"/>
+                <Setter Property="CanUserAddRows" Value="False"/>
+                <Setter Property="IsTabStop" Value="True" />
+                <Setter Property="IsTextSearchEnabled" Value="True"/>
+                <Setter Property="IsReadOnly" Value="True"/>
+                <Setter Property="TextBlock.HorizontalAlignment" Value="Left"/>
+            </Style>
+            <Style TargetType="DataGridRow">
+                <Setter Property="TextBlock.HorizontalAlignment" Value="Left"/>
+                <Style.Triggers>
+                    <Trigger Property="AlternationIndex" Value="0">
+                        <Setter Property="Background" Value="White"/>
+                    </Trigger>
+                    <Trigger Property="AlternationIndex" Value="1">
+                        <Setter Property="Background" Value="#FFCDF7F7"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="DataGridColumnHeader">
+                <Setter Property="FontSize"   Value="12"/>
+                <Setter Property="FontWeight" Value="Normal"/>
+            </Style>
+            <Style TargetType="DataGridCell">
+                <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+            </Style>
+            <Style TargetType="PasswordBox">
+                <Setter Property="Height" Value="24"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="TextBlock.HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="Margin" Value="5"/>
+                <Setter Property="PasswordChar" Value="*"/>
+            </Style>
+            <Style TargetType="ComboBox">
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="Height" Value="24"/>
+            </Style>
+        </Window.Resources>
+        <GroupBox Style="{StaticResource xGroupBox}" Grid.Row="0" Margin="10" Padding="10" Foreground="Black" Background="White">
+            <TabControl Grid.Row="1" Background="{x:Null}" BorderBrush="Black" Foreground="{x:Null}">
+                <TabControl.Resources>
+                    <Style TargetType="TabItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="TabItem">
+                                    <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Gainsboro" CornerRadius="4,4,0,0" Margin="2,0">
+                                        <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="10,2"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Border" Property="Background" Value="LightSkyBlue"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter TargetName="Border" Property="Background" Value="GhostWhite"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </TabControl.Resources>
+                <TabItem Header="Configuration">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="200"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" Header="[Snapshot]">
+                            <DataGrid Name="Services">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Binding='{Binding Name}' Width="*"/>
-                                    <DataGridTextColumn Header="Path" Binding='{Binding Fullname}' Width="2*"/>
+                                    <DataGridTextColumn Header="Name"      Binding="{Binding Name}"  Width="150"/>
+                                    <DataGridTextColumn Header="Installed/Meets minimum requirements" Binding="{Binding Value}" Width="*"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </GroupBox>
-                    </Grid>
-                    <Grid Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Name="IsoMount" Content="Mount" IsEnabled="False"/>
-                        <Button Grid.Column="1" Name="IsoDismount" Content="Dismount" IsEnabled="False"/>
-                    </Grid>
-                    <Grid Grid.Row="3">
-                        <GroupBox Header="[Windows ISO (Viewer)]">
-                            <DataGrid Name="IsoView">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="40"/>
-                                    <DataGridTextColumn Header="Name"  Binding='{Binding Name}' Width="*"/>
-                                    <DataGridTextColumn Header="Size"  Binding='{Binding Size}' Width="100"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
+                        <GroupBox Grid.Row="1" Header="[Services]">
+                            <TabControl>
+                                <TabItem Header="DHCP">
+                                    <GroupBox Header="Dynamic Host Control Protocol"/>
+                                </TabItem>
+                                <TabItem Header="DNS">
+                                    <GroupBox Header="Domain Name Service"/>
+                                </TabItem>
+                                <TabItem Header="ADDS">
+                                    <GroupBox Header="Active Directory Directory Service"/>
+                                </TabItem>
+                                <TabItem Header="WDS">
+                                    <GroupBox Header="Windows Deployment Services"/>
+                                </TabItem>
+                                <TabItem Header="MDT">
+                                    <GroupBox Header="Microsoft Deployment Toolkit">
+                                        <TabControl>
+                                            <TabItem Header="Bootstrap.ini">
+                                                <DataGrid Name="Bootstrap">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
+                                                        <DataGridTemplateColumn Header="Value" Width="*">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <ComboBox SelectedIndex="{Binding Slot}">
+                                                                        <ComboBoxItem Content="No"/>
+                                                                        <ComboBoxItem Content="Yes"/>
+                                                                    </ComboBox>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </TabItem>
+                                            <TabItem Header="CustomSettings.ini">
+                                                <DataGrid Name="CustomSettings">
+                                                    <DataGrid.Columns>
+                                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
+                                                        <DataGridTemplateColumn Header="Value" Width="*">
+                                                            <DataGridTemplateColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <ComboBox SelectedIndex="{Binding Slot}">
+                                                                        <ComboBoxItem Content="No"/>
+                                                                        <ComboBoxItem Content="Yes"/>
+                                                                    </ComboBox>
+                                                                </DataTemplate>
+                                                            </DataGridTemplateColumn.CellTemplate>
+                                                        </DataGridTemplateColumn>
+                                                    </DataGrid.Columns>
+                                                </DataGrid>
+                                            </TabItem>
+                                        </TabControl>
+                                    </GroupBox>
+                                </TabItem>
+                                <TabItem Header="WinADK">
+                                    <GroupBox Header="Windows Assessment and Deployment Toolkit"/>
+                                </TabItem>
+                                <TabItem Header="WinPE">
+                                    <GroupBox Header="Windows Preinstallation Environment Kit"/>
+                                </TabItem>
+                                <TabItem Header="IIS">
+                                    <GroupBox Header="Internet Information Services">
+                                        <Grid VerticalAlignment="Top">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <ComboBox Name="IISInstall" Grid.Column="0" Margin="10" Height="24">
+                                                <ComboBoxItem Content="No" IsSelected="True"/>
+                                                <ComboBoxItem Content="Yes"/>
+                                            </ComboBox>
+                                            <TextBox Grid.Column="1" Name="IISServerName" IsEnabled="False"/>
+                                            <TextBox Grid.Column="2" Name="IISAppPoolName" IsEnabled="False"/>
+                                            <TextBox Grid.Column="3" Name="IISVirtualHostName" IsEnabled="False"/>
+                                        </Grid>
+                                    </GroupBox>
+                                </TabItem>
+                            </TabControl>
                         </GroupBox>
                     </Grid>
-                    <Grid Grid.Row="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Name="WimQueue" Content="Queue" IsEnabled="False"/>
-                        <Button Grid.Column="1" Name="WimDequeue" Content="Dequeue" IsEnabled="False"/>
-                    </Grid>
-                    <Grid Grid.Row="5">
-                        <GroupBox Header="[Windows Image (Extraction Queue)]">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="40"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid Margin="5">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*"/>
-                                        <RowDefinition Height="*"/>
-                                    </Grid.RowDefinitions>
-                                    <Button Grid.Row="0" Name="WimIsoUp" Content="˄" Margin="0"/>
-                                    <Button Grid.Row="1" Name="WimIsoDown" Content="˅" Margin="0"/>
-                                </Grid>
-                                <DataGrid Grid.Column="1" Name="WimIso">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name"  Binding='{Binding FullName}' Width="*"/>
-                                        <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="100"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </Grid>
-                        </GroupBox>
-                    </Grid>
-                    <GroupBox Grid.Row="6" Header="[WIM Path (Target Directory)]">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="100"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Name="WimSelect" Grid.Column="0" Content="Select"/>
-                            <TextBox Grid.Column="1" Name="WimPath"/>
-                            <Button Grid.Column="2" Name="WimExtract" Content="Extract"/>
-                        </Grid>
-                    </GroupBox>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Updates" BorderBrush="{x:Null}"/>
-            <TabItem Header="Branding" BorderBrush="{x:Null}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                </TabItem>
+                <TabItem Header="Domain" BorderBrush="{x:Null}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="80"/>
+                            <RowDefinition Height="140"/>
                             <RowDefinition Height="80"/>
+                            <RowDefinition Height="180"/>
+                            <RowDefinition Height="140"/>
+                            <RowDefinition Height="60"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Grid.Column="0" Header="[Organization]">
+                                <TextBox Name="Organization"/>
+                            </GroupBox>
+                            <GroupBox Grid.Column="1" Header="[Common Name]">
+                                <TextBox Name="CommonName"/>
+                            </GroupBox>
+                            <Button Grid.Column="2" Name="GetSitename" Content="Get Sitename"/>
+                        </Grid>
+                        <GroupBox Grid.Row="1" Header="[Sitemap (Aggregate)]">
+                            <DataGrid Name="Sitemap"
+                                              ScrollViewer.CanContentScroll="True"
+                                              ScrollViewer.IsDeferredScrollingEnabled="True"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Location" Binding='{Binding Location}' Width="100"/>
+                                    <DataGridTextColumn Header="Region"   Binding='{Binding Region}' Width="60"/>
+                                    <DataGridTextColumn Header="Country"  Binding='{Binding Country}' Width="60"/>
+                                    <DataGridTextColumn Header="Postal"   Binding='{Binding Postal}' Width="60"/>
+                                    <DataGridTextColumn Header="SiteLink" Binding='{Binding SiteLink}' Width="120"/>
+                                    <DataGridTextColumn Header="TimeZone" Binding='{Binding TimeZone}' Width="120"/>
+                                    <DataGridTextColumn Header="SiteName" Binding='{Binding SiteName}' Width="Auto"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                        <Grid Grid.Row="2" Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Grid.Column="0" Header="[US Zip Code]">
+                                <TextBox Name="AddSitenameZip"/>
+                            </GroupBox>
+                            <GroupBox Grid.Column="1" Header="[US Town]" IsEnabled="False">
+                                <TextBox Name="AddSitenameTown"/>
+                            </GroupBox>
+                            <Button Grid.Column="2" Name="AddSitename" Content="Add Sitename"/>
+                        </Grid>
+                        <GroupBox Grid.Row="3" Header="[Sitename (Selected)]">
+                            <DataGrid Name="Sitename">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name"  Binding='{Binding Name}'  Width="125"/>
+                                    <DataGridTextColumn Header="Value" Binding='{Binding Value}' Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                        <GroupBox Grid.Row="4" Header="[ADDS (Topography)]">
+                            <DataGrid Name="Topography"
+                                              ScrollViewer.CanContentScroll="True"
+                                              ScrollViewer.IsDeferredScrollingEnabled="True"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="SiteLink" Binding="{Binding SiteLink}" Width="150"/>
+                                    <DataGridTextColumn Header="Sitename" Binding="{Binding SiteName}" Width="200"/>
+                                    <DataGridTemplateColumn Header="Exists" Width="50">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
+                                                    <ComboBoxItem Content="No"/>
+                                                    <ComboBoxItem Content="Yes"/>
+                                                </ComboBox>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                        <Button Grid.Row="5" Name="GetTopography" Content="Get Topography"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Network" BorderBrush="{x:Null}">
+                    <Grid>
+                        <Grid.RowDefinitions>
                             <RowDefinition Height="80"/>
+                            <RowDefinition Height="160"/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="120"/>
                             <RowDefinition Height="80"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Button Name="Collect" Content="Collect" IsEnabled="True"/>
-                            <GroupBox Grid.Column="1" Header="[Phone]">
-                                <TextBox Name="Phone"/>
+                            <GroupBox Grid.Row="0" Header="[Network (Designation)]">
+                                <TextBox Grid.Column="0" Name="StackText"/>
                             </GroupBox>
-                            <GroupBox Grid.Column="2" Header="[Hours]">
-                                <TextBox Name="Hours"/>
+                            <Button Grid.Column="1" Name="StackLoad" Content="Load" IsEnabled="False"/>
+                        </Grid>
+                        <GroupBox Grid.Row="1" Header="[Network (Stack)]">
+                            <DataGrid Name="Stack"
+                                              ScrollViewer.CanContentScroll="True" 
+                                              ScrollViewer.IsDeferredScrollingEnabled="True"
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Network"   Binding="{Binding Network}"   Width="*"/>
+                                    <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="*"/>
+                                    <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="*"/>
+                                    <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="*"/>
+                                    <DataGridTextColumn Header="Range"     Binding="{Binding Range}"     Width="*"/>
+                                    <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="Auto"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                        <GroupBox Grid.Row="3" Header="[Network (Selected)]">
+                            <DataGrid Name="Control" 
+                                              ScrollViewer.CanContentScroll="True"
+                                              ScrollViewer.IsDeferredScrollingEnabled="True"                                        
+                                              ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Network"   Binding="{Binding Network}"   Width="*"/>
+                                    <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="*"/>
+                                    <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="*"/>
+                                    <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="*"/>
+                                    <DataGridTextColumn Header="Range"     Binding="{Binding Range}"     Width="*"/>
+                                    <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="Auto"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                        <Grid Grid.Row="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Grid.Column="0" Header="[NetBIOS Name]">
+                                <TextBox Name="NetBIOSName"/>
+                            </GroupBox>
+                            <GroupBox Grid.Column="1" Header="[DNS Name]">
+                                <TextBox Name="DNSName"/>
                             </GroupBox>
                         </Grid>
-                        <GroupBox Grid.Row="1" Header="[Website]">
-                            <TextBox Name="Website"/>
-                        </GroupBox>
-                        <GroupBox Grid.Row="2" Header="[Logo 120x120 Bitmap/*.bmp]">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" Name="LogoSelect" Content="Select"/>
-                                <TextBox Grid.Column="1" Name="Logo"/>
-                            </Grid>
-                        </GroupBox>
-                        <GroupBox Grid.Row="3" Header="[Background (Common Image File)]">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" Name="BackgroundSelect" Content="Select"/>
-                                <TextBox Grid.Column="1" Name="Background"/>
-                            </Grid>
-                        </GroupBox>
                     </Grid>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Share">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="350"/>
-                        <RowDefinition Height="80"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                </TabItem>
+                <TabItem Header="Gateway" BorderBrush="{x:Null}">
+                    <GroupBox Header="[Gateway (Aggregate)]">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <DataGrid Name="GatewayPool">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Network}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </GroupBox>
+                </TabItem>
+                <TabItem Header="Imaging" BorderBrush="{x:Null}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="80"/>
+                            <RowDefinition Height="120"/>
+                            <RowDefinition Height="60"/>
+                            <RowDefinition Height="120"/>
+                            <RowDefinition Height="60"/>
+                            <RowDefinition Height="120"/>
                             <RowDefinition Height="80"/>
-                            <RowDefinition Height="80"/>
-                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="70"/>
                         </Grid.RowDefinitions>
-                        <Grid Grid.Row="0" Margin="5">
+                        <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="100"/>
                             </Grid.ColumnDefinitions>
-                            <Button Name="DSRootSelect" Grid.Column="0" Content="Select"/>
-                            <GroupBox Grid.Column="1" Header="[Root Path]">
-                                <TextBox Name="DSRootPath"/>
+                            <GroupBox Header="[ISO Path (Source Directory)]">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Name="IsoSelect" Grid.Column="0" Content="Select"/>
+                                    <TextBox Name="IsoPath"  Grid.Column="1"/>
+                                </Grid>
                             </GroupBox>
-                            <GroupBox Grid.Column="2" Header="[Share Name]">
-                                <TextBox Name="DSShareName"/>
-                            </GroupBox>
+                            <Button Name="IsoScan" Grid.Column="1" Content="Scan"/>
                         </Grid>
                         <Grid Grid.Row="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="150"/>
-                            </Grid.ColumnDefinitions>
-                            <GroupBox Grid.Column="0" Header="[PSDrive Name]">
-                                <TextBox Name="DSDriveName"/>
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="[Description]">
-                                <TextBox Name="DSDescription"/>
-                            </GroupBox>
-                            <GroupBox Grid.Column="2" Header="[Legacy MDT/PSD]" Margin="5">
-                                <ComboBox Name="DSType">
-                                    <ComboBoxItem Content="MDT" IsSelected="True"/>
-                                    <ComboBoxItem Content="PSD"/>
-                                </ComboBox>
+                            <GroupBox Header="[ISO List (Detected)]">
+                                <DataGrid Name="IsoList">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding='{Binding Name}' Width="*"/>
+                                        <DataGridTextColumn Header="Path" Binding='{Binding Fullname}' Width="2*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
                             </GroupBox>
                         </Grid>
                         <Grid Grid.Row="2">
@@ -1424,63 +1359,229 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <GroupBox Grid.Column="0" Header="[Domain Admin Username]">
-                                <TextBox Name="DSDCUsername"/>
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="[Password/Confirm]">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <PasswordBox Grid.Column="0" Name="DSDCPassword" HorizontalContentAlignment="Left"/>
-                                    <PasswordBox Grid.Column="1" Name="DSDCConfirm"  HorizontalContentAlignment="Left"/>
-                                </Grid>
-                            </GroupBox>
+                            <Button Grid.Column="0" Name="IsoMount" Content="Mount" IsEnabled="False"/>
+                            <Button Grid.Column="1" Name="IsoDismount" Content="Dismount" IsEnabled="False"/>
                         </Grid>
                         <Grid Grid.Row="3">
+                            <GroupBox Header="[Windows ISO (Viewer)]">
+                                <DataGrid Name="IsoView">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="40"/>
+                                        <DataGridTextColumn Header="Name"  Binding='{Binding Name}' Width="*"/>
+                                        <DataGridTextColumn Header="Size"  Binding='{Binding Size}' Width="100"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                        </Grid>
+                        <Grid Grid.Row="4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <GroupBox Grid.Column="0" Header="[Local Admin Username]">
-                                <TextBox Name="DSLMUsername"/>
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="[Password/Confirm]">
+                            <Button Grid.Column="0" Name="WimQueue" Content="Queue" IsEnabled="False"/>
+                            <Button Grid.Column="1" Name="WimDequeue" Content="Dequeue" IsEnabled="False"/>
+                        </Grid>
+                        <Grid Grid.Row="5">
+                            <GroupBox Header="[Windows Image (Extraction Queue)]">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="40"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <PasswordBox Grid.Column="0" Name="DSLMPassword"  HorizontalContentAlignment="Left"/>
-                                    <PasswordBox Grid.Column="1" Name="DSLMConfirm"  HorizontalContentAlignment="Left"/>
+                                    <Grid Margin="5">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <Button Grid.Row="0" Name="WimIsoUp" Content="˄" Margin="0"/>
+                                        <Button Grid.Row="1" Name="WimIsoDown" Content="˅" Margin="0"/>
+                                    </Grid>
+                                    <DataGrid Grid.Column="1" Name="WimIso">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name"  Binding='{Binding FullName}' Width="*"/>
+                                            <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="100"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                        <GroupBox Grid.Row="6" Header="[WIM Path (Target Directory)]">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Name="WimSelect" Grid.Column="0" Content="Select"/>
+                                <TextBox Grid.Column="1" Name="WimPath"/>
+                                <Button Grid.Column="2" Name="WimExtract" Content="Extract"/>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Updates" BorderBrush="{x:Null}"/>
+                <TabItem Header="Branding" BorderBrush="{x:Null}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="80"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Name="Collect" Content="Collect" IsEnabled="True"/>
+                                <GroupBox Grid.Column="1" Header="[Phone]">
+                                    <TextBox Name="Phone"/>
+                                </GroupBox>
+                                <GroupBox Grid.Column="2" Header="[Hours]">
+                                    <TextBox Name="Hours"/>
+                                </GroupBox>
+                            </Grid>
+                            <GroupBox Grid.Row="1" Header="[Website]">
+                                <TextBox Name="Website"/>
+                            </GroupBox>
+                            <GroupBox Grid.Row="2" Header="[Logo 120x120 Bitmap/*.bmp]">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Name="LogoSelect" Content="Select"/>
+                                    <TextBox Grid.Column="1" Name="Logo"/>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="3" Header="[Background (Common Image File)]">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Name="BackgroundSelect" Content="Select"/>
+                                    <TextBox Grid.Column="1" Name="Background"/>
                                 </Grid>
                             </GroupBox>
                         </Grid>
                     </Grid>
-                    <GroupBox Grid.Row="1" Header="[Organizational Unit Name]">
-                        <TextBox Name="DSOrganizationalUnit"/>
-                    </GroupBox>
-                    <GroupBox Grid.Row="2" Header="[Create]">
+                </TabItem>
+                <TabItem Header="Share">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="350"/>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="80"/>
                                 <RowDefinition Height="80"/>
                             </Grid.RowDefinitions>
-                            <DataGrid Name="DSShare" Grid.Row="0">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
-                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                            <Button Grid.Row="1" Name="DSInitialize" Content="Initialize"/>
+                            <Grid Grid.Row="0" Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="150"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Name="DSRootSelect" Grid.Column="0" Content="Select"/>
+                                <GroupBox Grid.Column="1" Header="[Root Path]">
+                                    <TextBox Name="DSRootPath"/>
+                                </GroupBox>
+                                <GroupBox Grid.Column="2" Header="[Share Name]">
+                                    <TextBox Name="DSShareName"/>
+                                </GroupBox>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="150"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Grid.Column="0" Header="[PSDrive Name]">
+                                    <TextBox Name="DSDriveName"/>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Header="[Description]">
+                                    <TextBox Name="DSDescription"/>
+                                </GroupBox>
+                                <GroupBox Grid.Column="2" Header="[Legacy MDT/PSD]" Margin="5">
+                                    <ComboBox Name="DSType">
+                                        <ComboBoxItem Content="MDT" IsSelected="True"/>
+                                        <ComboBoxItem Content="PSD"/>
+                                    </ComboBox>
+                                </GroupBox>
+                            </Grid>
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Grid.Column="0" Header="[Domain Admin Username]">
+                                    <TextBox Name="DSDCUsername"/>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Header="[Password/Confirm]">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <PasswordBox Grid.Column="0" Name="DSDCPassword" HorizontalContentAlignment="Left"/>
+                                        <PasswordBox Grid.Column="1" Name="DSDCConfirm"  HorizontalContentAlignment="Left"/>
+                                    </Grid>
+                                </GroupBox>
+                            </Grid>
+                            <Grid Grid.Row="3">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Grid.Column="0" Header="[Local Admin Username]">
+                                    <TextBox Name="DSLMUsername"/>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Header="[Password/Confirm]">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <PasswordBox Grid.Column="0" Name="DSLMPassword"  HorizontalContentAlignment="Left"/>
+                                        <PasswordBox Grid.Column="1" Name="DSLMConfirm"  HorizontalContentAlignment="Left"/>
+                                    </Grid>
+                                </GroupBox>
+                            </Grid>
                         </Grid>
-                    </GroupBox>
-                </Grid>
-            </TabItem>
-        </TabControl>
-    </GroupBox>
-</Window>
+                        <GroupBox Grid.Row="1" Header="[Organizational Unit Name]">
+                            <TextBox Name="DSOrganizationalUnit"/>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" Header="[Create]">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="80"/>
+                                </Grid.RowDefinitions>
+                                <DataGrid Name="DSShare" Grid.Row="0">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                <Button Grid.Row="1" Name="DSInitialize" Content="Initialize"/>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </GroupBox>
+    </Window>    
 "@
         FEDeploymentShareGUI()
         {
@@ -1531,6 +1632,7 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         # AddSitenameTown
         # AddSitename()
         # Sitename[DataGrid]
+        # Topography
 
     # Network
         # StackText
@@ -1592,24 +1694,25 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
     # --------------------------------------- #
 
     # 1) Configuration
-    $Xaml.IO.Services.ItemsSource  = @( )
+    $Xaml.IO.Services.ItemsSource    = @( )
 
     # 2) Domain
-    $Xaml.IO.Sitemap.ItemsSource   = @( )
-    $Xaml.IO.Sitename.ItemsSource  = @( )
+    $Xaml.IO.Sitemap.ItemsSource     = @( )
+    $Xaml.IO.Sitename.ItemsSource    = @( )
+    $Xaml.IO.Topography.ItemsSource  = @( )
 
     # 3) Network
-    $Xaml.IO.Stack.ItemsSource     = @( )
-    $Xaml.IO.Control.ItemsSource   = @( )
+    $Xaml.IO.Stack.ItemsSource       = @( )
+    $Xaml.IO.Control.ItemsSource     = @( )
     # $Xaml.IO.Subject.ItemsSource   = @( )
 
     # 4) Imaging
-    $Xaml.IO.WimIso.ItemsSource    = @( )
-    $Xaml.IO.IsoView.ItemsSource   = @( )
-    $Xaml.IO.IsoList.ItemsSource   = @( )
+    $Xaml.IO.WimIso.ItemsSource      = @( )
+    $Xaml.IO.IsoView.ItemsSource     = @( )
+    $Xaml.IO.IsoList.ItemsSource     = @( )
 
     # 7) Share
-    $Xaml.IO.DSShare.ItemsSource   = @( )
+    $Xaml.IO.DSShare.ItemsSource     = @( )
 
     # ----------------- #
     # Configuration Tab #
@@ -1683,15 +1786,22 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
             $Tmp  = $Main.SM.NewCertificate()
             $Item = $Main.SM.ZipStack.ZipTown($Xaml.IO.AddSitenameZip.Text)
 
-                $Tmp[0].Location = $Item.Name
-                $Tmp[0].Postal   = $Item.Zip
-                $Tmp[0].Region   = [States]::Name($Item.State)
+            $Tmp[0].Location = $Item.Name
+            $Tmp[0].Postal   = $Item.Zip
+            $Tmp[0].Region   = [States]::Name($Item.State)
 
-                $Tmp.GetSiteLink()
-            }
+            $Tmp.GetSiteLink()
+        }
 
-            $Xaml.IO.Sitemap.ItemsSource += $Tmp
-            $Xaml.IO.AddSitenameZip.Text = ""
+        $Xaml.IO.Sitemap.ItemsSource += $Tmp
+        $Xaml.IO.AddSitenameZip.Text = ""
+    })
+
+    $Xaml.IO.GetTopography.Add_Click(
+    {
+        $Tmp = @( $Xaml.IO.Sitemap.Items | % { [Topography]$_ } )
+        $Xaml.IO.Topography.ItemsSource = @( )
+        $Xaml.IO.Topography.ItemsSource = @( $Tmp )
     })
 
     $Xaml.IO.SiteMap.Add_MouseDoubleClick(
