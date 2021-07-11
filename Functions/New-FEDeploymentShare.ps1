@@ -10,19 +10,1475 @@ Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob
         Throw "Must use Windows Server operating system"
     }
 
-    # Prime the classes
-    $Base  = "github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare"
-    $Order = Invoke-RestMethod "$Base/Classes/index.txt?raw=true" | % Split "`n" | ? Length -gt 0
-    $Xaml  = Invoke-WebRequest "$Base/Xaml/DS.xaml?raw=true" | % Content
-    $List  = @( )
-
-    ForEach ($Item in $Order)
+    Class States
     {
-        $List += (Invoke-RestMethod "$Base/Classes/$Item.ps1?raw=true" -Verbose)
+        Static [Hashtable] $List            = @{
+
+            "Alabama"                       = "AL" ; "Alaska"                        = "AK" ;
+            "Arizona"                       = "AZ" ; "Arkansas"                      = "AR" ;
+            "California"                    = "CA" ; "Colorado"                      = "CO" ;
+            "Connecticut"                   = "CT" ; "Delaware"                      = "DE" ;
+            "Florida"                       = "FL" ; "Georgia"                       = "GA" ;
+            "Hawaii"                        = "HI" ; "Idaho"                         = "ID" ;
+            "Illinois"                      = "IL" ; "Indiana"                       = "IN" ;
+            "Iowa"                          = "IA" ; "Kansas"                        = "KS" ;
+            "Kentucky"                      = "KY" ; "Louisiana"                     = "LA" ;
+            "Maine"                         = "ME" ; "Maryland"                      = "MD" ;
+            "Massachusetts"                 = "MA" ; "Michigan"                      = "MI" ;
+            "Minnesota"                     = "MN" ; "Mississippi"                   = "MS" ;
+            "Missouri"                      = "MO" ; "Montana"                       = "MT" ;
+            "Nebraska"                      = "NE" ; "Nevada"                        = "NV" ;
+            "New Hampshire"                 = "NH" ; "New Jersey"                    = "NJ" ;
+            "New Mexico"                    = "NM" ; "New York"                      = "NY" ;
+            "North Carolina"                = "NC" ; "North Dakota"                  = "ND" ;
+            "Ohio"                          = "OH" ; "Oklahoma"                      = "OK" ;
+            "Oregon"                        = "OR" ; "Pennsylvania"                  = "PA" ;
+            "Rhode Island"                  = "RI" ; "South Carolina"                = "SC" ;
+            "South Dakota"                  = "SD" ; "Tennessee"                     = "TN" ;
+            "Texas"                         = "TX" ; "Utah"                          = "UT" ;
+            "Vermont"                       = "VT" ; "Virginia"                      = "VA" ;
+            "Washington"                    = "WA" ; "West Virginia"                 = "WV" ;
+            "Wisconsin"                     = "WI" ; "Wyoming"                       = "WY" ;
+            "American Samoa"                = "AS" ; "District of Columbia"          = "DC" ;
+            "Guam"                          = "GU" ; "Marshall Islands"              = "MH" ;
+            "Northern Mariana Island"       = "MP" ; "Puerto Rico"                   = "PR" ;
+            "Virgin Islands"                = "VI" ; "Armed Forces Africa"           = "AE" ;
+            "Armed Forces Americas"         = "AA" ; "Armed Forces Canada"           = "AE" ;
+            "Armed Forces Europe"           = "AE" ; "Armed Forces Middle East"      = "AE" ;
+            "Armed Forces Pacific"          = "AP" ;
+        }
+        Static [String] Name([String]$Code)
+        {
+            Return @( [States]::List | % GetEnumerator | ? Value -match $Code | % Name )
+        }
+        Static [String] Code([String]$State)
+        {
+            Return @( [States]::List | % GetEnumerator | ? Name -eq $State | % Value )
+        }
+        States(){}
     }
 
-    # Instantiate the classes
-    $List -join "`n" | Invoke-Expression
+    Class ZipEntry
+    {
+        [String]       $Zip
+        [String]      $Type
+        [String]      $Name
+        [String]     $State
+        [String]   $Country
+        [Float]       $Long
+        [Float]        $Lat
+        ZipEntry([String]$Line)
+        {
+            $String         = $Line -Split "`t"
+            
+            $This.Zip       = $String[0]
+            $This.Type      = @("UNIQUE","STANDARD","PO_BOX","MILITARY")[$String[1]]
+            $This.Name      = $String[2]
+            $This.State     = $String[3]
+            $This.Country   = $String[4]
+            $This.Long      = $String[5]
+            $This.Lat       = $String[6]
+        }
+    }
+
+    Class ZipStack
+    {
+        [String]    $Path
+        [Object] $Content
+        ZipStack([String]$Path)
+        {
+            $This.Path    = $Path
+            $This.Content = IRM $Path
+        }
+        [Object[]] ZipTown([String]$Zip)
+        {
+            $Value = [Regex]::Matches($This.Content,"($Zip)+.+").Value 
+            
+            If ( $Value -eq $Null )
+            {
+                Throw "No result found"
+            }
+
+            Else
+            {
+                $Return = @( )
+
+                ForEach ($Item in $Value)
+                {
+                    $Return += [ZipEntry]$Item    
+                }
+
+                Return $Return
+            }   
+        }
+        [Object[]] TownZip([String]$Town)
+        {
+            $Value = [Regex]::Matches($This.Content,"\d{5}\t\d{1}\t($Town)+.+").Value 
+            
+            If ( $Value -eq $Null )
+            {
+                Throw "No result found"
+            }
+
+            Else
+            {
+                $Return = @( )
+
+                ForEach ($Item in $Value)
+                {
+                    $Return += [ZipEntry]$Item    
+                }
+
+                Return $Return
+            }  
+        }
+    }
+    
+    Class Scope
+    {
+        [String]$Network
+        [String]$Netmask
+        Hidden [String[]]$Wildcard
+        [String]$Start
+        [String]$End
+        [String]$Range
+        [String]$Broadcast
+        Scope([String]$Network,[String]$Netmask,[String]$Wildcard)
+        {
+            $This.Network  = $Network
+            $This.Netmask  = $Netmask
+            $This.Wildcard = $Wildcard -Split ","
+
+            $NetworkSplit  = $Network  -Split "\."
+            $NetmaskSplit  = $Netmask  -Split "\."
+            $xStart         = @{ }
+            $xEnd           = @{ }
+            $xRange         = @{ }
+            $xBroadcast     = @{ }
+
+            ForEach ( $I in 0..3 )
+            {
+                $WC = $This.Wildcard[$I]
+                $NS = [Int32]$NetworkSplit[$I]
+
+                Switch($WC)
+                {
+                    1
+                    {
+                        $xStart.Add($I,$NS)
+                        $xEnd.Add($I,$NS)
+                        $xRange.Add($I,"$NS")
+                        $xBroadcast.Add($I,$NS)
+                    }
+
+                    256
+                    {
+                        $xStart.Add($I,0)
+                        $xEnd.Add($I,255)
+                        $xRange.Add($I,"0..255")
+                        $xBroadcast.Add($I,255)
+                    }
+
+                    Default
+                    {
+                        $xStart.Add($I,$NS)
+                        $xEnd.Add($I,$NS+($WC-1))
+                        $xRange.Add($I,"$($NS)..$($NS+($WC-1))")
+                        $xBroadcast.Add($I,$NS+($WC-1))
+                    }
+                }
+            }
+
+            $This.Start = $xStart[0..3] -join '.'
+            $This.End   = $xEnd[0..3] -join '.'
+            $This.Range = $xRange[0..3] -join '/'
+            $This.Broadcast = $xBroadcast[0..3] -join '.'
+        }
+    }
+    
+    Class Network
+    {
+        [String]$Network
+        [String]$Prefix
+        [String]$Netmask
+        [Object[]]$Stack
+        Network([String]$Network)
+        {
+            $Hash           = @{ }
+            $NetworkHash    = @{ }
+            $NetmaskHash    = @{ }
+            $HostHash       = @{ }
+
+            $This.Network   = $Network.Split("/")[0]
+            $This.Prefix    = $Network.Split("/")[1]
+
+            $NWSplit        = $This.Network.Split(".")
+            $BinStr         = "{0}{1}" -f ("1" * $this.Prefix),("0" * (32-$This.Prefix))
+
+            ForEach ( $I in 0..3 )
+            {
+                $Hash.Add($I,$BinStr.Substring(($I*8),8).ToCharArray())
+            }
+
+            ForEach ( $I in 0..3 )
+            {
+                Switch([UInt32]("0" -in $Hash[$I]))
+                {
+                    0
+                    {
+                        $NetworkHash.Add($I,$NWSplit[$I])
+                        $NetmaskHash.Add($I,255)
+                        $HostHash.Add($I,1)
+                    }
+
+                    1
+                    {
+                        $NwCt = ($Hash[$I] | ? { $_ -eq "1" }).Count
+                        $HostHash.Add($I,(256,128,64,32,16,8,4,2,1)[$NwCt])
+
+                        If ( $NwCt -eq 0)
+                        {
+                            $NetworkHash.Add($I,0)
+                            $NetmaskHash.Add($I,0)
+                        }
+
+                        Else
+                        {
+                            $NetworkHash.Add($I,(128,64,32,16,8,4,2,1)[$NwCt-1])
+                            $NetmaskHash.Add($I,(128,192,224,240,248,252,254,255)[$NwCt-1])
+                        }
+                    }
+                }
+            }
+
+            $This.Netmask = $NetmaskHash[0..3] -join '.'
+
+            $Hosts   = @{ }
+
+            ForEach ( $I in 0..3 )
+            {
+                Switch ($HostHash[$I])
+                {
+                    1
+                    {
+                        $Hosts.Add($I,$NetworkHash[$I])
+                    }
+
+                    256
+                    {
+                        $Hosts.Add($I,0)
+                    }
+
+                    Default
+                    {
+                        $Hosts.Add($I,@(0..255 | ? { $_ % $HostHash[$I] -eq 0 }))
+                    }
+                }
+            }
+
+            $Wildcard = $HostHash[0..3] -join ','
+
+            $Contain = @{ }
+
+            ForEach ( $0 in $Hosts[0] )
+            {
+                ForEach ( $1 in $Hosts[1] )
+                {
+                    ForEach ( $2 in $Hosts[2] )
+                    {
+                        ForEach ( $3 in $Hosts[3] )
+                        {
+                            $Contain.Add($Contain.Count,"$0.$1.$2.$3")
+                        }
+                    }
+                }
+            }
+
+            $This.Stack = 0..( $Contain.Count - 1 ) | % { [Scope]::New($Contain[$_],$This.Netmask,$Wildcard) }
+        }
+    }
+    
+    Class Certificate
+    {
+        Hidden[String] $ExternalIP
+        Hidden[Object]       $Ping
+        [String]     $Organization
+        [String]       $CommonName
+        [String]         $Location
+        [String]           $Region
+        [String]          $Country
+        [Int32]            $Postal
+        [String]         $TimeZone
+        [String]         $SiteName
+        [String]         $SiteLink
+        Certificate(
+        [String]     $Organization ,
+        [String]       $CommonName )
+        {
+            $This.Organization     = $Organization
+            $This.CommonName       = $CommonName  
+            $This.Prime()
+        }
+        Certificate([Object]$Sitemap)
+        {
+            $This.Organization     = $Sitemap.Organization
+            $This.CommonName       = $Sitemap.CommonName
+            $This.Prime()
+        }
+        Prime()
+        {
+            # These (2) lines are from Chrissie Lamaire's script
+            # https://gallery.technet.microsoft.com/scriptcenter/Get-ExternalPublic-IP-c1b601bb
+
+            $This.ExternalIP       = Invoke-RestMethod http://ifconfig.me/ip 
+            $This.Ping             = Invoke-RestMethod http://ipinfo.io/$($This.ExternalIP)
+
+            $This.Location         = $This.Ping.City
+            $This.Region           = $This.Ping.Region
+            $This.Country          = $This.Ping.Country
+            $This.Postal           = $This.Ping.Postal
+            $This.TimeZone         = $This.Ping.TimeZone
+
+            $This.GetSiteLink()
+        }
+        GetSiteLink()
+        {
+            $Return                = @{ }
+
+            # City
+            $Return.Add(0,@(Switch -Regex ($This.Location)
+            {
+                "\s"
+                {
+                    ( $This.Location | % Split " " | % { $_[0] } ) -join ''
+                }
+
+                Default
+                {
+                    $This.Location[0,1] -join ''
+                }
+    
+            }).ToUpper())
+
+            # State
+            $Return.Add(1,[States]::List[$This.Region])
+
+            # Country
+            $Return.Add(2,$This.Country)
+
+            # Zip
+            $Return.Add(3,$This.Postal)
+
+            $This.SiteLink = $Return[0..3] -join "-"
+            $This.SiteName = "{0}.{1}" -f ($Return[0..3] -join "."),$This.CommonName
+        }
+    }
+
+    Class Site
+    {
+        [String]$Location
+        [String]$Region
+        [String]$Country
+        [String]$Postal
+        [String]$TimeZone
+        [String]$SiteLink
+        [String]$SiteName
+        [String]$Network
+        [String]$Netmask
+        [String]$Start
+        [String]$End
+        [String]$Range
+        [String]$Broadcast
+        Site([Object]$Sitemap,[Object]$Network)
+        {
+            $This.Location  = $Sitemap.Location
+            $This.Region    = $Sitemap.Region
+            $This.Country   = $Sitemap.Country
+            $This.Postal    = $Sitemap.Postal
+            $This.Timezone  = $Sitemap.Timezone
+            $This.Sitelink  = $Sitemap.Sitelink
+            $This.Sitename  = $Sitemap.Sitename
+            $This.Network   = $Network.Network
+            $This.Netmask   = $Network.Netmask
+            $This.Start     = $Network.Start
+            $This.End       = $Network.End
+            $This.Range     = $Network.Range
+            $This.Broadcast = $Network.Broadcast
+        }
+    }
+    
+    Class Control
+    {
+        [String]$Organization
+        [String]$CommonName
+        Hidden [Object]$ZipStack
+        [Object]$SiteMap
+        [Object]$Stack
+        [Object]$Control
+        [Object]$Subject
+        [Object]$Gateway
+        Control([String]$Organization,[String]$CommonName)
+        {
+            $This.Organization = $Organization
+            $This.CommonName   = $CommonName
+            $This.ZipStack     = [ZipStack]::New("github.com/mcc85sx/FightingEntropy/blob/master/scratch/zcdb.txt?raw=true")
+            $This.SiteMap      = @( )
+        }
+        [Void] GetNetwork([String]$Network)
+        {
+            $This.Stack        = [Network]::New($Network).Stack
+        }
+        [Void] GetControl([String]$Master)
+        {
+            $This.Control      = $This.Stack | ? Network -eq $Master
+        }
+        [Void] GetGateway()
+        {
+            If ($This.Stack.Count -lt $This.Sitemap.Count)
+            {
+                Throw "Insufficient networks"
+            }
+
+            $This.Gateway = @( )
+            ForEach ($X in 0..($This.Sitemap.Count - 1))
+            {
+                $This.Gateway += [Site]::New($This.Sitemap[$X],$This.Network[$X])
+            }
+        }
+        [Object] NewCertificate()
+        {
+            Return @( [Certificate]::New($This.Organization,$This.CommonName) )
+        }
+        [Void]Load([Object]$Item)
+        {
+            If ($Item -eq $Null)
+            {
+                Throw "Item is null"
+            }
+
+            ElseIf ( $Item.Sitelink -in $This.Sitemap.Sitelink )
+            {
+                Throw "Item already exists"
+            }
+
+            Else
+            {
+                $This.SiteMap += $Item | Select-Object Location, Region, Country, Postal, Timezone, Sitelink, Sitename
+            }
+        }
+        [Void]Pull()
+        {
+            $This.Load([Certificate]::New($This))
+        }
+    }
+    
+    Class WindowsImage
+    {
+        [Uint32] $Index
+        [String] $Name
+        [String] $Description
+        Hidden [Float]   $FileSize
+        [String] $Size
+        WindowsImage([Object]$Image)
+        {
+            If (!$Image)
+            {
+                Throw "No image input"
+            }
+
+            $This.Index       = $Image.ImageIndex
+            $This.Name        = $Image.ImageName
+            $This.Description = $Image.ImageDescription
+            $This.FileSize    = $Image.ImageSize/1GB
+            $This.Size        = "{0:n3} GB" -f $This.FileSize 
+        }
+    }
+
+    Class ImageQueue
+    {
+        [String]  $Name
+        [String]  $FullName
+        [String]  $Index
+        [String]  $Description
+        ImageQueue([String]$FullName,[String]$Index,[String]$Description)
+        {
+            If (!$FullName -or !$Index)
+            {
+                Throw "Invalid selection"
+            }
+
+            $This.Name          = $FullName | Split-Path -Leaf
+            $This.FullName      = $FullName
+            $This.Index         = $Index
+            $This.Description   = $Description
+        }
+    }
+
+    Class ImageIndex
+    {
+        Hidden [UInt32] $Rank
+        Hidden [UInt32] $SourceIndex
+        Hidden [String] $SourceImagePath
+        Hidden [String] $Path
+        Hidden [String] $DestinationImagePath
+        Hidden [String] $DestinationName
+        Hidden [Object] $Disk
+        [Object] $Label
+        [UInt32] $ImageIndex            = 1
+        [String] $ImageName
+        [String] $ImageDescription
+        [String] $Version
+        [String] $Architecture
+        [String] $InstallationType
+        ImageIndex([Object]$Iso)
+        {
+            $This.SourceIndex           = $Iso.SourceIndex
+            $This.SourceImagePath       = $Iso.SourceImagePath
+            $This.DestinationImagePath  = $Iso.DestinationImagePath
+            $This.DestinationName       = $Iso.DestinationName
+            $This.Disk                  = Get-DiskImage -ImagePath $This.SourceImagePath
+        }
+        Load([String]$Target)
+        {
+            Get-WindowsImage -ImagePath $This.Path -Index $This.SourceIndex | % {
+
+                $This.ImageName         = $_.ImageName
+                $This.ImageDescription  = $_.ImageDescription
+                $This.Architecture      = Switch ([UInt32]($_.Architecture -eq 9)) { 0 { 86 } 1 { 64 } }
+                $This.Version           = $_.Version
+                $This.InstallationType  = $_.InstallationType.Split(" ")[0]
+            }
+
+            Switch($This.InstallationType)
+            {
+                Server
+                {
+                    $Year    = [Regex]::Matches($This.ImageName,"(\d{4})").Value
+                    $Edition = Switch -Regex ($This.ImageName) { STANDARD { "Standard" } DATACENTER { "Datacenter" } }
+                    $This.DestinationName = "Windows Server $Year $Edition (x64)"
+                    $This.Label           = "{0}{1}" -f $(Switch -Regex ($This.ImageName){Standard{"SD"}Datacenter{"DC"}}),[Regex]::Matches($This.ImageName,"(\d{4})").Value
+                }
+
+                Client
+                {
+                    $This.DestinationName = "{0} (x{1})" -f $This.ImageName, $This.Architecture
+                    $This.Label           = "10{0}{1}"   -f $(Switch -Regex ($This.ImageName) { Pro {"P"} Edu {"E"} Home {"H"} }),$This.Architecture
+                }
+            }
+
+            $This.DestinationImagePath    = "{0}\({1}){2}\{2}.wim" -f $Target,$This.Rank,$This.Label
+
+            $Folder                       = $This.DestinationImagePath | Split-Path -Parent
+
+            If (!(Test-Path $Folder))
+            {
+                New-Item -Path $Folder -ItemType Directory -Verbose
+            }
+        }
+    }
+    
+    Class ImageFile
+    {
+        [ValidateSet("Client","Server")]
+        [String]        $Type
+        [String]        $Name
+        [String] $DisplayName
+        [String]        $Path
+        [UInt32[]]     $Index
+        ImageFile([String]$Type,[String]$Path)
+        {
+            $This.Type  = $Type
+
+            If ( ! ( Test-Path $Path ) )
+            {
+                Throw "Invalid Path"
+            }
+
+            $This.Name        = ($Path -Split "\\")[-1]
+            $This.DisplayName = "($Type)($($This.Name))"
+            $This.Path        = $Path
+            $This.Index       = @( )
+        }
+        AddMap([UInt32[]]$Index)
+        {
+            ForEach ( $I in $Index )
+            {
+                $This.Index  += $I
+            }
+        }
+    }
+
+    Class ImageStore
+    {
+        [String]   $Source
+        [String]   $Target
+        [Object[]]  $Store
+        [Object[]]   $Swap
+        [Object[]] $Output
+        ImageStore([String]$Source,[String]$Target)
+        {
+            If ( ! ( Test-Path $Source ) )
+            {
+                Throw "Invalid image base path"
+            }
+
+            If ( !(Test-Path $Target) )
+            {
+                New-Item -Path $Target -ItemType Directory -Verbose
+            }
+
+            $This.Source = $Source
+            $This.Target = $Target
+            $This.Store  = @( )
+        }
+        AddImage([String]$Type,[String]$Name)
+        {
+            $This.Store += [ImageFile]::New($Type,"$($This.Source)\$Name")
+        }
+        GetSwap()
+        {
+            $This.Swap = @( )
+            $Ct        = 0
+
+            ForEach ( $Image in $This.Store )
+            {
+                ForEach ( $Index in $Image.Index )
+                {
+                    $Iso                     = @{ 
+
+                        SourceIndex          = $Index
+                        SourceImagePath      = $Image.Path
+                        DestinationImagePath = ("{0}\({1}){2}({3}).wim" -f $This.Target, $Ct, $Image.DisplayName, $Index)
+                        DestinationName      = "{0}({1})" -f $Image.DisplayName,$Index
+                    }
+
+                    $Item                    = [ImageIndex]::New($Iso)
+                    $Item.Rank               = $Ct
+                    $This.Swap              += $Item
+                    $Ct                     ++
+                }
+            }
+        }
+        GetOutput()
+        {
+            $Last = $Null
+
+            ForEach ( $X in 0..( $This.Swap.Count - 1 ) )
+            {
+                $Image       = $This.Swap[$X]
+
+                If ( $Last -ne $Null -and $Last -ne $Image.SourceImagePath )
+                {
+                    Write-Theme "Dismounting... $Last" 12,4,15,0
+                    Dismount-DiskImage -ImagePath $Last -Verbose
+                }
+
+                If (!(Get-DiskImage -ImagePath $Image.SourceImagePath).Attached)
+                {
+                    Write-Theme ("Mounting [+] {0}" -f $Image.SourceImagePath) 14,6,15,0
+                    Mount-DiskImage -ImagePath $Image.SourceImagePath
+                }
+
+                $Image.Path = "{0}:\sources\install.wim" -f (Get-DiskImage -ImagePath $Image.SourceImagePath | Get-Volume | % DriveLetter)
+
+                $Image.Load($This.Target)
+
+                $ISO                        = @{
+
+                    SourceIndex             = $Image.SourceIndex
+                    SourceImagePath         = $Image.Path
+                    DestinationImagePath    = $Image.DestinationImagePath
+                    DestinationName         = $Image.DestinationName
+                }
+
+                Write-Theme "Extracting [~] $($Iso.DestinationImagePath)" 11,7,15,0
+                Export-WindowsImage @ISO
+                Write-Theme "Extracted [+] $($Iso.DestinationName)" 10,10,15,0
+
+                $Last                       = $Image.SourceImagePath
+                $This.Output               += $Image
+            }
+
+            Dismount-DiskImage -ImagePath $Last
+        }
+    }
+    
+    Class XamlWindow 
+    {
+        Hidden [Object]        $XAML
+        Hidden [Object]         $XML
+        [String[]]            $Names
+        [Object]               $Node
+        [Object]                 $IO
+        [String[]] FindNames()
+        {
+            Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
+
+                ($_-Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
+
+            } | Select-Object -Unique ) 
+        }
+        XamlWindow([String]$XAML)
+        {           
+            If ( !$Xaml )
+            {
+                Throw "Invalid XAML Input"
+            }
+
+            [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+
+            $This.Xaml               = $Xaml
+            $This.XML                = [XML]$Xaml
+            $This.Names              = $This.FindNames()
+            $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
+            $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
+
+            ForEach ( $I in 0..( $This.Names.Count - 1 ) )
+            {
+                $Name                = $This.Names[$I]
+                $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $This.IO.FindName($Name) -Force 
+            }
+        }
+        Invoke()
+        {
+            $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
+        }
+    }
+    
+    Class DGList
+    {
+        [String]$Name
+        [Object]$Value
+        DGList([String]$Name,[Object]$Value)
+        {
+            $This.Name  = $Name
+            $This.Value = $Value
+        }
+    }
+    
+    Class Domain
+    {
+        [String] $Organization
+        [String] $CommonName
+        [String] $Location
+        [String] $Region
+        [String] $Country
+        [String] $Postal
+        [String] $TimeZone
+        [String] $SiteLink
+        [String] $SiteName
+        Domain([Object]$Domain)
+        {
+
+        }
+    }
+    
+    Class Sitemap
+    {
+        [String]$Organization
+        [String]$CommonName
+        [Object]$Sitemap
+        Sitemap([String]$Organization,$CommonName)
+        {
+            $This.Organization = $Organization
+            $This.CommonName   = $CommonName
+            $This.Sitemap      = @( )
+        }
+    }
+    
+    Class Key
+    {
+        [String]     $NetworkPath
+        [String]    $Organization
+        [String]      $CommonName
+        [String]      $Background
+        [String]            $Logo
+        [String]           $Phone
+        [String]           $Hours
+        [String]         $Website
+        Key([Object]$Root)
+        {
+            $This.NetworkPath     = $Root[0]
+            $This.Organization    = $Root[1]
+            $This.CommonName      = $Root[2]
+            $This.Background      = $Root[3]
+            $This.Logo            = $Root[4]
+            $This.Phone           = $Root[5]
+            $This.Hours           = $Root[6]
+            $This.Website         = $Root[7]
+        }
+    }
+
+    Class WimFile
+    {
+        [UInt32] $Rank
+        [Object] $Label
+        [UInt32] $ImageIndex            = 1
+        [String] $ImageName
+        [String] $ImageDescription
+        [String] $Version
+        [String] $Architecture
+        [String] $InstallationType
+        [String] $SourceImagePath
+
+        WimFile([UInt32]$Rank,[String]$Image)
+        {
+            If ( ! ( Test-Path $Image ) )
+            {
+                Throw "Invalid Path"
+            }
+
+            $This.SourceImagePath       = $Image
+            $This.Rank                  = $Rank
+
+            Get-WindowsImage -ImagePath $Image -Index 1 | % {
+                
+                $This.Version           = $_.Version
+                $This.Architecture      = @(86,64)[$_.Architecture -eq 9]
+                $This.InstallationType  = $_.InstallationType
+                $This.ImageName         = $_.ImageName
+                $This.Label             = Switch($This.InstallationType)
+                {
+                    Server
+                    {
+                        "{0}{1}" -f $(Switch -Regex ($This.ImageName){Standard{"SD"}Datacenter{"DC"}}),[Regex]::Matches($This.ImageName,"(\d{4})").Value
+                    }
+
+                    Client
+                    {
+                        "10{0}{1}" -f $(Switch -Regex ($This.ImageName) { Pro {"P"} Edu {"E"} Home {"H"} }),$This.Architecture
+                    }
+                }
+
+                $This.ImageDescription  = Get-Date -UFormat "[%Y-%m%d (MCC/SDP)][$($This.Label)]"
+
+                If ( $This.ImageName -match "Evaluation" )
+                {
+                    $This.ImageName     = $This.ImageName -Replace "Evaluation \(Desktop Experience\) ",""
+                }
+            }
+        }
+    }
+
+    Class BootImage
+    {
+        [Object] $Path
+        [Object] $Name
+        [Object] $Type
+        [Object] $ISO
+        [Object] $WIM
+        [Object] $XML
+        BootImage([String]$Path,[String]$Name)
+        {
+            $This.Path = $Path
+            $This.Name = $Name
+            $This.Type = Switch ([UInt32]($This.Name -match "\(x64\)")) { 0 { "x86" } 1 { "x64" } }
+            $This.ISO  = "$Path\$Name.iso"
+            $This.WIM  = "$Path\$Name.wim"
+            $This.XML  = "$Path\$Name.xml"
+        }
+    }
+
+    Class BootImages
+    {
+        [Object] $Images
+        BootImages([Object]$Directory)
+        {
+            $This.Images = @( )
+
+            ForEach ( $Item in Get-ChildItem $Directory | ? Extension | % BaseName | Select-Object -Unique )
+            {
+                $This.Images += [BootImage]::New($Directory,$Item)
+            }
+        }
+    }
+    
+    Class FEDeploymentShareGUI
+    {
+        [String] $Tab = @"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Topmost="True" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="GroupBox" x:Key="xGroupBox">
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">
+                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="10" Background="#007bff" BorderBrush="Black" BorderThickness="3">
+                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="TabItem">
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border CornerRadius="10" Background="#007bff" BorderBrush="Black" BorderThickness="3">
+                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Height" Value="24"/>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="AlternationCount" Value="2"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="IsTabStop" Value="True" />
+            <Setter Property="IsTextSearchEnabled" Value="True"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="TextBlock.HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style TargetType="DataGridRow">
+            <Setter Property="TextBlock.HorizontalAlignment" Value="Left"/>
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="White"/>
+                </Trigger>
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#FFCDF7F7"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="FontSize"   Value="12"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+        <Style TargetType="DataGridCell">
+            <Setter Property="TextBlock.TextAlignment" Value="Left" />
+        </Style>
+        <Style TargetType="PasswordBox">
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="TextBlock.HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="PasswordChar" Value="*"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Height" Value="24"/>
+        </Style>
+    </Window.Resources>
+    <GroupBox Style="{StaticResource xGroupBox}" Grid.Row="0" Margin="10" Padding="10" Foreground="Black" Background="White">
+        <TabControl Grid.Row="1" Background="{x:Null}" BorderBrush="Black" Foreground="{x:Null}">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Gainsboro" CornerRadius="4,4,0,0" Margin="2,0">
+                                    <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="10,2"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="LightSkyBlue"/>
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter TargetName="Border" Property="Background" Value="GhostWhite"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="Configuration">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="200"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" Header="[Snapshot]">
+                        <DataGrid Name="Services">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name"      Binding="{Binding Name}"  Width="150"/>
+                                <DataGridTextColumn Header="Installed/Meets minimum requirements" Binding="{Binding Value}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="1" Header="[Services]">
+                        <TabControl>
+                            <TabItem Header="DHCP">
+                                <GroupBox Header="Dynamic Host Control Protocol"/>
+                            </TabItem>
+                            <TabItem Header="DNS">
+                                <GroupBox Header="Domain Name Service"/>
+                            </TabItem>
+                            <TabItem Header="ADDS">
+                                <GroupBox Header="Active Directory Directory Service"/>
+                            </TabItem>
+                            <TabItem Header="WDS">
+                                <GroupBox Header="Windows Deployment Services"/>
+                            </TabItem>
+                            <TabItem Header="MDT">
+                                <GroupBox Header="Microsoft Deployment Toolkit"/>
+                            </TabItem>
+                            <TabItem Header="WinADK">
+                                <GroupBox Header="Windows Assessment and Deployment Toolkit"/>
+                            </TabItem>
+                            <TabItem Header="WinPE">
+                                <GroupBox Header="Windows Preinstallation Environment Kit"/>
+                            </TabItem>
+                            <TabItem Header="IIS">
+                                <GroupBox Header="Internet Information Services">
+                                    <Grid VerticalAlignment="Top">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox Name="IISInstall" Grid.Column="0" Margin="10" Height="24">
+                                            <ComboBoxItem Content="No" IsSelected="True"/>
+                                            <ComboBoxItem Content="Yes"/>
+                                        </ComboBox>
+                                        <TextBox Grid.Column="1" Name="IISServerName" IsEnabled="False"/>
+                                        <TextBox Grid.Column="2" Name="IISAppPoolName" IsEnabled="False"/>
+                                        <TextBox Grid.Column="3" Name="IISVirtualHostName" IsEnabled="False"/>
+                                    </Grid>
+                                </GroupBox>
+                            </TabItem>
+                        </TabControl>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Domain" BorderBrush="{x:Null}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="160"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="200"/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Grid.Column="0" Header="[Organization]">
+                            <TextBox Name="Organization"/>
+                        </GroupBox>
+                        <GroupBox Grid.Column="1" Header="[Common Name]">
+                            <TextBox Name="CommonName"/>
+                        </GroupBox>
+                        <Button Grid.Column="2" Name="GetSitename" Content="Get Sitename"/>
+                    </Grid>
+                    <GroupBox Grid.Row="1" Header="[Sitemap (Aggregate)]">
+                        <DataGrid Name="Sitemap"
+                                  ScrollViewer.CanContentScroll="True"
+                                  ScrollViewer.IsDeferredScrollingEnabled="True"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Location" Binding='{Binding Location}' Width="100"/>
+                                <DataGridTextColumn Header="Region"   Binding='{Binding Region}' Width="60"/>
+                                <DataGridTextColumn Header="Country"  Binding='{Binding Country}' Width="60"/>
+                                <DataGridTextColumn Header="Postal"   Binding='{Binding Postal}' Width="60"/>
+                                <DataGridTextColumn Header="SiteLink" Binding='{Binding SiteLink}' Width="120"/>
+                                <DataGridTextColumn Header="TimeZone" Binding='{Binding TimeZone}' Width="120"/>
+                                <DataGridTextColumn Header="SiteName" Binding='{Binding SiteName}' Width="Auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <Grid Grid.Row="2" Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="120"/>
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Grid.Column="0" Header="[US Zip Code]">
+                            <TextBox Name="AddSitenameZip"/>
+                        </GroupBox>
+                        <GroupBox Grid.Column="1" Header="[US Town]" IsEnabled="False">
+                            <TextBox Name="AddSitenameTown"/>
+                        </GroupBox>
+                        <Button Grid.Column="2" Name="AddSitename" Content="Add Sitename"/>
+                    </Grid>
+                    <GroupBox Grid.Row="3" Header="[Sitename (Selected)]">
+                        <DataGrid Name="Sitename">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name"  Binding='{Binding Name}'  Width="125"/>
+                                <DataGridTextColumn Header="Value" Binding='{Binding Value}' Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Network" BorderBrush="{x:Null}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="160"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="120"/>
+                        <RowDefinition Height="80"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Grid.Row="0" Header="[Network (Designation)]">
+                            <TextBox Grid.Column="0" Name="StackText"/>
+                        </GroupBox>
+                        <Button Grid.Column="1" Name="StackLoad" Content="Load" IsEnabled="False"/>
+                    </Grid>
+                    <GroupBox Grid.Row="1" Header="[Network (Stack)]">
+                        <DataGrid Name="Stack"
+                                  ScrollViewer.CanContentScroll="True" 
+                                  ScrollViewer.IsDeferredScrollingEnabled="True"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Network"   Binding="{Binding Network}"   Width="*"/>
+                                <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="*"/>
+                                <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="*"/>
+                                <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="*"/>
+                                <DataGridTextColumn Header="Range"     Binding="{Binding Range}"     Width="*"/>
+                                <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="Auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="3" Header="[Network (Selected)]">
+                        <DataGrid Name="Control" 
+                                  ScrollViewer.CanContentScroll="True"
+                                  ScrollViewer.IsDeferredScrollingEnabled="True"                                        
+                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Network"   Binding="{Binding Network}"   Width="*"/>
+                                <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="*"/>
+                                <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="*"/>
+                                <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="*"/>
+                                <DataGridTextColumn Header="Range"     Binding="{Binding Range}"     Width="*"/>
+                                <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="Auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <Grid Grid.Row="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Grid.Column="0" Header="[NetBIOS Name]">
+                            <TextBox Name="NetBIOSName"/>
+                        </GroupBox>
+                        <GroupBox Grid.Column="1" Header="[DNS Name]">
+                            <TextBox Name="DNSName"/>
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Imaging" BorderBrush="{x:Null}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="120"/>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="120"/>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="120"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="70"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Header="[ISO Path (Source Directory)]">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Name="IsoSelect" Grid.Column="0" Content="Select"/>
+                                <TextBox Name="IsoPath"  Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+                        <Button Name="IsoScan" Grid.Column="1" Content="Scan"/>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <GroupBox Header="[ISO List (Detected)]">
+                            <DataGrid Name="IsoList">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding='{Binding Name}' Width="*"/>
+                                    <DataGridTextColumn Header="Path" Binding='{Binding Fullname}' Width="2*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Name="IsoMount" Content="Mount" IsEnabled="False"/>
+                        <Button Grid.Column="1" Name="IsoDismount" Content="Dismount" IsEnabled="False"/>
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <GroupBox Header="[Windows ISO (Viewer)]">
+                            <DataGrid Name="IsoView">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="40"/>
+                                    <DataGridTextColumn Header="Name"  Binding='{Binding Name}' Width="*"/>
+                                    <DataGridTextColumn Header="Size"  Binding='{Binding Size}' Width="100"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </Grid>
+                    <Grid Grid.Row="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Name="WimQueue" Content="Queue" IsEnabled="False"/>
+                        <Button Grid.Column="1" Name="WimDequeue" Content="Dequeue" IsEnabled="False"/>
+                    </Grid>
+                    <Grid Grid.Row="5">
+                        <GroupBox Header="[Windows Image (Extraction Queue)]">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Margin="5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Row="0" Name="WimIsoUp" Content="˄" Margin="0"/>
+                                    <Button Grid.Row="1" Name="WimIsoDown" Content="˅" Margin="0"/>
+                                </Grid>
+                                <DataGrid Grid.Column="1" Name="WimIso">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name"  Binding='{Binding FullName}' Width="*"/>
+                                        <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="100"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                    <GroupBox Grid.Row="6" Header="[WIM Path (Target Directory)]">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="100"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Name="WimSelect" Grid.Column="0" Content="Select"/>
+                            <TextBox Grid.Column="1" Name="WimPath"/>
+                            <Button Grid.Column="2" Name="WimExtract" Content="Extract"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Updates" BorderBrush="{x:Null}"/>
+            <TabItem Header="Branding" BorderBrush="{x:Null}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="80"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Name="Collect" Content="Collect" IsEnabled="True"/>
+                            <GroupBox Grid.Column="1" Header="[Phone]">
+                                <TextBox Name="Phone"/>
+                            </GroupBox>
+                            <GroupBox Grid.Column="2" Header="[Hours]">
+                                <TextBox Name="Hours"/>
+                            </GroupBox>
+                        </Grid>
+                        <GroupBox Grid.Row="1" Header="[Website]">
+                            <TextBox Name="Website"/>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" Header="[Logo 120x120 Bitmap/*.bmp]">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Name="LogoSelect" Content="Select"/>
+                                <TextBox Grid.Column="1" Name="Logo"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Grid.Row="3" Header="[Background (Common Image File)]">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Name="BackgroundSelect" Content="Select"/>
+                                <TextBox Grid.Column="1" Name="Background"/>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Share">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="350"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="80"/>
+                            <RowDefinition Height="80"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="150"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Name="DSRootSelect" Grid.Column="0" Content="Select"/>
+                            <GroupBox Grid.Column="1" Header="[Root Path]">
+                                <TextBox Name="DSRootPath"/>
+                            </GroupBox>
+                            <GroupBox Grid.Column="2" Header="[Share Name]">
+                                <TextBox Name="DSShareName"/>
+                            </GroupBox>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="150"/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Grid.Column="0" Header="[PSDrive Name]">
+                                <TextBox Name="DSDriveName"/>
+                            </GroupBox>
+                            <GroupBox Grid.Column="1" Header="[Description]">
+                                <TextBox Name="DSDescription"/>
+                            </GroupBox>
+                            <GroupBox Grid.Column="2" Header="[Legacy MDT/PSD]" Margin="5">
+                                <ComboBox Name="DSType">
+                                    <ComboBoxItem Content="MDT" IsSelected="True"/>
+                                    <ComboBoxItem Content="PSD"/>
+                                </ComboBox>
+                            </GroupBox>
+                        </Grid>
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Grid.Column="0" Header="[Domain Admin Username]">
+                                <TextBox Name="DSDCUsername"/>
+                            </GroupBox>
+                            <GroupBox Grid.Column="1" Header="[Password/Confirm]">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <PasswordBox Grid.Column="0" Name="DSDCPassword" HorizontalContentAlignment="Left"/>
+                                    <PasswordBox Grid.Column="1" Name="DSDCConfirm"  HorizontalContentAlignment="Left"/>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Grid.Column="0" Header="[Local Admin Username]">
+                                <TextBox Name="DSLMUsername"/>
+                            </GroupBox>
+                            <GroupBox Grid.Column="1" Header="[Password/Confirm]">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <PasswordBox Grid.Column="0" Name="DSLMPassword"  HorizontalContentAlignment="Left"/>
+                                    <PasswordBox Grid.Column="1" Name="DSLMConfirm"  HorizontalContentAlignment="Left"/>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </Grid>
+                    <GroupBox Grid.Row="1" Header="[Organizational Unit Name]">
+                        <TextBox Name="DSOrganizationalUnit"/>
+                    </GroupBox>
+                    <GroupBox Grid.Row="2" Header="[Create]">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="80"/>
+                            </Grid.RowDefinitions>
+                            <DataGrid Name="DSShare" Grid.Row="0">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <Button Grid.Row="1" Name="DSInitialize" Content="Initialize"/>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </GroupBox>
+</Window>
+"@
+    FEDeploymentShareGUI()
+    {
+    
+    }
+}
+
 
     # Controller class
     Class Main
@@ -32,7 +1488,7 @@ Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob
         Static [String]       $Icon = "$([Main]::GFX)\icon.ico"
         Static [String]       $Logo = "$([Main]::GFX)\OEMLogo.bmp"
         Static [String] $Background = "$([Main]::GFX)\OEMbg.jpg"
-        Static [String]        $Tab = (IWR github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare/Xaml/DS.xaml?raw=true | % Content)
+        Static [String]        $Tab = [FEDeploymentShareGUI]::New().Tab
         [Object]               $Win 
         [Object]               $Reg 
         [Object]                $SM
@@ -295,14 +1751,14 @@ Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob
             [System.Windows.MessageBox]::Show("Invalid image root path","Error")
         }
     
-        $Tmp = Get-ChildItem $Xaml.IO.IsoPath.Text *.iso
+        $Tmp = Get-ChildItem $Xaml.IO.IsoPath.Text *.iso | Select-Object Name, FullName
     
         If (!$Tmp)
         {
             [System.Windows.MessageBox]::Show("No images detected","Error")
         }
-        
-        $Xaml.IO.IsoList.ItemsSource = $Tmp | Select-Object Name, Fullname
+
+        $Xaml.IO.IsoList.ItemsSource = @( $Tmp )
     })
     
     $Xaml.IO.IsoList.Add_SelectionChanged(
@@ -586,6 +2042,44 @@ Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob
     })
 
     # Branding Tab
+    $Xaml.IO.Collect.Add_Click(
+    {
+        $OEM = Get-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\OEMInformation' -EA 0
+
+        If ($OEM)
+        {
+            If ($OEM.Logo)
+            {
+                $Xaml.IO.Logo.Text = $Oem.Logo
+            }
+
+            If ($OEM.SupportPhone)
+            {
+                $Xaml.IO.Phone.Text = $Oem.SupportPhone
+            }
+
+            If ($OEM.SupportHours)
+            {
+                $Xaml.IO.Hours.Text = $Oem.SupportHours
+            }
+
+            If ($OEM.SupportURL)
+            {
+                $Xaml.IO.Website.Text = $Oem.SupportURL
+            }
+        }
+
+        $OEM = Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System' -EA 0
+        
+        If ($OEM)
+        {
+            If ($OEM.Wallpaper)
+            {
+                $Xaml.IO.Background.Text = $OEM.Wallpaper
+            }
+        }
+    })
+
     $Xaml.IO.LogoSelect.Add_Click(
     {
         $Item                  = New-Object System.Windows.Forms.OpenFileDialog
@@ -615,6 +2109,19 @@ Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob
     })
 
     # Share Tab
+    $Xaml.IO.DSRootSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        $Xaml.IO.DSRootPath.Text = $Item.SelectedPath
+    })
+
     $Xaml.IO.DSInitialize.Add_Click(
     {
         If ( $Xaml.IO.Services.Items | ? Name -eq MDT | ? Value -ne $True )
@@ -622,35 +2129,43 @@ Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob
             Throw "Unable to initialize, MDT not installed"
         }
 
-        If ( $PSVersionTable.PSEdition -ne "Desktop" )
+        ElseIf ( $PSVersionTable.PSEdition -ne "Desktop" )
         {
             Throw "Unable to initialize, use Windows PowerShell v5.1"
         }
 
-        If (!$Xaml.IO.DSDCUsername.Text)
+        ElseIf (!$Xaml.IO.DSDCUsername.Text)
         {
             [System.Windows.MessageBox]::Show("Missing the deployment share domain account name","Error")
         }
 
-        If ($Xaml.IO.DSDCPassword.Password -notmatch $Xaml.IO.DSDCConfirm.Password)
+        ElseIf ($Xaml.IO.DSDCPassword.SecurePassword -notmatch $Xaml.IO.DSDCConfirm.SecurePassword)
         {
             [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         } 
 
-        If (!$Xaml.IO.DSLMUsername.Text)
+        ElseIf (!$Xaml.IO.DSLMUsername.Text)
         {
             [System.Windows.MessageBox]::Show("Missing the child item local account name","Error")
         }
 
-        If ($Xaml.IO.DSLMPassword.Password -notmatch $Xaml.IO.DSLMConfirm.Password)
+        ElseIf ($Xaml.IO.DSLMPassword.SecurePassword -notmatch $Xaml.IO.DSLMConfirm.SecurePassword)
         {
             [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         }
 
-        Write-Theme "Creating [~] Deployment Share"
+        ElseIf (!(Get-ADObject -Filter * | ? DistinguishedName -eq $Xaml.IO.DSOrganizationalUnit.Text))
+        {
+            [System.Windows.MessageBox]::Show("Invalid OU specified","Error")
+        }
 
-        $MDT     = Get-ItemProperty HKLM:\Software\Microsoft\Deployment* | % Install_Dir | % TrimEnd \
-        Import-Module "$MDT\Bin\MicrosoftDeploymentToolkit.psd1"
+        Else
+        {
+            Write-Theme "Creating [~] Deployment Share"
+
+            $MDT     = Get-ItemProperty HKLM:\Software\Microsoft\Deployment* | % Install_Dir | % TrimEnd \
+            Import-Module "$MDT\Bin\MicrosoftDeploymentToolkit.psd1"
+        }
 
         If (Get-MDTPersistentDrive)
         {
@@ -826,10 +2341,14 @@ Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob
             Remove-Item -Path $Xaml.IO.WimPath.Text -Recurse -Force -Verbose
 
             # FightingEntropy(π) Installation propogation
-            $Install = "[Net.ServicePointManager]::SecurityProtocol = 3072",
-            "Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/master/Install.ps1?raw=true | Invoke-Expression",
-            "`$Key = '$($Key | ConvertTo-Json)'",
-            "New-EnvironmentKey -Key `$Key | % Apply `n"
+            $Install = @( 
+            "[Net.ServicePointManager]::SecurityProtocol = 3072",
+            "Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | Invoke-Expression",
+            "`$Key = '$( $Key | ConvertTo-Json )'",
+            "New-EnvironmentKey -Key `$Key | % Apply",
+            "`$Module = Get-FEModule",
+            "`$Module.Role.Choco()",
+            "choco install pwsh vscode microsoft-edge microsoft-windows-terminal ccleaner -y" -join ";`n")
 
             Set-Content -Path $Script\Install.ps1 -Value $Install -Force -Verbose
 
@@ -868,6 +2387,7 @@ Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob
                                         DomainAdmin          = $Xaml.IO.DSDCUserName.Text
                                         DomainAdminPassword  = $Xaml.IO.DSDCPassword.Password
                                         DomainAdminDomain    = $Xaml.IO.CommonName.Text
+                                        MachineObjectOU      = $Xaml.IO.DSOrganizationalUnit.Text
                                         SkipDomainMembership = "YES"
                                         OSInstall            = "Y"
                                         SkipCapture          = "NO"
@@ -934,6 +2454,8 @@ Function New-FEDeploymentShare # https://github.com/mcc85sx/FightingEntropy/blob
             Restart-Service -Name WDSServer
 
             Write-Theme -Flag
+
+            $Xaml.IO.DialogResult = $True
         }
     })
 
