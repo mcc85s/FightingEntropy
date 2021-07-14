@@ -10,7 +10,7 @@ Function Write-Theme # Cross Platform
         [Switch]$Flag,
         [Parameter(Position=1)]
         [UInt32[]]$Palette = @(10,12,15,0),
-        [Parameter()][Switch]$Out
+        [Parameter()][Switch]$Text
     )
 
     Class Block
@@ -700,9 +700,9 @@ Function Write-Theme # Cross Platform
         }
     }
 
-    If ($Out)
+    If ($Text)
     {
-        $Item.Out()
+        $Item.Out() | % { "#$_" }
     }
 
     Else
