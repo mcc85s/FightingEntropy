@@ -1,4 +1,4 @@
-Function New-FEDeploymentShare
+Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare/FEDeploymentShare.ps1
 {
     # Load Assemblies
     Add-Type -AssemblyName PresentationFramework
@@ -138,6 +138,7 @@ Function New-FEDeploymentShare
     {
         [String]$Network
         Hidden [UInt32[]]$Network_
+        Hidden [UInt32] $Prefix
         [String]$Netmask
         Hidden [UInt32[]]$Netmask_
         [UInt32]$HostCount
@@ -146,10 +147,11 @@ Function New-FEDeploymentShare
         [String]$End
         [String]$Range
         [String]$Broadcast
-        Scope([String]$Network,[String]$Netmask)
+        Scope([String]$Network,[String]$Prefix,[String]$Netmask)
         {
             $This.Network    = $Network
             $This.Network_   = $Network -Split "\."
+            $This.Prefix     = $Prefix
             $This.Netmask    = $Netmask
             $This.Netmask_   = $Netmask -Split "\."
 
@@ -304,7 +306,7 @@ Function New-FEDeploymentShare
                 }
             }
 
-            $This.Stack = 0..( $Contain.Count - 1 ) | % { [Scope]::New($Contain[$_],$This.Netmask) }
+            $This.Stack = 0..( $Contain.Count - 1 ) | % { [Scope]::New($Contain[$_],$This.Prefix,$This.Netmask) }
         }
     }
 
@@ -406,7 +408,7 @@ Function New-FEDeploymentShare
             $Return.Add(3,$This.Postal)
 
             $This.SiteLink = ($Return[0..3] -join "-").ToUpper()
-            $This.SiteName = ("{0}.{1}" -f ($Return[0..3] -join "."),$This.CommonName).ToLower()
+            $This.SiteName = ("{0}.{1}" -f ($Return[0..3] -join "-"),$This.CommonName).ToLower()
         }
     }
 
@@ -931,7 +933,7 @@ Function New-FEDeploymentShare
     Class FEDeploymentShareGUI
     {
         [String] $Tab = @"
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Topmost="True" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+        <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Topmost="True" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
         <Window.Resources>
             <Style TargetType="GroupBox" x:Key="xGroupBox">
                 <Setter Property="TextBlock.TextAlignment" Value="Center"/>
@@ -951,7 +953,7 @@ Function New-FEDeploymentShare
                 <Setter Property="FontWeight" Value="Medium"/>
                 <Setter Property="Padding" Value="10"/>
                 <Setter Property="Margin" Value="10"/>
-                <Setter Property="Height" Value="30"/>
+                <Setter Property="Height" Value="32"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="Template">
                     <Setter.Value>
@@ -1060,7 +1062,7 @@ Function New-FEDeploymentShare
                             <RowDefinition Height="200"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <GroupBox Grid.Row="0" Header="[Snapshot]">
+                        <GroupBox Grid.Row="0" Header="[Dependency Snapshot]">
                             <DataGrid Name="Services">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Name"      Binding="{Binding Name}"  Width="150"/>
@@ -1068,87 +1070,88 @@ Function New-FEDeploymentShare
                                 </DataGrid.Columns>
                             </DataGrid>
                         </GroupBox>
-                        <GroupBox Grid.Row="1" Header="[Services]">
-                            <TabControl>
-                                <TabItem Header="DHCP">
-                                    <GroupBox Header="Dynamic Host Control Protocol"/>
-                                </TabItem>
-                                <TabItem Header="DNS">
-                                    <GroupBox Header="Domain Name Service"/>
-                                </TabItem>
-                                <TabItem Header="ADDS">
-                                    <GroupBox Header="Active Directory Directory Service"/>
-                                </TabItem>
-                                <TabItem Header="WDS">
-                                    <GroupBox Header="Windows Deployment Services"/>
-                                </TabItem>
-                                <TabItem Header="MDT">
-                                    <GroupBox Header="Microsoft Deployment Toolkit">
-                                        <TabControl>
-                                            <TabItem Header="Bootstrap.ini">
-                                                <DataGrid Name="Bootstrap">
-                                                    <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
-                                                        <DataGridTemplateColumn Header="Value" Width="*">
-                                                            <DataGridTemplateColumn.CellTemplate>
-                                                                <DataTemplate>
-                                                                    <ComboBox SelectedIndex="{Binding Slot}">
-                                                                        <ComboBoxItem Content="No"/>
-                                                                        <ComboBoxItem Content="Yes"/>
-                                                                    </ComboBox>
-                                                                </DataTemplate>
-                                                            </DataGridTemplateColumn.CellTemplate>
-                                                        </DataGridTemplateColumn>
-                                                    </DataGrid.Columns>
-                                                </DataGrid>
-                                            </TabItem>
-                                            <TabItem Header="CustomSettings.ini">
-                                                <DataGrid Name="CustomSettings">
-                                                    <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
-                                                        <DataGridTemplateColumn Header="Value" Width="*">
-                                                            <DataGridTemplateColumn.CellTemplate>
-                                                                <DataTemplate>
-                                                                    <ComboBox SelectedIndex="{Binding Slot}">
-                                                                        <ComboBoxItem Content="No"/>
-                                                                        <ComboBoxItem Content="Yes"/>
-                                                                    </ComboBox>
-                                                                </DataTemplate>
-                                                            </DataGridTemplateColumn.CellTemplate>
-                                                        </DataGridTemplateColumn>
-                                                    </DataGrid.Columns>
-                                                </DataGrid>
-                                            </TabItem>
-                                        </TabControl>
-                                    </GroupBox>
-                                </TabItem>
-                                <TabItem Header="WinADK">
-                                    <GroupBox Header="Windows Assessment and Deployment Toolkit"/>
-                                </TabItem>
-                                <TabItem Header="WinPE">
-                                    <GroupBox Header="Windows Preinstallation Environment Kit"/>
-                                </TabItem>
-                                <TabItem Header="IIS">
-                                    <GroupBox Header="Internet Information Services">
-                                        <Grid VerticalAlignment="Top">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="2*"/>
-                                                <ColumnDefinition Width="2*"/>
-                                                <ColumnDefinition Width="2*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <ComboBox Name="IISInstall" Grid.Column="0" Margin="10" Height="24">
-                                                <ComboBoxItem Content="No" IsSelected="True"/>
-                                                <ComboBoxItem Content="Yes"/>
-                                            </ComboBox>
-                                            <TextBox Grid.Column="1" Name="IISServerName" IsEnabled="False"/>
-                                            <TextBox Grid.Column="2" Name="IISAppPoolName" IsEnabled="False"/>
-                                            <TextBox Grid.Column="3" Name="IISVirtualHostName" IsEnabled="False"/>
-                                        </Grid>
-                                    </GroupBox>
-                                </TabItem>
-                            </TabControl>
-                        </GroupBox>
+                        <TabControl Grid.Row="1">
+                            <TabItem Header="DHCP">
+                                <GroupBox Header="[Dynamic Host Control Protocol]">
+                                    <DataGrid Name="DHCP">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="DNS">
+                                <GroupBox Header="[Domain Name Service]">
+                                    <DataGrid Name="DNS">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="ADDS">
+                                <GroupBox Header="[Active Directory Directory Service]">
+                                    <DataGrid Name="ADDS">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="WDS">
+                                <GroupBox Header="[Windows Deployment Services]">
+                                    <DataGrid Name="WDS">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="MDT">
+                                <GroupBox Header="[Microsoft Deployment Toolkit]">
+                                    <DataGrid Name="MDT">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="WinADK">
+                                <GroupBox Header="[Windows Assessment and Deployment Kit]">
+                                    <DataGrid Name="WinADK">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="WinPE">
+                                <GroupBox Header="[Windows Preinstallation Environment Kit]">
+                                    <DataGrid Name="WinPE">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            </TabItem>
+                            <TabItem Header="IIS">
+                                <GroupBox Header="[Internet Information Services]">
+                                    <DataGrid Name="IIS">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            </TabItem>
+                        </TabControl>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Domain" BorderBrush="{x:Null}">
@@ -1159,7 +1162,7 @@ Function New-FEDeploymentShare
                             <RowDefinition Height="80"/>
                             <RowDefinition Height="180"/>
                             <RowDefinition Height="140"/>
-                            <RowDefinition Height="60"/>
+                            <RowDefinition Height="80"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
@@ -1243,8 +1246,7 @@ Function New-FEDeploymentShare
                         <Grid.RowDefinitions>
                             <RowDefinition Height="80"/>
                             <RowDefinition Height="160"/>
-                            <RowDefinition Height="20"/>
-                            <RowDefinition Height="120"/>
+                            <RowDefinition Height="200"/>
                             <RowDefinition Height="80"/>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0">
@@ -1272,18 +1274,11 @@ Function New-FEDeploymentShare
                                 </DataGrid.Columns>
                             </DataGrid>
                         </GroupBox>
-                        <GroupBox Grid.Row="3" Header="[Network (Selected)]">
-                            <DataGrid Name="Control" 
-                                              ScrollViewer.CanContentScroll="True"
-                                              ScrollViewer.IsDeferredScrollingEnabled="True"                                        
-                                              ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                        <GroupBox Grid.Row="2" Header="[Network (Selected)]">
+                            <DataGrid Name="Control">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Network"   Binding="{Binding Network}"   Width="*"/>
-                                    <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="*"/>
-                                    <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="*"/>
-                                    <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="*"/>
-                                    <DataGridTextColumn Header="Range"     Binding="{Binding Range}"     Width="*"/>
-                                    <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="Auto"/>
+                                    <DataGridTextColumn Header="Name"   Binding="{Binding Network}"   Width="*"/>
+                                    <DataGridTextColumn Header="Value"   Binding="{Binding Netmask}"   Width="*"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </GroupBox>
@@ -1563,25 +1558,48 @@ Function New-FEDeploymentShare
                             <TextBox Name="DSOrganizationalUnit"/>
                         </GroupBox>
                         <GroupBox Grid.Row="2" Header="[Create]">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="80"/>
-                                </Grid.RowDefinitions>
-                                <DataGrid Name="DSShare" Grid.Row="0">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
-                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                                <Button Grid.Row="1" Name="DSInitialize" Content="Initialize"/>
-                            </Grid>
+                            <TabControl>
+                                <TabItem Header="Bootstrap.ini">
+                                    <DataGrid Name="Bootstrap">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
+                                            <DataGridTemplateColumn Header="Value" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedIndex="{Binding Slot}">
+                                                            <ComboBoxItem Content="No"/>
+                                                            <ComboBoxItem Content="Yes"/>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </TabItem>
+                                <TabItem Header="CustomSettings.ini">
+                                    <DataGrid Name="CustomSettings">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
+                                            <DataGridTemplateColumn Header="Value" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedIndex="{Binding Slot}">
+                                                            <ComboBoxItem Content="No"/>
+                                                            <ComboBoxItem Content="Yes"/>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </TabItem>
+                            </TabControl>
                         </GroupBox>
                     </Grid>
                 </TabItem>
             </TabControl>
         </GroupBox>
-    </Window>    
+    </Window>
 "@
         FEDeploymentShareGUI()
         {
@@ -1695,6 +1713,14 @@ Function New-FEDeploymentShare
 
     # 1) Configuration
     $Xaml.IO.Services.ItemsSource    = @( )
+    $Xaml.IO.DHCP.ItemsSource        = @( )
+    $Xaml.IO.DNS.ItemsSource         = @( )
+    $Xaml.IO.ADDS.ItemsSource        = @( )
+    $Xaml.IO.WDS.ItemsSource         = @( )
+    $Xaml.IO.MDT.ItemsSource         = @( )
+    $Xaml.IO.WinADK.ItemsSource      = @( )
+    $Xaml.IO.WinPE.ItemsSource       = @( )
+    $Xaml.IO.IIS.ItemsSource         = @( )
 
     # 2) Domain
     $Xaml.IO.Sitemap.ItemsSource     = @( )
@@ -1837,14 +1863,14 @@ Function New-FEDeploymentShare
         If ( $Xaml.IO.Stack.SelectedIndex -gt -1 )
         {
             $Network                         = $Main.SM.Stack | ? Network -match $Xaml.IO.Stack.SelectedItem.Network
-            $Xaml.IO.Control.ItemsSource     = $Null
-            $Xaml.IO.Control.ItemsSource     = @( $Network )
+            
+            $List = "Network Netmask HostCount HostObject Start End Range Broadcast" -Split " " | % { 
+                
+                [DGList]::New($_,$Network.$_) 
+            }
 
-            #If ( $Control.Count -gt 1 )
-            #{
-            #    $Subject                     = $Main.SM.Stack | ? Network -notmatch $Network
-            #    $Xaml.IO.Subject.ItemsSource = $Subject
-            #}
+            $Xaml.IO.Control.ItemsSource     = $Null
+            $Xaml.IO.Control.ItemsSource     = $List
         }
     })
 
