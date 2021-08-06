@@ -691,7 +691,7 @@ Function Write-Theme # Cross Platform
 
         1 
         { 
-            [Banner]::New()
+            $Item = [Banner]::New()
         }
         
         2 
@@ -707,11 +707,9 @@ Function Write-Theme # Cross Platform
 
     Else
     {
-        If (!($Palette))
+        Switch([UInt32]($Item.GetType().Name -in "Flag","Banner"))
         {
-            $Palette = @(10,12,15,0)
+            0 { $Item.Draw($Palette) } 1 { $Item.Draw() }
         }
-
-        $Item.Draw($Palette)
     }
 }
