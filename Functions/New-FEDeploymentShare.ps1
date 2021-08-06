@@ -3583,7 +3583,7 @@ public struct WindowPosition
                 $TaskSequence           = @{ 
                     
                     Path                = "$TS\$Type\$($Image.Version)"
-                    Name                = $Image.ImageName
+                    Name                = ("{0} (x{1})" -f $Image.ImageName, $Image.Architecture)
                     Template            = "FE{0}Mod.xml" -f $Type
                     Comments            = $Comment
                     ID                  = $Image.Label
