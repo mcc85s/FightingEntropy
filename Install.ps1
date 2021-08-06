@@ -107,7 +107,7 @@ Function FightingEntropy
         [String[]]      $Names = "Classes","Control","Functions","Graphics"
 
         [String[]]    $Classes = @(("FirewallRule Drive Drives ViperBomb File Cache Icons",
-                "Shortcut Brand Branding DNSSuffix DomainName ADLogin ADConnection FEDCPromo Certificate Company Key RootVar Share Source",
+                "Shortcut Brand Branding DNSSuffix DomainName ADLogin ADConnection ADReplication FEDCPromo Certificate Company Key RootVar Share Source",
                 "Target ServerDependency ServerFeature ServerFeatures IISFeatures IIS Image Images Updates DCFound" -join ' ') -Split " " | % { "_$_.ps1" })
 
         [String[]]    $Control = "Computer.png DefaultApps.xml $( "FE","MDT","PSD" | % { "$_`Client","$_`Server" } | % { "$_`Mod.xml" } )" -Split " "
