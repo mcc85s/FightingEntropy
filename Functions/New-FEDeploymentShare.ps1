@@ -645,6 +645,98 @@ public struct WindowPosition
             $This.SwitchName         = $Switch
         }
     }
+    
+    Class VMServer
+    {
+        Hidden [Object]$Item
+        [Object]$Name
+        [Object]$MemoryStartupBytes
+        [Object]$Path
+        [Object]$NewVHDPath
+        [Object]$NewVHDSizeBytes
+        [Object]$Generation
+        [Object]$SwitchName
+        VMServer([Object]$Item,[Object]$Mem,[Object]$HD,[UInt32]$Gen,[String]$Switch)
+        {
+            $This.Item               = $Item
+            $This.Name               = $Item.Name
+            $This.MemoryStartupBytes = $Mem
+            $This.Path               = "{0}\$($Item.Name).vmx"
+            $This.NewVhdPath         = "{0}\$($Item.Name).vhdx"
+            $This.NewVhdSizeBytes    = $HD
+            $This.Generation         = $Gen
+            $This.SwitchName         = $Switch
+        }
+        New([Object]$Path)
+        {
+            If (!(Test-Path $Path))
+            {
+                Throw "Invalid path"
+            }
+
+            ElseIf (Get-VM -Name $This.Name -EA 0)
+            {
+                Write-Host "VM exists..."
+                If (Get-VM -Name $This.Name | ? Status -ne Off)
+                {
+                    $This.Stop()
+                }
+
+                $This.Remove()
+            }
+
+            $This.Path             = $This.Path -f $Path
+            $This.NewVhdPath       = $This.NewVhdPath -f $Path
+
+            If (Test-Path $This.Path)
+            {
+                Remove-Item $This.Path -Recurse -Confirm:$False -Verbose
+            }
+
+            If (Test-Path $This.NewVhdPath)
+            {
+                Remove-Item $This.NewVhdPath -Recurse -Confirm:$False -Verbose
+            }
+
+            $Object                = @{
+
+                Name               = $This.Name
+                MemoryStartupBytes = $This.MemoryStartupBytes
+                Path               = $This.Path
+                NewVhdPath         = $This.NewVhdPath
+                NewVhdSizeBytes    = $This.NewVhdSizebytes
+                Generation         = $This.Generation
+                SwitchName         = $This.SwitchName
+            }
+
+            New-VM @Object -Verbose | Add-VMDVDDrive -Verbose
+            Set-VMProcessor -VMName $This.Name -Count 2 -Verbose
+        }
+        Start()
+        {
+            Get-VM -Name $This.Name | ? State -eq Off | Start-VM -Verbose
+        }
+        Remove()
+        {
+            Get-VM -Name $This.Name | Remove-VM -Force -Confirm:$False -Verbose
+        }
+        Stop()
+        {
+            Get-VM -Name $This.Name | ? State -ne Off | Stop-VM -Verbose -Force
+        }
+        LoadISO([String]$Path)
+        {
+            If (!(Test-Path $Path))
+            {
+                Throw "Invalid ISO path"
+            }
+
+            Else
+            {
+                Get-VM -Name $This.Name | % { Set-VMDVDDrive -VMName $_.Name -Path $Path -Verbose }
+            }
+        }
+    }
 
     Class VMSilo
     {
@@ -654,6 +746,7 @@ public struct WindowPosition
         [Object] $Internal
         [Object] $External
         [Object] $Gateway
+        [Object] $Server
         [Object] $VMC
         VMSilo([String]$Name,[Object[]]$Gateway)
         {
