@@ -1,13 +1,41 @@
 Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare/FEDeploymentShare.ps1
 {
+   
     # Load Assemblies
     Add-Type -AssemblyName PresentationFramework
     Add-Type -AssemblyName System.Windows.Forms
+    Add-Type @"
+using System;
+using System.Runtime.InteropServices;
+public class Window 
+{
+    [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool GetWindowRect(IntPtr hWnd, out WindowPosition lpRect);
+
+    [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)]
+    public extern static bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
+
+    [DllImport("user32.dll")] [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool ShowWindow(IntPtr handle, int state);
+}
+public struct WindowPosition
+{
+    public int Left;
+    public int Top;
+    public int Right;
+    public int Bottom;
+}
+"@
 
     # Check for server operating system
     If ( (Get-CimInstance Win32_OperatingSystem).Caption -notmatch "Server" )
     {
         Throw "Must use Windows Server operating system"
+    }
+
+    If ($PSVersionTable.PSEdition -eq "Core")
+    {
+        Throw "Must use PowerShell v5 for MDT"
     }
 
     Class States
@@ -85,10 +113,15 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
     {
         [String]    $Path
         [Object] $Content
+        [Object]   $Stack
         ZipStack([String]$Path)
         {
             $This.Path    = $Path
-            $This.Content = IRM $Path
+            $This.Content = Invoke-RestMethod $Path
+            $This.Stack   = ForEach ( $Line in $This.Content.Split("`n") )
+            {
+                $Line.Substring(0,5)
+            }
         }
         [Object[]] ZipTown([String]$Zip)
         {
@@ -115,7 +148,7 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         {
             $Value = [Regex]::Matches($This.Content,"\d{5}\t\d{1}\t($Town)+.+").Value 
             
-            If ( $Value -eq $Null )
+            If (!$Value)
             {
                 Throw "No result found"
             }
@@ -136,9 +169,10 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
     
     Class Scope
     {
+        [String]  $Name
         [String]$Network
         Hidden [UInt32[]]$Network_
-        Hidden [UInt32] $Prefix
+        [UInt32] $Prefix
         [String]$Netmask
         Hidden [UInt32[]]$Netmask_
         [UInt32]$HostCount
@@ -147,13 +181,47 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         [String]$End
         [String]$Range
         [String]$Broadcast
+        [Object] GetSubnetMask([UInt32]$Int)
+        {
+            $Bin   = @(0..($Int-1) | % {1};$Int..31| % {0})
+            $Hash  = @{ }
+            $Mask  = @{ }
+            0..3 | % {
+
+                $Hash.Add($_,$Bin[($_*8)..(($_*8) + 8)])
+                $Mask.Add($_,(@(ForEach ($I in 0..7 )
+                { 
+                    Switch($Hash[$_][$I])
+                    {
+                        0 { 0 }
+                        1 { (128,64,32,16,8,4,2,1)[$I] }
+                    }
+                }) -join "+" | Invoke-Expression ))
+            }
+
+            Return @( $Mask[0..3] -join '.' )
+        }
+        Scope([String]$Prefix)
+        {
+            $This.Name     = $Prefix
+            $Object        = $Prefix.Split("/")
+            $This.Network  = $Object[0]
+            $This.Prefix   = $Object[1]
+            $This.Netmask  = $This.GetSubnetMask($Object[1])
+            $This.Remain()
+        }
         Scope([String]$Network,[String]$Prefix,[String]$Netmask)
         {
+            $This.Name       = "$Network/$Prefix"
             $This.Network    = $Network
-            $This.Network_   = $Network -Split "\."
             $This.Prefix     = $Prefix
             $This.Netmask    = $Netmask
-            $This.Netmask_   = $Netmask -Split "\."
+            $This.Remain()
+        }
+        Remain()
+        {
+            $This.Network_   = $This.Network -Split "\."
+            $This.Netmask_   = $This.Netmask -Split "\."
 
             $WC             = ForEach ( $X in 0..3 )
             { 
@@ -213,7 +281,7 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         [String]$Network
         [String]$Prefix
         [String]$Netmask
-        [Object[]]$Stack
+        [Object[]]$Aggregate
         Network([String]$Network)
         {
             $Hash           = @{ }
@@ -306,33 +374,121 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
                 }
             }
 
-            $This.Stack = 0..( $Contain.Count - 1 ) | % { [Scope]::New($Contain[$_],$This.Prefix,$This.Netmask) }
+            $This.Aggregate = 0..( $Contain.Count - 1 ) | % { [Scope]::New($Contain[$_],$This.Prefix,$This.Netmask) }
         }
     }
 
-    Class Topography
+    Class DcTopography
     {
-        Hidden [String[]] $Enum = "True","False"
-        [String] $SiteLink
-        [String] $SiteName
-        [UInt32] $Exists
+        Hidden [String[]]     $Enum = "True","False"
+        [String]              $Name
+        [String]          $SiteLink
+        [String]          $SiteName
+        [UInt32]            $Exists
         [Object] $DistinguishedName
-        Topography([Object]$SM)
+        DcTopography([Object]$SiteList,[Object]$SM)
         {
+            $This.Name     = $SM.Sitename
             $This.Sitelink = $SM.Sitelink
             $This.Sitename = $SM.Sitename
-            $Tmp           = Get-ADReplicationSite -Filter * | ? Name -match $SM.SiteLink
-            If (!$Tmp)
-            {
-                $This.Exists = 0
-            }
-
-            Else
+            $Tmp           = $SiteList | ? Name -match $SM.SiteLink
+            If ($Tmp)
             {
                 $This.Exists = 1
+                $This.DistinguishedName = $Tmp.DistinguishedName
+            }
+            Else
+            {
+                $This.Exists = 0
+                $This.DistinguishedName = $Null
+            }
+        }
+    }
+
+    Class NwTopography
+    {
+        Hidden [String[]]     $Enum = "True","False"
+        [String]              $Name
+        [String]           $Network
+        [UInt32]            $Exists
+        [Object] $DistinguishedName
+        NwTopography([Object]$SubnetList,[Object]$NW)
+        {
+            $This.Name     = $Nw.Name
+            $This.Network  = $Nw.Network
+            $Tmp           = $SubnetList | ? Name -match $Nw.Name
+            If ($Tmp)
+            {
+                $This.Exists = 1
+                $This.DistinguishedName = $Tmp.DistinguishedName
+            }
+            Else
+            {
+                $This.Exists = 0
+                $This.DistinguishedName = $Null
+            }
+        }
+    }
+
+    Class GwTopography
+    {
+        Hidden [String[]] $Enum = "True","False"
+        [String]              $Name
+        [String]           $Network
+        [String]          $SiteName
+        [UInt32]            $Exists
+        [Object] $DistinguishedName
+        GwTopography([Object]$OuList,[Object]$Gw)
+        {
+            $This.Name     = $Gw.Name
+            $This.Network  = $Gw.Network
+            $This.Sitename = $Gw.Sitename
+            $Tmp           = $OuList | ? Name -match $Gw.Name
+            If ($Tmp)
+            {
+                $This.Exists = 1
+                $This.DistinguishedName = $Tmp.DistinguishedName
+            }
+            Else
+            {
+                $This.Exists = 0
+                $This.DistinguishedName = $Null
+            }
+        }
+    }
+
+    Class GwFile
+    {
+        [String]$Path
+        [String]$Name
+        [UInt32]$Index
+        [String]$Slot
+        [Object]$Content
+        GwFile([Object]$File)
+        {
+            $This.Path    = $File.FullName
+            $This.Slot    = [Regex]::Matches($File.Name,"^\(\d+\)").Value
+            $This.Name    = $File.Name.Replace($This.Slot,"").Replace(".txt","")
+            $This.Index   = $This.Slot.Replace("(","").Replace(")","")
+            $This.Content = Get-Content $File.FullName | ConvertFrom-Json
+        }
+    }
+
+    Class GwFiles
+    {
+        [Object] $Path
+        [Object] $Items
+        [Object] $Files
+        GwFiles([String]$Path)
+        {
+            If (!(Test-Path $Path))
+            {
+                Throw "Invalid path"
             }
 
-            $This.DistinguishedName = $Tmp.DistinguishedName
+            $This.Path  = $Path
+            $This.Items = Get-ChildItem $Path *.txt 
+            $This.Files = @( $This.Items | % { [GwFile]::New($_) } )
         }
     }
     
@@ -412,8 +568,186 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         }
     }
 
+    Function KeyEntry
+    {
+        [CmdLetBinding()]
+        Param(
+        [Parameter(Mandatory)][Object]$KB,
+        [Parameter(Mandatory)][Object]$Object)
+        Class KeyEntry
+        {
+            Static [Char[]] $Capital  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray()
+            Static [Char[]]   $Lower  = "abcdefghijklmnopqrstuvwxyz".ToCharArray()
+            Static [Char[]] $Special  = ")!@#$%^&*(:+<_>?~{|}`"".ToCharArray()
+            Static [Object]    $Keys  = @{
+    
+                " " =  32; "˂" =  37; "˄" =  38; "˃" =  39; "˅" =  40; "0" =  48; 
+                "1" =  49; "2" =  50; "3" =  51; "4" =  52; "5" =  53; "6" =  54; 
+                "7" =  55; "8" =  56; "9" =  57; "a" =  65; "b" =  66; "c" =  67; 
+                "d" =  68; "e" =  69; "f" =  70; "g" =  71; "h" =  72; "i" =  73; 
+                "j" =  74; "k" =  75; "l" =  76; "m" =  77; "n" =  78; "o" =  79; 
+                "p" =  80; "q" =  81; "r" =  82; "s" =  83; "t" =  84; "u" =  85; 
+                "v" =  86; "w" =  87; "x" =  88; "y" =  89; "z" =  90; ";" = 186; 
+                "=" = 187; "," = 188; "-" = 189; "." = 190; "/" = 191; '`' = 192; 
+                "[" = 219; "\" = 220; "]" = 221; "'" = 222;
+            }
+            Static [Object]     $SKey = @{ 
+    
+                "A" =  65; "B" =  66; "C" =  67; "D" =  68; "E" =  69; "F" =  70; 
+                "G" =  71; "H" =  72; "I" =  73; "J" =  74; "K" =  75; "L" =  76; 
+                "M" =  77; "N" =  78; "O" =  79; "P" =  80; "Q" =  81; "R" =  82; 
+                "S" =  83; "T" =  84; "U" =  85; "V" =  86; "W" =  87; "X" =  88;
+                "Y" =  89; "Z" =  90; ")" =  48; "!" =  49; "@" =  50; "#" =  51; 
+                "$" =  52; "%" =  53; "^" =  54; "&" =  55; "*" =  56; "(" =  57; 
+                ":" = 186; "+" = 187; "<" = 188; "_" = 189; ">" = 190; "?" = 191; 
+                "~" = 192; "{" = 219; "|" = 220; "}" = 221; '"' = 222;
+            }
+        }
+        If ( $Object.Length -gt 1 )
+        {
+            $Object = $Object.ToCharArray()
+        }
+        ForEach ( $Key in $Object )
+        {
+            If ($Key -cin @([KeyEntry]::Special + [KeyEntry]::Capital))
+            {
+                $KB.PressKey(16) | Out-Null
+                $KB.TypeKey([KeyEntry]::SKey["$Key"]) | Out-Null
+                $KB.ReleaseKey(16) | Out-Null
+            }
+            Else
+            {
+                $KB.TypeKey([KeyEntry]::Keys["$Key"]) | Out-Null
+            }
+
+            Start-Sleep -Milliseconds 50
+        }
+    }
+
+    Class VMGateway
+    {
+        Hidden [Object]$Item
+        [Object]$Name
+        [Object]$MemoryStartupBytes
+        [Object]$Path
+        [Object]$NewVHDPath
+        [Object]$NewVHDSizeBytes
+        [Object]$Generation
+        [Object]$SwitchName
+        VMGateway([Object]$Item,[Object]$Mem,[Object]$HD,[UInt32]$Gen,[String]$Switch)
+        {
+            $This.Item               = $Item
+            $This.Name               = $Item.Name
+            $This.MemoryStartupBytes = $Mem
+            $This.Path               = "{0}\$($Item.Name).vmx"
+            $This.NewVhdPath         = "{0}\$($Item.Name).vhdx"
+            $This.NewVhdSizeBytes    = $HD
+            $This.Generation         = $Gen
+            $This.SwitchName         = $Switch
+        }
+    }
+
+    Class VMSilo
+    {
+        [Object] $Name
+        [Object] $VMHost
+        [Object] $Switch
+        [Object] $Internal
+        [Object] $External
+        [Object] $Gateway
+        [Object] $VMC
+        VMSilo([String]$Name,[Object[]]$Gateway)
+        {
+            $This.Name     = $Name
+            $This.VMHost   = Get-VMHost
+            $This.Switch   = Get-VMSwitch
+            $This.Internal = $This.Switch | ? SwitchType -eq Private
+            $This.External = $This.Switch | ? SwitchType -eq External
+            $This.Gateway  = ForEach ( $X in 0..($Gateway.Count - 1))
+            {        
+                $Item            = [VMGateway]::New($Gateway[$X],1024MB,20GB,1,$This.External.Name)
+                $Item.Path       = $Item.Path       -f $This.VMHost.VirtualMachinePath
+                $Item.NewVhdPath = $Item.NewVhdPath -f $This.VMHost.VirtualHardDiskPath
+                $Item
+            }
+            $This.VMC = @( )
+        }
+        Clear()
+        {
+            $VMList        = Get-VM | % Name
+
+            ForEach ( $Item in $This.Gateway)
+            {
+                If ($Item.Name -in $VMList)
+                {
+                    Stop-VM -Name $Item.Name -Force -Verbose
+                    Remove-VM -Name $Item.Name -Force -Verbose
+                }
+            }
+
+            ForEach ( $Item in $This.Gateway)
+            {
+                If (Test-Path $Item.Path)
+                {
+                    Remove-Item $Item.Path -Recurse -Force -Verbose
+                }
+
+                If (Test-Path $Item.NewVhdPath)
+                {
+                    Remove-Item $Item.NewVhdPath -Recurse -Force -Verbose
+                }
+            }
+        }
+        Create([Object]$ISOPath)
+        {
+            ForEach ($X in 0..($This.Gateway.Count - 1))
+            {
+                $Item                      = $This.Gateway[$X] | % { 
+                    
+                    @{
+                        Name               = $_.Name
+                        MemoryStartupBytes = $_.MemoryStartupBytes
+                        Path               = $_.Path
+                        NewVhdPath         = $_.NewVhdPath
+                        NewVhdSizeBytes    = $_.NewVhdSizeBytes
+                        Generation         = $_.Generation
+                        SwitchName         = $_.SwitchName
+                    }
+                }
+                
+                New-VM @Item -Verbose
+                Add-VMNetworkAdapter -VMName $Item.Name -SwitchName $This.Internal.Name -Verbose
+                Switch -Regex ($IsoPath.GetType().Name)
+                {
+                    "\[\]"
+                    {
+                        Set-VMDVDDrive -VMName $Item.Name -Path $IsoPath[($X % $IsoPath.Count)] -Verbose
+                    }
+                    Default
+                    {
+                        Set-VMDVDDrive -VMName $Item.Name -Path $ISOPath -Verbose
+                    }
+                }
+                $Mac = $Null
+                $ID  = $Item.Name 
+                Start-VM -Name $ID
+                Do
+                {
+                    Start-Sleep 1
+                    $Item = Get-VM -Name $ID
+                    $Mac  = $Item.NetworkAdapters | ? Switchname -eq $This.External.Name | % MacAddress
+                }
+                Until($Mac -ne 000000000000)
+                Stop-VM -Name $ID -Confirm:$False -Force
+                $This.VMC += $Mac
+            }
+        }
+    }
+
     Class Site
     {
+        Hidden [Object] $Hash
+        [String]$Name
         [String]$Location
         [String]$Region
         [String]$Country
@@ -422,91 +756,30 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         [String]$SiteLink
         [String]$SiteName
         [String]$Network
+        [String]$Prefix
         [String]$Netmask
         [String]$Start
         [String]$End
         [String]$Range
         [String]$Broadcast
-        Site([Object]$Sitemap,[Object]$Network)
+        Site([Object]$Domain,[Object]$Network)
         {
-            $This.Location  = $Sitemap.Location
-            $This.Region    = $Sitemap.Region
-            $This.Country   = $Sitemap.Country
-            $This.Postal    = $Sitemap.Postal
-            $This.Timezone  = $Sitemap.Timezone
-            $This.Sitelink  = $Sitemap.Sitelink
-            $This.Sitename  = $Sitemap.Sitename
+            $This.Hash      = @{ Domain = $Domain; Network = $Network }
+            $This.Name      = $Domain.SiteLink
+            $This.Location  = $Domain.Location
+            $This.Region    = $Domain.Region
+            $This.Country   = $Domain.Country
+            $This.Postal    = $Domain.Postal
+            $This.TimeZone  = $Domain.TimeZone
+            $This.SiteLink  = $Domain.SiteLink
+            $This.Sitename  = $Domain.Sitename
             $This.Network   = $Network.Network
+            $This.Prefix    = $Network.Prefix
             $This.Netmask   = $Network.Netmask
             $This.Start     = $Network.Start
             $This.End       = $Network.End
             $This.Range     = $Network.Range
             $This.Broadcast = $Network.Broadcast
-        }
-    }
-    
-    Class Control
-    {
-        [String]$Organization
-        [String]$CommonName
-        Hidden [Object]$ZipStack
-        [Object]$SiteMap
-        [Object]$Stack
-        [Object]$Control
-        [Object]$Subject
-        [Object]$Gateway
-        Control([String]$Organization,[String]$CommonName)
-        {
-            $This.Organization = $Organization
-            $This.CommonName   = $CommonName
-            $This.ZipStack     = [ZipStack]::New("github.com/mcc85sx/FightingEntropy/blob/master/scratch/zcdb.txt?raw=true")
-            $This.SiteMap      = @( )
-        }
-        [Void] GetNetwork([String]$Network)
-        {
-            $This.Stack        = [Network]::New($Network).Stack
-        }
-        [Void] GetControl([String]$Master)
-        {
-            $This.Control      = $This.Stack | ? Network -eq $Master
-        }
-        [Void] GetGateway()
-        {
-            If ($This.Stack.Count -lt $This.Sitemap.Count)
-            {
-                Throw "Insufficient networks"
-            }
-
-            $This.Gateway = @( )
-            ForEach ($X in 0..($This.Sitemap.Count - 1))
-            {
-                $This.Gateway += [Site]::New($This.Sitemap[$X],$This.Stack[$X])
-            }
-        }
-        [Object] NewCertificate()
-        {
-            Return @( [Certificate]::New($This.Organization,$This.CommonName) )
-        }
-        [Void]Load([Object]$Item)
-        {
-            If ($Item -eq $Null)
-            {
-                Throw "Item is null"
-            }
-
-            ElseIf ( $Item.Sitelink -in $This.Sitemap.Sitelink )
-            {
-                Throw "Item already exists"
-            }
-
-            Else
-            {
-                $This.SiteMap += $Item | Select-Object Location, Region, Country, Postal, Timezone, Sitelink, Sitename
-            }
-        }
-        [Void]Pull()
-        {
-            $This.Load([Certificate]::New($This))
         }
     }
     
@@ -793,7 +1066,7 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
             $This.Value = $Value
         }
     }
-    
+
     Class Domain
     {
         [String] $Organization
@@ -932,28 +1205,36 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
     
     Class FEDeploymentShareGUI
     {
-        [String] $Tab = @"
-        <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Topmost="True" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+        Static [String] $Tab = @"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
         <Window.Resources>
             <Style TargetType="GroupBox" x:Key="xGroupBox">
                 <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+                <Setter Property="Background" Value="Azure"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="GroupBox">
-                            <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">
+                            <Border CornerRadius="10" Background="Azure" BorderBrush="Black" BorderThickness="2">
                                 <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
                             </Border>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
+            <Style TargetType="GroupBox">
+                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="BorderBrush" Value="DarkBlue"/>
+                <Setter Property="BorderThickness" Value="2"/>
+                <Setter Property="Padding" Value="2"/>
+                <Setter Property="Margin" Value="2"/>
+            </Style>
             <Style TargetType="Button">
                 <Setter Property="TextBlock.TextAlignment" Value="Center"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="FontWeight" Value="Medium"/>
-                <Setter Property="Padding" Value="10"/>
-                <Setter Property="Margin" Value="10"/>
-                <Setter Property="Height" Value="32"/>
+                <Setter Property="Padding" Value="5"/>
+                <Setter Property="Margin" Value="5"/>
+                <Setter Property="Margin" Value="10,0,10,0"/>
                 <Setter Property="Foreground" Value="White"/>
                 <Setter Property="Template">
                     <Setter.Value>
@@ -964,6 +1245,9 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+            </Style>
+            <Style TargetType="TabControl">
+                <Setter Property="Background" Value="Azure"/>
             </Style>
             <Style TargetType="TabItem">
                 <Setter Property="TextBlock.TextAlignment" Value="Center"/>
@@ -985,9 +1269,14 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
                 <Setter Property="TextBlock.TextAlignment" Value="Left"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                 <Setter Property="HorizontalContentAlignment" Value="Left"/>
-                <Setter Property="Margin" Value="5"/>
+                <Setter Property="Margin" Value="10,0,10,0"/>
                 <Setter Property="TextWrapping" Value="Wrap"/>
                 <Setter Property="Height" Value="24"/>
+                <Setter Property="TextBlock.Effect">
+                    <Setter.Value>
+                        <DropShadowEffect ShadowDepth="1"/>
+                    </Setter.Value>
+                </Setter>
             </Style>
             <Style TargetType="DataGrid">
                 <Setter Property="Margin" Value="5"/>
@@ -1001,6 +1290,11 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
                 <Setter Property="IsTextSearchEnabled" Value="True"/>
                 <Setter Property="IsReadOnly" Value="True"/>
                 <Setter Property="TextBlock.HorizontalAlignment" Value="Left"/>
+                <Setter Property="TextBlock.Effect">
+                    <Setter.Value>
+                        <DropShadowEffect ShadowDepth="1"/>
+                    </Setter.Value>
+                </Setter>
             </Style>
             <Style TargetType="DataGridRow">
                 <Setter Property="TextBlock.HorizontalAlignment" Value="Left"/>
@@ -1009,13 +1303,12 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
                         <Setter Property="Background" Value="White"/>
                     </Trigger>
                     <Trigger Property="AlternationIndex" Value="1">
-                        <Setter Property="Background" Value="#FFCDF7F7"/>
+                        <Setter Property="Background" Value="Azure"/>
                     </Trigger>
                 </Style.Triggers>
             </Style>
             <Style TargetType="DataGridColumnHeader">
-                <Setter Property="FontSize"   Value="12"/>
-                <Setter Property="FontWeight" Value="Normal"/>
+                <Setter Property="FontSize"   Value="10"/>
             </Style>
             <Style TargetType="DataGridCell">
                 <Setter Property="TextBlock.TextAlignment" Value="Left"/>
@@ -1027,473 +1320,646 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
                 <Setter Property="TextBlock.HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="Margin" Value="5"/>
                 <Setter Property="PasswordChar" Value="*"/>
+                <Setter Property="TextBlock.Effect">
+                    <Setter.Value>
+                        <DropShadowEffect ShadowDepth="1"/>
+                    </Setter.Value>
+                </Setter>
             </Style>
             <Style TargetType="ComboBox">
                 <Setter Property="Margin" Value="10"/>
                 <Setter Property="Height" Value="24"/>
+                <Setter Property="TextBlock.Effect">
+                    <Setter.Value>
+                        <DropShadowEffect ShadowDepth="1"/>
+                    </Setter.Value>
+                </Setter>
             </Style>
         </Window.Resources>
-        <GroupBox Style="{StaticResource xGroupBox}" Grid.Row="0" Margin="10" Padding="10" Foreground="Black" Background="White">
-            <TabControl Grid.Row="1" Background="{x:Null}" BorderBrush="Black" Foreground="{x:Null}">
-                <TabControl.Resources>
-                    <Style TargetType="TabItem">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="TabItem">
-                                    <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Gainsboro" CornerRadius="4,4,0,0" Margin="2,0">
-                                        <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="10,2"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsSelected" Value="True">
-                                            <Setter TargetName="Border" Property="Background" Value="LightSkyBlue"/>
-                                        </Trigger>
-                                        <Trigger Property="IsSelected" Value="False">
-                                            <Setter TargetName="Border" Property="Background" Value="GhostWhite"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </TabControl.Resources>
-                <TabItem Header="Configuration">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="200"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <GroupBox Grid.Row="0" Header="[Dependency Snapshot]">
-                            <DataGrid Name="Services">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name"      Binding="{Binding Name}"  Width="150"/>
-                                    <DataGridTextColumn Header="Installed/Meets minimum requirements" Binding="{Binding Value}" Width="*"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </GroupBox>
-                        <TabControl Grid.Row="1">
-                            <TabItem Header="DHCP">
-                                <GroupBox Header="[Dynamic Host Control Protocol]">
-                                    <DataGrid Name="DHCP">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
-                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </GroupBox>
-                            </TabItem>
-                            <TabItem Header="DNS">
-                                <GroupBox Header="[Domain Name Service]">
-                                    <DataGrid Name="DNS">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
-                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </GroupBox>
-                            </TabItem>
-                            <TabItem Header="ADDS">
-                                <GroupBox Header="[Active Directory Directory Service]">
-                                    <DataGrid Name="ADDS">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
-                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </GroupBox>
-                            </TabItem>
-                            <TabItem Header="WDS">
-                                <GroupBox Header="[Windows Deployment Services]">
-                                    <DataGrid Name="WDS">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
-                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </GroupBox>
-                            </TabItem>
-                            <TabItem Header="MDT">
-                                <GroupBox Header="[Microsoft Deployment Toolkit]">
-                                    <DataGrid Name="MDT">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
-                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </GroupBox>
-                            </TabItem>
-                            <TabItem Header="WinADK">
-                                <GroupBox Header="[Windows Assessment and Deployment Kit]">
-                                    <DataGrid Name="WinADK">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
-                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </GroupBox>
-                            </TabItem>
-                            <TabItem Header="WinPE">
-                                <GroupBox Header="[Windows Preinstallation Environment Kit]">
-                                    <DataGrid Name="WinPE">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
-                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </GroupBox>
-                            </TabItem>
-                            <TabItem Header="IIS">
-                                <GroupBox Header="[Internet Information Services]">
-                                    <DataGrid Name="IIS">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
-                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </GroupBox>
-                            </TabItem>
-                        </TabControl>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Domain" BorderBrush="{x:Null}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="80"/>
-                            <RowDefinition Height="140"/>
-                            <RowDefinition Height="80"/>
-                            <RowDefinition Height="180"/>
-                            <RowDefinition Height="140"/>
-                            <RowDefinition Height="80"/>
-                        </Grid.RowDefinitions>
-                        <Grid Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="120"/>
-                            </Grid.ColumnDefinitions>
-                            <GroupBox Grid.Column="0" Header="[Organization]">
-                                <TextBox Name="Organization"/>
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="[Common Name]">
-                                <TextBox Name="CommonName"/>
-                            </GroupBox>
-                            <Button Grid.Column="2" Name="GetSitename" Content="Get Sitename"/>
-                        </Grid>
-                        <GroupBox Grid.Row="1" Header="[Sitemap (Aggregate)]">
-                            <DataGrid Name="Sitemap"
-                                              ScrollViewer.CanContentScroll="True"
-                                              ScrollViewer.IsDeferredScrollingEnabled="True"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Visible">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Location" Binding='{Binding Location}' Width="100"/>
-                                    <DataGridTextColumn Header="Region"   Binding='{Binding Region}' Width="60"/>
-                                    <DataGridTextColumn Header="Country"  Binding='{Binding Country}' Width="60"/>
-                                    <DataGridTextColumn Header="Postal"   Binding='{Binding Postal}' Width="60"/>
-                                    <DataGridTextColumn Header="SiteLink" Binding='{Binding SiteLink}' Width="120"/>
-                                    <DataGridTextColumn Header="TimeZone" Binding='{Binding TimeZone}' Width="120"/>
-                                    <DataGridTextColumn Header="SiteName" Binding='{Binding SiteName}' Width="Auto"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </GroupBox>
-                        <Grid Grid.Row="2" Margin="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="120"/>
-                            </Grid.ColumnDefinitions>
-                            <GroupBox Grid.Column="0" Header="[US Zip Code]">
-                                <TextBox Name="AddSitenameZip"/>
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="[US Town]" IsEnabled="False">
-                                <TextBox Name="AddSitenameTown"/>
-                            </GroupBox>
-                            <Button Grid.Column="2" Name="AddSitename" Content="Add Sitename"/>
-                        </Grid>
-                        <GroupBox Grid.Row="3" Header="[Sitename (Selected)]">
-                            <DataGrid Name="Sitename">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name"  Binding='{Binding Name}'  Width="125"/>
-                                    <DataGridTextColumn Header="Value" Binding='{Binding Value}' Width="*"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </GroupBox>
-                        <GroupBox Grid.Row="4" Header="[ADDS (Topography)]">
-                            <DataGrid Name="Topography"
-                                              ScrollViewer.CanContentScroll="True"
-                                              ScrollViewer.IsDeferredScrollingEnabled="True"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Visible">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="SiteLink" Binding="{Binding SiteLink}" Width="150"/>
-                                    <DataGridTextColumn Header="Sitename" Binding="{Binding SiteName}" Width="200"/>
-                                    <DataGridTemplateColumn Header="Exists" Width="50">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
-                                                    <ComboBoxItem Content="No"/>
-                                                    <ComboBoxItem Content="Yes"/>
-                                                </ComboBox>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </GroupBox>
-                        <Button Grid.Row="5" Name="GetTopography" Content="Get Topography"/>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Network" BorderBrush="{x:Null}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="80"/>
-                            <RowDefinition Height="160"/>
-                            <RowDefinition Height="200"/>
-                            <RowDefinition Height="80"/>
-                        </Grid.RowDefinitions>
-                        <Grid Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="100"/>
-                            </Grid.ColumnDefinitions>
-                            <GroupBox Grid.Row="0" Header="[Network (Designation)]">
-                                <TextBox Grid.Column="0" Name="StackText"/>
-                            </GroupBox>
-                            <Button Grid.Column="1" Name="StackLoad" Content="Load" IsEnabled="False"/>
-                        </Grid>
-                        <GroupBox Grid.Row="1" Header="[Network (Stack)]">
-                            <DataGrid Name="Stack"
-                                              ScrollViewer.CanContentScroll="True" 
-                                              ScrollViewer.IsDeferredScrollingEnabled="True"
-                                              ScrollViewer.HorizontalScrollBarVisibility="Visible">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Network"   Binding="{Binding Network}"   Width="*"/>
-                                    <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="*"/>
-                                    <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="*"/>
-                                    <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="*"/>
-                                    <DataGridTextColumn Header="Range"     Binding="{Binding Range}"     Width="*"/>
-                                    <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="Auto"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </GroupBox>
-                        <GroupBox Grid.Row="2" Header="[Network (Selected)]">
-                            <DataGrid Name="Control">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name"   Binding="{Binding Network}"   Width="*"/>
-                                    <DataGridTextColumn Header="Value"   Binding="{Binding Netmask}"   Width="*"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </GroupBox>
-                        <Grid Grid.Row="4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="2*"/>
-                            </Grid.ColumnDefinitions>
-                            <GroupBox Grid.Column="0" Header="[NetBIOS Name]">
-                                <TextBox Name="NetBIOSName"/>
-                            </GroupBox>
-                            <GroupBox Grid.Column="1" Header="[DNS Name]">
-                                <TextBox Name="DNSName"/>
-                            </GroupBox>
-                        </Grid>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Gateway" BorderBrush="{x:Null}">
-                    <GroupBox Header="[Gateway (Aggregate)]">
+        <Grid Background="White">
+            <GroupBox Style="{StaticResource xGroupBox}"  Grid.Row="0" Margin="10" Padding="10" Foreground="Black" Background="White">
+                <TabControl Grid.Row="1" BorderBrush="Black" Foreground="{x:Null}">
+                    <TabControl.Resources>
+                        <Style TargetType="TabItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TabItem">
+                                        <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Gainsboro" CornerRadius="4,4,0,0" Margin="2,0">
+                                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Center" ContentSource="Header" Margin="10,2"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="Border" Property="Background" Value="LightSkyBlue"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="False">
+                                                <Setter TargetName="Border" Property="Background" Value="GhostWhite"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TabControl.Resources>
+                    <TabItem Header="Config">
                         <Grid>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="200"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="60"/>
+                            </Grid.RowDefinitions>
+                            <GroupBox Grid.Row="0" Header="[CfgServices (Dependency Snapshot)]">
+                                <DataGrid Name="CfgServices">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name"      Binding="{Binding Name}"  Width="150"/>
+                                        <DataGridTextColumn Header="Installed/Meets minimum requirements" Binding="{Binding Value}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                            <TabControl Grid.Row="1">
+                                <TabItem Header="Dhcp">
+                                    <GroupBox Header="[CfgDhcp (Dynamic Host Control Protocol)]">
+                                        <DataGrid Name="CfgDhcp">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </TabItem>
+                                <TabItem Header="Dns">
+                                    <GroupBox Header="[CfgDns (Domain Name Service)]">
+                                        <DataGrid Name="CfgDns">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </TabItem>
+                                <TabItem Header="Adds">
+                                    <GroupBox Header="[CfgAdds (Active Directory Directory Service)">
+                                        <DataGrid Name="CfgAdds">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </TabItem>
+                                <TabItem Header="Wds">
+                                    <GroupBox Header="[CfgWds (Windows Deployment Services)]">
+                                        <DataGrid Name="CfgWds">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </TabItem>
+                                <TabItem Header="Mdt">
+                                    <GroupBox Header="[CfgMdt (Microsoft Deployment Toolkit)]">
+                                        <DataGrid Name="CfgMdt">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </TabItem>
+                                <TabItem Header="WinAdk">
+                                    <GroupBox Header="[CfgWinAdk (Windows Assessment and Deployment Kit)]">
+                                        <DataGrid Name="CfgWinAdk">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </TabItem>
+                                <TabItem Header="WinPE">
+                                    <GroupBox Header="[CfgWinPE (Windows Preinstallation Environment Kit)]">
+                                        <DataGrid Name="CfgWinPE">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </TabItem>
+                                <TabItem Header="IIS">
+                                    <GroupBox Header="[CfgIIS (Internet Information Services)]">
+                                        <DataGrid Name="CfgIIS">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </TabItem>
+                            </TabControl>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Domain" BorderBrush="{x:Null}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="225"/>
+                                <RowDefinition Height="150"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <DataGrid Name="GatewayPool">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Network}" Width="*"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="120"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Grid.Column="0" Header="[DcOrganization]">
+                                    <TextBox Name="DcOrganization"/>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Header="[DcCommonName]">
+                                    <TextBox Name="DcCommonName"/>
+                                </GroupBox>
+                                <Button Grid.Column="2" Name="DcGetSitename" Content="Get Sitename"/>
+                            </Grid>
+                            <GroupBox Grid.Row="1" Header="[DcAggregate]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="80"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0" Name="DcAggregate"
+                                                  ScrollViewer.CanContentScroll="True"
+                                                  ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                        <DataGrid.Columns>
+    
+                                            <DataGridTextColumn Header="Name"     Binding='{Binding SiteLink}' Width="120"/>
+                                            <DataGridTextColumn Header="Location" Binding='{Binding Location}' Width="100"/>
+                                            <DataGridTextColumn Header="Region"   Binding='{Binding Region}' Width="60"/>
+                                            <DataGridTextColumn Header="Country"  Binding='{Binding Country}' Width="60"/>
+                                            <DataGridTextColumn Header="Postal"   Binding='{Binding Postal}' Width="60"/>
+                                            <DataGridTextColumn Header="TimeZone" Binding='{Binding TimeZone}' Width="120"/>
+                                            <DataGridTextColumn Header="SiteName" Binding='{Binding SiteName}' Width="Auto"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1" Margin="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <GroupBox Grid.Column="0" Header="[DcAddSitenameTown]" IsEnabled="False">
+                                            <TextBox Name="DcAddSitenameTown"/>
+                                        </GroupBox>
+                                        <GroupBox Grid.Column="1" Header="[DcAddSitenameZip]">
+                                            <TextBox Name="DcAddSitenameZip"/>
+                                        </GroupBox>
+                                        <Button Grid.Column="2" Name="DcAddSitename" Content="+"/>
+                                        <Button Grid.Column="3" Name="DcRemoveSitename" Content="-"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="2" Header="[DcViewer]">
+                                <DataGrid Name="DcViewer">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name"  Binding='{Binding Name}'  Width="150"/>
+                                        <DataGridTextColumn Header="Value" Binding='{Binding Value}' Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="3" Header="[DcTopography]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0" Name="DcTopography"
+                                                  ScrollViewer.CanContentScroll="True"
+                                                  ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding SiteLink}" Width="150"/>
+                                            <DataGridTextColumn Header="Sitename" Binding="{Binding SiteName}" Width="200"/>
+                                            <DataGridTemplateColumn Header="Exists" Width="50">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
+                                                            <ComboBoxItem Content="No"/>
+                                                            <ComboBoxItem Content="Yes"/>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Name="DcGetTopography" Content="Get"/>
+                                        <Button Grid.Column="1" Name="DcNewTopography" Content="New"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                            
                         </Grid>
-                    </GroupBox>
-                </TabItem>
-                <TabItem Header="Imaging" BorderBrush="{x:Null}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="80"/>
-                            <RowDefinition Height="120"/>
-                            <RowDefinition Height="60"/>
-                            <RowDefinition Height="120"/>
-                            <RowDefinition Height="60"/>
-                            <RowDefinition Height="120"/>
-                            <RowDefinition Height="80"/>
-                            <RowDefinition Height="70"/>
-                        </Grid.RowDefinitions>
-                        <Grid Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="100"/>
-                            </Grid.ColumnDefinitions>
-                            <GroupBox Header="[ISO Path (Source Directory)]">
+                    </TabItem>
+                    <TabItem Header="Network" BorderBrush="{x:Null}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="225"/>
+                                <RowDefinition Height="150"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Grid.Row="0" Header="[NwScope]">
+                                    <TextBox Grid.Column="0" Name="NwScope"/>
+                                </GroupBox>
+                                <Button Grid.Column="1" Name="NwScopeLoad" Content="Load" IsEnabled="False"/>
+                            </Grid>
+                            <GroupBox Grid.Row="1" Header="[NwAggregate]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="80"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Name="NwAggregate"
+                                                  ScrollViewer.CanContentScroll="True" 
+                                                  ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name"      Binding="{Binding Network}"   Width="100"/>
+                                            <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="100"/>
+                                            <DataGridTextColumn Header="HostCount" Binding="{Binding HostCount}" Width="60"/>
+                                            <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="100"/>
+                                            <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="100"/>
+                                            <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1" Margin="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <GroupBox Grid.Column="0" Header="[NwSubnetName]">
+                                            <TextBox Name="NwSubnetName"/>
+                                        </GroupBox>
+                                        <Button Grid.Column="1" Name="NwAddSubnetName" Content="+"/>
+                                        <Button Grid.Column="2" Name="NwRemoveSubnetName" Content="-"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="2" Header="[NwViewer]">
+                                <DataGrid Name="NwViewer">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name"   Binding="{Binding Name}"   Width="150"/>
+                                        <DataGridTextColumn Header="Value"  Binding="{Binding Value}"   Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="3" Header="[NwTopography]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0" Name="NwTopography"
+                                                      ScrollViewer.CanContentScroll="True"
+                                                      ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name"    Binding="{Binding Name}" Width="150"/>
+                                            <DataGridTextColumn Header="Network" Binding="{Binding Network}" Width="200"/>
+                                            <DataGridTemplateColumn Header="Exists" Width="50">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
+                                                            <ComboBoxItem Content="No"/>
+                                                            <ComboBoxItem Content="Yes"/>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Name="NwGetSubnetName" Content="Get"/>
+                                        <Button Grid.Column="1" Name="NwNewSubnetName" Content="New"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Gateway" BorderBrush="{x:Null}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="225"/>
+                                <RowDefinition Height="150"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="120"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Grid.Column="0" Header="[GwSiteCount]">
+                                    <TextBox Name="GwSiteCount"/>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Header="[GwNetworkCount]">
+                                    <TextBox Name="GwNetworkCount"/>
+                                </GroupBox>
+                                <Button Grid.Column="2" Name="GwLoadGateway" Content="Load"/>
+                            </Grid>
+                            <GroupBox Grid.Row="1" Header="[GwAggregate]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="80"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Name="GwAggregate"
+                                                  ScrollViewer.CanContentScroll="True" 
+                                                  ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name"      Binding="{Binding Name}"     Width="*"/>
+                                            <DataGridTextColumn Header="Location"  Binding="{Binding Location}" Width="*"/>
+                                            <DataGridTextColumn Header="Sitename"  Binding="{Binding SiteName}" Width="*"/>
+                                            <DataGridTextColumn Header="Network"   Binding="{Binding Network}"  Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1" Margin="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="1" Name="GwAddGateway" Content="+"/>
+                                        <GroupBox Grid.Column="0" Header="[GwGatewayName]">
+                                            <TextBox Name="GwGateway"/>
+                                        </GroupBox>
+                                        <Button Grid.Column="2" Name="GwRemoveGateway" Content="-"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="2" Header="[GwViewer]">
+                                <DataGrid Name="GwViewer">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>
+                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="3" Header="[GwTopography]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0" Name="GwTopography">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="SiteName"  Binding="{Binding SiteName}" Width="200"/>
+                                            <DataGridTextColumn Header="Network"    Binding="{Binding Network}" Width="150"/>
+                                            <DataGridTemplateColumn Header="Exists" Width="50">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
+                                                            <ComboBoxItem Content="No"/>
+                                                            <ComboBoxItem Content="Yes"/>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Name="GwGetGateway" Content="Get"/>
+                                        <Button Grid.Column="1" Name="GwNewGateway" Content="New"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Imaging" BorderBrush="{x:Null}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="200"/>
+                                <RowDefinition Height="200"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <GroupBox Grid.Row="0" Header="[IsoPath (Source Directory)]">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
                                     <Button Name="IsoSelect" Grid.Column="0" Content="Select"/>
                                     <TextBox Name="IsoPath"  Grid.Column="1"/>
+                                    <Button Name="IsoScan" Grid.Column="2" Content="Scan"/>
                                 </Grid>
                             </GroupBox>
-                            <Button Name="IsoScan" Grid.Column="1" Content="Scan"/>
-                        </Grid>
-                        <Grid Grid.Row="1">
-                            <GroupBox Header="[ISO List (Detected)]">
-                                <DataGrid Name="IsoList">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Binding='{Binding Name}' Width="*"/>
-                                        <DataGridTextColumn Header="Path" Binding='{Binding Fullname}' Width="2*"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </GroupBox>
-                        </Grid>
-                        <Grid Grid.Row="2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Name="IsoMount" Content="Mount" IsEnabled="False"/>
-                            <Button Grid.Column="1" Name="IsoDismount" Content="Dismount" IsEnabled="False"/>
-                        </Grid>
-                        <Grid Grid.Row="3">
-                            <GroupBox Header="[Windows ISO (Viewer)]">
-                                <DataGrid Name="IsoView">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="40"/>
-                                        <DataGridTextColumn Header="Name"  Binding='{Binding Name}' Width="*"/>
-                                        <DataGridTextColumn Header="Size"  Binding='{Binding Size}' Width="100"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </GroupBox>
-                        </Grid>
-                        <Grid Grid.Row="4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Name="WimQueue" Content="Queue" IsEnabled="False"/>
-                            <Button Grid.Column="1" Name="WimDequeue" Content="Dequeue" IsEnabled="False"/>
-                        </Grid>
-                        <Grid Grid.Row="5">
-                            <GroupBox Header="[Windows Image (Extraction Queue)]">
+                            <GroupBox Grid.Row="1" Header="[IsoList (*.iso)]">
                                 <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="40"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid Margin="5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0" Name="IsoList">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding='{Binding Name}' Width="*"/>
+                                            <DataGridTextColumn Header="Path" Binding='{Binding Fullname}' Width="2*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Name="IsoMount" Content="Mount" IsEnabled="False"/>
+                                        <Button Grid.Column="1" Name="IsoDismount" Content="Dismount" IsEnabled="False"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                            <Grid Grid.Row="2">
+                                <GroupBox Grid.Row="2" Header="[IsoView (Image Viewer)]">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="60"/>
+                                        </Grid.RowDefinitions>
+                                        <DataGrid Grid.Row="0" Name="IsoView">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="40"/>
+                                                <DataGridTextColumn Header="Name"  Binding='{Binding Name}' Width="*"/>
+                                                <DataGridTextColumn Header="Size"  Binding='{Binding Size}' Width="100"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                        <Grid Grid.Row="1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button Grid.Column="0" Name="WimQueue" Content="Queue" IsEnabled="False"/>
+                                            <Button Grid.Column="1" Name="WimDequeue" Content="Dequeue" IsEnabled="False"/>
+                                        </Grid>
+                                    </Grid>
+                                </GroupBox>
+                            </Grid>
+                            <GroupBox Grid.Row="3" Header="[WimIso (Queue)]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
-                                        <Button Grid.Row="0" Name="WimIsoUp" Content="˄" Margin="0"/>
-                                        <Button Grid.Row="1" Name="WimIsoDown" Content="˅" Margin="0"/>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Row="0" Name="WimIsoUp" Content="˄"/>
+                                        <Button Grid.Row="1" Name="WimIsoDown" Content="˅"/>
+                                        <DataGrid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Name="WimIso">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name"  Binding='{Binding FullName}' Width="*"/>
+                                                <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="100"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
                                     </Grid>
-                                    <DataGrid Grid.Column="1" Name="WimIso">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name"  Binding='{Binding FullName}' Width="*"/>
-                                            <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="100"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="100"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Name="WimSelect" Grid.Column="0" Content="Select"/>
+                                        <TextBox Grid.Column="1" Name="WimPath"/>
+                                        <Button Grid.Column="2" Name="WimExtract" Content="Extract"/>
+                                    </Grid>
                                 </Grid>
                             </GroupBox>
                         </Grid>
-                        <GroupBox Grid.Row="6" Header="[WIM Path (Target Directory)]">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="100"/>
-                                </Grid.ColumnDefinitions>
-                                <Button Name="WimSelect" Grid.Column="0" Content="Select"/>
-                                <TextBox Grid.Column="1" Name="WimPath"/>
-                                <Button Grid.Column="2" Name="WimExtract" Content="Extract"/>
-                            </Grid>
-                        </GroupBox>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Updates" BorderBrush="{x:Null}"/>
-                <TabItem Header="Branding" BorderBrush="{x:Null}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
+                    </TabItem>
+                    <TabItem Header="Updates" BorderBrush="{x:Null}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="200"/>
+                                <RowDefinition Height="225"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <GroupBox Grid.Row="0" Header="[UpdPath (Updates)]">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" Name="UpdSelect" Content="Select"/>
+                                    <TextBox Grid.Column="1" Name="UpdPath"/>
+                                    <Button Grid.Column="2" Name="UpdScan" Content="Scan"/>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="1" Header="[UpdSelected]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="80"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0"  Name="UpdAggregate">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
+                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Name="UpdAddUpdate" Content="Add"/>
+                                        <Button Grid.Column="1" Name="UpdRemoveUpdate" Content="Remove"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="2" Header="[UpdViewer]">
+                                    <DataGrid Name="UpdViewer">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                            <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>
+                                            <DataGridCheckBoxColumn Header="Install" Binding="{Binding Install}" Width="50"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </GroupBox>
+                            <GroupBox Grid.Row="3" Header="[UpdWim]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="80"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0" Name="UpdWim">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                            <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>
+                                            <DataGridCheckBoxColumn Header="Install" Binding="{Binding Install}" Width="50"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Name="UpdInstallUpdate" Content="Install"/>
+                                        <Button Grid.Column="1" Name="UpdUninstallUpdate" Content="Uninstall"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Share">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="80"/>
                                 <RowDefinition Height="80"/>
-                                <RowDefinition Height="80"/>
-                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <Button Name="Collect" Content="Collect" IsEnabled="True"/>
-                                <GroupBox Grid.Column="1" Header="[Phone]">
-                                    <TextBox Name="Phone"/>
-                                </GroupBox>
-                                <GroupBox Grid.Column="2" Header="[Hours]">
-                                    <TextBox Name="Hours"/>
-                                </GroupBox>
-                            </Grid>
-                            <GroupBox Grid.Row="1" Header="[Website]">
-                                <TextBox Name="Website"/>
-                            </GroupBox>
-                            <GroupBox Grid.Row="2" Header="[Logo 120x120 Bitmap/*.bmp]">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Name="LogoSelect" Content="Select"/>
-                                    <TextBox Grid.Column="1" Name="Logo"/>
-                                </Grid>
-                            </GroupBox>
-                            <GroupBox Grid.Row="3" Header="[Background (Common Image File)]">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" Name="BackgroundSelect" Content="Select"/>
-                                    <TextBox Grid.Column="1" Name="Background"/>
-                                </Grid>
-                            </GroupBox>
-                        </Grid>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="Share">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="350"/>
-                            <RowDefinition Height="80"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="80"/>
-                                <RowDefinition Height="80"/>
-                                <RowDefinition Height="80"/>
-                                <RowDefinition Height="80"/>
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0" Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="150"/>
                                 </Grid.ColumnDefinitions>
-                                <Button Name="DSRootSelect" Grid.Column="0" Content="Select"/>
-                                <GroupBox Grid.Column="1" Header="[Root Path]">
-                                    <TextBox Name="DSRootPath"/>
+                                <Button Name="DsRootSelect" Grid.Column="0" Content="Select"/>
+                                <GroupBox Grid.Column="1" Header="[DsRootPath (Root)]">
+                                    <TextBox Name="DsRootPath"/>
                                 </GroupBox>
-                                <GroupBox Grid.Column="2" Header="[Share Name]">
-                                    <TextBox Name="DSShareName"/>
+                                <GroupBox Grid.Column="2" Header="[DsShareName (SMB)]">
+                                    <TextBox Name="DsShareName"/>
                                 </GroupBox>
                             </Grid>
                             <Grid Grid.Row="1">
@@ -1502,109 +1968,201 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="150"/>
                                 </Grid.ColumnDefinitions>
-                                <GroupBox Grid.Column="0" Header="[PSDrive Name]">
-                                    <TextBox Name="DSDriveName"/>
+                                <GroupBox Grid.Column="0" Header="[DsDriveName]">
+                                    <TextBox Name="DsDriveName"/>
                                 </GroupBox>
-                                <GroupBox Grid.Column="1" Header="[Description]">
-                                    <TextBox Name="DSDescription"/>
+                                <GroupBox Grid.Column="1" Header="[DsDescription]">
+                                    <TextBox Name="DsDescription"/>
                                 </GroupBox>
-                                <GroupBox Grid.Column="2" Header="[Legacy MDT/PSD]" Margin="5">
-                                    <ComboBox Name="DSType">
+                                <GroupBox Grid.Column="2" Header="[Legacy MDT/PSD]">
+                                    <ComboBox Name="DsType">
                                         <ComboBoxItem Content="MDT" IsSelected="True"/>
                                         <ComboBoxItem Content="PSD"/>
                                     </ComboBox>
                                 </GroupBox>
                             </Grid>
-                            <Grid Grid.Row="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <GroupBox Grid.Column="0" Header="[Domain Admin Username]">
-                                    <TextBox Name="DSDCUsername"/>
-                                </GroupBox>
-                                <GroupBox Grid.Column="1" Header="[Password/Confirm]">
-                                    <Grid>
+                            <GroupBox Grid.Row="2" Header="[DsShareConfig]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <TabControl Grid.Row="0">
+                                        <TabItem Header="Domain Admin">
+                                            <Grid  VerticalAlignment="Top">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="80"/>
+                                                    <RowDefinition Height="80"/>
+                                                </Grid.RowDefinitions>
+                                                <GroupBox Grid.Row="0" Header="[Domain Admin Username]">
+                                                    <TextBox Name="DsDcUsername"/>
+                                                </GroupBox>
+                                                <GroupBox Grid.Row="1" Header="[Password/Confirm]">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <PasswordBox Grid.Column="0" Name="DsDcPassword" HorizontalContentAlignment="Left"/>
+                                                        <PasswordBox Grid.Column="1" Name="DsDcConfirm"  HorizontalContentAlignment="Left"/>
+                                                    </Grid>
+                                                </GroupBox>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Local Admin">
+                                            <Grid VerticalAlignment="Top">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="80"/>
+                                                    <RowDefinition Height="80"/>
+                                                </Grid.RowDefinitions>
+                                                <GroupBox Grid.Row="0" Header="[Local Admin Username]">
+                                                    <TextBox Name="DsLmUsername"/>
+                                                </GroupBox>
+                                                <GroupBox Grid.Row="1" Header="[Password/Confirm]">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <PasswordBox Grid.Column="0" Name="DsLmPassword"  HorizontalContentAlignment="Left"/>
+                                                        <PasswordBox Grid.Column="1" Name="DsLmConfirm"  HorizontalContentAlignment="Left"/>
+                                                    </Grid>
+                                                </GroupBox>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Branding">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="80"/>
+                                                    <RowDefinition Height="80"/>
+                                                    <RowDefinition Height="80"/>
+                                                    <RowDefinition Height="80"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid Grid.Row="0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="100"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button Name="DsBrCollect" Content="Collect" IsEnabled="True"/>
+                                                    <GroupBox Grid.Column="1" Header="[BrPhone (Support Phone)]">
+                                                        <TextBox Name="DsBrPhone"/>
+                                                    </GroupBox>
+                                                    <GroupBox Grid.Column="2" Header="[BrHours (Support Hours)]">
+                                                        <TextBox Name="DsBrHours"/>
+                                                    </GroupBox>
+                                                </Grid>
+                                                <GroupBox Grid.Row="1" Header="[BrWebsite (Support Website)]">
+                                                    <TextBox Name="DsBrWebsite"/>
+                                                </GroupBox>
+                                                <GroupBox Grid.Row="2" Header="[BrLogo (120x120 Bitmap/*.bmp)]">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="100"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Button Grid.Column="0" Name="DsBrLogoSelect" Content="Select"/>
+                                                        <TextBox Grid.Column="1" Name="DsBrLogo"/>
+                                                    </Grid>
+                                                </GroupBox>
+                                                <GroupBox Grid.Row="3" Header="[BrBackground (Common Image File)]">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="100"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Button Grid.Column="0" Name="DsBrBackgroundSelect" Content="Select"/>
+                                                        <TextBox Grid.Column="1" Name="DsBrBackground"/>
+                                                    </Grid>
+                                                </GroupBox>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Network">
+                                            <Grid VerticalAlignment="Top">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="80"/>
+                                                    <RowDefinition Height="80"/>
+                                                    <RowDefinition Height="80"/>
+                                                </Grid.RowDefinitions>
+                                                <GroupBox Grid.Row="0" Header="[DsNwNetBiosName]">
+                                                    <TextBox Name="DsNwNetBiosName"/>
+                                                </GroupBox>
+                                                <GroupBox Grid.Row="1" Header="[DsNwDnsName]">
+                                                    <TextBox Name="DsNwDnsName"/>
+                                                </GroupBox>
+                                                <GroupBox Grid.Row="2" Header="[DsNwMachineOuName]">
+                                                    <TextBox Name="DsNwMachineOuName"/>
+                                                </GroupBox>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Bootstrap">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="60"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid Grid.Row="0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="100"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="100"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button Grid.Column="0" Name="DsGenerateBootstrap" Content="Generate"/>
+                                                    <TextBox Grid.Column="1" Name="DsBootstrapPath"/>
+                                                    <Button Grid.Column="2" Name="DsSelectBootstrap" Content="Select"/>
+                                                </Grid>
+                                                <GroupBox Grid.Row="1" Header="[Bootstrap.ini]">
+                                                    <TextBlock Grid.Row="1" Background="White" Name="DsBootstrap" Margin="5" Padding="5">
+                                                        <TextBlock.Effect>
+                                                            <DropShadowEffect ShadowDepth="1"/>
+                                                        </TextBlock.Effect>
+                                                    </TextBlock>
+                                                </GroupBox>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="CustomSettings">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="60"/>
+                                                    <RowDefinition Height="*"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid Grid.Row="0">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="100"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="100"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button Grid.Column="0" Name="DsGenerateCustomSettings" Content="Generate"/>
+                                                    <TextBox Grid.Column="1" Name="DsCustomSettingsPath"/>
+                                                    <Button Grid.Column="2" Name="DsSelectCustomSettings" Content="Select"/>
+                                                </Grid>
+                                                <GroupBox Grid.Row="1" Header="[CustomSettings.ini]">
+                                                    <TextBlock Grid.Row="1" Background="White" Name="DsCustomSettings" Margin="5" Padding="5">
+                                                        <TextBlock.Effect>
+                                                            <DropShadowEffect ShadowDepth="1"/>
+                                                        </TextBlock.Effect>
+                                                    </TextBlock>
+                                                </GroupBox>
+                                            </Grid>
+                                        </TabItem>
+                                    </TabControl>
+                                    <Grid Grid.Row="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <PasswordBox Grid.Column="0" Name="DSDCPassword" HorizontalContentAlignment="Left"/>
-                                        <PasswordBox Grid.Column="1" Name="DSDCConfirm"  HorizontalContentAlignment="Left"/>
+                                        <Button Grid.Column="0" Name="DsCreate" Content="Create"/>
+                                        <Button Grid.Column="1" Name="DsUpdate" Content="Update"/>
                                     </Grid>
-                                </GroupBox>
-                            </Grid>
-                            <Grid Grid.Row="3">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <GroupBox Grid.Column="0" Header="[Local Admin Username]">
-                                    <TextBox Name="DSLMUsername"/>
-                                </GroupBox>
-                                <GroupBox Grid.Column="1" Header="[Password/Confirm]">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <PasswordBox Grid.Column="0" Name="DSLMPassword"  HorizontalContentAlignment="Left"/>
-                                        <PasswordBox Grid.Column="1" Name="DSLMConfirm"  HorizontalContentAlignment="Left"/>
-                                    </Grid>
-                                </GroupBox>
-                            </Grid>
+                                </Grid>
+                            </GroupBox>
                         </Grid>
-                        <GroupBox Grid.Row="1" Header="[Organizational Unit Name]">
-                            <TextBox Name="DSOrganizationalUnit"/>
-                        </GroupBox>
-                        <GroupBox Grid.Row="2" Header="[Create]">
-                            <TabControl>
-                                <TabItem Header="Bootstrap.ini">
-                                    <DataGrid Name="Bootstrap">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
-                                            <DataGridTemplateColumn Header="Value" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ComboBox SelectedIndex="{Binding Slot}">
-                                                            <ComboBoxItem Content="No"/>
-                                                            <ComboBoxItem Content="Yes"/>
-                                                        </ComboBox>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </TabItem>
-                                <TabItem Header="CustomSettings.ini">
-                                    <DataGrid Name="CustomSettings">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
-                                            <DataGridTemplateColumn Header="Value" Width="*">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <ComboBox SelectedIndex="{Binding Slot}">
-                                                            <ComboBoxItem Content="No"/>
-                                                            <ComboBoxItem Content="Yes"/>
-                                                        </ComboBox>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </TabItem>
-                            </TabControl>
-                        </GroupBox>
-                    </Grid>
-                </TabItem>
-            </TabControl>
-        </GroupBox>
+                    </TabItem>
+                </TabControl>
+            </GroupBox>
+        </Grid>
     </Window>
 "@
-        FEDeploymentShareGUI()
-        {
-        
-        }
     }
 
     # Controller class
@@ -1615,266 +2173,722 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         Static [String]       $Icon = "$([Main]::GFX)\icon.ico"
         Static [String]       $Logo = "$([Main]::GFX)\OEMLogo.bmp"
         Static [String] $Background = "$([Main]::GFX)\OEMbg.jpg"
-        Static [String]        $Tab = [FEDeploymentShareGUI]::New().Tab
+        Hidden [Object]   $ZipStack
+        [String]               $Org
+        [String]                $CN
+        [Object]          $Template
+        [String]        $SearchBase
         [Object]               $Win 
-        [Object]               $Reg 
-        [Object]                $SM
+        [Object]               $Reg
+        [Object]            $Config
+        [Object]          $SiteList
+        [Object]        $SubnetList
+        [Object]            $OuList
+        [Object]            $Domain
+        [Object]           $Network
+        [Object]           $Gateway
+        [Object]             $Image
+        [Object]            $Update
+        [Object]             $Share
         Main()
         {
+            $This.ZipStack          = [ZipStack]::New("github.com/mcc85sx/FightingEntropy/blob/master/scratch/zcdb.txt?raw=true")
             $This.Win               = Get-WindowsFeature
             $This.Reg               = "","\WOW6432Node" | % { "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall\*" }
+            $This.Config            = @(
+
+                ForEach ( $Item in "DHCP","DNS","AD-Domain-Services","WDS","Web-WebServer")
+                {
+                    [DGList]::New( $Item, [Bool]( $This.Win | ? Name -eq $Item | % Installed ) )
+                }
+                
+                ForEach ( $Item in "MDT","WinADK","WinPE")
+                {
+                    $Slot = Switch($Item)
+                    {
+                        MDT    { $This.Reg[0], "Microsoft Deployment Toolkit"                       , "6.3.8456.1000" }
+                        WinADK { $This.Reg[1], "Windows Assessment and Deployment Kit - Windows 10" , "10.1.17763.1"  }
+                        WinPE  { $This.Reg[1], "Preinstallation Environment Add-ons - Windows 10"   , "10.1.17763.1"  }
+                    }
+                        
+                    [DGList]::New( $Item, [Bool]( Get-ItemProperty $Slot[0] | ? DisplayName -match $Slot[1] | ? DisplayVersion -ge $Slot[2] ) )
+                }
+            )
+
+            $This.Domain  = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Network = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Gateway = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Image   = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Update  = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Share   = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+        }
+        [Void] GetSiteList()
+        {
+            $This.Sitelist      = Get-ADObject -LDAPFilter "(objectClass=site)" -SearchBase "CN=Configuration,$($This.SearchBase)"
+        }
+        [Void] GetSubnetList()
+        {
+            $This.SubnetList    = Get-ADObject -LDAPFilter "(objectClass=subnet)" -SearchBase "CN=Configuration,$($This.SearchBase)"
+        }
+        [Void] GetOuList()
+        {
+            $This.OuList        = Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)" -SearchBase $This.SearchBase
+        }
+        [Void] GetLists()
+        {
+            $This.GetSiteList()
+            $This.GetSubnetList()
+            $This.GetOuList()
+        }
+        [Object] NewCertificate()
+        {
+            Return @( [Certificate]::New($This.Org,$This.CN) )
+        }
+        [Void] LoadSitemap([String]$Organization,[String]$CommonName)
+        {   # $Organization = "Secure Digits Plus LLC"; $CommonName = "securedigitsplus.com"
+            $This.Org           = $Organization
+            $This.CN            = $CommonName
+            $This.Template      = $This.NewCertificate()
+            $This.SearchBase    = "DC=$( $CommonName.Split(".") -join ",DC=" )"
+
+            $This.AddSiteName($This.Template.Postal)
+            $This.GetLists()
+        }
+        [Void] AddSitename([String]$Zip)
+        {
+            If ( $Zip -notin $This.Domain.Postal )
+            {
+                $Tmp                = [Certificate]::New($This.Org,$This.CN)
+                $Item               = $This.ZipStack.ZipTown($Zip)
+
+                $Tmp.Location       = $Item.Name
+                $Tmp.Postal         = $Item.Zip
+                $Tmp.Region         = [States]::Name($Item.State)
+
+                $Tmp.GetSiteLink()
+
+                $This.Domain       += @( $Tmp )
+            }
+        }
+        [Void] RemoveSitename([String]$Zip)
+        {
+            If ( $This.Domain.Count -gt 1 )
+            {
+                If ( $Zip -in $This.Domain.Postal )
+                {
+                    $Tmp                = @( $This.Domain )
+                    $This.Domain        = @( )
+                    $This.Domain        = @( $Tmp | ? Postal -ne $Zip )
+                }
+            }
+        }
+        [Object[]] GetDomain([Object]$List)
+        {
+            $This.GetSiteList()
+            Return @( $List | % { [DcTopography]::New($This.SiteList,$_) } )
+        }
+        [Void] NewDomain([Object]$List)
+        {
+            ForEach ( $Item in $This.GetDomain($List) )
+            {
+                If ( $Item.Exists -eq 0 )
+                {
+                    Switch([System.Windows.MessageBox]::Show("Create ADReplicationSite?","Item $($Item.Sitelink) does not exist.","YesNo"))
+                    {
+                        Yes { New-ADReplicationSite -Name $Item.Sitelink -Verbose } No { Write-Host "Skipping $($Item.Sitelink)" }
+                    }
+                }
+            }
+        }
+        [Void] LoadNetwork([String]$Prefix)
+        {
+            If ( $Prefix -notmatch "((\d+\.+){3}\d+\/\d+)" )
+            {
+                [System.Windows.MessageBox]::Show("Invalid/null network string (Use 'IP/Prefix' notation)","Error")
+            }
+
+            Else
+            {
+                $Tmp             = @( [Network]::New($Prefix).Aggregate )
+                $This.Network    = @( )
+                $This.Network    = @( $Tmp )
+            }
+        }
+        [Void] AddSubnet([String]$Prefix)
+        {
+            If ( $Prefix -notmatch "((\d+\.+){3}\d+\/\d+)" )
+            {
+                [System.Windows.MessageBox]::Show("Invalid/null network string (Use 'IP/Prefix' notation)","Error")
+            }
+
+            Else
+            {
+                $Tmp             = @( [Scope]$Prefix )
+                $This.Network   += @( $Tmp )
+            }
+        }
+        [Void] RemoveSubnet([String]$Prefix)
+        {
+            If ( $Prefix -notmatch "((\d+\.+){3}\d+\/\d+)" )
+            {
+                [System.Windows.MessageBox]::Show("Invalid/null network string (Use 'IP/Prefix' notation)","Error")
+            }
+
+            Else
+            {
+                $Tmp             = @( $This.Network | ? Name -ne $Prefix )
+                $This.Network    = @( )
+                $This.Network    = @( $Tmp )
+            }
+        }
+        [Object[]] GetNetwork([Object]$List)
+        {
+            $This.GetSubnetList()
+            Return @( $List | % { [NwTopography]::New($This.SubnetList,$_) } )
+        }
+        [Void] NewNetwork([Object]$List)
+        {
+            ForEach ( $Item in $This.GetNetwork($List) )
+            {
+                If ( $Item.Exists -eq 0 )
+                {
+                    Switch([System.Windows.MessageBox]::Show("Create ADReplicationSubnet?","Item $($Item.Name) does not exist.","YesNo"))
+                    {
+                        Yes { New-ADReplicationSubnet -Name $Item.Name -Verbose } No { Write-Host "Skipping $($Item.Name)" }
+                    }
+                }
+            }
+        }
+        [Void] LoadGateway()
+        {
+            If ($This.Network.Count -lt $This.Domain.Count)
+            {
+                Throw "Insufficient networks"
+            }
+
+            $This.Gateway = @( )
+
+            ForEach ($X in 0..($This.Domain.Count - 1))
+            {
+                $This.Gateway += [Site]::New($This.Domain[$X],$This.Network[$X])
+            }
+        }
+        [Void] RemoveGateway([String]$Name)
+        {
+            If ( $This.Gateway.Count -gt 1 )
+            {
+                If ($Name -in $This.Gateway.Name)
+                {
+                    $This.Gateway = @( $This.Gateway | ? Name -ne $Name )
+                }
+            }
+
+            Else
+            {
+                [System.Windows.MessageBox]::Show("Invalid operation, only one gateway remaining","Error")
+            }
+        }
+        [Object[]] GetGateway([Object]$List)
+        {
+            $This.GetOuList()
+            Return @( $List | % { [GwTopography]::New($This.OuList,$_) } )
+        }
+        [Object[]] LoadUpdate([String]$Path)
+        {
+            Return @( Get-ChildItem $Path -Recurse | ? Extension -match .msu | % FullName )
         }
     }
     
     # These two variables do most of the work
     $Main                           = [Main]::New()
-    $Xaml                           = [XamlWindow][Main]::Tab
+    $Xaml                           = [XamlWindow][FEDeploymentShareGUI]::Tab
 
-    # ---------------------- #
-    # Variables and controls #
-    # ---------------------- #
+    <# $Xaml.Names | ? { $_ -notin "ContentPresenter","Border","ContentSite" } | % {
+        $X = "    # `$Xaml.IO.$_"
+        $Y = $Xaml.IO.$_.GetType().Name 
+        "{0}{1} # $Y" -f $X,(" "*(40-$X.Length) -join '')
+    }#>
 
-    # Configuration
-        # Services[DataGrid]
-        # IISInstall
-        # IISServerName
-        # IISAppPoolName
-        # IISVirtualHostName
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Configuration Tab  ]__________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
-    # Domain
-        # Organization
-        # CommonName
-        # GetSiteName()
-        # SiteMap[DataGrid]
-        # AddSitenameZip
-        # AddSitenameTown
-        # AddSitename()
-        # Sitename[DataGrid]
-        # Topography
+    # [Config]://Variables
+    # $Xaml.IO.CfgServices              # DataGrid
+    # $Xaml.IO.CfgDhcp                  # DataGrid
+    # $Xaml.IO.CfgDns                   # DataGrid
+    # $Xaml.IO.CfgAdds                  # DataGrid
+    # $Xaml.IO.CfgWds                   # DataGrid
+    # $Xaml.IO.CfgMdt                   # DataGrid
+    # $Xaml.IO.CfgWinAdk                # DataGrid
+    # $Xaml.IO.CfgWinPE                 # DataGrid
+    # $Xaml.IO.CfgIIS                   # DataGrid
 
-    # Network
-        # StackText
-        # StackLoad()
-        # Stack[DataGrid]
-        # Control[DataGrid]
-        # Subject[DataGrid]
-        # NetBIOSName
-        # DNSName
+    # [DataGrid(s)]://Initialize
+    $Xaml.IO.CfgServices.ItemsSource    = @( )
+    $Xaml.IO.CfgDhcp.ItemsSource        = @( )
+    $Xaml.IO.CfgDns.ItemsSource         = @( )
+    $Xaml.IO.CfgAdds.ItemsSource        = @( )
+    $Xaml.IO.CfgWds.ItemsSource         = @( )
+    $Xaml.IO.CfgMdt.ItemsSource         = @( )
+    $Xaml.IO.CfgWinAdk.ItemsSource      = @( )
+    $Xaml.IO.CfgWinPE.ItemsSource       = @( )
+    $Xaml.IO.CfgIIS.ItemsSource         = @( )
 
-    # Imaging
-        # IsoSelect()            
-        # IsoPath
-        # IsoScan()
-        # IsoList[DataGrid]
-        # IsoMount()
-        # IsoDismount()
-        # IsoView[DataGrid]
-        # WimQueue()
-        # WimDequeue()
-        # WimIsoUp()
-        # WimIsoDown()
-        # WimIso[DataGrid]
-        # WimSelect()
-        # WimPath
-        # WimExtract()
+    # [CfgServices]://$Main.Config
+    $Xaml.IO.CfgServices.ItemsSource    = @( $Main.Config )
 
-    # Updates
-        # $Null
-
-    # Branding
-        # Collect()
-        # Phone
-        # Hours
-        # Website
-        # LogoSelect()
-        # Logo
-        # BackgroundSelect()
-        # Background
-
-    # Share
-        # DSRootSelect()
-        # DSRootPath
-        # DSShareName
-        # DSDescription
-        # DSType
-        # DSDCUsername
-        # DSDCPassword
-        # DSDCConfirm
-        # DSLMUsername
-        # DSLMPassword
-        # DSLMConfirm
-        # DSOrganizationalUnit
-        # DSShare
-        # DSInitialize()
-
-    # --------------------------------------- #
-    # DataGrid ItemsSource Array Declarations #
-    # --------------------------------------- #
-
-    # 1) Configuration
-    $Xaml.IO.Services.ItemsSource    = @( )
-    $Xaml.IO.DHCP.ItemsSource        = @( )
-    $Xaml.IO.DNS.ItemsSource         = @( )
-    $Xaml.IO.ADDS.ItemsSource        = @( )
-    $Xaml.IO.WDS.ItemsSource         = @( )
-    $Xaml.IO.MDT.ItemsSource         = @( )
-    $Xaml.IO.WinADK.ItemsSource      = @( )
-    $Xaml.IO.WinPE.ItemsSource       = @( )
-    $Xaml.IO.IIS.ItemsSource         = @( )
-
-    # 2) Domain
-    $Xaml.IO.Sitemap.ItemsSource     = @( )
-    $Xaml.IO.Sitename.ItemsSource    = @( )
-    $Xaml.IO.Topography.ItemsSource  = @( )
-
-    # 3) Network
-    $Xaml.IO.Stack.ItemsSource       = @( )
-    $Xaml.IO.Control.ItemsSource     = @( )
-    # $Xaml.IO.Subject.ItemsSource   = @( )
-
-    # 4) Imaging
-    $Xaml.IO.WimIso.ItemsSource      = @( )
-    $Xaml.IO.IsoView.ItemsSource     = @( )
-    $Xaml.IO.IsoList.ItemsSource     = @( )
-
-    # 7) Share
-    $Xaml.IO.DSShare.ItemsSource     = @( )
-
-    # ----------------- #
-    # Configuration Tab #
-    # ----------------- #
-
-    $Xaml.IO.Services.ItemsSource  = @( 
-        
-        ForEach ( $Item in "DHCP","DNS","AD-Domain-Services","WDS","Web-WebServer")
-        {
-            [DGList]::New( $Item, [Bool]( $Main.Win | ? Name -eq $Item | % Installed ) )
-        }
-        
-        ForEach ( $Item in "MDT","WinADK","WinPE")
-        {
-            $Slot = Switch($Item)
-            {
-                MDT    { $Main.Reg[0], "Microsoft Deployment Toolkit"                       , "6.3.8456.1000" }
-                WinADK { $Main.Reg[1], "Windows Assessment and Deployment Kit - Windows 10" , "10.1.17763.1"  }
-                WinPE  { $Main.Reg[1], "Preinstallation Environment Add-ons - Windows 10"   , "10.1.17763.1"  }
-            }
-                
-            [DGList]::New( $Item, [Bool]( Get-ItemProperty $Slot[0] | ? DisplayName -match $Slot[1] | ? DisplayVersion -ge $Slot[2] ) )
-        }
-    )
-
-    If ( $Xaml.IO.Services.Items | ? Name -eq MDT | ? Value -eq $True )
+    # [CfgMdt]://Installed ? -> Load persistent drives
+    If ( $Main.Config | ? Name -eq MDT | ? Value -eq $True )
     {   
         $MDT     = Get-ItemProperty HKLM:\Software\Microsoft\Deployment* | % Install_Dir | % TrimEnd \
         Import-Module "$MDT\Bin\MicrosoftDeploymentToolkit.psd1"
 
         If (Get-MDTPersistentDrive)
         {
-            $Persist = Restore-MDTPersistentDrive
+            Restore-MDTPersistentDrive
+            $Persist = Get-MDTPersistentDrive
         }
 
-        $Xaml.IO.DSDriveName.Text = ("FE{0:d3}" -f @($Persist.Count + 1))
+        $Xaml.IO.DsDriveName.Text = ("FE{0:d3}" -f @($Persist.Count + 1))
     }
 
-    # Domain Tab
-    $Xaml.IO.GetSitename.Add_Click(
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Domain Tab ]__________________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+    # [Domain]://Variables
+    # $Xaml.IO.DcOrganization           # Text
+    # $Xaml.IO.DcCommonName             # Text
+    # $Xaml.IO.DcGetSitename            # Button
+    # $Xaml.IO.DcAggregate              # DataGrid
+    # $Xaml.IO.DcAddSitename            # Button
+    # $Xaml.IO.DcAddSitenameZip         # Text
+    # $Xaml.IO.DcAddSitenameTown        # Text
+    # $Xaml.IO.DcRemoveSitename         # Button
+    # $Xaml.IO.DcViewer                 # DataGrid
+    # $Xaml.IO.DcTopography             # DataGrid
+    # $Xaml.IO.DcGetTopography          # Button
+    # $Xaml.IO.DcNewTopography          # Button
+
+    # [DataGrid(s)]://Initialize
+    $Xaml.IO.DcAggregate.ItemsSource    = @( )
+    $Xaml.IO.DcViewer.ItemsSource       = @( )
+    $Xaml.IO.DcTopography.ItemsSource   = @( )
+
+    # [Domain]://Events
+    $Xaml.IO.DcGetSitename.Add_Click(
     {
-        If (!$Xaml.IO.Organization.Text)
+        If (!$Xaml.IO.DcOrganization.Text)
         {
             [System.Windows.MessageBox]::Show("Invalid/null organization entry","Error")
         }
 
-        ElseIf (!$Xaml.IO.CommonName.Text)
+        ElseIf (!$Xaml.IO.DcCommonName.Text)
         {
             [System.Windows.MessageBox]::Show("Invalid/null common name entry","Error")
         }
 
         Else
-        {
-            $Main.SM = [Control]::New($Xaml.IO.Organization.Text,$Xaml.IO.CommonName.Text)
-            $Main.SM.Pull()
-            $Xaml.IO.Sitemap.ItemsSource   += $Main.SM.Sitemap
-            $Xaml.IO.GetSitename.IsEnabled  = 0
-            $Xaml.IO.StackLoad.IsEnabled    = 1
+        {   # $Main.LoadSitemap("Secure Digits Plus LLC","securedigitsplus.com")
+            $Main.LoadSitemap($Xaml.IO.DcOrganization.Text,$Xaml.IO.DcCommonName.Text)
+            $Xaml.IO.DcAggregate.ItemsSource   = @( )
+            $Xaml.IO.DcAggregate.ItemsSource   = @( $Main.Domain )
+            $Xaml.IO.DcGetSitename.IsEnabled   = 0
+            $Xaml.IO.NwScopeLoad.IsEnabled     = 1
         }
     })
 
-    $Xaml.IO.AddSitename.Add_Click(
+    $Xaml.IO.DcAggregate.Add_SelectionChanged(
     {
-        If (!$Xaml.IO.AddSitenameZip.Text)
+        $Object = $Xaml.IO.DcAggregate.SelectedItem
+        If ( $Object )
         {
-            [System.Windows.MessageBox]::Show("Zipcode text entry error","Error")
+            $Xaml.IO.DcViewer.ItemsSource = @( )
+            $Xaml.IO.DcViewer.ItemsSource = ForEach ( $Item in "Location Region Country Postal TimeZone SiteLink SiteName" -Split " " )
+            {
+                [DGList]::New($Item,$Object.$Item)
+            }
+        }
+    })    
+
+    $Xaml.IO.DcAddSitename.Add_Click(
+    {
+        If ($Xaml.IO.DcAddSitenameZip.Text -notmatch "(\d{5})")
+        {
+            Return [System.Windows.MessageBox]::Show("Zipcode text entry error","Error")
+        }
+
+        ElseIf($Xaml.IO.DcAddSitenameZip.Text -notin $Main.ZipStack.Stack)
+        {
+            Return [System.Windows.MessageBox]::Show("Not a valid zip code","Error")
+        }
+
+        ElseIf($Xaml.IO.DcAddSitenameZip.Text -in $Main.Domain.Postal)
+        {
+            Return [System.Windows.MessageBox]::Show("Duplicate Zipcode entry","Error")
         }
 
         Else
         {
-            $Tmp  = $Main.SM.NewCertificate()
-            $Item = $Main.SM.ZipStack.ZipTown($Xaml.IO.AddSitenameZip.Text)
-
-            $Tmp[0].Location = $Item.Name
-            $Tmp[0].Postal   = $Item.Zip
-            $Tmp[0].Region   = [States]::Name($Item.State)
-
-            $Tmp.GetSiteLink()
+            $Main.AddSitename($Xaml.IO.DcAddSitenameZip.Text)
+            $Xaml.IO.DcAggregate.ItemsSource  = @( )
+            $Xaml.IO.DcAggregate.ItemsSource  = @( $Main.Domain )
+            $Xaml.IO.DcAddSitenameZip.Text    = ""
         }
-
-        $Xaml.IO.Sitemap.ItemsSource += $Tmp
-        $Xaml.IO.AddSitenameZip.Text = ""
     })
 
-    $Xaml.IO.GetTopography.Add_Click(
+    $Xaml.IO.DcRemoveSitename.Add_Click(
     {
-        $Tmp = @( $Xaml.IO.Sitemap.Items | % { [Topography]$_ } )
-        $Xaml.IO.Topography.ItemsSource = @( )
-        $Xaml.IO.Topography.ItemsSource = @( $Tmp )
-    })
-
-    $Xaml.IO.SiteMap.Add_MouseDoubleClick(
-    {
-        $Object = $Xaml.IO.Sitemap.SelectedItem
-        $Xaml.IO.Sitename.ItemsSource = $Null
-        $Xaml.IO.Sitename.ItemsSource = ForEach ( $Item in "Location Region Country Postal TimeZone SiteLink SiteName" -Split " " )
+        If ( $Xaml.IO.DcAggregate.SelectedIndex -gt -1)
         {
-            [DGList]::New($Item,$Object.$Item)
+            Switch($Main.Domain.Count)
+            {
+                1
+                { 
+                    Return [System.Windows.MessageBox]::Show("Count cannot be 1","Last site remaining")
+                }
+
+                Default
+                {
+                    $Item                            = $Xaml.IO.DcAggregate.SelectedItem
+                    $Main.Domain                     = ForEach ( $Object in $Main.Domain )
+                    {
+                        If ( $Object.Postal -notmatch $Item.Postal )
+                        {
+                            $Object
+                        }
+                    }
+                    $Xaml.IO.DcAggregate.ItemsSource = @( )
+                    $Xaml.IO.DcAggregate.ItemsSource = @( $Main.Domain )
+                }
+            }
         }
     })
 
-    # Network Tab
-    $Xaml.IO.StackLoad.Add_Click(
+    $Xaml.IO.DcGetTopography.Add_Click(
     {
-        If ($Xaml.IO.StackText.Text -notmatch "((\d+\.+){3}\d+\/\d+)")
+        $Tmp                              = @( $Main.GetDomain($Main.Domain) | % { [DcTopography]::New($Main.SiteList,$_) } )
+        $Xaml.IO.DcTopography.ItemsSource = @( )
+        $Xaml.IO.DcTopography.ItemsSource = @( $Tmp )
+
+        $Xaml.IO.GwSiteCount.Text         = $Main.Domain.Count
+    })
+    
+    $Xaml.IO.DcNewTopography.Add_Click(
+    {
+        ForEach ( $Item in $Xaml.IO.DcTopography.ItemsSource )
+        {
+            If ( $Item.Exists -eq 0 )
+            {
+                New-ADReplicationSite -Name $Item.Sitelink -Verbose
+            }
+        }
+
+        $Tmp                              = @( $Main.GetDomain($Main.Domain) | % { [DcTopography]::New($Main.SiteList,$_) } )
+        $Xaml.IO.DcTopography.ItemsSource = @( )
+        $Xaml.IO.DcTopography.ItemsSource = @( $Tmp )
+
+        $Xaml.IO.GwSiteCount.Text         = $Main.Domain.Count
+    })
+
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Network Tab    ]______________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+    # [Network]://Variables
+    # $Xaml.IO.NwScope                  # Text
+    # $Xaml.IO.NwScopeLoad              # Button
+    # $Xaml.IO.NwAggregate              # DataGrid
+    # $Xaml.IO.NwViewer                 # DataGrid
+    # $Xaml.IO.NwAddNetwork             # Button
+    # $Xaml.IO.NwRemoveNetwork          # Button
+    # $Xaml.IO.NwTopography             # DataGrid
+    # $Xaml.IO.NwGetNetwork             # Button
+    # $Xaml.IO.NwNewNetwork             # Button
+
+    # [DataGrid(s)]://Initialize
+    $Xaml.IO.NwAggregate.ItemsSource    = @( )
+    $Xaml.IO.NwViewer.ItemsSource       = @( )
+    $Xaml.IO.NwTopography.ItemsSource   = @( )
+
+    # [Network]://Events
+    $Xaml.IO.NwScopeLoad.Add_Click(
+    {
+        If ($Xaml.IO.NwScope.Text -notmatch "((\d+\.+){3}\d+\/\d+)")
         {
             [System.Windows.MessageBox]::Show("Invalid/null network string (Use 'IP/Prefix' notation)","Error")
         }
 
         Else
-        {
-            $Main.SM.GetNetwork($Xaml.IO.StackText.Text)
-            $Xaml.IO.Stack.ItemsSource   = $Null
-            $Xaml.IO.Control.ItemsSource = $Null
-            #$Xaml.IO.Subject.ItemsSource = $Null
-            $Xaml.IO.Stack.ItemsSource   = $Main.SM.Stack
+        {   # $Main.LoadNetwork("172.16.0.1/19")
+            $Main.LoadNetwork($Xaml.IO.NwScope.Text)
+            $Xaml.IO.NwScope.Text              = ""
+            $Xaml.IO.NwAggregate.ItemsSource   = @( )
+            $Xaml.IO.NwViewer.ItemsSource      = @( )
+            $Xaml.IO.NwAggregate.ItemsSource   = @( $Main.Network )
         }
     })
 
-    $Xaml.IO.Stack.Add_MouseDoubleClick(
+    $Xaml.IO.NwAggregate.Add_SelectionChanged(
     {
-        If ( $Xaml.IO.Stack.SelectedIndex -gt -1 )
+        $Xaml.IO.NwViewer.ItemsSource     = @( )
+
+        If ( $Xaml.IO.NwAggregate.SelectedIndex -gt -1 )
         {
-            $Network                         = $Main.SM.Stack | ? Network -match $Xaml.IO.Stack.SelectedItem.Network
+            $Network                           = @( $Main.Network | ? Network -match $Xaml.IO.NwAggregate.SelectedItem.Network )
             
-            $List = "Network Netmask HostCount HostObject Start End Range Broadcast" -Split " " | % { 
-                
-                [DGList]::New($_,$Network.$_) 
+            $List = ForEach ( $Item in "Name Network Prefix Netmask Start End Range Broadcast".Split(" ") )
+            {     
+                [DGList]::New($Item,$Network.$Item) 
             }
 
-            $Xaml.IO.Control.ItemsSource     = $Null
-            $Xaml.IO.Control.ItemsSource     = $List
+            $Xaml.IO.NwViewer.ItemsSource     = @( $List )
         }
     })
 
-    # Imaging Tab
+    $Xaml.IO.NwAddSubnetName.Add_Click(
+    {
+        $Prefix = $Xaml.IO.NwSubnetName.Text
+        If ( $Prefix -notmatch "((\d+\.+){3}\d+\/\d+)")
+        {
+            [System.Windows.MessageBox]::Show("Invalid subnet provided","Error")
+        }
+        ElseIf( $Prefix -in $Main.Network.Name )
+        {
+            [System.Windows.MessageBox]::Show("Prefix already exists","Error")
+        }
+        Else
+        {
+            $Main.AddSubnet($Prefix)
+            $Xaml.IO.NwSubnetName.Text       = ""
+            $Xaml.IO.NwAggregate.ItemsSource = @( )
+            $Xaml.IO.NwAggregate.ItemsSource = @( $Main.Network )
+        }
+    })
+
+    $Xaml.IO.NwRemoveSubnetName.Add_Click(
+    {
+        If ( $Xaml.IO.NwAggregate.SelectedIndex -gt -1 )
+        {
+            $Main.Network                     = $Main.Network | ? Name -ne $Xaml.IO.NwAggregate.SelectedItem.Name
+            $Xaml.IO.NwAggregate.ItemsSource  = @( )
+            $Xaml.IO.NwAggregate.ItemsSource  = @( $Main.Network )
+        }
+
+        Else
+        {
+            [System.Windows.MessageBox]::Show("Select a subnet within the dialog box","Error")
+        }
+    })
+
+    $Xaml.IO.NwGetSubnetName.Add_Click(
+    {
+        $Main.GetSubnetList()
+        If (!$Main.SubnetList)
+        {
+            Throw "No valid networks detected"
+        }
+        
+        $Xaml.IO.NwTopography.ItemsSource = @( )
+
+        ForEach ( $Item in $Xaml.IO.NwAggregate.ItemsSource | % { [NwTopography]::New($Main.SubnetList,$_) } )
+        {
+            $Xaml.IO.NwTopography.ItemsSource += $Item 
+            #[DGList]::New($Item.Name,$Item.DistinguishedName)
+        }
+
+        $Xaml.IO.GwNetworkCount.Text      = $Main.Network.Count 
+    })
+
+    $Xaml.IO.NwNewSubnetName.Add_Click(
+    {
+        ForEach ( $Item in $Xaml.IO.NwTopography.ItemsSource )
+        {
+            If (!$Item.Exists)
+            {
+                New-ADReplicationSubnet -Name $Item.Name -Verbose
+            }
+        }
+
+        $Tmp                              = @( $Main.GetNetwork($Main.Network) | % { [NwTopography]::New($Main.SubnetList,$_) } )
+        $Xaml.IO.NwTopography.ItemsSource = @( )
+        $Xaml.IO.NwTopography.ItemsSource = @( $Tmp )
+
+        $Xaml.IO.GwNetworkCount.Text      = $Main.Network.Count 
+    })
+
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Gateway Tab    ]______________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+    # [Gateway]://Variables
+    # $Xaml.IO.GwSiteCount               # TextBox
+    # $Xaml.IO.GwNetworkCount            # TextBox
+    # $Xaml.IO.GwLoadGateway             # Button
+    # $Xaml.IO.GwAggregate               # DataGrid
+    # $Xaml.IO.GwAddGateway              # Button
+    # $Xaml.IO.GwGateway                 # TextBox
+    # $Xaml.IO.GwRemoveGateway           # Button
+    # $Xaml.IO.GwViewer                  # DataGrid
+    # $Xaml.IO.GwTopography              # DataGrid
+    # $Xaml.IO.GwGetGateway              # Button
+    # $Xaml.IO.GwNewGateway              # Button
+
+    # [DataGrid(s)]://Initialize
+    $Xaml.IO.GwAggregate.ItemsSource    = @()
+    $Xaml.IO.GwViewer.ItemsSource       = @()
+    $Xaml.IO.GwTopography.ItemsSource   = @()
+
+    # [Gateway]://Events
+    $Xaml.IO.GwLoadGateway.Add_Click(
+    {
+        If ( $Main.Network.Count -lt $Main.Domain.Count )
+        {
+            [System.Windows.MessageBox]::Show("Insufficient networks","Error: Network count")
+        }
+
+        Else
+        {
+            $Main.LoadGateway()
+            $Xaml.IO.GwAggregate.ItemsSource = @( )
+            $Xaml.IO.GwAggregate.ItemsSource = @( $Main.Gateway )
+        }
+    })
+
+    $Xaml.IO.GwAggregate.Add_SelectionChanged(
+    {
+        $Xaml.IO.GwViewer.ItemsSource     = @( )
+
+        If ( $Xaml.IO.GwAggregate.SelectedIndex -gt -1 )
+        {
+            $Gateway                           = @( $Main.Gateway | ? Network -match $Xaml.IO.GwAggregate.SelectedItem.Network )
+            
+            $List = ForEach ( $Item in "Location Region Country Postal TimeZone SiteLink SiteName Name Network Prefix Netmask Start End Range Broadcast".Split(" ") )
+            {     
+                [DGList]::New($Item,$Gateway.$Item) 
+            }
+
+            $Xaml.IO.GwViewer.ItemsSource     = @( $List )
+        }
+    })
+
+    $Xaml.IO.GwRemoveGateway.Add_Click(
+    {
+        If ( $Xaml.IO.GwAggregate.SelectedIndex -gt -1)
+        {
+            $Tmp = $Xaml.IO.GwAggregate.SelectedItem
+            If ( $Tmp.Name -in $Main.Gateway.Name)
+            {
+                $Main.RemoveGateway($Tmp.Name)
+                $Xaml.IO.GwAggregate.ItemsSource = @( )
+                $Xaml.IO.GwAggregate.ItemsSource = @( $Main.Gateway )
+            }
+        }
+    })
+
+    $Xaml.IO.GwGetGateway.Add_Click(
+    {
+        $Main.GetOuList()
+        $Xaml.IO.GwTopography.ItemsSource = @( )
+
+        ForEach ( $Item in $Xaml.IO.GwAggregate.ItemsSource | % { [GwTopography]::New($Main.OuList,$_) } )
+        {
+            $Xaml.IO.GwTopography.ItemsSource += $Item
+        }
+    })
+
+    $Xaml.IO.GwNewGateway.Add_Click(
+    {
+        $Main.GetOuList()
+
+        ForEach ( $Item in $Xaml.IO.GwAggregate.ItemsSource | % { [GwTopography]::New($Main.OuList,$_) } )
+        {
+            If (!$Item.Exists)
+            {
+                $Gateway = $Main.Gateway | ? Name -eq $Item.Name
+                $OU             = @{ 
+
+                    City        = $Gateway.Location
+                    Country     = $Gateway.Country
+                    Description = $Gateway.Hash.Network.Name
+                    DisplayName = $Gateway.SiteName
+                    PostalCode  = $Gateway.Postal
+                    State       = $Gateway.Region
+                    Name        = $Gateway.Name
+                    Path        = $Main.SearchBase
+                }
+                New-ADOrganizationalUnit @OU -Verbose
+
+                $OU.Path        = "OU={0},{1}" -f $OU.Name, $OU.Path
+
+                0..4 | % { 
+                    
+                    $OU.Name        = "Gateway","Server","Computers","Users","Service")[$_]
+                    $OU.Description = "(Routing/Remote Access)","(Domain Servers)","(Workstations)","(Domain Users)","(Service Accounts)")[$_]
+                    New-ADOrganizationalUnit @OU -Verbose
+                }
+
+                New-ADComputer -Name $Gateway.Name -DNSHostName $Gateway.Sitename -Path "OU=Gateway,$($OU.Path)" -TrustedForDelegation:$True -Verbose
+                New-ADComputer -Name "dc1-$($Gateway.Postal)"                     -Path "OU=Server,$($OU.Path)"  -TrustedForDelegation:$True -Verbose
+                New-ADUser     -Name "svc1-$($Gateway.Postal)" -Path "OU=Service,$($OU.Path)"
+            }
+        }
+
+        $Main.GetOuList()
+        $Tmp                              = @( $Main.Gateway | % { [GwTopography]::New($Main.OuList,$_) } )
+        $Xaml.IO.GwTopography.ItemsSource = @( )
+        $Xaml.IO.GwTopography.ItemsSource = @( $Tmp )
+    })
+
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Sites Tab  ]__________________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+    #$Xaml.IO.SLLoadSiteList.Add_Click(
+    #{
+
+    #})
+
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Imaging Tab    ]______________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+    # [Imaging]://Variables
+    # $Xaml.IO.IsoSelect                # Button
+    # $Xaml.IO.IsoPath                  # Text
+    # $Xaml.IO.IsoScan                  # Button
+    # $Xaml.IO.IsoList                  # DataGrid
+    # $Xaml.IO.IsoMount                 # Button
+    # $Xaml.IO.IsoDismount              # Button
+    # $Xaml.IO.IsoView                  # DataGrid
+    # $Xaml.IO.WimQueue                 # Button
+    # $Xaml.IO.WimDequeue               # Button
+    # $Xaml.IO.WimIsoUp                 # Button
+    # $Xaml.IO.WimIsoDown               # Button
+    # $Xaml.IO.WimIso                   # DataGrid
+    # $Xaml.IO.WimSelect                # Button
+    # $Xaml.IO.WimPath                  # Text
+    # $Xaml.IO.WimExtract               # Button
+
+    # [DataGrid]://Initialize
+    $Xaml.IO.IsoList.ItemsSource        = @( )
+    $Xaml.IO.IsoView.ItemsSource        = @( )
+    $Xaml.IO.WimIso.ItemsSource         = @( )
+
+    # [Imaging]://Events
     $Xaml.IO.IsoSelect.Add_Click(
     {
         $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
@@ -2198,8 +3212,90 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         }
     })
 
-    # Branding Tab
-    $Xaml.IO.Collect.Add_Click(
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Updates Tab    ]______________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+    # [Updates]://Variables
+    # $Xaml.IO.UpdSelect                 # Button
+    # $Xaml.IO.UpdPath                   # TextBox
+    # $Xaml.IO.UpdScan                   # Button
+    # $Xaml.IO.UpdAggregate              # DataGrid
+    # $Xaml.IO.UpdAddUpdate              # Button
+    # $Xaml.IO.UpdRemoveUpdate           # Button
+    # $Xaml.IO.UpdViewer                 # DataGrid
+    # $Xaml.IO.UpdWim                    # DataGrid
+    # $Xaml.IO.UpdInstallUpdate          # Button
+    # $Xaml.IO.UpdUninstallUpdate        # Button
+
+    # [DataGrid(s)]://Initialize
+    $Xaml.IO.UpdAggregate.ItemsSource   = @( )
+    $Xaml.IO.UpdViewer.ItemsSource      = @( )
+    $Xaml.IO.UpdWim.ItemsSource         = @( )
+
+    # [Updates]://Events
+    $Xaml.IO.UpdSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        $Xaml.IO.UpdPath.Text = $Item.SelectedPath
+    })
+
+    $Xaml.IO.UpdScan.Add_Click(
+    {
+        $Main.Update
+        $Xaml.IO.UpdAggregate = @( )
+    })
+
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Share Tab  ]__________________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+    
+    # [Share]://Variables
+    # $Xaml.IO.DsRootSelect             # Button
+    # $Xaml.IO.DsRootPath               # Text
+    # $Xaml.IO.DsShareName              # Text
+    # $Xaml.IO.DsDriveName              # Text
+    # $Xaml.IO.DsDescription            # Text
+    # $Xaml.IO.DsType                   # ComboBox
+    # $Xaml.IO.DsDcUsername             # Text
+    # $Xaml.IO.DsDcPassword             # Password
+    # $Xaml.IO.DsDcConfirm              # Password
+    # $Xaml.IO.DsLmUsername             # Text
+    # $Xaml.IO.DsLmPassword             # Password
+    # $Xaml.IO.DsLmConfirm              # Password
+    # $Xaml.IO.DsBrCollect              # Button
+    # $Xaml.IO.DsBrPhone                # Text
+    # $Xaml.IO.DsBrHours                # Text
+    # $Xaml.IO.DsBrWebsite              # Text
+    # $Xaml.IO.DsBrLogoSelect           # Button
+    # $Xaml.IO.DsBrLogo                 # Text
+    # $Xaml.IO.DsBrBackgroundSelect     # Button
+    # $Xaml.IO.DsBrBackground           # Text
+    # $Xaml.IO.DsNetBiosName            # Text
+    # $Xaml.IO.DsDnsName                # Text
+    # $Xaml.IO.DsMachineOuName          # Text
+    # $Xaml.IO.DsSelectBootstrap         # Button
+    # $Xaml.IO.DsGetBootstrap            # Button
+    # $Xaml.IO.DsBootstrap               # TextBlock
+    # $Xaml.IO.DsSelectCustomSettings    # Button
+    # $Xaml.IO.DsGetCustomSettings       # Button
+    # $Xaml.IO.DsCustomSettings          # TextBlock
+    # $Xaml.IO.DsCreate                  # Button
+    # $Xaml.IO.DsUpdate                  # Button
+
+    # [Share]://Events
+    $Xaml.IO.DsBrCollect.Add_Click(
     {
         $OEM = Get-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\OEMInformation' -EA 0
 
@@ -2207,22 +3303,22 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         {
             If ($OEM.Logo)
             {
-                $Xaml.IO.Logo.Text = $Oem.Logo
+                $Xaml.IO.DsBrLogo.Text = $Oem.Logo
             }
 
             If ($OEM.SupportPhone)
             {
-                $Xaml.IO.Phone.Text = $Oem.SupportPhone
+                $Xaml.IO.DsBrPhone.Text = $Oem.SupportPhone
             }
 
             If ($OEM.SupportHours)
             {
-                $Xaml.IO.Hours.Text = $Oem.SupportHours
+                $Xaml.IO.DsBrHours.Text = $Oem.SupportHours
             }
 
             If ($OEM.SupportURL)
             {
-                $Xaml.IO.Website.Text = $Oem.SupportURL
+                $Xaml.IO.DsBrWebsite.Text = $Oem.SupportURL
             }
         }
 
@@ -2232,12 +3328,12 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         {
             If ($OEM.Wallpaper)
             {
-                $Xaml.IO.Background.Text = $OEM.Wallpaper
+                $Xaml.IO.DsBrBackground.Text = $OEM.Wallpaper
             }
         }
     })
 
-    $Xaml.IO.LogoSelect.Add_Click(
+    $Xaml.IO.DsBrLogoSelect.Add_Click(
     {
         $Item                  = New-Object System.Windows.Forms.OpenFileDialog
         $Item.InitialDirectory = [Main]::Base
@@ -2248,10 +3344,10 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
             $Item.Filename     = [Main]::Logo
         }
 
-        $Xaml.IO.Logo.Text = $Item.FileName
+        $Xaml.IO.DsBrLogo.Text = $Item.FileName
     })
     
-    $Xaml.IO.BackgroundSelect.Add_Click(
+    $Xaml.IO.DsBrBackgroundSelect.Add_Click(
     {
         $Item                  = New-Object System.Windows.Forms.OpenFileDialog
         $Item.InitialDirectory = [Main]::Base
@@ -2262,11 +3358,10 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
             $Item.Filename     = [Main]::Background
         }
 
-        $Xaml.IO.Background.Text = $Item.FileName
+        $Xaml.IO.DsBrBackground.Text = $Item.FileName
     })
 
-    # Share Tab
-    $Xaml.IO.DSRootSelect.Add_Click(
+    $Xaml.IO.DsRootSelect.Add_Click(
     {
         $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
         $Item.ShowDialog()
@@ -2279,7 +3374,7 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         $Xaml.IO.DSRootPath.Text = $Item.SelectedPath
     })
 
-    $Xaml.IO.DSRootPath.Add_TextChanged(
+    $Xaml.IO.DsRootPath.Add_TextChanged(
     {
         If ( $Xaml.IO.DSRootPath.Text -ne "" )
         {
@@ -2287,9 +3382,9 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         }
     })
 
-    $Xaml.IO.DSInitialize.Add_Click(
+    $Xaml.IO.DsCreate.Add_Click(
     {
-        If ( $Xaml.IO.Services.Items | ? Name -eq MDT | ? Value -ne $True )
+        If ( $Xaml.IO.CfgServices.Items | ? Name -eq MDT | ? Value -ne $True )
         {
             Throw "Unable to initialize, MDT not installed"
         }
@@ -2299,27 +3394,27 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
             Throw "Unable to initialize, use Windows PowerShell v5.1"
         }
 
-        ElseIf (!$Xaml.IO.DSDCUsername.Text)
+        ElseIf (!$Xaml.IO.DsDcUsername.Text)
         {
             [System.Windows.MessageBox]::Show("Missing the deployment share domain account name","Error")
         }
 
-        ElseIf ($Xaml.IO.DSDCPassword.SecurePassword -notmatch $Xaml.IO.DSDCConfirm.SecurePassword)
+        ElseIf ($Xaml.IO.DsDCPassword.SecurePassword -notmatch $Xaml.IO.DsDCConfirm.SecurePassword)
         {
             [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         } 
 
-        ElseIf (!$Xaml.IO.DSLMUsername.Text)
+        ElseIf (!$Xaml.IO.DsLmUsername.Text)
         {
             [System.Windows.MessageBox]::Show("Missing the child item local account name","Error")
         }
 
-        ElseIf ($Xaml.IO.DSLMPassword.SecurePassword -notmatch $Xaml.IO.DSLMConfirm.SecurePassword)
+        ElseIf ($Xaml.IO.DsLmPassword.SecurePassword -notmatch $Xaml.IO.DsLmConfirm.SecurePassword)
         {
             [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         }
 
-        ElseIf (!(Get-ADObject -Filter * | ? DistinguishedName -eq $Xaml.IO.DSOrganizationalUnit.Text))
+        ElseIf (!(Get-ADObject -Filter * | ? DistinguishedName -eq $Xaml.IO.DsMachineOuName.Text))
         {
             [System.Windows.MessageBox]::Show("Invalid OU specified","Error")
         }
@@ -2340,45 +3435,45 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
         $SMB     = Get-SMBShare
         $PSD     = Get-PSDrive
 
-        If ($Xaml.IO.DSRootPath.Text -in $Persist.Root)
+        If ($Xaml.IO.DsRootPath.Text -in $Persist.Root)
         {
             [System.Windows.MessageBox]::Show("That path belongs to an existing deployment share","Error")
         }
 
-        ElseIf($Xaml.IO.DSShareName.Text -in $SMB.Name)
+        ElseIf($Xaml.IO.DsShareName.Text -in $SMB.Name)
         {
             [System.Windows.MessageBox]::Show("That share name belongs to an existing SMB share","Error")
         }
 
-        ElseIf ($Xaml.IO.DSDriveName.Text -in $PSD.Name)
+        ElseIf ($Xaml.IO.DsDriveName.Text -in $PSD.Name)
         {
             [System.Windows.MessageBox]::Show("That (DSDrive|PSDrive) label is already being used","Error")
         }
 
         Else
         {
-            If (!(Test-Path $Xaml.IO.DSRootPath.Text))
+            If (!(Test-Path $Xaml.IO.DsRootPath.Text))
             {
-                New-Item $Xaml.IO.DSRootPath.Text -ItemType Directory -Verbose
+                New-Item $Xaml.IO.DsRootPath.Text -ItemType Directory -Verbose
             }
 
             $Hostname       = @($Env:ComputerName,"$Env:ComputerName.$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
 
             $SMB            = @{
 
-                Name        = $Xaml.IO.DSShareName.Text
-                Path        = $Xaml.IO.DSRootPath.Text
-                Description = $Xaml.IO.DSDescription.Text
+                Name        = $Xaml.IO.DsShareName.Text
+                Path        = $Xaml.IO.DsRootPath.Text
+                Description = $Xaml.IO.DsDescription.Text
                 FullAccess  = "Administrators"
             }
 
             $PSD            = @{ 
 
-                Name        = $Xaml.IO.DSDriveName.Text
+                Name        = $Xaml.IO.DsDriveName.Text
                 PSProvider  = "MDTProvider"
-                Root        = $Xaml.IO.DSRootPath.Text
-                Description = $Xaml.IO.DSDescription.Text
-                NetworkPath = ("\\{0}\{1}" -f $Hostname, $Xaml.IO.DSShareName.Text)
+                Root        = $Xaml.IO.DsRootPath.Text
+                Description = $Xaml.IO.DsDescription.Text
+                NetworkPath = ("\\{0}\{1}" -f $Hostname, $Xaml.IO.DsShareName.Text)
             }
 
             New-SMBShare @SMB
@@ -2392,13 +3487,13 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
 
             # To propogate the environment keys to child item [server/client]
             $DS                    = @($PSD.NetworkPath,
-                $Xaml.IO.Organization.Text,
-                $Xaml.IO.CommonName.Text,
-                $Xaml.IO.Background.Text,
-                $Xaml.IO.Logo.Text,
-                $Xaml.IO.Phone.Text,
-                $Xaml.IO.Hours.Text,
-                $Xaml.IO.Website.Text)
+                $Xaml.IO.DcOrganization.Text,
+                $Xaml.IO.DcCommonName.Text,
+                $Xaml.IO.DsBrBackground.Text,
+                $Xaml.IO.DsBrLogo.Text,
+                $Xaml.IO.DsBrPhone.Text,
+                $Xaml.IO.DsBrHours.Text,
+                $Xaml.IO.DsBrWebsite.Text)
             $Key                   = [Key]$DS
             
             # Copies the background and logo if they were selected
@@ -2536,9 +3631,9 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
 
                 Settings           = @{ Priority             = "Default"                      }
                 Default            = @{ DeployRoot           = $Key.NetworkPath
-                                        UserID               = $Xaml.IO.DSDCUserName.Text
-                                        UserPassword         = $Xaml.IO.DSDCPassword.Password
-                                        UserDomain           = $Xaml.IO.CommonName.Text
+                                        UserID               = $Xaml.IO.DsDcUserName.Text
+                                        UserPassword         = $Xaml.IO.DsDcPassword.Password
+                                        UserDomain           = $Xaml.IO.DsCommonName.Text
                                         SkipBDDWelcome       = "YES"                          }
             } | % Output
 
@@ -2547,12 +3642,12 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
 
                 Settings           = @{ Priority             = "Default" 
                                         Properties           = "MyCustomProperty" }
-                Default            = @{ _SMSTSOrgName        = $Xaml.IO.Organization.Text
-                                        JoinDomain           = $Xaml.IO.CommonName.Text
-                                        DomainAdmin          = $Xaml.IO.DSDCUserName.Text
-                                        DomainAdminPassword  = $Xaml.IO.DSDCPassword.Password
-                                        DomainAdminDomain    = $Xaml.IO.CommonName.Text
-                                        MachineObjectOU      = $Xaml.IO.DSOrganizationalUnit.Text
+                Default            = @{ _SMSTSOrgName        = $Xaml.IO.DcOrganization.Text
+                                        JoinDomain           = $Xaml.IO.DcCommonName.Text
+                                        DomainAdmin          = $Xaml.IO.DsDcUserName.Text
+                                        DomainAdminPassword  = $Xaml.IO.DsDcPassword.Password
+                                        DomainAdminDomain    = $Xaml.IO.DsCommonName.Text
+                                        MachineObjectOU      = $Xaml.IO.DsMachineOuName.Text
                                         SkipDomainMembership = "YES"
                                         OSInstall            = "Y"
                                         SkipCapture          = "NO"
@@ -2625,10 +3720,45 @@ Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/Fightin
     })
 
     # Set initial TextBox values
-    $Xaml.IO.NetBIOSName.Text   = $Env:UserDomain
-    $Xaml.IO.DNSName.Text       = @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
-    $Xaml.IO.DSDescription.Text = "[FightingEntropy({0})][(2021.7.0)]" -f [char]960
-    $Xaml.IO.DSLMUsername.Text  = "Administrator"
+    $Xaml.IO.DsNwNetBIOSName.Text = $Env:UserDomain
+    $Xaml.IO.DsNwDNSName.Text     = @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+    $Xaml.IO.DsDescription.Text   = "[FightingEntropy({0})][(2021.7.0)]" -f [char]960
+    $Xaml.IO.DsLmUsername.Text    = "Administrator"
     
     $Xaml.Invoke()
+    
+    # [Gateway - Prepping Section II]
+    If ($Main.Gateway)
+    {
+        $Gateway = $Main.Gateway
+        $Scratch = "$Env:ProgramData\Secure Digits Plus LLC"
+        $Date    = Get-Date -UFormat %Y%m%d
+        $Path    = "$Scratch\Lab($Date)"
+        If (!(Test-Path $Scratch))
+        {
+            New-Item -Path $Scratch -ItemType Directory -Verbose
+        }
+        If (!(Test-Path $Path))
+        {
+            New-Item -Path $Path -ItemType Directory -Verbose 
+        }
+
+        Get-ChildItem $Path | ? Extension -eq .txt | Remove-Item -Verbose
+
+        ForEach ( $X in 0..($Gateway.Count - 1 ))
+        {
+            $Item = $Gateway[$X]
+            $Item.Hash.Network.HostObject = $Null 
+            $Item.Hash.Network.Network_   = $Null 
+            $Item.Hash.Network.Netmask_   = $Null
+            $Item.Hash.Domain.Ping        = $Null
+
+            Set-Content -Path "$Path\($X)$($Item.Name).txt" -Value ($Item | ConvertTo-Json) -Verbose
+        }
+    }
+
+    #$Files = [GwFiles]::New($Path)
+
+    # Add-Type -AssemblyName PresentationFramework
+    # ( GC $Home\Desktop\New-FEDeploymentShare.ps1 -Encoding UTF8 ) -join "`n" | IEX
 }
