@@ -707,6 +707,11 @@ Function Write-Theme # Cross Platform
 
     Else
     {
+        If (!($Palette))
+        {
+            $Palette = @(10,12,15,0)
+        }
+
         $Item.Draw($Palette)
     }
 }
