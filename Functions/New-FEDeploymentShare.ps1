@@ -3414,7 +3414,7 @@ public struct WindowPosition
             Return [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         }
 
-        ElseIf (!(Get-ADObject -Filter * | ? DistinguishedName -eq $Xaml.IO.DsMachineOuName.Text))
+        ElseIf (!(Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)" | ? DistinguishedName -eq $Xaml.IO.DsMachineOuName.Text))
         {
             Return [System.Windows.MessageBox]::Show("Invalid OU specified","Error")
         }
@@ -3693,10 +3693,12 @@ public struct WindowPosition
                 }
             }
 
-            If (!(Get-Service | ? Name -eq WDSServer))
+            If (!(Get-Service -Name WDSServer))
             {
                 Throw "WDS Server not installed"
             }
+
+            Get-Service -Name WDSServer | ? Status -ne Running | Start-Service -Verbose
 
             # Update/Flush FEShare(WDS)
             ForEach ( $Image in [BootImages]::New("$($Xaml.IO.DSRootPath.Text)\Boot").Images )
