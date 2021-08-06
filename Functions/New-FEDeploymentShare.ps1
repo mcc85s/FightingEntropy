@@ -1,6 +1,5 @@
 Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare/FEDeploymentShare.ps1
 {
-   
     # Load Assemblies
     Add-Type -AssemblyName PresentationFramework
     Add-Type -AssemblyName System.Windows.Forms
@@ -581,8 +580,8 @@ public struct WindowPosition
             Static [Char[]] $Special  = ")!@#$%^&*(:+<_>?~{|}`"".ToCharArray()
             Static [Object]    $Keys  = @{
     
-                " " =  32; [Char]706 =  37; [Char]708 =  38; [Char]707 =  39; [char]709 =  40; 
-                "0" =  48; "1" =  49; "2" =  50; "3" =  51; "4" =  52; "5" =  53; "6" =  54; 
+                " " =  32; "˂" =  37; "˄" =  38; "˃" =  39; "˅" =  40; "0" =  48; 
+                "1" =  49; "2" =  50; "3" =  51; "4" =  52; "5" =  53; "6" =  54; 
                 "7" =  55; "8" =  56; "9" =  57; "a" =  65; "b" =  66; "c" =  67; 
                 "d" =  68; "e" =  69; "f" =  70; "g" =  71; "h" =  72; "i" =  73; 
                 "j" =  74; "k" =  75; "l" =  76; "m" =  77; "n" =  78; "o" =  79; 
@@ -2187,6 +2186,7 @@ public struct WindowPosition
         [Object]            $Domain
         [Object]           $Network
         [Object]           $Gateway
+        [Object]            $Server
         [Object]             $Image
         [Object]            $Update
         [Object]             $Share
@@ -3396,27 +3396,27 @@ public struct WindowPosition
 
         ElseIf (!$Xaml.IO.DsDcUsername.Text)
         {
-            [System.Windows.MessageBox]::Show("Missing the deployment share domain account name","Error")
+            Return [System.Windows.MessageBox]::Show("Missing the deployment share domain account name","Error")
         }
 
         ElseIf ($Xaml.IO.DsDCPassword.SecurePassword -notmatch $Xaml.IO.DsDCConfirm.SecurePassword)
         {
-            [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
+            Return [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         } 
 
         ElseIf (!$Xaml.IO.DsLmUsername.Text)
         {
-            [System.Windows.MessageBox]::Show("Missing the child item local account name","Error")
+            Return [System.Windows.MessageBox]::Show("Missing the child item local account name","Error")
         }
 
         ElseIf ($Xaml.IO.DsLmPassword.SecurePassword -notmatch $Xaml.IO.DsLmConfirm.SecurePassword)
         {
-            [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
+            Return [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         }
 
         ElseIf (!(Get-ADObject -Filter * | ? DistinguishedName -eq $Xaml.IO.DsMachineOuName.Text))
         {
-            [System.Windows.MessageBox]::Show("Invalid OU specified","Error")
+            Return [System.Windows.MessageBox]::Show("Invalid OU specified","Error")
         }
 
         Else
@@ -3437,17 +3437,17 @@ public struct WindowPosition
 
         If ($Xaml.IO.DsRootPath.Text -in $Persist.Root)
         {
-            [System.Windows.MessageBox]::Show("That path belongs to an existing deployment share","Error")
+            Return [System.Windows.MessageBox]::Show("That path belongs to an existing deployment share","Error")
         }
 
         ElseIf($Xaml.IO.DsShareName.Text -in $SMB.Name)
         {
-            [System.Windows.MessageBox]::Show("That share name belongs to an existing SMB share","Error")
+            Return [System.Windows.MessageBox]::Show("That share name belongs to an existing SMB share","Error")
         }
 
         ElseIf ($Xaml.IO.DsDriveName.Text -in $PSD.Name)
         {
-            [System.Windows.MessageBox]::Show("That (DSDrive|PSDrive) label is already being used","Error")
+            Return [System.Windows.MessageBox]::Show("That (DSDrive|PSDrive) label is already being used","Error")
         }
 
         Else
@@ -3726,7 +3726,7 @@ public struct WindowPosition
     $Xaml.IO.DsLmUsername.Text    = "Administrator"
     
     $Xaml.Invoke()
-    
+
     # [Gateway - Prepping Section II]
     If ($Main.Gateway)
     {
@@ -3756,9 +3756,9 @@ public struct WindowPosition
             Set-Content -Path "$Path\($X)$($Item.Name).txt" -Value ($Item | ConvertTo-Json) -Verbose
         }
     }
-
-    #$Files = [GwFiles]::New($Path)
-
-    # Add-Type -AssemblyName PresentationFramework
-    # ( GC $Home\Desktop\New-FEDeploymentShare.ps1 -Encoding UTF8 ) -join "`n" | IEX
 }
+
+#$Files = [GwFiles]::New($Path)
+
+# Add-Type -AssemblyName PresentationFramework
+# ( GC $Home\Desktop\New-FEDeploymentShare.ps1 -Encoding UTF8 ) -join "`n" | IEX
