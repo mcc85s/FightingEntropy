@@ -645,98 +645,6 @@ public struct WindowPosition
             $This.SwitchName         = $Switch
         }
     }
-    
-    Class VMServer
-    {
-        Hidden [Object]$Item
-        [Object]$Name
-        [Object]$MemoryStartupBytes
-        [Object]$Path
-        [Object]$NewVHDPath
-        [Object]$NewVHDSizeBytes
-        [Object]$Generation
-        [Object]$SwitchName
-        VMServer([Object]$Item,[Object]$Mem,[Object]$HD,[UInt32]$Gen,[String]$Switch)
-        {
-            $This.Item               = $Item
-            $This.Name               = $Item.Name
-            $This.MemoryStartupBytes = $Mem
-            $This.Path               = "{0}\$($Item.Name).vmx"
-            $This.NewVhdPath         = "{0}\$($Item.Name).vhdx"
-            $This.NewVhdSizeBytes    = $HD
-            $This.Generation         = $Gen
-            $This.SwitchName         = $Switch
-        }
-        New([Object]$Path)
-        {
-            If (!(Test-Path $Path))
-            {
-                Throw "Invalid path"
-            }
-
-            ElseIf (Get-VM -Name $This.Name -EA 0)
-            {
-                Write-Host "VM exists..."
-                If (Get-VM -Name $This.Name | ? Status -ne Off)
-                {
-                    $This.Stop()
-                }
-
-                $This.Remove()
-            }
-
-            $This.Path             = $This.Path -f $Path
-            $This.NewVhdPath       = $This.NewVhdPath -f $Path
-
-            If (Test-Path $This.Path)
-            {
-                Remove-Item $This.Path -Recurse -Confirm:$False -Verbose
-            }
-
-            If (Test-Path $This.NewVhdPath)
-            {
-                Remove-Item $This.NewVhdPath -Recurse -Confirm:$False -Verbose
-            }
-
-            $Object                = @{
-
-                Name               = $This.Name
-                MemoryStartupBytes = $This.MemoryStartupBytes
-                Path               = $This.Path
-                NewVhdPath         = $This.NewVhdPath
-                NewVhdSizeBytes    = $This.NewVhdSizebytes
-                Generation         = $This.Generation
-                SwitchName         = $This.SwitchName
-            }
-
-            New-VM @Object -Verbose | Add-VMDVDDrive -Verbose
-            Set-VMProcessor -VMName $This.Name -Count 2 -Verbose
-        }
-        Start()
-        {
-            Get-VM -Name $This.Name | ? State -eq Off | Start-VM -Verbose
-        }
-        Remove()
-        {
-            Get-VM -Name $This.Name | Remove-VM -Force -Confirm:$False -Verbose
-        }
-        Stop()
-        {
-            Get-VM -Name $This.Name | ? State -ne Off | Stop-VM -Verbose -Force
-        }
-        LoadISO([String]$Path)
-        {
-            If (!(Test-Path $Path))
-            {
-                Throw "Invalid ISO path"
-            }
-
-            Else
-            {
-                Get-VM -Name $This.Name | % { Set-VMDVDDrive -VMName $_.Name -Path $Path -Verbose }
-            }
-        }
-    }
 
     Class VMSilo
     {
@@ -746,7 +654,6 @@ public struct WindowPosition
         [Object] $Internal
         [Object] $External
         [Object] $Gateway
-        [Object] $Server
         [Object] $VMC
         VMSilo([String]$Name,[Object[]]$Gateway)
         {
@@ -2311,6 +2218,7 @@ public struct WindowPosition
             $This.Domain  = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
             $This.Network = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
             $This.Gateway = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Server  = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
             $This.Image   = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
             $This.Update  = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
             $This.Share   = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
@@ -3492,7 +3400,7 @@ public struct WindowPosition
             Return [System.Windows.MessageBox]::Show("Missing the deployment share domain account name","Error")
         }
 
-        ElseIf ($Xaml.IO.DsDCPassword.SecurePassword -notmatch $Xaml.IO.DsDCConfirm.SecurePassword)
+        ElseIf ($Xaml.IO.DsDcPassword.SecurePassword -notmatch $Xaml.IO.DsDcConfirm.SecurePassword)
         {
             Return [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         } 
@@ -3507,7 +3415,7 @@ public struct WindowPosition
             Return [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         }
 
-        ElseIf (!(Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)" | ? DistinguishedName -eq $Xaml.IO.DsMachineOuName.Text))
+        ElseIf (!(Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)" | ? DistinguishedName -eq $Xaml.IO.DsNwMachineOuName.Text))
         {
             Return [System.Windows.MessageBox]::Show("Invalid OU specified","Error")
         }
@@ -3681,10 +3589,10 @@ public struct WindowPosition
                     ID                  = $Image.Label
                     Version             = "1.0"
                     OperatingSystemPath = Get-ChildItem -Path $Path | ? Name -match $Image.Label | % { "{0}\{1}" -f $Path, $_.Name }
-                    FullName            = $Xaml.IO.DCLMUsername
-                    OrgName             = $Xaml.IO.Organization
-                    HomePage            = $Xaml.IO.Website
-                    AdminPassword       = $Xaml.IO.DCLMPassword.Password
+                    FullName            = $Xaml.IO.DcLmUsername
+                    OrgName             = $Xaml.IO.DcOrganization
+                    HomePage            = $Xaml.IO.DcBrWebsite
+                    AdminPassword       = $Xaml.IO.DcLmPassword.Password
                 }
 
                 Import-MDTTaskSequence @TaskSequence -Verbose
@@ -3740,7 +3648,7 @@ public struct WindowPosition
                                         DomainAdmin          = $Xaml.IO.DsDcUserName.Text
                                         DomainAdminPassword  = $Xaml.IO.DsDcPassword.Password
                                         DomainAdminDomain    = $Xaml.IO.DsCommonName.Text
-                                        MachineObjectOU      = $Xaml.IO.DsMachineOuName.Text
+                                        MachineObjectOU      = $Xaml.IO.DsNwMachineOuName.Text
                                         SkipDomainMembership = "YES"
                                         OSInstall            = "Y"
                                         SkipCapture          = "NO"
@@ -3764,7 +3672,7 @@ public struct WindowPosition
             }
 
             # Rename the Litetouch_ files
-            Get-ChildItem -Path "$($Xaml.IO.DSRootPath.Text)\Boot" | ? Extension | % { 
+            Get-ChildItem -Path "$($Xaml.IO.DsRootPath.Text)\Boot" | ? Extension | % { 
 
                 $Label          = $ImageLabel[$(Switch -Regex ($_.Name) { 64 {64} 86 {86}})]
                 $Image          = @{ 
@@ -3794,7 +3702,7 @@ public struct WindowPosition
             Get-Service -Name WDSServer | ? Status -ne Running | Start-Service -Verbose
 
             # Update/Flush FEShare(WDS)
-            ForEach ( $Image in [BootImages]::New("$($Xaml.IO.DSRootPath.Text)\Boot").Images )
+            ForEach ( $Image in [BootImages]::New("$($Xaml.IO.DsRootPath.Text)\Boot").Images )
             {        
                 If (Get-WdsBootImage -Architecture $Image.Type -ImageName $Image.Name -EA 0)
                 {
