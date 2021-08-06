@@ -2832,8 +2832,8 @@ public struct WindowPosition
 
                 0..4 | % { 
                     
-                    $OU.Name        = "Gateway","Server","Computers","Users","Service")[$_]
-                    $OU.Description = "(Routing/Remote Access)","(Domain Servers)","(Workstations)","(Domain Users)","(Service Accounts)")[$_]
+                    $OU.Name        = ("Gateway","Server","Computers","Users","Service")[$_]
+                    $OU.Description = ("(Routing/Remote Access)","(Domain Servers)","(Workstations)","(Domain Users)","(Service Accounts)")[$_]
                     New-ADOrganizationalUnit @OU -Verbose
                 }
 
