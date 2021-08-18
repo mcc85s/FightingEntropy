@@ -1,6 +1,7 @@
-Function New-FEDeploymentShare # based off of https://github.com/mcc85sx/FightingEntropy/blob/master/FEDeploymentShare/FEDeploymentShare.ps1
-{
+Function New-FEDeploymentShare
+{    
     # Load Assemblies
+    # $TX = [System.Diagnostics.Stopwatch]::StartNew()
     Add-Type -AssemblyName PresentationFramework
     Add-Type -AssemblyName System.Windows.Forms
     Add-Type @"
@@ -23,6 +24,18 @@ public struct WindowPosition
     public int Top;
     public int Right;
     public int Bottom;
+}
+"@
+
+Import-Module PoshRSJob
+
+$WindowObject = @"
+using System;
+using System.Runtime.InteropServices;
+public class WindowObject 
+{ 
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetForegroundWindow();
 }
 "@
 
@@ -377,7 +390,7 @@ public struct WindowPosition
         }
     }
 
-    Class DcTopography
+    Class DcTopology
     {
         Hidden [String[]]     $Enum = "True","False"
         [String]              $Name
@@ -385,7 +398,7 @@ public struct WindowPosition
         [String]          $SiteName
         [UInt32]            $Exists
         [Object] $DistinguishedName
-        DcTopography([Object]$SiteList,[Object]$SM)
+        DcTopology([Object]$SiteList,[Object]$SM)
         {
             $This.Name     = $SM.Sitename
             $This.Sitelink = $SM.Sitelink
@@ -404,14 +417,14 @@ public struct WindowPosition
         }
     }
 
-    Class NwTopography
+    Class NwTopology
     {
         Hidden [String[]]     $Enum = "True","False"
         [String]              $Name
         [String]           $Network
         [UInt32]            $Exists
         [Object] $DistinguishedName
-        NwTopography([Object]$SubnetList,[Object]$NW)
+        NwTopology([Object]$SubnetList,[Object]$NW)
         {
             $This.Name     = $Nw.Name
             $This.Network  = $Nw.Network
@@ -429,68 +442,169 @@ public struct WindowPosition
         }
     }
 
-    Class GwTopography
+    Class Site
     {
-        Hidden [String[]] $Enum = "True","False"
-        [String]              $Name
-        [String]           $Network
-        [String]          $SiteName
-        [UInt32]            $Exists
-        [Object] $DistinguishedName
-        GwTopography([Object]$OuList,[Object]$Gw)
-        {
-            $This.Name     = $Gw.Name
-            $This.Network  = $Gw.Network
-            $This.Sitename = $Gw.Sitename
-            $Tmp           = $OuList | ? Name -match $Gw.Name
-            If ($Tmp)
-            {
-                $This.Exists = 1
-                $This.DistinguishedName = $Tmp.DistinguishedName
-            }
-            Else
-            {
-                $This.Exists = 0
-                $This.DistinguishedName = $Null
-            }
-        }
-    }
-
-    Class GwFile
-    {
-        [String]$Path
+        Hidden [Object] $Hash
         [String]$Name
-        [UInt32]$Index
-        [String]$Slot
-        [Object]$Content
-        GwFile([Object]$File)
+        [String]$Location
+        [String]$Region
+        [String]$Country
+        [String]$Postal
+        [String]$TimeZone
+        [String]$SiteLink
+        [String]$SiteName
+        [String]$Network
+        [String]$Prefix
+        [String]$Netmask
+        [String]$Start
+        [String]$End
+        [String]$Range
+        [String]$Broadcast
+        Site([Object]$Domain,[Object]$Network)
         {
-            $This.Path    = $File.FullName
-            $This.Slot    = [Regex]::Matches($File.Name,"^\(\d+\)").Value
-            $This.Name    = $File.Name.Replace($This.Slot,"").Replace(".txt","")
-            $This.Index   = $This.Slot.Replace("(","").Replace(")","")
-            $This.Content = Get-Content $File.FullName | ConvertFrom-Json
+            $This.Hash      = @{ Domain = $Domain; Network = $Network }
+            $This.Name      = $Domain.SiteLink
+            $This.Location  = $Domain.Location
+            $This.Region    = $Domain.Region
+            $This.Country   = $Domain.Country
+            $This.Postal    = $Domain.Postal
+            $This.TimeZone  = $Domain.TimeZone
+            $This.SiteLink  = $Domain.SiteLink
+            $This.Sitename  = $Domain.Sitename
+            $This.Network   = $Network.Network
+            $This.Prefix    = $Network.Prefix
+            $This.Netmask   = $Network.Netmask
+            $This.Start     = $Network.Start
+            $This.End       = $Network.End
+            $This.Range     = $Network.Range
+            $This.Broadcast = $Network.Broadcast
         }
     }
 
-    Class GwFiles
+    Class SwTopologyBranch
     {
-        [Object] $Path
-        [Object] $Items
-        [Object] $Files
-        GwFiles([String]$Path)
+        [String]              $Type
+        [String]              $Name
+        [String] $DistinguishedName
+        [Bool]              $Exists
+        SwTopologyBranch([String]$Type,[String]$Name,[String]$Base,[Object]$OUList)
         {
-            If (!(Test-Path $Path))
+            $This.Type              = $Type
+            Switch($Type) 
             {
-                Throw "Invalid path"
+                Main 
+                {
+                    $This.Name              = $Name
+                    $This.DistinguishedName = "OU=$Name,$Base"
+                } 
+                
+                Leaf 
+                { 
+                    $This.Name              = $Name.Split("/")[1]
+                    $This.DistinguishedName = "OU={1},OU={0},$Base" -f $Name.Split("/") 
+                }
+            }
+            $This.Exists            = @(0,1)[$This.DistinguishedName -in $OUList.DistinguishedName] 
+        }
+    }
+
+    Class SmTemplateItem
+    {
+        [String] $ObjectClass
+        [Bool] $Create
+        SmTemplateItem([String]$ObjectClass,[Bool]$Create)
+        {
+            $This.ObjectClass = $ObjectClass
+            $This.Create      = $Create
+        }
+    }
+
+    Class SmTemplate
+    {
+        Hidden [String[]] $Names = ("Gateway Server Computers Users Service" -Split " ")
+        [Object] $Stack
+        SmTemplate()
+        {
+            $This.Stack = @( )
+
+            ForEach ( $Name in $This.Names )
+            {
+                $This.Stack += [SmTemplateItem]::New($Name,1)
+            }
+        }
+    }
+
+    Class Topology
+    {
+        [String] $Type
+        [String] $DistinguishedName
+        [Bool]   $Exists
+        [String] $Name
+        [String] $Location
+        [String] $Region
+        [String] $Country
+        [String] $Postal
+        [String] $TimeZone
+        [String] $SiteLink
+        [String] $SiteName
+        [String] $Network
+        [String] $Prefix
+        [String] $Netmask
+        [String] $Start
+        [String] $End
+        [String] $Range
+        [String] $Broadcast
+        Topology([String]$Type,[String]$DN,[Object]$Site)
+        {
+            $This.Type              = $Type
+            $This.DistinguishedName = @{Gateway="CN=$($Site.Name),$DN";Server="CN=dc1-$($Site.Postal),$DN"}[$Type]
+            $Return                 = Get-ADObject -Filter * | ? DistinguishedName -match $This.DistinguishedName
+            $This.Exists            = $Return -ne $Null
+            $This.Name              = $Site.Name
+            $This.Location          = $Site.Location
+            $This.Region            = $Site.Region
+            $this.Country           = $Site.Country
+            $This.Postal            = $Site.Postal
+            $This.TimeZone          = $Site.TimeZone
+            $This.SiteLink          = $Site.SiteLink
+            $This.SiteName          = $Site.SiteName
+            $This.Network           = $Site.Network
+            $This.Prefix            = $Site.Prefix
+            $This.Netmask           = $Site.Netmask
+            $This.Start             = $Site.Start
+            $This.End               = $Site.End
+            $This.Range             = $Site.Range
+            $This.Broadcast         = $Site.Broadcast
+        }
+    }
+
+    Class DsShare
+    {
+        [String]$Name
+        [String]$Root
+        [Object]$Share
+        [String]$Description
+        DsShare([Object]$Drive)
+        {
+            $This.Name        = $Drive.Name
+            $This.Root        = $Drive.Path
+            $This.Share       = Get-SMBShare | ? Path -eq $Drive.Path | % Name
+            $This.Description = $Drive.Description
+        }
+        DsShare([String]$Name,[String]$Root,[String]$Share,[String]$Description)
+        {
+            If (Get-SMBShare -Name $Share -EA 0)
+            {
+                Throw "Share name is already assigned"
             }
 
-            $This.Path  = $Path
-            $This.Items = Get-ChildItem $Path *.txt 
-            $This.Files = @( $This.Items | % { [GwFile]::New($_) } )
+            $This.Name        = $Name
+            $This.Root        = $Root
+            $This.Share       = $Share
+            $This.Description = $Description
         }
     }
-    
+
     Class Certificate
     {
         Hidden[String] $ExternalIP
@@ -504,9 +618,7 @@ public struct WindowPosition
         [String]         $TimeZone
         [String]         $SiteName
         [String]         $SiteLink
-        Certificate(
-        [String]     $Organization ,
-        [String]       $CommonName )
+        Certificate([String]$Organization,[String]$CommonName)
         {
             $This.Organization     = $Organization
             $This.CommonName       = $CommonName  
@@ -567,218 +679,153 @@ public struct WindowPosition
         }
     }
 
-    Function KeyEntry
+    Class VmSelect
     {
-        [CmdLetBinding()]
-        Param(
-        [Parameter(Mandatory)][Object]$KB,
-        [Parameter(Mandatory)][Object]$Object)
-        Class KeyEntry
+        [String] $Type
+        [String] $Name
+        [Bool]   $Create
+        VmSelect([Object]$Item)
         {
-            Static [Char[]] $Capital  = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray()
-            Static [Char[]]   $Lower  = "abcdefghijklmnopqrstuvwxyz".ToCharArray()
-            Static [Char[]] $Special  = ")!@#$%^&*(:+<_>?~{|}`"".ToCharArray()
-            Static [Object]    $Keys  = @{
-    
-                " " =  32; [Char]706 =  37; [Char]708 =  38; [char]707 =  39; [Char]709 =  40; 
-                "0" =  48; "1" =  49; "2" =  50; "3" =  51; "4" =  52; "5" =  53; "6" =  54; 
-                "7" =  55; "8" =  56; "9" =  57; "a" =  65; "b" =  66; "c" =  67; 
-                "d" =  68; "e" =  69; "f" =  70; "g" =  71; "h" =  72; "i" =  73; 
-                "j" =  74; "k" =  75; "l" =  76; "m" =  77; "n" =  78; "o" =  79; 
-                "p" =  80; "q" =  81; "r" =  82; "s" =  83; "t" =  84; "u" =  85; 
-                "v" =  86; "w" =  87; "x" =  88; "y" =  89; "z" =  90; ";" = 186; 
-                "=" = 187; "," = 188; "-" = 189; "." = 190; "/" = 191; '`' = 192; 
-                "[" = 219; "\" = 220; "]" = 221; "'" = 222;
-            }
-            Static [Object]     $SKey = @{ 
-    
-                "A" =  65; "B" =  66; "C" =  67; "D" =  68; "E" =  69; "F" =  70; 
-                "G" =  71; "H" =  72; "I" =  73; "J" =  74; "K" =  75; "L" =  76; 
-                "M" =  77; "N" =  78; "O" =  79; "P" =  80; "Q" =  81; "R" =  82; 
-                "S" =  83; "T" =  84; "U" =  85; "V" =  86; "W" =  87; "X" =  88;
-                "Y" =  89; "Z" =  90; ")" =  48; "!" =  49; "@" =  50; "#" =  51; 
-                "$" =  52; "%" =  53; "^" =  54; "&" =  55; "*" =  56; "(" =  57; 
-                ":" = 186; "+" = 187; "<" = 188; "_" = 189; ">" = 190; "?" = 191; 
-                "~" = 192; "{" = 219; "|" = 220; "}" = 221; '"' = 222;
-            }
-        }
-        If ( $Object.Length -gt 1 )
-        {
-            $Object = $Object.ToCharArray()
-        }
-        ForEach ( $Key in $Object )
-        {
-            If ($Key -cin @([KeyEntry]::Special + [KeyEntry]::Capital))
-            {
-                $KB.PressKey(16) | Out-Null
-                $KB.TypeKey([KeyEntry]::SKey["$Key"]) | Out-Null
-                $KB.ReleaseKey(16) | Out-Null
-            }
-            Else
-            {
-                $KB.TypeKey([KeyEntry]::Keys["$Key"]) | Out-Null
-            }
-
-            Start-Sleep -Milliseconds 50
+            $This.Type   = $Item.Type
+            $This.Name   = $Item.Name
+            $This.Create = 1
         }
     }
 
-    Class VMGateway
+    Class VmTest
     {
-        Hidden [Object]$Item
+        [Object] $Name
+        [Bool] $Exists
+        VmTest([String]$Name)
+        {
+            $This.Name   = $Name
+            $Return      = Get-VM -Name $Name -EA 0
+            $This.Exists = $Return -ne $Null
+        }
+    }
+
+    Class VmController
+    {
+        [String]$Name
+        [String]$Status
+        [String]$Username
+        [String]$Credential
+        VmController([String]$ID)
+        {
+            If ($ID -eq "localhost")
+            {
+                $ID = $Env:ComputerName
+            }
+
+            $This.Name       = Resolve-DNSName $ID | Select-Object -First 1 | % Name
+            $This.Status     = Get-Service -Name vmms | % Status
+            $This.Username   = $Env:Username
+            $This.Credential = Get-Credential $Env:Username
+        }
+        VmController([String]$ID,[Object]$Credential)
+        {
+            If ($ID -eq "localhost")
+            {
+                $ID = $Env:ComputerName
+            }
+
+            $This.Name       = Resolve-DNSName $ID | Select-Object -First 1 | % Name
+            $This.Status     = Get-Service -Name vmms -ComputerName $ID | % Status
+            $This.Username   = $Credential.Username
+            $This.Credential = $Credential
+        }
+    }
+
+    Class VMObject
+    {
+        [Object]$Item
         [Object]$Name
-        [Object]$MemoryStartupBytes
+        [Double]$MemoryStartupBytes
         [Object]$Path
         [Object]$NewVHDPath
-        [Object]$NewVHDSizeBytes
+        [Double]$NewVHDSizeBytes
         [Object]$Generation
         [Object]$SwitchName
-        VMGateway([Object]$Item,[Object]$Mem,[Object]$HD,[UInt32]$Gen,[String]$Switch)
+        VMObject([Object]$Item,[UInt32]$Mem,[UInt32]$HD,[UInt32]$Gen,[String]$Switch)
         {
             $This.Item               = $Item
             $This.Name               = $Item.Name
-            $This.MemoryStartupBytes = $Mem
+            $This.MemoryStartupBytes = ([UInt32]$Mem)*1048576
             $This.Path               = "{0}\$($Item.Name).vmx"
             $This.NewVhdPath         = "{0}\$($Item.Name).vhdx"
-            $This.NewVhdSizeBytes    = $HD
+            $This.NewVhdSizeBytes    = ([UInt32]$HD)*1073741824
             $This.Generation         = $Gen
             $This.SwitchName         = $Switch
         }
-    }
-
-    Class VMSilo
-    {
-        [Object] $Name
-        [Object] $VMHost
-        [Object] $Switch
-        [Object] $Internal
-        [Object] $External
-        [Object] $Gateway
-        [Object] $VMC
-        VMSilo([String]$Name,[Object[]]$Gateway)
+        New([Object]$Path)
         {
-            $This.Name     = $Name
-            $This.VMHost   = Get-VMHost
-            $This.Switch   = Get-VMSwitch
-            $This.Internal = $This.Switch | ? SwitchType -eq Private
-            $This.External = $This.Switch | ? SwitchType -eq External
-            $This.Gateway  = ForEach ( $X in 0..($Gateway.Count - 1))
-            {        
-                $Item            = [VMGateway]::New($Gateway[$X],1024MB,20GB,1,$This.External.Name)
-                $Item.Path       = $Item.Path       -f $This.VMHost.VirtualMachinePath
-                $Item.NewVhdPath = $Item.NewVhdPath -f $This.VMHost.VirtualHardDiskPath
-                $Item
-            }
-            $This.VMC = @( )
-        }
-        Clear()
-        {
-            $VMList        = Get-VM | % Name
-
-            ForEach ( $Item in $This.Gateway)
+            If (!(Test-Path $Path))
             {
-                If ($Item.Name -in $VMList)
-                {
-                    Stop-VM -Name $Item.Name -Force -Verbose
-                    Remove-VM -Name $Item.Name -Force -Verbose
-                }
+                Throw "Invalid path"
             }
 
-            ForEach ( $Item in $This.Gateway)
+            ElseIf (Get-VM -Name $This.Name -EA 0)
             {
-                If (Test-Path $Item.Path)
+                Write-Host "VM exists..."
+                If (Get-VM -Name $This.Name | ? Status -ne Off)
                 {
-                    Remove-Item $Item.Path -Recurse -Force -Verbose
+                    $This.Stop()
                 }
 
-                If (Test-Path $Item.NewVhdPath)
-                {
-                    Remove-Item $Item.NewVhdPath -Recurse -Force -Verbose
-                }
+                $This.Remove()
             }
-        }
-        Create([Object]$ISOPath)
-        {
-            ForEach ($X in 0..($This.Gateway.Count - 1))
+
+            $This.Path             = $This.Path -f $Path
+            $This.NewVhdPath       = $This.NewVhdPath -f $Path
+
+            If (Test-Path $This.Path)
             {
-                $Item                      = $This.Gateway[$X] | % { 
-                    
-                    @{
-                        Name               = $_.Name
-                        MemoryStartupBytes = $_.MemoryStartupBytes
-                        Path               = $_.Path
-                        NewVhdPath         = $_.NewVhdPath
-                        NewVhdSizeBytes    = $_.NewVhdSizeBytes
-                        Generation         = $_.Generation
-                        SwitchName         = $_.SwitchName
-                    }
-                }
-                
-                New-VM @Item -Verbose
-                Add-VMNetworkAdapter -VMName $Item.Name -SwitchName $This.Internal.Name -Verbose
-                Switch -Regex ($IsoPath.GetType().Name)
-                {
-                    "\[\]"
-                    {
-                        Set-VMDVDDrive -VMName $Item.Name -Path $IsoPath[($X % $IsoPath.Count)] -Verbose
-                    }
-                    Default
-                    {
-                        Set-VMDVDDrive -VMName $Item.Name -Path $ISOPath -Verbose
-                    }
-                }
-                $Mac = $Null
-                $ID  = $Item.Name 
-                Start-VM -Name $ID
-                Do
-                {
-                    Start-Sleep 1
-                    $Item = Get-VM -Name $ID
-                    $Mac  = $Item.NetworkAdapters | ? Switchname -eq $This.External.Name | % MacAddress
-                }
-                Until($Mac -ne 000000000000)
-                Stop-VM -Name $ID -Confirm:$False -Force
-                $This.VMC += $Mac
+                Remove-Item $This.Path -Recurse -Confirm:$False -Verbose
             }
-        }
-    }
 
-    Class Site
-    {
-        Hidden [Object] $Hash
-        [String]$Name
-        [String]$Location
-        [String]$Region
-        [String]$Country
-        [String]$Postal
-        [String]$TimeZone
-        [String]$SiteLink
-        [String]$SiteName
-        [String]$Network
-        [String]$Prefix
-        [String]$Netmask
-        [String]$Start
-        [String]$End
-        [String]$Range
-        [String]$Broadcast
-        Site([Object]$Domain,[Object]$Network)
+            If (Test-Path $This.NewVhdPath)
+            {
+                Remove-Item $This.NewVhdPath -Recurse -Confirm:$False -Verbose
+            }
+
+            $Object                = @{
+
+                Name               = $This.Name
+                MemoryStartupBytes = $This.MemoryStartupBytes
+                Path               = $This.Path
+                NewVhdPath         = $This.NewVhdPath
+                NewVhdSizeBytes    = $This.NewVhdSizebytes
+                Generation         = $This.Generation
+                SwitchName         = $This.SwitchName
+            }
+
+            New-VM @Object -Verbose
+            $Ct = @{Gateway=1;Server=2}[$This.Item.Type]
+            Set-VMProcessor -VMName $This.Name -Count $Ct -Verbose
+        }
+        Start()
         {
-            $This.Hash      = @{ Domain = $Domain; Network = $Network }
-            $This.Name      = $Domain.SiteLink
-            $This.Location  = $Domain.Location
-            $This.Region    = $Domain.Region
-            $This.Country   = $Domain.Country
-            $This.Postal    = $Domain.Postal
-            $This.TimeZone  = $Domain.TimeZone
-            $This.SiteLink  = $Domain.SiteLink
-            $This.Sitename  = $Domain.Sitename
-            $This.Network   = $Network.Network
-            $This.Prefix    = $Network.Prefix
-            $This.Netmask   = $Network.Netmask
-            $This.Start     = $Network.Start
-            $This.End       = $Network.End
-            $This.Range     = $Network.Range
-            $This.Broadcast = $Network.Broadcast
+            Get-VM -Name $This.Name | ? State -eq Off | Start-VM -Verbose
+        }
+        Remove()
+        {
+            Get-VM -Name $This.Name | Remove-VM -Force -Confirm:$False -Verbose
+        }
+        Stop()
+        {
+            Get-VM -Name $This.Name | ? State -ne Off | Stop-VM -Verbose -Force
+        }
+        LoadISO([String]$Path)
+        {
+            If (!(Test-Path $Path))
+            {
+                Throw "Invalid ISO path"
+            }
+
+            Else
+            {
+                Get-VM -Name $This.Name | % { Set-VMDVDDrive -VMName $_.Name -Path $Path -Verbose }
+            }
         }
     }
     
@@ -1245,6 +1292,13 @@ public struct WindowPosition
                     </Setter.Value>
                 </Setter>
             </Style>
+            <Style TargetType="Label">
+                <Setter Property="HorizontalAlignment" Value="Right"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Padding" Value="5"/>
+                <Setter Property="Margin" Value="5"/>
+            </Style>
             <Style TargetType="TabControl">
                 <Setter Property="Background" Value="Azure"/>
             </Style>
@@ -1405,6 +1459,16 @@ public struct WindowPosition
                                         </DataGrid>
                                     </GroupBox>
                                 </TabItem>
+                                <TabItem Header="Hyper-V">
+                                    <GroupBox Header="[CfgHyperV (Veridian)">
+                                        <DataGrid Name="CfgHyperV">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </GroupBox>
+                                </TabItem>
                                 <TabItem Header="Wds">
                                     <GroupBox Header="[CfgWds (Windows Deployment Services)]">
                                         <DataGrid Name="CfgWds">
@@ -1487,11 +1551,10 @@ public struct WindowPosition
                                         <RowDefinition Height="80"/>
                                     </Grid.RowDefinitions>
                                     <DataGrid Grid.Row="0" Name="DcAggregate"
-                                                  ScrollViewer.CanContentScroll="True"
-                                                  ScrollViewer.IsDeferredScrollingEnabled="True"
-                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                                      ScrollViewer.CanContentScroll="True"
+                                                      ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                         <DataGrid.Columns>
-    
                                             <DataGridTextColumn Header="Name"     Binding='{Binding SiteLink}' Width="120"/>
                                             <DataGridTextColumn Header="Location" Binding='{Binding Location}' Width="100"/>
                                             <DataGridTextColumn Header="Region"   Binding='{Binding Region}' Width="60"/>
@@ -1527,16 +1590,16 @@ public struct WindowPosition
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </GroupBox>
-                            <GroupBox Grid.Row="3" Header="[DcTopography]">
+                            <GroupBox Grid.Row="3" Header="[DcTopology]">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="60"/>
                                     </Grid.RowDefinitions>
-                                    <DataGrid Grid.Row="0" Name="DcTopography"
-                                                  ScrollViewer.CanContentScroll="True"
-                                                  ScrollViewer.IsDeferredScrollingEnabled="True"
-                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                    <DataGrid Grid.Row="0" Name="DcTopology"
+                                                      ScrollViewer.CanContentScroll="True"
+                                                      ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name" Binding="{Binding SiteLink}" Width="150"/>
                                             <DataGridTextColumn Header="Sitename" Binding="{Binding SiteName}" Width="200"/>
@@ -1544,8 +1607,8 @@ public struct WindowPosition
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
-                                                            <ComboBoxItem Content="No"/>
-                                                            <ComboBoxItem Content="Yes"/>
+                                                            <ComboBoxItem Content="False"/>
+                                                            <ComboBoxItem Content="True"/>
                                                         </ComboBox>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -1558,12 +1621,11 @@ public struct WindowPosition
                                             <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Button Grid.Column="0" Name="DcGetTopography" Content="Get"/>
-                                        <Button Grid.Column="1" Name="DcNewTopography" Content="New"/>
+                                        <Button Grid.Column="0" Name="DcGetTopology" Content="Get"/>
+                                        <Button Grid.Column="1" Name="DcNewTopology" Content="New"/>
                                     </Grid>
                                 </Grid>
                             </GroupBox>
-                            
                         </Grid>
                     </TabItem>
                     <TabItem Header="Network" BorderBrush="{x:Null}">
@@ -1591,9 +1653,9 @@ public struct WindowPosition
                                         <RowDefinition Height="80"/>
                                     </Grid.RowDefinitions>
                                     <DataGrid Name="NwAggregate"
-                                                  ScrollViewer.CanContentScroll="True" 
-                                                  ScrollViewer.IsDeferredScrollingEnabled="True"
-                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                                      ScrollViewer.CanContentScroll="True" 
+                                                      ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name"      Binding="{Binding Network}"   Width="100"/>
                                             <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="100"/>
@@ -1625,16 +1687,16 @@ public struct WindowPosition
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </GroupBox>
-                            <GroupBox Grid.Row="3" Header="[NwTopography]">
+                            <GroupBox Grid.Row="3" Header="[NwTopology]">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="60"/>
                                     </Grid.RowDefinitions>
-                                    <DataGrid Grid.Row="0" Name="NwTopography"
-                                                      ScrollViewer.CanContentScroll="True"
-                                                      ScrollViewer.IsDeferredScrollingEnabled="True"
-                                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                    <DataGrid Grid.Row="0" Name="NwTopology"
+                                                          ScrollViewer.CanContentScroll="True"
+                                                          ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                          ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name"    Binding="{Binding Name}" Width="150"/>
                                             <DataGridTextColumn Header="Network" Binding="{Binding Network}" Width="200"/>
@@ -1642,8 +1704,8 @@ public struct WindowPosition
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
-                                                            <ComboBoxItem Content="No"/>
-                                                            <ComboBoxItem Content="Yes"/>
+                                                            <ComboBoxItem Content="False"/>
+                                                            <ComboBoxItem Content="True"/>
                                                         </ComboBox>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -1663,13 +1725,14 @@ public struct WindowPosition
                             </GroupBox>
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Gateway" BorderBrush="{x:Null}">
+                    <TabItem Header="Sitemap" BorderBrush="{x:Null}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="80"/>
-                                <RowDefinition Height="225"/>
-                                <RowDefinition Height="150"/>
+                                <RowDefinition Height="180"/>
+                                <RowDefinition Height="180"/>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="80"/>
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0">
                                 <Grid.ColumnDefinitions>
@@ -1677,29 +1740,97 @@ public struct WindowPosition
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="120"/>
                                 </Grid.ColumnDefinitions>
-                                <GroupBox Grid.Column="0" Header="[GwSiteCount]">
-                                    <TextBox Name="GwSiteCount"/>
+                                <GroupBox Grid.Column="0" Header="[SmSiteCount]">
+                                    <TextBox Name="SmSiteCount"/>
                                 </GroupBox>
-                                <GroupBox Grid.Column="1" Header="[GwNetworkCount]">
-                                    <TextBox Name="GwNetworkCount"/>
+                                <GroupBox Grid.Column="1" Header="[SmNetworkCount]">
+                                    <TextBox Name="SmNetworkCount"/>
                                 </GroupBox>
-                                <Button Grid.Column="2" Name="GwLoadGateway" Content="Load"/>
+                                <Button Grid.Column="2" Name="SmLoadSitemap" Content="Load"/>
                             </Grid>
-                            <GroupBox Grid.Row="1" Header="[GwAggregate]">
+                            <GroupBox Grid.Row="1" Header="[SmAggregate]">
+                                <DataGrid Name="SmAggregate">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name"      Binding="{Binding Name}"     Width="*"/>
+                                        <DataGridTextColumn Header="Location"  Binding="{Binding Location}" Width="*"/>
+                                        <DataGridTextColumn Header="Sitename"  Binding="{Binding SiteName}" Width="*"/>
+                                        <DataGridTextColumn Header="Network"   Binding="{Binding Network}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="2" Header="[SmTemplate]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="20"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="Select the following items to create objects for each site listed above"/>
+                                    <DataGrid Grid.Row="1" Name="SmTemplate">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="ObjectClass" Binding="{Binding ObjectClass}" Width="150"/>
+                                            <DataGridTemplateColumn Header="Create" Width="*">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedIndex="{Binding Create}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
+                                                            <ComboBoxItem Content="False"/>
+                                                            <ComboBoxItem Content="True"/>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="3" Header="[SmTopology]">
+                                <DataGrid Name="SmTopology">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                        <DataGridTemplateColumn Header="Exists" Width="60">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
+                                                        <ComboBoxItem Content="False"/>
+                                                        <ComboBoxItem Content="True"/>
+                                                    </ComboBox>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                            <Grid Grid.Row="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Name="SmGetSitemap" Content="Get"/>
+                                <Button Grid.Column="1" Name="SmNewSitemap" Content="New"/>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Gateway" BorderBrush="{x:Null}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="225"/>
+                                <RowDefinition Height="150"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <GroupBox Grid.Row="0" Header="[GwAggregate]">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="80"/>
                                     </Grid.RowDefinitions>
                                     <DataGrid Name="GwAggregate"
-                                                  ScrollViewer.CanContentScroll="True" 
-                                                  ScrollViewer.IsDeferredScrollingEnabled="True"
-                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                                      ScrollViewer.CanContentScroll="True" 
+                                                      ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name"      Binding="{Binding Name}"     Width="*"/>
-                                            <DataGridTextColumn Header="Location"  Binding="{Binding Location}" Width="*"/>
-                                            <DataGridTextColumn Header="Sitename"  Binding="{Binding SiteName}" Width="*"/>
-                                            <DataGridTextColumn Header="Network"   Binding="{Binding Network}"  Width="*"/>
+                                            <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>
+                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                     <Grid Grid.Row="1" Margin="5">
@@ -1716,7 +1847,7 @@ public struct WindowPosition
                                     </Grid>
                                 </Grid>
                             </GroupBox>
-                            <GroupBox Grid.Row="2" Header="[GwViewer]">
+                            <GroupBox Grid.Row="1" Header="[GwViewer]">
                                 <DataGrid Name="GwViewer">
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>
@@ -1724,13 +1855,13 @@ public struct WindowPosition
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </GroupBox>
-                            <GroupBox Grid.Row="3" Header="[GwTopography]">
+                            <GroupBox Grid.Row="2" Header="[GwTopology]">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="60"/>
                                     </Grid.RowDefinitions>
-                                    <DataGrid Grid.Row="0" Name="GwTopography">
+                                    <DataGrid Grid.Row="0" Name="GwTopology">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="SiteName"  Binding="{Binding SiteName}" Width="200"/>
                                             <DataGridTextColumn Header="Network"    Binding="{Binding Network}" Width="150"/>
@@ -1738,8 +1869,8 @@ public struct WindowPosition
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
-                                                            <ComboBoxItem Content="No"/>
-                                                            <ComboBoxItem Content="Yes"/>
+                                                            <ComboBoxItem Content="False"/>
+                                                            <ComboBoxItem Content="True"/>
                                                         </ComboBox>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -1757,6 +1888,322 @@ public struct WindowPosition
                                     </Grid>
                                 </Grid>
                             </GroupBox>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Server" BorderBrush="{x:Null}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="225"/>
+                                <RowDefinition Height="150"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <GroupBox Grid.Row="0" Header="[SrAggregate]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="80"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Name="SrAggregate"
+                                                      ScrollViewer.CanContentScroll="True" 
+                                                      ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>
+                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1" Margin="5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="50"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="1" Name="SrAddServer" Content="+"/>
+                                        <GroupBox Grid.Column="0" Header="[SrServerName]">
+                                            <TextBox Name="SrServer"/>
+                                        </GroupBox>
+                                        <Button Grid.Column="2" Name="SrRemoveServer" Content="-"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="1" Header="[SrViewer]">
+                                <DataGrid Name="SrViewer">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>
+                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="2" Header="[SrTopology]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="60"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0" Name="SrTopology">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="SiteName"  Binding="{Binding SiteName}" Width="200"/>
+                                            <DataGridTextColumn Header="Network"    Binding="{Binding Network}" Width="150"/>
+                                            <DataGridTemplateColumn Header="Exists" Width="50">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
+                                                            <ComboBoxItem Content="False"/>
+                                                            <ComboBoxItem Content="True"/>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Name="SrGetServer" Content="Get"/>
+                                        <Button Grid.Column="1" Name="SrNewServer" Content="New"/>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Virtual" BorderBrush="{x:Null}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="80"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="150"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Grid.Column="0" Header="[VmHost]">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0" Name="VmHostSelect" Content="Select"/>
+                                        <TextBox Grid.Column="1" Name="VmHost"/>
+                                    </Grid>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Header="[VmPopulate]">
+                                    <Button Grid.Column="0" Name="VmPopulate" Content="Pull"/>
+                                </GroupBox>
+                            </Grid>
+                            <TabControl Grid.Row="1">
+                                <TabItem Header="Control">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="120"/>
+                                            <RowDefinition Height="80"/>
+                                            <RowDefinition Height="80"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <GroupBox Header="[VmController]">
+                                            <DataGrid Name="VmController">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                                                    <DataGridTextColumn Header="Status (Hyper-V Service)" Binding="{Binding Status}" Width="150"/>
+                                                    <DataGridTextColumn Header="Credential" Binding="{Binding Username}" Width="*"/>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </GroupBox>
+                                        <Grid Grid.Row="1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <GroupBox Grid.Column="0" Header="[VmControllerSwitch]">
+                                                <ComboBox Name="VmControllerSwitch"/>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="1" Header="[VmControllerNetwork]">
+                                                <TextBox Name="VmControllerNetwork"/>
+                                            </GroupBox>
+                                        </Grid>
+                                        <Grid Grid.Row="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <GroupBox Grid.Column="0" Header="[VmControllerConfigVM]">
+                                                <ComboBox Name="VmControllerConfigVM"/>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="1" Header="[VmControllerGateway]">
+                                                <TextBox Name="VmControllerGateway"/>
+                                            </GroupBox>
+                                        </Grid>
+                                        <GroupBox Grid.Row="3" Header="[VmSelect]">
+                                            <DataGrid Name="VmSelect">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>
+                                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                                    <DataGridTemplateColumn Header="Create VM?" Width="100">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ComboBox SelectedIndex="{Binding Create}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
+                                                                    <ComboBoxItem Content="False"/>
+                                                                    <ComboBoxItem Content="True"/>
+                                                                </ComboBox>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </GroupBox>
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Gateway">
+                                    <GroupBox Header="[VmGateway]">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="160"/>
+                                            </Grid.RowDefinitions>
+                                            <DataGrid Grid.Row="0" Name="VmGateway">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                                    <DataGridTemplateColumn Header="Exists" Width="100">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
+                                                                    <ComboBoxItem Content="False"/>
+                                                                    <ComboBoxItem Content="True"/>
+                                                                </ComboBox>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                            <Grid Grid.Row="1">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="120"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid Grid.Column="0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <GroupBox Grid.Row="0" Header="[VmGatewayScript]">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="100"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Button Grid.Column="0" Name="VmGatewayScriptSelect" Content="Select"/>
+                                                            <TextBox Grid.Column="1" Name="VmGatewayScript"/>
+                                                        </Grid>
+                                                    </GroupBox>
+                                                    <GroupBox Grid.Row="1" Header="[VmGatewayImage]">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="100"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Button Grid.Column="0" Name="VmGatewayImageSelect" Content="Select"/>
+                                                            <TextBox Grid.Column="1" Name="VmGatewayImage"/>
+                                                        </Grid>
+                                                    </GroupBox>
+                                                </Grid>
+                                                <Grid Grid.Column="1">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <GroupBox Grid.Row="0" Header="[(RAM/MB)]">
+                                                        <TextBox Name="VmGatewayMemory"/>
+                                                    </GroupBox>
+                                                    <GroupBox Grid.Row="1" Header="[(HDD/GB)]">
+                                                        <TextBox Name="VmGatewayDrive"/>
+                                                    </GroupBox>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                    </GroupBox>
+                                </TabItem>
+                                <TabItem Header="Server">
+                                    <GroupBox Header="[VmServer]">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="160"/>
+                                            </Grid.RowDefinitions>
+                                            <DataGrid Grid.Row="0" Name="VmServer">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                                    <DataGridTemplateColumn Header="Exists" Width="100">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
+                                                                    <ComboBoxItem Content="False"/>
+                                                                    <ComboBoxItem Content="True"/>
+                                                                </ComboBox>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                            <Grid Grid.Row="1">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="120"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid Grid.Column="0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <GroupBox Grid.Row="0" Header="[VmServerScript]">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="100"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Button Grid.Column="0" Name="VmServerScriptSelect" Content="Select"/>
+                                                            <TextBox Grid.Column="1" Name="VmServerScript"/>
+                                                        </Grid>
+                                                    </GroupBox>
+                                                    <GroupBox Grid.Row="1" Header="[VmServerImage]">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="100"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Button Grid.Column="0" Name="VmServerImageSelect" Content="Select"/>
+                                                            <TextBox Grid.Column="1" Name="VmServerImage"/>
+                                                        </Grid>
+                                                    </GroupBox>
+                                                </Grid>
+                                                <Grid Grid.Column="1">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <GroupBox Grid.Row="0" Header="[(RAM/MB)]">
+                                                        <TextBox Name="VmServerMemory"/>
+                                                    </GroupBox>
+                                                    <GroupBox Grid.Row="1" Header="[(HDD/GB)]">
+                                                        <TextBox Name="VmServerDrive"/>
+                                                    </GroupBox>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                    </GroupBox>
+                                </TabItem>
+                            </TabControl>
+                            <Grid Grid.Row="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Name="VmGetArchitecture" Content="Get"/>
+                                <Button Grid.Column="1" Name="VmNewArchitecture" Content="New"/>
+                            </Grid>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Imaging" BorderBrush="{x:Null}">
@@ -1907,14 +2354,14 @@ public struct WindowPosition
                                 </Grid>
                             </GroupBox>
                             <GroupBox Grid.Row="2" Header="[UpdViewer]">
-                                    <DataGrid Name="UpdViewer">
-                                        <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                                            <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>
-                                            <DataGridCheckBoxColumn Header="Install" Binding="{Binding Install}" Width="50"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </GroupBox>
+                                <DataGrid Name="UpdViewer">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
+                                        <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>
+                                        <DataGridCheckBoxColumn Header="Install" Binding="{Binding Install}" Width="50"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
                             <GroupBox Grid.Row="3" Header="[UpdWim]">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -1943,43 +2390,76 @@ public struct WindowPosition
                     <TabItem Header="Share">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="80"/>
-                                <RowDefinition Height="80"/>
+                                <RowDefinition Height="310"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <Grid Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="150"/>
-                                </Grid.ColumnDefinitions>
-                                <Button Name="DsRootSelect" Grid.Column="0" Content="Select"/>
-                                <GroupBox Grid.Column="1" Header="[DsRootPath (Root)]">
-                                    <TextBox Name="DsRootPath"/>
-                                </GroupBox>
-                                <GroupBox Grid.Column="2" Header="[DsShareName (SMB)]">
-                                    <TextBox Name="DsShareName"/>
-                                </GroupBox>
-                            </Grid>
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="150"/>
-                                </Grid.ColumnDefinitions>
-                                <GroupBox Grid.Column="0" Header="[DsDriveName]">
-                                    <TextBox Name="DsDriveName"/>
-                                </GroupBox>
-                                <GroupBox Grid.Column="1" Header="[DsDescription]">
-                                    <TextBox Name="DsDescription"/>
-                                </GroupBox>
-                                <GroupBox Grid.Column="2" Header="[Legacy MDT/PSD]">
-                                    <ComboBox Name="DsType">
-                                        <ComboBoxItem Content="MDT" IsSelected="True"/>
-                                        <ComboBoxItem Content="PSD"/>
-                                    </ComboBox>
-                                </GroupBox>
-                            </Grid>
+                            <GroupBox Header="[DsAggregate]">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="120"/>
+                                        <RowDefinition Height="180"/>
+                                    </Grid.RowDefinitions>
+                                    <DataGrid Grid.Row="0" Name="DsAggregate"
+                                                    ScrollViewer.CanContentScroll="True" 
+                                                    ScrollViewer.IsDeferredScrollingEnabled="True"
+                                                    ScrollViewer.HorizontalScrollBarVisibility="Visible">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="60"/>
+                                            <DataGridTextColumn Header="Root" Binding="{Binding Root}" Width="*"/>
+                                            <DataGridTextColumn Header="Share" Binding="{Binding Share}" Width="150"/>
+                                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="Auto"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Grid Grid.Row="1">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="80"/>
+                                            <RowDefinition Height="80"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="150"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="50"/>
+                                                <ColumnDefinition Width="50"/>
+                                            </Grid.ColumnDefinitions>
+                                            <GroupBox Grid.Column="0" Header="[DsDriveName]">
+                                                <TextBox Name="DsDriveName"/>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="1" Header="[DsRootPath (Root)]">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="80"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Button Grid.Column="0" Name="DsRootSelect" Content="Select"/>
+                                                    <TextBox Grid.Column="1" Name="DsRootPath"/>
+                                                </Grid>
+                                            </GroupBox>
+                                            <Button Grid.Column="2" Name="DsAddShare" Content="+"/>
+                                            <Button Grid.Column="3" Name="DsRemoveShare" Content="-"/>
+                                        </Grid>
+                                        <Grid Grid.Row="1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="150"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="150"/>
+                                            </Grid.ColumnDefinitions>
+                                            <GroupBox Grid.Column="0" Header="[DsShareName (SMB)]">
+                                                <TextBox Name="DsShareName"/>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="1" Header="[DsDescription]">
+                                                <TextBox Name="DsDescription"/>
+                                            </GroupBox>
+                                            <GroupBox Grid.Column="2" Header="[Legacy MDT/PSD]">
+                                                <ComboBox Name="DsType">
+                                                    <ComboBoxItem Content="MDT" IsSelected="True"/>
+                                                    <ComboBoxItem Content="PSD"/>
+                                                </ComboBox>
+                                            </GroupBox>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </GroupBox>
                             <GroupBox Grid.Row="2" Header="[DsShareConfig]">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -1987,7 +2467,25 @@ public struct WindowPosition
                                         <RowDefinition Height="60"/>
                                     </Grid.RowDefinitions>
                                     <TabControl Grid.Row="0">
-                                        <TabItem Header="Domain Admin">
+                                        <TabItem Header="Network">
+                                            <Grid VerticalAlignment="Top">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="80"/>
+                                                    <RowDefinition Height="80"/>
+                                                    <RowDefinition Height="80"/>
+                                                </Grid.RowDefinitions>
+                                                <GroupBox Grid.Row="0" Header="[DsNwNetBiosName]">
+                                                    <TextBox Name="DsNwNetBiosName"/>
+                                                </GroupBox>
+                                                <GroupBox Grid.Row="1" Header="[DsNwDnsName]">
+                                                    <TextBox Name="DsNwDnsName"/>
+                                                </GroupBox>
+                                                <GroupBox Grid.Row="2" Header="[DsNwMachineOuName]">
+                                                    <TextBox Name="DsNwMachineOuName"/>
+                                                </GroupBox>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Domain">
                                             <Grid  VerticalAlignment="Top">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="80"/>
@@ -2008,7 +2506,7 @@ public struct WindowPosition
                                                 </GroupBox>
                                             </Grid>
                                         </TabItem>
-                                        <TabItem Header="Local Admin">
+                                        <TabItem Header="Local">
                                             <Grid VerticalAlignment="Top">
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="80"/>
@@ -2035,26 +2533,26 @@ public struct WindowPosition
                                                     <RowDefinition Height="80"/>
                                                     <RowDefinition Height="80"/>
                                                     <RowDefinition Height="80"/>
-                                                    <RowDefinition Height="80"/>
                                                 </Grid.RowDefinitions>
                                                 <Grid Grid.Row="0">
                                                     <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="100"/>
-                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="50"/>
+                                                        <ColumnDefinition Width="150"/>
+                                                        <ColumnDefinition Width="150"/>
                                                         <ColumnDefinition Width="*"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <Button Name="DsBrCollect" Content="Collect" IsEnabled="True"/>
-                                                    <GroupBox Grid.Column="1" Header="[BrPhone (Support Phone)]">
+                                                    <Button Name="DsBrCollect" Content="~" IsEnabled="True"/>
+                                                    <GroupBox Grid.Column="1" Header="[BrPhone]">
                                                         <TextBox Name="DsBrPhone"/>
                                                     </GroupBox>
-                                                    <GroupBox Grid.Column="2" Header="[BrHours (Support Hours)]">
+                                                    <GroupBox Grid.Column="2" Header="[BrHours]">
                                                         <TextBox Name="DsBrHours"/>
                                                     </GroupBox>
+                                                    <GroupBox Grid.Column="3" Header="[BrWebsite]">
+                                                        <TextBox Name="DsBrWebsite"/>
+                                                    </GroupBox>
                                                 </Grid>
-                                                <GroupBox Grid.Row="1" Header="[BrWebsite (Support Website)]">
-                                                    <TextBox Name="DsBrWebsite"/>
-                                                </GroupBox>
-                                                <GroupBox Grid.Row="2" Header="[BrLogo (120x120 Bitmap/*.bmp)]">
+                                                <GroupBox Grid.Row="1" Header="[BrLogo (120x120 Bitmap/*.bmp)]">
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="100"/>
@@ -2064,7 +2562,7 @@ public struct WindowPosition
                                                         <TextBox Grid.Column="1" Name="DsBrLogo"/>
                                                     </Grid>
                                                 </GroupBox>
-                                                <GroupBox Grid.Row="3" Header="[BrBackground (Common Image File)]">
+                                                <GroupBox Grid.Row="2" Header="[BrBackground (Common Image File)]">
                                                     <Grid>
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="100"/>
@@ -2073,24 +2571,6 @@ public struct WindowPosition
                                                         <Button Grid.Column="0" Name="DsBrBackgroundSelect" Content="Select"/>
                                                         <TextBox Grid.Column="1" Name="DsBrBackground"/>
                                                     </Grid>
-                                                </GroupBox>
-                                            </Grid>
-                                        </TabItem>
-                                        <TabItem Header="Network">
-                                            <Grid VerticalAlignment="Top">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="80"/>
-                                                    <RowDefinition Height="80"/>
-                                                    <RowDefinition Height="80"/>
-                                                </Grid.RowDefinitions>
-                                                <GroupBox Grid.Row="0" Header="[DsNwNetBiosName]">
-                                                    <TextBox Name="DsNwNetBiosName"/>
-                                                </GroupBox>
-                                                <GroupBox Grid.Row="1" Header="[DsNwDnsName]">
-                                                    <TextBox Name="DsNwDnsName"/>
-                                                </GroupBox>
-                                                <GroupBox Grid.Row="2" Header="[DsNwMachineOuName]">
-                                                    <TextBox Name="DsNwMachineOuName"/>
                                                 </GroupBox>
                                             </Grid>
                                         </TabItem>
@@ -2164,6 +2644,21 @@ public struct WindowPosition
 "@
     }
 
+    Class VmStack
+    {
+        [Object] $Host
+        [Object] $Switch
+        [Object] $External
+        [Object] $Internal
+        VmStack([Object]$VmHost,[Object]$VmSwitch)
+        {
+            $This.Host     = $VmHost
+            $This.Switch   = $VmSwitch
+            $This.External = $Vmswitch | ? SwitchType -eq External
+            $This.Internal = $Vmswitch | ? SwitchType -eq Internal
+        }
+    }
+
     # Controller class
     Class Main
     {
@@ -2175,18 +2670,30 @@ public struct WindowPosition
         Hidden [Object]   $ZipStack
         [String]               $Org
         [String]                $CN
+        [Object]        $Credential
         [Object]          $Template
         [String]        $SearchBase
-        [Object]               $Win 
+        [Object]               $Win
         [Object]               $Reg
         [Object]            $Config
+        [Object]                $IP
+        [Object]              $Dhcp
         [Object]          $SiteList
         [Object]        $SubnetList
-        [Object]            $OuList
+        [Object]            $OUList
+        [Object]        $SmTemplate
         [Object]            $Domain
         [Object]           $Network
+        [Object]           $Sitemap
         [Object]           $Gateway
         [Object]            $Server
+        [Object]           $Service
+        [Object]              $ADDS
+        [Object]           $Virtual
+        [Object]                $Vm
+        [Object]                $Sw
+        [Object]                $Gw
+        [Object]                $Sr
         [Object]             $Image
         [Object]            $Update
         [Object]             $Share
@@ -2215,13 +2722,34 @@ public struct WindowPosition
                 }
             )
 
-            $This.Domain  = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-            $This.Network = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-            $This.Gateway = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-            $This.Server  = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-            $This.Image   = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-            $This.Update  = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-            $This.Share   = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.IP         = Get-NetIPAddress | % IPAddress
+            $This.DHCP       = @{ 
+
+                ScopeID      = Get-DHCPServerV4Scope | % ScopeID
+                Options      = Get-DHCPServerV4OptionValue | Sort-Object OptionID
+            }
+
+            $This.SmTemplate = [SmTemplate]::New().Stack
+            $This.Domain     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Network    = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Sitemap    = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Gateway    = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Server     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Image      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Update     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Share      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.ADDS       = @{ 
+
+                Gateway      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+                Server       = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            }
+            $This.Virtual    = @{ 
+
+                Gateway      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+                Server       = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            }
+
+            $This.OUList     = Get-ADObject -Filter * | ? ObjectClass -eq OrganizationalUnit
         }
         [Void] GetSiteList()
         {
@@ -2231,29 +2759,24 @@ public struct WindowPosition
         {
             $This.SubnetList    = Get-ADObject -LDAPFilter "(objectClass=subnet)" -SearchBase "CN=Configuration,$($This.SearchBase)"
         }
-        [Void] GetOuList()
+        [Void] GetOUList()
         {
-            $This.OuList        = Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)" -SearchBase $This.SearchBase
-        }
-        [Void] GetLists()
-        {
-            $This.GetSiteList()
-            $This.GetSubnetList()
-            $This.GetOuList()
+            $This.OUList        = Get-ADObject -LDAPFilter "(objectClass=OrganizationalUnit)" -SearchBase $This.SearchBase 
         }
         [Object] NewCertificate()
         {
             Return @( [Certificate]::New($This.Org,$This.CN) )
         }
-        [Void] LoadSitemap([String]$Organization,[String]$CommonName)
-        {   # $Organization = "Secure Digits Plus LLC"; $CommonName = "securedigitsplus.com"
+        [Void] LoadSite([String]$Organization,[String]$CommonName)
+        {
             $This.Org           = $Organization
             $This.CN            = $CommonName
             $This.Template      = $This.NewCertificate()
             $This.SearchBase    = "DC=$( $CommonName.Split(".") -join ",DC=" )"
 
             $This.AddSiteName($This.Template.Postal)
-            $This.GetLists()
+            $This.GetSiteList()
+            $This.GetSubnetList()
         }
         [Void] AddSitename([String]$Zip)
         {
@@ -2286,7 +2809,7 @@ public struct WindowPosition
         [Object[]] GetDomain([Object]$List)
         {
             $This.GetSiteList()
-            Return @( $List | % { [DcTopography]::New($This.SiteList,$_) } )
+            Return @( $List | % { [DcTopology]::New($This.SiteList,$_) } )
         }
         [Void] NewDomain([Object]$List)
         {
@@ -2315,7 +2838,7 @@ public struct WindowPosition
                 $This.Network    = @( $Tmp )
             }
         }
-        [Void] AddSubnet([String]$Prefix)
+        [Void] AddSubnet([String]$Prefix) # Add further error handling on input
         {
             If ( $Prefix -notmatch "((\d+\.+){3}\d+\/\d+)" )
             {
@@ -2345,7 +2868,7 @@ public struct WindowPosition
         [Object[]] GetNetwork([Object]$List)
         {
             $This.GetSubnetList()
-            Return @( $List | % { [NwTopography]::New($This.SubnetList,$_) } )
+            Return @( $List | % { [NwTopology]::New($This.SubnetList,$_) } )
         }
         [Void] NewNetwork([Object]$List)
         {
@@ -2360,27 +2883,27 @@ public struct WindowPosition
                 }
             }
         }
-        [Void] LoadGateway()
+        [Void] LoadSitemap()
         {
             If ($This.Network.Count -lt $This.Domain.Count)
             {
                 Throw "Insufficient networks"
             }
 
-            $This.Gateway = @( )
+            $This.Sitemap = @( )
 
             ForEach ($X in 0..($This.Domain.Count - 1))
             {
-                $This.Gateway += [Site]::New($This.Domain[$X],$This.Network[$X])
+                $This.Sitemap += [Site]::New($This.Domain[$X],$This.Network[$X])
             }
         }
-        [Void] RemoveGateway([String]$Name)
+        [Void] RemoveGateway([String]$DistinguishedName)
         {
             If ( $This.Gateway.Count -gt 1 )
             {
-                If ($Name -in $This.Gateway.Name)
+                If ($DistinguishedName -in $This.Gateway.DistinguishedName)
                 {
-                    $This.Gateway = @( $This.Gateway | ? Name -ne $Name )
+                    $This.Gateway = @( $This.Gateway | ? DistinguishedName -ne $DistinguishedName )
                 }
             }
 
@@ -2389,10 +2912,20 @@ public struct WindowPosition
                 [System.Windows.MessageBox]::Show("Invalid operation, only one gateway remaining","Error")
             }
         }
-        [Object[]] GetGateway([Object]$List)
+        [Void] RemoveServer([String]$DistinguishedName)
         {
-            $This.GetOuList()
-            Return @( $List | % { [GwTopography]::New($This.OuList,$_) } )
+            If ( $This.Server.Count -gt 1 )
+            {
+                If ($DistinguishedName -in $This.Server.DistinguishedName)
+                {
+                    $This.Server = @( $This.Server | ? DistinguishedName -ne $DistinguishedName )
+                }
+            }
+
+            Else
+            {
+                [System.Windows.MessageBox]::Show("Invalid operation, only one gateway remaining","Error")
+            }
         }
         [Object[]] LoadUpdate([String]$Path)
         {
@@ -2408,7 +2941,7 @@ public struct WindowPosition
         $X = "    # `$Xaml.IO.$_"
         $Y = $Xaml.IO.$_.GetType().Name 
         "{0}{1} # $Y" -f $X,(" "*(40-$X.Length) -join '')
-    }#>
+    } | Set-Clipboard #>
 
 #    ____                                                                                                    ________    
 #   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
@@ -2421,6 +2954,7 @@ public struct WindowPosition
     # $Xaml.IO.CfgDhcp                  # DataGrid
     # $Xaml.IO.CfgDns                   # DataGrid
     # $Xaml.IO.CfgAdds                  # DataGrid
+    # $Xaml.IO.CfgHyperV                # DataGrid
     # $Xaml.IO.CfgWds                   # DataGrid
     # $Xaml.IO.CfgMdt                   # DataGrid
     # $Xaml.IO.CfgWinAdk                # DataGrid
@@ -2432,17 +2966,21 @@ public struct WindowPosition
     $Xaml.IO.CfgDhcp.ItemsSource        = @( )
     $Xaml.IO.CfgDns.ItemsSource         = @( )
     $Xaml.IO.CfgAdds.ItemsSource        = @( )
+    $Xaml.IO.CfgHyperV.ItemsSource      = @( )
     $Xaml.IO.CfgWds.ItemsSource         = @( )
     $Xaml.IO.CfgMdt.ItemsSource         = @( )
     $Xaml.IO.CfgWinAdk.ItemsSource      = @( )
     $Xaml.IO.CfgWinPE.ItemsSource       = @( )
     $Xaml.IO.CfgIIS.ItemsSource         = @( )
 
+    # [DataGrid]://PersistentDrives
+    $Xaml.IO.DsAggregate.ItemsSource    = @( )
+
     # [CfgServices]://$Main.Config
     $Xaml.IO.CfgServices.ItemsSource    = @( $Main.Config )
 
     # [CfgMdt]://Installed ? -> Load persistent drives
-    If ( $Main.Config | ? Name -eq MDT | ? Value -eq $True )
+    If ($Main.Config | ? Name -eq MDT | ? Value -eq $True)
     {   
         $MDT     = Get-ItemProperty HKLM:\Software\Microsoft\Deployment* | % Install_Dir | % TrimEnd \
         Import-Module "$MDT\Bin\MicrosoftDeploymentToolkit.psd1"
@@ -2450,10 +2988,13 @@ public struct WindowPosition
         If (Get-MDTPersistentDrive)
         {
             Restore-MDTPersistentDrive
-            $Persist = Get-MDTPersistentDrive
+            ForEach ($Drive in Get-MDTPersistentDrive)
+            {
+                $Xaml.IO.DsAggregate.ItemsSource += [DsShare]$Drive
+            }
         }
 
-        $Xaml.IO.DsDriveName.Text = ("FE{0:d3}" -f @($Persist.Count + 1))
+        $Xaml.IO.DsAggregate.ItemsSource += [DsShare]::New("<New>","-",$Null,"-")
     }
 
 #    ____                                                                                                    ________    
@@ -2472,31 +3013,31 @@ public struct WindowPosition
     # $Xaml.IO.DcAddSitenameTown        # Text
     # $Xaml.IO.DcRemoveSitename         # Button
     # $Xaml.IO.DcViewer                 # DataGrid
-    # $Xaml.IO.DcTopography             # DataGrid
-    # $Xaml.IO.DcGetTopography          # Button
-    # $Xaml.IO.DcNewTopography          # Button
+    # $Xaml.IO.DcTopology               # DataGrid
+    # $Xaml.IO.DcGetTopology            # Button
+    # $Xaml.IO.DcNewTopology            # Button
 
     # [DataGrid(s)]://Initialize
     $Xaml.IO.DcAggregate.ItemsSource    = @( )
     $Xaml.IO.DcViewer.ItemsSource       = @( )
-    $Xaml.IO.DcTopography.ItemsSource   = @( )
+    $Xaml.IO.DcTopology.ItemsSource     = @( )
 
     # [Domain]://Events
     $Xaml.IO.DcGetSitename.Add_Click(
     {
         If (!$Xaml.IO.DcOrganization.Text)
         {
-            [System.Windows.MessageBox]::Show("Invalid/null organization entry","Error")
+            Return [System.Windows.MessageBox]::Show("Invalid/null organization entry","Error")
         }
 
         ElseIf (!$Xaml.IO.DcCommonName.Text)
         {
-            [System.Windows.MessageBox]::Show("Invalid/null common name entry","Error")
+            Return [System.Windows.MessageBox]::Show("Invalid/null common name entry","Error")
         }
 
         Else
         {   # $Main.LoadSitemap("Secure Digits Plus LLC","securedigitsplus.com")
-            $Main.LoadSitemap($Xaml.IO.DcOrganization.Text,$Xaml.IO.DcCommonName.Text)
+            $Main.LoadSite($Xaml.IO.DcOrganization.Text,$Xaml.IO.DcCommonName.Text)
             $Xaml.IO.DcAggregate.ItemsSource   = @( )
             $Xaml.IO.DcAggregate.ItemsSource   = @( $Main.Domain )
             $Xaml.IO.DcGetSitename.IsEnabled   = 0
@@ -2571,18 +3112,18 @@ public struct WindowPosition
         }
     })
 
-    $Xaml.IO.DcGetTopography.Add_Click(
+    $Xaml.IO.DcGetTopology.Add_Click(
     {
-        $Tmp                              = @( $Main.GetDomain($Main.Domain) | % { [DcTopography]::New($Main.SiteList,$_) } )
-        $Xaml.IO.DcTopography.ItemsSource = @( )
-        $Xaml.IO.DcTopography.ItemsSource = @( $Tmp )
+        $Tmp                              = @( $Main.GetDomain($Main.Domain) | % { [DcTopology]::New($Main.SiteList,$_) } )
+        $Xaml.IO.DcTopology.ItemsSource   = @( )
+        $Xaml.IO.DcTopology.ItemsSource   = @( $Tmp )
 
-        $Xaml.IO.GwSiteCount.Text         = $Main.Domain.Count
+        $Xaml.IO.SmSiteCount.Text         = $Main.Domain.Count
     })
     
-    $Xaml.IO.DcNewTopography.Add_Click(
+    $Xaml.IO.DcNewTopology.Add_Click(
     {
-        ForEach ( $Item in $Xaml.IO.DcTopography.ItemsSource )
+        ForEach ( $Item in $Xaml.IO.DcTopology.ItemsSource )
         {
             If ( $Item.Exists -eq 0 )
             {
@@ -2590,11 +3131,11 @@ public struct WindowPosition
             }
         }
 
-        $Tmp                              = @( $Main.GetDomain($Main.Domain) | % { [DcTopography]::New($Main.SiteList,$_) } )
-        $Xaml.IO.DcTopography.ItemsSource = @( )
-        $Xaml.IO.DcTopography.ItemsSource = @( $Tmp )
+        $Tmp                              = @( $Main.GetDomain($Main.Domain) | % { [DcTopology]::New($Main.SiteList,$_) } )
+        $Xaml.IO.DcTopology.ItemsSource   = @( )
+        $Xaml.IO.DcTopology.ItemsSource   = @( $Tmp )
 
-        $Xaml.IO.GwSiteCount.Text         = $Main.Domain.Count
+        $Xaml.IO.SmSiteCount.Text         = $Main.Domain.Count
     })
 
 #    ____                                                                                                    ________    
@@ -2610,21 +3151,21 @@ public struct WindowPosition
     # $Xaml.IO.NwViewer                 # DataGrid
     # $Xaml.IO.NwAddNetwork             # Button
     # $Xaml.IO.NwRemoveNetwork          # Button
-    # $Xaml.IO.NwTopography             # DataGrid
+    # $Xaml.IO.NwTopology               # DataGrid
     # $Xaml.IO.NwGetNetwork             # Button
     # $Xaml.IO.NwNewNetwork             # Button
 
     # [DataGrid(s)]://Initialize
     $Xaml.IO.NwAggregate.ItemsSource    = @( )
     $Xaml.IO.NwViewer.ItemsSource       = @( )
-    $Xaml.IO.NwTopography.ItemsSource   = @( )
+    $Xaml.IO.NwTopology.ItemsSource     = @( )
 
     # [Network]://Events
     $Xaml.IO.NwScopeLoad.Add_Click(
     {
         If ($Xaml.IO.NwScope.Text -notmatch "((\d+\.+){3}\d+\/\d+)")
         {
-            [System.Windows.MessageBox]::Show("Invalid/null network string (Use 'IP/Prefix' notation)","Error")
+            Return [System.Windows.MessageBox]::Show("Invalid/null network string (Use 'IP/Prefix' notation)","Error")
         }
 
         Else
@@ -2659,11 +3200,11 @@ public struct WindowPosition
         $Prefix = $Xaml.IO.NwSubnetName.Text
         If ( $Prefix -notmatch "((\d+\.+){3}\d+\/\d+)")
         {
-            [System.Windows.MessageBox]::Show("Invalid subnet provided","Error")
+            Return [System.Windows.MessageBox]::Show("Invalid subnet provided","Error")
         }
         ElseIf( $Prefix -in $Main.Network.Name )
         {
-            [System.Windows.MessageBox]::Show("Prefix already exists","Error")
+            Return [System.Windows.MessageBox]::Show("Prefix already exists","Error")
         }
         Else
         {
@@ -2685,7 +3226,7 @@ public struct WindowPosition
 
         Else
         {
-            [System.Windows.MessageBox]::Show("Select a subnet within the dialog box","Error")
+            Return [System.Windows.MessageBox]::Show("Select a subnet within the dialog box","Error")
         }
     })
 
@@ -2697,20 +3238,20 @@ public struct WindowPosition
             Throw "No valid networks detected"
         }
         
-        $Xaml.IO.NwTopography.ItemsSource = @( )
+        $Xaml.IO.NwTopology.ItemsSource = @( )
 
-        ForEach ( $Item in $Xaml.IO.NwAggregate.ItemsSource | % { [NwTopography]::New($Main.SubnetList,$_) } )
+        ForEach ( $Item in $Xaml.IO.NwAggregate.ItemsSource | % { [NwTopology]::New($Main.SubnetList,$_) } )
         {
-            $Xaml.IO.NwTopography.ItemsSource += $Item 
+            $Xaml.IO.NwTopology.ItemsSource += $Item 
             #[DGList]::New($Item.Name,$Item.DistinguishedName)
         }
 
-        $Xaml.IO.GwNetworkCount.Text      = $Main.Network.Count 
+        $Xaml.IO.SmNetworkCount.Text      = $Main.Network.Count 
     })
 
     $Xaml.IO.NwNewSubnetName.Add_Click(
     {
-        ForEach ( $Item in $Xaml.IO.NwTopography.ItemsSource )
+        ForEach ($Item in $Xaml.IO.NwTopology.ItemsSource)
         {
             If (!$Item.Exists)
             {
@@ -2718,11 +3259,110 @@ public struct WindowPosition
             }
         }
 
-        $Tmp                              = @( $Main.GetNetwork($Main.Network) | % { [NwTopography]::New($Main.SubnetList,$_) } )
-        $Xaml.IO.NwTopography.ItemsSource = @( )
-        $Xaml.IO.NwTopography.ItemsSource = @( $Tmp )
+        $Tmp                              = @( $Main.GetNetwork($Main.Network) | % { [NwTopology]::New($Main.SubnetList,$_) } )
+        $Xaml.IO.NwTopology.ItemsSource   = @( )
+        $Xaml.IO.NwTopology.ItemsSource   = @( $Tmp )
 
-        $Xaml.IO.GwNetworkCount.Text      = $Main.Network.Count 
+        $Xaml.IO.SmNetworkCount.Text      = $Main.Network.Count
+    })
+
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Sitemap Tab    ]______________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+    # $Xaml.IO.SmSiteCount               # TextBox
+    # $Xaml.IO.SmNetworkCount            # TextBox
+    # $Xaml.IO.SmLoadSitemap             # Button
+    # $Xaml.IO.SmAggregate               # DataGrid
+    # $Xaml.IO.SmTemplate                # DataGrid
+    # $Xaml.IO.SmGetSitemap              # Button
+    # $Xaml.IO.SmNewSitemap              # Button
+
+    $Xaml.IO.SmTemplate.ItemsSource  = @( )
+    $Xaml.IO.SmAggregate.ItemsSource = @( )
+    $Xaml.IO.SmTopology.ItemsSource  = @( )
+
+    $Xaml.IO.SmLoadSitemap.Add_Click(
+    {
+        If ($Main.Network.Count -lt $Main.Domain.Count)
+        {
+            Return [System.Windows.MessageBox]::Show("Insufficient networks","Error: Network count")
+        }
+    
+        Else
+        {
+            $Main.LoadSitemap()
+            $Xaml.IO.SmAggregate.ItemsSource = @( )
+            $Xaml.IO.SmAggregate.ItemsSource = @( $Main.Sitemap )
+            If ( $Xaml.IO.SmAggregate.Items.Count -gt 0 )
+            {
+                $Xaml.IO.SmTemplate.ItemsSource  = @( $Main.SmTemplate )
+            }
+        }
+    })
+
+    $Xaml.IO.SmGetSitemap.Add_Click(
+    {
+        $Xaml.IO.SmTopology.ItemsSource = @( )
+
+        ForEach ($Item in $Xaml.IO.SmAggregate.ItemsSource)
+        {
+            $Xaml.IO.SmTopology.ItemsSource += [SwTopologyBranch]::New("Main",$Item.Name,$Main.SearchBase,$Main.OUList)
+
+            ForEach ($Name in $Xaml.IO.SmTemplate.Items | ? Create -eq 1)
+            {
+                $Xaml.IO.SmTopology.ItemsSource += [SwTopologyBranch]::New("Leaf","$($Item.Name)/$($Name.ObjectClass)",$Main.SearchBase,$Main.OUList)
+            }
+        }
+
+        $Main.GetOUList()
+
+        $Main.Sitelist                    = $Xaml.IO.SmTopology.ItemsSource
+        $Main.Gateway                     = $Main.Sitelist | ? Name -eq Gateway
+        $Main.Server                      = $Main.Sitelist | ? Name -eq Server
+
+        $Xaml.IO.GwAggregate.ItemsSource  = $Main.Gateway
+        $Xaml.IO.SrAggregate.ItemsSource  = $Main.Server
+    })
+
+    $Xaml.IO.SmNewSitemap.Add_Click(
+    {
+        ForEach ($X in 0..($Xaml.IO.SmTopology.ItemsSource.Count-1))
+        {
+            $Item               = $Xaml.IO.SmTopology.Items[$X]
+            $Site               = $Main.Sitemap | ? Name -match ([Regex]::Matches($Item.DistinguishedName,"(\w{2}\-){3}\d+").Value)
+            If ($Item.Exists -eq $False)
+            {
+                $OU             = @{
+
+                    City        = $Site.Location
+                    Country     = $Site.Country
+                    Description = $Site.Hash.Network.Name
+                    DisplayName = $Site.SiteName
+                    PostalCode  = $Site.Postal
+                    State       = $Site.Region
+                    Name        = $Item.Name
+                    Path        = $Item.DistinguishedName -Replace "OU=$($Item.Name),",""
+                }        
+                New-ADOrganizationalUnit @OU -Verbose
+
+                $Item.Exists    = $True
+            }
+
+            Else
+            {
+                Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName)
+            }
+        }
+        
+        $Main.Sitelist                    = $Xaml.IO.SmTopology.ItemsSource
+        $Main.Gateway                     = $Main.Sitelist | ? Name -eq Gateway
+        $Main.Server                      = $Main.Sitelist | ? Name -eq Server
+
+        $Xaml.IO.GwAggregate.ItemsSource  = $Main.Gateway
+        $Xaml.IO.SrAggregate.ItemsSource  = $Main.Server
     })
 
 #    ____                                                                                                    ________    
@@ -2734,36 +3374,21 @@ public struct WindowPosition
     # [Gateway]://Variables
     # $Xaml.IO.GwSiteCount               # TextBox
     # $Xaml.IO.GwNetworkCount            # TextBox
-    # $Xaml.IO.GwLoadGateway             # Button
     # $Xaml.IO.GwAggregate               # DataGrid
     # $Xaml.IO.GwAddGateway              # Button
     # $Xaml.IO.GwGateway                 # TextBox
     # $Xaml.IO.GwRemoveGateway           # Button
     # $Xaml.IO.GwViewer                  # DataGrid
-    # $Xaml.IO.GwTopography              # DataGrid
+    # $Xaml.IO.GwTopology                # DataGrid
     # $Xaml.IO.GwGetGateway              # Button
     # $Xaml.IO.GwNewGateway              # Button
 
     # [DataGrid(s)]://Initialize
     $Xaml.IO.GwAggregate.ItemsSource    = @()
     $Xaml.IO.GwViewer.ItemsSource       = @()
-    $Xaml.IO.GwTopography.ItemsSource   = @()
+    $Xaml.IO.GwTopology.ItemsSource     = @()
 
     # [Gateway]://Events
-    $Xaml.IO.GwLoadGateway.Add_Click(
-    {
-        If ( $Main.Network.Count -lt $Main.Domain.Count )
-        {
-            [System.Windows.MessageBox]::Show("Insufficient networks","Error: Network count")
-        }
-
-        Else
-        {
-            $Main.LoadGateway()
-            $Xaml.IO.GwAggregate.ItemsSource = @( )
-            $Xaml.IO.GwAggregate.ItemsSource = @( $Main.Gateway )
-        }
-    })
 
     $Xaml.IO.GwAggregate.Add_SelectionChanged(
     {
@@ -2771,7 +3396,7 @@ public struct WindowPosition
 
         If ( $Xaml.IO.GwAggregate.SelectedIndex -gt -1 )
         {
-            $Gateway                           = @( $Main.Gateway | ? Network -match $Xaml.IO.GwAggregate.SelectedItem.Network )
+            $Gateway                           = $Main.Sitemap | ? Name -eq ([Regex]::Matches($Xaml.IO.GwAggregate.SelectedItem.DistinguishedName,"(\w{2}\-){3}\d+").Value)
             
             $List = ForEach ( $Item in "Location Region Country Postal TimeZone SiteLink SiteName Name Network Prefix Netmask Start End Range Broadcast".Split(" ") )
             {     
@@ -2786,8 +3411,8 @@ public struct WindowPosition
     {
         If ( $Xaml.IO.GwAggregate.SelectedIndex -gt -1)
         {
-            $Tmp = $Xaml.IO.GwAggregate.SelectedItem
-            If ( $Tmp.Name -in $Main.Gateway.Name)
+            $Tmp = $Main.Sitemap | ? Name -eq ([Regex]::Matches($Xaml.IO.GwAggregate.SelectedItem.DistinguishedName,"(\w{2}\-){3}\d+").Value)
+            If ( $Tmp.Name -in $Main.Sitemap.Name)
             {
                 $Main.RemoveGateway($Tmp.Name)
                 $Xaml.IO.GwAggregate.ItemsSource = @( )
@@ -2798,68 +3423,1911 @@ public struct WindowPosition
 
     $Xaml.IO.GwGetGateway.Add_Click(
     {
-        $Main.GetOuList()
-        $Xaml.IO.GwTopography.ItemsSource = @( )
+        $Xaml.IO.GwTopology.ItemsSource = @( )
+        $Main.ADDS.Gateway              = @( )
 
-        ForEach ( $Item in $Xaml.IO.GwAggregate.ItemsSource | % { [GwTopography]::New($Main.OuList,$_) } )
+        ForEach ( $Item in $Xaml.IO.GwAggregate.ItemsSource )
         {
-            $Xaml.IO.GwTopography.ItemsSource += $Item
+            $Main.ADDS.Gateway += $Main.Sitemap | ? Name -eq ([Regex]::Matches($Item.DistinguishedName,"(\w{2}\-){3}\d+").Value) | % { [Topology]::New("Gateway",$Item.DistinguishedName,$_)}
         }
+
+        $Xaml.IO.GwTopology.ItemsSource = @($Main.ADDS.Gateway)
     })
 
     $Xaml.IO.GwNewGateway.Add_Click(
     {
-        $Main.GetOuList()
-
-        ForEach ( $Item in $Xaml.IO.GwAggregate.ItemsSource | % { [GwTopography]::New($Main.OuList,$_) } )
+        ForEach ( $X in 0..($Xaml.IO.GwTopology.ItemsSource.Count - 1))
         {
-            If (!$Item.Exists)
+            $Item = $Xaml.IO.GwTopology.Items[$X]
+            If ($Item.Exists -eq $False)
             {
-                $Gateway = $Main.Gateway | ? Name -eq $Item.Name
-                $OU             = @{ 
+                $Split = $Item.DistinguishedName -Split ","
+                $Path  = $Split[1..($Split.Count-1)] -join ","
+                New-ADComputer -Name $Item.Name -DNSHostName $Item.Sitename -Path $Path -TrustedForDelegation:$True -Verbose
+                $Item.Exists = $True
+            }
 
-                    City        = $Gateway.Location
-                    Country     = $Gateway.Country
-                    Description = $Gateway.Hash.Network.Name
-                    DisplayName = $Gateway.SiteName
-                    PostalCode  = $Gateway.Postal
-                    State       = $Gateway.Region
-                    Name        = $Gateway.Name
-                    Path        = $Main.SearchBase
-                }
-                New-ADOrganizationalUnit @OU -Verbose
-
-                $OU.Path        = "OU={0},{1}" -f $OU.Name, $OU.Path
-
-                0..4 | % { 
-                    
-                    $OU.Name        = ("Gateway","Server","Computers","Users","Service")[$_]
-                    $OU.Description = ("(Routing/Remote Access)","(Domain Servers)","(Workstations)","(Domain Users)","(Service Accounts)")[$_]
-                    New-ADOrganizationalUnit @OU -Verbose
-                }
-
-                New-ADComputer -Name $Gateway.Name -DNSHostName $Gateway.Sitename -Path "OU=Gateway,$($OU.Path)" -TrustedForDelegation:$True -Verbose
-                New-ADComputer -Name "dc1-$($Gateway.Postal)"                     -Path "OU=Server,$($OU.Path)"  -TrustedForDelegation:$True -Verbose
-                New-ADUser     -Name "svc1-$($Gateway.Postal)" -Path "OU=Service,$($OU.Path)"
+            Else
+            {
+                Write-Host ("Item Exists [+] [{0}]" -f $Item.DistinguishedName) -F 10
             }
         }
-
-        $Main.GetOuList()
-        $Tmp                              = @( $Main.Gateway | % { [GwTopography]::New($Main.OuList,$_) } )
-        $Xaml.IO.GwTopography.ItemsSource = @( )
-        $Xaml.IO.GwTopography.ItemsSource = @( $Tmp )
     })
 
 #    ____                                                                                                    ________    
 #   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
 #   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Sites Tab  ]__________________________________________________________________________________//¯¯¯        
+#    ¯¯¯\\__[ Server Tab    ]______________________________________________________________________________//¯¯¯        
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
-    #$Xaml.IO.SLLoadSiteList.Add_Click(
-    #{
+    # [Server]://Variables
+    # $Xaml.IO.SrSiteCount               # TextBox
+    # $Xaml.IO.SrNetworkCount            # TextBox
+    # $Xaml.IO.SrAggregate               # DataGrid
+    # $Xaml.IO.SrAddGateway              # Button
+    # $Xaml.IO.SrGateway                 # TextBox
+    # $Xaml.IO.SrRemoveGateway           # Button
+    # $Xaml.IO.SrViewer                  # DataGrid
+    # $Xaml.IO.SrTopology                # DataGrid
+    # $Xaml.IO.SrGetGateway              # Button
+    # $Xaml.IO.SrNewGateway              # Button
 
-    #})
+    # [DataGrid(s)]://Initialize
+    $Xaml.IO.SrAggregate.ItemsSource    = @()
+    $Xaml.IO.SrViewer.ItemsSource       = @()
+    $Xaml.IO.SrTopology.ItemsSource     = @()
+
+    # [Server]://Events
+    $Xaml.IO.SrAggregate.Add_SelectionChanged(
+    {
+        $Xaml.IO.SrViewer.ItemsSource     = @( )
+
+        If ( $Xaml.IO.SrAggregate.SelectedIndex -gt -1 )
+        {
+            $Server                           = $Main.Sitemap | ? Name -eq ([Regex]::Matches($Xaml.IO.SrAggregate.SelectedItem.DistinguishedName,"(\w{2}\-){3}\d+").Value)
+            
+            $List = ForEach ( $Item in "Location Region Country Postal TimeZone SiteLink SiteName Name Network Prefix Netmask Start End Range Broadcast".Split(" ") )
+            {     
+                [DGList]::New($Item,$Server.$Item) 
+            }
+
+            $Xaml.IO.SrViewer.ItemsSource     = @( $List )
+        }
+    })
+
+    $Xaml.IO.SrRemoveServer.Add_Click(
+    {
+        If ( $Xaml.IO.SrAggregate.SelectedIndex -gt -1)
+        {
+            $Tmp = $Main.Sitemap | ? Name -eq ([Regex]::Matches($Xaml.IO.SrAggregate.SelectedItem.DistinguishedName,"(\w{2}\-){3}\d+").Value)
+            If ( $Tmp.Name -in $Main.Sitemap.Name)
+            {
+                $Main.RemoveServer($Tmp.Name)
+                $Xaml.IO.SrAggregate.ItemsSource = @( )
+                $Xaml.IO.SrAggregate.ItemsSource = @( $Main.Server )
+            }
+        }
+    })
+
+    $Xaml.IO.SrGetServer.Add_Click(
+    {
+        $Xaml.IO.SrTopology.ItemsSource = @( )
+        $Main.ADDS.Server               = @( )
+
+        ForEach ( $Item in $Xaml.IO.SrAggregate.ItemsSource )
+        {
+            $Main.ADDS.Server += $Main.Sitemap | ? Name -eq ([Regex]::Matches($Item.DistinguishedName,"(\w{2}\-){3}\d+").Value) | % { [Topology]::New("Server",$Item.DistinguishedName,$_)}
+        }
+
+        $Main.Adds.Server | % { $_.Name = $_.DistinguishedName.Split(",")[0].Replace("CN=","") }
+
+        $Xaml.IO.SrTopology.ItemsSource = @($Main.ADDS.Server)
+    })
+
+    $Xaml.IO.SrNewServer.Add_Click(
+    {
+        ForEach ( $X in 0..($Xaml.IO.SrTopology.ItemsSource.Count - 1))
+        {
+            $Item      = $Xaml.IO.SrTopology.Items[$X]
+            $Split     = $Item.DistinguishedName -Split ","
+            $Path      = $Split[1..($Split.Count-1)] -join ","
+            $Item.Name = $Split[0].Replace("CN=","")
+            $Split     = $Item.SiteName -Split "."
+            $DNSName   = $Item.Name,$Split[1..($Split.Count-1)] -join "."
+            If ($Item.Exists -eq $False)
+            {
+                New-ADComputer -Name $Item.Name -DNSHostName $DNSName -Path $Path -TrustedForDelegation:$True -Verbose
+                $Item.Exists = $True
+            }
+
+            Else
+            {
+                Write-Host ("Item Exists [+] [{0}]" -f $Item.DistinguishedName) -F 10
+            }
+        }
+    })
+
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Virtual Tab    ]______________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+    # $Xaml.IO.VmSelect                  # DataGrid
+    # $Xaml.IO.VmHostSelect              # Button
+    # $Xaml.IO.VmHost                    # TextBox
+    # $Xaml.IO.VmPopulate                # Button
+    # $Xaml.IO.VmGateway                 # DataGrid
+    # $Xaml.IO.VmGatewayScriptSelect     # Button
+    # $Xaml.IO.VmGatewayScript           # TextBox
+    # $Xaml.IO.VmGatewayImageSelect      # Button
+    # $Xaml.IO.VmGatewayImage            # TextBox
+    # $Xaml.IO.VmGatewayMemory           # TextBox
+    # $Xaml.IO.VmGatewayDrive            # TextBox
+    # $Xaml.IO.VmServer                  # DataGrid
+    # $Xaml.IO.VmServerScriptSelect      # Button
+    # $Xaml.IO.VmServerScript            # TextBox
+    # $Xaml.IO.VmServerImageSelect       # Button
+    # $Xaml.IO.VmServerImage             # TextBox
+    # $Xaml.IO.VmServerMemory            # TextBox
+    # $Xaml.IO.VmServerDrive             # TextBox
+    # $Xaml.IO.VmGetArchitecture         # Button
+    # $Xaml.IO.VmNewArchitecture         # Button
+
+    $Xaml.IO.VmSelect.ItemsSource        = @( )
+    $Xaml.IO.VmHostSelect.Add_Click(
+    {
+        If ($Xaml.IO.VmHost.Text -eq "")
+        {
+            Return [System.Windows.Messagebox]::Show("Must enter a server hostname or IP address","Error")
+        }
+
+        ElseIf ((Test-Connection -ComputerName $Xaml.IO.VmHost.Text -Count 1 -EA 0) -eq $Null)
+        {
+            Return [System.Windows.Messagebox]::Show("Not a valid server hostname or IP Address","Error")
+        }
+
+        Write-Host "Retrieving [~] VMHost, and VMSwitch"
+
+        If ( $Xaml.IO.VmHost.Text -in @("localhost";$Main.IP))
+        {
+            $Main.Vm    = [VmStack]::New((Get-VMHost),(Get-VMSwitch))
+            If (Get-Service -Name vmms -EA 0 | ? Status -ne Running)
+            {
+                Return [System.Windows.MessageBox]::Show("The Hyper-V Virtual Machine Management service is not (installed/running)","Error")
+            }
+
+            $Xaml.IO.VmController.ItemsSource         = @([VmController]::New($Xaml.IO.VmHost.Text))
+            $Xaml.IO.VmControllerConfigVM.ItemsSource = @( Get-VM | % Name )
+        }
+        Else
+        {
+            $Credential = Get-Credential
+            $Main.Vm    = [VmStack]::New((Get-VMHost -ComputerName $Xaml.IO.VmHost.Text -Credential $Credential),
+                                    (Get-VmSwitch -ComputerName $Xaml.IO.VmHost.Text -Credenttial $Credential))
+            If (Get-Service -ComputerName $Xaml.IO.VmHost.Text -Credential $Credential -Name vmms -EA 0 | ? Status -ne Running)
+            {
+                Return [System.Windows.MessageBox]::Show("The Hyper-V Virtual Machine Management service is not (installed/running)","Error")
+            }
+
+            $Xaml.IO.VmController.ItemsSource         = [VmController]::New($Xaml.IO.VmHost.Text,$Credential)
+            $Xaml.IO.VmControllerConfigVM.ItemsSource = @( Get-VM -ComputerName $$Xaml.IO.VmHost.Text -Credential $Credential )
+        }
+        
+        $Xaml.IO.VmControllerSwitch.ItemsSource   = @( $Main.Vm.External | % Name )
+        
+        Write-Host "Retrieved [+] VMHost, and VMSwitch"
+    })
+
+    $Xaml.IO.VmControllerSwitch.Add_SelectionChanged(
+    {
+        $NetRoute = Get-NetAdapter | ? Name -match $Xaml.IO.VmControllerSwitch.SelectedItem | Get-NetRoute -AddressFamily IPV4
+        $Xaml.IO.VmControllerNetwork.Text = $NetRoute | ? NextHop -eq 0.0.0.0 | Select-Object -Last 1 | % DestinationPrefix
+        $Xaml.IO.VmControllerGateway.Text = $NetRoute | ? NextHop -ne 0.0.0.0 | % NextHop
+    })
+
+    $Xaml.IO.VmPopulate.Add_Click(
+    {
+        If ( $Xaml.IO.VmHost.Text -eq $Null )
+        {
+            Return [System.Windows.Messagebox]::Show("Must select the VM Host first","Error")
+        }
+
+        $Xaml.IO.VmSelect.ItemsSource    = @( )
+        $Collect                         = @( )
+
+        If ( $Main.ADDS.Gateway.Count -gt 0 )
+        {
+            $Main.ADDS.Gateway           | % { $Collect += $_ }
+        }
+
+        If ( $Main.ADDS.Server.Count -gt 0 )
+        {
+            $Main.ADDS.Server            | % { $Collect += $_ }
+        }
+
+        $Xaml.IO.VmSelect.ItemsSource    = @([VmSelect[]]$Collect)
+    })
+
+    $Xaml.IO.VmGatewayScriptSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory = $Env:SystemDrive
+        $Item.Filter           = "(*.ps1)|*.ps1"
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename     = ""
+        }
+
+        $Xaml.IO.VmGatewayScript.Text = $Item.FileName
+    })
+
+    $Xaml.IO.VmGatewayImageSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory = $Env:SystemDrive
+        $Item.Filter           = "(*.iso)|*.iso"
+        $Item.ShowDialog()
+            
+        If (!$Item.Filename)
+        {
+            $Item.Filename     = ""
+        }
+    
+        $Xaml.IO.VmGatewayImage.Text = $Item.FileName
+    })
+
+    $Xaml.IO.VmServerScriptSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory = $Env:SystemDrive
+        $Item.Filter           = "(*.ps1)|*.ps1"
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename     = ""
+        }
+
+        $Xaml.IO.VmServerScript.Text = $Item.FileName
+    })
+
+    $Xaml.IO.VmServerImageSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory = $Env:SystemDrive
+        $Item.Filter           = "(*.iso)|*.iso"
+        $Item.ShowDialog()
+            
+        If (!$Item.Filename)
+        {
+            $Item.Filename     = ""
+        }
+    
+        $Xaml.IO.VmServerImage.Text = $Item.FileName
+    })
+
+    $Xaml.IO.VmGatewayMemory.Text        = "2048"
+    $Xaml.IO.VmGatewayDrive.Text         = "20"
+    $Xaml.IO.VmServerMemory.Text         = "4096"
+    $Xaml.IO.VmServerDrive.Text          = "100"
+
+    $Xaml.IO.VMGetArchitecture.Add_Click(
+    {
+        $Main.Virtual.Gateway            = @( )
+        $Main.Virtual.Server             = @( )
+
+        ForEach ( $Item in $Xaml.IO.VmSelect.Items )
+        {
+            Switch($Item.Type)
+            {
+                Gateway 
+                { 
+                    If ($Item.Create -eq 1 )
+                    {
+                        $Main.Virtual.Gateway += $Main.Adds.Gateway | ? Name -eq $Item.Name
+                    } 
+                }
+                Server  
+                { 
+                    If ($Item.Create -eq 1 )
+                    {     
+                        $Main.Virtual.Server  += $Main.Adds.Server | ? Name -eq $Item.Name
+                    } 
+                }
+            }
+        }
+
+        $Xaml.IO.VmGateway.ItemsSource   = @($Main.Virtual.Gateway | % { [VmTest]$_.Name } )
+        $Xaml.IO.VmServer.ItemsSource    = @($Main.Virtual.Server  | % { [VmTest]$_.Name } )
+    })
+    
+    # $Xaml.IO.DcOrganization.Text = "Secure Digits Plus LLC"; $Xaml.IO.DcCommonName.Text = "securedigitsplus.com"; $Xaml.IO.NwScope.Text = "172.16.0.0/19"
+    
+    $Xaml.IO.VMNewArchitecture.Add_Click(
+    {
+        If (!$Xaml.IO.VmGatewayImage.Text)
+        {
+            Return [System.Windows.MessageBox]::Show("Must input an image to install virtual gateway(s)","Error")
+        }
+
+        If (!(Test-Path $Xaml.IO.VmGatewayImage.Text) -or $Xaml.IO.VmGatewayImage.Text.Split(".")[-1] -ne "iso" )
+        {
+            Return [System.Windows.MessageBox]::Show("Not a valid image (path/file)","Error")
+        }
+
+        If (!$Xaml.IO.VmServerImage.Text)
+        {
+            Return [System.Windows.MessageBox]::Show("Must input an image to install virtual server(s)","Error")
+        }
+
+        If (!(Test-Path $Xaml.IO.VmServerImage.Text) -or $Xaml.IO.VmServerImage.Text.Split(".")[-1] -ne "iso" )
+        {
+            Return [System.Windows.MessageBox]::Show("Not a valid image (path/file)","Error")
+        }
+
+        If(!($Main.Vm))
+        {
+            Return [System.Windows.MessageBox]::Show("Must have Hyper-V running","Error")
+        }
+
+        $Main.Credential    = Get-Credential root
+
+        # Create the virtual switches
+        Write-Theme "Deploying [~] [VMSwitch[]]" 14,6,15
+        $Main.Sw = @( )
+        ForEach ( $X in 0..($Main.Virtual.Gateway.Count-1))
+        {
+            $Sw = $Main.Virtual.Gateway[$X]
+            If (Get-VMSwitch -Name $Sw.Name -EA 0)
+            {
+                Write-Theme "Removing [~] [Switch: $($Sw.Name)]" 12,4,15
+                Remove-VMSwitch -Name $Sw.Name -Verbose -Confirm:$False -Force
+            }
+
+            Write-Theme "Creating [~] [Switch: $($Sw.Name)]" 9,1,15
+            $Main.Sw += New-VMSwitch -Name $Sw.Name -SwitchType Internal -Verbose
+        }
+        Write-Theme "Deployed [+] [VMSwitch[]]" 10,2,15
+        Start-Sleep 2
+
+        Write-Theme "Updating [~] `$Main.Vm.Switch"
+        $Main.Vm.Switch = Get-VMSwitch
+
+        # Create the virtual gateways
+        Write-Theme "Creating [~] [VMGateway[]]" 14,6,15
+        $Main.Gw = @( )
+        ForEach ( $X in 0..($Main.Virtual.Gateway.Count-1))
+        {
+            $Gw = $Main.Virtual.Gateway[$X]
+            If (Get-VM -Name $Gw.Name -EA 0)
+            {
+                Write-Theme "Removing [~] [Gateway: $($Gw.Name)]" 12,4,15
+                Remove-VM -Name $Gw.Name -Verbose -Confirm:$False -Force
+            }
+
+            Write-Theme "Creating [~] [Gateway: $($Gw.Name)]" 9,1,15
+            $Item     = [VMObject]::New($Gw,$Xaml.IO.VmGatewayMemory.Text,$Xaml.IO.VmGatewayDrive.Text,1,$Main.Vm.External.Name)
+            $Item.New($Main.VM.Host.VirtualMachinePath)
+            Add-VMNetworkAdapter -VMName $Item.Name -SwitchName $Item.Name -Verbose
+            $Item.LoadISO($Xaml.IO.VmGatewayImage.Text)
+            $Item.Start()
+            $Item.Stop()
+            $Main.Gw += $Item
+        }
+
+        Write-Theme "Created [+] [VMGateway[]]" 10,2,15
+        Start-Sleep 2
+
+        # Create the virtual servers
+        Write-Theme "Creating [~] [VMServer[]]" 14,6,15
+        $Main.Sr = @( )
+        ForEach ( $X in 0..($Main.Virtual.Server.Count-1))
+        {
+            $Sr = $Main.Virtual.Server[$X]
+            If (Get-VM -Name $Sr.Name -EA 0)
+            {
+                Write-Theme "Removing [~] [Server: $($Sr.Name)]" 12,4,15
+                Remove-VM -Name $Sr.Name -Verbose -Confirm:$False -Force
+            }
+                    
+            Write-Theme "Creating [~] [Server: $($Sr.Name)]" 9,1,15
+            $Item     = [VMObject]::New($Sr,$Xaml.IO.VmServerMemory.Text,$Xaml.IO.VmServerDrive.Text,2,$Main.Sw[$X].Name)
+            $Item.New($Main.VM.Host.VirtualMachinePath)
+            $VM       = Get-VM -Name $Item.Name
+            $VM       | Add-VMDVDDrive -Verbose
+            $Item.LoadISO($Xaml.IO.VmServerImage.Text)
+            $Item.Start()
+            $Item.Stop()
+            $BootOrder = $VM | Get-VMFirmware | % { $_.BootOrder[2,0,1] }
+            $VM        | Set-VMFirmware -BootOrder $BootOrder -Verbose
+            $Main.Sr  += $Item
+        }
+
+        Write-Theme "Created [+] [VMServer[]]" 10,2,15
+        Start-Sleep 2
+
+        # Preparing [DNS/DHCP/MacAddress Stuff]
+        $DNS      = Get-DNSServerResourceRecord -Zonename $Main.CN
+
+        ForEach ( $Name in $Main.Gw.Name )
+        {
+            $DNS  | ? HostName -match $Item | Remove-DNSServerResourceRecord -ZoneName $Main.CN -Verbose -Confirm:$False -Force
+        }
+
+        $ScopeID  = Get-DhcpServerv4Scope
+        $DHCP     = Get-DhcpServerv4Reservation -ScopeID $ScopeID.ScopeID
+
+        $DHCP     | ? Name -match "((\w{2}-){3}(\d{5})|OPNsense)" | Remove-DHCPServerV4Reservation -Verbose -EA 0
+
+        $DHCP     = Get-DhcpServerv4Reservation -ScopeID $ScopeID.ScopeID
+        $Slot     = $DHCP[-1].IPAddress.ToString().Split(".")
+
+        If ( $Main.Gw.Count -gt 1 )
+        {
+            $Spot    = [UInt32]$Slot[3]
+
+            ForEach ( $X in 0..($Main.Gw.Count - 1))
+            {
+                $Reserve = Get-DhcpServerv4Reservation -ScopeID $ScopeID.ScopeID
+                $Gw      = $Main.Gw[$X]
+                $Item    = $Gw.Item
+                $Mac     = Get-VMNetworkAdapter -VMName $Gw.Name | ? SwitchName -ne $Gw.Name | % MacAddress
+
+                Write-Theme "Adding [~] DHCP Reservation [$($Item.Network)/$($Item.Prefix)]@[$($Item.Sitename)]" 10,2,15
+                $Spot ++
+                $Obj             = @{
+        
+                    ScopeID      = $ScopeID.ScopeID
+                    IPAddress    = @($Slot[0,1,2];$Spot) -join '.'
+                    ClientID     = $Mac
+                    Name         = $Item.SiteLink
+                    Description  = "[$($Item.Network)/$($Item.Prefix)]@[$($Item.Sitename)]"
+                }
+                Add-DhcpServerV4Reservation @Obj -Verbose
+            }
+        }
+
+        Write-Theme "Added [+] DHCP Reservations"
+
+        #    ____                                                                                            ________    
+        #   //¯¯\\__________________________________________________________________________________________//¯¯\\__//   
+        #   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+        #    ¯¯¯\\__[ Gateway Installation   ]______________________________________________________________//¯¯¯        
+        #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+        Switch([System.Windows.MessageBox]::Show("This process will now spawn the [GATEWAY] items in Hyper-V, and then install them","Press [Yes] to proceed","YesNo"))
+        {
+            Yes 
+            {
+                0..($Main.Gw.Count-1) | Start-RSJob -Name {$Main.Gw[$_].Name} -Throttle 4 -FunctionsToLoad Invoke-KeyEntry -ScriptBlock {
+
+                    $Main       = $Using:Main
+                    $Pass       = $Main.Credential.GetNetworkCredential().Password
+                    $X          = $_
+                    $VM         = $Main.Gw[$X]
+                    $VMDisk     = $VM.NewVHDPath
+                    $ID         = $VM.Name
+                
+                    $Time       = [System.Diagnostics.Stopwatch]::StartNew()
+                    $Log        = @{ }
+                
+                    Start-VM $ID -Verbose
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] Starting [~] [$ID]")
+                
+                    $Ctrl      = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $ID
+                    $KB        = Get-WmiObject -Query "ASSOCIATORS OF {$($Ctrl.Path.Path)} WHERE resultClass = Msvm_Keyboard" -Namespace "root\virtualization\v2"
+                
+                    Start-Sleep 75
+                    $C         = @( )
+                    Do
+                    {
+                        Start-Sleep -Seconds 1
+                
+                        $Item     = Get-VM -Name $ID
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C  = @( ) } 0 { $C += 1 } 1 { $C += 1 }
+                        }
+                
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+                
+                        $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNSense [~] Initializing [Inactivity:($($Sum))]")
+                        Write-Host $Log[$Log.Count-1]
+                    }
+                    Until($Sum -ge 35) # Manual assignment capture (35)
+                
+                    # Manual Interface
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Configure VLans Now?
+                    Invoke-KeyEntry $KB "n"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Enter WAN interface name
+                    Invoke-KeyEntry $KB "hn0"
+                    Start-Sleep -M 100
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Enter LAN Interface name
+                    Invoke-KeyEntry $KB "hn1"
+                    Start-Sleep -M 100
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Enter Optional interface name
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+                
+                    # Proceed...?
+                    Invoke-KeyEntry $KB "y"
+                    $KB.TypeKey(13)
+                
+                    $C         = @( )
+                    Do
+                    {
+                        $Item     = Get-VM -Name $ID
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C  = @( ) } 0 { $C += 1 } 1 { $C += 1 }
+                        }
+                
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+                
+                        $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNSense [~] Initializing [Inactivity:($($Sum))]")
+                        Write-Host $Log[$Log.Count-1]
+                
+                        Start-Sleep -Seconds 1
+                    }
+                    Until($Sum -ge 200) # Initial login, must account for machine delay
+                
+                    # Login
+                    Invoke-KeyEntry $KB "installer"
+                    $KB.PressKey(13)
+                    Start-Sleep 1
+                
+                    # Password
+                    Invoke-KeyEntry $KB "opnsense"
+                    $KB.PressKey(13)
+                    Start-Sleep 3
+                
+                    # [21.1] Welcome
+                    # $KB.TypeKey(13)
+                    # $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense [~] Installer")
+                    # Write-Host $Log[$Log.Count-1]
+                    # Start-Sleep 2
+                
+                    # Continue with default keymap
+                    $KB.TypeKey(13)
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense [~] Accept defaults")
+                    Write-Host $Log[$Log.Count-1]
+                    Start-Sleep 2
+                
+                    # [21.1] Guided installation
+                    # $KB.TypeKey(13)
+                    # $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense [~] Guided installation")
+                    # Write-Host $Log[$Log.Count-1]
+                    # Start-Sleep 2
+                
+                    # Install (ZFS)
+                    $KB.TypeKey(40)
+                    Start-Sleep -M 100
+                    $KB.TypeKey(13)
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense [~] Install (ZFS)")
+                    Write-Host $Log[$Log.Count-1]
+                    Start-Sleep 8
+                
+                    # ZFS Configuration (stripe)
+                    $KB.TypeKey(13)
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense [~] ZFS Configuration (stripe)")
+                    Write-Host $Log[$Log.Count-1]
+                    Start-Sleep 2
+                
+                    # Select a disk
+                    $KB.TypeKey(32)
+                    Start-Sleep -M 100
+                    $KB.TypeKey(13)
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense [~] Disk select")
+                    Write-Host $Log[$Log.Count-1]
+                    Start-Sleep 2
+                
+                    # Install mode
+                    $KB.TypeKey(9)
+                    Start-Sleep -M 100
+                    $KB.TypeKey(13)
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense [~] Install mode")
+                    Write-Host $Log[$Log.Count-1]
+                
+                    While((Get-Item $VMDisk).Length -lt 1.5GB)
+                    {
+                        $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNSense [~] Installing")
+                        Write-Host $Log[$Log.Count-1]
+                
+                        $Item     = Get-VM -Name $ID
+                        Start-Sleep -Seconds 10
+                    }
+                
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense validating")
+                    Write-Host $Log[$Log.Count-1]
+                    Start-Sleep 300
+                
+                    $C = @( )
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C  = @( ) } 0 { $C += 1 } 1 { $C += 1 }
+                        }
+                
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+                
+                        $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNSense [~] finalizing [Inactivity:($($Sum))]")
+                        Write-Host $Log[$Log.Count-1]
+                        
+                        Start-Sleep 1
+                    }
+                    Until ($Sum -ge 100)
+                
+                    # Change root password
+                    $KB.TypeKey(40)
+                    Start-Sleep -M 100
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+                
+                    # Enter root password
+                    Invoke-KeyEntry $KB "$Pass"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Confirm root password
+                    Invoke-KeyEntry $KB "$Pass"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Complete
+                    $KB.TypeKey(13)
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense [~] Installed")
+                    Write-Host $Log[$Log.Count-1]
+                    Start-Sleep 5
+                
+                    # [21.1] Reboot
+                    # $KB.TypeKey(13)
+                    # Start-Sleep 5
+                
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+                        $Log.Add($Log.Count,"[$($Time.Elapsed)] [$ID] [~] Rebooting...")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Item.Uptime.TotalSeconds -le 2)
+                
+                    Stop-VM -Name $ID -Verbose -Force
+                
+                    # Disconnect DVD/ISO
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] [~] Releasing DVD-ISO")
+                    Set-VMDvdDrive -VMName $ID -Path $Null -Verbose
+                
+                    Start-VM -Name $ID 
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense [~] First boot...")
+                    Write-Host $Log[$Log.Count-1]
+                
+                    Start-Sleep 30
+                
+                    $C         = @( )
+                    Do
+                    {
+                        Start-Sleep 1
+                
+                        $Item     = Get-VM -Name $ID
+                
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C  = @( ) } 0 { $C += 1 } 1 { $C += 1 }
+                        }
+                
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+                
+                        $Log.Add($Log.Count,"[$($Time.Elapsed)] OPNsense [~] First boot... [Inactivity:($($Sum))]")
+                        Write-Host $Log[$Log.Count-1]
+                    }
+                    Until($Sum -ge 250)
+                
+                    Invoke-KeyEntry $KB "root"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    Invoke-KeyEntry $KB "$Pass"
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+                
+                    Invoke-KeyEntry $KB "2"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    Invoke-KeyEntry $KB "1"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Configure LAN via DHCP? (No)
+                    Invoke-KeyEntry $KB "n"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # IPV4 Gateway (Subnet start address)
+                    Invoke-KeyEntry $KB "$($VM.Item.Start)"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Subnet bit count/prefix (Subnet prefix)
+                    Invoke-KeyEntry $KB "$($VM.Item.Prefix)"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Upstream gateway? (for WAN)
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # IPV6 WAN Tracking? (Can't hurt)
+                    Invoke-KeyEntry $KB "y"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Enable DHCP? (No, save DHCP for Windows Server)
+                    Invoke-KeyEntry $KB "n"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Revert to HTTP as the web GUI protocol? (No)
+                    Invoke-KeyEntry $KB "n"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Generate a new self-signed web GUI certificate? (Yes)
+                    Invoke-KeyEntry $KB "y"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    # Restore web GUI defaults? (Yes)
+                    Invoke-KeyEntry $KB "y"
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                
+                    Set-Content -Path "$Home\Desktop\$(Get-Date -UFormat %Y%m%d)($($ID)).log" -Value $Log[0..($Log.Count-1)]
+                }
+            
+                # Open VMC Windows
+                0..($Main.Gw.Count-1) | % { 
+                    
+                    Start-Process -FilePath C:\Windows\System32\vmconnect.exe -ArgumentList @($Main.Vm.Host.Computername,$Main.Gw.Name[$_]) -Passthru
+                    Start-Sleep -Milliseconds 100
+                }
+                
+                $Time = [System.Diagnostics.Stopwatch]::StartNew()
+                Do
+                {
+                    Write-Theme "Time Elapsed: $($Time.Elapsed)"
+                    $RS = Get-RSJob
+                    $RS
+                    $Complete = $RS | ? State -eq Completed
+                    Start-Sleep -Seconds 10
+                    Clear-Host
+                }
+                Until ($Complete.Count -ge $Main.Gw.Count)
+                
+                Get-RSJob | Remove-RSJob -Verbose
+                Write-Theme "Complete ($($Time.Elapsed)) [+] Gateway Installation"
+
+                $ID        = $Xaml.IO.VmControllerConfigVM.SelectedItem
+                $VM        = Get-VM -Name $ID
+                $Internal  = $Main.VM.Switch | ? SwitchType -eq Internal | ? Name -notin $Main.Gw.Name | % Name
+                $External  = $Xaml.IO.VmControllerSwitch.SelectedItem
+                $DHCP      = Get-DHCPServerV4OptionValue 
+                $DNS       = $DHCP | ? OptionID -eq 6 | % Value
+                [String]$Network, [UInt32]$Prefix = $Xaml.IO.VmControllerNetwork.Text.Split("/")
+
+                Get-VM -Name $ID | ? State -ne Off | Stop-VM -Confirm:$False -Verbose
+                Start-VM -Name $ID -Verbose
+                $Ctrl      = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $ID
+                $KB        = Get-WmiObject -Query "ASSOCIATORS OF {$($Ctrl.path.path)} WHERE resultClass = Msvm_Keyboard" -Namespace "root\virtualization\v2"
+
+                Start-Process vmconnect -ArgumentList @($Main.VM.Host.ComputerName,$ID) -PassThru
+
+                $C         = @()
+                Do
+                {
+                    Start-Sleep 1
+                    $Item = Get-VM -Name $ID
+
+                    Switch($Item.CPUUsage)
+                    {
+                        0 { $C += 1 } 1 { $C += 1 } Default { $C = @( ) }
+                    }
+
+                    $Sum = @( Switch($C.Count)
+                    {
+                        0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                    } ) | Invoke-Expression
+
+                    Write-Host ("Booting [~] CFGSRV [{0}]" -f $Sum )
+                }
+                Until ($Sum -gt 35)
+                $KB.TypeCtrlAltDel()
+                Start-Sleep 3
+                Invoke-KeyEntry $KB "$($Main.Credential.GetNetworkCredential().Password)"
+                $KB.TypeKey(13)
+
+                $C         = @()
+                Do
+                {
+                    Start-Sleep 1
+                    $Item = Get-VM -Name $ID
+
+                    Switch($Item.CPUUsage)
+                    {
+                        0 { $C += 1 } 1 { $C += 1 } Default { $C = @( ) }
+                    }
+
+                    $Sum = @( Switch($C.Count)
+                    {
+                        0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                    } ) | Invoke-Expression
+
+                    Write-Host ("Awaiting [~] CFGSRV idle state [{0}]" -f $Sum )
+                }
+                Until ($Sum -gt 50)
+
+                $KB.PressKey(18)
+                $KB.TypeKey(115)
+                $KB.ReleaseKey(18)
+                $KB.TypeKey(27)
+                Start-Sleep 2
+
+                $KB.PressKey(91)
+                $KB.TypeKey(82)
+                $KB.ReleaseKey(91)
+                Start-Sleep 1
+                $KB.TypeText("msedge")
+                Start-Sleep 1
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.PressKey(91)
+                $KB.TypeKey(82)
+                $KB.ReleaseKey(91)
+                Start-Sleep 1
+                $KB.TypeText("powershell")
+                Start-Sleep 1
+                $KB.TypeKey(13)
+                Start-Sleep 15
+
+                $KB.TypeText("Get-Process -Name ServerManager -EA 0 | Stop-Process")
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText("Add-Type @'")
+                $KB.TypeKey(13)
+                Start-Sleep 1
+
+                $KB.TypeText($WindowObject)
+                $KB.TypeKey(13)
+                Start-Sleep 5
+
+                $KB.TypeText("'@")
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('$Date = Get-Date -UFormat %Y%m%d;$Path = "$Home\Desktop\IP-($Date).ps1";$Start = Get-NetIPAddress -AddressFamily IPV4 | ? IPAddress -ne 127.0.0.1')
+                $KB.TypeKey(13)
+                Start-Sleep 3
+
+                $KB.TypeText('$ifIndex = $Start.InterfaceIndex;$Ip = $Start.IPAddress;$pfLength = $Start.PrefixLength')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('$Gw = Get-NetRoute -InterfaceIndex $ifIndex | ? DestinationPrefix -eq 0.0.0.0/0 | % NextHop')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('$Dns = Get-DNSClientServerAddress -AddressFamily IPV4 -interfaceIndex $ifIndex | % ServerAddresses')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('If ($Dns.Count -gt 1) { $Dns = "`"$($Dns -join "``",``"")`"" } Else { $Dns = "`"$Dns`"" }')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('$Content = "`$ifIndex=`"$ifIndex`";`$IP=`"$IP`";`$pfLength=`"$pfLength`";`$Dns=$Dns;`$Gw=`"$Gw`"";Set-Content -Path $Path -Value $Content -Verbose')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $X = 0
+                Do
+                {
+                    $Item  = $Main.Gw[$X].Item
+                    $Names = "Hash Name Location Region Country Postal Timezone SiteLink SiteName Network Prefix Netmask Start End Range Broadcast".Split(" ")
+
+                    $KB.TypeText('$Item = @{}')
+                    $KB.TypeKey(13)
+
+                    $List  = @( $Names | % { "('$_','$($Item.$_)')" } ) -join "," 
+
+                    $KB.TypeText("$List | % { `$Item.Add(`$_[0],`$_[1]) }")
+                    $KB.TypeKey(13)
+                    Start-Sleep 12
+
+                    $KB.TypeText('$Temp = $Item.Start -Split "\.";$Temp[-1] = [UInt32]($Temp[-1]) + 1')
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $KB.TypeText('$Hash = @{ InterfaceIndex = $ifIndex; AddressFamily="IPV4"; IPAddress=$Temp -join "."; PrefixLength=$pfLength; DefaultGateway=$Item.Start}')
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+
+                    $KB.TypeText('Get-NetRoute -DestinationPrefix 0.0.0.0/0 -InterfaceIndex $ifIndex | ? NextHop -notmatch $Item.Start | Remove-NetRoute -Confirm:$False -Verbose')
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+
+                    $KB.TypeText('Get-NetIPAddress -AddressFamily IPV4 -InterfaceIndex $ifIndex | ? PrefixOrigin -eq Manual | ? IPAddress -ne $Hash.IPAddress | Remove-NetIPAddress -Confirm:$False -Verbose')
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+
+                    $KB.TypeText('New-NetIPAddress @Hash -Verbose -EA 0')
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+
+                    $KB.TypeText('Set-DNSclientServerAddress -InterfaceIndex $ifIndex -ServerAddresses $Item.Start -Verbose;Start-Sleep 1')
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+
+                    $VM | Get-VMNetworkAdapter | Connect-VMNetworkAdapter -SwitchName $Item.Sitelink
+                    Start-Sleep 3
+                    $KB.PressKey(27)
+                    Start-Sleep 4
+
+                    # Alt-Tab
+                    $KB.PressKey(18)
+                    $KB.TypeKey(9)
+                    $KB.ReleaseKey(18)
+                    Start-Sleep 2
+
+                    $KB.PressKey(17)
+                    $KB.TypeKey(76)
+                    $KB.ReleaseKey(17)
+                    Start-Sleep 2
+                    $KB.TypeText("https://$($Item.Start)")
+                    $KB.TypeKey(13)
+                    Start-Sleep 8
+
+                    # [Edge]-Browser Accept
+                    9,9,32,9,13 | % { $KB.TypeKey($_); Start-Sleep -Milliseconds 100 }
+                    Start-Sleep 3
+
+                    # [Edge]-Login
+                    $KB.TypeText('root')
+                    $KB.TypeKey(9)
+                    $KB.TypeText($Main.Credential.GetNetworkCredential().Password)
+                    $KB.TypeKey(9)
+                    $KB.TypeKey(13)
+                    Start-Sleep 10
+
+                    # [Edge]-General Setup
+                    $KB.PressKey(16)
+                    9,9,9|%{$KB.TypeKey($_); Start-Sleep -Milliseconds 100 }
+                    $KB.ReleaseKey(16)
+                    $KB.TypeKey(32)
+                    Start-Sleep 2
+
+                    # [Edge]-General Information
+                    $KB.PressKey(16)
+                    0..11 | % { $KB.TypeKey(9) }
+                    $KB.ReleaseKey(16)
+                    $KB.TypeText($Item.SiteLink)
+                    $KB.TypeKey(9)
+                    $KB.TypeText($Item.Sitename.Replace($Item.Sitelink.ToLower()+'.',""))
+                    $KB.TypeKey(9)
+                    $KB.TypeKey(9)
+                    $KB.TypeText($DNS[0])
+                    $KB.TypeKey(9)
+                    If ($DNS[1])
+                    {
+                        $KB.TypeText($DNS[1])
+                        $KB.TypeKey(9)
+                    }
+                    $KB.TypeKey(32)
+                    $KB.TypeKey(9)
+                    $KB.TypeKey(9)
+                    $KB.TypeKey(9)
+                    $KB.TypeKey(9)
+                    $KB.TypeKey(32)
+                    Start-Sleep 2
+
+                    # [Edge]-Time server information
+                    $KB.PressKey(16)
+                    0..2 | % { $KB.TypeKey(9)}
+                    $KB.ReleaseKey(16)
+                    $KB.TypeKey(32)
+                    Start-Sleep 2
+
+                    # [Edge]-WAN Interface (Keep set to DHCP, has a reservation tied to MAC address)
+                    $KB.PressKey(16)
+                    0..4 | % { $KB.TypeKey(9) }
+                    $KB.ReleaseKey(16)
+                    $KB.TypeKey(32)
+                    0..1 | % { $KB.TypeKey(9) }
+                    $KB.TypeKey(32)
+                    Start-Sleep 2
+
+                    # LAN Interface (Should be fine as is)
+                    $KB.PressKey(16)
+                    0..2 | % { $KB.TypeKey(9) }
+                    $KB.ReleaseKey(16)
+                    $KB.TypeKey(32)
+                    Start-Sleep 2
+
+                    # Set root password
+                    $KB.PressKey(16)
+                    0..2 | % { $KB.TypeKey(9) }
+                    $KB.ReleaseKey(16)
+                    $KB.TypeKey(32)
+                    Start-Sleep 2
+
+                    # Reload Configuration
+                    $KB.PressKey(16)
+                    0..2 | % { $KB.TypeKey(9); Start-Sleep -M 100 }
+                    $KB.ReleaseKey(16)
+                    $KB.TypeKey(32)
+                    Start-Sleep 10
+
+                    # Get to firewall rules
+                    $KB.PressKey(17)
+                    $KB.TypeKey(76)
+                    $KB.ReleaseKey(17)
+                    Start-Sleep 2
+                    $KB.TypeText("https://$($Item.Start)/firewall_rules.php?if=FloatingRules")
+                    Start-Sleep 1
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+
+                    # Firewall Rules
+                    $KB.PressKey(16)
+                    0..7 | % { $KB.TypeKey(9); Start-Sleep -M 100 }
+                    $KB.ReleaseKey(16)
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $KB.PressKey(16)
+                    0..24 | % { $KB.TypeKey(9); Start-Sleep -M 100 }
+                    $KB.ReleaseKey(16)
+                    $KB.TypeKey(38)
+                    $KB.TypeText("Network")
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                    $KB.TypeKey(9)
+                    $KB.TypeText($Network)
+                    Start-Sleep 1
+                    $KB.TypeKey(9)
+                    0..(32-($Prefix+1)) | % { $KB.TypeKey(40); Start-Sleep -M 100 }
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                    0..20 | % { $KB.TypeKey(9); Start-Sleep -M 100 }
+                    $KB.TypeKey(32)
+                    Start-Sleep 2
+
+                    # Apply Firewall Rules
+                    $KB.PressKey(16)
+                    0..13 | % { $KB.TypeKey(9); Start-Sleep -M 100 }
+                    $KB.ReleaseKey(16)
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+
+                    # Alt-Tab
+                    $KB.PressKey(18)
+                    $KB.TypeKey(9)
+                    $KB.ReleaseKey(18)
+                    Start-Sleep 2
+                    $X ++
+                }
+                Until ($X -eq $Main.Gw.Count)
+
+                $KB.PressKey(18)
+                $KB.TypeKey(9)
+                $KB.ReleaseKey(18)
+                Start-Sleep 2
+
+                $KB.PressKey(18)
+                $KB.TypeKey(115)
+                $KB.ReleaseKey(18)
+                Start-Sleep 2
+
+                $VM | Get-VMNetworkAdapter | Connect-VMNetworkAdapter -SwitchName $Xaml.IO.VmControllerSwitch.SelectedItem
+
+                $KB.TypeText('$Content = Get-Content "$Home\Desktop\IP*";Invoke-Expression ($Content -join "`n")')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('$Hash = @{ InterfaceIndex = $ifIndex; AddressFamily="IPV4"; IPAddress=$IP; PrefixLength=$pfLength; DefaultGateway=$Gw}')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('$EndGw = Get-Netroute | ? DestinationPrefix -eq 0.0.0.0/0 | % NextHop')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('$EndIp = Get-NetIPAddress -AddressFamily IPV4 | ? IPAddress -ne 127.0.0.1')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('$EndDns = Get-DNSClientServerAddress -AddressFamily IPV4 -InterfaceIndex $ifIndex')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('If ($EndGw -ne $Gw) { Get-NetRoute | ? NextHop -eq $EndGw | Remove-NetRoute -Confirm:$False -Verbose; $Hash.DefaultGateway = $Gw }')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('If ($EndIp.IPAddress -ne $Ip) { Get-NetIPAddress -AddressFamily IPv4 -InterfaceIndex $ifIndex | ? PrefixOrigin -eq Manual | ? IPAddress -ne $IP | Remove-NetIPAddress -Confirm:$False -Verbose; $Hash.IPAddress = $IP }')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('New-NetIPAddress @Hash -Verbose')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('Set-DNSClientServerAddress -InterfaceIndex $ifIndex -ServerAddresses @($Dns) -Verbose')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('$Connection = Test-Connection 1.1.1.1 -Count 1 -EA 0; If ($Connection) { Remove-Item $Home\Desktop\IP* -Force -Verbose }')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                $KB.TypeText('Stop-Computer')
+                $KB.TypeKey(13)
+                Start-Sleep 2
+
+                Write-Host "Shutting down [~] [VMGateway[]] [$($Time.Elapsed)]"
+
+                $Main.Gw | % { Stop-VM -Name $_.Name -EA 0 }
+
+                If ((Get-VM | ? Name -in $Main.Gw.Name | ? State -eq Running) -eq 0)
+                {
+                    Write-Theme "$($Time.Elapsed) [+] Gateway Configuration"
+                }
+            }
+
+            No  
+            {  
+                $Time.Stop()
+                Write-Host "Cancelled dialog [$($Time.Elapsed)]"
+                Break
+            }
+        }
+
+        #    ____                                                                                            ________    
+        #   //¯¯\\__________________________________________________________________________________________//¯¯\\__//   
+        #   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+        #    ¯¯¯\\__[ Server Installation    ]______________________________________________________________//¯¯¯        
+        #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+        Switch([System.Windows.MessageBox]::Show("This process will now create the [SERVER] items in Hyper-V, and then install them","Proceed","YesNo"))
+        {
+            Yes 
+            {
+                $Date       = Get-Date -UFormat %Y%m%d
+                $Path       = "$Home\Desktop\VM($Date)"
+                $VMX        = $Main.Sr
+                $Filter     = $Main | Select-Object CN, SearchBase, VM | ConvertTo-Json
+                $Credential = $Main.Credential
+                If (!(Test-Path $Path))
+                {
+                    New-Item $Path -ItemType Directory -Verbose -Force
+                }
+
+                ForEach ( $X in 0..($Main.Sr.Count-1))
+                {
+                    If (!(Test-Path "$Path\$X"))
+                    {
+                        New-Item "$Path\$X" -ItemType Directory -Verbose -Force
+                    }
+                    Set-Content -Path "$Path\$X\vmx.txt" -Value ( $VMX[$X] | ConvertTo-Json ) -Verbose -Force
+                    Set-Content -Path "$Path\$X\host.txt" -Value $Filter -Verbose -Force
+                    Export-CliXml -Path "$Path\$X\cred.txt" -InputObject $Credential -Verbose -Force
+                }
+
+                0..($VMX.Count - 1) | Start-RSJob -Name {$VMX[$_].Name} -Throttle 2 -FunctionsToLoad Invoke-KeyEntry -ScriptBlock {
+                    
+                    # (Date/Path)
+                    $Date       = Get-Date -UFormat %Y%m%d
+                    $Path       = "$Home\Desktop\VM($Date)"
+
+                    # (Index/VM Info/Main)
+                    $Sr         = Get-Content "$Path\$_\vmx.txt" | ConvertFrom-Json
+                    $MX         = Get-Content "$Path\$_\host.txt" | ConvertFrom-Json
+                    $Cred       = Import-CliXml "$Path\$_\cred.txt"
+                    $User       = $Cred.Username
+                    $Pass       = $Cred.GetNetworkCredential().Password
+                    $ID         = $Sr.Name
+                    $VMDisk     = $Sr.NewVHDPath
+                    $Domain     = $MX.CN
+                    $Base       = $MX.SearchBase
+                    $Cfg        = "CN=Configuration,$Base"
+                    $DhcpOpt    = Get-DhcpServerV4OptionValue
+                    $DNS        = Get-NetAdapter | ? Name -match $MX.Vm.External.Name | Get-NetIPAddress | % IPAddress
+
+                    # Time and logging
+                    $T1        = [System.Diagnostics.Stopwatch]::StartNew()
+                    $T2        = [System.Diagnostics.Stopwatch]::New()
+                    $Log       = @{ }
+
+                    # Grab server manifest
+
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Beginning [~] Installation]")
+                    Write-Host $Log[$Log.Count-1]
+
+                    # Start
+                    Start-VM -Name $Sr.SwitchName -EA 0
+                    Start-VM -Name $ID
+
+                    # Set Msvm keyboard controls
+                    $Ctrl      = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $ID
+                    $KB        = Get-WmiObject -Query "ASSOCIATORS OF {$($Ctrl.path.path)} WHERE resultClass = Msvm_Keyboard" -Namespace "root\virtualization\v2"
+
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+                        Start-Sleep -Milliseconds 100 
+                    }
+                    Until ($Item.Uptime.TotalSeconds -ge 1)
+                    $KB.TypeKey(13)
+
+                    # Timer to initialize setup
+                    $T2.Start()
+                    $C         = @( )
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+                        }
+
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][Initializing [~] Setup ($($T2.Elapsed))][(Inactivity:$Sum/100)]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Sum -gt 100)
+                    $T2.Reset()
+                    
+                    0..2 | % { $KB.TypeKey(9); Start-Sleep -M 100 }
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+
+                    $KB.TypeKey(13)
+
+                    $T2.Start()
+                    $C = @( )
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+                        }
+
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][Starting [~] Setup ($($T2.Elapsed))][(Inactivity:$Sum/100)]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Sum -gt 100)
+                    $T2.Reset()
+
+                    40,40,40,40,9,13 | % { $KB.TypeKey($_); Start-Sleep -M 100 }; Start-Sleep 5
+                    32,9,13,9,13     | % { $KB.TypeKey($_); Start-Sleep -M 100 }; Start-Sleep 3
+                    9,9,9,9,13       | % { $KB.TypeKey($_); Start-Sleep -M 100 }; Start-Sleep 1
+
+                    # Commence main installation
+                    $T2.Start()
+                    $C = @( )
+                    Do
+                    {
+                        $Disk = Get-Item $VMDisk | % { $_.Length }
+
+                        $Log.Add($Log.Count,("[$($T1.Elapsed)][Installing [~] Windows Server 2019 ($($T2.Elapsed))][({0:n3}/8.500 GB)]" -f [Float]($Disk/1GB)))
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Disk -ge 8.5GB)
+                    $T2.Reset()
+
+                    # Set idle timer for first login
+                    $T2.Start()
+                    $C = @( )
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][Finalizing [~] Setup ($($T2.Elapsed))]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Item.Uptime.TotalSeconds -le 2)
+                    $T2.Reset()
+
+                    # Disconnect DVD/ISO
+                    $Log.Add($Log.Count,"[$($Time.Elapsed)] [~] Releasing DVD-ISO")
+                    Set-VMDvdDrive -VMName $ID -Path $Null -Verbose
+
+                    Start-Sleep 5
+
+                    $T2.Start()
+                    $C = @( )
+                    Do
+                    {
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][Preparing [~] System ($($T2.Elapsed))]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Item.Uptime.TotalSeconds -le 2)
+                    $T2.Reset()
+
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][System [~] First boot]")
+                    Write-Host $Log[$Log.Count-1]
+                    Start-Sleep 60
+
+                    $T2.Start()
+                    $C = @( )
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+                        }
+
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][System [~] First boot ($($T2.Elapsed))][(Inactivity:$Sum/100)]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Sum -gt 100)
+
+                    # Log and begin interacting with VM
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Ready [+] System (First login)]")
+                    Write-Host $Log[$Log.Count-1]
+
+                    # First PW Screen
+                    Invoke-KeyEntry $KB "$Pass"
+                    Start-Sleep 1
+                    $KB.TypeKey(9)
+                    Invoke-KeyEntry $KB "$Pass"
+                    Start-Sleep 1
+                    $KB.TypeKey(13)
+                    Start-Sleep 15
+
+                    # First Login screen
+                    $KB.TypeCtrlAltDel()
+                    Start-Sleep 5
+                    Invoke-KeyEntry $KB "$Pass"
+                    $KB.TypeKey(13)
+
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][First Login [@] ($(Get-Date))]")
+                    Write-Host $Log[$Log.Count-1]
+                    Start-Sleep 60
+
+                    # For the 'join network' 
+                    $KB.TypeKey(27)
+                    Start-Sleep 1
+
+                    # Run PowerShell
+                    $T2.Start()
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][PowerShell [~] Setup ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+
+                    $KB.PressKey(91)
+                    $KB.TypeKey(82)
+                    $KB.ReleaseKey(91)
+                    Start-Sleep 1
+                    $KB.TypeText("powershell")
+                    $KB.TypeKey(13)
+                    Start-Sleep 45
+
+                    # Stop ServerManager, get manifest, set static IP
+                    $KB.TypeText("Stop-Process -Name ServerManager")
+                    $KB.TypeKey(13)
+                    Start-Sleep 15
+
+                    $KB.TypeText("Set-DisplayResolution -Width 1280 -Height 720")
+                    $KB.TypeKey(13)
+                    Start-Sleep 12
+
+                    $KB.TypeText("y")
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][PowerShell [~] Setup (IP/Gateway/DNS) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+
+                    $KB.TypeText("`$ifIndex = Get-NetIPAddress -AddressFamily IPV4 | ? IPAddress -ne 127.0.0.1 | % InterfaceIndex;`$pfLength='$($Sr.Item.Prefix)'")
+                    $KB.TypeKey(13)
+                    Start-Sleep 5
+
+                    $KB.TypeText("`$Start = `"$($Sr.Item.Start)`";`$Temp = `$Start.Split('.'); `$Temp[-1] = [UInt32]`$Temp[-1] + 1;")
+                    $KB.TypeKey(13)
+                    Start-Sleep 5
+
+                    $KB.TypeText("`$Hash = @{ InterfaceIndex = `$ifIndex; AddressFamily='IPV4'; IPAddress=`$Temp -join '.'; PrefixLength=`$pfLength; DefaultGateway='$($Sr.Item.Start)'}")
+                    $KB.TypeKey(13)
+                    Start-Sleep 5
+
+                    $KB.TypeText("New-NetIPAddress @Hash -Verbose -EA 0")
+                    $KB.TypeKey(13)
+                    Start-Sleep 5
+
+                    $KB.TypeText("Set-DNSclientServerAddress -InterfaceIndex `$ifIndex -ServerAddresses $DNS -Verbose;Start-Sleep 1")
+                    $KB.TypeKey(13)
+                    Start-Sleep 5
+
+                    # Deposit the manifest to a text file
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][PowerShell [~] Setup (Transfer Server Manifest) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+
+                    $Names     = ($Sr.Item | ConvertTo-CSV)[1].Split(",")
+                    $Values    = $Names | % { $Sr.Item.$($_.Replace('"',"")) } | % { "`"$_`"" }
+                    $Content = @("@(`"```$Hash = @{`""; 0..($Names.Count-1) | % { "'{0} = {1}'" -f $Names[$_], $Values[$_] }; "`"};`")") -join "`n"
+                    $KB.TypeText("`$Content = $Content")
+                    $KB.TypeKey(13)
+                    Start-Sleep 10
+
+                    $KB.TypeText("Set-Content -Path `$Home\Desktop\server.txt -Value `$Content -Verbose")
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+                    $T2.Reset()
+
+                    $KB.TypeText("Invoke-Expression (`$Content -join `"``n`")")
+                    $KB.TypeKey(13)
+
+                    $T2.Start()
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][PowerShell [~] Setup (FightingEntropy) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+
+                    $KB.TypeText("IRM github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | IEX")
+                    $KB.TypeKey(13)
+
+                    $C = @( )
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+                        }
+
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][PowerShell [~] Setup (FightingEntropy) ($($T2.Elapsed))][(Inactivity:$Sum/100)]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Sum -gt 100)
+                    $T2.Reset()
+
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][System [~] (Hostname/Network/Domain) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+                    $KB.PressKey(91)
+                    $KB.TypeKey(82)
+                    $KB.ReleaseKey(91)
+                    Start-Sleep 1
+                    $KB.TypeText("control panel")
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+                    $KB.PressKey(17)
+                    $KB.TypeKey(76)
+                    $KB.ReleaseKey(17)
+                    Start-Sleep 1
+                    $KB.TypeText("Control Panel\System and Security\System")
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+                    $KB.TypeKey(32)
+                    Start-Sleep 1
+                    $KB.TypeText("[$ID]://($($Sr.Item.SiteLink))")
+                    $KB.TypeKey(9)
+                    $KB.TypeKey(32)
+                    Start-Sleep 1
+                    $KB.TypeText($ID)
+                    Start-Sleep 1
+                    $KB.TypeKey(9)
+                    $KB.TypeKey(32)
+                    Start-Sleep 1
+                    $KB.TypeText($MX.CN)
+                    13,13,27,9,38,9 | % { $KB.TypeKey($_); Start-Sleep -M 100 }
+                    $KB.TypeText($MX.CN)
+                    $KB.TypeKey(9)
+                    $KB.TypeKey(13)
+                    Start-Sleep 10
+                    $KB.TypeText("$User@$Domain")
+                    $KB.TypeKey(9)
+                    Start-Sleep 1
+                    $KB.TypeText("$Pass")
+                    $KB.TypeKey(9)
+                    Start-Sleep 1
+
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][System [~] (Joining domain...) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+                    $KB.TypeKey(13)
+                    Start-Sleep 25
+
+                    $KB.TypeKey(13)
+                    Start-Sleep 10
+
+                    $KB.TypeKey(13)
+                    Start-Sleep 1
+
+                    $KB.PressKey(18)
+                    $KB.TypeKey(65)
+                    $KB.ReleaseKey(18)
+                    Start-Sleep 1
+
+                    $KB.TypeKey(13)
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][System [+] (Hostname/Network/Domain) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+                    $T2.Reset()
+
+                    # Wait for login
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+                        Start-Sleep 1
+                    }
+                    Until ($Item.Uptime.TotalSeconds -lt 2)
+
+                    $T2.Start()
+                    $C = @( )
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+                        }
+
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][Domain [~] Restarting ($($T2.Elapsed))]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Sum -gt 100)
+
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Domain [+] (Joined to domain) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+                    $T2.Reset()
+
+                    $KB.TypeCtrlAltDel()
+                    Start-Sleep 5
+                    $KB.TypeText($Pass)
+                    $KB.TypeKey(13)
+                    Start-Sleep 15
+
+                    $T2.Start()
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Services [~] (Deploy Dhcp) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+
+                    $KB.PressKey(91)
+                    $KB.TypeKey(82)
+                    $KB.ReleaseKey(91)
+                    Start-Sleep 1
+                    $KB.TypeText("powershell")
+                    $KB.TypeKey(13)
+                    Start-Sleep 15
+
+                    $KB.TypeText("Stop-Process -Name ServerManager")
+                    $KB.TypeKey(13)
+                    Start-Sleep 15
+
+                    # Install Dhcp
+                    $KB.TypeText("Get-WindowsFeature | ? Name -match DHCP | Install-WindowsFeature")
+                    $KB.TypeKey(13)
+
+                    $C = @( )
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+                        }
+
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][Services [~] (Deploy Dhcp) ($($T2.Elapsed))][(Inactivity:$Sum/100)]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Sum -gt 100)
+
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Services [+] (Deploy Dhcp) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+                    $T2.Reset()
+
+                    # Reload the gateway/server variables
+                    $KB.TypeText("(Get-Content `$Home\Desktop\server.txt) -join `"``n`" | Invoke-Expression")
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    # Get Dhcp splat 
+                    $KB.TypeText('$Content="`$Dhcp=@{StartRange=`"$($Hash.Start)`";EndRange=`"$($Hash.End)`";Name=`"$($Hash.Network)/$($Hash.Prefix)`";Description=`"$($Hash.Sitelink)`";SubnetMask=`"$($Hash.Netmask)`"}"')
+                    $KB.TypeKey(13)
+                    Start-Sleep 3
+
+                    # Set content
+                    $KB.TypeText("Set-Content `$Home\Desktop\dhcp.txt -Value `$Content -Verbose")
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    # Add the Dhcp scope
+                    $KB.TypeText('$Content | Invoke-Expression; Add-DhcpServerV4Scope @Dhcp -Verbose')
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    # Get NetIPConfig
+                    $KB.TypeText('$Config = Get-NetIPConfiguration -Detailed')
+                    $KB.TypeKey(13)
+                    Start-Sleep 10
+
+                    $KB.TypeText('$Arp = arp -a | ? { $_ -match "dynamic" -and $_ -match "$($Hash.Start) "};$ClientID=[Regex]::Matches($Arp,"([a-f0-9]{2}\-){5}([a-f0-9]){2}").Value -Replace "-|:",""')
+                    $KB.TypeKey(13)
+                    Start-Sleep 6
+
+                    # Set Initial DHCP Reservations
+                    $KB.TypeText('Add-DhcpServerv4Reservation -ScopeID $Hash.Network -IPAddress $Hash.Start -ClientID $ClientID -Name Router -Verbose')
+                    $KB.TypeKey(13)
+                    Start-Sleep 4
+
+                    $KB.TypeText('Add-DhcpServerv4Reservation -ScopeID $Hash.Network -IPAddress $Config.IPv4Address.IPAddress -ClientID $Config.NetAdapter.LinkLayerAddress.Replace("-","").ToLower() -Name Server -Verbose')
+                    $KB.TypeKey(13)
+                    Start-Sleep 6
+
+                    # Set Dhcp Scope Options
+                    $KB.TypeText("Set-DhcpServerv4OptionValue -OptionID 3 -Value `$Config.IPV4DefaultGateway.NextHop -Verbose") # (Router)
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $Value = ( $MX.Dhcp.Options | ? OptionID -eq 4 | % Value ) -join ','
+                    $KB.TypeText("Set-DhcpServerv4OptionValue -OptionID 4 -Value $Value -Verbose") # (Time Servers)
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $Value = ( $MX.Dhcp.Options | ? OptionID -eq 5 | % Value ) -join ','
+                    $KB.TypeText("Set-DhcpServerv4OptionValue -OptionID 5 -Value $Value -Verbose") # (Name Servers)
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $KB.TypeText("`$Value = ( `$Config.DNSServer | ? AddressFamily -eq 2 | % ServerAddresses )")
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $KB.TypeText("Set-DhcpServerv4OptionValue -OptionID 6 -Value `$Value -Verbose") # (Dns Servers)
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $KB.TypeText("Set-DhcpServerv4OptionValue -OptionID 15 -Value $($MX.CN) -Verbose") # (Dns Domain Name)
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $KB.TypeText("Set-DhcpServerv4OptionValue -OptionID 28 -Value `$Hash.Broadcast -Verbose") # (Broadcast Address)
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Services [+] (Dhcp Configured) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+                    $T2.Reset()
+
+                    $T2.Start()
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Services [~] (Adds/Rsat/Dhcp/Dns) Suite ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+
+                    $KB.TypeText('$Module = Get-FEModule')
+                    $KB.TypeKey(13)
+                    Start-Sleep 5
+
+                    $KB.TypeText('($Module.Classes | ? Name -match ServerFeature | Get-Content ) -join "`n" | Invoke-Expression')
+                    $KB.TypeKey(13)
+                    Start-Sleep 5
+
+                    $KB.TypeText('$Features = [_ServerFeatures]::New().Output')
+                    $KB.TypeKey(13)
+                    Start-Sleep 5
+
+                    $KB.TypeText('$Features | ? { !($_.Installed) } | % { $_.Name.Replace("_","-") } | Install-WindowsFeature -Verbose')
+                    $KB.TypeKey(13)
+
+                    $C = 0
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+                        Start-Sleep 1
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][Installing [~] (Adds/Rsat/Dhcp/Dns) Suite ($($T2.Elapsed))][(Timer:$C/120)]")
+                        Write-Host $Log[$Log.Count-1]
+
+                        $C ++
+                    }
+                    Until ($C -gt 120)
+
+                    $C = @( )
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+                        }
+
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)]Installing [~] (Adds/Rsat/Dhcp/Dns) Suite ($($T2.Elapsed))][(Inactivity:$Sum/100)]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Sum -gt 100)
+
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Installed [+] (Adds/Rsat/Dhcp/Dns) Suite ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+                    $T2.Reset()
+
+                    $T2.Start()
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Deploying [~] (Domain Controller) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+
+                    $KB.TypeText('Import-Module ADDSDeployment')
+                    $KB.TypeKey(13)
+                    Start-Sleep 10
+
+                    $KB.TypeText("`$Pw = Read-Host 'Enter password' -AsSecureString")
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    Invoke-KeyEntry $KB "$Pass"
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $KB.TypeText("`$Credential=[System.Management.Automation.PSCredential]::New(`"$User@$Domain`",`$Pw)")
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+
+                    $KB.TypeText("`$ADDS=@{NoGlobalCatalog=0;CreateDnsDelegation=0;Credential=`$Credential;CriticalReplicationOnly=0;DatabasePath='C:\Windows\NTDS';DomainName='$($MX.CN)';InstallDns=1;LogPath='C:\Windows\NTDS';NoRebootOnCompletion=0;SiteName='$($Sr.Item.SiteLink)';SysVolPath='C:\Windows\SYSVOL';Force=1;SafeModeAdministratorPassword=`$Pw}")
+                    $KB.TypeKey(13)
+                    Start-Sleep 8
+
+                    $KB.TypeText("Install-ADDSDomainController @ADDS -Verbose")
+                    $KB.TypeKey(13)
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Deploying [~] (Domain Controller) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+
+                    $T2.Start()
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][Deploying [~] (Domain Controller) ($($T2.Elapsed))]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until($Item.Uptime.TotalSeconds -le 2)
+
+                    $C = @( )
+                    Do
+                    {
+                        $Item = Get-VM -Name $ID
+
+                        Switch($Item.CPUUsage)
+                        {
+                            Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+                        }
+
+                        $Sum = @( Switch($C.Count)
+                        {
+                            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+                        } ) | Invoke-Expression
+
+                        $Log.Add($Log.Count,"[$($T1.Elapsed)][Booting [~] Domain Controller ($($T2.Elapsed))][(Inactivity:$Sum/100)]")
+                        Write-Host $Log[$Log.Count-1]
+                        Start-Sleep 1
+                    }
+                    Until ($Sum -gt 100)
+
+                    $T2.Stop()
+                    $Log.Add($Log.Count,"[$($T1.Elapsed)][Deployed [+] (Domain Controller) ($($T2.Elapsed))]")
+                    Write-Host $Log[$Log.Count-1]
+                    
+                    Set-Content -Path "$Home\Desktop\$(Get-Date -UFormat %Y%m%d)($ID).txt" -Value $Log[0..($Log.Count-1)] -Verbose
+
+                    Stop-VM -Name $ID
+                    Stop-VM -Name $Sr.SwitchName
+                }
+
+                # Open VMC Windows
+                0..($Main.Sr.Count-1) | % { 
+                    
+                    Start-Process -FilePath C:\Windows\System32\vmconnect.exe -ArgumentList @($Main.Vm.Host.Computername,$Main.Sr.Name[$_]) -Passthru
+                    Start-Sleep -Milliseconds 100
+                }
+                
+                Do
+                {
+                    "[$($Time.Elapsed)]"
+                    $RS = Get-RSJob
+                    $RS
+                    $Complete = $RS | ? State -eq Completed
+                    Start-Sleep -Seconds 10
+                    Clear-Host
+                }
+                Until ($Complete.Count -ge $Main.Sr.Count)
+                
+                Get-RSJob | Remove-RSJob -Verbose
+                $Time.Stop()
+                Write-Theme "Complete ($($Time.Elapsed)) [+] Server Installation"
+            }
+
+            No  
+            {  
+                $Time.Stop()
+                Write-Theme "Cancelled dialog [$($Time.Elapsed)]"
+                Break
+            }
+        }
+    })
 
 #    ____                                                                                                    ________    
 #   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
@@ -2920,14 +5388,14 @@ public struct WindowPosition
     {
         If (!(Test-Path $Xaml.IO.IsoPath.Text))
         {
-            [System.Windows.MessageBox]::Show("Invalid image root path","Error")
+            Return [System.Windows.MessageBox]::Show("Invalid image root path","Error")
         }
     
         $Tmp = Get-ChildItem $Xaml.IO.IsoPath.Text *.iso | Select-Object Name, FullName
     
         If (!$Tmp)
         {
-            [System.Windows.MessageBox]::Show("No images detected","Error")
+            Return [System.Windows.MessageBox]::Show("No images detected","Error")
         }
 
         $Xaml.IO.IsoList.ItemsSource = @( $Tmp )
@@ -2950,7 +5418,7 @@ public struct WindowPosition
     {
         If ( $Xaml.IO.IsoList.SelectedIndex -eq -1)
         {
-            [System.Windows.MessageBox]::Show("No image selected","Error")
+            Return [System.Windows.MessageBox]::Show("No image selected","Error")
         }
     
         $ImagePath  = $Xaml.IO.IsoList.SelectedItem.FullName
@@ -2962,12 +5430,12 @@ public struct WindowPosition
         
         If (!$Letter)
         {
-            [System.Windows.MessageBox]::Show("Image failed mounting to drive letter","Error")
+            Return [System.Windows.MessageBox]::Show("Image failed mounting to drive letter","Error")
         }
     
         ElseIf (!(Test-Path "${Letter}:\sources\install.wim"))
         {
-            [System.Windows.MessageBox]::Show("Not a valid Windows disc/image","Error")
+            Return [System.Windows.MessageBox]::Show("Not a valid Windows disc/image","Error")
             Dismount-Diskimage -ImagePath $ImagePath
         }
     
@@ -3027,7 +5495,7 @@ public struct WindowPosition
     {
         If ($Xaml.IO.IsoList.SelectedItem.Fullname -in $Xaml.IO.WimIso.Items.Name)
         {
-            [System.Windows.MessageBox]::Show("Image already selected","Error")
+            Return [System.Windows.MessageBox]::Show("Image already selected","Error")
         }
     
         Else
@@ -3263,6 +5731,8 @@ public struct WindowPosition
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
     
     # [Share]://Variables
+    # $Xaml.IO.DsAggregate              # DataGrid
+
     # $Xaml.IO.DsRootSelect             # Button
     # $Xaml.IO.DsRootPath               # Text
     # $Xaml.IO.DsShareName              # Text
@@ -3296,6 +5766,76 @@ public struct WindowPosition
     # $Xaml.IO.DsUpdate                  # Button
 
     # [Share]://Events
+    $Xaml.IO.DsAggregate.Add_SelectionChanged(
+    {
+        $Item = $Xaml.IO.DsAggregate.SelectedItem
+        If ( $Item.Name -match "(\<New\>)" )
+        {
+            $Xaml.IO.DsDriveName.Text     = ("FE{0:d3}" -f $Xaml.IO.DsAggregate.Items.Count)
+            $Xaml.IO.DsRootPath.Text      = ""
+            $Xaml.IO.DsShareName.Text     = ""
+            $Xaml.IO.DsDescription.Text   = ("[FightingEntropy({0})][(2021.8.0)]" -f [char]960)
+            $Xaml.IO.DsType.SelectedIndex = 0
+        }
+
+        Else
+        {
+            $Xaml.IO.DsDriveName.Text     = $Item.Name
+            $Xaml.IO.DsRootPath.Text      = $Item.Root
+            $Xaml.IO.DsShareName.Text     = $Item.Share
+            $Xaml.IO.DsDescription.Text   = $Item.Description
+            $Xaml.IO.DsType.SelectedIndex = 0 # Write logic for PSD share here
+        }
+    })
+
+    $Xaml.IO.DsAddShare.Add_Click(
+    {
+        If ($Xaml.IO.DsDriveName.Text -notmatch "(\w|\d)+")
+        {
+            Return [System.Windows.MessageBox]::Show("Drive label can only contain alphanumeric characters","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsRootPath.Text -in $Xaml.IO.DsAggregate.Items.Root )
+        {
+            Return [System.Windows.MessageBox]::Show("Selected path is already assigned to another deployment share","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsRootPath | ? Text -in @("",$Null) )
+        {
+            Return [System.Windows.MessageBox]::Show("Selected path is invalid","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsShareName.Text -in $Xaml.IO.DsAggregate.Items.Share)
+        {
+            Return [System.Windows.MessageBox]::Show("Selected share name is already assigned to another deployment share","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.DsAggregate.ItemsSource += [DsShare]::New($Xaml.IO.DsDriveName.Text,$Xaml.IO.DsRootPath.Text,$Xaml.IO.DsShareName.Text,$Xaml.IO.DsDescription.Text)
+        }
+    })
+
+    $Xaml.IO.DsRemoveShare.Add_Click(
+    {
+        If ( $Xaml.IO.DsAggregate.SelectedIndex -eq -1 )
+        {
+            Return [System.Windows.MessageBox]::Show("No share to remove...","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsAggregate.SelectedItem.Name -eq "<New>")
+        {
+            Return [System.Windows.MessageBox]::Show("No deployment share selected","Error")
+        }
+        
+        Else
+        {
+            $Items = @( $Xaml.IO.DsAggregate.ItemsSource | ? Name -ne $Xaml.IO.DsAggregate.SelectedItem.Name )
+            $Xaml.IO.DsAggregate.ItemsSource = @( )
+            $Xaml.IO.DsAggregate.ItemsSource = @( $Items )
+        }
+    })
+
     $Xaml.IO.DsBrCollect.Add_Click(
     {
         $OEM = Get-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\OEMInformation' -EA 0
@@ -3415,7 +5955,7 @@ public struct WindowPosition
             Return [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         }
 
-        ElseIf (!(Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)" | ? DistinguishedName -eq $Xaml.IO.DsNwMachineOuName.Text))
+        ElseIf (!(Get-ADObject -Filter * | ? DistinguishedName -eq $Xaml.IO.DsNwMachineOuName.Text))
         {
             Return [System.Windows.MessageBox]::Show("Invalid OU specified","Error")
         }
@@ -3424,56 +5964,29 @@ public struct WindowPosition
         {
             Write-Theme "Creating [~] Deployment Share"
 
-            #$MDT     = Get-ItemProperty HKLM:\Software\Microsoft\Deployment* | % Install_Dir | % TrimEnd \
-            #Import-Module "$MDT\Bin\MicrosoftDeploymentToolkit.psd1"
-        }
+            $Item = $Xaml.IO.DsAggregate.SelectedItem | ? Name -notin (Get-MDTPersistentDrive).Name
 
-        If (Get-MDTPersistentDrive)
-        {
-            $Persist = Restore-MDTPersistentDrive
-        }
-
-        $SMB     = Get-SMBShare
-        $PSD     = Get-PSDrive
-
-        If ($Xaml.IO.DsRootPath.Text -in $Persist.Root)
-        {
-            Return [System.Windows.MessageBox]::Show("That path belongs to an existing deployment share","Error")
-        }
-
-        ElseIf($Xaml.IO.DsShareName.Text -in $SMB.Name)
-        {
-            Return [System.Windows.MessageBox]::Show("That share name belongs to an existing SMB share","Error")
-        }
-
-        ElseIf ($Xaml.IO.DsDriveName.Text -in $PSD.Name)
-        {
-            Return [System.Windows.MessageBox]::Show("That (DSDrive|PSDrive) label is already being used","Error")
-        }
-
-        Else
-        {
-            If (!(Test-Path $Xaml.IO.DsRootPath.Text))
+            If (!(Test-Path $Item.Root))
             {
-                New-Item $Xaml.IO.DsRootPath.Text -ItemType Directory -Verbose
+                New-Item $Item.Root -ItemType Directory -Verbose
             }
 
             $Hostname       = @($Env:ComputerName,"$Env:ComputerName.$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
 
             $SMB            = @{
 
-                Name        = $Xaml.IO.DsShareName.Text
-                Path        = $Xaml.IO.DsRootPath.Text
-                Description = $Xaml.IO.DsDescription.Text
+                Name        = $Item.Share
+                Path        = $Item.Root
+                Description = $Item.Description
                 FullAccess  = "Administrators"
             }
 
             $PSD            = @{ 
 
-                Name        = $Xaml.IO.DsDriveName.Text
+                Name        = $Item.Name
                 PSProvider  = "MDTProvider"
-                Root        = $Xaml.IO.DsRootPath.Text
-                Description = $Xaml.IO.DsDescription.Text
+                Root        = $Item.Root
+                Description = $Item.Description
                 NetworkPath = ("\\{0}\{1}" -f $Hostname, $Xaml.IO.DsShareName.Text)
             }
 
@@ -3583,7 +6096,7 @@ public struct WindowPosition
                 $TaskSequence           = @{ 
                     
                     Path                = "$TS\$Type\$($Image.Version)"
-                    Name                = ("{0} (x{1})" -f $Image.ImageName, $Image.Architecture)
+                    Name                = ( "{0} (x{1})" -f $Image.ImageName, $Image.Architecture)
                     Template            = "FE{0}Mod.xml" -f $Type
                     Comments            = $Comment
                     ID                  = $Image.Label
@@ -3725,43 +6238,7 @@ public struct WindowPosition
     # Set initial TextBox values
     $Xaml.IO.DsNwNetBIOSName.Text = $Env:UserDomain
     $Xaml.IO.DsNwDNSName.Text     = @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
-    $Xaml.IO.DsDescription.Text   = "[FightingEntropy({0})][(2021.7.0)]" -f [char]960
     $Xaml.IO.DsLmUsername.Text    = "Administrator"
     
     $Xaml.Invoke()
-
-    # [Gateway - Prepping Section II]
-    If ($Main.Gateway)
-    {
-        $Gateway = $Main.Gateway
-        $Scratch = "$Env:ProgramData\Secure Digits Plus LLC"
-        $Date    = Get-Date -UFormat %Y%m%d
-        $Path    = "$Scratch\Lab($Date)"
-        If (!(Test-Path $Scratch))
-        {
-            New-Item -Path $Scratch -ItemType Directory -Verbose
-        }
-        If (!(Test-Path $Path))
-        {
-            New-Item -Path $Path -ItemType Directory -Verbose 
-        }
-
-        Get-ChildItem $Path | ? Extension -eq .txt | Remove-Item -Verbose
-
-        ForEach ( $X in 0..($Gateway.Count - 1 ))
-        {
-            $Item = $Gateway[$X]
-            $Item.Hash.Network.HostObject = $Null 
-            $Item.Hash.Network.Network_   = $Null 
-            $Item.Hash.Network.Netmask_   = $Null
-            $Item.Hash.Domain.Ping        = $Null
-
-            Set-Content -Path "$Path\($X)$($Item.Name).txt" -Value ($Item | ConvertTo-Json) -Verbose
-        }
-    }
 }
-
-#$Files = [GwFiles]::New($Path)
-
-# Add-Type -AssemblyName PresentationFramework
-# ( GC $Home\Desktop\New-FEDeploymentShare.ps1 -Encoding UTF8 ) -join "`n" | IEX
