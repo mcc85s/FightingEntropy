@@ -485,7 +485,7 @@ Function Write-Theme # Cross Platform
                     $This.Track[2].Mask[     2].Object = ([Char[]]@(47,175,175,175) -join '')
                     ForEach ( $Mask in $This.Track[2].Mask[ 3..26] )
                     {
-                        If ( $Mask.Object -match "(\]*_+)" )
+                        If ( $Mask.Object -match "(\]_{3}|_{4})" )
                         {
                             $Mask.Object = "    " 
                         }
