@@ -49,4 +49,5 @@ Function Copy-FileStream # Renamed - https://stackoverflow.com/questions/2434133
     }
 
     [FileStream]::New($Source,$Destination) | Out-Null
+    Get-Item $Destination
 }
