@@ -11,7 +11,7 @@ public class Window
 {
     [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool GetWindowRect(IntPtr hWnd, out WindowPosition lpRect);
-FMX
+
     [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)]
     public extern static bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
 
