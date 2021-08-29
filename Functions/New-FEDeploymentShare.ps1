@@ -5892,12 +5892,12 @@ public class WindowObject
             Throw "Unable to initialize, use Windows PowerShell v5.1"
         }
 
-        ElseIf ($Xaml.IO.DcOrganization.Text -match "" )
+        ElseIf ($Xaml.IO.DcOrganization.Text.Length -eq 0 )
         {
             Return [System.Windows.MessageBox]::Show("Missing the organization name","Error")
         }
 
-        ElseIf ($Xaml.IO.DcCommonName.Text -match "" )
+        ElseIf ($Xaml.IO.DcCommonName.Text.Length -eq 0 )
         {
             Return [Systme.Windows.MessageBox]::Show("Missing the domain name/common name","Error")
         }
