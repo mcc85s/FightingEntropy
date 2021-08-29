@@ -828,235 +828,131 @@ public class WindowObject
             }
         }
     }
-    
-    Class WindowsImage
+
+    Class ImageLabel
     {
-        [Uint32] $Index
+        [String] $Name
+        [String] $Index
+        ImageLabel([Object]$ImageFile)
+        {
+            $This.Name  = $ImageFile.Name
+            $This.Index = $ImageFile.Selected -join ","
+        }
+    }
+
+    Class ImageSlot
+    {
+        Hidden [Object] $ImageFile
+        Hidden [Object] $Arch
+        [UInt32] $Index
         [String] $Name
         [String] $Description
-        Hidden [Float]   $FileSize
         [String] $Size
-        WindowsImage([Object]$Image)
+        [UInt32] $Architecture
+        ImageSlot([Object]$ImageFile,[Object]$Arch,[Object]$Slot)
         {
-            If (!$Image)
-            {
-                Throw "No image input"
-            }
-
-            $This.Index       = $Image.ImageIndex
-            $This.Name        = $Image.ImageName
-            $This.Description = $Image.ImageDescription
-            $This.FileSize    = $Image.ImageSize/1GB
-            $This.Size        = "{0:n3} GB" -f $This.FileSize 
+            $This.ImageFile    = $ImageFile
+            $This.Arch         = $Arch
+            $This.Index        = $Slot.ImageIndex
+            $This.Name         = $Slot.ImageName
+            $This.Description  = $Slot.ImageDescription
+            $This.Size         = "{0:n2} GB" -f ([Double]($Slot.ImageSize -Replace "(,|bytes|\s)","")/1073741824)
+            $This.Architecture = @(86,64)[$Arch.Architecture -eq 9]
         }
     }
 
-    Class ImageQueue
-    {
-        [String]  $Name
-        [String]  $FullName
-        [String]  $Index
-        [String]  $Description
-        ImageQueue([String]$FullName,[String]$Index,[String]$Description)
-        {
-            If (!$FullName -or !$Index)
-            {
-                Throw "Invalid selection"
-            }
-
-            $This.Name          = $FullName | Split-Path -Leaf
-            $This.FullName      = $FullName
-            $This.Index         = $Index
-            $This.Description   = $Description
-        }
-    }
-
-    Class ImageIndex
-    {
-        Hidden [UInt32] $Rank
-        Hidden [UInt32] $SourceIndex
-        Hidden [String] $SourceImagePath
-        Hidden [String] $Path
-        Hidden [String] $DestinationImagePath
-        Hidden [String] $DestinationName
-        Hidden [Object] $Disk
-        [Object] $Label
-        [UInt32] $ImageIndex            = 1
-        [String] $ImageName
-        [String] $ImageDescription
-        [String] $Version
-        [String] $Architecture
-        [String] $InstallationType
-        ImageIndex([Object]$Iso)
-        {
-            $This.SourceIndex           = $Iso.SourceIndex
-            $This.SourceImagePath       = $Iso.SourceImagePath
-            $This.DestinationImagePath  = $Iso.DestinationImagePath
-            $This.DestinationName       = $Iso.DestinationName
-            $This.Disk                  = Get-DiskImage -ImagePath $This.SourceImagePath
-        }
-        Load([String]$Target)
-        {
-            Get-WindowsImage -ImagePath $This.Path -Index $This.SourceIndex | % {
-
-                $This.ImageName         = $_.ImageName
-                $This.ImageDescription  = $_.ImageDescription
-                $This.Architecture      = Switch ([UInt32]($_.Architecture -eq 9)) { 0 { 86 } 1 { 64 } }
-                $This.Version           = $_.Version
-                $This.InstallationType  = $_.InstallationType.Split(" ")[0]
-            }
-
-            Switch($This.InstallationType)
-            {
-                Server
-                {
-                    $Year    = [Regex]::Matches($This.ImageName,"(\d{4})").Value
-                    $Edition = Switch -Regex ($This.ImageName) { STANDARD { "Standard" } DATACENTER { "Datacenter" } }
-                    $This.DestinationName = "Windows Server $Year $Edition (x64)"
-                    $This.Label           = "{0}{1}" -f $(Switch -Regex ($This.ImageName){Standard{"SD"}Datacenter{"DC"}}),[Regex]::Matches($This.ImageName,"(\d{4})").Value
-                }
-
-                Client
-                {
-                    $This.DestinationName = "{0} (x{1})" -f $This.ImageName, $This.Architecture
-                    $This.Label           = "10{0}{1}"   -f $(Switch -Regex ($This.ImageName) { Pro {"P"} Edu {"E"} Home {"H"} }),$This.Architecture
-                }
-            }
-
-            $This.DestinationImagePath    = "{0}\({1}){2}\{2}.wim" -f $Target,$This.Rank,$This.Label
-
-            $Folder                       = $This.DestinationImagePath | Split-Path -Parent
-
-            If (!(Test-Path $Folder))
-            {
-                New-Item -Path $Folder -ItemType Directory -Verbose
-            }
-        }
-    }
-    
     Class ImageFile
     {
-        [ValidateSet("Client","Server")]
-        [String]        $Type
-        [String]        $Name
-        [String] $DisplayName
-        [String]        $Path
-        [UInt32[]]     $Index
-        ImageFile([String]$Type,[String]$Path)
+        [UInt32]      $Index
+        [String]       $Type
+        [String]       $Name
+        [String]       $Path
+        [Object[]]  $Content
+        [UInt32[]] $Selected
+        ImageFile([UInt32]$Index,[String]$Path)
         {
-            $This.Type  = $Type
-
-            If ( ! ( Test-Path $Path ) )
-            {
-                Throw "Invalid Path"
-            }
-
-            $This.Name        = ($Path -Split "\\")[-1]
-            $This.DisplayName = "($Type)($($This.Name))"
-            $This.Path        = $Path
-            $This.Index       = @( )
+            $This.Index    = $Index
+            $This.Name     = $Path | Split-Path -Leaf
+            $This.Path     = $Path
+            $This.Content  = @( )
+            $This.Selected = @( )
         }
-        AddMap([UInt32[]]$Index)
+        LoadContent([Object[]]$Content)
         {
-            ForEach ( $I in $Index )
+            $This.Type     = @("Client","Server")[$Content[0].Name -match "Server"]
+            $This.Content  = $Content
+        }
+        LoadSelection([UInt32[]]$Index)
+        {
+            $This.Selected = @( )
+            
+            If (!($This.Content))
             {
-                $This.Index  += $I
+                [System.Windows.MessageBox]::Show("Content has not been loaded yet","Image Error")
             }
+
+            $This.Selected = @( $Index )
         }
     }
 
-    Class ImageStore
+    Class ImageStack
     {
-        [String]   $Source
-        [String]   $Target
-        [Object[]]  $Store
-        [Object[]]   $Swap
-        [Object[]] $Output
-        ImageStore([String]$Source,[String]$Target)
+        [String] $Source
+        [String] $Target
+        [Object] $Store
+        [Object] $Queue
+        [Object] $Swap
+        [Object] $Output
+        ImageStack([String]$Source)
         {
-            If ( ! ( Test-Path $Source ) )
+            If (!(Test-Path $Source))
             {
-                Throw "Invalid image base path"
-            }
-
-            If ( !(Test-Path $Target) )
-            {
-                New-Item -Path $Target -ItemType Directory -Verbose
+                Throw "Invalid source path"
             }
 
             $This.Source = $Source
-            $This.Target = $Target
             $This.Store  = @( )
-        }
-        AddImage([String]$Type,[String]$Name)
-        {
-            $This.Store += [ImageFile]::New($Type,"$($This.Source)\$Name")
-        }
-        GetSwap()
-        {
-            $This.Swap = @( )
-            $Ct        = 0
 
-            ForEach ( $Image in $This.Store )
+            ForEach ( $Item in Get-ChildItem $This.Source *.iso )
             {
-                ForEach ( $Index in $Image.Index )
-                {
-                    $Iso                     = @{ 
-
-                        SourceIndex          = $Index
-                        SourceImagePath      = $Image.Path
-                        DestinationImagePath = ("{0}\({1}){2}({3}).wim" -f $This.Target, $Ct, $Image.DisplayName, $Index)
-                        DestinationName      = "{0}({1})" -f $Image.DisplayName,$Index
-                    }
-
-                    $Item                    = [ImageIndex]::New($Iso)
-                    $Item.Rank               = $Ct
-                    $This.Swap              += $Item
-                    $Ct                     ++
-                }
-            }
-        }
-        GetOutput()
-        {
-            $Last = $Null
-
-            ForEach ( $X in 0..( $This.Swap.Count - 1 ) )
-            {
-                $Image       = $This.Swap[$X]
-
-                If ( $Last -ne $Null -and $Last -ne $Image.SourceImagePath )
-                {
-                    Write-Theme "Dismounting... $Last" 12,4,15,0
-                    Dismount-DiskImage -ImagePath $Last -Verbose
-                }
-
-                If (!(Get-DiskImage -ImagePath $Image.SourceImagePath).Attached)
-                {
-                    Write-Theme ("Mounting [+] {0}" -f $Image.SourceImagePath) 14,6,15,0
-                    Mount-DiskImage -ImagePath $Image.SourceImagePath
-                }
-
-                $Image.Path = "{0}:\sources\install.wim" -f (Get-DiskImage -ImagePath $Image.SourceImagePath | Get-Volume | % DriveLetter)
-
-                $Image.Load($This.Target)
-
-                $ISO                        = @{
-
-                    SourceIndex             = $Image.SourceIndex
-                    SourceImagePath         = $Image.Path
-                    DestinationImagePath    = $Image.DestinationImagePath
-                    DestinationName         = $Image.DestinationName
-                }
-
-                Write-Theme "Extracting [~] $($Iso.DestinationImagePath)" 11,7,15,0
-                Export-WindowsImage @ISO
-                Write-Theme "Extracted [+] $($Iso.DestinationName)" 10,10,15,0
-
-                $Last                       = $Image.SourceImagePath
-                $This.Output               += $Image
+                $This.Store += [ImageFile]::New($This.Store.Count,$Item.FullName)
             }
 
-            Dismount-DiskImage -ImagePath $Last
+            If ( $This.Store.Count -eq 0 )
+            {
+                [System.Windows.MessageBox]::Show("No ISO's detected")
+            }
+        }
+        LoadIso([UInt32]$Index)
+        {
+            If ( $This.Store.Count -eq 0 )
+            {
+                [System.Windows.MessageBox]::Show("No ISO's loaded")
+                Break
+            }
+            
+            $ImageFile = $This.Store[$Index]
+            Write-Theme "Loading [~] [$($ImageFile.Name)]"
+            $ImageFile.Path | Get-DiskImage | ? { !$_.Attached } | Mount-DiskImage
+
+            $Letter = $ImageFile.Path | Get-DiskImage | Get-Volume | % DriveLetter
+            $Path   = "${Letter}:\sources\install.wim"
+            If (!(Test-Path $Path))
+            {
+                [System.Windows.MessageBox]::Show("Not a valid Windows Iso")
+                $ImageFile.Path | Dismount-DiskImage
+            }
+            Else
+            {
+                $Arch    = Get-WindowsImage -ImagePath $Path -Index 1
+                $Content = Get-WindowsImage -ImagePath $Path | % { [ImageSlot]::New($ImageFile.Path,$Arch,$_) }
+                $ImageFile.LoadContent($Content)
+            }
+        }
+        UnloadIso([UInt32]$Index)
+        {
+            $ImageFile = $This.Store[$Index]
+            Dismount-DiskImage $ImageFile.Path
         }
     }
     
@@ -1071,7 +967,7 @@ public class WindowObject
         {
             Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
 
-                ($_-Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
+                ($_ -Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
 
             } | Select-Object -Unique ) 
         }
@@ -2235,7 +2131,7 @@ public class WindowObject
                                     <DataGrid Grid.Row="0" Name="IsoList">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name" Binding='{Binding Name}' Width="*"/>
-                                            <DataGridTextColumn Header="Path" Binding='{Binding Fullname}' Width="2*"/>
+                                            <DataGridTextColumn Header="Path" Binding='{Binding Path}' Width="2*"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                     <Grid Grid.Row="1">
@@ -2260,6 +2156,7 @@ public class WindowObject
                                                 <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="40"/>
                                                 <DataGridTextColumn Header="Name"  Binding='{Binding Name}' Width="*"/>
                                                 <DataGridTextColumn Header="Size"  Binding='{Binding Size}' Width="100"/>
+                                                <DataGridTextColumn Header="Architecture" Binding='{Binding Architecture}' Width="100"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                         <Grid Grid.Row="1">
@@ -2288,11 +2185,11 @@ public class WindowObject
                                             <ColumnDefinition Width="50"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Button Grid.Row="0" Name="WimIsoUp" Content="˄"/>
-                                        <Button Grid.Row="1" Name="WimIsoDown" Content="˅"/>
+                                        <Button Grid.Row="0" Name="WimIsoUp" Content="^"/>
+                                        <Button Grid.Row="1" Name="WimIsoDown" Content="?"/>
                                         <DataGrid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Name="WimIso">
                                             <DataGrid.Columns>
-                                                <DataGridTextColumn Header="Name"  Binding='{Binding FullName}' Width="*"/>
+                                                <DataGridTextColumn Header="Name"  Binding='{Binding Name}' Width="*"/>
                                                 <DataGridTextColumn Header="Index" Binding='{Binding Index}' Width="100"/>
                                             </DataGrid.Columns>
                                         </DataGrid>
@@ -2925,6 +2822,13 @@ public class WindowObject
             Else
             {
                 [System.Windows.MessageBox]::Show("Invalid operation, only one gateway remaining","Error")
+            }
+        }
+        [Void] LoadImagePath([String]$ImagePath)
+        {
+            If ((Test-Path $ImagePath) -and (Get-ChildItem $ImagePath *.iso).Count -gt 0 )
+            {
+                $This.Image = [ImageStack]::New($ImagePath)
             }
         }
         [Object[]] LoadUpdate([String]$Path)
@@ -5391,14 +5295,16 @@ public class WindowObject
             Return [System.Windows.MessageBox]::Show("Invalid image root path","Error")
         }
     
-        $Tmp = Get-ChildItem $Xaml.IO.IsoPath.Text *.iso | Select-Object Name, FullName
+        $Main.LoadImagePath($Xaml.IO.IsoPath.Text)
     
-        If (!$Tmp)
+        If (!$Main.Image.Store)
         {
             Return [System.Windows.MessageBox]::Show("No images detected","Error")
         }
-
-        $Xaml.IO.IsoList.ItemsSource = @( $Tmp )
+        Else
+        {
+            $Xaml.IO.IsoList.ItemsSource = @( $Main.Image.Store )
+        }
     })
     
     $Xaml.IO.IsoList.Add_SelectionChanged(
@@ -5420,43 +5326,36 @@ public class WindowObject
         {
             Return [System.Windows.MessageBox]::Show("No image selected","Error")
         }
-    
-        $ImagePath  = $Xaml.IO.IsoList.SelectedItem.FullName
-        Write-Host "Mounting [~] [$ImagePath]"
-    
-        Mount-DiskImage -ImagePath $ImagePath -Verbose
-    
-        $Letter    = Get-DiskImage $ImagePath | Get-Volume | % DriveLetter
+
+        $Image = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex]
+        $Main.Image.LoadIso($Xaml.IO.IsoList.SelectedIndex)
+        Do
+        {
+            Start-Sleep -Milliseconds 100
+        }
+        Until (Get-DiskImage $Image.Path | ? Attached)
         
-        If (!$Letter)
-        {
-            Return [System.Windows.MessageBox]::Show("Image failed mounting to drive letter","Error")
-        }
-    
-        ElseIf (!(Test-Path "${Letter}:\sources\install.wim"))
-        {
-            Return [System.Windows.MessageBox]::Show("Not a valid Windows disc/image","Error")
-            Dismount-Diskimage -ImagePath $ImagePath
-        }
-    
-        Else
-        {
-            $Xaml.IO.IsoView.ItemsSource     = Get-WindowsImage -ImagePath "${Letter}:\sources\install.wim" | % { [WindowsImage]$_ }
-            $Xaml.IO.IsoList.IsEnabled       = 0
-            $Xaml.IO.IsoDismount.IsEnabled   = 1
-            Write-Host "Mounted [+] [$ImagePath]"
-        }
+        $Xaml.IO.IsoView.ItemsSource = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex].Content
+        $Xaml.IO.IsoList.IsEnabled       = 0
+        $Xaml.IO.IsoDismount.IsEnabled   = 1
+        Write-Theme "Mounting [$($Image.Path)]" 14,6,15
     })
     
     $Xaml.IO.IsoDismount.Add_Click(
     {
-        $ImagePath                           = $Xaml.IO.IsoList.SelectedItem.FullName
-        Dismount-DiskImage -ImagePath $ImagePath
+        $Image  = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex]
+        $Main.Image.UnloadIso($Xaml.IO.IsoList.SelectedIndex)
+        Do
+        {
+            Start-Sleep -Milliseconds 100
+        }
+        Until (!(Get-DiskImage $Image.Path | ? Attached))
+
         $Xaml.IO.IsoView.ItemsSource         = $Null
         $Xaml.IO.IsoList.IsEnabled           = 1
-    
-        Write-Host "Dismounted [+] [$ImagePath]"
-        $ImagePath                           = $Null
+        Write-Theme "Dismounting [$($Image.Path)]" 12,4,15
+
+        $Image                               = $Null
     
         $Xaml.IO.IsoDismount.IsEnabled       = 0
     })
@@ -5480,7 +5379,7 @@ public class WindowObject
         {
             $Xaml.IO.WimDequeue.IsEnabled   = 0
             $Xaml.IO.WimIsoUp.IsEnabled     = 0
-            $xaml.IO.WimIsoDown.IsEnabled   = 0
+            $Xaml.IO.WimIsoDown.IsEnabled   = 0
         }
     
         If ( $Xaml.IO.WimIso.Items.Count -gt 0 )
@@ -5493,40 +5392,35 @@ public class WindowObject
     
     $Xaml.IO.WimQueue.Add_Click(
     {
-        If ($Xaml.IO.IsoList.SelectedItem.Fullname -in $Xaml.IO.WimIso.Items.Name)
+        If ($Xaml.IO.IsoList.SelectedItem.Path -in $Xaml.IO.WimIso.Items.Name)
         {
             Return [System.Windows.MessageBox]::Show("Image already selected","Error")
         }
     
         Else
         {
-            $Indexes      = $Xaml.IO.IsoView.SelectedItems.Index -join ","
-            $Descriptions = $Xaml.IO.IsoView.SelectedItems.Description -join ","
-            $Xaml.IO.WimIso.ItemsSource += [ImageQueue]::New($Xaml.IO.IsoList.SelectedItem.Fullname,$Indexes,$Descriptions)
+            $Image  = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex]
+            $Image.LoadSelection($Xaml.IO.IsoView.SelectedItems.Index)
+            $Xaml.IO.WimIso.ItemsSource += [ImageLabel]::New($Image)
         }
     })
     
     $Xaml.IO.WimDequeue.Add_Click(
     {
-        $Grid = $Xaml.IO.WimIso.ItemsSource
-        $Items = @( )
-    
-        ForEach ( $Item in $Grid )
-        {
-            If ( $Item -ne $Xaml.IO.WimIso.SelectedItem )
-            {
-                $Items += $Item
-            }
-        }
-    
+        $Items = @( $Xaml.IO.WimIso.Items | ? Name -ne $Xaml.IO.WimIso.SelectedItem.Name )
+
         $Xaml.IO.WimIso.ItemsSource = @( )
-        $Xaml.IO.WimIso.ItemsSource = $Items
-        $Grid                       = $Null
-        $Items                      = $Null
+
+        If ($Items)
+        {
+            $Xaml.IO.WimIso.ItemsSource = $Items
+            $Items                      = $Null
+        }
     
         If ( $Xaml.IO.WimIso.Items.Count -eq 0 )
         {
             $Xaml.IO.WimDequeue.IsEnabled = 0
+            $Xaml.IO.WimIso.ItemsSource = @( )
         }
     })
     
@@ -5618,7 +5512,7 @@ public class WindowObject
                     {
                         ForEach ( $Child in $Children )
                         {
-                            Remove-Item $Child -Force -Verbose
+                            Get-ChildItem $Xaml.IO.WimPath.Text | Remove-Item -Recurse -Confirm:$False -Force -Verbose
                         }
                     }
 
@@ -5635,24 +5529,87 @@ public class WindowObject
             New-Item -Path $Xaml.IO.WimPath.Text -ItemType Directory -Verbose
         }
     
-        $Images = [ImageStore]::New($Xaml.IO.IsoPath.Text,$Xaml.IO.WimPath.Text)
+        $Main.Image.Target = $Xaml.IO.WimPath.Text
     
-        $X      = 0
-        ForEach ( $Item in $Xaml.IO.WimIso.Items )
+        $X = 0
+        ForEach ( $I in $Xaml.IO.WimIso.Items )
         {
-            $Type = Switch -Regex ($Item.Description)
+            $Item = $Main.Image.Store | ? Name -eq $I.Name
+            $Disk = Get-DiskImage -ImagePath $Item.Path
+            If (!$Disk.Attached)
             {
-                Server { "Server" } Default { "Client" }
+                Write-Host "Mounting [~] $($Item.Path)"
+                Mount-DiskImage -ImagePath $Item.Path -Verbose
+                $Disk  = Get-DiskImage -ImagePath $Item.Path
             }
-    
-            $Images.AddImage($Type,$Item.Name)
-            $Images.Store[$X].AddMap($Item.Index.Split(","))
-            $X ++
+
+            $Path  = "{0}:\sources\install.wim" -f ($Disk | Get-Volume | % DriveLetter)
+
+            ForEach ($U in $Item.Selected)
+            {
+                $Select = $Item.Content | ? Index -eq $U
+                Switch($Item.Type)
+                {
+                    Server
+                    {
+                        $Year               = [Regex]::Matches($Select.Name,"(\d{4})").Value
+                        Switch -Regex ($Select.Name) 
+                        {
+                            STANDARD
+                            {
+                                $Edition    = "Standard"
+                                $Tag        = "SD" 
+                            }
+                            DATACENTER
+                            {
+                                $Edition    = "Datacenter"
+                                $Tag        = "DC"
+                            }
+                        }
+                        $DestinationName    = "Windows Server $Year $Edition (x64)"
+                        $Label              = "{0}{1}" -f $Tag, $Year
+                    }
+
+                    Client
+                    {
+                        Switch -Regex ($Select.Name)
+                        {
+                            Education
+                            {
+                                $Tag        = "E"
+                            }
+                            Pro
+                            {
+                                $Tag        = "P"
+                            }
+                            Home
+                            {
+                                $Tag        = "H"
+                            }
+                        }
+                        $DestinationName    = "{0} (x{1})" -f $Select.Name, $Select.Architecture
+                        $Label              = "10{0}{1}" -f $Tag, $Select.Architecture
+                    }
+                }
+
+                $ISO                        = @{
+
+                    SourceIndex             = $U
+                    SourceImagePath         = $Path
+                    DestinationImagePath    = ("{0}\({1}){2}\{2}.wim" -f $Xaml.IO.WimPath.Text,$X,$Label)
+                    DestinationName         = $DestinationName
+                }
+
+                New-Item ($Iso.DestinationImagePath | Split-Path -Parent) -ItemType Directory -Verbose
+
+                Write-Host "Extracting [~] $($Iso.DestinationName)"
+                Export-WindowsImage @ISO
+                Write-Theme "Extracting [~] $($Iso.DestinationName)"
+                $X ++
+            }
+            Get-DiskImage -ImagePath $Item.Path | Dismount-DiskImage
         }
-    
-        $Images.GetSwap()
-        $Images.GetOutput()
-        Write-Theme "Complete [+] Images Collected"
+        Write-Host "Complete [+] Images Collected"
     })
     
     $Xaml.IO.WimSelect.Add_Click(
@@ -5955,14 +5912,36 @@ public class WindowObject
             Return [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         }
 
-        ElseIf (!(Get-ADObject -Filter * | ? DistinguishedName -eq $Xaml.IO.DsNwMachineOuName.Text))
+        ElseIf (!(Get-ADOrganizationalUnit -Filter * | ? DistinguishedName -match $Xaml.IO.DsNwMachineOuName.Text))
         {
             Return [System.Windows.MessageBox]::Show("Invalid OU specified","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsDriveName.Text -in (Get-PSDrive).Name)
+        {
+            Return [System.Windows.MessageBox]::Show("A PS Drive by that name already exists.","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsShareName.Text -in (Get-SMBShare).Name)
+        {
+            Return [System.Windows.MessageBox]::Show("An SMB share by that name already exists.","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsDriveName.Text -in (Get-MDTPersistentDrive).Name)
+        {
+            Return [System.Windows.MessageBox]::Show("An MDT Persistent Drive by that name already exists.","Error")
         }
 
         Else
         {
             Write-Theme "Creating [~] Deployment Share"
+            If ( $Xaml.IO.DsAggregate.SelectedItem.Name -eq "<New>" )
+            {
+                $Xaml.IO.DsAggregate.SelectedItem.Name  = $Xaml.IO.DsDriveName.Text
+                $Xaml.IO.DsAggregate.SelectedItem.Root  = $Xaml.IO.DsRootPath.Text
+                $Xaml.IO.DsAggregate.SelectedItem.Share = $Xaml.IO.DsShareName.Text
+                $Xaml.IO.DsAggregate.SelectedItem.Description = $Xaml.IO.DsDescription.Text
+            }
 
             $Item = $Xaml.IO.DsAggregate.SelectedItem | ? Name -notin (Get-MDTPersistentDrive).Name
 
@@ -5975,18 +5954,18 @@ public class WindowObject
 
             $SMB            = @{
 
-                Name        = $Item.Share
-                Path        = $Item.Root
-                Description = $Item.Description
+                Name        = $Xaml.IO.DsShareName.Text
+                Path        = $Xaml.IO.DsRootPath.Text
+                Description = $Xaml.IO.DsDescription.Text
                 FullAccess  = "Administrators"
             }
 
             $PSD            = @{ 
 
-                Name        = $Item.Name
+                Name        = $Xaml.IO.DsDriveName.Text
                 PSProvider  = "MDTProvider"
-                Root        = $Item.Root
-                Description = $Item.Description
+                Root        = $Xaml.IO.DsRootPath.Text
+                Description = $Xaml.IO.DsDescription.Text
                 NetworkPath = ("\\{0}\{1}" -f $Hostname, $Xaml.IO.DsShareName.Text)
             }
 
@@ -6102,9 +6081,9 @@ public class WindowObject
                     ID                  = $Image.Label
                     Version             = "1.0"
                     OperatingSystemPath = Get-ChildItem -Path $Path | ? Name -match $Image.Label | % { "{0}\{1}" -f $Path, $_.Name }
-                    FullName            = $Xaml.IO.DcLmUsername
-                    OrgName             = $Xaml.IO.DcOrganization
-                    HomePage            = $Xaml.IO.DcBrWebsite
+                    FullName            = $Xaml.IO.DcLmUsername.Text
+                    OrgName             = $Xaml.IO.DcOrganization.Text
+                    HomePage            = $Xaml.IO.DcBrWebsite.Text
                     AdminPassword       = $Xaml.IO.DcLmPassword.Password
                 }
 
@@ -6114,7 +6093,7 @@ public class WindowObject
             Write-Theme "OS/TS [+] Imported, removing Wim Swap directory" 11,3,15,0
             Remove-Item -Path $Xaml.IO.WimPath.Text -Recurse -Force -Verbose
 
-            # FightingEntropy(π) Installation propogation
+            # FightingEntropy(p) Installation propogation
             $Install = @( 
             "[Net.ServicePointManager]::SecurityProtocol = 3072",
             "Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | Invoke-Expression",
@@ -6136,7 +6115,7 @@ public class WindowObject
             ForEach ($x in 64,86)
             {
                 $Names  = $X | % { "Boot.x$_" } | % { "$_.Generate{0}ISO $_.{0}WIMDescription $_.{0}ISOName $_.BackgroundFile" -f "LiteTouch" -Split " " }
-                $Values = $X | % { "$($Module.Name)[$($Module.Version)](x$_)" } | % { "True;$_;$_.iso;$($Xaml.IO.Background.Text)" -Split ";" }
+                $Values = $X | % { "$($Module.Name)[$($Module.Version)](x$_)" } | % { "True;$_;$_.iso;$($Xaml.IO.DsBrBackground.Text)" -Split ";" }
                 0..3         | % { Set-ItemProperty -Path $Root -Name $Names[$_] -Value $Values[$_] -Verbose } 
             }
 
