@@ -34,7 +34,7 @@ Function Copy-FileStream # Renamed - https://stackoverflow.com/questions/2434133
                     $This.Total += $This.Count
                     If ($This.Total % 1mb -eq 0) 
                     {
-                        Write-Progress -Activity "Copying File" -Status "$Source -> $Destination" -PercentComplete ([Long]($This.Total * 100 / $This.Source.Length))
+                        Write-Progress -Activity "Copying File" -Status "$Source -> $Destination" -PercentComplete ([long]($This.Total * 100 / $This.Source.Length))
                     }
                 } 
                 While ($This.Count -gt 0)
@@ -48,5 +48,5 @@ Function Copy-FileStream # Renamed - https://stackoverflow.com/questions/2434133
         }
     }
 
-    [FileStream]::New($Source,$Destination)
+    [FileStream]::New($Source,$Destination) | Out-Null
 }
