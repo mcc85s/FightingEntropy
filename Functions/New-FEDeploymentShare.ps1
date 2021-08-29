@@ -11,7 +11,7 @@ public class Window
 {
     [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool GetWindowRect(IntPtr hWnd, out WindowPosition lpRect);
-
+FMX
     [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)]
     public extern static bool MoveWindow(IntPtr handle, int x, int y, int width, int height, bool redraw);
 
@@ -5045,12 +5045,12 @@ public class WindowObject
                     $KB.TypeKey(13)
                     Start-Sleep 2
 
-                    $Value = ( $MX.Dhcp.Options | ? OptionID -eq 4 | % Value ) -join ','
+                    $Value = ( $DhcpOpt | ? OptionID -eq 4 | % Value ) -join ','
                     $KB.TypeText("Set-DhcpServerv4OptionValue -OptionID 4 -Value $Value -Verbose") # (Time Servers)
                     $KB.TypeKey(13)
                     Start-Sleep 2
 
-                    $Value = ( $MX.Dhcp.Options | ? OptionID -eq 5 | % Value ) -join ','
+                    $Value = ( $DhcpOpt | ? OptionID -eq 5 | % Value ) -join ','
                     $KB.TypeText("Set-DhcpServerv4OptionValue -OptionID 5 -Value $Value -Verbose") # (Name Servers)
                     $KB.TypeKey(13)
                     Start-Sleep 2
@@ -5068,6 +5068,10 @@ public class WindowObject
                     Start-Sleep 2
 
                     $KB.TypeText("Set-DhcpServerv4OptionValue -OptionID 28 -Value `$Hash.Broadcast -Verbose") # (Broadcast Address)
+                    $KB.TypeKey(13)
+                    Start-Sleep 2
+                    
+                    $KB.TypeText("Set-DhcpServerv4OptionValue -OptionID 66 -Value `"$ID.$($MX.CN)`" -Verbose") # (Broadcast Address)
                     $KB.TypeKey(13)
                     Start-Sleep 2
 
