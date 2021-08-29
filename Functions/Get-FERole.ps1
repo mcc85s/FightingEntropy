@@ -172,7 +172,7 @@ Function Get-FERole
 
         GetFeatures()
         {
-            Install-PackageManager -Name NuGet -Confirm:$False -Force
+            Install-PackageProvider -Name NuGet -Confirm:$False -Force
             Find-Module -Name PoshRSJob | Install-Module -Confirm:$False -Force
         }
 
