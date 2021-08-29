@@ -1,7 +1,7 @@
 Function Get-FEImageManifest
 {
     [CmdLetBinding()]Param(
-        [Paramter(Mandatory,Position=0)][String]$Path,
+        [Parameter(Mandatory,Position=0)][String]$Path,
         [Parameter(Mandatory,Position=1)][String]$Source,
         [Parameter(Mandatory,Position=2)][String]$Destination
     )
