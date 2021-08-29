@@ -79,6 +79,15 @@ Function Get-FERole
         {
         
         }
+
+        LoadEnvironmentKey([String]$Path)
+        {
+            $Key = Get-EnvironmentKey -Path $Path -Convert
+            If ($Key)
+            {
+                New-EnvironmentKey -Key $Key | % Apply 
+            }
+        }
     
         Choco()
         {
@@ -163,7 +172,17 @@ Function Get-FERole
 
         GetFeatures()
         {
-        
+            Install-PackageManager -Name NuGet -Confirm:$False -Force
+            Find-Module -Name PoshRSJob | Install-Module -Confirm:$False -Force
+        }
+
+        LoadEnvironmentKey([String]$Path)
+        {
+            $Key = Get-EnvironmentKey -Path $Path -Convert
+            If ($Key)
+            {
+                New-EnvironmentKey -Key $Key | % Apply 
+            }
         }
         
         Choco()
