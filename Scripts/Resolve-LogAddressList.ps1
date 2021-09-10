@@ -48,11 +48,11 @@ Function Resolve-LogAddressList
             $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
         }
     }
-
+    
+    # ( Get-Content $home\Desktop\LogAddressList.xaml ).Replace("'",'"') | % { "        '$_'," } | Set-Clipboard
     Class LogAddressListGUI
     {
-        Static [String] $Tab = @(
-                '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="800" Height="480" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="CanResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
+        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Log Address List" Width="800" Height="480" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="CanResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style TargetType="GroupBox">',
         '            <Setter Property="Foreground" Value="Black"/>',
