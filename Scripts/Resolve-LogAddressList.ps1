@@ -51,8 +51,8 @@ Function Resolve-LogAddressList
 
     Class LogAddressListGUI
     {
-        Static [String] $Tab = @(        
-        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="800" Height="480" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
+        Static [String] $Tab = @(
+                '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="800" Height="480" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="CanResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style TargetType="GroupBox">',
         '            <Setter Property="Foreground" Value="Black"/>',
@@ -104,6 +104,7 @@ Function Resolve-LogAddressList
         '                    <DataGridTextColumn Header="Index"   Binding="{Binding Index}"  Width="60"/>',
         '                    <DataGridTextColumn Header="Date"    Binding="{Binding Date}"   Width="100"/>',
         '                    <DataGridTextColumn Header="Time"    Binding="{Binding Time}"   Width="100"/>',
+        '                    <DataGridTextColumn Header="Type"    Binding="{Binding Type}"   Width="100"/>',
         '                    <DataGridTextColumn Header="IP"      Binding="{Binding IP}"     Width="120"/>',
         '                    <DataGridTextColumn Header="Status"  Binding="{Binding Status}" Width="40"/>',
         '                    <DataGridTextColumn Header="Name"    Binding="{Binding Name}"   Width="150"/>',
