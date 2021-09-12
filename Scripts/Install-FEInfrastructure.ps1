@@ -6,7 +6,7 @@ $Cred2       = Get-Credential fightingentropy@securedigitsplus.com
 
 ForEach ( $X in 0..($GW.Count - 1 ))
 {
-    # $X = 0
+    # $X = 1
     $Vm0         = Get-Content "$($Gw[$X])\vmx.txt" | ConvertFrom-Json
     $Mx0         = Get-Content "$($Gw[$X])\host.txt" | ConvertFrom-Json
     $Cred0       = Import-CliXml "$($Gw[$X])\cred.txt"
@@ -838,7 +838,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         Start-Sleep 1
         $Kb1.TypeText("$Pass1")
         $Kb1.TypeKey(13)
-        Start-Sleep 15
+        Start-Sleep 30
 
         $Kb1.PressKey(91)
         $Kb1.TypeKey(82)
@@ -917,7 +917,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $Kb1.TypeKey(13)
         Start-Sleep 2
 
-        $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 28 -Value `$Hash.Broadcast -Verbose") # (Broadcast Address)
+        $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 28 -Value $($Vm1.Item.Broadcast) -Verbose") # (Broadcast Address)
         $Kb1.TypeKey(13)
         Start-Sleep 2
         
@@ -1016,16 +1016,16 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         Until ($Sum -gt 100)
 
         $Kb1.TypeCtrlAltDel()
-        Start-Sleep 6
+        Start-Sleep 10
         9,9,9,13 | % { $Kb1.TypeKey($_); Start-Sleep -M 100 }
-        Start-Sleep 1
+        Start-Sleep 4
 
         $Kb1.TypeText("$User1@$Domain")
         $Kb1.TypeKey(9)
         Start-Sleep 1
         $Kb1.TypeText("$Pass1")
         $Kb1.TypeKey(13)
-        Start-Sleep 15
+        Start-Sleep 25
 
         $Kb1.PressKey(91)
         $Kb1.TypeKey(82)
@@ -1039,12 +1039,12 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $Kb1.TypeKey(9)
         $Kb1.TypeKey(9)
         $Kb1.TypeKey(13)
-        Start-Sleep 20
+        Start-Sleep 30
 
         $Kb1.TypeText("Stop-Process -Name ServerManager")
         $Kb1.TypeKey(13)
 
-        $Kb1.TypeText("`$Item='$($Vm1.Item | ConvertTo-Json)'")
+        $Kb1.TypeText("`$Item='$($Vm1.Item | ConvertTo-Json)';Set-Content -Path `$Home\Desktop\server.txt -Value `$Item")
         $Kb1.TypeKey(13)
 
         $Kb1.TypeText("start `$Env:Public\Desktop\FightingEntropy.lnk")
@@ -1054,7 +1054,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         # [Shell 1]
         $Kb1.TypeText("`$Module = Get-FEModule;`$Module.Role.LoadEnvironmentKey(`"\\dsc0\FlightTest$\DSKey.csv`");Get-MDTModule;`$Module.Role.GetFeatures();Add-DHCPServerInDC;Add-DhcpServerSecurityGroup")
         $Kb1.TypeKey(13)
-        Start-Sleep 6
+        Start-Sleep 10
 
         # [Shell 2]
         $Kb1.PressKey(18)
@@ -1080,7 +1080,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
                 0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
             } ) | Invoke-Expression
 
-            $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Deploying [~] (Domain Controller) ($($Tx2.Elapsed))][Inactivity:($Sum/100)]")
+            $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Image Server Setup [~] ($($Tx2.Elapsed))][Inactivity:($Sum/100)]")
             Write-Host $Lx1[$Lx1.Count-1]
             Start-Sleep 1
         }
@@ -1101,7 +1101,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $Kb1.TypeText("wdsutil /initialize-server /reminst:`"C:\RemoteInstall`";New-WDSInstallImageGroup -Name `$Group;Import-WDSInstallImage -ImageGroup `$Group -Path `$Path -ImageName `$ImageName")
         $Kb1.TypeKey(13)
 
-        $C = @( )
+        $C = 0
         Do
         {
             $Item = Get-VM -VMName $Id1
@@ -1112,7 +1112,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
 
             $C ++
         }
-        Until ($C -gt 60)
+        Until ($C -gt 90)
 
         $Kb1.TypeText('64,86|%{irm "github.com/mcc85sx/FightingEntropy/blob/master/Boot/x$_/wdsmgfw.efi?raw=true" -Outfile "C:\RemoteInstall\Boot\x$_\wdsmgfw.efi"}')
         $Kb1.TypeKey(13)
@@ -1121,14 +1121,14 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         # [Configure WDS]
         $Kb1.TypeText("mmc")
         $Kb1.TypeKey(13)
-        Start-Sleep 1
+        Start-Sleep 3
 
         $Kb1.PressKey(18)
         $Kb1.TypeKey(70)
         Start-Sleep 1
         $Kb1.TypeKey(77)
         $Kb1.ReleaseKey(18)
-        Start-Sleep 1
+        Start-Sleep 4
 
         $Kb1.TypeKey(87)
         $Kb1.TypeKey(40)
@@ -1136,74 +1136,62 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $Kb1.TypeKey(65)
         $Kb1.ReleaseKey(18)
         $Kb1.TypeKey(13)
-        Start-Sleep 1
+        Start-Sleep 3
 
-        $Kb1.TypeKey(40)
-        $Kb1.TypeKey(39)
-        $Kb1.TypeKey(40)
-        $Kb1.TypeKey(39)
-        $Kb1.TypeKey(40)
-        $Kb1.TypeKey(39)
-        $Kb1.TypeKey(93)
-        $Kb1.TypeKey(40)
-        $Kb1.TypeKey(13)
-        Start-Sleep 1
+        40,39,40,39,40,39,93,40,13 | % { $Kb1.TypeKey($_); Start-Sleep -M 200 }
+        Start-Sleep 3
 
         # [General]
-        $Kb1.TypeKey(39)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(40)
-        $Kb1.TypeKey(40)
+        39,9,40,40 | % { $Kb1.TypeKey($_); Start-Sleep -M 200 }
         $Kb1.PressKey(16)
         $Kb1.TypeKey(9)
         $Kb1.ReleaseKey(16)
-
-        <# [ADDS]
-        $Kb1.TypeKey(39)
-        $Kb1.PressKey(18)
-        $Kb1.TypeKey(76)
-        $Kb1.ReleaseKey(18)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(32)
         Start-Sleep 1
 
-        $Kb1.TypeKey(39)#>
+        $Kb1.PressKey(17)
+        $Kb1.TypeKey(9)
+        $Kb1.TypeKey(9)
+        $Kb1.ReleaseKey(17)
+        Start-Sleep 1
+
         # [Boot]
-        $Kb1.TypeKey(39)
         $Kb1.PressKey(18)
         $Kb1.TypeKey(67)
-        Start-Sleep 1
-        $Kb1.TypeKey(80)
         $Kb1.ReleaseKey(18)
         Start-Sleep 1
-        $Kb1.PressKey(16)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(9)
-        $Kb1.ReleaseKey(16)
-
-        # [Client/DHCP/TFTP]
-        $Kb1.TypeKey(39)
-        $Kb1.TypeKey(39)
-        $Kb1.TypeKey(38)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeText(16384)
-        $Kb1.PressKey(16)
-        $Kb1.TypeKey(9)
-        $Kb1.ReleaseKey(16)
-
-        # [Network/Advanced/Multicast]
-        $Kb1.TypeKey(37)
-        $Kb1.TypeKey(37)
-        $Kb1.TypeKey(37)
         $Kb1.PressKey(18)
         $Kb1.TypeKey(80)
         $Kb1.ReleaseKey(18)
         Start-Sleep 1
 
+        # [Boot -> Multicast]
+        $Kb1.PressKey(17)
+        $Kb1.TypeKey(9)
+        $Kb1.TypeKey(9)
+        $Kb1.TypeKey(9)
+        $Kb1.ReleaseKey(17)
+        Start-Sleep 1
+
+        # [Multicast (Speed)]
+        $Kb1.PressKey(18)
+        $Kb1.TypeKey(80)
+        $Kb1.ReleaseKey(18)
+        Start-Sleep 1
+
+        # [Multicast -> TFTP]
+        $Kb1.PressKey(17)
+        $Kb1.TypeKey(9)
+        $Kb1.TypeKey(9)
+        $Kb1.TypeKey(9)
+        $Kb1.ReleaseKey(17)
+        Start-Sleep 1
+
+        # [TFTP Block size]
+        $Kb1.TypeText(16384)
         $Kb1.TypeKey(13)
         Start-Sleep 2
 
+        # [Start Service]
         $Kb1.TypeKey(93)
         $Kb1.TypeKey(40)
         $Kb1.TypeKey(40)
@@ -1212,14 +1200,17 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $Kb1.TypeKey(13)
         Start-Sleep 15
 
+        # [OK]
         $Kb1.TypeKey(13)
         $Kb1.PressKey(18)
         $Kb1.TypeKey(115)
         $Kb1.ReleaseKey(18)
         Start-Sleep 1
 
+        # [Don't save MMC]
         $Kb1.TypeKey(39)
         $Kb1.TypeKey(13)
+        Start-Sleep 1
 
         # [New-FEDeploymentShare]
         $Kb1.TypeText("New-FEDeploymentShare")
@@ -1426,7 +1417,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $Kb1.TypeKey(9)
         $Kb1.TypeKey(9)
         $Kb1.TypeKey(9)
-        $Kb1.TypeText($Vm1.Item.DistinguishedName.Replace("CN=dc1-12019,OU=Server","OU=Computers"))
+        $Kb1.TypeText($Vm1.Item.DistinguishedName.Replace("CN=$($VM.Item.Name),OU=Server","OU=Computers"))
 
         # [Domain]
         $Kb1.PressKey(17)
@@ -1471,13 +1462,13 @@ ForEach ( $X in 0..($GW.Count - 1 ))
 
         $VmHost                = Get-VMHost
         $VmSwitch              = Get-VMSwitch
-        $Zip                   = 12019
+        $Zip                   = $Vm1.Item.Postal
         $Vw0                   = @{ 
 
-            Name               = "ws1-12019"
+            Name               = "ws1-$zip"
             MemoryStartupBytes = 2GB
             BootDevice         = "NetworkAdapter"
-            NewVHDPath         = ("{0}\ws1-12019.vhdx" -f $VMHost.VirtualHardDiskPath)
+            NewVHDPath         = ("{0}\ws1-$zip.vhdx" -f $VMHost.VirtualHardDiskPath)
             NewVHDSizeBytes    = 20GB
             SwitchName         = ($VMSwitch | ? Name -match $Zip | % Name)
             Generation         = 2
@@ -1486,6 +1477,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         New-VM @Vw0 -Verbose
 
         $IdW = $Vw0.Name
+
         $Tw0 = [System.Diagnostics.Stopwatch]::StartNew()
         $Lw0 = @{}
         Start-VM -VmName $Vw0.Name -Verbose  
@@ -1497,4 +1489,157 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $KbW        = Get-WmiObject -Query "ASSOCIATORS OF {$($CtrlW.Path.Path)} WHERE resultClass = Msvm_Keyboard" -Namespace "root\virtualization\v2"
         Start-Process vmconnect -ArgumentList ($Mx0.VM.Host.Name,$Vw0.Name)
 
+        Do
+        {
+            $Item = Get-VM -VMName $IdW
+
+            $Lw0.Add($Lw0.Count,"[$($Tw0.Elapsed)] Starting [~] [$IdW]")
+            Write-Host $Lw0[$Lw0.Count-1]
+
+            Start-Sleep 1
+        }
+        Until ($Item.Uptime.TotalSeconds -gt 135)
+
+        $C = @( )
+        Do
+        {
+            $Item = Get-VM -VMName $IdW
+
+            Switch($Item.CPUUsage)
+            {
+                Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+            }
+
+            $Sum = @( Switch($C.Count)
+            {
+                0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+            } ) | Invoke-Expression
+
+            $Lw0.Add($Lw0.Count,"[$($Tw0.Elapsed)][FEDeploymentShare [~] (Testing)][($Sum)]")
+            Write-Host $Lw0[$Lw0.Count-1]
+            Start-Sleep 1
+        }
+        Until ($Sum -gt 200)
+
+        $KbW.TypeKey(9)
+        $KbW.TypeKey(9)
+        $KbW.TypeKey(9)
+        $KbW.TypeKey(32)
+        $KbW.TypeKey(9)
+        $KbW.TypeKey(32)
+        Start-Sleep 2
+
+        $KbW.PressKey(18)
+        $KbW.TypeKey(78)
+        $KbW.ReleaseKey(18)
+        Start-Sleep 2
+
+        # [Computer Name]
+        $Kbw.TypeText($IdW)
+        $KbW.PressKey(18)
+        $KbW.TypeKey(78)
+        $KbW.ReleaseKey(18)
+        Start-Sleep 2
+
+        # [Move data/settings]
+        $KbW.PressKey(18)
+        $KbW.TypeKey(78)
+        $KbW.ReleaseKey(18)
+        Start-Sleep 2
+
+        # [Restore data/settings]
+        $KbW.PressKey(18)
+        $KbW.TypeKey(78)
+        $KbW.ReleaseKey(18)
+        Start-Sleep 2
+
+        # [Locale and Time]
+        $KbW.PressKey(18)
+        $KbW.TypeKey(71)
+        $KbW.ReleaseKey(18)
+        Start-Sleep 2
+
+        # [Installation]
+        Do
+        {
+            $Item = Get-VM -VMName $IdW
+
+            $Lw0.Add($Lw0.Count,"[$($Tw0.Elapsed)][FEDeploymentShare [~] (Testing)]")
+            Write-Host $Lw0[$Lw0.Count-1]
+            Start-Sleep 1
+        }
+        Until ($Item.Uptime.TotalSeconds -le 5)
+
+        Start-Sleep 5
+        # [Sysprep]
+        Do
+        {
+            $Item = Get-VM -VMName $IdW
+
+            $Lw0.Add($Lw0.Count,"[$($Tw0.Elapsed)][FEDeploymentShare [~] (Testing)]")
+            Write-Host $Lw0[$Lw0.Count-1]
+            Start-Sleep 1
+        }
+        Until ($Item.Uptime.TotalSeconds -le 5)
+
+        # First Run
+        $C = @( )
+        Do
+        {
+            $Item = Get-VM -VMName $IdW
+
+            Switch($Item.CPUUsage)
+            {
+                Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+            }
+
+            $Sum = @( Switch($C.Count)
+            {
+                0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+            } ) | Invoke-Expression
+
+            $Lw0.Add($Lw0.Count,"[$($Tw0.Elapsed)][FEDeploymentShare [~] (First Run)][($Sum)]")
+            Write-Host $Lw0[$Lw0.Count-1]
+            Start-Sleep 1
+        }
+        Until ($Sum -gt 200)
+
+        $KbW.PressKey(18)
+        $KbW.TypeKey(9)
+        $KbW.ReleaseKey(18)
+        Start-Sleep 1
+
+        $KbW.PressKey(18)
+        $KbW.TypeKey(70)
+        $KbW.ReleaseKey(18)
+        Start-Sleep 1
+
+
+        $KbW.TypeKey(91)
+        Start-Sleep 2
+        $KbW.TypeText("Resolution")
+        Start-Sleep 4
+        $KbW.TypeKey(13)
+        Start-Sleep 7
+
+        $KbW.PressKey(38)
+
+        $KbW.PressKey(91)
+        $KbW.TypeKey(82)
+        $KbW.ReleaseKey(91)
+
+        $KbW.TypeText("%PUBLIC%\Desktop\FightingEntropy.lnk")
+        $KbW.TypeKey(13)
+        Start-Sleep 20
+
+        $KbW.TypeText("Set-DisplayResolution 1920 1080")
+        $KbW.TypeKey(13)
+        Start-Sleep 12
+    
+        $KbW.TypeText("y")
+        $KbW.TypeKey(13)
+        Start-Sleep 3
+    
+        $Lw0.Add($Lw0.Count,"[$($Tw0.Elapsed)][FEDeploymentShare [+] Complete]")
+        Write-Host $Lw0[$Lw0.Count-1]
 }
