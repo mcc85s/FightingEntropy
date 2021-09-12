@@ -4687,8 +4687,7 @@ Function New-FEDeploymentShare
             "`$Key = '$( $Key | ConvertTo-Json )'",
             "New-EnvironmentKey -Key `$Key | % Apply",
             "`$Module = Get-FEModule",
-            "`$Module.Role.Choco()",
-            "choco install pwsh vscode microsoft-edge microsoft-windows-terminal ccleaner -y" -join ";`n")
+            "`$Module.Role.Choco()" -join ";`n")
 
             Set-Content -Path $Script\Install.ps1 -Value $Install -Force -Verbose
 
