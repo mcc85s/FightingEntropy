@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <sequence version="3.00" name="Standard Client Task Sequence" description="A complete task sequence for deploying a client operating system">
   <globalVarList>
-    <variable name="OSGUID" property="OSGUID">{3e55dbea-238d-4e32-909d-2fd51acbe1c7}</variable>
+    <variable name="OSGUID" property="OSGUID">{00000000-0000-0000-0000-000000000000}</variable>
     <variable name="DestinationDisk" property="DestinationDisk">0</variable>
     <variable name="DestinationPartition" property="DestinationPartition">1</variable>
     <variable name="DestinationOSVariable" property="DestinationOSVariable">OSDisk</variable>
     <variable name="DestinationOSRefresh" property="DestinationOSRefresh"></variable>
     <variable name="DestinationOSDriveLetter" property="DestinationOSDriveLetter"></variable>
     <variable name="DestinationOSInstallType" property="DestinationOSInstallType">ByVariable</variable>
-    <variable name="OSGUID" property="OSGUID">{3e55dbea-238d-4e32-909d-2fd51acbe1c7}</variable>
+    <variable name="OSGUID" property="OSGUID">{00000000-0000-0000-0000-000000000000}</variable>
   </globalVarList>
   <group name="Initialization" disable="false" continueOnError="false" description="Initialize the TS environment" expand="false">
     <step type="BDD_Gather" name="Gather local only" disable="false" continueOnError="false" successCodeList="0 3010" description="" startIn="">
@@ -392,7 +392,7 @@
     </condition>
     <step type="BDD_InstallOS" name="Install Operating System" description="" disable="false" continueOnError="false" runIn="WinPEandFullOS" successCodeList="0 3010">
       <defaultVarList>
-        <variable name="OSGUID" property="OSGUID">{3e55dbea-238d-4e32-909d-2fd51acbe1c7}</variable>
+        <variable name="OSGUID" property="OSGUID">{00000000-0000-0000-0000-000000000000}</variable>
         <variable name="DestinationDisk" property="DestinationDisk">0</variable>
         <variable name="DestinationPartition" property="DestinationPartition">1</variable>
         <variable name="DestinationOSDriveLetter" property="DestinationOSDriveLetter"></variable>
@@ -732,3 +732,4 @@
     </group>
   </group>
 </sequence>
+
