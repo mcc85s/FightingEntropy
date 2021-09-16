@@ -1051,6 +1051,32 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $Kb1.TypeKey(13)
         Start-Sleep 5
 
+        <# [Shell 1]
+        $Images   = "\\dsc0\images"
+        $Manifest = "2021_0912-(FightingEntropy).txt" 
+        $Path     = "\\dsc0\images\2021_0912-(FightingEntropy).txt"
+        Get-FEImageManifest $Images\$Manifest $Images C:\Images
+        $Image    = ( Get-ChildItem C:\Images | ? Name -match 17763 )
+        Rename-Item $Image.FullName -NewName "Windows Server 2019.iso"
+        $File     = "C:\Images\Windows Server 2019.iso"
+        Mount-DiskImage $File
+        $Path     = "{0}:\sources\install.wim" -f (Get-DiskImage $File | Get-Volume | % DriveLetter)
+        wdsutil /initialize-server /reminst:"C:\RemoteInstall"
+        $Group    = (Get-Content $home\desktop\server.txt | ConvertFrom-Json).SiteLink
+        New-WDSInstallImageGroup -Name $Group
+        $ImageName = (Get-WindowsImage -ImagePath $Path -Index 4 | % ImageName) -Replace "Datacenter.+","SERVERDATACENTER"
+        Import-WDSInstallImage -ImageGroup $Group -Path $Path -ImageName $ImageName
+        64, 86 | % { irm github.com/mcc85sx/FightingEntropy/blob/master/Boot/x$_/wdsmgfw.efi?raw=true -Outfile C:\RemoteInstall\x$_\wdsmgfw.efi }
+
+        # [Shell 2]
+        $Module = Get-FEModule 
+        $Module.Role.LoadEnvironmentKey("\\dsc0\FlightTest$\DSKey.csv")
+        Get-MDTModule
+        $Module.Role.GetFeatures()
+        Add-DHCPServerInDC
+        Add-DhcpServerSecurityGroup
+        #>
+
         # [Shell 1]
         $Kb1.TypeText("`$Module = Get-FEModule;`$Module.Role.LoadEnvironmentKey(`"\\dsc0\FlightTest$\DSKey.csv`");Get-MDTModule;`$Module.Role.GetFeatures();Add-DHCPServerInDC;Add-DhcpServerSecurityGroup")
         $Kb1.TypeKey(13)
@@ -1216,14 +1242,14 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $Kb1.TypeText("New-FEDeploymentShare")
         $Kb1.TypeKey(13)
 
-        $C = @( )
+        $C = 0
         Do
         {
             $Item = Get-VM -VMName $Id1
 
             Switch($Item.CPUUsage)
             {
-                Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+                Default { $C = 0 } 0 { $C += 1 } 1 { $C += 1 } 
             }
 
             $Sum = @( Switch($C.Count)
@@ -1237,10 +1263,10 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         }
         Until ($Sum -gt 20)
 
-        <#$Kb1.PressKey(18)
+        $Kb1.PressKey(18)
         $Kb1.TypeKey(9)
         $Kb1.ReleaseKey(18)
-        Start-Sleep 1#>
+        Start-Sleep 1
 
         $Kb1.PressKey(17)
         $Kb1.TypeKey(9)
@@ -1253,12 +1279,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
 
         # [Imaging]
         $Kb1.PressKey(17)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(9)
+        9,9,9,9,9,9 | % { $Kb1.TypeKey($_); Start-Sleep -M 200 }
         $Kb1.ReleaseKey(17)
         $Kb1.TypeKey(9)
         $Kb1.TypeText("C:\Images")
@@ -1283,11 +1304,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         Start-Sleep 10
 
         # [Enter IsoView]
-        $Kb1.TypeKey(40)
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(40)
-        $Kb1.TypeKey(40)
-        $Kb1.TypeKey(40)
+        40,9,40,40,40 | % { $Kb1.TypeKey($_); Start-Sleep -M 200 }
 
         # [Escape IsoView]
         $Kb1.PressKey(17)
@@ -1304,22 +1321,16 @@ ForEach ( $X in 0..($GW.Count - 1 ))
 
         # [Dismount]
         $Kb1.TypeKey(32)
+        Start-Sleep 1
 
         # [Outside -> Extract]
         $Kb1.PressKey(16)
         $Kb1.TypeKey(9)
         $Kb1.ReleaseKey(16)
+        Start-Sleep 1
 
-        # [Extract -> IsoList]
-        $Kb1.TypeKey(38)
-        $Kb1.TypeKey(38)
-        $Kb1.TypeKey(38)
-        $Kb1.TypeKey(38)
-
-        # [IsoList -> Select Win10]
-        $Kb1.TypeKey(9)
-        $Kb1.TypeKey(13)
-        $Kb1.TypeKey(38)
+        # [Extract -> IsoList][IsoList -> Select Win10]
+        38,38,38,38,9,9 | % { $Kb1.TypeKey($_); Start-Sleep -M 200 }
 
         # [Escape IsoList]
         $Kb1.PressKey(17)
@@ -1328,13 +1339,13 @@ ForEach ( $X in 0..($GW.Count - 1 ))
 
         # [Mount Win10]
         $Kb1.TypeKey(32)
-        Start-Sleep 15
+        Start-Sleep 16
 
-        # [Mount -> IsoView]
+        # [Mount -> IsoView][Select Win10 Pro]
         $Kb1.TypeKey(40)
-
-        # [Select Win10 Pro]
         $Kb1.TypeKey(9)
+        Start-Sleep 1
+
         $Kb1.TypeKey(40)
         $Kb1.TypeKey(40)
         $Kb1.TypeKey(40)
@@ -1348,17 +1359,20 @@ ForEach ( $X in 0..($GW.Count - 1 ))
 
         # [Queue]
         $Kb1.TypeKey(32)
+        Start-Sleep 2
 
         # [Queue -> Dismount]
         $Kb1.TypeKey(38)
         $Kb1.TypeKey(38)
         $Kb1.TypeKey(39)
         $Kb1.TypeKey(32)
+        Start-Sleep 2
 
         # [Outside -> Extract]
         $Kb1.PressKey(16)
         $Kb1.TypeKey(9)
         $Kb1.ReleaseKey(16)
+        Start-Sleep 1
 
         # [Goto Select]
         $Kb1.TypeKey(37)
@@ -1417,7 +1431,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $Kb1.TypeKey(9)
         $Kb1.TypeKey(9)
         $Kb1.TypeKey(9)
-        $Kb1.TypeText($Vm1.Item.DistinguishedName.Replace("CN=$($VM.Item.Name),OU=Server","OU=Computers"))
+        $Kb1.TypeText($Vm1.Item.DistinguishedName.Replace("CN=$($Vm1.Item.Name),OU=Server","OU=Computers"))
 
         # [Domain]
         $Kb1.PressKey(17)
@@ -1460,6 +1474,29 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         $Kb1.TypeKey(9)
         $Kb1.TypeKey(32)
 
+        # [Creating Share + Boot images]
+        $C = @( )
+        Do
+        {
+            $Item = Get-VM -VMName $Id1
+
+            Switch($Item.CPUUsage)
+            {
+                Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+            }
+
+            $Sum = @( Switch($C.Count)
+            {
+                0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+            } ) | Invoke-Expression
+
+            $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][FEDeploymentShare [~] (Creating share/Boot images) ($($Tx2.Elapsed))][($Sum)]")
+            Write-Host $Lx1[$Lx1.Count-1]
+            Start-Sleep 1
+        }
+        Until ($Sum -gt 200)
+
+        # [Workstation Test]
         $VmHost                = Get-VMHost
         $VmSwitch              = Get-VMSwitch
         $Zip                   = $Vm1.Item.Postal
@@ -1521,43 +1558,38 @@ ForEach ( $X in 0..($GW.Count - 1 ))
         }
         Until ($Sum -gt 200)
 
-        $KbW.TypeKey(9)
-        $KbW.TypeKey(9)
-        $KbW.TypeKey(9)
-        $KbW.TypeKey(32)
-        $KbW.TypeKey(9)
-        $KbW.TypeKey(32)
-        Start-Sleep 2
+        9,9,9,32,9,32 | % { $KbW.TypeKey($_); Start-Sleep -M 200 }
+        Start-Sleep 3
 
         $KbW.PressKey(18)
         $KbW.TypeKey(78)
         $KbW.ReleaseKey(18)
-        Start-Sleep 2
+        Start-Sleep 4
 
         # [Computer Name]
         $Kbw.TypeText($IdW)
         $KbW.PressKey(18)
         $KbW.TypeKey(78)
         $KbW.ReleaseKey(18)
-        Start-Sleep 2
+        Start-Sleep 4
 
         # [Move data/settings]
         $KbW.PressKey(18)
         $KbW.TypeKey(78)
         $KbW.ReleaseKey(18)
-        Start-Sleep 2
+        Start-Sleep 4
 
         # [Restore data/settings]
         $KbW.PressKey(18)
         $KbW.TypeKey(78)
         $KbW.ReleaseKey(18)
-        Start-Sleep 2
+        Start-Sleep 4
 
         # [Locale and Time]
         $KbW.PressKey(18)
         $KbW.TypeKey(71)
         $KbW.ReleaseKey(18)
-        Start-Sleep 2
+        Start-Sleep 4
 
         # [Installation]
         Do
@@ -1569,8 +1601,8 @@ ForEach ( $X in 0..($GW.Count - 1 ))
             Start-Sleep 1
         }
         Until ($Item.Uptime.TotalSeconds -le 5)
-
         Start-Sleep 5
+        
         # [Sysprep]
         Do
         {
