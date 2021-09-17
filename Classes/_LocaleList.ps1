@@ -5,7 +5,7 @@ Class _LocaleList
     [Object]$Keyboard
     [Object]$Timezone
 
-    LocaleList([String]$Path)
+    _LocaleList([String]$Path)
     {
         $This.Path     = $Path
         $This.Stack    = @( )
@@ -24,7 +24,7 @@ Class _LocaleList
                     $Line = $Content[$X]
                     If ($Line -match "\<option")
                     {
-                        $This.Stack += [LocaleItem]::New(0,$Line)
+                        $This.Stack += [_LocaleItem]::New(0,$Line)
                     }
                     $X ++
                 }
@@ -38,7 +38,7 @@ Class _LocaleList
                     $Line = $Content[$X]
                     If ($Line -match "\<option")
                     {
-                        $This.Stack += [LocaleItem]::New(1,$Line)
+                        $This.Stack += [_LocaleItem]::New(1,$Line)
                     }
                     $X ++
                 }
