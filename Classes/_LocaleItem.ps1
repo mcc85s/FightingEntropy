@@ -4,7 +4,7 @@ Class _LocaleItem
     Hidden[String]$Line
     [String]$Name
     [String]$Value
-    LocaleItem([UInt32]$Mode,[String]$Line)
+    _LocaleItem([UInt32]$Mode,[String]$Line)
     {
         $This.Type  = @("Keyboard","TimeZone")[$Mode]
         $This.Line  = $Line -Replace "\s+", " "
