@@ -5,56 +5,86 @@ If ($Host.Version.Major -le 5)
     Switch($Host.UI.PromptForChoice("Lab removal","This will remove all of the lab issued VM/ADDS instances",@("&Yes","&No"),1))
     {
         0 
-        { 
-            $Zone       = "securedigitsplus.com"
-            $Base       = "DC=securedigitsplus,DC=com"
-            $Code       = "(\w{2}\-){3}\d{5}"
-            $SafeOU     = "CP-NY-US-12065"
-            $SafeSubnet = "172.16.0.0/19"
-            $Gateway    = Get-ADObject -Filter * | ? ObjectClass -eq Computer | ? Name -match "(dc\d\-\d{5}|$Code)"
-            $Gateway    | ? Name -notmatch $SafeOU | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
-            $OUList     = Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)" -SearchBase $Base | ? Name -match $Code
-            $OUList     | ? Name -ne $SafeOU | % { Set-ADObject -Identity $_.DistinguishedName -ProtectedFromAccidentalDeletion 0 -Verbose }
-            $OUList     | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
-            $Subnet     = Get-ADObject -LDAPfilter "(objectClass=subnet)" -SearchBase "CN=Configuration,$Base"
-            $Subnet     | ? Name -ne $SafeSubnet  | Remove-ADObject -Confirm:$False -Verbose
-            $SiteList   = Get-ADObject -LDAPFilter "(objectClass=site)" -SearchBase "CN=Configuration,$Base"
-            $SiteList   | ? Name -ne $SafeOU | Remove-ADObject -Confirm:$False -Recursive -Verbose
-            $AuthDHCP   = Get-ADObject -LDAPFilter "(objectClass=dhcpclass)" -SearchBase "CN=Configuration,DC=securedigitsplus,DC=com" | ? Name -match "(dc\d\-\d{5})"
-            $AuthDHCP   | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
-            
-            # DHCP Cleanup Script
-            # -------------------
-            $ScopeID    = Get-DhcpServerv4Scope | % ScopeID
-            $DHCP       = Get-DhcpServerv4Reservation -ScopeID $ScopeID | ? Name -match "($Code|OPNsense)" | ? Name -notmatch $SafeOU
-            
-            If ($DHCP.Count -gt 0)
-            {
-                $DHCP   | Remove-DHCPServerV4Reservation -Verbose -EA 0
+        {   # Master Server/OU Variables
+            $Master     = @{ 
+                
+                Zone    = "securedigitsplus.com"
+                Base    = "DC=securedigitsplus,DC=com"
+                CFG     = "CN=Configuration,DC=securedigitsplus,DC=com"
+                OU      = "CP-NY-US-12065"
+                Subnet  = "172.16.0.0/19"
+                IP      = Get-NetIPAddress | % IPAddress
+                ScopeID = Get-DhcpServerv4Scope | % ScopeID
+                VMHost  = Get-VMHost
             }
+
+            # Regex Lab Tags
+            $Gateway    = "(\w{2}\-){3}\d{5}"
+            $Server     = "dc\d\-\d{5}"
+            $Client     = "ws\d\-\d{5}"
+            $All        = "$Gateway|$Server|$Client"
+
+            # Flush Lab ADDS computer objects
+            Get-ADObject -Filter * | ? ObjectClass -eq Computer | ? Name -match "($All)" | ? DistinguishedName -notmatch $Master.OU | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
+
+            # Flush Lab OUs
+            Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)" -SearchBase $Master.Base | ? DistinguishedName -match "($All)" | % { 
+                
+                Set-ADObject -Identity $_.DistinguishedName -ProtectedFromAccidentalDeletion 0 -Verbose 
             
-            $DNS        = Get-DNSServerResourceRecord -ZoneName $Zone | ? HostName -match "($Code|OPNsense)" | ? Hostname -notmatch $SafeOU
-            If ($DNS.Count -gt 0)
-            {
-                $DNS    | Remove-DNSServerResourceRecord -ZoneName $Zone -Verbose -EA 0 -Confirm:$False -Force
-            }
+            } | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
+
+            # Flush Lab Subnets
+            Get-ADObject -LDAPfilter "(objectClass=subnet)" -SearchBase $Master.CFG | ? Name -notmatch $Master.Subnet | Remove-ADObject -Confirm:$False -Verbose
+
+            # Flush Lab Sites 
+            Get-ADObject -LDAPFilter "(objectClass=site)" -SearchBase $Master.CFG | ? Name -notmatch $Master.OU | Remove-ADObject -Confirm:$False -Recursive -Verbose
+
+            # Flush Lab DHCP-ADDS Objects 
+            Get-ADObject -LDAPFilter "(objectClass=dhcpclass)" -SearchBase $Master.CFG | ? Name -match $Server | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
             
-            # VM Cleanup Script
-            # -----------------
-            $VM         = Get-VM | ? Name -match "($Code|OPNsense|dc\d\-\d{5})"
-            If ( $VM.Count -gt 0 )
-            {
-                $VM     | Stop-VM -Confirm:$False -Verbose -Force
-                $VM     | Remove-VM -Confirm:$false -Verbose -Force
-            }
+            # Flush Lab DHCPv4 Reservation Objects
+            Get-DhcpServerv4Reservation -ScopeID $Master.ScopeID | ? Name -match "($All|OPNsense)" | ? Name -notmatch $Master.OU | Remove-DHCPServerV4Reservation -Verbose -EA 0
             
-            # VM Switch Cleanup
-            # -----------------
-            $VMS        = Get-VMSwitch | ? Name -match $Code
-            If ( $VMS.Count -gt 0 )
+            # Flush Lab DNS Main Zone Objects
+            @( ForEach ( $Item in Get-DNSServerResourceRecord -ZoneName $Master.Zone )
             {
-                $VMS    | Remove-VMSwitch -Confirm:$False -Verbose -Force
+                Switch ($Item.RecordType)
+                {
+                    A    { $Item | ? { $_.RecordData.IPV4Address -notmatch "172.16.0." }}
+                    AAAA { $Item | ? RecordName -match $Server }
+                    SRV  { $Item | ? { $_.RecordData.DomainName  -match $Server }}
+                }
+            } ) | Remove-DNSServerResourceRecord -ZoneName $Master.Zone -Verbose -EA 0 -Confirm:$False -Force
+
+            # Flush Lab MSDCS DNS Zone Objects
+            @( ForEach ( $Item in Get-DNSServerResourceRecord -ZoneName "_msdcs.$($Master.Zone)" )
+            {
+                Switch($Item.RecordType)
+                {
+                    NS     { $Item | ? { $_.RecordData.NameServer    -match $Server } } # Nameservers
+                    CNAME  { $Item | ? { $_.RecordData.HostnameAlias -match $Server } } # CName
+                    SRV    { $Item | ? { $_.RecordData.DomainName    -match $Server } } # SRV
+                    A      { $Item | ? { $_.RecordData.IPV4Address   -notin $Master.IP } } # Host A Record
+                    AAAA   { $Item | ? { $_.RecordData.IPV6Address   -notin $Master.IP } } # Host AAAA Record
+                }
+            } ) | Remove-DNSServerResourceRecord -ZoneName "_msdcs.$($Master.Zone)" -Verbose -EA 0 -Confirm:$False -Force
+
+            # Flush Lab VM Objects
+            Get-VM | ? Name -match "($All|OPNsense)" | % { 
+
+                If ( $_.State -ne "Off" )
+                {
+                    Stop-VM -Name $_.Name -Confirm:$False -Verbose -Force
+                }
+                Remove-VM -Name $_.Name -Confirm:$false -Verbose -Force
             }
+
+            # Flush Lab VHDX Objects
+            Get-ChildItem @( $Master.VMHost | % { $_.VirtualHardDiskPath,$_.VirtualMachinePath }) | ? Name -match $All | Remove-Item -Verbose -Force -Confirm:$False -EA 0 
+            
+            # Flush Lab VMSwitch Objects
+            Get-VMSwitch | ? Name -match $Gateway | Remove-VMSwitch -Confirm:$False -Verbose -Force
         } 
         
         1 
