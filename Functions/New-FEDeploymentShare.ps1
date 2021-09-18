@@ -1380,15 +1380,15 @@ Function New-FEDeploymentShare
         '                                <ColumnDefinition Width="*"/>',
         '                                <ColumnDefinition Width="120"/>',
         '                            </Grid.ColumnDefinitions>',
-        '                            <GroupBox Grid.Column="0" Header="[DcOrganization]">',
+        '                            <GroupBox Grid.Column="0" Header="[DcOrganization] - (Company Name)">',
         '                                <TextBox Name="DcOrganization"/>',
         '                            </GroupBox>',
-        '                            <GroupBox Grid.Column="1" Header="[DcCommonName]">',
+        '                            <GroupBox Grid.Column="1" Header="[DcCommonName] - (Domain Name)">',
         '                                <TextBox Name="DcCommonName"/>',
         '                            </GroupBox>',
         '                            <Button Grid.Column="2" Name="DcGetSitename" Content="Get Sitename"/>',
         '                        </Grid>',
-        '                        <GroupBox Grid.Row="1" Header="[DcAggregate]">',
+        '                        <GroupBox Grid.Row="1" Header="[DcAggregate] - (Provision subdomain/site list)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -1426,7 +1426,7 @@ Function New-FEDeploymentShare
         '                                </Grid>',
         '                            </Grid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="2" Header="[DcViewer]">',
+        '                        <GroupBox Grid.Row="2" Header="[DcViewer] - (View each sites&apos; properties/attributes)">',
         '                            <DataGrid Name="DcViewer">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="150"/>',
@@ -1434,7 +1434,7 @@ Function New-FEDeploymentShare
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="3" Header="[DcTopology]">',
+        '                        <GroupBox Grid.Row="3" Header="[DcTopology] - (Output/Existence validation)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -1485,12 +1485,12 @@ Function New-FEDeploymentShare
         '                                <ColumnDefinition Width="*"/>',
         '                                <ColumnDefinition Width="100"/>',
         '                            </Grid.ColumnDefinitions>',
-        '                            <GroupBox Grid.Row="0" Header="[NwScope]">',
+        '                            <GroupBox Grid.Row="0" Header="[NwScope] - (Enter master address/prefix length)">',
         '                                <TextBox Grid.Column="0" Name="NwScope"/>',
         '                            </GroupBox>',
         '                            <Button Grid.Column="1" Name="NwScopeLoad" Content="Load" IsEnabled="False"/>',
         '                        </Grid>',
-        '                        <GroupBox Grid.Row="1" Header="[NwAggregate]">',
+        '                        <GroupBox Grid.Row="1" Header="[NwAggregate] - (Provision independent subnets)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -1515,7 +1515,7 @@ Function New-FEDeploymentShare
         '                                        <ColumnDefinition Width="50"/>',
         '                                        <ColumnDefinition Width="50"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Column="0" Header="[NwSubnetName]">',
+        '                                    <GroupBox Grid.Column="0" Header="[NwSubnetName] - (Add an independent address/prefix length)">',
         '                                        <TextBox Name="NwSubnetName"/>',
         '                                    </GroupBox>',
         '                                    <Button Grid.Column="1" Name="NwAddSubnetName" Content="+"/>',
@@ -1523,7 +1523,7 @@ Function New-FEDeploymentShare
         '                                </Grid>',
         '                            </Grid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="2" Header="[NwViewer]">',
+        '                        <GroupBox Grid.Row="2" Header="[NwViewer] - (View each subnets&apos; properties/attributes)">',
         '                            <DataGrid Name="NwViewer">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"   Binding="{Binding Name}"   Width="150"/>',
@@ -1531,7 +1531,7 @@ Function New-FEDeploymentShare
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="3" Header="[NwTopology]">',
+        '                        <GroupBox Grid.Row="3" Header="[NwTopology] - (Output/Existence validation)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -1573,9 +1573,10 @@ Function New-FEDeploymentShare
         '                    <Grid>',
         '                        <Grid.RowDefinitions>',
         '                            <RowDefinition Height="80"/>',
-        '                            <RowDefinition Height="180"/>',
-        '                            <RowDefinition Height="180"/>',
-        '                            <RowDefinition Height="*"/>',
+        '                            <RowDefinition Height="120"/>',
+        '                            <RowDefinition Height="120"/>',
+        '                            <RowDefinition Height="120"/>',
+        '                            <RowDefinition Height="160"/>',
         '                            <RowDefinition Height="80"/>',
         '                        </Grid.RowDefinitions>',
         '                        <Grid Grid.Row="0">',
@@ -1584,15 +1585,15 @@ Function New-FEDeploymentShare
         '                                <ColumnDefinition Width="*"/>',
         '                                <ColumnDefinition Width="120"/>',
         '                            </Grid.ColumnDefinitions>',
-        '                            <GroupBox Grid.Column="0" Header="[SmSiteCount]">',
+        '                            <GroupBox Grid.Column="0" Header="[SmSiteCount] - (Selected sites)">',
         '                                <TextBox Name="SmSiteCount"/>',
         '                            </GroupBox>',
-        '                            <GroupBox Grid.Column="1" Header="[SmNetworkCount]">',
+        '                            <GroupBox Grid.Column="1" Header="[SmNetworkCount] - (Selected Subnets)">',
         '                                <TextBox Name="SmNetworkCount"/>',
         '                            </GroupBox>',
         '                            <Button Grid.Column="2" Name="SmLoadSitemap" Content="Load"/>',
         '                        </Grid>',
-        '                        <GroupBox Grid.Row="1" Header="[SmAggregate]">',
+        '                        <GroupBox Grid.Row="1" Header="[SmAggregate] - (Sites to be generated)">',
         '                            <DataGrid Name="SmAggregate">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"      Binding="{Binding Name}"     Width="*"/>',
@@ -1602,13 +1603,15 @@ Function New-FEDeploymentShare
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="2" Header="[SmTemplate]">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="20"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <TextBlock Text="Select the following items to create objects for each site listed above"/>',
+        '                        <GroupBox Grid.Row="2" Header="[SmSiteLink] - (Select main trunk for ISGT/intersite topology generation)">',
+        '                            <DataGrid Name="SmSiteLink">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name"               Binding="{Binding Name}"              Width="150"/>',
+        '                                    <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                        </GroupBox>',
+        '                        <GroupBox Grid.Row="3" Header="[SmTemplate] - (Create the following objects for each selected site)">',
         '                                <DataGrid Grid.Row="1" Name="SmTemplate">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="ObjectClass" Binding="{Binding ObjectClass}" Width="150"/>',
@@ -1624,9 +1627,8 @@ Function New-FEDeploymentShare
         '                                        </DataGridTemplateColumn>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
-        '                            </Grid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="3" Header="[SmTopology]">',
+        '                        <GroupBox Grid.Row="4" Header="[SmTopology] - (Output/Existence Validation)">',
         '                            <DataGrid Name="SmTopology">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>',
@@ -1645,7 +1647,7 @@ Function New-FEDeploymentShare
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                        </GroupBox>',
-        '                        <Grid Grid.Row="4">',
+        '                        <Grid Grid.Row="5">',
         '                            <Grid.ColumnDefinitions>',
         '                                <ColumnDefinition Width="*"/>',
         '                                <ColumnDefinition Width="*"/>',
@@ -1662,7 +1664,7 @@ Function New-FEDeploymentShare
         '                            <RowDefinition Height="150"/>',
         '                            <RowDefinition Height="*"/>',
         '                        </Grid.RowDefinitions>',
-        '                        <GroupBox Grid.Row="0" Header="[GwAggregate]">',
+        '                        <GroupBox Grid.Row="0" Header="[GwAggregate] - (Provision gateway/router items)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -1683,15 +1685,15 @@ Function New-FEDeploymentShare
         '                                        <ColumnDefinition Width="50"/>',
         '                                        <ColumnDefinition Width="50"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="1" Name="GwAddGateway" Content="+"/>',
-        '                                    <GroupBox Grid.Column="0" Header="[GwGatewayName]">',
+        '                                    <Button Grid.Column="1" Name="GwAddGateway" Content="+" IsEnabled="False"/>',
+        '                                    <GroupBox Grid.Column="0" Header="[GwGatewayName] - (Enter an individual gateway name)" IsEnabled="False">',
         '                                        <TextBox Name="GwGateway"/>',
         '                                    </GroupBox>',
-        '                                    <Button Grid.Column="2" Name="GwRemoveGateway" Content="-"/>',
+        '                                    <Button Grid.Column="2" Name="GwRemoveGateway" Content="-" IsEnabled="False"/>',
         '                                </Grid>',
         '                            </Grid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="1" Header="[GwViewer]">',
+        '                        <GroupBox Grid.Row="1" Header="[GwViewer] - (View each gateways&apos; properties/attributes)">',
         '                            <DataGrid Name="GwViewer">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
@@ -1699,7 +1701,7 @@ Function New-FEDeploymentShare
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="2" Header="[GwTopology]">',
+        '                        <GroupBox Grid.Row="2" Header="[GwTopology] - (Output/Existence validation)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -1741,7 +1743,7 @@ Function New-FEDeploymentShare
         '                            <RowDefinition Height="150"/>',
         '                            <RowDefinition Height="*"/>',
         '                        </Grid.RowDefinitions>',
-        '                        <GroupBox Grid.Row="0" Header="[SrAggregate]">',
+        '                        <GroupBox Grid.Row="0" Header="[SrAggregate] - (Provision server items)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -1762,15 +1764,15 @@ Function New-FEDeploymentShare
         '                                        <ColumnDefinition Width="50"/>',
         '                                        <ColumnDefinition Width="50"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="1" Name="SrAddServer" Content="+"/>',
-        '                                    <GroupBox Grid.Column="0" Header="[SrServerName]">',
+        '                                    <Button Grid.Column="1" Name="SrAddServer" Content="+" IsEnabled="False"/>',
+        '                                    <GroupBox Grid.Column="0" Header="[SrServerName] - (Enter an individual server name)" IsEnabled="False">',
         '                                        <TextBox Name="SrServer"/>',
         '                                    </GroupBox>',
-        '                                    <Button Grid.Column="2" Name="SrRemoveServer" Content="-"/>',
+        '                                    <Button Grid.Column="2" Name="SrRemoveServer" Content="-" IsEnabled="False"/>',
         '                                </Grid>',
         '                            </Grid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="1" Header="[SrViewer]">',
+        '                        <GroupBox Grid.Row="1" Header="[SrViewer] - (View each servers&apos; properties/attributes)">',
         '                            <DataGrid Name="SrViewer">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
@@ -1778,7 +1780,7 @@ Function New-FEDeploymentShare
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="2" Header="[SrTopology]">',
+        '                        <GroupBox Grid.Row="2" Header="[SrTopology] - (Output/Existence validation)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -1825,7 +1827,7 @@ Function New-FEDeploymentShare
         '                                <ColumnDefinition Width="2*"/>',
         '                                <ColumnDefinition Width="150"/>',
         '                            </Grid.ColumnDefinitions>',
-        '                            <GroupBox Grid.Column="0" Header="[VmHost]">',
+        '                            <GroupBox Grid.Column="0" Header="[VmHost] - (Enter the control virtual machine server)">',
         '                                <Grid>',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="100"/>',
@@ -1848,7 +1850,7 @@ Function New-FEDeploymentShare
         '                                        <RowDefinition Height="80"/>',
         '                                        <RowDefinition Height="*"/>',
         '                                    </Grid.RowDefinitions>',
-        '                                    <GroupBox Header="[VmController]">',
+        '                                    <GroupBox Header="[VmController] - (View virtual machine server/service/credential properties)">',
         '                                        <DataGrid Name="VmController">',
         '                                            <DataGrid.Columns>',
         '                                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>',
@@ -1862,10 +1864,10 @@ Function New-FEDeploymentShare
         '                                            <ColumnDefinition Width="*"/>',
         '                                            <ColumnDefinition Width="*"/>',
         '                                        </Grid.ColumnDefinitions>',
-        '                                        <GroupBox Grid.Column="0" Header="[VmControllerSwitch]">',
+        '                                        <GroupBox Grid.Column="0" Header="[VmControllerSwitch] - (External VM switch)">',
         '                                            <ComboBox Name="VmControllerSwitch"/>',
         '                                        </GroupBox>',
-        '                                        <GroupBox Grid.Column="1" Header="[VmControllerNetwork]">',
+        '                                        <GroupBox Grid.Column="1" Header="[VmControllerNetwork] - (External network)">',
         '                                            <TextBox Name="VmControllerNetwork"/>',
         '                                        </GroupBox>',
         '                                    </Grid>',
@@ -1874,14 +1876,14 @@ Function New-FEDeploymentShare
         '                                            <ColumnDefinition Width="*"/>',
         '                                            <ColumnDefinition Width="*"/>',
         '                                        </Grid.ColumnDefinitions>',
-        '                                        <GroupBox Grid.Column="0" Header="[VmControllerConfigVM]">',
+        '                                        <GroupBox Grid.Column="0" Header="[VmControllerConfigVM]" IsEnabled="False">',
         '                                            <ComboBox Name="VmControllerConfigVM"/>',
         '                                        </GroupBox>',
-        '                                        <GroupBox Grid.Column="1" Header="[VmControllerGateway]">',
+        '                                        <GroupBox Grid.Column="1" Header="[VmControllerGateway] - (External gateway)">',
         '                                            <TextBox Name="VmControllerGateway"/>',
         '                                        </GroupBox>',
         '                                    </Grid>',
-        '                                    <GroupBox Grid.Row="3" Header="[VmSelect]">',
+        '                                    <GroupBox Grid.Row="3" Header="[VmSelect] - (Output/Existence validation)">',
         '                                        <DataGrid Name="VmSelect">',
         '                                            <DataGrid.Columns>',
         '                                                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>',
@@ -1902,7 +1904,7 @@ Function New-FEDeploymentShare
         '                                </Grid>',
         '                            </TabItem>',
         '                            <TabItem Header="Gateway">',
-        '                                <GroupBox Header="[VmGateway]">',
+        '                                <GroupBox Header="[VmGateway] - (Provision physical/virtual machine gateways)">',
         '                                    <Grid>',
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="*"/>',
@@ -1933,7 +1935,7 @@ Function New-FEDeploymentShare
         '                                                    <RowDefinition Height="*"/>',
         '                                                    <RowDefinition Height="*"/>',
         '                                                </Grid.RowDefinitions>',
-        '                                                <GroupBox Grid.Row="0" Header="[VmGatewayScript]">',
+        '                                                <GroupBox Grid.Row="0" Header="[VmGatewayScript] - (Script to install gateway item)" IsEnabled="False">',
         '                                                    <Grid>',
         '                                                        <Grid.ColumnDefinitions>',
         '                                                            <ColumnDefinition Width="100"/>',
@@ -1943,7 +1945,7 @@ Function New-FEDeploymentShare
         '                                                        <TextBox Grid.Column="1" Name="VmGatewayScript"/>',
         '                                                    </Grid>',
         '                                                </GroupBox>',
-        '                                                <GroupBox Grid.Row="1" Header="[VmGatewayImage]">',
+        '                                                <GroupBox Grid.Row="1" Header="[VmGatewayImage] - (Image to install gateway item)">',
         '                                                    <Grid>',
         '                                                        <Grid.ColumnDefinitions>',
         '                                                            <ColumnDefinition Width="100"/>',
@@ -1971,7 +1973,7 @@ Function New-FEDeploymentShare
         '                                </GroupBox>',
         '                            </TabItem>',
         '                            <TabItem Header="Server">',
-        '                                <GroupBox Header="[VmServer]">',
+        '                                <GroupBox Header="[VmServer] - (Provision physical/virtual machine servers)">',
         '                                    <Grid>',
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="*"/>',
@@ -2002,7 +2004,7 @@ Function New-FEDeploymentShare
         '                                                    <RowDefinition Height="*"/>',
         '                                                    <RowDefinition Height="*"/>',
         '                                                </Grid.RowDefinitions>',
-        '                                                <GroupBox Grid.Row="0" Header="[VmServerScript]">',
+        '                                                <GroupBox Grid.Row="0" Header="[VmServerScript] - (Script to install virtual servers)">',
         '                                                    <Grid>',
         '                                                        <Grid.ColumnDefinitions>',
         '                                                            <ColumnDefinition Width="100"/>',
@@ -2012,7 +2014,7 @@ Function New-FEDeploymentShare
         '                                                        <TextBox Grid.Column="1" Name="VmServerScript"/>',
         '                                                    </Grid>',
         '                                                </GroupBox>',
-        '                                                <GroupBox Grid.Row="1" Header="[VmServerImage]">',
+        '                                                <GroupBox Grid.Row="1" Header="[VmServerImage] - (Image to install virtual servers)">',
         '                                                    <Grid>',
         '                                                        <Grid.ColumnDefinitions>',
         '                                                            <ColumnDefinition Width="100"/>',
@@ -2070,7 +2072,7 @@ Function New-FEDeploymentShare
         '                                <Button Name="IsoScan" Grid.Column="2" Content="Scan"/>',
         '                            </Grid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="1" Header="[IsoList (*.iso)]">',
+        '                        <GroupBox Grid.Row="1" Header="[IsoList (*.iso)] - (ISO files found in source directory)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -2093,7 +2095,7 @@ Function New-FEDeploymentShare
         '                            </Grid>',
         '                        </GroupBox>',
         '                        <Grid Grid.Row="2">',
-        '                            <GroupBox Grid.Row="2" Header="[IsoView (Image Viewer)]">',
+        '                            <GroupBox Grid.Row="2" Header="[IsoView (Image Viewer/Wim file selector)]">',
         '                                <Grid>',
         '                                    <Grid.RowDefinitions>',
         '                                        <RowDefinition Height="*"/>',
@@ -2118,7 +2120,7 @@ Function New-FEDeploymentShare
         '                                </Grid>',
         '                            </GroupBox>',
         '                        </Grid>',
-        '                        <GroupBox Grid.Row="3" Header="[WimIso (Queue)]">',
+        '                        <GroupBox Grid.Row="3" Header="[WimIso (Queued WIM file extraction)]">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -2161,10 +2163,10 @@ Function New-FEDeploymentShare
         '                        <Grid.RowDefinitions>',
         '                            <RowDefinition Height="80"/>',
         '                            <RowDefinition Height="200"/>',
-        '                            <RowDefinition Height="225"/>',
+        '                            <RowDefinition Height="200"/>',
         '                            <RowDefinition Height="*"/>',
         '                        </Grid.RowDefinitions>',
-        '                        <GroupBox Grid.Row="0" Header="[UpdPath (Updates)]">',
+        '                        <GroupBox Grid.Row="0" Header="[UpdPath (Update file source directory)]">',
         '                            <Grid>',
         '                                <Grid.ColumnDefinitions>',
         '                                    <ColumnDefinition Width="100"/>',
@@ -2176,7 +2178,7 @@ Function New-FEDeploymentShare
         '                                <Button Grid.Column="2" Name="UpdScan" Content="Scan"/>',
         '                            </Grid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="1" Header="[UpdSelected]">',
+        '                        <GroupBox Grid.Row="1" Header="[UpdSelected] - (Updates found in source directory)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -2198,7 +2200,7 @@ Function New-FEDeploymentShare
         '                                </Grid>',
         '                            </Grid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="2" Header="[UpdViewer]">',
+        '                        <GroupBox Grid.Row="2" Header="[UpdViewer] - (View properties/attribues of update files)">',
         '                            <DataGrid Name="UpdViewer">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
@@ -2207,7 +2209,7 @@ Function New-FEDeploymentShare
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="3" Header="[UpdWim]">',
+        '                        <GroupBox Grid.Row="3" Header="[UpdWim] - (Selected WIM file to inject the update(s) into)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
@@ -2238,7 +2240,7 @@ Function New-FEDeploymentShare
         '                            <RowDefinition Height="310"/>',
         '                            <RowDefinition Height="*"/>',
         '                        </Grid.RowDefinitions>',
-        '                        <GroupBox Header="[DsAggregate]">',
+        '                        <GroupBox Header="[DsAggregate] - (Existing/Provioning deployment shares)">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="120"/>',
@@ -2319,13 +2321,13 @@ Function New-FEDeploymentShare
         '                                                <RowDefinition Height="80"/>',
         '                                                <RowDefinition Height="80"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[DsNwNetBiosName]">',
+        '                                            <GroupBox Grid.Row="0" Header="[DsNwNetBiosName] - (Enter NetBIOS name)">',
         '                                                <TextBox Name="DsNwNetBiosName"/>',
         '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[DsNwDnsName]">',
+        '                                            <GroupBox Grid.Row="1" Header="[DsNwDnsName] - (Enter DNS name)">',
         '                                                <TextBox Name="DsNwDnsName"/>',
         '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="2" Header="[DsNwMachineOuName]">',
+        '                                            <GroupBox Grid.Row="2" Header="[DsNwMachineOuName] - (Enter the organizational unit container for child items)">',
         '                                                <TextBox Name="DsNwMachineOuName"/>',
         '                                            </GroupBox>',
         '                                        </Grid>',
@@ -2374,49 +2376,58 @@ Function New-FEDeploymentShare
         '                                    </TabItem>',
         '                                    <TabItem Header="Branding">',
         '                                        <Grid>',
+        '                                            <Grid.Resources>',
+        '                                                <Style TargetType="Label">',
+        '                                                    <Setter Property="HorizontalAlignment" Value="Left"/>',
+        '                                                    <Setter Property="VerticalAlignment"   Value="Center"/>',
+        '                                                </Style>',
+        '                                            </Grid.Resources>',
         '                                            <Grid.RowDefinitions>',
-        '                                                <RowDefinition Height="80"/>',
-        '                                                <RowDefinition Height="80"/>',
-        '                                                <RowDefinition Height="80"/>',
+        '                                                <RowDefinition Height="3*"/>',
+        '                                                <RowDefinition Height="4*"/>',
         '                                            </Grid.RowDefinitions>',
         '                                            <Grid Grid.Row="0">',
+        '                                                <Grid.RowDefinitions>',
+        '                                                    <RowDefinition Height="*"/>',
+        '                                                    <RowDefinition Height="*"/>',
+        '                                                    <RowDefinition Height="*"/>',
+        '                                                </Grid.RowDefinitions>',
         '                                                <Grid.ColumnDefinitions>',
-        '                                                    <ColumnDefinition Width="50"/>',
-        '                                                    <ColumnDefinition Width="150"/>',
-        '                                                    <ColumnDefinition Width="150"/>',
+        '                                                    <ColumnDefinition Width="100"/>',
+        '                                                    <ColumnDefinition Width="80"/>',
         '                                                    <ColumnDefinition Width="*"/>',
         '                                                </Grid.ColumnDefinitions>',
-        '                                                <Button Name="DsBrCollect" Content="~" IsEnabled="True"/>',
-        '                                                <GroupBox Grid.Column="1" Header="[BrPhone]">',
-        '                                                    <TextBox Name="DsBrPhone"/>',
-        '                                                </GroupBox>',
-        '                                                <GroupBox Grid.Column="2" Header="[BrHours]">',
-        '                                                    <TextBox Name="DsBrHours"/>',
-        '                                                </GroupBox>',
-        '                                                <GroupBox Grid.Column="3" Header="[BrWebsite]">',
-        '                                                    <TextBox Name="DsBrWebsite"/>',
+        '                                                <!-- Column 1 -->',
+        '                                                <Label   Grid.Row="0" Grid.Column="1" Content="[BrPhone]:"/>',
+        '                                                <Label   Grid.Row="1" Grid.Column="1" Content="[BrHours]:"/>',
+        '                                                <Label   Grid.Row="2" Grid.Column="1" Content="[BrWebsite]:"/>',
+        '                                                <!-- Column 2 -->',
+        '                                                <TextBox Grid.Row="0" Grid.Column="2" Name="DsBrPhone"/>',
+        '                                                <TextBox Grid.Row="1" Grid.Column="2" Name="DsBrHours"/>',
+        '                                                <TextBox Grid.Row="2" Grid.Column="2" Name="DsBrWebsite"/>',
+        '                                                <!-- column 0 -->',
+        '                                                <GroupBox Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Header="[DsBrCollect]">',
+        '                                                    <Button Name="DsBrCollect" Content="~"/>    ',
         '                                                </GroupBox>',
         '                                            </Grid>',
-        '                                            <GroupBox Grid.Row="1" Header="[BrLogo (120x120 Bitmap/*.bmp)]">',
-        '                                                <Grid>',
-        '                                                    <Grid.ColumnDefinitions>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                        <ColumnDefinition Width="*"/>',
-        '                                                    </Grid.ColumnDefinitions>',
-        '                                                    <Button Grid.Column="0" Name="DsBrLogoSelect" Content="Select"/>',
-        '                                                    <TextBox Grid.Column="1" Name="DsBrLogo"/>',
-        '                                                </Grid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="2" Header="[BrBackground (Common Image File)]">',
-        '                                                <Grid>',
-        '                                                    <Grid.ColumnDefinitions>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                        <ColumnDefinition Width="*"/>',
-        '                                                    </Grid.ColumnDefinitions>',
-        '                                                    <Button Grid.Column="0" Name="DsBrBackgroundSelect" Content="Select"/>',
-        '                                                    <TextBox Grid.Column="1" Name="DsBrBackground"/>',
-        '                                                </Grid>',
-        '                                            </GroupBox>',
+        '                                            <Grid Grid.Row="1">',
+        '                                                <Grid.RowDefinitions>',
+        '                                                    <RowDefinition Height="*"/>',
+        '                                                    <RowDefinition Height="*"/>',
+        '                                                    <RowDefinition Height="*"/>',
+        '                                                    <RowDefinition Height="*"/>',
+        '                                                </Grid.RowDefinitions>',
+        '                                                <Grid.ColumnDefinitions>',
+        '                                                    <ColumnDefinition Width="230"/>',
+        '                                                    <ColumnDefinition Width="*"/>',
+        '                                                </Grid.ColumnDefinitions>',
+        '                                                <Label  Grid.Row="0" Grid.Column="0" Content="[BrLogo (120x120 Bitmap/*.bmp)]:"/>',
+        '                                                <Button Grid.Row="0" Grid.Column="1" Name="DsBrLogoSelect" Content="Browse"/>',
+        '                                                <TextBox Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="2" Name="DsBrLogo"/>',
+        '                                                <Label  Grid.Row="2" Grid.Column="0" Content="[BrBackground (Common Image File)]:"/>',
+        '                                                <Button Grid.Row="2" Grid.Column="1" Name="DsBrBackgroundSelect" Content="Browse"/>',
+        '                                                <TextBox Grid.Row="3" Grid.Column="0"  Grid.ColumnSpan="2" Name="DsBrBackground"/>',
+        '                                            </Grid>',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                    <TabItem Header="Bootstrap">',
@@ -2456,9 +2467,9 @@ Function New-FEDeploymentShare
         '                                                    <ColumnDefinition Width="*"/>',
         '                                                    <ColumnDefinition Width="100"/>',
         '                                                </Grid.ColumnDefinitions>',
-        '                                                <Button Grid.Column="0" Name="DsGenerateCustomSettings" Content="Generate"/>',
+        '                                                <Button  Grid.Column="0" Name="DsGenerateCustomSettings" Content="Generate"/>',
         '                                                <TextBox Grid.Column="1" Name="DsCustomSettingsPath"/>',
-        '                                                <Button Grid.Column="2" Name="DsSelectCustomSettings" Content="Select"/>',
+        '                                                <Button  Grid.Column="2" Name="DsSelectCustomSettings" Content="Select"/>',
         '                                            </Grid>',
         '                                            <GroupBox Grid.Row="1" Header="[CustomSettings.ini]">',
         '                                                <TextBlock Grid.Row="1" Background="White" Name="DsCustomSettings" Margin="5" Padding="5">',
@@ -2522,6 +2533,7 @@ Function New-FEDeploymentShare
         [Object]            $Config
         [Object]                $IP
         [Object]              $Dhcp
+        [Object]      $SiteLinkList
         [Object]          $SiteList
         [Object]        $SubnetList
         [Object]            $OUList
@@ -2599,6 +2611,10 @@ Function New-FEDeploymentShare
         {
             $This.Sitelist      = Get-ADObject -LDAPFilter "(objectClass=site)" -SearchBase "CN=Configuration,$($This.SearchBase)"
         }
+        [Void] GetSiteLinkList()
+        {
+            $This.SitelinkList  = Get-ADObject -LDAPFilter "(objectClass=siteLink)" -Searchbase "CN=Configuration,$($This.SearchBase)"
+        }
         [Void] GetSubnetList()
         {
             $This.SubnetList    = Get-ADObject -LDAPFilter "(objectClass=subnet)" -SearchBase "CN=Configuration,$($This.SearchBase)"
@@ -2620,6 +2636,7 @@ Function New-FEDeploymentShare
 
             $This.AddSiteName($This.Template.Postal)
             $This.GetSiteList()
+            $This.GetSiteLinkList()
             $This.GetSubnetList()
         }
         [Void] AddSitename([String]$Zip)
@@ -2788,10 +2805,19 @@ Function New-FEDeploymentShare
     $Main                           = [Main]::New()
     $Xaml                           = [XamlWindow][FEDeploymentShareGUI]::Tab
 
-    <# $Xaml.Names | ? { $_ -notin "ContentPresenter","Border","ContentSite" } | % {
+    <# $Last = $Null
+    $Xaml.Names | ? { $_ -notin "ContentPresenter","Border","ContentSite" } | % {
+        
+        $Item = $_[0,1] -join ""
+        If ($Last -eq $Null -or $Item -ne $Last)
+        {
+            Write-Theme "$Item Tab" -Text
+        }
         $X = "    # `$Xaml.IO.$_"
         $Y = $Xaml.IO.$_.GetType().Name 
-        "{0}{1} # $Y" -f $X,(" "*(40-$X.Length) -join '')
+        "{0}{1} # $Y" -f $X,(" "*(60-$X.Length) -join '')
+        $Last = $_[0,1] -join ""
+    
     } | Set-Clipboard #>
 
 #    ____                                                                                                    ________    
@@ -2887,7 +2913,7 @@ Function New-FEDeploymentShare
         }
 
         Else
-        {   # $Main.LoadSitemap("Secure Digits Plus LLC","securedigitsplus.com")
+        {   # $Main.LoadSite("Secure Digits Plus LLC","securedigitsplus.com")
             $Main.LoadSite($Xaml.IO.DcOrganization.Text,$Xaml.IO.DcCommonName.Text)
             $Xaml.IO.DcAggregate.ItemsSource   = @( )
             $Xaml.IO.DcAggregate.ItemsSource   = @( $Main.Domain )
@@ -3133,6 +3159,7 @@ Function New-FEDeploymentShare
 
     $Xaml.IO.SmTemplate.ItemsSource  = @( )
     $Xaml.IO.SmAggregate.ItemsSource = @( )
+    $Xaml.IO.SmSiteLink.ItemsSource  = @( )
     $Xaml.IO.SmTopology.ItemsSource  = @( )
 
     $Xaml.IO.SmLoadSitemap.Add_Click(
@@ -3146,7 +3173,9 @@ Function New-FEDeploymentShare
         {
             $Main.LoadSitemap()
             $Xaml.IO.SmAggregate.ItemsSource = @( )
+            $Xaml.IO.SmSiteLink.ItemsSource  = @( )
             $Xaml.IO.SmAggregate.ItemsSource = @( $Main.Sitemap )
+            $Xaml.IO.SmSiteLink.ItemsSource  = @( $Main.Sitelinklist )
             If ( $Xaml.IO.SmAggregate.Items.Count -gt 0 )
             {
                 $Xaml.IO.SmTemplate.ItemsSource  = @( $Main.SmTemplate )
@@ -3198,13 +3227,14 @@ Function New-FEDeploymentShare
                     Path        = $Item.DistinguishedName -Replace "OU=$($Item.Name),",""
                 }        
                 New-ADOrganizationalUnit @OU -Verbose
+                Set-ADReplicationSiteLink -Identity $Xaml.IO.SmSiteLink.SelecteItem.DistinguishedName -SitesIncluded @{"Add"=$OU.Path} -Verbose
 
                 $Item.Exists    = $True
             }
 
             Else
             {
-                Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName)
+                Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
             }
         }
         
@@ -4687,7 +4717,8 @@ Function New-FEDeploymentShare
             "`$Key = '$( $Key | ConvertTo-Json )'",
             "New-EnvironmentKey -Key `$Key | % Apply",
             "`$Module = Get-FEModule",
-            "`$Module.Role.Choco()" -join ";`n")
+            "`$Module.Role.Choco()",
+            "choco install pwsh vscode microsoft-edge microsoft-windows-terminal ccleaner -y" -join ";`n")
 
             Set-Content -Path $Script\Install.ps1 -Value $Install -Force -Verbose
 
