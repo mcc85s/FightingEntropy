@@ -3228,6 +3228,8 @@ Function New-FEDeploymentShare
                 }        
                 New-ADOrganizationalUnit @OU -Verbose
                 Set-ADReplicationSiteLink -Identity $Xaml.IO.SmSiteLink.SelecteItem.DistinguishedName -SitesIncluded @{"Add"=$OU.Path} -Verbose
+                $Location       = ("{0}, {1} {2}" -f $OU.City, $OU.State, $OU.PostalCode)
+                Get-ADReplicationSubnet -Filter * | ? Name -match $OU.Description | Set-ADReplicationSubnet -Location $Location -Site $Item.Name -Verbose
 
                 $Item.Exists    = $True
             }
