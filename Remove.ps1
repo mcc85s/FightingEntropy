@@ -1,5 +1,5 @@
 $Name       = "FightingEntropy"
-$Version    = "2021.6.0"
+$Version    = "2021.8.0"
 $Company    = "Secure Digits Plus LLC"
 
 $RegPath    = "HKLM:\Software\Policies\$Company\$Name\$Version"
