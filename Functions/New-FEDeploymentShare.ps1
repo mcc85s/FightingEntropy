@@ -4690,7 +4690,7 @@ Function New-FEDeploymentShare
     {
         $Item = $Xaml.IO.DsAggregate.SelectedItem
         $Xaml.IO.DsPostConfig.Text = @($Main.GetPostConfig("\\$Env:ComputerName\$($Item.Share)\DSKey.csv"))
-    }
+    })
 
     $Xaml.IO.DsSelectBootstrap.Add_Click(
     {
