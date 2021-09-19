@@ -4648,7 +4648,7 @@ Function New-FEDeploymentShare
         {
             $Xaml.IO.DsBootstrap.Text = @($Main.Bootstrap($Item.Type,$Xaml.IO.DcNwNetBiosName.Text,$Item.Share,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
         }
-    }
+    })
 
     $Xaml.IO.DsGenerateCustomSettings.Add_Click(
     {
@@ -4856,7 +4856,7 @@ Function New-FEDeploymentShare
             If ($Item.Type -eq "PSD")
             {
                 $ScriptRoot         = Get-PSDModule
-                $ItemName           = "$($Item.Name:)"
+                $ItemName           = "$($Item.Name):"
                 $ItemRoot           = $Item.Root
                 $ItemShare          = $Item.Share
 
