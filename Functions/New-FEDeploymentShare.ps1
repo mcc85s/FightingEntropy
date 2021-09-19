@@ -1107,7 +1107,7 @@ Function New-FEDeploymentShare
 
     Class FEDeploymentShareGUI
     {
-        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
+        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style TargetType="GroupBox" x:Key="xGroupBox">',
         '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
@@ -2484,6 +2484,31 @@ Function New-FEDeploymentShare
         '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
+        '                                    <TabItem Header="PostConfig">',
+        '                                        <Grid>',
+        '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="60"/>',
+        '                                                <RowDefinition Height="*"/>',
+        '                                            </Grid.RowDefinitions>',
+        '                                            <Grid Grid.Row="0">',
+        '                                                <Grid.ColumnDefinitions>',
+        '                                                    <ColumnDefinition Width="100"/>',
+        '                                                    <ColumnDefinition Width="*"/>',
+        '                                                    <ColumnDefinition Width="100"/>',
+        '                                                </Grid.ColumnDefinitions>',
+        '                                                <Button  Grid.Column="0" Name="DsGeneratePostConfig" Content="Generate"/>',
+        '                                                <TextBox Grid.Column="1" Name="DsPostConfigPath"/>',
+        '                                                <Button  Grid.Column="2" Name="DsSelectPostConfig" Content="Select"/>',
+        '                                            </Grid>',
+        '                                            <GroupBox Grid.Row="1" Header="[Post Configuration]">',
+        '                                                <TextBlock Grid.Row="1" Background="White" Name="DsPostConfig" Margin="5" Padding="5">',
+        '                                                    <TextBlock.Effect>',
+        '                                                        <DropShadowEffect ShadowDepth="1"/>',
+        '                                                    </TextBlock.Effect>',
+        '                                                </TextBlock>',
+        '                                            </GroupBox>',
+        '                                        </Grid>',
+        '                                    </TabItem>',
         '                                </TabControl>',
         '                                <Grid Grid.Row="1">',
         '                                    <Grid.ColumnDefinitions>',
@@ -3343,6 +3368,11 @@ Function New-FEDeploymentShare
 
     $Xaml.IO.SmNewSitemap.Add_Click(
     {
+        If ( $Xaml.IO.SmSiteLink.SelectedIndex -eq -1)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a master site link","Error")
+        }
+
         ForEach ($X in 0..($Xaml.IO.SmTopology.ItemsSource.Count-1))
         {
             $Item               = $Xaml.IO.SmTopology.Items[$X]
