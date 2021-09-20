@@ -1,4 +1,4 @@
-Function Write-Theme2 # Cross Platform
+Function Write-Theme # Cross Platform
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
