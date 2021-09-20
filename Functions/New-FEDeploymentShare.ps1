@@ -4677,6 +4677,10 @@ Function New-FEDeploymentShare
         {
             Return [System.Windows.Messagebox]::Show("Must enter the NetBIOS ID","Error")
         }
+        ElseIf($Xaml.IO.DsNwDnsName.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Must enter the hostname DNS ID","Error")
+        }
         ElseIf ($Xaml.IO.DsDcUsername.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Must enter domain admin username","Error")
@@ -4693,7 +4697,7 @@ Function New-FEDeploymentShare
         {
             $Item                          = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsBootstrap.Text      = @( ) 
-            ForEach ( $Line in $Main.Bootstrap($Item.Type,$Xaml.IO.DsNwNetBiosName.Text,"\\$($Xaml.IO.NwDnsName)\$($Item.Share)",$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
+            ForEach ( $Line in $Main.Bootstrap($Item.Type,$Xaml.IO.DsNwNetBiosName.Text,"\\$($Xaml.IO.DsNwDnsName.Text)\$($Item.Share)",$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
             {
                 $Xaml.IO.DsBootstrap.Text += $Line
             }
