@@ -2889,10 +2889,10 @@ Function New-FEDeploymentShare
                 $Output                = @{
                     Settings           = @{
                         Priority       = "Default"
-                        Properties     = "PSDeployRoots"
+                        Properties     = "PSDDeployRoots"
                     }
                     Default            = @{ 
-                        PSDeployRoots  = $UNC
+                        PSDDeployRoots = $UNC
                         UserID         = $UserID.Split("@")[0]
                         UserPassword   = $Password
                         UserDomain     = $NetBIOS
@@ -2949,7 +2949,7 @@ Function New-FEDeploymentShare
                 $Output                      = @{
                     Settings                 = @{
                         Priority             = "Default"
-                        Properties           = "PSDeployRoots"
+                        Properties           = "PSDDeployRoots"
                     }
                     Default                  = @{
                         _SMSTSOrgName        = $Org
@@ -4760,7 +4760,7 @@ Function New-FEDeploymentShare
         {
             $Item                           = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsPostConfig.Text      = @( )
-            ForEach ( $Line in $Main.PostConfig("\\$Env:ComputerName\$($Item.Share)\DSKey.csv") )
+            ForEach ( $Line in $Main.PostConfig("\\$($Xaml.IO.DsNwDnsName.Text)\$($Item.Share)\DSKey.csv") )
             {
                 $Xaml.IO.DsPostConfig.Text += $Line
             }
@@ -5197,7 +5197,7 @@ Function New-FEDeploymentShare
                     $Xaml.IO.DsBrLogo.Text,$Xaml.IO.DsBrPhone.Text,$Xaml.IO.DsBrHours.Text,$Xaml.IO.DsBrWebsite.Text)
             $Key = [Key]$DS
         
-            Set-Content -Path "$($PSD.Root)\DSKey.csv" -Value ($Key | ConvertTo-CSV) -Verbose
+            Set-Content -Path "\\$($PSD.NetworkPath)\DSKey.csv" -Value ($Key | ConvertTo-CSV) -Verbose
 
             # Update FEShare(MDT)
             Update-MDTDeploymentShare -Path $Root -Force -Verbose
