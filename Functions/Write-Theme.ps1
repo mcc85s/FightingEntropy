@@ -1,4 +1,4 @@
-Function Write-Theme # Cross Platform
+Function Write-Theme2 # Cross Platform
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
@@ -10,7 +10,7 @@ Function Write-Theme # Cross Platform
         [Switch]$Flag,
         [Parameter(Position=1)]
         [UInt32[]]$Palette = @(10,12,15,0),
-        [Parameter()][Switch]$Text
+        [Parameter(ParameterSetName=0)][Switch]$Text = $False
     )
 
     Class Block
@@ -682,11 +682,11 @@ Function Write-Theme # Cross Platform
                     }
                 }
 
-    $Item = Switch($PSCmdLet.ParameterSetName)
+    Switch($PSCmdLet.ParameterSetName)
     {
         0 
         {  
-            [Stack]::New($InputObject)
+            $Item = [Stack]::New($InputObject)
         }
 
         1 
@@ -696,20 +696,25 @@ Function Write-Theme # Cross Platform
         
         2 
         {   
-            [Flag]::New()
+            $Item = [Flag]::New()
         }
     }
 
-    If ($Text)
+    If ($PSCmdLet.ParameterSetName -eq 0)
     {
-        $Item.Out() | % { "#$_" }
+        If ($Text)
+        {
+            $Item.Out() | % { "#$_" }
+        }
+
+        If (!$Text)
+        {
+            $Item.Draw($Palette)
+        }
     }
 
     Else
     {
-        Switch([UInt32]($Item.GetType().Name -in "Flag","Banner"))
-        {
-            0 { $Item.Draw($Palette) } 1 { $Item.Draw() }
-        }
+        $Item.Draw()
     }
 }
