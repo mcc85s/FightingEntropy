@@ -1104,10 +1104,9 @@ Function New-FEDeploymentShare
         }
     }
     
-
     Class FEDeploymentShareGUI
     {
-        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
+        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://New Deployment Share" Width="640" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
         '    <Window.Resources>',
         '        <Style TargetType="GroupBox" x:Key="xGroupBox">',
         '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
@@ -1237,6 +1236,24 @@ Function New-FEDeploymentShare
         '        <Style TargetType="ComboBox">',
         '            <Setter Property="Margin" Value="10"/>',
         '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="TextBlock.Effect">',
+        '                <Setter.Value>',
+        '                    <DropShadowEffect ShadowDepth="1"/>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="TextBox" x:Key="Block">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="Height" Value="140"/>',
+        '            <Setter Property="FontFamily" Value="System"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '            <Setter Property="AcceptsReturn" Value="True"/>',
+        '            <Setter Property="VerticalAlignment" Value="Top"/>',
+        '            <Setter Property="TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Top"/>',
+        '            <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>',
         '            <Setter Property="TextBlock.Effect">',
         '                <Setter.Value>',
         '                    <DropShadowEffect ShadowDepth="1"/>',
@@ -1585,15 +1602,15 @@ Function New-FEDeploymentShare
         '                        <Grid.RowDefinitions>',
         '                            <RowDefinition Height="80"/>',
         '                            <RowDefinition Height="120"/>',
-        '                            <RowDefinition Height="120"/>',
-        '                            <RowDefinition Height="120"/>',
+        '                            <RowDefinition Height="100"/>',
+        '                            <RowDefinition Height="140"/>',
         '                            <RowDefinition Height="160"/>',
         '                            <RowDefinition Height="80"/>',
         '                        </Grid.RowDefinitions>',
         '                        <Grid Grid.Row="0">',
         '                            <Grid.ColumnDefinitions>',
         '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="1.1*"/>',
         '                                <ColumnDefinition Width="120"/>',
         '                            </Grid.ColumnDefinitions>',
         '                            <GroupBox Grid.Column="0" Header="[SmSiteCount] - (Selected sites)">',
@@ -1839,8 +1856,8 @@ Function New-FEDeploymentShare
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="100"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <Button Grid.Column="1" Name="VmHostSelect" Content="Select"/>',
         '                                <TextBox Grid.Column="0" Name="VmHost"/>',
+        '                                <Button Grid.Column="1" Name="VmHostSelect" Content="Select"/>',
         '                            </Grid>',
         '                        </GroupBox>',
         '                        <TabControl Grid.Row="1">',
@@ -2134,11 +2151,11 @@ Function New-FEDeploymentShare
         '                                        <RowDefinition Height="*"/>',
         '                                    </Grid.RowDefinitions>',
         '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="50"/>',
+        '                                        <ColumnDefinition Width="80"/>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Row="0" Name="WimIsoUp" Content="^"/>',
-        '                                    <Button Grid.Row="1" Name="WimIsoDown" Content="?"/>',
+        '                                    <Button Grid.Row="0" Name="WimIsoUp" Content="Up"/>',
+        '                                    <Button Grid.Row="1" Name="WimIsoDown" Content="Down"/>',
         '                                    <DataGrid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Name="WimIso">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="*"/>',
@@ -2255,9 +2272,9 @@ Function New-FEDeploymentShare
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="60"/>',
         '                                        <DataGridTextColumn Header="Type"  Binding="{Binding Type}" Width="60"/>',
-        '                                        <DataGridTextColumn Header="Root" Binding="{Binding Root}" Width="*"/>',
+        '                                        <DataGridTextColumn Header="Root" Binding="{Binding Root}" Width="250"/>',
         '                                        <DataGridTextColumn Header="Share" Binding="{Binding Share}" Width="150"/>',
-        '                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="Auto"/>',
+        '                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="350"/>',
         '                                        ',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
@@ -2277,8 +2294,9 @@ Function New-FEDeploymentShare
         '                                        </GroupBox>',
         '                                        <GroupBox Grid.Column="1" Header="[Legacy MDT/PSD]">',
         '                                            <ComboBox Name="DsType">',
-        '                                                <ComboBoxItem Content="MDT" IsSelected="True"/>',
+        '                                                <ComboBoxItem Content="MDT"/>',
         '                                                <ComboBoxItem Content="PSD"/>',
+        '                                                <ComboBoxItem Content="-"/>',
         '                                            </ComboBox>',
         '                                        </GroupBox>',
         '                                        <GroupBox Grid.Column="2" Header="[DsRootPath (Root)]">',
@@ -2451,11 +2469,7 @@ Function New-FEDeploymentShare
         '                                                <Button Grid.Column="2" Name="DsSelectBootstrap" Content="Select"/>',
         '                                            </Grid>',
         '                                            <GroupBox Grid.Row="1" Header="[Bootstrap.ini]">',
-        '                                                <TextBlock Grid.Row="1" Background="White" Name="DsBootstrap" Margin="5" Padding="5">',
-        '                                                    <TextBlock.Effect>',
-        '                                                        <DropShadowEffect ShadowDepth="1"/>',
-        '                                                    </TextBlock.Effect>',
-        '                                                </TextBlock>',
+        '                                                <TextBox Grid.Row="1" Background="White" Name="DsBootstrap" Style="{StaticResource Block}"/>',
         '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
@@ -2476,11 +2490,7 @@ Function New-FEDeploymentShare
         '                                                <Button  Grid.Column="2" Name="DsSelectCustomSettings" Content="Select"/>',
         '                                            </Grid>',
         '                                            <GroupBox Grid.Row="1" Header="[CustomSettings.ini]">',
-        '                                                <TextBlock Grid.Row="1" Background="White" Name="DsCustomSettings" Margin="5" Padding="5">',
-        '                                                    <TextBlock.Effect>',
-        '                                                        <DropShadowEffect ShadowDepth="1"/>',
-        '                                                    </TextBlock.Effect>',
-        '                                                </TextBlock>',
+        '                                                <TextBox Grid.Row="1" Background="White" Name="DsCustomSettings" Style="{StaticResource Block}"/>',
         '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
@@ -2501,11 +2511,7 @@ Function New-FEDeploymentShare
         '                                                <Button  Grid.Column="2" Name="DsSelectPostConfig" Content="Select"/>',
         '                                            </Grid>',
         '                                            <GroupBox Grid.Row="1" Header="[Post Configuration]">',
-        '                                                <TextBlock Grid.Row="1" Background="White" Name="DsPostConfig" Margin="5" Padding="5">',
-        '                                                    <TextBlock.Effect>',
-        '                                                        <DropShadowEffect ShadowDepth="1"/>',
-        '                                                    </TextBlock.Effect>',
-        '                                                </TextBlock>',
+        '                                                <TextBox Grid.Row="1" Background="White" Name="DsPostConfig" Style="{StaticResource Block}"/>',
         '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
@@ -2730,7 +2736,7 @@ Function New-FEDeploymentShare
                 $This.Network    = @( $Tmp )
             }
         }
-        [Void] AddSubnet([String]$Prefix) # Add further error handling on input
+        [Void] AddSubnet([String]$Prefix)
         {
             If ( $Prefix -notmatch "((\d+\.+){3}\d+\/\d+)" )
             {
@@ -2834,10 +2840,11 @@ Function New-FEDeploymentShare
         {
             $This.Drives = $Drives
         }
-        [UInt32] GetNextEventPort()
+        [String] GetNextEventPort()
         {
             $Collect = $This.Drives | % { Get-ItemProperty "$($_.Name):" }
-            Return @( 9800..9899 | ? { $_ % 2 -eq 0 } | ? { $_ -notin $Collect.MonitorEventPort } | Select-Object -First 1 )
+            $Port    = @( 9800..9899 | ? { $_ % 2 -eq 0 } | ? { $_ -notin $Collect.MonitorEventPort } )
+            Return $Port[0]
         }
         [Object] Enumerate([Hashtable]$Object)
         {
@@ -2857,12 +2864,12 @@ Function New-FEDeploymentShare
                     $Output += ""
                 }
             }
-            Return $Output
+            Return ($Output -join "`n")
         }
-        [Object] Bootstrap([UInt32]$Type,[String]$NetBIOS,[String]$UNC,[String]$UserID,[String]$Password)
+        [Object] Bootstrap([String]$Type,[String]$NetBIOS,[String]$UNC,[String]$UserID,[String]$Password)
         {
             $Output = $Null
-            If ($Type -eq 0)
+            If ($Type -eq "MDT")
             {
                 $Output                = @{ 
                     Settings           = @{ 
@@ -2877,12 +2884,12 @@ Function New-FEDeploymentShare
                 }
             }
 
-            If ($Type -eq 1)
+            If ($Type -eq "PSD")
             {
                 $Output                = @{
                     Settings           = @{
                         Priority       = "Default"
-                        Properties     = "PSDEployRoots"
+                        Properties     = "PSDeployRoots"
                     }
                     Default            = @{ 
                         PSDeployRoots  = $UNC
@@ -2895,7 +2902,7 @@ Function New-FEDeploymentShare
 
             Return $This.Enumerate($Output)
         }
-        [Object] CustomSettings([UInt32]$Type,[String]$UNC,[String]$Org,[String]$NetBIOS,[String]$DNS,[String]$OU,[String]$UserID,[String]$Password)
+        [Object] CustomSettings([String]$Type,[String]$UNC,[String]$Org,[String]$NetBIOS,[String]$DNS,[String]$OU,[String]$UserID,[String]$Password)
         {
             $Output = $Null
             $Port   = $Null
@@ -2906,10 +2913,10 @@ Function New-FEDeploymentShare
             }
             If ($Exists -ne $Null)
             {
-                $Port = [Regex]::Matches((Get-Content "$UNC\Control\CustomSettings.ini"),"\/\/.+\:\d{4}").Value.Split(":")[-1]
+                $Port = [UInt32][Regex]::Matches((Get-Content "$UNC\Control\CustomSettings.ini"),"\/\/.+\:\d{4}").Value.Split(":")[-1]
             }
 
-            If ($Type -eq 0)
+            If ($Type -eq "MDT")
             {
                 $Output                      = @{ 
                     Settings                 = @{
@@ -2932,12 +2939,12 @@ Function New-FEDeploymentShare
                         SkipBitlocker        = "YES"
                         KeyboardLocale       = "en-US"
                         TimeZoneName         = "$(Get-Timezone | % ID)"
-                        EventService         = "http://{0}:{1}" -f $UNC,$Port
+                        EventService         = ("http://{0}:{1}" -f $DNS,$Port)
                     }
                 }
             }
 
-            If ($Type -eq 1)
+            If ($Type -eq "PSD")
             {
                 $Output                      = @{
                     Settings                 = @{
@@ -2948,7 +2955,7 @@ Function New-FEDeploymentShare
                         _SMSTSOrgName        = $Org
                         TimeZoneName         = "$(Get-Timezone | % ID)"
                         KeyboardLocale       = "en-US"
-                        EventService         = "http://{0}:{1}" -f $UNC,$Port
+                        EventService         = ("http://{0}:{1}" -f $DNS,$Port)
                     }
                 }
             }
@@ -2959,7 +2966,7 @@ Function New-FEDeploymentShare
         {
             Return @("[Net.ServicePointManager]::SecurityProtocol = 3072",
             "Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | Invoke-Expression",
-            "`$Module = Get-FEModule","`$Module.Role.LoadEnvironmentKey(`"$Key`")","`$Module.Role.Choco()")
+            "`$Module = Get-FEModule","`$Module.Role.LoadEnvironmentKey(`"$Key`")","`$Module.Role.Choco()" -join "`n")
         }
     }
     
@@ -3025,12 +3032,13 @@ Function New-FEDeploymentShare
         Restore-MDTPersistentDrive
         $Drives = Get-MDTPersistentDrive
         $Main.LoadDrives($Drives)
+        
+        $Xaml.IO.DsAggregate.ItemsSource += [DsShare]::New("<New>","-",$Null,"-",2)
+        
         ForEach ($Drive in $Main.Drives)
         {
             $Xaml.IO.DsAggregate.ItemsSource += [DsShare]$Drive
         }
-
-        $Xaml.IO.DsAggregate.ItemsSource += [DsShare]::New("<New>","-",$Null,"-",2)
     }
 
 #    ____                                                                                                    ________    
@@ -3783,8 +3791,6 @@ Function New-FEDeploymentShare
         $Xaml.IO.VmServer.ItemsSource    = @($Main.Virtual.Server  | % { [VmTest]$_.Name } )
     })
     
-    # $Xaml.IO.DcOrganization.Text = "Secure Digits Plus LLC"; $Xaml.IO.DcCommonName.Text = "securedigitsplus.com"; $Xaml.IO.NwScope.Text = "172.16.0.0/19"
-    
     $Xaml.IO.VMNewArchitecture.Add_Click(
     {
         If (!$Xaml.IO.VmGatewayImage.Text)
@@ -4509,7 +4515,7 @@ Function New-FEDeploymentShare
             $Xaml.IO.DsRootPath.Text           = $Item.Root
             $Xaml.IO.DsShareName.Text          = $Item.Share
             $Xaml.IO.DsDescription.Text        = $Item.Description
-            $Xaml.IO.DsType.SelectedIndex      = $Item.Type
+            $Xaml.IO.DsType.SelectedIndex      = @{MDT=0;PSD=1;"-"=2}[$Item.Type]
             $Xaml.IO.DsBootstrapPath.Text      = "$($Item.Root)\Control\Bootstrap.ini"
             $Xaml.IO.DsCustomSettingsPath.Text = "$($Item.Root)\Control\CustomSettings.ini"
             $Xaml.IO.DsPostConfigPath.Text     = "$($Item.Root)\Script\Install-FightingEntropy.ps1"
@@ -4538,19 +4544,25 @@ Function New-FEDeploymentShare
             Return [System.Windows.MessageBox]::Show("Selected share name is already assigned to another deployment share","Error")
         }
 
+        ElseIf($Xaml.IO.DsType.SelectedIndex -eq 2)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select MDT or PSD for deployment share type","Error")
+        }
+
         Else
         {
-            $Xaml.IO.DsAggregate.ItemsSource += [DsShare]::New($Xaml.IO.DsDriveName.Text,
+            $Xaml.IO.DsAggregate.ItemsSource  += [DsShare]::New($Xaml.IO.DsDriveName.Text,
             $Xaml.IO.DsRootPath.Text,
             $Xaml.IO.DsShareName.Text,
             $Xaml.IO.DsDescription.Text,
             $Xaml.IO.DsType.SelectedIndex)
+            $Xaml.IO.DsAggregate.SelectedIndex = ($Xaml.IO.DsAggregate.Items.Count - 1)
         }
     })
 
     $Xaml.IO.DsRemoveShare.Add_Click(
     {
-        If ( $Xaml.IO.DsAggregate.SelectedIndex -eq -1 )
+        If ($Xaml.IO.DsAggregate.SelectedIndex -eq -1)
         {
             Return [System.Windows.MessageBox]::Show("No share to remove...","Error")
         }
@@ -4657,16 +4669,19 @@ Function New-FEDeploymentShare
 
     $Xaml.IO.DsGenerateBootstrap.Add_Click(
     {
-        $Item = $Xaml.IO.DsAggregate.SelectedItem
-        If ($Xaml.IO.DcNwNetBiosName.Text -match $Null)
+        If ($Xaml.IO.DsAggregate.SelectedIndex -eq -1)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a share from the datagrid","Error")
+        }
+        ElseIf ($Xaml.IO.DsNwNetBiosName.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Must enter the NetBIOS ID","Error")
         }
-        ElseIf ($Xaml.IO.DsDcUsername.Text -match $Null)
+        ElseIf ($Xaml.IO.DsDcUsername.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Must enter domain admin username","Error")
         }
-        ElseIf ($Xaml.IO.DsDcPassword.Password -match $Null)
+        ElseIf ($Xaml.IO.DsDcPassword.Password -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Must enter domain admin password","Error")
         }
@@ -4676,34 +4691,42 @@ Function New-FEDeploymentShare
         }
         Else
         {
-            $Xaml.IO.DsBootstrap.Text = @($Main.Bootstrap($Item.Type,$Xaml.IO.DcNwNetBiosName.Text,$Item.Share,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
+            $Item                          = $Xaml.IO.DsAggregate.SelectedItem
+            $Xaml.IO.DsBootstrap.Text      = @( ) 
+            ForEach ( $Line in $Main.Bootstrap($Item.Type,$Xaml.IO.DsNwNetBiosName.Text,"\\$($Xaml.IO.NwDnsName)\$($Item.Share)",$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
+            {
+                $Xaml.IO.DsBootstrap.Text += $Line
+            }
         }
     })
 
     $Xaml.IO.DsGenerateCustomSettings.Add_Click(
     {
-        $Item = $Xaml.IO.DsAggregate.SelectedItem
-        If ($Xaml.IO.DcOrganization.Text -match $Null)
+        If ($Xaml.IO.DsAggregate.SelectedIndex -eq -1)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a share from the datagrid","Error")
+        }
+        ElseIf ($Xaml.IO.DcOrganization.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Invalid organization name","Error")
         }
-        ElseIf($Xaml.IO.DsNwNetBiosName.Text -match $Null)
+        ElseIf($Xaml.IO.DsNwNetBiosName.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Invalid NetBIOS name","Error")
         }
-        ElseIf($Xaml.IO.DsNwDnsName.Text -match $Null)
+        ElseIf($Xaml.IO.DsNwDnsName.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Invalid DNS name","Error")
         }
-        ElseIf($Xaml.IO.DsNwMachineOUName.Text -match $Null)
+        ElseIf($Xaml.IO.DsNwMachineOUName.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Invalid computer OU designated","Error")
         }
-        ElseIf ($Xaml.IO.DsDcUsername.Text -match $Null)
+        ElseIf ($Xaml.IO.DsDcUsername.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Must enter domain admin username","Error")
         }
-        ElseIf ($Xaml.IO.DsDcPassword.Password -match $Null)
+        ElseIf ($Xaml.IO.DsDcPassword.Password -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Must enter domain admin password","Error")
         }
@@ -4711,17 +4734,36 @@ Function New-FEDeploymentShare
         {
             Return [System.Windows.Messagebox]::Show("Invalid password confirmation","Error")
         }
-
-        $Xaml.IO.DsCustomSettings.Text = @($Main.CustomSettings($Item.Type,$Item.Share,$Xaml.IO.DcOrganization.Text,$Xaml.IO.DsNwNetBiosName.Text,
-                                            $Xaml.IO.DsNwDnsName.Text,$Xaml.IO.DsNwMachineOUName.Text,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
+        Else
+        {
+            $Item                               = $Xaml.IO.DsAggregate.SelectedItem
+            $Xaml.IO.DsCustomSettings.Text      = @() 
+            ForEach ($Line in $Main.CustomSettings($Item.Type,$Item.Share,$Xaml.IO.DcOrganization.Text,$Xaml.IO.DsNwNetBiosName.Text,
+                                                $Xaml.IO.DsNwDnsName.Text,$Xaml.IO.DsNwMachineOUName.Text,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
+            {
+                $Xaml.IO.DsCustomSettings.Text += $Line
+            }
+        }
     })
 
     $Xaml.IO.DsGeneratePostConfig.Add_Click(
     {
-        $Item = $Xaml.IO.DsAggregate.SelectedItem
-        $Xaml.IO.DsPostConfig.Text = @($Main.GetPostConfig("\\$Env:ComputerName\$($Item.Share)\DSKey.csv"))
+        If ($Xaml.IO.DsAggregate.SelectedIndex -eq -1)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a share from the datagrid","Error")
+        }
+        Else
+        {
+            $Item                           = $Xaml.IO.DsAggregate.SelectedItem
+            $Xaml.IO.DsPostConfig.Text      = @( )
+            ForEach ( $Line in $Main.PostConfig("\\$Env:ComputerName\$($Item.Share)\DSKey.csv") )
+            {
+                $Xaml.IO.DsPostConfig.Text += $Line
+            }
+        }
     })
 
+    # [Select Scripts]
     $Xaml.IO.DsSelectBootstrap.Add_Click(
     {
         $Item                                  = New-Object System.Windows.Forms.OpenFileDialog
@@ -4788,7 +4830,7 @@ Function New-FEDeploymentShare
             Throw "Unable to initialize, use Windows PowerShell v5.1"
         }
 
-        ElseIf($Xaml.IO.DsAggregate.SelectedIndex -eq -1)
+        ElseIf ($Xaml.IO.DsAggregate.SelectedIndex -eq -1)
         {
             Return [System.Windows.MessageBox]::Show("Must select a valid drive in the aggregate category box","Error")
         }
@@ -4833,17 +4875,17 @@ Function New-FEDeploymentShare
             Return [System.Windows.MessageBox]::Show("Invalid OU specified","Error")
         }
 
-        ElseIf ($Xaml.IO.DsBootstrap.Text -match $Null)
+        ElseIf ($Xaml.IO.DsBootstrap.Text -eq "")
         {
             Return [System.Windows.MessageBox]::Show("The bootstrap file was not generated or reviewed","Error")
         }
 
-        ElseIf ($Xaml.IO.DsCustomSettings.Text -match $Null)
+        ElseIf ($Xaml.IO.DsCustomSettings.Text -eq "")
         {
             Return [System.Windows.MessageBox]::Show("The bootstrap file was not generated or reviewed","Error")
         }
 
-        ElseIf ($Xaml.IO.DsPostconfig.Text -match $Null)
+        ElseIf ($Xaml.IO.DsPostConfig.Text -eq "")
         {
             Return [System.Windows.MessageBox]::Show("The post config file was not generated or reviewed","Error")
         }
