@@ -21,6 +21,6 @@ Add-VMHardDiskDrive -VMName $Vm1.Name -ControllerType SCSI -ControllerNumber 0 -
 
 Set-VMDvdDrive -VMName $Vm0.Name -Path C:\Images\OPNsense-21.7-OpenSSL-dvd-amd64.iso -Verbose
 Start-Sleep 2
-Set-VMDvdDrive -VMName $Vm1.Name -Path C:\Images\17763.737.190906-2324.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us_1.iso -Verbose
+Set-VMDvdDrive -VMName $Vm1.Name -Path C:\Images\17763.737.190906-2324.iso -Verbose
 
 Get-Process -Name vmconnect -EA 0 | Stop-Process
