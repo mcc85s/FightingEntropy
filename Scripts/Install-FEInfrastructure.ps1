@@ -2,7 +2,7 @@ $Path        = Get-ChildItem $home\desktop | ? Name -match "(\d{8})" | % Fullnam
 $GW          = Get-ChildItem $Path\GW | % FullName
 $SR          = Get-ChildItem $Path\SR | % FullName
 Import-Module FightingEntropy
-$Cred2       = Get-Credential fightingentropy@securedigitsplus.com
+$Cred2       = Get-Credential
 
 ForEach ( $X in 0..($GW.Count - 1 ))
 {
@@ -793,9 +793,6 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     $Kb1.TypeKey(13)
     Start-Sleep 1
 
-    $Kb1.TypeKey(13)
-    Start-Sleep 1
-
     # [Alt + A] to apply
     $Kb1.PressKey(18)
     $Kb1.TypeKey(65)
@@ -1052,17 +1049,31 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     $Kb1.TypeKey(9)
     $Kb1.TypeKey(9)
     $Kb1.TypeKey(13)
-    Start-Sleep 25
+    Start-Sleep 35
 
-    $Kb1.TypeText("Stop-Process -Name ServerManager")
+    $Kb1.TypeText("Stop-Process -Name ServerManager;`$Item='$($Vm1.Item | ConvertTo-Json)';Set-Content -Path `$Home\Desktop\server.txt -Value `$Item;start `$Env:Public\Desktop\FightingEntropy.lnk")
     $Kb1.TypeKey(13)
 
-    $Kb1.TypeText("`$Item='$($Vm1.Item | ConvertTo-Json)';Set-Content -Path `$Home\Desktop\server.txt -Value `$Item")
-    $Kb1.TypeKey(13)
+    $C = @( )
+    Do
+    {
+        $Item = Get-VM -Name $Id1
 
-    $Kb1.TypeText("start `$Env:Public\Desktop\FightingEntropy.lnk")
-    $Kb1.TypeKey(13)
-    Start-Sleep 5
+        Switch($Item.CPUUsage)
+        {
+            Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 }
+        }
+
+        $Sum = @( Switch($C.Count)
+        {
+            0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+        } ) | Invoke-Expression
+
+        $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Awaiting [~] Idle state ($($Tx2.Elapsed))][(Inactivity:$Sum/100)]")
+        Write-Host $Lx1[$Lx1.Count-1]
+        Start-Sleep 1
+    }
+    Until ($Sum -gt 100)
 
     # [Shell 1]
     $Kb1.TypeText("Start-Sleep 10;`$Module = Get-FEModule;`$Module.Role.LoadEnvironmentKey(`"\\dsc0\FlightTest$\DSKey.csv`");Get-MDTModule;`$Module.Role.GetFeatures();Add-DHCPServerInDC;Add-DhcpServerSecurityGroup;Exit")
