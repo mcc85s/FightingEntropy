@@ -8,14 +8,15 @@ If ($Host.Version.Major -le 5)
         {   # Master Server/OU Variables
             $Master     = @{ 
                 
-                Zone    = "securedigitsplus.com"
-                Base    = "DC=securedigitsplus,DC=com"
-                CFG     = "CN=Configuration,DC=securedigitsplus,DC=com"
-                OU      = "CP-NY-US-12065"
-                Subnet  = "172.16.0.0/19"
-                IP      = Get-NetIPAddress | % IPAddress
-                ScopeID = Get-DhcpServerv4Scope | % ScopeID
-                VMHost  = Get-VMHost
+                Zone     = "securedigitsplus.com"
+                Base     = "DC=securedigitsplus,DC=com"
+                CFG      = "CN=Configuration,DC=securedigitsplus,DC=com"
+                OU       = "CP-NY-US-12065"
+                Subnet   = "172.16.0.0/19"
+                Sitelink = Get-ADReplicationSiteLink -Filter * | ? name -match default
+                IP       = Get-NetIPAddress | % IPAddress
+                ScopeID  = Get-DhcpServerv4Scope | % ScopeID
+                VMHost   = Get-VMHost
             }
 
             # Regex Lab Tags
@@ -25,23 +26,29 @@ If ($Host.Version.Major -le 5)
             $All        = "$Gateway|$Server|$Client"
 
             # Flush Lab ADDS computer objects
-            Get-ADObject -Filter * | ? ObjectClass -eq Computer | ? Name -match "($All)" | ? DistinguishedName -notmatch $Master.OU | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
+            Get-ADObject -LDAPFilter "(objectClass=Computer)" | ? Name -match "($All)" | ? DistinguishedName -notmatch $Master.OU | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
 
-            # Flush Lab OUs
+            # Flush Lab ADDS OUs
             Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)" -SearchBase $Master.Base | ? DistinguishedName -match "($All)" | % { 
                 
                 Set-ADObject -Identity $_.DistinguishedName -ProtectedFromAccidentalDeletion 0 -Verbose 
             
             } | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
 
-            # Flush Lab Subnets
+            # Flush Lab ADDS Subnets
             Get-ADObject -LDAPfilter "(objectClass=subnet)" -SearchBase $Master.CFG | ? Name -notmatch $Master.Subnet | Remove-ADObject -Confirm:$False -Verbose
 
-            # Flush Lab Sites 
-            Get-ADObject -LDAPFilter "(objectClass=site)" -SearchBase $Master.CFG | ? Name -notmatch $Master.OU | Remove-ADObject -Confirm:$False -Recursive -Verbose
+            # Flush Lab ADDS Sites/SiteLinks
+            Get-ADObject -LDAPFilter "(objectClass=site)" -SearchBase $Master.CFG | ? Name -notmatch $Master.OU | % { 
+                
+                Set-ADReplicationSiteLink -Identity $Master.Sitelink -SitesIncluded @{Add=$_.DistinguishedName} -Verbose
+                #Remove-ADObject -Confirm:$False -Recursive -Verbose
+            }
 
-            # Flush Lab DHCP-ADDS Objects 
+            # Flush Lab ADDS DHCP Objects 
             Get-ADObject -LDAPFilter "(objectClass=dhcpclass)" -SearchBase $Master.CFG | ? Name -match $Server | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
+            
+            Get-ADObject -LDAPFilter "(objectClass=SiteLink)" -SearchBase $Master.CFG -Properties * |
             
             # Flush Lab DHCPv4 Reservation Objects
             Get-DhcpServerv4Reservation -ScopeID $Master.ScopeID | ? Name -match "($All|OPNsense)" | ? Name -notmatch $Master.OU | Remove-DHCPServerV4Reservation -Verbose -EA 0
