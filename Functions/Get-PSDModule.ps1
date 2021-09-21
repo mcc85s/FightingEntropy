@@ -2,7 +2,7 @@ Function Get-PSDModule
 {
     $MDTDir = Get-ItemProperty "HKLM:\Software\Microsoft\Deployment 4" | % Install_Dir | % TrimEnd \
     $Branch = "https://github.com/mcc85sx/FightingEntropy/blob/master/PSD"
-    $PSD    = "$MDTDir\PSD" 
+    $PSD    = "$MDTDir\PSD"
 
     If ($MDTDir -ne $Null)
     {    
@@ -13,8 +13,6 @@ Function Get-PSDModule
             Expand-Archive -Path "$PSD.zip" -DestinationPath $MDTDir -Force
             Remove-Item "$PSD.zip" -Confirm:$False -Force
             Rename-Item "$PSD-master" -Newname $PSD -Verbose
-
-            $Branch = "https://github.com/mcc85sx/FightingEntropy/blob/master/PSD"
             
             # [Install-PSD.ps1]
             irm "$Branch/Install-PSD.ps1?raw=true" -Outfile "$PSD\Install-PSD.ps1" -Verbose
@@ -27,6 +25,12 @@ Function Get-PSDModule
 
             # [Set-ScreenResolution.ps1]
             irm "$Branch/Set-ScreenResolution.ps1?raw=true" -Outfile "$PSD\Scripts\Set-ScreenResolution.ps1" -Verbose
+
+            # [PSDWizard.psm1]
+            irm "$Branch/PSDWizard.psm1?raw=true" -Outfile "$PSD\Scripts\PSDWizard.psm1" -Verbose
+
+            # [PSDWizard.xaml.Initialize.ps1]
+            irm "$Branch/PSDWizard.xaml.Initialize.ps1?raw=true" -Outfile "$PSD\Scripts\PSDWizard.xaml.Initialize.ps1" -Verbose
 
             # [PSDWizard.xaml]
             irm "$Branch/PSDWizard.xaml?raw=true" -Outfile "$PSD\Scripts\PSDWizard.xaml" -Verbose
