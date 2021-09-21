@@ -10,7 +10,7 @@
     <variable name="DestinationOSInstallType" property="DestinationOSInstallType">ByVariable</variable>
     <variable name="OSGUID" property="OSGUID">{00000000-0000-0000-0000-000000000000}</variable>
   </globalVarList>
-  <group name="Initialization" disable="false" continueOnError="false" description="Initialize the TS environment" expand="false">
+  <group name="Initialization" disable="false" continueOnError="false" description="Initialize the TS environment" expand="true">
     <step type="BDD_Gather" name="Gather local only" disable="false" continueOnError="false" successCodeList="0 3010" description="" startIn="">
       <defaultVarList>
         <variable name="GatherLocalOnly" property="GatherLocalOnly">true</variable>
@@ -484,6 +484,16 @@
         <variable name="LoadProfile" property="LoadProfile">false</variable>
       </defaultVarList>
     </step>
+    <step type="SMS_TaskSequence_RunCommandLineAction" name="Install FightingEntropy" description="Installs the FightingEntropy modification for PowerShell" disable="false" continueOnError="false" startIn="" successCodeList="0 3010" runIn="WinPEandFullOS">
+      <defaultVarList>
+        <variable name="PackageID" property="PackageID"></variable>
+        <variable name="RunAsUser" property="RunAsUser">false</variable>
+        <variable name="SMSTSRunCommandLineUserName" property="SMSTSRunCommandLineUserName"></variable>
+        <variable name="SMSTSRunCommandLineUserPassword" property="SMSTSRunCommandLineUserPassword"></variable>
+        <variable name="LoadProfile" property="LoadProfile">false</variable>
+      </defaultVarList>
+      <action>powershell.exe -file %SCRIPTROOT%\Install-FightingEntropy.ps1</action>
+    </step>
     <step type="BDD_InstallApplication" name="Install Applications" disable="false" continueOnError="false" successCodeList="0 3010" description="" startIn="">
       <action>cscript.exe "%SCRIPTROOT%\ZTIApplications.wsf"</action>
       <defaultVarList>
@@ -543,17 +553,7 @@
         <variable name="LoadProfile" property="LoadProfile">false</variable>
       </defaultVarList>
     </step>
-    <step type="SMS_TaskSequence_RunCommandLineAction" name="Run Command Line" description="" disable="false" continueOnError="false" startIn="" successCodeList="0 3010" runIn="WinPEandFullOS">
-      <defaultVarList>
-        <variable name="PackageID" property="PackageID"></variable>
-        <variable name="RunAsUser" property="RunAsUser">false</variable>
-        <variable name="SMSTSRunCommandLineUserName" property="SMSTSRunCommandLineUserName"></variable>
-        <variable name="SMSTSRunCommandLineUserPassword" property="SMSTSRunCommandLineUserPassword"></variable>
-        <variable name="LoadProfile" property="LoadProfile">false</variable>
-      </defaultVarList>
-      <action>xcopy.exe "%deployroot%\Scripts\Initialize-Hybrid.ps1" "%userprofile%\Desktop"</action>
-    </step>
-    <group expand="false" name="Imaging" description="" disable="false" continueOnError="false">
+    <group expand="true" name="Imaging" description="" disable="false" continueOnError="false">
       <action />
       <group name="Prepare Only" disable="false" continueOnError="false" expand="false" description="">
         <condition>
@@ -695,4 +695,3 @@
     </step>
   </group>
 </sequence>
-
