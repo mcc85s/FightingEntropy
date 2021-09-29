@@ -1,3 +1,27 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: New-FEInfrastrcuture.ps1
+          Solution: FightingEntropy Infrastructure Deployment Tool
+          Purpose: For deploying virtual and physical infrastructure, including gateways and servers for ADDS
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 
+          Modified: 2021-09-29
+
+          Version - 0.0.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
+
 Function New-FEInfrastructure
 {
     # Load Assemblies
@@ -744,7 +768,7 @@ Function New-FEInfrastructure
             $This.Disk = $VM.HardDrives[0].Path
             $This.Size = "{0:n2} GB" -f [Float]((Get-Item $This.Disk | % Length)/1GB)
             $This.Network = $VM.NetworkAdapters | % { [VmGuestNetwork]$_ }
-            $This.Switch  = $This.Network.SwitchName
+            $This.Switch  = @($This.Network.SwitchName)
         }
     }
 
@@ -776,8 +800,6 @@ Function New-FEInfrastructure
         [String] $VHDPath
         [String] $VMPath
         [Object] $Switch
-        [Object] $External
-        [Object] $Internal
         [Object] $Vm
         VmHost([Object]$IP)
         {
@@ -792,9 +814,6 @@ Function New-FEInfrastructure
             Write-Host "Collecting [~] Virtual Machine Switch(es)"
             $This.Switch    = @( ) 
             Get-VMSwitch    | % { $This.Switch += [VmSwitch]::New($This.Switch.Count,$IP,$_) }
-
-            $This.External  = $This.Switch | ? Type -eq External
-            $This.Internal  = $This.Switch | ? Type -eq Internal
 
             Write-Host "Collecting [~] Virtual Machine Guest(s)"
             $This.Vm        = @( )
@@ -815,25 +834,27 @@ Function New-FEInfrastructure
         [String] $ID
         WdsImage([Object]$Type,[Object]$Image)
         {
-            $This.Type        = @("Install","Boot")[$Type]
-            $This.Arch        = $Boot.Architecture
-            $This.Created     = $Boot.Created
-            $This.Language    = $Boot.DefaultLangauge
-            $This.Description = $Boot.Description
-            $This.Enabled     = @(0,1)[$Boot.Enabled -eq $True]
-            $This.FileName    = $Boot.FileName
-            $This.ID          = $Boot.ID
+            $This.Type        = $Type
+            $This.Arch        = @("x86","x64")[$Image.Architecture -eq 3]
+            $This.Created     = $Image.CreationTime
+            $This.Language    = $Image.DefaultLanguage
+            $This.Description = $Image.Description
+            $This.Enabled     = @(0,1)[$Image.Enabled -eq $True]
+            $This.FileName    = $Image.FileName
+            $This.ID          = $Image.ID
         }
     }
 
     Class WdsServer
     {
         [String] $Server
+        [Object[]] $IPAddress
         [Object] $Images
-        WdsServer()
+        WdsServer([Object]$IP)
         {
-            $This.Server = $Env:ComputerName
-            $This.Images = @( )
+            $This.Server    = @($Env:ComputerName,"$Env:ComputerName.$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+            $This.IPAddress = @($IP)
+            $This.Images    = @( )
             Get-WdsInstallImage -EA 0 | % { $This.Images += [WdsImage]::New("Install",$_) }
             Get-WdsBootImage    -EA 0 | % { $This.Images += [WdsImage]::New("Boot",$_) }
         }
@@ -1979,8 +2000,18 @@ Function New-FEInfrastructure
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Index" Binding="{Binding Index}"       Width="50"/>',
         '                                            <DataGridTextColumn Header="Name"  Binding="{Binding ZoneName}"    Width="*"/>',
-        '                                            <DataGridTextColumn Header="Type"  Binding="{Binding ZoneType}"    Width="150"/>',
-        '                                            <DataGridTextColumn Header="Hosts" Binding="{Binding Hosts.Count}" Width="*"/>',
+        '                                            <DataGridTextColumn Header="Type"     Binding="{Binding ZoneType}"    Width="150"/>',
+        '                                            <DataGridTemplateColumn Header="Reverse" Width="50">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox SelectedIndex="{Binding IsReverseLookupZone}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                            <ComboBoxItem Content="False"/>',
+        '                                                            <ComboBoxItem Content="True"/>',
+        '                                                        </ComboBox>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="Host Count" Binding="{Binding Hosts.Count}" Width="*"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
@@ -1990,7 +2021,7 @@ Function New-FEInfrastructure
         '                                            <DataGridTextColumn Header="HostName"   Binding="{Binding HostName}"   Width="250"/>',
         '                                            <DataGridTextColumn Header="Record"     Binding="{Binding RecordType}" Width="65"/>',
         '                                            <DataGridTextColumn Header="Type"       Binding="{Binding Type}"       Width="65"/>',
-        '                                            <DataGridTextColumn Header="Data"       Binding="{Binding RecordData}" Width="*"/>',
+        '                                            <DataGridTextColumn Header="Data"       Binding="{Binding RecordData}" Width="Auto"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
@@ -2068,8 +2099,8 @@ Function New-FEInfrastructure
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="110"/>',
-        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="120"/>',
+        '                                    <RowDefinition Height="180"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
         '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[Hyper-V/Veridian]"/>',
@@ -2077,17 +2108,17 @@ Function New-FEInfrastructure
         '                                    <DataGrid Name="CfgHyperV">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"      Binding="{Binding Name}"      Width="150"/>',
-        '                                            <DataGridTextColumn Header="Processor" Binding="{Binding Processor}" Width="60"/>',
-        '                                            <DataGridTextColumn Header="Memory"    Binding="{Binding Memory}"    Width="60"/>',
-        '                                            <DataGridTextColumn Header="VMPath"    Binding="{Binding VMPath}"    Width="300"/>',
-        '                                            <DataGridTextColumn Header="VHDPath"   Binding="{Binding VHDPath}"   Width="300"/>',
+        '                                            <DataGridTextColumn Header="Processor" Binding="{Binding Processor}" Width="80"/>',
+        '                                            <DataGridTextColumn Header="Memory"    Binding="{Binding Memory}"    Width="150"/>',
+        '                                            <DataGridTextColumn Header="VMPath"    Binding="{Binding VMPath}"    Width="150"/>',
+        '                                            <DataGridTextColumn Header="VHDPath"   Binding="{Binding VHDPath}"   Width="150"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
         '                                <GroupBox Grid.Row="2" Header="[Hyper-V Switch] - (Virtual Switches)">',
         '                                    <DataGrid Name="CfgHyperV_Switch">',
         '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="#"           Binding="{Binding Index}"       Width="25"/>',
+        '                                            <DataGridTextColumn Header="Index"       Binding="{Binding Index}"       Width="40"/>',
         '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="150"/>',
         '                                            <DataGridTextColumn Header="ID"          Binding="{Binding ID}"          Width="150"/>',
         '                                            <DataGridTextColumn Header="Type"        Binding="{Binding Type}"        Width="80"/>',
@@ -2105,14 +2136,14 @@ Function New-FEInfrastructure
         '                                <GroupBox Grid.Row="3" Header="[Hyper-V VM] - (Virtual Machines)">',
         '                                    <DataGrid Name="CfgHyperV_VM">',
         '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="#"           Binding="{Binding Index}"       Width="25"/>',
-        '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="150"/>',
-        '                                            <DataGridTextColumn Header="ID"          Binding="{Binding ID}"          Width="200"/>',
-        '                                            <DataGridTextColumn Header="Size"        Binding="{Binding Size}"        Width="60"/>',
+        '                                            <DataGridTextColumn Header="Index"       Binding="{Binding Index}"       Width="40"/>',
+        '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="80"/>',
+        '                                            <DataGridTextColumn Header="ID"          Binding="{Binding ID}"          Width="150"/>',
+        '                                            <DataGridTextColumn Header="Size"        Binding="{Binding Size}"        Width="150"/>',
         '                                            <DataGridTemplateColumn Header="SwitchName" Width="125">',
         '                                                <DataGridTemplateColumn.CellTemplate>',
         '                                                    <DataTemplate>',
-        '                                                        <ComboBox ItemsSource="{Binding SwitchName}" SelectedIndex="0" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center"/>',
+        '                                                        <ComboBox ItemsSource="{Binding Network.SwitchName}" SelectedIndex="0" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center"/>',
         '                                                    </DataTemplate>',
         '                                                </DataGridTemplateColumn.CellTemplate>',
         '                                            </DataGridTemplateColumn>',
@@ -2124,14 +2155,49 @@ Function New-FEInfrastructure
         '                            </Grid>',
         '                        </TabItem>',
         '                        <TabItem Header="Wds">',
-        '                            <GroupBox Header="[CfgWds (Windows Deployment Services)]">',
-        '                                <DataGrid Name="CfgWds">',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>',
-        '                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                            </GroupBox>',
+        '                            <Grid>',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[WDS/Windows Deployment Services]"/>',
+        '                                <Grid Grid.Row="1">',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="150"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="150"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <Label    Grid.Column="0" Content="[Server]:"/>',
+        '                                    <TextBox  Grid.Column="1" Name="WDS_Server"/>',
+        '                                    <Label    Grid.Column="2" Content="[IPAddress]:"/>',
+        '                                    <ComboBox Grid.Column="3" Name="WDS_IPAddress"/>',
+        '                                </Grid>',
+        '                                <GroupBox Grid.Row="2" Header="[Wds Images (Windows Deployment Services)]">',
+        '                                    <DataGrid Name="CfgWds">',
+        '                                        <DataGrid.Columns>',
+        '                                            <DataGridTextColumn Header="Type"        Binding="{Binding Type}"        Width="60"/>',
+        '                                            <DataGridTextColumn Header="Arch"        Binding="{Binding Arch}"        Width="40"/>',
+        '                                            <DataGridTextColumn Header="Created"     Binding="{Binding Created}"     Width="150"/>',
+        '                                            <DataGridTextColumn Header="Language"    Binding="{Binding Language}"    Width="65"/>',
+        '                                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="250"/>',
+        '                                            <DataGridTemplateColumn Header="Enabled" Width="60">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox SelectedIndex="{Binding Enabled}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                            <ComboBoxItem Content="False"/>',
+        '                                                            <ComboBoxItem Content="True"/>',
+        '                                                        </ComboBox>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="FileName"    Binding="{Binding FileName}"    Width="250"/>',
+        '                                            <DataGridTextColumn Header="ID"          Binding="{Binding ID}"          Width="250"/>',
+        '                                        </DataGrid.Columns>',
+        '                                    </DataGrid>',
+        '                                </GroupBox>',
+        '                            </Grid>',
         '                        </TabItem>',
         '                        <TabItem Header="Mdt">',
         '                            <GroupBox Header="[CfgMdt (Microsoft Deployment Toolkit)]">',
@@ -3273,6 +3339,7 @@ Function New-FEInfrastructure
         [Object]               $Dns
         [Object]           $CfgAdds
         [Object]            $HyperV
+        [Object]               $WDS
         [String]               $Org
         [String]                $CN
         [Object]        $Credential
@@ -3358,6 +3425,12 @@ Function New-FEInfrastructure
             {
                 Write-Host "Collecting [~] Hyper-V Server"
                 $This.HyperV            = [VmHost]::New($This.IPConfig)
+            }
+
+            If ($This.Config | ? Name -match WDS | ? Value -eq 1)
+            {
+                Write-Host "Collecting [~] WDS Server"
+                $This.WDS               = [WDSServer]::New($This.System.Network.IPAddress)
             }
 
             Write-Host "Collecting [~] Zipcode Database"
@@ -3799,7 +3872,8 @@ Function New-FEInfrastructure
     # $Xaml.IO.CfgIIS                   # DataGrid
 
     # [DataGrid(s)]://Initialize
-    $Xaml.IO.CfgServices.ItemsSource    = @( )
+    $Xaml.IO.CfgServices.ItemsSource                  = @( )
+    $Xaml.IO.CfgServices.ItemsSource                  = @($Main.Config)
 
     # [System]
     $Xaml.IO.System_Manufacturer.Text                 = $Main.System.Manufacturer
@@ -3954,7 +4028,13 @@ Function New-FEInfrastructure
     $Xaml.IO.CfgHyperV_VM.ItemsSource     = @( )
     $Xaml.IO.CfgHyperV_VM.ItemsSource     = @( $Main.HyperV.VM )
 
+    $Xaml.IO.WDS_Server.Text              = $Main.WDS.Server
+    $Xaml.IO.WDS_IPAddress.ItemsSource    = @( )
+    $Xaml.IO.WDS_IPAddress.ItemsSource    = @($Main.WDS.IPAddress)
+
     $Xaml.IO.CfgWds.ItemsSource           = @( )
+    $Xaml.IO.CfgWds.ItemsSource           = @($Main.WDS.Images)
+
     $Xaml.IO.CfgMdt.ItemsSource           = @( )
     $Xaml.IO.CfgWinAdk.ItemsSource        = @( )
     $Xaml.IO.CfgWinPE.ItemsSource         = @( )
