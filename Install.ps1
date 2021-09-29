@@ -128,7 +128,7 @@ Function FightingEntropy
                 "Install-IISServer","New-ACLObject","New-Company","New-EnvironmentKey","New-FEImage","New-FEShare","Remove-FEModule","Remove-FEShare",
                 "Show-ToastNotification","Update-FEShare","Write-Theme","Get-MDTOData","New-FEDeploymentShare","Start-VMGroup",
                 "Install-VMGroup","Invoke-KeyEntry","Copy-FileStream","Get-EnvironmentKey","Get-FEImageManifest","Invoke-cimdb",
-                "Set-ScreenResolution","Get-PSDModule","Install-FEInfrastructure" | % { "$_.ps1" })
+                "Set-ScreenResolution","Get-PSDModule","New-FEInfrastructure" | % { "$_.ps1" })
 
         [String[]]   $Graphics = "background.jpg banner.png icon.ico OEMbg.jpg OEMlogo.bmp sdplogo.png" -Split " "
 
