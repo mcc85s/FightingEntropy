@@ -473,7 +473,7 @@ Function New-FEInfrastructure
             Write-Host "Collecting [~] Processor"
             $This.Processor        = Get-WmiObject -Class Win32_Processor      | % { [SysProcessor]$_ }
             
-            Write-Host "Collecting [~] System"
+            Write-Host "Collecting [~] Computer"
             Get-WmiObject Win32_ComputerSystem        | % { 
 
                 $This.Manufacturer = $_.Manufacturer; 
@@ -3685,7 +3685,7 @@ Function New-FEInfrastructure
             }
 
             Write-Host "Collecting [~] Zipcode Database"
-            $This.ZipStack          = [ZipStack]::New("$($This.Module.Path)\Control\zipcode.txt")
+            $This.ZipStack              = [ZipStack]::New("$($This.Module.Path)\Control\zipcode.txt")
 
             $This.SmTemplate = [SmTemplate]::New().Stack
             $This.Domain     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
@@ -3786,27 +3786,20 @@ Function New-FEInfrastructure
             $This.CN            = $CommonName
             $This.Template      = $This.NewCertificate()
             $This.SearchBase    = "DC=$( $CommonName.Split(".") -join ",DC=" )"
-
-            $This.AddSiteName($This.Template.Postal)
+            
+            $This.AddSiteName( $This.Zipstack.ZipTown($This.Template.Postal))
             $This.GetSiteList()
             $This.GetSiteLinkList()
             $This.GetSubnetList()
         }
-        [Void] AddSitename([String]$Zip)
+        [Void] AddSitename([Object]$Obj)
         {
-            If ( $Zip -notin $This.Domain.Postal )
-            {
-                $Tmp                = [Certificate]::New($This.Org,$This.CN)
-                $Item               = $This.ZipStack.ZipTown($Zip)
-
-                $Tmp.Location       = $Item.Name
-                $Tmp.Postal         = $Item.Zip
-                $Tmp.Region         = [States]::Name($Item.State)
-
-                $Tmp.GetSiteLink()
-
-                $This.Domain       += @( $Tmp )
-            }
+            $Tmp                = [Certificate]::New($This.Org,$This.CN)
+            $Tmp.Location       = $Obj.Name
+            $Tmp.Postal         = $Obj.Zip
+            $Tmp.Region         = [States]::Name($Obj.State)
+            $Tmp.GetSiteLink()
+            $This.Domain       += @( $Tmp )
         }
         [Void] RemoveSitename([String]$Zip)
         {
@@ -4341,7 +4334,7 @@ Function New-FEInfrastructure
     # [HyperV]
     $Xaml.IO.CfgHyperV.ItemsSource        = @( )
     $Xaml.IO.CfgHyperV.ItemsSource        = @( $Main.HyperV )
-    If ( $Main.HyperV -ne $Null)
+    If ($Main.HyperV)
     {
         $Xaml.IO.VmHost.Text = $Main.HyperV.Name
     }
@@ -4474,7 +4467,7 @@ Function New-FEInfrastructure
 
         Else
         {
-            $Main.AddSitename($Zip)
+            $Main.AddSitename([Object]$Return)
             $Xaml.IO.DcAggregate.ItemsSource  = @( )
             $Xaml.IO.DcAggregate.ItemsSource  = @( $Main.Domain )
             $Xaml.IO.DcAddSitenameZip.Text    = ""
