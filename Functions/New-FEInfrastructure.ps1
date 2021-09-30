@@ -4129,7 +4129,7 @@ Function New-FEInfrastructure
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
     $Xaml.IO.Module_Info.ItemsSource    = @( )
-    $Xaml.IO.Module_Info.ItemsSource    = @( ForEach ( $Item in ("Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status" -Split " ")
+    $Xaml.IO.Module_Info.ItemsSource    = @( ForEach ( $Item in "Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status" -Split " ")
     {
         $Name = Switch ($Item)
         {
