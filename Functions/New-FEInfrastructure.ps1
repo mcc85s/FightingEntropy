@@ -3269,7 +3269,7 @@ Function New-FEInfrastructure
         '            <TabItem Header="Share">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="140"/>',
+        '                        <RowDefinition Height="160"/>',
         '                        <RowDefinition Height="160"/>',
         '                        <RowDefinition Height="*"/>',
         '                        <RowDefinition Height="40"/>',
