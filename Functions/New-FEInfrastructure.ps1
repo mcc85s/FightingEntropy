@@ -5428,16 +5428,16 @@ Function New-FEInfrastructure
 
         $Image = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex]
         $Main.Image.LoadIso($Xaml.IO.IsoList.SelectedIndex)
-        If ( Get-DiskImage $Image.Path | ? Attached -eq $False)
+        If (!(Get-DiskImage $Image.Path | % Attached))
         {
             Do
             {
                 Start-Sleep -Milliseconds 100
             }
-            Until (Get-DiskImage $Image.Path | ? Attached)
+            Until (Get-DiskImage $Image.Path | % Attached)
         }
         
-        $Xaml.IO.IsoView.ItemsSource = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex].Content
+        $Xaml.IO.IsoView.ItemsSource     = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex].Content
         $Xaml.IO.IsoList.IsEnabled       = 0
         $Xaml.IO.IsoDismount.IsEnabled   = 1
         Write-Theme "Mounting [$($Image.Path)]" 14,6,15
@@ -5451,7 +5451,7 @@ Function New-FEInfrastructure
         {
             Start-Sleep -Milliseconds 100
         }
-        Until (!(Get-DiskImage $Image.Path | ? Attached))
+        Until (!(Get-DiskImage $Image.Path | % Attached))
 
         $Xaml.IO.IsoView.ItemsSource         = $Null
         $Xaml.IO.IsoList.IsEnabled           = 1
