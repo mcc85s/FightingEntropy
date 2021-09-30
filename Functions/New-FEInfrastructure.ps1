@@ -6,7 +6,7 @@
 .LINK
 
 .NOTES
-          FileName: New-FEInfrastrcuture.ps1
+          FileName: New-FEInfrastructure.ps1
           Solution: FightingEntropy Infrastructure Deployment Tool
           Purpose: For deploying virtual and physical infrastructure, including gateways and servers for ADDS
           Author: Michael C. Cook Sr.
