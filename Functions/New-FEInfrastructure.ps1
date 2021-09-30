@@ -12,7 +12,7 @@
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
-          Created: 
+          Created: 2021-09-11
           Modified: 2021-09-29
 
           Version - 0.0.0 - () - Finalized functional version 1.
@@ -120,11 +120,8 @@ Function New-FEInfrastructure
         ZipStack([String]$Path)
         {
             $This.Path    = $Path
-            $This.Content = Invoke-RestMethod $Path
-            $This.Stack   = ForEach ( $Line in $This.Content.Split("`n") )
-            {
-                $Line.Substring(0,5)
-            }
+            $This.Content = Get-Content $Path
+            $This.Stack   = $This.Content -Split "`n" | % { $_.Substring(0,5) }
         }
         [Object[]] ZipTown([String]$Zip)
         {
@@ -855,8 +852,140 @@ Function New-FEInfrastructure
             $This.Server    = @($Env:ComputerName,"$Env:ComputerName.$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
             $This.IPAddress = @($IP)
             $This.Images    = @( )
+            Write-Host "Collecting [~] Wds Install Images"
             Get-WdsInstallImage -EA 0 | % { $This.Images += [WdsImage]::New("Install",$_) }
+            Write-Host "Collecting [~] Wds Boot Images"
             Get-WdsBootImage    -EA 0 | % { $This.Images += [WdsImage]::New("Boot",$_) }
+        }
+    }
+
+    # [Mdt Classes]
+    Class MdtShare
+    {
+        [String] $Name
+        [String] $Type
+        [String] $Root
+        [String] $Share
+        [String] $Description
+        MdtShare([Object]$Drive)
+        {
+            $This.Name        = $Drive.Name
+            $This.Type        = If (Test-Path "$($Drive.Path)\PSDResources") { "PSD" } Else { "MDT" }
+            $This.Root        = $Drive.Path
+            $This.Share       = Get-SmbShare | ? Path -eq $Drive.Path | % Name
+            $This.Description = $Drive.Description
+        }
+    }
+
+    Class MdtServer
+    {
+        [String]      $Server
+        [Object[]] $IPAddress
+        [String]        $Path
+        [String]     $Version
+        [String]  $AdkVersion
+        [String]   $PEVersion
+        [Object]      $Shares
+        MdtServer([Object]$IP,[Object]$Registry)
+        {
+            $This.Server     = @($Env:ComputerName,"$Env:ComputerName.$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+            $This.IPAddress  = @($IP)
+            $This.Path       = Get-ItemProperty "HKLM:\Software\Microsoft\Deployment*" | % Install_Dir
+            $This.Version    = Get-ItemProperty $Registry | ? DisplayName -match "Microsoft Deployment Toolkit" | % DisplayVersion | % TrimEnd \
+            $This.AdkVersion = Get-ItemProperty $Registry | ? DisplayName -match "Windows Assessment and Deployment Kit - Windows 10" | % DisplayVersion
+            $This.PeVersion  = Get-ItemProperty $Registry | ? DisplayName -match "Preinstallation Environment Add-ons - Windows 10"   | % DisplayVersion
+            $This.Shares     = @( )
+            Get-MDTModule | Import-Module
+            Get-MDTPersistentDrive | % { $This.Shares += [MdtShare]$_ }
+        }
+    }
+
+    # [IIS Classes]
+    Class IISSiteBinding
+    {
+        [UInt32]      $Index
+        [String]   $Protocol
+        [String]    $Binding
+        [String]   $SslFlags
+        IISSiteBinding([UInt32]$Index,[Object]$Bind)
+        {
+            $This.Index    = $Index
+            $This.Protocol = $Bind.Protocol
+            $This.Binding  = $Bind.BindingInformation
+            $This.SslFlags = $Bind.SslFlags
+        }
+        [String] ToString()
+        {
+            Return @( $This.Binding)
+        }
+    }
+
+    Class IISSite
+    {
+        [String]        $Name
+        [UInt32]          $ID
+        [String]       $State
+        [String]        $Path
+        [Object[]]  $Bindings
+        [UInt32]   $BindCount
+        IISSite([Object]$Site)
+        {
+            $This.Name     = $Site.Name
+            $This.ID       = $Site.ID
+            $This.State    = $Site.State
+            $This.Path     = $Site.Applications[0].VirtualDirectories[0].PhysicalPath
+            $This.Bindings = @( )
+            If ( $Site.Bindings.Count -gt 1 )
+            {
+                ForEach ( $Binding in $Site.Bindings)
+                {
+                    $This.Bindings += [IISSiteBinding]::New($This.Bindings.Count,$Binding)
+                }
+            }
+            Else
+            {
+                $This.Bindings += [IISSiteBinding]::New(0,$Site.Bindings)
+            }
+            $This.BindCount = $This.Bindings.Count
+        }
+    }
+
+    Class IISAppPool
+    {
+        [String]         $Name
+        [String]       $Status
+        [String]    $AutoStart
+        [String]   $CLRVersion
+        [String] $PipelineMode
+        [String]    $StartMode
+        IISAppPool([Object]$AppPool)
+        {
+            $This.Name         = $AppPool.Name
+            $This.Status       = $AppPool.State
+            $This.AutoStart    = $AppPool.Attributes | ? Name -eq autoStart             | % Value
+            $This.CLRVersion   = $AppPool.Attributes | ? Name -eq managedRuntimeVersion | % Value
+            $This.PipelineMode = $AppPool.ManagedPipelineMode
+            $This.StartMode    = $AppPool.StartMode
+        }
+    }
+
+    Class IISServer
+    {
+        [Object]     $AppDefaults
+        [Object] $AppPoolDefaults
+        [Object]    $SiteDefaults
+        [Object] $VirtualDefaults
+        [Object[]]      $AppPools
+        [Object[]]         $Sites
+        IISServer()
+        {
+            Import-Module WebAdministration
+            $IIS                  = Get-IISServerManager
+            $This.AppDefaults     = $IIS.ApplicationDefaults
+            $This.AppPoolDefaults = $IIS.ApplicationPoolDefaults
+            $This.AppPools        = $IIS.ApplicationPools | % { [IISAppPool]$_ }
+            $This.SiteDefaults    = $IIS.SiteDefaults
+            $This.Sites           = $IIS.Sites | % { [IISSite]$_ }
         }
     }
 
@@ -1307,6 +1436,21 @@ Function New-FEInfrastructure
             {
                 Get-VM -Name $This.Name | % { Set-VMDVDDrive -VMName $_.Name -Path $Path -Verbose }
             }
+        }
+    }
+
+    Class VmStack
+    {
+        [Object] $Host
+        [Object] $Switch
+        [Object] $External
+        [Object] $Internal
+        VmStack([Object]$VmHost,[Object]$VmSwitch)
+        {
+            $This.Host     = $VmHost
+            $This.Switch   = $VmSwitch
+            $This.External = $Vmswitch | ? SwitchType -eq External
+            $This.Internal = $Vmswitch | ? SwitchType -eq Internal
         }
     }
 
@@ -1782,6 +1926,49 @@ Function New-FEInfrastructure
         '            </Style>',
         '        </Grid.Resources>',
         '        <TabControl>',
+        '            <TabItem Header="Module">',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="400"/>',
+        '                        <RowDefinition Height="*"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Module Information and Components"/>',
+        '                    <GroupBox Grid.Row="1" Header="[Information]">',
+        '                        <DataGrid Name="Module_Info">',
+        '                            <DataGrid.Columns>',
+        '                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
+        '                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                            </DataGrid.Columns>',
+        '                        </DataGrid>',
+        '                    </GroupBox>',
+        '                    <GroupBox Grid.Row="2" Header="[Components]">',
+        '                        <Grid>',
+        '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="*"/>',
+        '                            </Grid.RowDefinitions>',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="200"/>',
+        '                                <ColumnDefinition Width="200"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <ComboBox Grid.Row="0" Grid.Column="0" Name="Module_Type"/>',
+        '                            <ComboBox Grid.Row="0" Grid.Column="1" Name="Module_Property"/>',
+        '                            <TextBox  Grid.Row="0" Grid.Column="2" Name="Module_Filter"/>',
+        '                            <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"  Name="Module_List">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Mode"          Binding="{Binding Mode}"   Width="40"/>',
+        '                                    <DataGridTextColumn Header="LastWriteTime" Binding="{Binding LastWriteTime}"  Width="150"/>',
+        '                                    <DataGridTextColumn Header="Length"        Binding="{Binding Length}" Width="75"/>',
+        '                                    <DataGridTextColumn Header="Name"          Binding="{Binding Name}"   Width="200"/>',
+        '                                    <DataGridTextColumn Header="Path"          Binding="{Binding Path}"   Width="600"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                        </Grid>',
+        '                    </GroupBox>',
+        '                </Grid>',
+        '            </TabItem>',
         '            <TabItem Header="Config">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
@@ -1797,6 +1984,23 @@ Function New-FEInfrastructure
         '                        </DataGrid>',
         '                    </GroupBox>',
         '                    <TabControl Grid.Row="1">',
+        '                        <TabItem Header="Role">',
+        '                            <Grid>',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Role and System Information"/>',
+        '                                <GroupBox Grid.Row="1" Header="[Information]">',
+        '                                    <DataGrid Name="Role_Info">',
+        '                                        <DataGrid.Columns>',
+        '                                            <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
+        '                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                        </DataGrid.Columns>',
+        '                                    </DataGrid>',
+        '                                </GroupBox>',
+        '                            </Grid>',
+        '                        </TabItem>',
         '                        <TabItem Header="System">',
         '                            <Grid Grid.Row="1" Name="System_Panel">',
         '                                <Grid.RowDefinitions>',
@@ -1804,7 +2008,7 @@ Function New-FEInfrastructure
         '                                    <RowDefinition Height="290"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[Server System Information]"/>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Server System Information"/>',
         '                                <GroupBox Header="[System]" Grid.Row="1">',
         '                                    <Grid Margin="5">',
         '                                        <Grid.ColumnDefinitions>',
@@ -1873,7 +2077,7 @@ Function New-FEInfrastructure
         '                                    <RowDefinition Height="180"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[Network Adapter Information]"/>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Network Adapter Information"/>',
         '                                <GroupBox Header="[Adapter]" Grid.Row="1">',
         '                                    <DataGrid Name="Network_Adapter" Margin="5" ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                        <DataGrid.Columns>',
@@ -1943,7 +2147,7 @@ Function New-FEInfrastructure
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[DHCP/Dynamic Host Control Protocol]"/>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Dynamic Host Control Protocol"/>',
         '                                <GroupBox Grid.Row="1"  Header="[Dhcp ScopeID] - (DHCP Server Scope ID Information)">',
         '                                    <DataGrid Name="CfgDhcpScopeID">',
         '                                        <DataGrid.Columns>',
@@ -1994,24 +2198,14 @@ Function New-FEInfrastructure
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="2*"/>',
         '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[DNS/Domain Name Service]"/>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Domain Name Service"/>',
         '                                <GroupBox Grid.Row="1" Header="[CfgDnsZone (DNS Server Zone List)]">',
         '                                    <DataGrid Name="CfgDnsZone">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Index" Binding="{Binding Index}"       Width="50"/>',
         '                                            <DataGridTextColumn Header="Name"  Binding="{Binding ZoneName}"    Width="*"/>',
-        '                                            <DataGridTextColumn Header="Type"     Binding="{Binding ZoneType}"    Width="150"/>',
-        '                                            <DataGridTemplateColumn Header="Reverse" Width="50">',
-        '                                                <DataGridTemplateColumn.CellTemplate>',
-        '                                                    <DataTemplate>',
-        '                                                        <ComboBox SelectedIndex="{Binding IsReverseLookupZone}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
-        '                                                            <ComboBoxItem Content="False"/>',
-        '                                                            <ComboBoxItem Content="True"/>',
-        '                                                        </ComboBox>',
-        '                                                    </DataTemplate>',
-        '                                                </DataGridTemplateColumn.CellTemplate>',
-        '                                            </DataGridTemplateColumn>',
-        '                                            <DataGridTextColumn Header="Host Count" Binding="{Binding Hosts.Count}" Width="*"/>',
+        '                                            <DataGridTextColumn Header="Type"  Binding="{Binding ZoneType}"    Width="150"/>',
+        '                                            <DataGridTextColumn Header="Hosts" Binding="{Binding Hosts.Count}" Width="*"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
@@ -2034,7 +2228,7 @@ Function New-FEInfrastructure
         '                                    <RowDefinition Height="200"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[ADDS/Active Directory Domain Service]"/>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Active Directory Domain Service"/>',
         '                                <GroupBox Grid.Row="1" Header="[CfgAddsDomain] - (Active Directory Domain Information)">',
         '                                    <Grid>',
         '                                        <Grid.RowDefinitions>',
@@ -2101,17 +2295,17 @@ Function New-FEInfrastructure
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="120"/>',
         '                                    <RowDefinition Height="180"/>',
-        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="180"/>',
         '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[Hyper-V/Veridian]"/>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Veridian"/>',
         '                                <GroupBox Grid.Row="1" Header="[Hyper-V Host] - (Main Hyper-V Host Settings)">',
         '                                    <DataGrid Name="CfgHyperV">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"      Binding="{Binding Name}"      Width="150"/>',
         '                                            <DataGridTextColumn Header="Processor" Binding="{Binding Processor}" Width="80"/>',
         '                                            <DataGridTextColumn Header="Memory"    Binding="{Binding Memory}"    Width="150"/>',
-        '                                            <DataGridTextColumn Header="VMPath"    Binding="{Binding VMPath}"    Width="150"/>',
-        '                                            <DataGridTextColumn Header="VHDPath"   Binding="{Binding VHDPath}"   Width="150"/>',
+        '                                            <DataGridTextColumn Header="VMPath"    Binding="{Binding VMPath}"    Width="500"/>',
+        '                                            <DataGridTextColumn Header="VHDPath"   Binding="{Binding VHDPath}"   Width="500"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
@@ -2120,7 +2314,7 @@ Function New-FEInfrastructure
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Index"       Binding="{Binding Index}"       Width="40"/>',
         '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="150"/>',
-        '                                            <DataGridTextColumn Header="ID"          Binding="{Binding ID}"          Width="150"/>',
+        '                                            <DataGridTextColumn Header="ID"          Binding="{Binding ID}"          Width="250"/>',
         '                                            <DataGridTextColumn Header="Type"        Binding="{Binding Type}"        Width="80"/>',
         '                                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="200"/>',
         '                                            <DataGridTemplateColumn Header="Interface" Width="125">',
@@ -2137,8 +2331,8 @@ Function New-FEInfrastructure
         '                                    <DataGrid Name="CfgHyperV_VM">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Index"       Binding="{Binding Index}"       Width="40"/>',
-        '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="80"/>',
-        '                                            <DataGridTextColumn Header="ID"          Binding="{Binding ID}"          Width="150"/>',
+        '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="150"/>',
+        '                                            <DataGridTextColumn Header="ID"          Binding="{Binding ID}"          Width="250"/>',
         '                                            <DataGridTextColumn Header="Size"        Binding="{Binding Size}"        Width="150"/>',
         '                                            <DataGridTemplateColumn Header="SwitchName" Width="125">',
         '                                                <DataGridTemplateColumn.CellTemplate>',
@@ -2147,8 +2341,8 @@ Function New-FEInfrastructure
         '                                                    </DataTemplate>',
         '                                                </DataGridTemplateColumn.CellTemplate>',
         '                                            </DataGridTemplateColumn>',
-        '                                            <DataGridTextColumn Header="Disk"        Binding="{Binding Disk}"        Width="350"/>',
-        '                                            <DataGridTextColumn Header="Path"        Binding="{Binding Path}"        Width="350"/>',
+        '                                            <DataGridTextColumn Header="Disk"        Binding="{Binding Disk}"        Width="500"/>',
+        '                                            <DataGridTextColumn Header="Path"        Binding="{Binding Path}"        Width="500"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
@@ -2161,7 +2355,7 @@ Function New-FEInfrastructure
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[WDS/Windows Deployment Services]"/>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Windows Deployment Services"/>',
         '                                <Grid Grid.Row="1">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="150"/>',
@@ -2174,8 +2368,8 @@ Function New-FEInfrastructure
         '                                    <Label    Grid.Column="2" Content="[IPAddress]:"/>',
         '                                    <ComboBox Grid.Column="3" Name="WDS_IPAddress"/>',
         '                                </Grid>',
-        '                                <GroupBox Grid.Row="2" Header="[Wds Images (Windows Deployment Services)]">',
-        '                                    <DataGrid Name="CfgWds">',
+        '                                <GroupBox Grid.Row="2" Header="[Wds] - (Images)">',
+        '                                    <DataGrid Name="Wds_Images">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Type"        Binding="{Binding Type}"        Width="60"/>',
         '                                            <DataGridTextColumn Header="Arch"        Binding="{Binding Arch}"        Width="40"/>',
@@ -2199,45 +2393,92 @@ Function New-FEInfrastructure
         '                                </GroupBox>',
         '                            </Grid>',
         '                        </TabItem>',
-        '                        <TabItem Header="Mdt">',
-        '                            <GroupBox Header="[CfgMdt (Microsoft Deployment Toolkit)]">',
-        '                                <DataGrid Name="CfgMdt">',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>',
-        '                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                            </GroupBox>',
-        '                        </TabItem>',
-        '                        <TabItem Header="WinAdk">',
-        '                            <GroupBox Header="[CfgWinAdk (Windows Assessment and Deployment Kit)]">',
-        '                                <DataGrid Name="CfgWinAdk">',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>',
-        '                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                            </GroupBox>',
-        '                        </TabItem>',
-        '                        <TabItem Header="WinPE">',
-        '                            <GroupBox Header="[CfgWinPE (Windows Preinstallation Environment Kit)]">',
-        '                                <DataGrid Name="CfgWinPE">',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>',
-        '                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                            </GroupBox>',
+        '                        <TabItem Header="Mdt/WinADK/WinPE">',
+        '                            <Grid>',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Windows Deployment Services"/>',
+        '                                <Grid Grid.Row="1">',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="150"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="150"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <Label    Grid.Row="0" Grid.Column="0" Content="[Server]:"/>',
+        '                                    <TextBox  Grid.Row="0" Grid.Column="1" Name="MDT_Server"/>',
+        '                                    <Label    Grid.Row="0" Grid.Column="2" Content="[IPAddress]:"/>',
+        '                                    <ComboBox Grid.Row="0" Grid.Column="3" Name="MDT_IPAddress"/>',
+        '                                    <Label    Grid.Row="1" Grid.Column="0" Content="[WinADK Version]:"/>',
+        '                                    <TextBox  Grid.Row="1" Grid.Column="1" Name="MDT_ADK_Version"/>',
+        '                                    <Label    Grid.Row="1" Grid.Column="2" Content="[WinPE Version]:"/>',
+        '                                    <TextBox  Grid.Row="1" Grid.Column="3" Name="MDT_PE_Version"/>',
+        '                                    <Label    Grid.Row="2" Grid.Column="0" Content="[MDT Version]:"/>',
+        '                                    <TextBox  Grid.Row="2" Grid.Column="1" Name="MDT_Version"/>',
+        '                                    <Label    Grid.Row="3" Grid.Column="0" Content="[Installation Path]:"/>',
+        '                                    <TextBox  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Name="MDT_Path"/>',
+        '                                    <GroupBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Header="[Mdt] - (Shares)">',
+        '                                        <DataGrid Name="Mdt_Shares">',
+        '                                            <DataGrid.Columns>',
+        '                                                <DataGridTextColumn Header="Name"        Binding="{Binding Name}" Width="60"/>',
+        '                                                <DataGridTextColumn Header="Type"        Binding="{Binding Type}" Width="60"/>',
+        '                                                <DataGridTextColumn Header="Root"        Binding="{Binding Root}" Width="250"/>',
+        '                                                <DataGridTextColumn Header="Share"       Binding="{Binding Share}" Width="150"/>',
+        '                                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="350"/>',
+        '                                            </DataGrid.Columns>',
+        '                                        </DataGrid>',
+        '                                    </GroupBox>',
+        '                                </Grid>',
+        '                            </Grid>',
         '                        </TabItem>',
         '                        <TabItem Header="IIS">',
-        '                            <GroupBox Header="[CfgIIS (Internet Information Services)]">',
-        '                                <DataGrid Name="CfgIIS">',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>',
-        '                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                            </GroupBox>',
+        '                            <Grid>',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Internet Information Services"/>',
+        '                                <GroupBox Grid.Row="1" Header="[IIS App Pools]">',
+        '                                    <DataGrid Name="IIS_AppPools">',
+        '                                        <DataGrid.Columns>',
+        '                                            <DataGridTextColumn Header="Name"         Binding="{Binding Name}"         Width="150"/>',
+        '                                            <DataGridTextColumn Header="Status"       Binding="{Binding Status}"       Width="80"/>',
+        '                                            <DataGridTextColumn Header="AutoStart"    Binding="{Binding AutoStart}"    Width="80"/>',
+        '                                            <DataGridTextColumn Header="CLRVersion"   Binding="{Binding CLRVersion}"   Width="80"/>',
+        '                                            <DataGridTextColumn Header="PipelineMode" Binding="{Binding PipelineMode}" Width="150"/>',
+        '                                            <DataGridTextColumn Header="StartMode"    Binding="{Binding StartMode}"    Width="*"/>',
+        '                                        </DataGrid.Columns>',
+        '                                    </DataGrid>',
+        '                                </GroupBox>',
+        '                                <GroupBox Grid.Row="2" Header="[IIS Sites]">',
+        '                                    <DataGrid Name="IIS_Sites">',
+        '                                        <DataGrid.Columns>',
+        '                                            <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="150"/>',
+        '                                            <DataGridTextColumn Header="ID"    Binding="{Binding ID}"    Width="40"/>',
+        '                                            <DataGridTextColumn Header="State" Binding="{Binding State}" Width="100"/>',
+        '                                            <DataGridTextColumn Header="Path"  Binding="{Binding Path}"  Width="100"/>',
+        '                                            <DataGridTemplateColumn Header="Bindings" Width="350">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox ItemsSource="{Binding Bindings}" SelectedIndex="0" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center"/>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="BindCount" Binding="{Binding BindCount}" Width="60"/>',
+        '                                        </DataGrid.Columns>',
+        '                                    </DataGrid>',
+        '                                </GroupBox>',
+        '                            </Grid>',
         '                        </TabItem>',
         '                    </TabControl>',
         '                </Grid>',
@@ -3305,24 +3546,32 @@ Function New-FEInfrastructure
         '</Window>' -join "`n")
     }
 
-    Class VmStack
+    Class ModuleFile
     {
-        [Object] $Host
-        [Object] $Switch
-        [Object] $External
-        [Object] $Internal
-        VmStack([Object]$VmHost,[Object]$VmSwitch)
+        [String] $Mode
+        [String] $LastWriteTime
+        [String] $Length
+        [String] $Name
+        [String] $Path
+        ModuleFile([Object]$File)
         {
-            $This.Host     = $VmHost
-            $This.Switch   = $VmSwitch
-            $This.External = $Vmswitch | ? SwitchType -eq External
-            $This.Internal = $Vmswitch | ? SwitchType -eq Internal
+            $This.Mode          = $File.Mode.ToString()
+            $This.LastWriteTime = $File.LastWriteTime.ToString()
+            $This.Length        = Switch ($File.Length)
+            {
+                {$_ -lt 1KB}                 { "{0} B"     -f  $File.Length      }
+                {$_ -ge 1KB -and $_ -lt 1MB} { "{0:n2} KB" -f ($File.Length/1KB) }
+                {$_ -ge 1MB}                 { "{0:n2} MB" -f ($File.Length/1MB) }
+            }
+            $This.Name          = $File.Name
+            $This.Path          = $File.FullName
         }
     }
 
     # Controller class
     Class Main
     {
+        [Object]            $Module = (Get-FEModule)
         Static [String]       $Base = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy"
         Static [String]        $GFX = "$([Main]::Base)\Graphics"
         Static [String]       $Icon = "$([Main]::GFX)\icon.ico"
@@ -3340,6 +3589,8 @@ Function New-FEInfrastructure
         [Object]           $CfgAdds
         [Object]            $HyperV
         [Object]               $WDS
+        [Object]               $MDT
+        [Object]               $IIS
         [String]               $Org
         [String]                $CN
         [Object]        $Credential
@@ -3369,6 +3620,11 @@ Function New-FEInfrastructure
         [Object]             $Share
         Main()
         {
+            ForEach ( $Item in $This.Module.Tree.Name )
+            {
+                $This.Module.$Item = @( $This.Module.$Item | % { [ModuleFile]$_ } )
+            }
+
             Write-Host "Collecting [~] System"
             $This.System            = [System]::New()
 
@@ -3376,7 +3632,7 @@ Function New-FEInfrastructure
             $This.Win               = Get-WindowsFeature
 
             Write-Host "Collecting [~] Windows Registry"
-            $This.Reg               = "","\WOW6432Node" | % { "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall\*" }
+            $This.Reg               = @( "","\WOW6432Node" | % { "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall\*" })
 
             Write-Host "Collecting [~] Config"
             $This.Config            = @(
@@ -3433,8 +3689,20 @@ Function New-FEInfrastructure
                 $This.WDS               = [WDSServer]::New($This.System.Network.IPAddress)
             }
 
+            If ($This.Config | ? Name -match MDT | ? Value -eq 1)
+            {
+                Write-Host "Collecting [~] MDT/WinPE/WinADK Server"
+                $This.MDT               = [MdtServer]::New($This.System.Network.IPAddress,$This.Reg)
+            }
+
+            If ($This.Config | ? Name -match Web-WebServer | ? Value -eq 1)
+            {
+                Write-Host "Collecting [~] IIS Server"
+                $This.IIS               = [IISServer]::New()
+            }
+
             Write-Host "Collecting [~] Zipcode Database"
-            $This.ZipStack          = [ZipStack]::New("github.com/mcc85sx/FightingEntropy/blob/master/scratch/zcdb.txt?raw=true")
+            $This.ZipStack          = [ZipStack]::New(($This.Module.Path + "\Control\zipcode.txt"))
 
             $This.SmTemplate = [SmTemplate]::New().Stack
             $This.Domain     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
@@ -3473,6 +3741,7 @@ Function New-FEInfrastructure
 
             $Xaml.IO.Network_Name.Text                        = $IPInfo.Name
             $Xaml.IO.Network_Name.IsReadOnly                  = 1
+
             # [Network Type]
             $Xaml.IO.Network_Type.SelectedIndex               = $X
 
@@ -3753,10 +4022,10 @@ Function New-FEInfrastructure
                 $Output                = @{
                     Settings           = @{
                         Priority       = "Default"
-                        Properties     = "PSDeployRoots"
+                        Properties     = "PSDDeployRoots"
                     }
                     Default            = @{ 
-                        PSDeployRoots  = $UNC
+                        PSDDeployRoots = $UNC
                         UserID         = $UserID.Split("@")[0]
                         UserPassword   = $Password
                         UserDomain     = $NetBIOS
@@ -3813,7 +4082,7 @@ Function New-FEInfrastructure
                 $Output                      = @{
                     Settings                 = @{
                         Priority             = "Default"
-                        Properties           = "PSDeployRoots"
+                        Properties           = "PSDDeployRoots"
                     }
                     Default                  = @{
                         _SMSTSOrgName        = $Org
@@ -3856,6 +4125,68 @@ Function New-FEInfrastructure
 #    ____                                                                                                    ________    
 #   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
 #   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Module Tab ]__________________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+    $Xaml.IO.Module_Info.ItemsSource    = @( )
+    $Xaml.IO.Module_Info.ItemsSource    = @( ForEach ( $Item in ("Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status" -Split " ")
+    {
+        $Name = Switch ($Item)
+        {
+            Default { $Item }
+            Date    { "Installation Date" }
+            RegPath { "Registry Path"     }
+            ModPath { "Module File"       }
+            ManPath { "Manifest File"     }
+            Path    { "Module Path"       }
+            Status  { "Module Status"     }
+        }
+        [DGList]::New($Name,$Main.Module.$Item) 
+    })
+
+    $Xaml.IO.Module_Type.ItemsSource     = @( )
+    $Xaml.IO.Module_Type.ItemsSource     = @($Main.Module.Tree)
+    $Xaml.IO.Module_Type.SelectedIndex   = 0
+    
+    $Xaml.IO.Module_Property.ItemsSource   = @( )
+    $Xaml.IO.Module_Property.ItemsSource   = @("Name")
+    $Xaml.IO.Module_Property.SelectedIndex = 0
+    
+    $Xaml.IO.Module_Filter.Text            = $Null
+    $Xaml.IO.Module_List.ItemsSource       = @( )
+
+    $Xaml.IO.Module_Type.Add_SelectionChanged(
+    {
+        $Xaml.IO.Module_Filter.Text        = $Null
+        $Xaml.IO.Module_List.ItemsSource   = @( )
+        $Xaml.IO.Module_List.ItemsSource   = @( $Main.Module."$($Xaml.IO.Module_Type.SelectedItem)" )
+        Start-Sleep -Milliseconds 50
+    })
+
+    $Xaml.IO.Module_Filter.Add_TextChanged(
+    {
+        $Xaml.IO.Module_List.ItemsSource   = @( )
+        $Xaml.IO.Module_List.ItemsSource   = @( $Main.Module."$($Xaml.IO.Module_Type.SelectedItem)" | ? $Xaml.IO.Module_Property.SelectedItem -match $Xaml.IO.Module_Filter.Text )
+        Start-Sleep -Milliseconds 50
+    })
+
+    $Xaml.IO.Module_List.ItemsSource       = @( $Main.Module.Classes )
+
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ Role Tab   ]__________________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+
+    $Xaml.IO.Role_Info.ItemsSource = @( )
+    $Xaml.IO.Role_Info.ItemsSource = @( ForEach ( $Item in "Name DNS NetBIOS Hostname Username IsAdmin Caption Version Build ReleaseID Code SKU Chassis" -Split " ")
+    {
+        [DGList]::New($Item,$Main.Module.Role.$Item)
+    })
+
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
 #    ¯¯¯\\__[ Configuration Tab  ]__________________________________________________________________________//¯¯¯        
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
@@ -3871,7 +4202,7 @@ Function New-FEInfrastructure
     # $Xaml.IO.CfgWinPE                 # DataGrid
     # $Xaml.IO.CfgIIS                   # DataGrid
 
-    # [DataGrid(s)]://Initialize
+    # [CfgServices]://$Main.Config
     $Xaml.IO.CfgServices.ItemsSource                  = @( )
     $Xaml.IO.CfgServices.ItemsSource                  = @($Main.Config)
 
@@ -3945,10 +4276,10 @@ Function New-FEInfrastructure
     })
 
     # [DHCP]
-    $Xaml.IO.CfgDhcpScopeID.ItemsSource           = @( )
-    $Xaml.IO.CfgDhcpScopeReservations.ItemsSource = @( )
-    $Xaml.IO.CfgDhcpScopeOptions.ItemsSource      = @( )
-    $Xaml.IO.CfgDhcpScopeID.ItemsSource           = @($Main.Dhcp)
+    $Xaml.IO.CfgDhcpScopeID.ItemsSource                = @( )
+    $Xaml.IO.CfgDhcpScopeReservations.ItemsSource      = @( )
+    $Xaml.IO.CfgDhcpScopeOptions.ItemsSource           = @( )
+    $Xaml.IO.CfgDhcpScopeID.ItemsSource                = @($Main.Dhcp)
     $Xaml.IO.CfgDhcpScopeID.Add_SelectionChanged(
     {
         If ($Xaml.IO.CfgDhcpScopeID.SelectedIndex -ne -1)
@@ -4023,28 +4354,43 @@ Function New-FEInfrastructure
     # [HyperV]
     $Xaml.IO.CfgHyperV.ItemsSource        = @( )
     $Xaml.IO.CfgHyperV.ItemsSource        = @( $Main.HyperV )
+    If ( $Main.HyperV -ne $Null)
+    {
+        $Xaml.IO.VmHost.Text = $Main.HyperV.Name
+    }
     $Xaml.IO.CfgHyperV_Switch.ItemsSource = @( )
-    $Xaml.IO.CfgHyperV_Switch.ItemsSource = @( $Main.HyperV.Switch )
+    $Xaml.IO.CfgHyperV_Switch.ItemsSource = @($Main.HyperV.Switch)
     $Xaml.IO.CfgHyperV_VM.ItemsSource     = @( )
-    $Xaml.IO.CfgHyperV_VM.ItemsSource     = @( $Main.HyperV.VM )
+    $Xaml.IO.CfgHyperV_VM.ItemsSource     = @($Main.HyperV.VM)
 
     $Xaml.IO.WDS_Server.Text              = $Main.WDS.Server
     $Xaml.IO.WDS_IPAddress.ItemsSource    = @( )
     $Xaml.IO.WDS_IPAddress.ItemsSource    = @($Main.WDS.IPAddress)
+    $Xaml.IO.WDS_IPAddress.SelectedIndex  = 0
 
-    $Xaml.IO.CfgWds.ItemsSource           = @( )
-    $Xaml.IO.CfgWds.ItemsSource           = @($Main.WDS.Images)
+    $Xaml.IO.WDS_Images.ItemsSource       = @( )
+    $Xaml.IO.WDS_Images.ItemsSource       = @($Main.WDS.Images)
 
-    $Xaml.IO.CfgMdt.ItemsSource           = @( )
-    $Xaml.IO.CfgWinAdk.ItemsSource        = @( )
-    $Xaml.IO.CfgWinPE.ItemsSource         = @( )
-    $Xaml.IO.CfgIIS.ItemsSource           = @( )
+    # [Mdt/Adk/WinPE]
+    $Xaml.IO.MDT_Server.Text              = $Main.MDT.Server
+    $Xaml.IO.MDT_IPAddress.ItemsSource    = @( )
+    $Xaml.IO.MDT_IPAddress.ItemsSource    = @($Main.MDT.IPAddress)
+    $Xaml.IO.MDT_Path.Text                = $Main.MDT.Path
+    $Xaml.IO.MDT_Version.Text             = $Main.MDT.Version
+    $Xaml.IO.MDT_ADK_Version.Text         = $Main.MDT.AdkVersion
+    $Xaml.IO.MDT_PE_Version.Text          = $Main.MDT.PeVersion
+    $Xaml.IO.MDT_Shares.ItemsSource       = @( )
+    $Xaml.IO.MDT_Shares.ItemsSource       = @($Main.MDT.Shares)
+
+    # [IIS]
+    $Xaml.IO.IIS_AppPools.ItemsSource     = @( )
+    $Xaml.IO.IIS_AppPools.ItemsSource     = @($Main.IIS.AppPools)
+
+    $Xaml.Io.IIS_Sites.ItemsSource        = @( )
+    $Xaml.Io.IIS_Sites.ItemsSource        = @($Main.IIS.Sites)
 
     # [DataGrid]://PersistentDrives
-    $Xaml.IO.DsAggregate.ItemsSource    = @( )
-
-    # [CfgServices]://$Main.Config
-    $Xaml.IO.CfgServices.ItemsSource    = @( $Main.Config )
+    $Xaml.IO.DsAggregate.ItemsSource      = @( )
 
     # [CfgMdt]://Installed ? -> Load persistent drives
     If ($Main.Config | ? Name -eq MDT | ? Value -eq $True)
@@ -5100,13 +5446,18 @@ Function New-FEInfrastructure
             Return [System.Windows.MessageBox]::Show("No image selected","Error")
         }
 
+        [System.Windows.MessageBox]::Show("Loading ISO, this may take a moment")
+
         $Image = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex]
         $Main.Image.LoadIso($Xaml.IO.IsoList.SelectedIndex)
-        Do
+        If ( Get-DiskImage $Image.Path | ? Attached -eq $False)
         {
-            Start-Sleep -Milliseconds 100
+            Do
+            {
+                Start-Sleep -Milliseconds 100
+            }
+            Until (Get-DiskImage $Image.Path | ? Attached)
         }
-        Until (Get-DiskImage $Image.Path | ? Attached)
         
         $Xaml.IO.IsoView.ItemsSource = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex].Content
         $Xaml.IO.IsoList.IsEnabled       = 0
