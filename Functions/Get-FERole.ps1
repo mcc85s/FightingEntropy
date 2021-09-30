@@ -14,7 +14,7 @@ Function Get-FERole
         [String]             $Caption
         [String]             $Version
         [UInt32]               $Build
-        [UInt32]          $ReleasedID
+        [UInt32]           $ReleaseID
         [String]                $Code
         [String]                 $SKU
         [String]             $Chassis
@@ -53,7 +53,7 @@ Function Get-FERole
                 $This.Caption          = $_.Caption
                 $This.Version          = $_.Version
                 $This.Build            = $_.Build
-                $This.ReleasedID       = $_.ReleaseID
+                $This.ReleaseID        = $_.ReleaseID
                 $This.Code             = "{0}/{1}" -f $_.CodeName,$_.Name
                 $This.SKU              = $_.SKU
                 $This.Chassis          = $_.Chassis
@@ -109,7 +109,7 @@ Function Get-FERole
         [String]             $Caption
         [String]             $Version
         [UInt32]               $Build
-        [UInt32]          $ReleasedID
+        [UInt32]           $ReleaseID
         [String]                $Code
         [String]                 $SKU
         [String]             $Chassis
@@ -148,7 +148,7 @@ Function Get-FERole
                 $This.Caption          = $_.Caption
                 $This.Version          = $_.Version
                 $This.Build            = $_.Build
-                $This.ReleasedID       = $_.ReleaseID
+                $This.ReleaseID        = $_.ReleaseID
                 $This.Code             = "{0}/{1}" -f $_.CodeName,$_.Name
                 $This.SKU              = $_.SKU
                 $This.Chassis          = $_.Chassis
