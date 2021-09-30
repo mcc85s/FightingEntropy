@@ -5860,6 +5860,17 @@ Function New-FEInfrastructure
             $Xaml.IO.DsCustomSettingsPath.Text = "$($Item.Root)\Control\CustomSettings.ini"
             $Xaml.IO.DsPostConfigPath.Text     = "$($Item.Root)\Script\Install-FightingEntropy.ps1"
         }
+
+        If ($Item.Root -in $Main.MDT.Shares.Path)
+        {
+            $Xaml.IO.DsCreate.IsEnabled = 0
+            $Xaml.IO.DsUpdate.IsEnabled = 1
+        }
+        If ($Item.Root -notin $Main.MDT.Shares.Path)
+        {
+            $Xaml.IO.DsCreate.IsEnabled = 1
+            $Xaml.IO.DsUpdate.IsEnabled = 0
+        }
     })
 
     $Xaml.IO.DsAddShare.Add_Click(
