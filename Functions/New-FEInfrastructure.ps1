@@ -1273,6 +1273,7 @@ Function New-FEInfrastructure
         }
     }
 
+    # [VM Classes]
     Class VmSelect
     {
         [String] $Type
@@ -1438,6 +1439,7 @@ Function New-FEInfrastructure
         }
     }
 
+    # [Image Classes]
     Class ImageLabel
     {
         [String] $Name
@@ -1542,14 +1544,18 @@ Function New-FEInfrastructure
             
             $ImageFile = $This.Store[$Index]
             Write-Theme "Loading [~] [$($ImageFile.Name)]"
-            $ImageFile.Path | Get-DiskImage | ? { !$_.Attached } | Mount-DiskImage
+            If (!(Get-DiskImage -ImagePath $ImageFile.Path).Attached)
+            {
+                Get-DiskImage -ImagePath $ImageFile.Path | Mount-DiskImage
+            }
 
-            $Letter = $ImageFile.Path | Get-DiskImage | Get-Volume | % DriveLetter
+            $Letter = Get-DiskImage -ImagePath $ImageFile.Path | Get-Volume | % DriveLetter
             $Path   = "${Letter}:\sources\install.wim"
             If (!(Test-Path $Path))
             {
+                Dismount-DiskImage -ImagePath $ImageFile.Path
                 [System.Windows.MessageBox]::Show("Not a valid Windows Iso")
-                $ImageFile.Path | Dismount-DiskImage
+                Break
             }
             Else
             {
@@ -1561,7 +1567,7 @@ Function New-FEInfrastructure
         UnloadIso([UInt32]$Index)
         {
             $ImageFile = $This.Store[$Index]
-            Dismount-DiskImage $ImageFile.Path
+            Dismount-DiskImage -ImageFile $ImageFile.Path
         }
     }
     
@@ -5400,7 +5406,7 @@ Function New-FEInfrastructure
         {
             $Xaml.IO.IsoPath.Text        = $Item.SelectedPath
             $Main.LoadImagePath($Xaml.IO.IsoPath.Text)        
-            $Xaml.IO.IsoList.ItemsSource = @( $Main.Image.Store )
+            $Xaml.IO.IsoList.ItemsSource = @($Main.Image.Store)
         }
     })
     
