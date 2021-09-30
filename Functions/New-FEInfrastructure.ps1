@@ -4632,8 +4632,7 @@ Function New-FEInfrastructure
 
         ForEach ( $Item in $Xaml.IO.NwAggregate.ItemsSource | % { [NwTopology]::New($Main.SubnetList,$_) } )
         {
-            $Xaml.IO.NwTopology.ItemsSource += $Item 
-            #[DGList]::New($Item.Name,$Item.DistinguishedName)
+            $Xaml.IO.NwTopology.ItemsSource += $Item
         }
 
         $Xaml.IO.SmNetworkCount.Text      = $Main.Network.Count 
@@ -4988,36 +4987,36 @@ Function New-FEInfrastructure
             Return [System.Windows.Messagebox]::Show("Not a valid server hostname or IP Address","Error")
         }
 
+        $Credential = Try 
+        {
+            Get-Credential
+        }
+        Catch
+        {
+            Return [System.Windows.MessageBox]::Show("No credential","Error")
+        }
+
         Write-Host "Retrieving [~] VMHost"
 
-        If ( $Xaml.IO.VmHost.Text -in @("localhost";$Main.IP;$Main.Module.Role.Name))
+        If ( $Xaml.IO.VmHost.Text -match "localhost" -or $Xaml.IO.VmHost.Text -in $Main.IP -or $Xaml.IO.VmHost.Text -match $Main.Module.Role.Name)
         {
-            $Main.Vm    = [VmStack]::New((Get-VMHost),(Get-VMSwitch))
+            $Main.Vm    = [VmStack]::New($Main.HyperV,$Main.HyperV.Switch)
             If (Get-Service -Name vmms -EA 0 | ? Status -ne Running)
             {
                 Return [System.Windows.MessageBox]::Show("The Hyper-V Virtual Machine Management service is not (installed/running)","Error")
             }
 
-            $Xaml.IO.VmController.ItemsSource         = @([VmController]::New($Xaml.IO.VmHost.Text))
-            $Xaml.IO.VmControllerConfigVM.ItemsSource = @( Get-VM | % Name )
+            $Xaml.IO.VmController.ItemsSource         = @([VmController]::New($Xaml.IO.VmHost.Text,$Credential))
         }
         Else
         {
-            $Credential = Get-Credential
-            $Main.Vm    = [VmStack]::New((Get-VMHost -ComputerName $Xaml.IO.VmHost.Text -Credential $Credential),
-                                    (Get-VmSwitch -ComputerName $Xaml.IO.VmHost.Text -Credenttial $Credential))
-            If (Get-Service -ComputerName $Xaml.IO.VmHost.Text -Credential $Credential -Name vmms -EA 0 | ? Status -ne Running)
-            {
-                Return [System.Windows.MessageBox]::Show("The Hyper-V Virtual Machine Management service is not (installed/running)","Error")
-            }
-
-            $Xaml.IO.VmController.ItemsSource         = [VmController]::New($Xaml.IO.VmHost.Text,$Credential)
-            $Xaml.IO.VmControllerConfigVM.ItemsSource = @( Get-VM -ComputerName $$Xaml.IO.VmHost.Text -Credential $Credential )
+            Return [System.Windows.MessageBox]::Show("Remote Hyper-V Server not implemented","Error")
         }
         
-        $Xaml.IO.VmControllerSwitch.ItemsSource   = @( $Main.Vm.External | % Name )
-        $Xaml.IO.VmSelect.ItemsSource    = @( )
-        $Collect                         = @( )
+        $Xaml.IO.VmControllerSwitch.ItemsSource   = @( $Main.Vm.Switch | ? Type -eq External | % Name )
+        # $Xaml.IO.VmControllerSwitch.SelectedIndex = 0
+        $Xaml.IO.VmSelect.ItemsSource             = @( )
+        $Collect                                  = @( )
 
         If ( $Main.ADDS.Gateway.Count -gt 0 )
         {
@@ -5030,7 +5029,6 @@ Function New-FEInfrastructure
         }
 
         $Xaml.IO.VmSelect.ItemsSource    = @([VmSelect[]]$Collect)
-
         
         Write-Host "Retrieved [+] VMHost"
     })
@@ -5348,6 +5346,7 @@ Function New-FEInfrastructure
         #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
         Write-Theme "Creating [~] Script Initialization"
+        Return [System.Windows.MessageBox]::Show("Virtual (Switch/Gateway/Server) item(s) have been created","Success")
     })
 
 #    ____                                                                                                    ________    
