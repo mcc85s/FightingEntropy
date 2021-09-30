@@ -4990,7 +4990,7 @@ Function New-FEInfrastructure
 
         Write-Host "Retrieving [~] VMHost"
 
-        If ( $Xaml.IO.VmHost.Text -in @("localhost";$Main.IP))
+        If ( $Xaml.IO.VmHost.Text -in @("localhost";$Main.IP;$Main.Module.Role.Name))
         {
             $Main.Vm    = [VmStack]::New((Get-VMHost),(Get-VMSwitch))
             If (Get-Service -Name vmms -EA 0 | ? Status -ne Running)
