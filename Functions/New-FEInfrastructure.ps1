@@ -6,7 +6,7 @@
 .LINK
 
 .NOTES
-          FileName: New-FEInfrastructure.ps1
+          FileName: New-FEInfrastrcuture.ps1
           Solution: FightingEntropy Infrastructure Deployment Tool
           Purpose: For deploying virtual and physical infrastructure, including gateways and servers for ADDS
           Author: Michael C. Cook Sr.
@@ -96,8 +96,8 @@ Function New-FEInfrastructure
         [String]      $Name
         [String]     $State
         [String]   $Country
-        [Float]       $Long
-        [Float]        $Lat
+        [String]      $Long
+        [String]       $Lat
         ZipEntry([String]$Line)
         {
             $String         = $Line -Split "`t"
@@ -110,60 +110,44 @@ Function New-FEInfrastructure
             $This.Long      = $String[5]
             $This.Lat       = $String[6]
         }
+        ZipEntry([UInt32]$Zip)
+        {
+            $This.Zip       = $Zip
+            $This.Type      = "Invalid"
+            $This.Name      = "N/A"
+            $This.State     = "N/A"
+            $This.Country   = "N/A"
+            $This.Long      = "N/A"
+            $This.Lat       = "N/A"
+        }
     }
 
     Class ZipStack
     {
-        [String]    $Path
-        [Object] $Content
-        [Object]   $Stack
+        [String]      $Path
+        [Object]   $Content
+        [Object]     $Stack
         ZipStack([String]$Path)
         {
             $This.Path    = $Path
-            $This.Content = Get-Content $Path
-            $This.Stack   = $This.Content -Split "`n" | % { $_.Substring(0,5) }
-        }
-        [Object[]] ZipTown([String]$Zip)
-        {
-            $Value = [Regex]::Matches($This.Content,"($Zip)+.+").Value 
-            
-            If ( $Value -eq $Null )
+            $This.Content = Get-Content $Path | ? Length -gt 0
+            $This.Stack   = @{ }
+            $X            = 0
+            ForEach ( $Item in $This.Content )
             {
-                Throw "No result found"
+                $This.Stack.Add($Item.Substring(0,5),$X)
+                $X ++
+            }
+        }
+        [Object] ZipTown([String]$Zip)
+        {
+            $Index = $This.Stack["$Zip"]
+            If (!$Index)
+            {
+                Return [ZipEntry][UInt32]$Zip
             }
 
-            Else
-            {
-                $Return = @( )
-
-                ForEach ($Item in $Value)
-                {
-                    $Return += [ZipEntry]$Item    
-                }
-
-                Return $Return
-            }   
-        }
-        [Object[]] TownZip([String]$Town)
-        {
-            $Value = [Regex]::Matches($This.Content,"\d{5}\t\d{1}\t($Town)+.+").Value 
-            
-            If (!$Value)
-            {
-                Throw "No result found"
-            }
-
-            Else
-            {
-                $Return = @( )
-
-                ForEach ($Item in $Value)
-                {
-                    $Return += [ZipEntry]$Item    
-                }
-
-                Return $Return
-            }  
+            Return [ZipEntry]$This.Content[$Index]
         }
     }
     
@@ -1756,7 +1740,7 @@ Function New-FEInfrastructure
     # (Get-Content $home\desktop\FEInfrastructure.xaml) -Replace "'",'"' | % { "'$_',"} | Set-Clipboard
     Class FEInfrastructureGUI
     {
-        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
+        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style TargetType="Label">',
         '            <Setter Property="Height" Value="28"/>',
@@ -2281,8 +2265,8 @@ Function New-FEInfrastructure
         '                                            <DataGrid.Columns>',
         '                                                <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="200"/>',
         '                                                <DataGridTextColumn Header="Class"             Binding="{Binding Class}"             Width="150"/>',
-        '                                                <DataGridTextColumn Header="GUID"              Binding="{Binding GUID}"              Width="200"/>',
-        '                                                <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
+        '                                                <DataGridTextColumn Header="GUID"              Binding="{Binding GUID}"              Width="250"/>',
+        '                                                <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="500"/>',
         '                                            </DataGrid.Columns>',
         '                                        </DataGrid>',
         '                                    </Grid>',
@@ -3039,7 +3023,6 @@ Function New-FEInfrastructure
         '                                    <RowDefinition Height="180"/>',
         '                                </Grid.RowDefinitions>',
         '                                <GroupBox Grid.Row="0" Header="[VmServer] - (Provision physical/virtual machine servers)">',
-        '',
         '                                    <DataGrid  Name="VmServer">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
@@ -3702,7 +3685,7 @@ Function New-FEInfrastructure
             }
 
             Write-Host "Collecting [~] Zipcode Database"
-            $This.ZipStack          = [ZipStack]::New(($This.Module.Path + "\Control\zipcode.txt"))
+            $This.ZipStack          = [ZipStack]::New("$($This.Module.Path)\Control\zipcode.txt")
 
             $This.SmTemplate = [SmTemplate]::New().Stack
             $This.Domain     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
@@ -4334,8 +4317,12 @@ Function New-FEInfrastructure
     $Xaml.IO.CfgAddsObject.ItemsSource     = @( )
     $Xaml.IO.CfgAddsType.ItemsSource       = @( )
     $Xaml.IO.CfgAddsType.ItemsSource       = @("Site","Sitelink","Subnet","Dhcp","OU","Computer")
+    $Xaml.IO.CfgAddsType.SelectedIndex     = 0
+
     $Xaml.IO.CfgAddsProperty.ItemsSource   = @( )
     $Xaml.IO.CfgAddsProperty.ItemsSource   = @("Name","GUID","DistinguishedName")
+    $Xaml.IO.CfgAddsProperty.SelectedIndex = 0
+
     $Xaml.IO.CfgAddsType.Add_SelectionChanged(
     {
         Start-Sleep -Milliseconds 50
@@ -4375,6 +4362,8 @@ Function New-FEInfrastructure
     $Xaml.IO.MDT_Server.Text              = $Main.MDT.Server
     $Xaml.IO.MDT_IPAddress.ItemsSource    = @( )
     $Xaml.IO.MDT_IPAddress.ItemsSource    = @($Main.MDT.IPAddress)
+    $Xaml.IO.MDT_IPAddress.SelectedIndex  = 0
+    
     $Xaml.IO.MDT_Path.Text                = $Main.MDT.Path
     $Xaml.IO.MDT_Version.Text             = $Main.MDT.Version
     $Xaml.IO.MDT_ADK_Version.Text         = $Main.MDT.AdkVersion
@@ -4386,8 +4375,8 @@ Function New-FEInfrastructure
     $Xaml.IO.IIS_AppPools.ItemsSource     = @( )
     $Xaml.IO.IIS_AppPools.ItemsSource     = @($Main.IIS.AppPools)
 
-    $Xaml.Io.IIS_Sites.ItemsSource        = @( )
-    $Xaml.Io.IIS_Sites.ItemsSource        = @($Main.IIS.Sites)
+    $Xaml.IO.IIS_Sites.ItemsSource        = @( )
+    $Xaml.IO.IIS_Sites.ItemsSource        = @($Main.IIS.Sites)
 
     # [DataGrid]://PersistentDrives
     $Xaml.IO.DsAggregate.ItemsSource      = @( )
@@ -4471,24 +4460,21 @@ Function New-FEInfrastructure
 
     $Xaml.IO.DcAddSitename.Add_Click(
     {
-        If ($Xaml.IO.DcAddSitenameZip.Text -notmatch "(\d{5})")
-        {
-            Return [System.Windows.MessageBox]::Show("Zipcode text entry error","Error")
-        }
+        $Return = $Main.Zipstack.ZipTown([UInt32]$Xaml.IO.DcAddSitenameZip.Text)
 
-        ElseIf($Xaml.IO.DcAddSitenameZip.Text -notin $Main.ZipStack.Stack)
+        If ($Return.Type -match "Invalid")
         {
             Return [System.Windows.MessageBox]::Show("Not a valid zip code","Error")
         }
 
-        ElseIf($Xaml.IO.DcAddSitenameZip.Text -in $Main.Domain.Postal)
+        ElseIf ($Return.Zip -in $Main.Domain.Postal)
         {
-            Return [System.Windows.MessageBox]::Show("Duplicate Zipcode entry","Error")
+            Return [System.Windows.MessageBox]::Show("That entry already exists","Error")
         }
 
         Else
         {
-            $Main.AddSitename($Xaml.IO.DcAddSitenameZip.Text)
+            $Main.AddSitename($Zip)
             $Xaml.IO.DcAggregate.ItemsSource  = @( )
             $Xaml.IO.DcAggregate.ItemsSource  = @( $Main.Domain )
             $Xaml.IO.DcAddSitenameZip.Text    = ""
