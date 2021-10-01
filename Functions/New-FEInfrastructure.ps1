@@ -1440,14 +1440,17 @@ Function New-FEInfrastructure
     }
 
     # [Image Classes]
+    # Add-Type -AssemblyName PresentationFramework
     Class ImageLabel
     {
         [String] $Name
         [String] $Index
-        ImageLabel([Object]$ImageFile)
+        [Object[]] $Content
+        ImageLabel([Object]$Selected,[UInt32[]]$Index)
         {
-            $This.Name  = $ImageFile.Name
-            $This.Index = $ImageFile.Selected -join ","
+            $This.Name    = $Selected.Path
+            $This.Index   = $Index -join ","
+            $This.Content = @($Selected.Content | ? Index -in $Index)
         }
     }
 
@@ -1460,7 +1463,7 @@ Function New-FEInfrastructure
         [String] $Description
         [String] $Size
         [UInt32] $Architecture
-        ImageSlot([Object]$ImageFile,[Object]$Arch,[Object]$Slot)
+        ImageSlot([Object]$ImageFile,[UInt32]$Arch,[Object]$Slot)
         {
             $This.ImageFile    = $ImageFile
             $This.Arch         = $Arch
@@ -1468,41 +1471,42 @@ Function New-FEInfrastructure
             $This.Name         = $Slot.ImageName
             $This.Description  = $Slot.ImageDescription
             $This.Size         = "{0:n2} GB" -f ([Double]($Slot.ImageSize -Replace "(,|bytes|\s)","")/1073741824)
-            $This.Architecture = @(86,64)[$Arch.Architecture -eq 9]
+            $This.Architecture = @(86,64)[$Arch -eq 9]
         }
     }
 
     Class ImageFile
     {
         [UInt32]      $Index
+        [UInt32]       $Arch
         [String]       $Type
         [String]       $Name
         [String]       $Path
         [Object[]]  $Content
-        [UInt32[]] $Selected
         ImageFile([UInt32]$Index,[String]$Path)
         {
-            $This.Index    = $Index
-            $This.Name     = $Path | Split-Path -Leaf
-            $This.Path     = $Path
-            $This.Content  = @( )
-            $This.Selected = @( )
+            $This.Index     = $Index
+            $This.Name      = $Path | Split-Path -Leaf
+            $This.Path      = $Path
+            $This.Content   = @( )
         }
-        LoadContent([Object[]]$Content)
+        [Object] GetDiskImage()
         {
-            $This.Type     = @("Client","Server")[$Content[0].Name -match "Server"]
-            $This.Content  = $Content
+            Return @( Get-DiskImage -ImagePath $This.Path )
         }
-        LoadSelection([UInt32[]]$Index)
+        [Void] MountDiskImage()
         {
-            $This.Selected = @( )
-            
-            If (!($This.Content))
-            {
-                [System.Windows.MessageBox]::Show("Content has not been loaded yet","Image Error")
-            }
-
-            $This.Selected = @( $Index )
+            Mount-DiskImage -ImagePath $This.Path
+        }
+        [Void] DismountDiskImage()
+        {
+            Dismount-DiskImage -ImagePath $This.Path
+        }
+        GetWindowsImage([String]$Path)
+        {
+            $This.Arch     = Get-WindowsImage -ImagePath $Path -Index 1 | % Architecture
+            $This.Content  = Get-WindowsImage -ImagePath $Path | % { [ImageSlot]::New($Path,$This.Arch,$_) }
+            $This.Type     = @("Client","Server")[$This.Content[0].Name -match "Server"]
         }
     }
 
@@ -1510,64 +1514,92 @@ Function New-FEInfrastructure
     {
         [String] $Source
         [String] $Target
+        [Object] $Selected
         [Object] $Store
         [Object] $Queue
         [Object] $Swap
         [Object] $Output
-        ImageStack([String]$Source)
+        ImageStack()
+        {
+            $This.Source   = $Null
+            $This.Target   = $Null
+            $This.Selected = $Null
+            $This.Store    = @( )
+            $This.Queue    = @( )
+        }
+        [Void] LoadSilo([String]$Source)
         {
             If (!(Test-Path $Source))
             {
                 Throw "Invalid source path"
             }
 
-            $This.Source = $Source
-            $This.Store  = @( )
-
-            ForEach ( $Item in Get-ChildItem $This.Source *.iso )
-            {
-                $This.Store += [ImageFile]::New($This.Store.Count,$Item.FullName)
-            }
-
-            If ( $This.Store.Count -eq 0 )
+            ElseIf ((Get-ChildItem $Source *.iso).Count -eq 0)
             {
                 [System.Windows.MessageBox]::Show("No ISO's detected")
+            }
+
+            Else
+            {
+                $This.Store  = @( )
+                $This.Source = $Source
+
+                ForEach ( $Item in Get-ChildItem $This.Source *.iso )
+                {
+                    $This.Store += [ImageFile]::New($This.Store.Count,$Item.FullName)
+                }
             }
         }
         LoadIso([UInt32]$Index)
         {
-            If ( $This.Store.Count -eq 0 )
+            If ($This.Store.Count -eq 0)
             {
-                [System.Windows.MessageBox]::Show("No ISO's loaded")
-                Break
-            }
-            
-            $ImageFile = $This.Store[$Index]
-            Write-Theme "Loading [~] [$($ImageFile.Name)]"
-            If (!(Get-DiskImage -ImagePath $ImageFile.Path).Attached)
-            {
-                Get-DiskImage -ImagePath $ImageFile.Path | Mount-DiskImage
+                [System.Windows.MessageBox]::Show("No ISO's detected")
             }
 
-            $Letter = Get-DiskImage -ImagePath $ImageFile.Path | Get-Volume | % DriveLetter
-            $Path   = "${Letter}:\sources\install.wim"
+            $This.Selected = $This.Store[$Index]
+
+            If ( $This.Selected.GetDiskImage() | ? Attached -eq $False )
+            {
+                $This.Selected.MountDiskImage()
+            }
+
+            $Letter    = $This.Selected.GetDiskImage() | Get-Volume | % DriveLetter
+            $Path      = "${Letter}:\sources\install.wim"
+
             If (!(Test-Path $Path))
             {
-                Dismount-DiskImage -ImagePath $ImageFile.Path
+                $This.Selected.DismountDiskImage()
                 [System.Windows.MessageBox]::Show("Not a valid Windows Iso")
-                Break
             }
             Else
             {
-                $Arch    = Get-WindowsImage -ImagePath $Path -Index 1
-                $Content = Get-WindowsImage -ImagePath $Path | % { [ImageSlot]::New($ImageFile.Path,$Arch,$_) }
-                $ImageFile.LoadContent($Content)
+                $This.Selected.GetWindowsImage($Path)
             }
         }
-        UnloadIso([UInt32]$Index)
+        [Void] UnloadIso()
         {
-            $ImageFile = $This.Store[$Index]
-            Dismount-DiskImage -ImageFile $ImageFile.Path
+            $This.Selected.DismountDiskImage()
+            $This.Selected = $Null
+        }
+        AddQueue([UInt32[]]$Index)
+        {
+            $Index = $Index | % { $_ + 1 }
+            If ($This.Selected.Path -in $This.Queue.Path)
+            {
+                [System.Windows.MessageBox]::Show("That image is already in the queue - remove, and reindex","Error")
+            }
+            Else
+            {
+                $This.Queue += [ImageLabel]::New($This.Selected,$Index)
+            }
+        }
+        [Void] DeleteQueue([String]$Name)
+        {
+            If ($Name -in $This.Queue.Name)
+            {
+                $This.Queue = @( $This.Queue | ? Name -ne $Name )
+            }
         }
     }
     
@@ -3699,7 +3731,7 @@ Function New-FEInfrastructure
             $This.Sitemap    = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
             $This.Gateway    = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
             $This.Server     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-            $This.Image      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+            $This.Image      = [ImageStack]::New()
             $This.Update     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
             $This.Share      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
             $This.ADDS       = @{ 
@@ -5405,7 +5437,8 @@ Function New-FEInfrastructure
         Else
         {
             $Xaml.IO.IsoPath.Text        = $Item.SelectedPath
-            $Main.LoadImagePath($Xaml.IO.IsoPath.Text)        
+            $Main.LoadSilo($Xaml.IO.IsoPath.Text) 
+            $Xaml.IO.IsoList.ItemsSource = @( )       
             $Xaml.IO.IsoList.ItemsSource = @($Main.Image.Store)
         }
     })
@@ -5430,41 +5463,40 @@ Function New-FEInfrastructure
             Return [System.Windows.MessageBox]::Show("No image selected","Error")
         }
 
-        [System.Windows.MessageBox]::Show("Loading ISO, this may take a moment")
-
-        $Image = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex]
-        $Main.Image.LoadIso($Xaml.IO.IsoList.SelectedIndex)
-        If (!(Get-DiskImage $Image.Path | % Attached))
+        $Index = $Xaml.IO.IsoList.SelectedIndex
+        $Name  = $Xaml.IO.IsoList.SelectedItem.Name
+        If ($Name.Length -gt 65)
         {
-            Do
-            {
-                Start-Sleep -Milliseconds 100
-            }
-            Until (Get-DiskImage $Image.Path | % Attached)
+            $Name = "$($Name.Substring(0,64))..."
         }
-        
-        $Xaml.IO.IsoView.ItemsSource     = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex].Content
-        $Xaml.IO.IsoList.IsEnabled       = 0
-        $Xaml.IO.IsoDismount.IsEnabled   = 1
-        Write-Theme "Mounting [$($Image.Path)]" 14,6,15
+
+        Write-Theme "Mounting [~] $Name" 14,6,15
+
+        $Main.Image.LoadIso($Index)
+        If ($Main.Image.Selected.Content -eq $Null)
+        {
+            Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
+            $Main.Image.UnloadIso()
+        }
+        Else
+        {
+            $Xaml.IO.IsoView.ItemsSource     = $Main.Image.Store[$Index].Content
+            $Xaml.IO.IsoList.IsEnabled       = 0
+            $Xaml.IO.IsoDismount.IsEnabled   = 1
+        }
     })
     
     $Xaml.IO.IsoDismount.Add_Click(
     {
-        $Image  = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex]
-        $Main.Image.UnloadIso($Xaml.IO.IsoList.SelectedIndex)
-        Do
+        $Name  = $Xaml.IO.IsoList.SelectedItem.Name
+        If ( $Name.Length -gt 65)
         {
-            Start-Sleep -Milliseconds 100
+            $Name = "$($Name.Substring(0,64))..."
         }
-        Until (!(Get-DiskImage $Image.Path | % Attached))
-
+        Write-Theme "Dismounting [~] $Name" 12,4,15
+        $Main.Image.UnloadIso()
         $Xaml.IO.IsoView.ItemsSource         = $Null
         $Xaml.IO.IsoList.IsEnabled           = 1
-        Write-Theme "Dismounting [$($Image.Path)]" 12,4,15
-
-        $Image                               = $Null
-    
         $Xaml.IO.IsoDismount.IsEnabled       = 0
     })
     
@@ -5500,117 +5532,107 @@ Function New-FEInfrastructure
     
     $Xaml.IO.WimQueue.Add_Click(
     {
-        If ($Xaml.IO.IsoList.SelectedItem.Path -in $Xaml.IO.WimIso.Items.Name)
-        {
-            Return [System.Windows.MessageBox]::Show("Image already selected","Error")
-        }
-    
-        Else
-        {
-            $Image  = $Main.Image.Store[$Xaml.IO.IsoList.SelectedIndex]
-            $Image.LoadSelection($Xaml.IO.IsoView.SelectedItems.Index)
-            $Xaml.IO.WimIso.ItemsSource += [ImageLabel]::New($Image)
-        }
+        $Index = @($Xaml.IO.IsoList.SelectedIndex )
+        $Main.Image.AddQueue($Index)
+        $Xaml.IO.WimIso.ItemsSource = @( )
+        $Xaml.IO.WimIso.ItemsSource = @($Main.Image.Queue)
     })
     
     $Xaml.IO.WimDequeue.Add_Click(
     {
-        $Items = @( $Xaml.IO.WimIso.Items | ? Name -ne $Xaml.IO.WimIso.SelectedItem.Name )
-
+        $Main.Image.DeleteQueue($Xaml.IO.WimIso.SelectedItem.Name)
         $Xaml.IO.WimIso.ItemsSource = @( )
-
-        If ($Items)
-        {
-            $Xaml.IO.WimIso.ItemsSource = $Items
-            $Items                      = $Null
-        }
+        $Xaml.IO.WimIso.ItemsSource = @($Main.Image.Queue)
     
         If ( $Xaml.IO.WimIso.Items.Count -eq 0 )
         {
             $Xaml.IO.WimDequeue.IsEnabled = 0
-            $Xaml.IO.WimIso.ItemsSource = @( )
         }
     })
     
     $Xaml.IO.WimIsoUp.Add_Click(
     {
-        If ( $Xaml.IO.WimIso.Items.Count -gt 1 )
+        If ($Main.Image.Queue.Count -gt 1)
         {
-            $Rank  = $Xaml.IO.WimIso.SelectedIndex
-            $Grid  = $Xaml.IO.WimIso.ItemsSource
-            $Items = 0..($Grid.Count-1)
-    
-            If ($Rank -ne 0)
+            $Name  = $Xaml.IO.WimIso.SelectedItem.Name 
+            $Index = $Xaml.IO.WimIso.SelectedIndex
+            $Items = @( )
+
+            If ($Index -gt 0)
             {
-                ForEach ($I in 0..($Grid.Count-1))
+                ForEach ( $X in 0..($Main.Image.Queue.Count - 1))
                 {
-                    If ( $I -eq $Rank - 1 )
+                    If ( $X -lt $Index-1)
                     {
-                        $Items[$I] = $Grid[$I+1]
+                        $Items += $Main.Image.Queue[$X]
                     }
-    
-                    ElseIf ( $I -eq $Rank )
+                    If ( $X -eq $Index-1)
                     {
-                        $Items[$I] = $Grid[$I-1]   
+                        $Items += $Main.Image.Queue[$Index]
                     }
-    
-                    Else
+                    If ( $X -gt $Index-1)
                     {
-                        $Items[$I] = $Grid[$I]
+                        $Items += $Main.Image.Queue[$X-1]
                     }
                 }
-    
-                $Xaml.IO.WimIso.ItemsSource = @( )
-                $Xaml.IO.WimIso.ItemsSource = $Items
-                $Items = $Null
-                $Rank  = $Null
-                $Grid  = $Null
             }
+            Else
+            {
+                $Items = @($Main.Image.Queue)
+            }
+
+            $Main.Image.Queue             = @( )
+            $Main.Image.Queue             = @($Items)
+            $Xaml.IO.WimIso.ItemsSource   = @( )
+            $Xaml.IO.WimIso.ItemsSource   = $Main.Image.Queue
+            $Xaml.IO.WimIso.SelectedItem  = $Xaml.IO.WimIso.ItemsSource | ? Name -eq $Name
         }
     })
     
     $Xaml.IO.WimIsoDown.Add_Click(
     {
-        If ( $Xaml.IO.WimIso.Items.Count -gt 1 )
+        If ($Main.Image.Queue.Count -gt 1)
         {
-            $Rank  = $Xaml.IO.WimIso.SelectedIndex
-            $Grid  = $Xaml.IO.WimIso.ItemsSource
-            $Items = 0..($Grid.Count - 1)
-    
-            If ($Rank -ne $Grid.Count - 1)
+            $Name  = $Xaml.IO.WimIso.SelectedItem.Name 
+            $Index = $Xaml.IO.WimIso.SelectedIndex
+            $Items = @( )
+
+            If ($Index -lt $Main.Image.Queue.Count - 1)
             {
-                ForEach ($I in 0..($Grid.Count-1))
+                ForEach ( $X in 0..($Main.Image.Queue.Count - 1))
                 {
-                    If ( $I -eq $Rank )
+                    If ( $X -lt $Index+1)
                     {
-                        $Items[$I] = $Grid[$I+1]   
+                        $Items += $Main.Image.Queue[$X]
                     }
-    
-                    ElseIf ( $I -eq $Rank + 1 )
+                    If ( $X -eq $Index+1)
                     {
-                        $Items[$I] = $Grid[$I-1]
+                        $Items += $Main.Image.Queue[$Index]
                     }
-    
-                    Else
+                    If ( $X -gt $Index+1)
                     {
-                        $Items[$I] = $Grid[$I]
+                        $Items += $Main.Image.Queue[$X+1]
                     }
                 }
-                
-                $Xaml.IO.WimIso.ItemsSource = @( )
-                $Xaml.IO.WimIso.ItemsSource = $Items
-                $Items = $Null
-                $Rank  = $Null
-                $Grid  = $Null
             }
-        }
+            Else
+            {
+                $Items = @($Main.Image.Queue)
+            }
+
+            $Main.Image.Queue             = @( )
+            $Main.Image.Queue             = @($Items)
+            $Xaml.IO.WimIso.ItemsSource   = @( )
+            $Xaml.IO.WimIso.ItemsSource   = $Main.Image.Queue
+            $Xaml.IO.WimIso.SelectedItem  = $Xaml.IO.WimIso.ItemsSource | ? Name -eq $Name
     })
     
     $Xaml.IO.WimExtract.Add_Click(
     {
-        If (Test-Path $Xaml.IO.WimPath.Text)
+        $Target = $Xaml.IO.WimPath.Text
+        If (Test-Path $Target)
         {
-            $Children = Get-ChildItem $Xaml.IO.WimPath.Text *.wim -Recurse | % FullName
+            $Children = Get-ChildItem $Target *.wim -Recurse | % FullName
 
             If ($Children.Count -gt 0)
             {
@@ -5620,7 +5642,7 @@ Function New-FEInfrastructure
                     {
                         ForEach ( $Child in $Children )
                         {
-                            Get-ChildItem $Xaml.IO.WimPath.Text | Remove-Item -Recurse -Confirm:$False -Force -Verbose
+                            Get-ChildItem $Target | Remove-Item -Recurse -Confirm:$False -Force -Verbose
                         }
                     }
 
@@ -5632,36 +5654,39 @@ Function New-FEInfrastructure
             }
         }
 
-        If (!(Test-Path $Xaml.IO.WimPath.Text))
+        If (!(Test-Path $Target))
         {
-            New-Item -Path $Xaml.IO.WimPath.Text -ItemType Directory -Verbose
+            New-Item -Path $Target -ItemType Directory -Verbose
         }
     
-        $Main.Image.Target = $Xaml.IO.WimPath.Text
+        $Main.Image.Target = $Target
     
         $X = 0
-        ForEach ( $I in $Xaml.IO.WimIso.Items )
+        ForEach ( $File in $Main.Image.Queue )
         {
-            $Item = $Main.Image.Store | ? Name -eq $I.Name
-            $Disk = Get-DiskImage -ImagePath $Item.Path
+            $Disk = Get-DiskImage -ImagePath $File.Name
+            $Name = $File.Name | Split-Path -Leaf
+            If ($Name.Length -gt 65)
+            {
+                $Name = "$($Name.Substring(0,64))..."
+            }
             If (!$Disk.Attached)
             {
-                Write-Host "Mounting [~] $($Item.Path)"
-                Mount-DiskImage -ImagePath $Item.Path -Verbose
-                $Disk  = Get-DiskImage -ImagePath $Item.Path
+                Write-Theme "Mounting [~] $Name"
+                Mount-DiskImage -ImagePath $Disk.ImagePath -Verbose
+                $Disk = Get-DiskImage -ImagePath $File.Name
             }
 
             $Path  = "{0}:\sources\install.wim" -f ($Disk | Get-Volume | % DriveLetter)
 
-            ForEach ($U in $Item.Selected)
+            ForEach ($Item in $File.Content)
             {
-                $Select = $Item.Content | ? Index -eq $U
-                Switch($Item.Type)
+                Switch -Regex ($Item.Name)
                 {
                     Server
                     {
-                        $Year               = [Regex]::Matches($Select.Name,"(\d{4})").Value
-                        Switch -Regex ($Select.Name) 
+                        $Year               = [Regex]::Matches($Item.Name,"(\d{4})").Value
+                        Switch -Regex ($Item.Name) 
                         {
                             STANDARD
                             {
@@ -5678,13 +5703,13 @@ Function New-FEInfrastructure
                         $Label              = "{0}{1}" -f $Tag, $Year
                     }
 
-                    Client
+                    Default
                     {
-                        Switch -Regex ($Select.Name)
+                        Switch -Regex ($Item.Name)
                         {
                             Education
                             {
-                                $Tag        = "E"
+                                $Tag        = "Edu"
                             }
                             Pro
                             {
@@ -5694,30 +5719,41 @@ Function New-FEInfrastructure
                             {
                                 $Tag        = "H"
                             }
+                            Enterprise
+                            {
+                                $Tag        = "En"
+                            }
                         }
-                        $DestinationName    = "{0} (x{1})" -f $Select.Name, $Select.Architecture
-                        $Label              = "10{0}{1}" -f $Tag, $Select.Architecture
+                        $DestinationName    = "{0} (x{1})" -f $Item.Name, $Item.Architecture
+                        $Label              = "10{0}{1}" -f $Tag, $Item.Architecture
                     }
                 }
 
                 $ISO                        = @{
 
-                    SourceIndex             = $U
+                    SourceIndex             = $Item.Index
                     SourceImagePath         = $Path
-                    DestinationImagePath    = ("{0}\({1}){2}\{2}.wim" -f $Xaml.IO.WimPath.Text,$X,$Label)
+                    DestinationImagePath    = ("{0}\({1}){2}\{2}.wim" -f $Main.Image.Target,$X,$Label)
                     DestinationName         = $DestinationName
                 }
 
                 New-Item ($Iso.DestinationImagePath | Split-Path -Parent) -ItemType Directory -Verbose
 
-                Write-Host "Extracting [~] $($Iso.DestinationName)"
+                Write-Theme "Extracting [~] $DestinationName" 14,6,15
+                Start-Sleep 1
+
                 Export-WindowsImage @ISO
-                Write-Theme "Extracting [~] $($Iso.DestinationName)"
+                Write-Theme "Extracted [~] $DestinationName" 10,2,15
+                Start-Sleep 1
+
                 $X ++
             }
-            Get-DiskImage -ImagePath $Item.Path | Dismount-DiskImage
+            Write-Theme "Dismounting [~] $Name" 12,4,15
+            Start-Sleep 1
+
+            Get-DiskImage -ImagePath $File.Name | Dismount-DiskImage
         }
-        Write-Host "Complete [+] Images Collected"
+        Write-Theme "Complete [+] ($($Main.Image.Queue.Content.Count)) *.wim files Extracted" 10,2,15
     })
     
     $Xaml.IO.WimSelect.Add_Click(
