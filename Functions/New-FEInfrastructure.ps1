@@ -5625,6 +5625,7 @@ Function New-FEInfrastructure
             $Xaml.IO.WimIso.ItemsSource   = @( )
             $Xaml.IO.WimIso.ItemsSource   = $Main.Image.Queue
             $Xaml.IO.WimIso.SelectedItem  = $Xaml.IO.WimIso.ItemsSource | ? Name -eq $Name
+        }
     })
     
     $Xaml.IO.WimExtract.Add_Click(
