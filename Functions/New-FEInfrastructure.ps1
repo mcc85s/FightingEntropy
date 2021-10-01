@@ -5567,7 +5567,7 @@ Function New-FEInfrastructure
             $Items = @( )
             ForEach ( $X in 0..($Main.Image.Queue.Count - 1))
             {
-                If ($X -lt $Dest)
+                If ($X -notin @($Index,$Dest))
                 {
                     $Items += $Main.Image.Queue[$X]
                 }
@@ -5575,7 +5575,7 @@ Function New-FEInfrastructure
                 {
                     $Items += $Main.Image.Queue[$Index]
                 }
-                If ($X -gt $Dest)
+                If ($X -eq $Index)
                 {
                     $Items += $Main.Image.Queue[$X+1]
                 }
@@ -5599,7 +5599,7 @@ Function New-FEInfrastructure
             $Items = @( )
             ForEach ( $X in 0..($Main.Image.Queue.Count - 1))
             {
-                If ($X -lt $Dest)
+                If ($X -notin @($Index,$Dest))
                 {
                     $Items += $Main.Image.Queue[$X]
                 }
