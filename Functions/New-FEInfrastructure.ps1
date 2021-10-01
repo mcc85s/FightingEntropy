@@ -5561,31 +5561,12 @@ Function New-FEInfrastructure
     {
         If ($Main.Image.Queue.Count -gt 1)
         {
-            $Name  = $Xaml.IO.WimIso.SelectedItem.Name 
-            $Index = $Xaml.IO.WimIso.SelectedIndex
-            $Dest  = $Index - 1
-            $Items = @( )
-            ForEach ( $X in 0..($Main.Image.Queue.Count - 1))
-            {
-                If ($X -notin @($Index,$Dest))
-                {
-                    $Items += $Main.Image.Queue[$X]
-                }
-                If ($X -eq $Dest)
-                {
-                    $Items += $Main.Image.Queue[$Index]
-                }
-                If ($X -eq $Index)
-                {
-                    $Items += $Main.Image.Queue[$X+1]
-                }
-            }
-
-            $Main.Image.Queue             = @( )
-            $Main.Image.Queue             = @($Items)
+            $Index                        = $Xaml.IO.WimIso.SelectedIndex
+            $Swap                         = $Main.Image.Queue[$Index-1]
+            $Main.Image.Queue[$Index-1]   = $Main.Image.Queue[$Index]
+            $Main.Image.Queue[$Index]     = $Swap
             $Xaml.IO.WimIso.ItemsSource   = @( )
             $Xaml.IO.WimIso.ItemsSource   = @($Main.Image.Queue)
-            $Xaml.IO.WimIso.SelectedItem  = $Xaml.IO.WimIso.ItemsSource | ? Name -eq $Name
         }
     })
     
@@ -5593,31 +5574,12 @@ Function New-FEInfrastructure
     {
         If ($Main.Image.Queue.Count -gt 1)
         {
-            $Name  = $Xaml.IO.WimIso.SelectedItem.Name 
-            $Index = $Xaml.IO.WimIso.SelectedIndex
-            $Dest  = $Index + 1
-            $Items = @( )
-            ForEach ( $X in 0..($Main.Image.Queue.Count - 1))
-            {
-                If ($X -notin @($Index,$Dest))
-                {
-                    $Items += $Main.Image.Queue[$X]
-                }
-                If ($X -eq $Dest)
-                {
-                    $Items += $Main.Image.Queue[$Index]
-                }
-                If ($X -gt $Dest)
-                {
-                    $Items += $Main.Image.Queue[$X-1]
-                }
-            }
-
-            $Main.Image.Queue             = @( )
-            $Main.Image.Queue             = @($Items)
+            $Index                        = $Xaml.IO.WimIso.SelectedIndex
+            $Swap                         = $Main.Image.Queue[$Index+1]
+            $Main.Image.Queue[$Index+1]   = $Main.Image.Queue[$Index]
+            $Main.Image.Queue[$Index]     = $Swap
             $Xaml.IO.WimIso.ItemsSource   = @( )
             $Xaml.IO.WimIso.ItemsSource   = @($Main.Image.Queue)
-            $Xaml.IO.WimIso.SelectedItem  = $Xaml.IO.WimIso.ItemsSource | ? Name -eq $Name
         }
     })
     
