@@ -1,3 +1,27 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Write-Theme.ps1
+          Solution: FightingEntropy Write Theme
+          Purpose: For stylizing a PowerShell command prompt console
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-02
+          Modified: 2021-10-02
+
+          Version - 0.0.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
+
 Function Write-Theme
 {
     [CmdletBinding(DefaultParameterSetName=0)]
