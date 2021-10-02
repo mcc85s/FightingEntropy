@@ -220,7 +220,7 @@ Function FightingEntropy
         [String]      $Author = "Michael C. Cook Sr."
         [String]     $Company = "Secure Digits Plus LLC"
         [String]   $Copyright = "(c) 2021 (mcc85s/mcc85sx/sdp). All rights reserved."
-        [String]        $GUID = "81320271-fd4a-4607-b164-4e66b12f8d3a"
+        [String]        $GUID = "64ab3ba6-064a-4929-b9a1-ffe27a55972a"
         [String]     $Version = ""
         [Object]          $OS = [_OS]::New()
         [Object]    $Manifest = [_Manifest]::New()
@@ -402,7 +402,7 @@ Function FightingEntropy
         }
     }
     
-    [_Module]::New("2021.8.0")
+    [_Module]::New("2021.10.0")
     
     $Path              = "$Env:Public\Desktop\FightingEntropy.lnk" 
     $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut($Path)
