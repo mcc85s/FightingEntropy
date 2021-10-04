@@ -612,5 +612,7 @@ Function FightingEntropy
     }
     
     $Module            = [Module]::New("2021.10.0")
-    $Module
+    $Module 
 }
+
+$Module = FightingEntropy
