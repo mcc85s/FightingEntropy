@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-09-11
-          Modified: 2021-09-30
+          Modified: 2021-10-04
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -1562,6 +1562,11 @@ Function New-FEInfrastructure
             If ( $This.Selected.GetDiskImage() | ? Attached -eq $False )
             {
                 $This.Selected.MountDiskImage()
+                Do
+                {
+                    Start-Sleep -Milliseconds 100
+                }
+                Until ($This.Selected.GetDiskImage() | ? Attached -eq $True)
             }
 
             $Letter    = $This.Selected.GetDiskImage() | Get-Volume | % DriveLetter
