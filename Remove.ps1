@@ -1,40 +1,55 @@
-$Name       = "FightingEntropy"
-$Version    = "2021.8.0"
-$Company    = "Secure Digits Plus LLC"
+Class Version
+{
+    [UInt32] $Exists
+    [UInt32] $Year
+    [UInt32] $Month
+    [UInt32] $Slot
+    [String] $RegPath
+    Version([Object]$Object)
+    {
+        $ID           = $Object.PSChildName.Split(".")
+        $This.Year    = $ID[0]
+        $This.Month   = $ID[1] 
+        $This.Slot    = $ID[2]
+        $This.RegPath = $Object.GetValue("RegPath")
+        $This.Exists  = 0
+        If ($This.Regpath)
+        {
+            $This.Exists = Test-Path $This.RegPath
+        }
+    }
+}
+        
+$Name      = "FightingEntropy"
+$Company   = "Secure Digits Plus LLC"
+$Default   = "HKLM:\Software\Policies\$Company\$Name"
+If (!(Test-Path $Default))
+{
+    Throw "Installation not found"
+}
+    
+$Child     = Get-ChildItem $Default | % { [Version]::New($_) } | ? Exists | Sort-Object Year | Select-Object -First 1
+If (!$Child)
+{
+    Throw "No version detected"
+}
 
-$RegPath    = "HKLM:\Software\Policies\$Company\$Name\$Version"
-If(!(Test-Path $RegPath))
+$RegPath   = Get-ItemProperty $Child.RegPath
+
+If(!$RegPath)
 {
     Write-Host "[!] Registry path invalid [!]"
 }
-Else
+
+If ($RegPath)
 {
-    $ID      = Get-ItemProperty $RegPath
-    If(-not $ID)
+    $Main    = $RegPath.Main
+    If (!(Test-Path $Main))
     {
-        Write-Host "[!] Registry properties missing [!]"
+        Write-Host "[!] Module references missing"
     }
-    Else
-    {
-        $Main    = $ID.Main
-        $ModPath = $ID.Trunk
-        Remove-Item $RegPath -Recurse -Force -Verbose
-     }
-}
-
-If(-not $ModPath)
-{
-    Write-Host "[!] Module path null [!]"
-}
-
-ElseIf (!(Test-Path $ModPath))
-{
-    Write-Host "[!] Module path invalid [!]"
-}
-
-Else
-{
-    Remove-Item $ModPath -Recurse -Force -Verbose
+    Remove-Item $Main -Recurse -Force -Verbose -EA 0
+    Remove-Item $Child.RegPath -Recurse -Force -EA 0
 }
 
 # [Data path values]
