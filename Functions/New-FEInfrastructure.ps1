@@ -1482,6 +1482,7 @@ Function New-FEInfrastructure
         [String]       $Type
         [String]       $Name
         [String]       $Path
+        [String]     $Letter
         [Object[]]  $Content
         ImageFile([UInt32]$Index,[String]$Path)
         {
@@ -1492,7 +1493,7 @@ Function New-FEInfrastructure
         }
         [Object] GetDiskImage()
         {
-            Return @( $This.Image )
+            Return @( Get-DiskImage -ImagePath $This.Path )
         }
         MountDiskImage()
         {
@@ -1502,6 +1503,8 @@ Function New-FEInfrastructure
                 Start-Sleep -Milliseconds 100
             }
             Until ($This.GetDiskImage() | ? Attached -eq $True)
+            
+            $This.Letter    = $This.GetDiskImage() | Get-Volume | % DriveLetter
         }
         DismountDiskImage()
         {
@@ -1570,13 +1573,11 @@ Function New-FEInfrastructure
                 Start-Sleep 1
             }
 
-            $Letter    = $This.Selected.Image.Path | Get-Volume | % DriveLetter
-            $Path      = "${Letter}:\sources\install.wim"
+            $Path      = "$($This.Selected.Letter):\sources\install.wim"
 
             If (!(Test-Path $Path))
             {
                 $This.Selected.DismountDiskImage()
-                [System.Windows.MessageBox]::Show("Not a valid Windows Iso")
             }
             Else
             {
@@ -1613,11 +1614,6 @@ Function New-FEInfrastructure
             }
         }
     }
-
-    $ImageSilo  = "C:\Images"
-    $ImageStack = [ImageStack]::New()
-    $ImageStack.LoadSilo($ImageSilo)
-    $ImageStack.LoadIso(0)
 
     Class XamlWindow 
     {
