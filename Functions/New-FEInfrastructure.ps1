@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-09-11
-          Modified: 2021-09-30
+          Modified: 2021-10-05
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -1482,6 +1482,7 @@ Function New-FEInfrastructure
         [String]       $Type
         [String]       $Name
         [String]       $Path
+        [Object]      $Image
         [Object[]]  $Content
         ImageFile([UInt32]$Index,[String]$Path)
         {
@@ -1492,7 +1493,7 @@ Function New-FEInfrastructure
         }
         [Object] GetDiskImage()
         {
-            Return @( Get-DiskImage -ImagePath $This.Path )
+            Return @( $This.Image )
         }
         MountDiskImage()
         {
@@ -1502,6 +1503,8 @@ Function New-FEInfrastructure
                 Start-Sleep -Milliseconds 100
             }
             Until ($This.GetDiskImage() | ? Attached -eq $True)
+            
+            $This.Image     = Get-DiskImage -ImagePath $This.Path
         }
         DismountDiskImage()
         {
@@ -1570,7 +1573,7 @@ Function New-FEInfrastructure
                 Start-Sleep 1
             }
 
-            $Letter    = $This.Selected.GetDiskImage() | Get-Volume | % DriveLetter
+            $Letter    = $This.Selected.Image | Get-Volume | % DriveLetter
             $Path      = "${Letter}:\sources\install.wim"
 
             If (!(Test-Path $Path))
@@ -1613,6 +1616,11 @@ Function New-FEInfrastructure
             }
         }
     }
+
+    $ImageSilo  = "C:\Images"
+    $ImageStack = [ImageStack]::New()
+    $ImageStack.LoadSilo($ImageSilo)
+    $ImageStack.LoadIso(0)
 
     Class XamlWindow 
     {
@@ -5550,7 +5558,7 @@ Function New-FEInfrastructure
     
     $Xaml.IO.WimQueue.Add_Click(
     {
-        $Index = @($Xaml.IO.IsoList.SelectedIndex )
+        $Index = @( $Xaml.IO.IsoList.SelectedIndex )
         $Main.Image.AddQueue($Index)
         $Xaml.IO.WimIso.ItemsSource = @( )
         $Xaml.IO.WimIso.ItemsSource = @($Main.Image.Queue)
