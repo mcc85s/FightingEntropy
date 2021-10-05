@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-09-11
-          Modified: 2021-10-04
+          Modified: 2021-09-30
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -1444,13 +1444,13 @@ Function New-FEInfrastructure
     Class ImageLabel
     {
         [String] $Name
-        [String] $Index
+        [String] $SelectedIndex
         [Object[]] $Content
         ImageLabel([Object]$Selected,[UInt32[]]$Index)
         {
-            $This.Name    = $Selected.Path
-            $This.Index   = $Index -join ","
-            $This.Content = @($Selected.Content | ? Index -in $Index)
+            $This.Name          = $Selected.Path
+            $This.SelectedIndex = $Index -join ","
+            $This.Content       = @($Selected.Content | ? Index -in $Index)
         }
     }
 
@@ -1494,11 +1494,16 @@ Function New-FEInfrastructure
         {
             Return @( Get-DiskImage -ImagePath $This.Path )
         }
-        [Void] MountDiskImage()
+        MountDiskImage()
         {
             Mount-DiskImage -ImagePath $This.Path
+            Do
+            {
+                Start-Sleep -Milliseconds 100
+            }
+            Until ($This.GetDiskImage() | ? Attached -eq $True)
         }
-        [Void] DismountDiskImage()
+        DismountDiskImage()
         {
             Dismount-DiskImage -ImagePath $This.Path
         }
@@ -1562,11 +1567,7 @@ Function New-FEInfrastructure
             If ( $This.Selected.GetDiskImage() | ? Attached -eq $False )
             {
                 $This.Selected.MountDiskImage()
-                Do
-                {
-                    Start-Sleep -Milliseconds 100
-                }
-                Until ($This.Selected.GetDiskImage() | ? Attached -eq $True)
+                Start-Sleep 1
             }
 
             $Letter    = $This.Selected.GetDiskImage() | Get-Volume | % DriveLetter
@@ -1580,6 +1581,11 @@ Function New-FEInfrastructure
             Else
             {
                 $This.Selected.GetWindowsImage($Path)
+                Do
+                {
+                    Start-Sleep -Milliseconds 100
+                }
+                Until ($This.Selected.Content.Count -gt 0)
             }
         }
         [Void] UnloadIso()
@@ -1607,7 +1613,7 @@ Function New-FEInfrastructure
             }
         }
     }
-    
+
     Class XamlWindow 
     {
         Hidden [Object]        $XAML
@@ -3217,7 +3223,7 @@ Function New-FEInfrastructure
         '                                <DataGrid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Name="WimIso">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="*"/>',
-        '                                        <DataGridTextColumn Header="Index" Binding="{Binding Index}" Width="100"/>',
+        '                                        <DataGridTextColumn Header="SelectedIndex" Binding="{Binding SelectedIndex}" Width="100"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                            </Grid>',
@@ -3312,7 +3318,7 @@ Function New-FEInfrastructure
         '            <TabItem Header="Share">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="160"/>',
+        '                        <RowDefinition Height="140"/>',
         '                        <RowDefinition Height="160"/>',
         '                        <RowDefinition Height="*"/>',
         '                        <RowDefinition Height="40"/>',
