@@ -478,6 +478,28 @@ Function Get-FEModule
             $This.ServiceListInfo()
         }
     }
+
+    Class Version
+    {
+        [UInt32] $Exists
+        [UInt32] $Year
+        [UInt32] $Month
+        [UInt32] $Slot
+        [String] $RegPath
+        Version([Object]$Object)
+        {
+            $ID           = $Object.PSChildName.Split(".")
+            $This.Year    = $ID[0]
+            $This.Month   = $ID[1] 
+            $This.Slot    = $ID[2]
+            $This.RegPath = $Object.GetValue("RegPath")
+            $This.Exists  = 0
+            If ($This.Regpath)
+            {
+                $This.Exists = Test-Path $This.RegPath
+            }
+        }
+    }
         
     $Name      = "FightingEntropy"
     $Company   = "Secure Digits Plus LLC"
@@ -493,18 +515,8 @@ Function Get-FEModule
         Throw "Registry not found"
     }
     
-    $Child     = Get-ChildItem $Default
-    If (-not $Child)
-    {
-        Throw "No version detected"
-    }
-    
-    If ($Child.Count -gt 1)
-    {
-        $Child = $Child[-1]
-    }
-    
-    $RegPath   = Get-ItemProperty $Child.GetValue("RegPath")
+    $Child     = Get-ChildItem $Default | % { [Version]::New($_) } | ? Exists | Sort-Object Year | Select-Object -First 1
+    $RegPath   = Get-ItemProperty $Child.RegPath
     
     Switch($PSCmdLet.ParameterSetName)
     {
