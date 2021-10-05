@@ -1482,7 +1482,6 @@ Function New-FEInfrastructure
         [String]       $Type
         [String]       $Name
         [String]       $Path
-        [Object]      $Image
         [Object[]]  $Content
         ImageFile([UInt32]$Index,[String]$Path)
         {
@@ -1503,8 +1502,6 @@ Function New-FEInfrastructure
                 Start-Sleep -Milliseconds 100
             }
             Until ($This.GetDiskImage() | ? Attached -eq $True)
-            
-            $This.Image     = Get-DiskImage -ImagePath $This.Path
         }
         DismountDiskImage()
         {
@@ -1573,7 +1570,7 @@ Function New-FEInfrastructure
                 Start-Sleep 1
             }
 
-            $Letter    = $This.Selected.Image | Get-Volume | % DriveLetter
+            $Letter    = $This.Selected.Image.Path | Get-Volume | % DriveLetter
             $Path      = "${Letter}:\sources\install.wim"
 
             If (!(Test-Path $Path))
@@ -5558,7 +5555,7 @@ Function New-FEInfrastructure
     
     $Xaml.IO.WimQueue.Add_Click(
     {
-        $Index = @( $Xaml.IO.IsoList.SelectedIndex )
+        $Index = @( $Xaml.IO.IsoView.SelectedIndex )
         $Main.Image.AddQueue($Index)
         $Xaml.IO.WimIso.ItemsSource = @( )
         $Xaml.IO.WimIso.ItemsSource = @($Main.Image.Queue)
