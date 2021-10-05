@@ -1572,12 +1572,17 @@ Function New-FEInfrastructure
                 $This.Selected.MountDiskImage()
                 Start-Sleep 1
             }
+            If ( $This.Selected.GetDiskImage() | ? Attached -eq $True )
+            {
+                $This.Selected.Letter = Get-DiskImage -ImagePath $This.Selected.Path | Get-Volume | % DriveLetter
+            }
 
             $Path      = "$($This.Selected.Letter):\sources\install.wim"
 
             If (!(Test-Path $Path))
             {
                 $This.Selected.DismountDiskImage()
+                [System.Windows.MessageBox]::Show("Not a valid Windows image","Error")
             }
             Else
             {
@@ -1596,8 +1601,7 @@ Function New-FEInfrastructure
         }
         AddQueue([UInt32[]]$Index)
         {
-            $Index = $Index | % { $_ + 1 }
-            If ($This.Selected.Path -in $This.Queue.Path)
+            If ($This.Selected.Path -in $This.Queue.Name)
             {
                 [System.Windows.MessageBox]::Show("That image is already in the queue - remove, and reindex","Error")
             }
@@ -5422,6 +5426,7 @@ Function New-FEInfrastructure
     # $Xaml.IO.WimPath                  # Text
     # $Xaml.IO.WimExtract               # Button
 
+    # $Xaml                           = [XamlWindow][FEInfrastructureGUI]::Tab
     # [DataGrid]://Initialize
     $Xaml.IO.IsoList.ItemsSource        = @( )
     $Xaml.IO.IsoView.ItemsSource        = @( )
@@ -5551,7 +5556,7 @@ Function New-FEInfrastructure
     
     $Xaml.IO.WimQueue.Add_Click(
     {
-        $Index = @( $Xaml.IO.IsoView.SelectedIndex )
+        $Index = @( $Xaml.IO.IsoView.SelectedItems.Index )
         $Main.Image.AddQueue($Index)
         $Xaml.IO.WimIso.ItemsSource = @( )
         $Xaml.IO.WimIso.ItemsSource = @($Main.Image.Queue)
