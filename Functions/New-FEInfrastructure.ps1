@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-09-11
-          Modified: 2021-10-05
+          Modified: 2021-10-06
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -1162,6 +1162,46 @@ Function New-FEInfrastructure
         }
     }
 
+    Class DsWimFile
+    {
+        [UInt32] $Rank
+        [Object] $Label
+        [UInt32] $ImageIndex            = 1
+        [String] $ImageName
+        [String] $ImageDescription
+        [String] $Version
+        [String] $Architecture
+        [String] $InstallationType
+        [String] $SourceImagePath
+        DsWimFile([UInt32]$Rank,[String]$Image)
+        {
+            If (!(Test-Path $Image))
+            {
+                Throw "Invalid Path"
+            }
+
+            $Item                       = Get-Item $Image
+            $Date                       = $Item.LastWriteTime.GetDateTimeFormats()[5].Split("-")
+            $This.SourceImagePath       = $Image
+            $This.Rank                  = $Rank
+
+            Get-WindowsImage -ImagePath $Image -Index 1 | % {
+                
+                $This.Version           = $_.Version
+                $This.Architecture      = @(86,64)[$_.Architecture -eq 9]
+                $This.InstallationType  = $_.InstallationType
+                $This.ImageName         = $_.ImageName
+                $This.Label             = $Item.BaseName
+                $This.ImageDescription  = "[{0}-{1}{2} (MCC/SDP)][{3}]" -f $Date[0],$Date[1],$Date[2],$This.Label
+
+                If ($This.ImageName -match "Evaluation")
+                {
+                    $This.ImageName     = $This.ImageName -Replace "Evaluation","" -Replace "\(Desktop Experience\)","" -Replace "(\s{2,})"," "
+                }
+            }
+        }
+    }
+
     Class DsShare
     {
         [String]$Name
@@ -1169,6 +1209,7 @@ Function New-FEInfrastructure
         [Object]$Share
         [String]$Description
         [String]$Type
+        [Object]$WimFiles
         DsShare([Object]$Drive)
         {
             $This.Name        = $Drive.Name
@@ -1183,6 +1224,10 @@ Function New-FEInfrastructure
             {
                 $This.Type    = "MDT"
             }
+            If (Test-Path "$($This.Root)\Operating Systems")
+            {
+                $This.ImportWimFiles("$($This.Root)\Operating Systems")
+            }
         }
         DsShare([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
         {
@@ -1191,11 +1236,21 @@ Function New-FEInfrastructure
                 Throw "Share name is already assigned"
             }
 
-            $This.Name        = $Name
-            $This.Root        = $Root
-            $This.Share       = $Share
-            $This.Description = $Description
-            $This.Type        = @("MDT","PSD","-")[$Type]
+            $This.Name          = $Name
+            $This.Root          = $Root
+            $This.Share         = $Share
+            $This.Description   = $Description
+            $This.Type          = @("MDT","PSD","-")[$Type]
+        }
+        ImportWimFiles([String]$Path)
+        {
+            $This.WimFiles      = @( )
+            Write-Host "[Drive]://$($This.Name)"
+            ForEach ($Item in Get-ChildItem $Path *.wim -Recurse)
+            {
+                Write-Host "[Importing]://$($Item.Name)"
+                $This.WimFiles += [DsWimFile]::New($This.WimFiles.Count,$Item.FullName)
+            }
         }
     }
 
@@ -1705,56 +1760,6 @@ Function New-FEInfrastructure
             $This.Phone           = $Root[5]
             $This.Hours           = $Root[6]
             $This.Website         = $Root[7]
-        }
-    }
-
-    Class WimFile
-    {
-        [UInt32] $Rank
-        [Object] $Label
-        [UInt32] $ImageIndex            = 1
-        [String] $ImageName
-        [String] $ImageDescription
-        [String] $Version
-        [String] $Architecture
-        [String] $InstallationType
-        [String] $SourceImagePath
-        WimFile([UInt32]$Rank,[String]$Image)
-        {
-            If ( ! ( Test-Path $Image ) )
-            {
-                Throw "Invalid Path"
-            }
-
-            $This.SourceImagePath       = $Image
-            $This.Rank                  = $Rank
-
-            Get-WindowsImage -ImagePath $Image -Index 1 | % {
-                
-                $This.Version           = $_.Version
-                $This.Architecture      = @(86,64)[$_.Architecture -eq 9]
-                $This.InstallationType  = $_.InstallationType
-                $This.ImageName         = $_.ImageName
-                $This.Label             = Switch($This.InstallationType)
-                {
-                    Server
-                    {
-                        "{0}{1}" -f $(Switch -Regex ($This.ImageName){Standard{"SD"}Datacenter{"DC"}}),[Regex]::Matches($This.ImageName,"(\d{4})").Value
-                    }
-
-                    Client
-                    {
-                        "10{0}{1}" -f $(Switch -Regex ($This.ImageName) { Pro {"P"} Edu {"E"} Home {"H"} }),$This.Architecture
-                    }
-                }
-
-                $This.ImageDescription  = Get-Date -UFormat "[%Y-%m%d (MCC/SDP)][$($This.Label)]"
-
-                If ( $This.ImageName -match "Evaluation" )
-                {
-                    $This.ImageName     = $This.ImageName -Replace "Evaluation \(Desktop Experience\) ",""
-                }
-            }
         }
     }
 
@@ -3397,32 +3402,34 @@ Function New-FEInfrastructure
         '                        <TabControl>',
         '                            <TabItem Header="Wim Files">',
         '                                <GroupBox Grid.Row="0" Header="[DsWimFiles] - (Selected Wim Files)">',
-        '                                    <Grid VerticalAlignment="Top">',
+        '                                    <Grid Height="215"  VerticalAlignment="Top">',
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="40"/>',
-        '                                            <RowDefinition Height="175"/>',
+        '                                            <RowDefinition Height="160"/>',
         '                                        </Grid.RowDefinitions>',
-        '                                        <Grid.ColumnDefinitions>',
+        '                                        <Grid Grid.Row="0">',
+        '                                            <Grid.ColumnDefinitions>',
         '                                            <ColumnDefinition Width="100"/>',
         '                                            <ColumnDefinition Width="*"/>',
         '                                            <ColumnDefinition Width="100"/>',
         '                                        </Grid.ColumnDefinitions>',
-        '                                        <Button   Grid.Row="0" Grid.Column="0" Name="DsSelectWimFilePath" Content="Select"/>',
-        '                                        <TextBox  Grid.Row="0" Grid.Column="1" Name="DsWimFilePath"/>',
-        '                                        <ComboBox Grid.Row="0" Grid.Column="2" Name="DsWimFileMode"/>',
+        '                                            <Button   Grid.Row="0" Grid.Column="0" Name="DsSelectWimFilePath" Content="Select"/>',
+        '                                            <TextBox  Grid.Row="0" Grid.Column="1" Name="DsWimFilePath"/>',
+        '                                            <ComboBox Grid.Row="0" Grid.Column="2" Name="DsWimFileMode"/>',
+        '                                        </Grid>',
         '                                        <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Name="DsWimFiles"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                            <DataGrid.Columns>',
-        '                                                <DataGridTextColumn Header="Rank"        Binding="{Binding Rank}"             Width="40"/>',
+        '                                                <DataGridTextColumn Header="Rank"        Binding="{Binding Rank}"             Width="30"/>',
         '                                                <DataGridTextColumn Header="Label"       Binding="{Binding Label}"            Width="100"/>',
-        '                                                <DataGridTextColumn Header="Name"        Binding="{Binding ImageName}"        Width="200"/>',
+        '                                                <DataGridTextColumn Header="Name"        Binding="{Binding ImageName}"        Width="250"/>',
         '                                                <DataGridTextColumn Header="Description" Binding="{Binding ImageDescription}" Width="200"/>',
         '                                                <DataGridTextColumn Header="Version"     Binding="{Binding Version}"          Width="100"/>',
-        '                                                <DataGridTextColumn Header="Arch"        Binding="{Binding Architecture}"     Width="40"/>',
-        '                                                <DataGridTextColumn Header="Type"        Binding="{Binding InstallationType}" Width="100"/>',
-        '                                                <DataGridTextColumn Header="Path"        Binding="{Binding SourceImagePath}"  Width="350"/>',
+        '                                                <DataGridTextColumn Header="Arch"        Binding="{Binding Architecture}"     Width="30"/>',
+        '                                                <DataGridTextColumn Header="Type"        Binding="{Binding InstallationType}" Width="50"/>',
+        '                                                <DataGridTextColumn Header="Path"        Binding="{Binding SourceImagePath}"  Width="Auto"/>',
         '                                            </DataGrid.Columns>',
         '                                        </DataGrid>',
         '                                    </Grid>',
@@ -3431,19 +3438,24 @@ Function New-FEInfrastructure
         '                            <TabItem Header="Network">',
         '                                <Grid VerticalAlignment="Top">',
         '                                    <Grid.RowDefinitions>',
-        '                                        <RowDefinition Height="80"/>',
-        '                                        <RowDefinition Height="80"/>',
-        '                                        <RowDefinition Height="80"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
         '                                    </Grid.RowDefinitions>',
-        '                                    <GroupBox Grid.Row="0" Header="[DsNwNetBiosName] - (Enter NetBIOS name)">',
-        '                                        <TextBox Name="DsNwNetBiosName"/>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Header="[DsNwDnsName] - (Enter DNS name)">',
-        '                                        <TextBox Name="DsNwDnsName"/>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="2" Header="[DsNwMachineOuName] - (Enter the organizational unit container for child items)">',
-        '                                        <TextBox Name="DsNwMachineOuName"/>',
-        '                                    </GroupBox>',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="100"/>',
+        '                                        <ColumnDefinition Width="200"/>',
+        '                                        <ColumnDefinition Width="100"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <Label   Grid.Row="0" Grid.Column="0" Content="[NetBios]:"/>',
+        '                                    <TextBox Grid.Row="0" Grid.Column="1" Name="DsNetBiosName"/>',
+        '                                    <Label   Grid.Row="0" Grid.Column="2" Content="[Dns]:"/>',
+        '                                    <TextBox Grid.Row="0" Grid.Column="3" Name="DsDnsName"/>',
+        '                                    <Label   Grid.Row="1" Grid.Column="0" Content="[Organization]:"/>',
+        '                                    <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="DsOrganization"/>',
+        '                                    <Label   Grid.Row="2" Grid.Column="0" Content="[MachineOu]:"/>',
+        '                                    <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Name="DsMachineOu"/>',
         '                                </Grid>',
         '                            </TabItem>',
         '                            <TabItem Header="Domain">',
@@ -4177,7 +4189,7 @@ Function New-FEInfrastructure
     {
         $Name = Switch ($Item)
         {
-            Default { $Item }
+            Default { $Item               }
             Date    { "Installation Date" }
             RegPath { "Registry Path"     }
             ModPath { "Module File"       }
@@ -4185,7 +4197,7 @@ Function New-FEInfrastructure
             Path    { "Module Path"       }
             Status  { "Module Status"     }
         }
-        [DGList]::New($Name,$Main.Module.$Item) 
+        [DGList]::New($Name,$Main.Module.$Item)
     })
 
     $Xaml.IO.Module_Type.ItemsSource     = @( )
@@ -5674,7 +5686,7 @@ Function New-FEInfrastructure
                     {
                         $Year               = [Regex]::Matches($Item.Name,"(\d{4})").Value
                         $ID                 = $Item.Name -Replace "Windows Server \d{4} SERVER",''
-                        $Edition, $Tag = Switch -Regex ($ID) 
+                        $Edition, $Tag      = Switch -Regex ($ID) 
                         {
                             "^STANDARDCORE$"   { "Standard Core",  "SDX" }
                             "^STANDARD$"       { "Standard",        "SD" }
@@ -5844,8 +5856,8 @@ Function New-FEInfrastructure
     # [Share]://Events
     $Xaml.IO.DsAggregate.Add_SelectionChanged(
     {
-        $Item = $Xaml.IO.DsAggregate.SelectedItem
-        If ( $Item.Name -match "(\<New\>)" )
+        $Ds = $Xaml.IO.DsAggregate.SelectedItem
+        If ( $Ds.Name -match "(\<New\>)" )
         {
             $Xaml.IO.DsDriveName.Text          = ("FE{0:d3}" -f $Xaml.IO.DsAggregate.Items.Count)
             $Xaml.IO.DsRootPath.Text           = ""
@@ -5857,19 +5869,21 @@ Function New-FEInfrastructure
             $Xaml.IO.DsCustomSettingsPath.Text = ""
             $Xaml.IO.DsPostConfigPath.Text     = ""
             $Xaml.IO.DsShareConfig.IsEnabled   = 0
+            $Xaml.IO.DsWimFilePath.Text        = ""
+            $Xaml.IO.DsWimFiles.ItemsSource    = @( )
         }
 
         Else
         {
-            $Xaml.IO.DsDriveName.Text          = $Item.Name
-            $Xaml.IO.DsRootPath.Text           = $Item.Root
-            $Xaml.IO.DsShareName.Text          = $Item.Share
-            $Xaml.IO.DsDescription.Text        = $Item.Description
-            $Xaml.IO.DsType.SelectedIndex      = @{MDT=0;PSD=1;"-"=2}[$Item.Type]
+            $Xaml.IO.DsDriveName.Text          = $Ds.Name
+            $Xaml.IO.DsRootPath.Text           = $Ds.Root
+            $Xaml.IO.DsShareName.Text          = $Ds.Share
+            $Xaml.IO.DsDescription.Text        = $Ds.Description
+            $Xaml.IO.DsType.SelectedIndex      = @{MDT=0;PSD=1;"-"=2}[$Ds.Type]
             $Xaml.IO.DsType.IsEnabled          = 0
-            $Xaml.IO.DsBootstrapPath.Text      = "$($Item.Root)\Control\Bootstrap.ini"
-            $Xaml.IO.DsCustomSettingsPath.Text = "$($Item.Root)\Control\CustomSettings.ini"
-            $Xaml.IO.DsPostConfigPath.Text     = "$($Item.Root)\Script\Install-FightingEntropy.ps1"
+            $Xaml.IO.DsBootstrapPath.Text      = "$($Ds.Root)\Control\Bootstrap.ini"
+            $Xaml.IO.DsCustomSettingsPath.Text = "$($Ds.Root)\Control\CustomSettings.ini"
+            $Xaml.IO.DsPostConfigPath.Text     = "$($Ds.Root)\Script\Install-FightingEntropy.ps1"
             $Xaml.IO.DsShareConfig.IsEnabled   = 1
             
             If (Test-Path $Xaml.IO.DsBootstrapPath.Text)
@@ -5902,17 +5916,44 @@ Function New-FEInfrastructure
                 $Xaml.IO.DsGeneratePostConfig.IsEnabled     = 1
                 $Xaml.IO.DsSelectPostConfig.IsEnabled       = 0
             }
+
+            If (Test-Path "$($Ds.Root)\Operating Systems")
+            {
+                $Xaml.IO.DsWimFilePath.Text                 = "$($Ds.Root)\Operating Systems"
+                $Xaml.IO.DsWimFiles.ItemsSource             = @( )
+            }
+
+            If (!(Test-Path "$($Ds.Root)\Operating Systems"))
+            {
+                $Xaml.IO.DsWimFilePath.Text                 = ""
+            }
+
+            If ($Ds.WimFiles.Count -gt 0)
+            {
+                $Xaml.IO.DsWimFiles.ItemsSource             = @($Ds.WimFiles)
+                $Xaml.IO.DsSelectWimFilePath.IsEnabled      = 0
+                $Xaml.IO.DsWimFilePath.IsEnabled            = 0
+                $Xaml.IO.DsWimFileMode.IsEnabled            = 0
+            }
+
+            If ($Ds.WimFiles.Count -eq 0)
+            {
+                $Xaml.IO.DsWimFiles.ItemsSource             = @( )
+                $Xaml.IO.DsSelectWimFilePath.IsEnabled      = 1
+                $Xaml.IO.DsWimFilePath.IsEnabled            = 1
+                $Xaml.IO.DsWimFileMode.IsEnabled            = 1
+            }
         }
 
-        If ($Item.Root -in $Main.MDT.Shares.Root)
+        If ($Ds.Root -in $Main.MDT.Shares.Root)
         {
-            $Xaml.IO.DsCreate.IsEnabled = 0
-            $Xaml.IO.DsUpdate.IsEnabled = 1
+            $Xaml.IO.DsCreate.IsEnabled      = 0
+            $Xaml.IO.DsUpdate.IsEnabled      = 1
         }
-        If ($Item.Root -notin $Main.MDT.Shares.Root)
+        If ($Ds.Root -notin $Main.MDT.Shares.Root)
         {
-            $Xaml.IO.DsCreate.IsEnabled = 1
-            $Xaml.IO.DsUpdate.IsEnabled = 0
+            $Xaml.IO.DsCreate.IsEnabled      = 1
+            $Xaml.IO.DsUpdate.IsEnabled      = 0
         }
     })
 
@@ -5978,6 +6019,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.DsSelectWimFilePath.Add_Click(
     {
+        $Ds                    = $Xaml.IO.DsAggregate.SelectedItem
         $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
         $Item.ShowDialog()
         
@@ -5986,21 +6028,18 @@ Function New-FEInfrastructure
             $Item.SelectedPath  = ""
         }
 
-        ElseIf ((Get-ChildItem $Item.SelectedPath -Recurse *.wim).Count -eq 0)
+        ElseIf ((Get-ChildItem $Item.SelectedPath *.wim -Recurse).Count -eq 0)
         {
             Return [System.Windows.MessageBox]::Show("No .wim files were detected in the provided path","Error")
         }
 
         Else
         {
-            $Xaml.IO.DsWimFilePath.Text     = $Item.SelectedPath
+            $Xaml.IO.DsWimFilePath.Text            = $Item.SelectedPath
+            $Xaml.IO.DsSelectWimFilePath.IsEnabled = 0
+            $Ds.ImportWimFiles($Xaml.IO.DsWimFilePath.Text)
             $Xaml.IO.DsWimFiles.ItemsSource = @( )
-
-            Get-ChildItem -Path $Xaml.IO.DsWimFilePath.Text -Recurse *.wim | % { 
-        
-                Write-Host "Processing [$($_.FullName)]"
-                $Xaml.IO.DsWimFiles.ItemsSource += [WimFile]::New($Xaml.IO.DsWimFiles.Items.Count,$_.FullName) 
-            }
+            $Xaml.IO.DsWimFiles.ItemsSource = @($Ds.WimFiles)
         }
     })
 
@@ -6101,7 +6140,7 @@ Function New-FEInfrastructure
         {
             Return [System.Windows.MessageBox]::Show("Must select a share from the datagrid","Error")
         }
-        ElseIf ($Xaml.IO.DsNwNetBiosName.Text -eq "")
+        ElseIf ($Xaml.IO.DsNetBiosName.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Must enter the NetBIOS ID","Error")
         }
@@ -6119,9 +6158,9 @@ Function New-FEInfrastructure
         }
         Else
         {
-            $Item                          = $Xaml.IO.DsAggregate.SelectedItem
+            $Ds                            = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsBootstrap.Text      = @( ) 
-            ForEach ( $Line in $Main.Bootstrap($Item.Type,$Xaml.IO.DsNwNetBiosName.Text,"\\$($Xaml.IO.NwDnsName)\$($Item.Share)",$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
+            ForEach ( $Line in $Main.Bootstrap($Ds.Type,$Xaml.IO.DsNetBiosName.Text,"\\$($Main.MDT.Server)\$($Ds.Share)",$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
             {
                 $Xaml.IO.DsBootstrap.Text += $Line
             }
@@ -6134,19 +6173,19 @@ Function New-FEInfrastructure
         {
             Return [System.Windows.MessageBox]::Show("Must select a share from the datagrid","Error")
         }
-        ElseIf ($Xaml.IO.DcOrganization.Text -eq "")
+        ElseIf ($Xaml.IO.DsOrganization.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Invalid organization name","Error")
         }
-        ElseIf($Xaml.IO.DsNwNetBiosName.Text -eq "")
+        ElseIf($Xaml.IO.DsNetBiosName.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Invalid NetBIOS name","Error")
         }
-        ElseIf($Xaml.IO.DsNwDnsName.Text -eq "")
+        ElseIf($Xaml.IO.DsDnsName.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Invalid DNS name","Error")
         }
-        ElseIf($Xaml.IO.DsNwMachineOUName.Text -eq "")
+        ElseIf($Xaml.IO.DsMachineOU.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Invalid computer OU designated","Error")
         }
@@ -6164,10 +6203,10 @@ Function New-FEInfrastructure
         }
         Else
         {
-            $Item                               = $Xaml.IO.DsAggregate.SelectedItem
+            $Ds                               = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsCustomSettings.Text      = @() 
-            ForEach ($Line in $Main.CustomSettings($Item.Type,$Item.Share,$Xaml.IO.DcOrganization.Text,$Xaml.IO.DsNwNetBiosName.Text,
-                                                $Xaml.IO.DsNwDnsName.Text,$Xaml.IO.DsNwMachineOUName.Text,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
+            ForEach ($Line in $Main.CustomSettings($Ds.Type,$Ds.Share,$Xaml.IO.DsOrganization.Text,$Xaml.IO.DsNetBiosName.Text,
+                                                $Main.MDT.Server,$Xaml.IO.DsMachineOU.Text,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
             {
                 $Xaml.IO.DsCustomSettings.Text += $Line
             }
@@ -6182,9 +6221,9 @@ Function New-FEInfrastructure
         }
         Else
         {
-            $Item                           = $Xaml.IO.DsAggregate.SelectedItem
+            $Ds                           = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsPostConfig.Text      = @( )
-            ForEach ( $Line in $Main.PostConfig("\\$Env:ComputerName\$($Item.Share)\DSKey.csv") )
+            ForEach ( $Line in $Main.PostConfig("\\$Env:ComputerName\$($Ds.Share)\DSKey.csv") )
             {
                 $Xaml.IO.DsPostConfig.Text += $Line
             }
@@ -6268,12 +6307,12 @@ Function New-FEInfrastructure
             Return [System.Windows.MessageBox]::Show("Cannot use the <New> for the share, select another option","Error")
         }
 
-        ElseIf ($Xaml.IO.DcOrganization.Text.Length -eq 0)
+        ElseIf ($Xaml.IO.DsOrganization.Text.Length -eq 0)
         {
             Return [System.Windows.MessageBox]::Show("Missing the organization name","Error")
         }
 
-        ElseIf ($Xaml.IO.DcCommonName.Text.Length -eq 0)
+        ElseIf ($Xaml.IO.DsDnsName.Text.Length -eq 0)
         {
             Return [Systme.Windows.MessageBox]::Show("Missing the domain name/common name","Error")
         }
@@ -6298,7 +6337,7 @@ Function New-FEInfrastructure
             Return [System.Windows.MessageBox]::Show("Invalid domain account password/confirm","Error")
         }
 
-        ElseIf (!(Get-ADOrganizationalUnit -Filter * | ? DistinguishedName -match $Xaml.IO.DsNwMachineOuName.Text))
+        ElseIf (!(Get-ADOrganizationalUnit -Filter * | ? DistinguishedName -match $Xaml.IO.DsMachineOu.Text))
         {
             Return [System.Windows.MessageBox]::Show("Invalid OU specified","Error")
         }
@@ -6327,30 +6366,30 @@ Function New-FEInfrastructure
         {
             Write-Theme "Creating [~] Deployment Share"
 
-            $Item = $Xaml.IO.DsAggregate.SelectedItem
+            $Ds = $Xaml.IO.DsAggregate.SelectedItem
 
-            If (!(Test-Path $Item.Root))
+            If (!(Test-Path $Ds.Root))
             {
-                New-Item $Item.Root -ItemType Directory -Verbose
+                New-Item $Ds.Root -ItemType Directory -Verbose
             }
 
-            $Hostname       = @($Env:ComputerName,"$Env:ComputerName.$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+            $Hostname       = $Main.MDT.Server
 
             $SMB            = @{
 
-                Name        = $Xaml.IO.DsShareName.Text
-                Path        = $Xaml.IO.DsRootPath.Text
-                Description = $Xaml.IO.DsDescription.Text
+                Name        = $Ds.Share
+                Path        = $Ds.Root
+                Description = $Ds.Description
                 FullAccess  = "Administrators"
             }
 
             $PSD            = @{ 
 
-                Name        = $Xaml.IO.DsDriveName.Text
+                Name        = $Ds.Name
                 PSProvider  = "MDTProvider"
-                Root        = $Xaml.IO.DsRootPath.Text
-                Description = $Xaml.IO.DsDescription.Text
-                NetworkPath = ("\\{0}\{1}" -f $Hostname, $Xaml.IO.DsShareName.Text)
+                Root        = $Ds.Root
+                Description = $Ds.Description
+                NetworkPath = ("\\{0}\{1}" -f $Hostname, $Ds.Share)
             }
 
             $MDT            = Get-ItemProperty HKLM:\Software\Microsoft\Deployment* | % Install_Dir | % TrimEnd \
@@ -6358,12 +6397,12 @@ Function New-FEInfrastructure
             New-SMBShare @SMB
             New-PSDrive  @PSD -Verbose | Add-MDTPersistentDrive -Verbose
 
-            If ($Item.Type -eq "PSD")
+            If ($Ds.Type -eq "PSD")
             {
                 $ScriptRoot         = Get-PSDModule
-                $ItemName           = "$($Item.Name):"
-                $ItemRoot           = $Item.Root
-                $ItemShare          = $Item.Share
+                $ItemName           = "$($Ds.Name):"
+                $ItemRoot           = $Ds.Root
+                $ItemShare          = $Ds.Share
 
                 # Create backup folder      
                 Write-Host "Creating [~] backup folder"
@@ -6488,9 +6527,23 @@ Function New-FEInfrastructure
 
             # Load Module / Share Drive Mount
             $Module                = Get-FEModule
-            $Root                  = "$($PSD.Name):\"
-            $Control               = "$($PSD.Root)\Control"
-            $Script                = "$($PSD.Root)\Scripts"
+            $Root                  = "$($Ds.Name):"
+            $Control               = "$($Ds.Root)\Control"
+            $Script                = "$($Ds.Root)\Scripts"
+            $Network               = "\\$Hostname\$($Ds.Share)"
+
+            # [Propogate the variables as an environment key for (server/client) child items to restore]
+            $DSKey                 = @($Network,
+                                       $Xaml.IO.DsOrganization.Text,
+                                       $Xaml.IO.DsDnsName.Text,
+                                       $Xaml.IO.DsBrBackground.Text,
+                                       $Xaml.IO.DsBrLogo.Text,
+                                       $Xaml.IO.DsBrPhone.Text,
+                                       $Xaml.IO.DsBrHours.Text,
+                                       $Xaml.IO.DsBrWebsite.Text)
+
+            $Key                   = [Key]$DSKey
+
             
             # Copies the background and logo if they were selected and are found
             ForEach ($File in $Xaml.IO.DsBrBackground.Text,$Xaml.IO.DsBrLogo.Text)
@@ -6501,12 +6554,12 @@ Function New-FEInfrastructure
 
                     If ($File -eq $Key.Background)
                     {
-                        $Key.Background = "$($PSD.NetworkPath)\Scripts\$($File | Split-Path -Leaf)"
+                        $Key.Background = "$Network\Scripts\$( $File | Split-Path -Leaf )"
                     }
 
                     If ($File -eq $Key.Logo)
                     {
-                        $Key.Logo       = "$($PSD.NetworkPath)\Scripts\$($File | Split-Path -Leaf)"
+                        $Key.Logo       = "$Network\Scripts\$( $File | Split-Path -Leaf )"
                     }
                 }
             }
@@ -6514,7 +6567,7 @@ Function New-FEInfrastructure
             # For the PXE environment images
             ForEach ( $File in $Module.Control | ? Extension -eq .png )
             {
-                Copy-Item -Path $File.Fullname -Destination $Script -Force -Verbose
+                Copy-Item -Path $File.FullName -Destination $Script -Force -Verbose
             }
 
             # Copies custom template for FightingEntropy to post install/configure
@@ -6524,14 +6577,14 @@ Function New-FEInfrastructure
             }
 
             # [Import OS/TS to MDT Share]
-            $OS          = "$($PSD.Name):\Operating Systems"
-            $TS          = "$($PSD.Name):\Task Sequences"
-            $Comment     = Get-Date -UFormat "[%Y-%m%d (MCC/SDP)][$($Item.Type)]"
+            $OS          = "$Root\Operating Systems"
+            $TS          = "$Root\Task Sequences"
+            $Comment     = Get-Date -UFormat "[%Y-%m%d (MCC/SDP)][$($Ds.Type)]"
 
             # [Create folders in the new MDT share]
-            ForEach ( $Type in "Server","Client" )
+            ForEach ($Type in "Server","Client")
             {
-                ForEach ( $Version in $Images | ? InstallationType -eq $Type | % Version | Select-Object -Unique )
+                ForEach ($Version in $Ds.WimFiles | ? InstallationType -eq $Type | % Version | Select-Object -Unique)
                 {
                     ForEach ( $Slot in $OS, $TS )
                     {
@@ -6549,7 +6602,7 @@ Function New-FEInfrastructure
             }
 
             # [Inject the Wim files into the MDT share]
-            ForEach ($Image in $Xaml.IO.DsWimFiles.ItemsSource)
+            ForEach ($Image in $Ds.WimFiles)
             {
                 $Type                   = $Image.InstallationType
                 $Path                   = "$OS\$Type\$($Image.Version)"
@@ -6574,15 +6627,15 @@ Function New-FEInfrastructure
                     
                     Path                = "$TS\$Type\$($Image.Version)"
                     Name                = $Image.ImageName
-                    Template            = "{0}{1}Mod.xml" -f $Item.Type, $Type
+                    Template            = "{0}{1}Mod.xml" -f $Ds.Type, $Type
                     Comments            = $Comment
                     ID                  = $Image.Label
                     Version             = "1.0"
                     OperatingSystemPath = Get-ChildItem -Path $Path | ? Name -match $Image.Label | % { "{0}\{1}" -f $Path, $_.Name }
-                    FullName            = $Xaml.IO.DcLmUsername.Text
-                    OrgName             = $Xaml.IO.DcOrganization.Text
-                    HomePage            = $Xaml.IO.DcBrWebsite.Text
-                    AdminPassword       = $Xaml.IO.DcLmPassword.Password
+                    FullName            = $Xaml.IO.DsLmUsername.Text
+                    OrgName             = $Xaml.IO.DsOrganization.Text
+                    HomePage            = $Xaml.IO.DsBrWebsite.Text
+                    AdminPassword       = $Xaml.IO.DsLmPassword.Password
                 }
 
                 Import-MDTTaskSequence @TaskSequence -Verbose
@@ -6598,19 +6651,19 @@ Function New-FEInfrastructure
             If ($Xaml.IO.DsWimFileMode.SelectedIndex -eq 1)
             {
                 Write-Theme "OS/TS [+] Imported, removing .wim file directory" 11,3,15,0
-                Remove-Item -Path $Xaml.IO.DcWimFilePath.Text -Recurse -Force -Verbose
+                Remove-Item -Path $Xaml.IO.DsWimFilePath.Text -Recurse -Force -Verbose
             }
 
-            Write-Theme "Setting [~] Share properties [($Root)]"
+            Write-Theme "Setting [~] Share properties [$Root]"
             # Share Settings
-            Set-ItemProperty $Root -Name Comments    -Value $("[FightingEntropy({0})]{1}[{2}]" -f [Char]960,(Get-Date -UFormat "[%Y-%m%d (MCC/SDP)]"),$Item.Type ) -Verbose
+            Set-ItemProperty $Root -Name Comments    -Value $("[FightingEntropy({0})]{1}[{2}]" -f [Char]960,(Get-Date -UFormat "[%Y-%m%d (MCC/SDP)]"),$Ds.Type ) -Verbose
             Set-ItemProperty $Root -Name MonitorHost -Value $HostName -Verbose
 
             # Image Names/Background
             ForEach ($x in 64,86)
             {
                 $Names  = $X | % { "Boot.x$_" } | % { "$_.Generate{0}ISO $_.{0}WIMDescription $_.{0}ISOName $_.BackgroundFile" -f "LiteTouch" -Split " " }
-                $Values = $X | % { "$($Module.Name)[$($Module.Version)][$($Item.Type)](x$_)" } | % { "True;$_;$_.iso;$($Xaml.IO.DsBrBackground.Text)" -Split ";" }
+                $Values = $X | % { "$($Module.Name)[$($Module.Version)][$($Ds.Type)](x$_)" } | % { "True;$_;$_.iso;$($Xaml.IO.DsBrBackground.Text)" -Split ";" }
                 0..3         | % { Set-ItemProperty -Path $Root -Name $Names[$_] -Value $Values[$_] -Verbose } 
             }
 
@@ -6625,15 +6678,17 @@ Function New-FEInfrastructure
             # [FightingEntropy Installation propogation]
             [System.IO.File]::WriteAllLines("$Script\Install-FightingEntropy.ps1",$Xaml.IO.DsPostConfig.Text,$Encoding)
 
-            # [Propogate the variables as an environment keys for [server/client] child items to restore]
-            $DS  = @($PSD.NetworkPath,$Xaml.IO.DcOrganization.Text,$Xaml.IO.DcCommonName.Text,$Xaml.IO.DsBrBackground.Text,
-                    $Xaml.IO.DsBrLogo.Text,$Xaml.IO.DsBrPhone.Text,$Xaml.IO.DsBrHours.Text,$Xaml.IO.DsBrWebsite.Text)
-            $Key = [Key]$DS
-        
-            Set-Content -Path "$($PSD.Root)\DSKey.csv" -Value ($Key | ConvertTo-CSV) -Verbose
+            # Write Environment Key to the share
+            Set-Content -Path "$($Ds.Root)\DSKey.csv" -Value ($Key | ConvertTo-CSV) -Verbose
 
             # Update FEShare(MDT)
             Update-MDTDeploymentShare -Path $Root -Force -Verbose
+
+#    ____                                                                                                    ________    
+#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+#    ¯¯¯\\__[ WDS Section    ]______________________________________________________________________________//¯¯¯        
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
             # Update/Flush FEShare(Images)
             $ImageLabel = Get-ItemProperty -Path $Root | % { 
@@ -6643,7 +6698,7 @@ Function New-FEInfrastructure
             }
 
             # Rename the Litetouch_ files
-            Get-ChildItem -Path "$($Xaml.IO.DsRootPath.Text)\Boot" | ? Extension | % { 
+            Get-ChildItem -Path "$($Ds.Root)\Boot" | ? Extension | % { 
 
                 $Label          = $ImageLabel[$(Switch -Regex ($_.Name) { 64 {64} 86 {86}})]
                 $Image          = @{ 
@@ -6673,7 +6728,7 @@ Function New-FEInfrastructure
             Get-Service -Name WDSServer | ? Status -ne Running | Start-Service -Verbose
 
             # Update/Flush FEShare(WDS)
-            ForEach ( $Image in [BootImages]::New("$($Xaml.IO.DsRootPath.Text)\Boot").Images )
+            ForEach ($Image in [BootImages]::New("$($Ds.Root)\Boot").Images)
             {        
                 If (Get-WdsBootImage -Architecture $Image.Type -ImageName $Image.Name -EA 0)
                 {
@@ -6694,8 +6749,8 @@ Function New-FEInfrastructure
     })
 
     # Set initial TextBox values
-    $Xaml.IO.DsNwNetBIOSName.Text = $Env:UserDomain
-    $Xaml.IO.DsNwDNSName.Text     = @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+    $Xaml.IO.DsNetBIOSName.Text   = $Env:UserDomain.ToLower()
+    $Xaml.IO.DsDNSName.Text       = $Env:UserDNSDomain.ToLower()
     $Xaml.IO.DsLmUsername.Text    = "Administrator"
     
     $Xaml.Invoke()
