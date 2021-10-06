@@ -5640,17 +5640,16 @@ Function New-FEInfrastructure
                     Server
                     {
                         $Year               = [Regex]::Matches($Item.Name,"(\d{4})").Value
-                        Switch -Regex ($Item.Name) 
+                        $ID                 = $Item.Name -Replace "Windows Server \d{4} ",''
+                        ForEach ($Item in $Wim)
                         {
-                            STANDARD
+                            $ID            = $Item.ImageName -Replace "Windows Server \d{4} SERVER",''
+                            $Edition, $Tag = Switch -Regex ($ID) 
                             {
-                                $Edition    = "Standard"
-                                $Tag        = "SD" 
-                            }
-                            DATACENTER
-                            {
-                                $Edition    = "Datacenter"
-                                $Tag        = "DC"
+                                "^STANDARDCORE$"   { "Standard Core",  "SDX" }
+                                "^STANDARD$"       { "Standard",        "SD" }
+                                "^DATACENTERCORE$" { "Datacenter Core","DCX" }
+                                "^DATACENTER$"     { "Datacenter",      "DC" }
                             }
                         }
                         $DestinationName    = "Windows Server $Year $Edition (x64)"
@@ -5659,24 +5658,15 @@ Function New-FEInfrastructure
 
                     Default
                     {
-                        Switch -Regex ($Item.Name)
+                        $ID                 = $Item.Name -Replace "Windows 10 "
+                        $Tag                = Switch -Regex ($Item.Name)
                         {
-                            Education
-                            {
-                                $Tag        = "Edu"
-                            }
-                            Pro
-                            {
-                                $Tag        = "P"
-                            }
-                            Home
-                            {
-                                $Tag        = "H"
-                            }
-                            Enterprise
-                            {
-                                $Tag        = "En"
-                            }
+                            "^Home$"             { "HOME"       } "^Home N$"            { "HOME_N"   }
+                            "^Home Sin.+$"       { "HOME_SL"    } "^Education$"         { "EDUC"     }
+                            "^Education N$"      { "EDUC_N"     } "^Pro$"               { "PRO"      }
+                            "^Pro N$"            { "PRO_N"      } "^Pro Education [^N]" { "PRO_EDUC" }
+                            "^Pro Edu.+N$"       { "PRO_EDUC_N" } "^Pro [^N].+Work.+$"  { "PRO_WS"   }
+                            "^Pro N .+Work.+$"   { "PRO_N_WS"   } "Enterprise"          { "ENT"      }
                         }
                         $DestinationName    = "{0} (x{1})" -f $Item.Name, $Item.Architecture
                         $Label              = "10{0}{1}" -f $Tag, $Item.Architecture
