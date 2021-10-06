@@ -2333,7 +2333,7 @@ Function New-FEInfrastructure
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="120"/>',
         '                                    <RowDefinition Height="180"/>',
-        '                                    <RowDefinition Height="180"/>',
+        '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
         '                                <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Veridian"/>',
         '                                <GroupBox Grid.Row="1" Header="[Hyper-V Host] - (Main Hyper-V Host Settings)">',
@@ -5640,17 +5640,13 @@ Function New-FEInfrastructure
                     Server
                     {
                         $Year               = [Regex]::Matches($Item.Name,"(\d{4})").Value
-                        $ID                 = $Item.Name -Replace "Windows Server \d{4} ",''
-                        ForEach ($Item in $Wim)
+                        $ID                 = $Item.Name -Replace "Windows Server \d{4} SERVER",''
+                        $Edition, $Tag = Switch -Regex ($ID) 
                         {
-                            $ID            = $Item.ImageName -Replace "Windows Server \d{4} SERVER",''
-                            $Edition, $Tag = Switch -Regex ($ID) 
-                            {
-                                "^STANDARDCORE$"   { "Standard Core",  "SDX" }
-                                "^STANDARD$"       { "Standard",        "SD" }
-                                "^DATACENTERCORE$" { "Datacenter Core","DCX" }
-                                "^DATACENTER$"     { "Datacenter",      "DC" }
-                            }
+                            "^STANDARDCORE$"   { "Standard Core",  "SDX" }
+                            "^STANDARD$"       { "Standard",        "SD" }
+                            "^DATACENTERCORE$" { "Datacenter Core","DCX" }
+                            "^DATACENTER$"     { "Datacenter",      "DC" }
                         }
                         $DestinationName    = "Windows Server $Year $Edition (x64)"
                         $Label              = "{0}{1}" -f $Tag, $Year
@@ -5659,7 +5655,7 @@ Function New-FEInfrastructure
                     Default
                     {
                         $ID                 = $Item.Name -Replace "Windows 10 "
-                        $Tag                = Switch -Regex ($Item.Name)
+                        $Tag                = Switch -Regex ($ID)
                         {
                             "^Home$"             { "HOME"       } "^Home N$"            { "HOME_N"   }
                             "^Home Sin.+$"       { "HOME_SL"    } "^Education$"         { "EDUC"     }
