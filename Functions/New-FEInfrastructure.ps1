@@ -8,7 +8,72 @@
 .NOTES
           FileName: New-FEInfrastructure.ps1
           Solution: FightingEntropy Infrastructure Deployment Tool
-          Purpose: For deploying virtual and physical infrastructure, including gateways and servers for ADDS
+          Purpose: For deploying virtual and physical infrastructure, including:
+            [Module ()]
+            - FightingEntropy Module 
+            - FightingEntropy Machine Role
+            [Config (Administration/Configuration)]
+            - System Information Panel
+            - Network Information Panel (Multiple Adapters/IPV4)
+            - Dynamic Host Configuration Protocol (ScopeID/Reservations/Option Values)
+            - Domain Name Service (Zones/Hosts/Records)
+            - Active Directory Domain Services (Sites and Services/Sitelinks/OUs/Computers/DHCP)
+            - Hyper-V/Veridian (Virtual Switches/Machines)
+            - Windows Deployment Services Loadout + (Boot/Install) Images Loadout
+            - Microsoft Deployment Toolkit Loadout + Deployment Shares
+            - Windows Assessment and Deployment Kit/Preinstallation Environment
+            - Internet Information Services (Application Pools/Sites)
+            [Domain]
+            - Aggregate a new or current company name, and associate concatenated site names w/ common name
+            - Input new locations based on US zip codes
+            - View location information
+            - Topology overview
+            [Network]
+            - Input a master network + prefix length address to subdivide and aggregate total possible subnets and host ranges
+            - Input a custom network + prefix length
+            - View network information
+            - Topology overview
+            [Sitemap]
+            - Concatenate Domain + Network values to build intersite topology generation
+            - Link all sites via master sitelink
+            - Select template objects to create in each site
+            - View site (location/network) information
+            - Topology overview
+            [Gateway]
+            - Pull gateway information from sitemap to build ADDS Gateway items
+            - View gateway (location/network) information
+            - Test/Validate topology overview
+            - Create ADDS items for each individual gateway
+            [Server]
+            - Pull server information from sitemap to build ADDS Server items
+            - View server (location/network) information
+            - Test/Validate topology overview
+            - Create ADDS items for each individual server
+            [Virtual]
+            - Input a Hyper-V control server
+            - Log into control server with credentials
+            - Test/Validate provisioned gateway/server items
+            - Configure image, disk size and memory for (gateway/server) VMs
+            - Deploy (physical/virtual) switches, gateways, and servers
+            [Imaging]
+            - Load a path to Windows ISO files
+            - Review ISO tree
+            - Load an ISO
+            - Extract Windows images (.wim files)
+            - Queue for extraction
+            - Automate .wim extraction
+            [Updates]
+            - To be completed
+            [Share]
+            - To administrate/update current Microsoft Deployment Toolkit shares, and create new ones
+            - Update feature not yet implemented
+            - Allows injection of .wim files from Imaging tab
+            - Streamlines all aspects of building a deployment share, network info, domain login, branding
+            - Generate or select a Bootstrap.ini, CustomSettings.ini, and PostConfig.ps1
+            - Automatically injects the operating systems and task sequences for each .wim file
+            - Injects customized information into boot images
+            - Automatically deploys the boot image to Windows Deployment Services
+            
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
