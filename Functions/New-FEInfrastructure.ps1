@@ -3405,10 +3405,12 @@ Function New-FEInfrastructure
         '                                        <Grid.ColumnDefinitions>',
         '                                            <ColumnDefinition Width="100"/>',
         '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="100"/>',
         '                                        </Grid.ColumnDefinitions>',
         '                                        <Button   Grid.Row="0" Grid.Column="0" Name="DsSelectWimFilePath" Content="Select"/>',
         '                                        <TextBox  Grid.Row="0" Grid.Column="1" Name="DsWimFilePath"/>',
-        '                                        <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Name="DsWimFiles"',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="2" Name="DsWimFileMode"/>',
+        '                                        <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Name="DsWimFiles"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -6676,7 +6678,7 @@ Function New-FEInfrastructure
                 If (Get-WdsBootImage -Architecture $Image.Type -ImageName $Image.Name -EA 0)
                 {
                     Write-Theme "Detected [!] $($Image.Name), removing..." 12,4,15,0
-                    Remove-WDSBootImage -Architecture $Image.Type -ImageName $Image.Name -Verbose
+                    Remove-WdsBootImage -Architecture $Image.Type -ImageName $Image.Name -Verbose
                 }
 
                 Write-Theme "Importing [~] $($Image.Name)" 11,3,15,0
