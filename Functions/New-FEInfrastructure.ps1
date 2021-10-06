@@ -4091,7 +4091,7 @@ Function New-FEInfrastructure
 
             Return $This.Enumerate($Output)
         }
-        [Object] CustomSettings([String]$Type,[String]$UNC,[String]$Org,[String]$NetBIOS,[String]$DNS,[String]$OU,[String]$UserID,[String]$Password)
+        [Object] CustomSettings([String]$Type,[String]$UNC,[String]$Org,[String]$NetBIOS,[String]$DNS,[String]$Server,[String]$OU,[String]$UserID,[String]$Password)
         {
             $Output = $Null
             $Port   = $Null
@@ -4114,10 +4114,10 @@ Function New-FEInfrastructure
                     }
                     Default                  = @{
                         _SMSTSOrgName        = $Org
-                        JoinDomain           = $DNS
-                        DomainAdmin          = $UserID
+                        JoinDomain           = $NetBIOS
+                        DomainAdmin          = $UserID.Split("@")[0]
                         DomainAdminPassword  = $Password
-                        DomainAdminDomain    = $DNS
+                        DomainAdminDomain    = $NetBIOS
                         MachineObjectOU      = $OU
                         SkipDomainMembership = "YES" 
                         OSInstall            = "Y"
@@ -4128,7 +4128,7 @@ Function New-FEInfrastructure
                         SkipBitlocker        = "YES"
                         KeyboardLocale       = "en-US"
                         TimeZoneName         = "$(Get-Timezone | % ID)"
-                        EventService         = ("http://{0}:{1}" -f $DNS,$Port)
+                        EventService         = ("http://{0}:{1}" -f $Server,$Port)
                     }
                 }
             }
@@ -4144,7 +4144,7 @@ Function New-FEInfrastructure
                         _SMSTSOrgName        = $Org
                         TimeZoneName         = "$(Get-Timezone | % ID)"
                         KeyboardLocale       = "en-US"
-                        EventService         = ("http://{0}:{1}" -f $DNS,$Port)
+                        EventService         = ("http://{0}:{1}" -f $Server,$Port)
                     }
                 }
             }
@@ -6205,8 +6205,17 @@ Function New-FEInfrastructure
         {
             $Ds                               = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsCustomSettings.Text      = @() 
+            <#[String]$Type,
+            [String]$UNC,
+            [String]$Org,
+            [String]$NetBIOS,
+            [String]$DNS,
+            [String]$Server,
+            [String]$OU,
+            [String]$UserID,
+            [String]$Password#>
             ForEach ($Line in $Main.CustomSettings($Ds.Type,$Ds.Share,$Xaml.IO.DsOrganization.Text,$Xaml.IO.DsNetBiosName.Text,
-                                                $Main.MDT.Server,$Xaml.IO.DsMachineOU.Text,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
+                                                $Main.MDT.Server,$Xaml.IO.DsDnsName.Text,$Xaml.IO.DsMachineOU.Text,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
             {
                 $Xaml.IO.DsCustomSettings.Text += $Line
             }
