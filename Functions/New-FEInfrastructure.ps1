@@ -73,7 +73,7 @@
             - Automatically injects the operating systems and task sequences for each .wim file
             - Injects customized information into boot images
             - Automatically deploys the boot image to Windows Deployment Services
-            
+
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
@@ -6744,13 +6744,13 @@ Function New-FEInfrastructure
             $Encoding = New-Object System.Text.UTF8Encoding $False
 
             # [Bootstrap.ini]
-            [System.IO.File]::WriteAllLines("$Control\Bootstrap.ini",$Xaml.IO.DsBootstrap.Text,$Encoding)
+            [System.IO.File]::WriteAllLines("$Control\Bootstrap.ini",($Xaml.IO.DsBootstrap.Text -Split "`n"),$Encoding)
 
             # [CustomSettings.ini]
-            [System.IO.File]::WriteAllLines("$Control\CustomSettings.ini",$Xaml.IO.DsBootstrap.Text,$Encoding)
+            [System.IO.File]::WriteAllLines("$Control\CustomSettings.ini",($Xaml.IO.DsBootstrap.Text -Split "`n"),$Encoding)
 
             # [FightingEntropy Installation propogation]
-            [System.IO.File]::WriteAllLines("$Script\Install-FightingEntropy.ps1",$Xaml.IO.DsPostConfig.Text,$Encoding)
+            [System.IO.File]::WriteAllLines("$Script\Install-FightingEntropy.ps1",($Xaml.IO.DsPostConfig.Text -Split "`n"),$Encoding)
 
             # Write Environment Key to the share
             Set-Content -Path "$($Ds.Root)\DSKey.csv" -Value ($Key | ConvertTo-CSV) -Verbose
