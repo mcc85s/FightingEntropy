@@ -5694,7 +5694,7 @@ Function New-FEInfrastructure
                             "^Home Sin.+$"       { "HOME_SL"    } "^Education$"         { "EDUC"     }
                             "^Education N$"      { "EDUC_N"     } "^Pro$"               { "PRO"      }
                             "^Pro N$"            { "PRO_N"      } "^Pro Education$"     { "PRO_EDUC" }
-                            "^Pro Education N$"  { "PRO_EDUC_N" } "^Pro [^N].+Work.+$"  { "PRO_WS"   }
+                            "^Pro Education N$"  { "PRO_EDUC_N" } "^Pro [^N]Work.+$"    { "PRO_WS"   }
                             "^Pro N .+Work.+$"   { "PRO_N_WS"   } "Enterprise"          { "ENT"      }
                         }
                         $DestinationName    = "{0} (x{1})" -f $Item.Name, $Item.Architecture
