@@ -6232,7 +6232,7 @@ Function New-FEInfrastructure
         {
             $Ds                           = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsPostConfig.Text      = @( )
-            ForEach ( $Line in $Main.PostConfig("\\$Env:ComputerName\$($Ds.Share)\DSKey.csv") )
+            ForEach ( $Line in $Main.PostConfig("\\$($Main.MDT.Server)\$($Ds.Share)\DSKey.csv") )
             {
                 $Xaml.IO.DsPostConfig.Text += $Line
             }
