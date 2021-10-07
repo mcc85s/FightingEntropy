@@ -1,7 +1,7 @@
 Function Get-FEProcess
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
-    Param([Parameter(ParameterSetName=1,Mandatory)][Switch]$Output)
+    Param([Parameter(ParameterSetName=1,Mandatory)][Switch]$Text)
     
     Class FEProcess
     {
