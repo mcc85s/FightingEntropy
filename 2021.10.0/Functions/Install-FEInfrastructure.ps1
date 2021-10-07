@@ -1,5 +1,3 @@
-
-
 $Path        = Get-ChildItem $home\desktop | ? Name -match "(\d{8})" | % Fullname
 $GW          = Get-ChildItem $Path\GW | % FullName
 $SR          = Get-ChildItem $Path\SR | % FullName
