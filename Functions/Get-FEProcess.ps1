@@ -41,8 +41,16 @@ Function Get-FEProcess
                 CPU  { 10 }
                 ID   {  7 }
                 SI   {  4 }
+                Name { 35 }
             }
-            Return @( $String, (" " * ($Buffer - $String.Length) -join '') -join '')
+            If ($String.Length -gt $Buffer)
+            {
+                Return $String.Substring(0,($Buffer-3)) + "..."
+            }
+            Else
+            {
+                Return @( $String, (" " * ($Buffer - $String.Length) -join '') -join '')
+            }
         }
         [String[]] ToString()
         {
@@ -51,18 +59,13 @@ Function Get-FEProcess
             "---       --        --        ---       --     --  ----                               "
             ForEach ($Item in $This.Output)
             {
-                If ($Item.Name.Length -gt 35)
-                { 
-                    $Item.Name = $Item.Name.Substring(0,32) + "..." 
-                }
-
                 $This.Buffer("NPM",$Item.NPM),
                 $This.Buffer( "PM",$Item.PM),
                 $This.Buffer( "WS",$Item.WS),
                 $This.Buffer("CPU",$Item.CPU),
                 $This.Buffer( "ID",$Item.ID),
                 $This.Buffer( "SI",$Item.SI),
-                $Item.Name -join ''
+                $This.Buffer("Name",$Item.Name) -join ''
             })
         }
     }
