@@ -39,18 +39,23 @@ Function Get-FEProcess
                 PM   { 10 }
                 WS   { 10 }
                 CPU  { 10 }
-                ID   { 10 }
-                SI   {  5 }
+                ID   {  7 }
+                SI   {  4 }
             }
             Return @( $String, (" " * ($Buffer - $String.Length) -join '') -join '')
         }
         [String[]] ToString()
         {
             Return @(
-                "NPM       PM        WS        CPU       ID        SI   Name                           "
-                "---       --        --        ---       --        --   ----                           "
-                ForEach ($Item in $This.Output)
+            "NPM       PM        WS        CPU       ID     SI  Name                               "
+            "---       --        --        ---       --     --  ----                               "
+            ForEach ($Item in $This.Output)
             {
+                If ($Item.Name.Length -gt 35)
+                { 
+                    $Item.Name = $Item.Name.Substring(0,32) + "..." 
+                }
+
                 $This.Buffer("NPM",$Item.NPM),
                 $This.Buffer( "PM",$Item.PM),
                 $This.Buffer( "WS",$Item.WS),
