@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-FEModule.ps1
+          Solution: FightingEntropy Modukle
+          Purpose: For various system management, networking, automation tasks, as well as console styling, and GUI design
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-09-30
+          Modified: 2021-10-07
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
 Function Get-FEModule
 {
     [CmdLetBinding( DefaultParameterSetName = "Default",
