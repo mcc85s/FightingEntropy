@@ -6,7 +6,6 @@ Function FightingEntropy
     {
         [String] $Name
         [Object] $Value
-
         _Enum([String]$Name,[Object]$Value)
         {
             $This.Name  = $Name
@@ -21,20 +20,17 @@ Function FightingEntropy
         [String] $Path
         Hidden [String] $URL
         [Object] $Content
-
         _File([String]$Name,[String]$Type,[String]$Root)
         {
             $This.Name    = $Name
             $This.Type    = $Type
             $This.Path    = "$Root\$Name"
         }
-
         _Content([String]$Base)
         {
             $This.URL     = "$Base/$($This.Type)/$($This.Name)?raw=true"
             $This.Content = Invoke-WebRequest -Uri $This.URL -UseBasicParsing | % Content
         }
-
         _Write([UInt32]$PSVersion)
         {
             If ( $This.Name -match "\.+(jpg|jpeg|png|bmp|ico)" )
@@ -61,7 +57,6 @@ Function FightingEntropy
         [Object] $Ver
         [Object] $Major
         [Object] $Type
-
         _OS()
         {
             $This.Env   = Get-ChildItem Env:\      | % { [_Enum]::New($_.Key,$_.Value) }
@@ -71,7 +66,6 @@ Function FightingEntropy
             $This.Major = $This.Ver.Major
             $This.Type  = $This.GetOSType()
         }
-
         [String] GetWinType()
         {
             Return @( Switch -Regex ( Invoke-Expression "[wmiclass]'Win32_OperatingSystem' | % GetInstances | % Caption" )
@@ -79,14 +73,13 @@ Function FightingEntropy
                 "Windows 10" { "Win32_Client" } "Windows Server" { "Win32_Server" }
             })
         }
-
         [String] GetOSType()
         {
-            Return @( If ( $This.Major -gt 5 )
+            Return @( If ($This.Major -gt 5)
             {
-                If ( Get-Item Variable:\IsLinux | % Value )
+                If (Get-Item Variable:\IsLinux | % Value)
                 {
-                    "RHELCentOS"
+                    (hostnamectl | ? { $_ -match "Operating System" }).Split(":")[1].TrimStart(" ")
                 }
 
                 Else
@@ -105,13 +98,10 @@ Function FightingEntropy
     Class _Manifest
     {
         [String[]]      $Names = "Classes","Control","Functions","Graphics"
-
         [String[]]    $Classes = @(("FirewallRule Drive Drives ViperBomb File Cache Icons",
                 "Shortcut Brand Branding DNSSuffix DomainName ADLogin ADConnection ADReplication FEDCPromo Certificate Company Key RootVar Share Source",
                 "Target ServerDependency ServerFeature ServerFeatures IISFeatures IIS Image Images Updates DCFound LocaleList LocaleItem" -join ' ') -Split " " | % { "_$_.ps1" })
-
         [String[]]    $Control = "Computer.png DefaultApps.xml header-image.png MDT_LanguageUI.xml zipcode.txt $( "FE","MDT","PSD" | % { "$_`Client","$_`Server" } | % { "$_`Mod.xml" } )" -Split " "
-
         [String[]]  $Functions = ("Add-ACL","Complete-IISServer","Export-Ini","Get-FECertificate","Get-DiskInfo","Get-FEDCPromo","Get-FEDCPromoProfile",
                 "Get-FEHive",
                 "Get-FEHost",
@@ -122,6 +112,7 @@ Function FightingEntropy
                 "Get-FEModule",
                 "Get-FENetwork",
                 "Get-FEOS",
+                "Get-FEProcess",
                 "Get-FEService",
                 "Get-FEShare",
                 "Get-MadBomb","Get-MDTModule","Get-ServerDependency","Get-ViperBomb","Get-XamlWindow","Import-FEImage","Install-FEModule",
@@ -129,9 +120,7 @@ Function FightingEntropy
                 "Show-ToastNotification","Update-FEShare","Write-Theme","Get-MDTOData","New-FEDeploymentShare","Start-VMGroup",
                 "Install-VMGroup","Invoke-KeyEntry","Copy-FileStream","Get-EnvironmentKey","Get-FEImageManifest","Invoke-cimdb",
                 "Set-ScreenResolution","Get-PSDModule","New-FEInfrastructure" | % { "$_.ps1" })
-
         [String[]]   $Graphics = "background.jpg banner.png icon.ico OEMbg.jpg OEMlogo.bmp sdplogo.png" -Split " "
-
         _Manifest()
         {
 
@@ -150,7 +139,6 @@ Function FightingEntropy
         [String]           $GUID
         [String]        $Version
         [String]           $Date
-        
         [String]        $RegPath
         [String]        $Default
         [String]           $Main
@@ -158,10 +146,8 @@ Function FightingEntropy
         [String]        $ModPath
         [String]        $ManPath
         [String]           $Path
-        
         [String]         $Status
         [String]           $Type
-
         _Registry([String]$Base, [String]$Name, [String]$Description, [String]$Author, [String]$Company, [String]$Copyright, [String]$GUID, 
         [String]$Version, [String]$Default, [String]$Main, [String]$Trunk, [String]$ModPath, [String]$ManPath, [String]$Path, [String]$Type)
         {
@@ -237,7 +223,6 @@ Function FightingEntropy
         [Object[]] $Functions
         [Object[]]  $Graphics
         [Object]        $Role
-
         _Build()
         {
             $_Path = $Null
@@ -268,7 +253,6 @@ Function FightingEntropy
                 }
             }
         }
-
         _Gather()
         {
             $O = 1
@@ -288,7 +272,6 @@ Function FightingEntropy
                 $O ++
             }
         }
-
         _Save()
         {
             $O = 1
@@ -308,7 +291,6 @@ Function FightingEntropy
                 $O ++
             }
         }
-
         _Write()
         {
             $Module        = @( )
@@ -364,7 +346,6 @@ Function FightingEntropy
                 RequiredAssemblies   = "PresentationFramework"
             }                        | % { New-ModuleManifest @_ }
         }
-
         _Module([String]$Version)
         {
             $This.Version            = $Version
