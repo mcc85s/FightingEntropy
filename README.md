@@ -11,8 +11,8 @@
     [Manifest]@{ 
     
         Name        = "FightingEntropy"
-        Version     = "2021.6.0"
-        Date        = "2021_0602"
+        Version     = "2021.10.0"
+        Date        = "2021_1007"
         Company     = "Secure Digits Plus LLC"
         Description = "Beginning the fight against ID theft and cybercrime"
         Author      = "Michael C. Cook Sr."
