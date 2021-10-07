@@ -1,0 +1,323 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Module Information" Width="800" Height="800" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">
+    <Window.Resources>
+        <Style TargetType="Label">
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+        <Style x:Key="DropShadow">
+            <Setter Property="TextBlock.Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">
+            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#000000"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="2"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource DropShadow}">
+            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Height" Value="24"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="#000000"/>
+            <Setter Property="Foreground" Value="#66D066"/>
+        </Style>
+        <Style TargetType="TabItem">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border Name="Border" BorderThickness="2" BorderBrush="Black" CornerRadius="2" Margin="2">
+                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Right" ContentSource="Header" Margin="5"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#4444FF"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="False">
+                                <Setter TargetName="Border" Property="Background" Value="#DFFFBA"/>
+                                <Setter Property="Foreground" Value="#000000"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontWeight" Value="Semibold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Background" Value="#DFFFBA"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="5"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+        </Style>
+        <Style TargetType="TabControl">
+            <Setter Property="TabStripPlacement" Value="Top"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="LightYellow"/>
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        <Style TargetType="TextBox" x:Key="Block">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="Height" Value="170"/>
+            <Setter Property="FontFamily" Value="System"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="TextAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>
+            <Setter Property="TextBlock.Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="AlternationCount" Value="2"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="IsTabStop" Value="True"/>
+            <Setter Property="IsTextSearchEnabled" Value="True"/>
+            <Setter Property="SelectionMode" Value="Extended"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        </Style>
+        <Style TargetType="DataGridRow">
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="White"/>
+                </Trigger>
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#FFD6FFFB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="FontSize"   Value="10"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Padding" Value="2"/>
+        </Style>
+        <Style TargetType="Label" x:Key="Config">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="5"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="LightYellow"/>
+        </Grid.Background>
+        <TabControl Margin="5">
+            <TabItem Header="Module">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="400"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Module Information and Components"/>
+                    <GroupBox Grid.Row="1" Header="[Information]">
+                        <DataGrid Name="Module_Info">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>
+                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="2" Header="[Components]">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <ComboBox Grid.Row="0" Grid.Column="0" Name="Module_Type"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1" Name="Module_Property"/>
+                            <TextBox  Grid.Row="0" Grid.Column="2" Name="Module_Filter"/>
+                            <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"  Name="Module_List">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Mode"          Binding="{Binding Mode}"   Width="40"/>
+                                    <DataGridTextColumn Header="LastWriteTime" Binding="{Binding LastWriteTime}"  Width="150"/>
+                                    <DataGridTextColumn Header="Length"        Binding="{Binding Length}" Width="75"/>
+                                    <DataGridTextColumn Header="Name"          Binding="{Binding Name}"   Width="200"/>
+                                    <DataGridTextColumn Header="Path"          Binding="{Binding Path}"   Width="600"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Role">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Style="{StaticResource Config}"  Content="[FightingEntropy]://Role and System Information"/>
+                    <GroupBox Grid.Row="1" Header="[Information]">
+                        <DataGrid Name="Role_Info">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>
+                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Processes">
+                <GroupBox Header="[Running processes]">
+                    <DataGrid Name="ProcessInfo">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="NPM(K)" Width="60" Binding="{Binding NPM}"/>
+                            <DataGridTextColumn Header="PM(M)" Width="60" Binding="{Binding PM}"/>
+                            <DataGridTextColumn Header="WS(M)" Width="60" Binding="{Binding WS}"/>
+                            <DataGridTextColumn Header="CPU(s)" Width="60" Binding="{Binding CPU}"/>
+                            <DataGridTextColumn Header="ID" Width="50" Binding="{Binding ID}"/>
+                            <DataGridTextColumn Header="SI" Width="50" Binding="{Binding SI}"/>
+                            <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Network">
+                <TabControl>
+                    <TabItem Header="Total Interface(s)">
+                        <GroupBox Header="[Interface panel]">
+                            <DataGrid Name="InterfaceList">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Hostname" Width="200" Binding="{Binding Hostname}"/>
+                                    <DataGridTextColumn Header="Alias" Width="150" Binding="{Binding Alias}"/>
+                                    <DataGridTextColumn Header="#" Width="25" Binding="{Binding Index}"/>
+                                    <DataGridTextColumn Header="Description" Width="150" Binding="{Binding Description}"/>
+                                    <DataGridTextColumn Header="Status" Width="60" Binding="{Binding Status}"/>
+                                    <DataGridTextColumn Header="MacAddress" Width="120" Binding="{Binding MacAddress}"/>
+                                    <DataGridTextColumn Header="Vendor" Width="7.5*" Binding="{Binding Vendor}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </TabItem>
+                    <TabItem Header="Active Interface(s)">
+                        <GroupBox Header="[Active interface panel]">
+                            <DataGrid Name="ActiveList">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Hostname" Width="200" Binding="{Binding Hostname}"/>
+                                    <DataGridTextColumn Header="Alias" Width="150" Binding="{Binding Alias}"/>
+                                    <DataGridTextColumn Header="#" Width="25" Binding="{Binding Index}"/>
+                                    <DataGridTextColumn Header="Description" Width="36*" Binding="{Binding Description}"/>
+                                    <DataGridTextColumn Header="Status" Width="80" Binding="{Binding Status}"/>
+                                    <DataGridTextColumn Header="MacAddress" Width="12*" Binding="{Binding MacAddress}"/>
+                                    <DataGridTextColumn Header="Vendor" Width="7.5*" Binding="{Binding Vendor}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </TabItem>
+                    <TabItem Header="Connection statistics">
+                        <GroupBox Header="[Connection stats]">
+                            <DataGrid Name="ConnectionList">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Proto" Width="60" Binding="{Binding Protocol}"/>
+                                    <DataGridTextColumn Header="L.Address" Width="200" Binding="{Binding LocalAddress}"/>
+                                    <DataGridTextColumn Header="L.Port" Width="60" Binding="{Binding LocalPort}"/>
+                                    <DataGridTextColumn Header="R.Address" Width="200" Binding="{Binding RemoteAddress}"/>
+                                    <DataGridTextColumn Header="R.Port" Width="60" Binding="{Binding RemotePort}"/>
+                                    <DataGridTextColumn Header="State" Width="*" Binding="{Binding State}"/>
+                                    <DataGridTextColumn Header="In/Out" Width="*" Binding="{Binding Direction}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </TabItem>
+                    <TabItem Header="Network Host(s)">
+                        <GroupBox Header="[Host stats]">
+                            <DataGrid Name="HostList">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="#" Width="25" Binding="{Binding Index}"/>
+                                    <DataGridTextColumn Header="IPAddress" Width="240" Binding="{Binding IPAddress}"/>
+                                    <DataGridTextColumn Header="Hostname" Width="240" Binding="{Binding Hostname}"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </GroupBox>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem Header="Services">
+                <GroupBox Header="Services">
+                    <DataGrid Name="ServiceList">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="#" Width="30" Binding="{Binding Index}"/>
+                            <DataGridTextColumn Header="Name" Width="100" Binding="{Binding Name}"/>
+                            <DataGridTextColumn Header="Status" Width="50" Binding="{Binding Status}"/>
+                            <DataGridTextColumn Header="StartType" Width="70" Binding="{Binding StartMode}"/>
+                            <DataGridTextColumn Header="DisplayName" Width="*" Binding="{Binding DisplayName}"/>
+                            <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Preferences">
+
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
