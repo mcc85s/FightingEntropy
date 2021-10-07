@@ -1,0 +1,456 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Windows 10 Settings/Tweaks Script By Madbomb122" Height="600" Width="800" BorderBrush="Black" Background="White">
+    <Window.Resources>
+        <Style x:Key="SeparatorStyle1" TargetType="{x:Type Separator}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Separator}">
+                        <Border Height="24" SnapsToDevicePixels="True" Background="#FF4D4D4D" BorderBrush="#FF4D4D4D" BorderThickness="0,0,0,1"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type ToolTip}">
+            <Setter Property="Background" Value="#FFFFFFBF"/>
+        </Style>
+        <Style TargetType="CheckBox" x:Key="xCheckBox">
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+        <Style TargetType="Button" x:Key="xButton">
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="5" Background="#FF0080FF" BorderBrush="Black" BorderThickness="3">
+                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="GroupBox" x:Key="xGroupBox">
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">
+                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="DataGridRow">
+            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0" VerticalAlignment="Top">
+            <MenuItem Header="Help">
+                <MenuItem Name="_Feedback" Header="Feedback/Bug Report"/>
+                <MenuItem Name="_FAQ" Header="FAQ"/>
+                <MenuItem Name="_About" Header="About"/>
+                <MenuItem Name="_Copyright" Header="Copyright"/>
+                <MenuItem Name="_Contact" Header="Contact Me"/>
+            </MenuItem>
+            <MenuItem Name="_Donation" Header="Donate to Me" Background="#FFFFAD2F" FontWeight="Bold"/>
+            <MenuItem Name="_Madbomb" Header="Madbomb122&apos;s GitHub" Background="#FFFFDF4F" FontWeight="Bold"/>
+        </Menu>
+        <TabControl Name="TabControl" Grid.Row="1" BorderBrush="Gainsboro" TabStripPlacement="Left">
+            <TabControl.Resources>
+                <Style TargetType="TabItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabItem">
+                                <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Gainsboro" CornerRadius="4" Margin="2">
+                                    <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Right" ContentSource="Header" Margin="5"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="Border" Property="Background" Value="LightSkyBlue" />
+                                    </Trigger>
+                                    <Trigger Property="IsSelected" Value="False">
+                                        <Setter TargetName="Border" Property="Background" Value="GhostWhite" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="Preferences">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="160"/>
+                            <RowDefinition Height="90"/>
+                            <RowDefinition Height="90"/>
+                        </Grid.RowDefinitions>
+                        <GroupBox Grid.Row="0" Header="Global" Margin="5">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <CheckBox Grid.Row="0" Style="{StaticResource xCheckBox}" Name="_RestorePoint" Content="Create Restore Point"/>
+                                <CheckBox Grid.Row="1" Style="{StaticResource xCheckBox}" Name="_ShowSkipped" Content="Show Skipped Items"/>
+                                <CheckBox Grid.Row="2" Style="{StaticResource xCheckBox}" Name="_Restart" Content="Restart When Done (Restart is Recommended)"/>
+                                <CheckBox Grid.Row="3" Style="{StaticResource xCheckBox}" Name="_VersionCheck" Content="Check for Update (If found, will run with current settings)"/>
+                                <CheckBox Grid.Row="4" Style="{StaticResource xCheckBox}" Name="_InternetCheck" Content="Skip Internet Check"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Grid.Row="1" Header="Backup" Margin="5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Style="{StaticResource xButton}" Name="_Save" Content="Save Settings"/>
+                                <Button Grid.Column="1" Style="{StaticResource xButton}" Name="_Load" Content="Load Settings"/>
+                                <Button Grid.Column="2" Style="{StaticResource xButton}" Name="_WinDefault" Content="Windows Default"/>
+                                <Button Grid.Column="3" Style="{StaticResource xButton}" Name="_ResetDefault" Content="Reset All Items"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" Header="Script" Margin="5">
+                            <ComboBox Margin="5" Height="24" IsEnabled="False">
+                                <ComboBoxItem Content="Rewrite Module Version" IsSelected="True"/>
+                            </ComboBox>
+                        </GroupBox>
+                    </Grid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Privacy">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid Name="_Privacy" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                                <DataGridTemplateColumn Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                                <ComboBoxItem Content="Skip"/>
+                                                <ComboBoxItem Content="Enable"/>
+                                                <ComboBoxItem Content="Disable"/>
+                                            </ComboBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Service">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid Name="_Service" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                                <DataGridTemplateColumn Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                                <ComboBoxItem Content="Skip"/>
+                                                <ComboBoxItem Content="Enable"/>
+                                                <ComboBoxItem Content="Disable"/>
+                                            </ComboBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Context">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid Name="_Context" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                                <DataGridTemplateColumn Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                                <ComboBoxItem Content="Skip"/>
+                                                <ComboBoxItem Content="Enable"/>
+                                                <ComboBoxItem Content="Disable"/>
+                                            </ComboBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Taskbar">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid Name="_Taskbar" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                                <DataGridTemplateColumn Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                                <ComboBoxItem Content="Skip"/>
+                                                <ComboBoxItem Content="Enable"/>
+                                                <ComboBoxItem Content="Disable"/>
+                                            </ComboBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Explorer">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <DataGrid Name="_Explorer" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                            <ComboBoxItem Content="Skip"/>
+                                            <ComboBoxItem Content="Enable"/>
+                                            <ComboBoxItem Content="Disable"/>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="StartMenu">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <DataGrid Name="_StartMenu" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                            <ComboBoxItem Content="Skip"/>
+                                            <ComboBoxItem Content="Enable"/>
+                                            <ComboBoxItem Content="Disable"/>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Paths">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <DataGrid Name="_Paths" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                            <ComboBoxItem Content="Skip"/>
+                                            <ComboBoxItem Content="Enable"/>
+                                            <ComboBoxItem Content="Disable"/>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Icons">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <DataGrid Name="_Icons" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                            <ComboBoxItem Content="Skip"/>
+                                            <ComboBoxItem Content="Enable"/>
+                                            <ComboBoxItem Content="Disable"/>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Lock Screen">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <DataGrid Name="_LockScreen" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                            <ComboBoxItem Content="Skip"/>
+                                            <ComboBoxItem Content="Enable"/>
+                                            <ComboBoxItem Content="Disable"/>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Miscellaneous">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <DataGrid Name="_Miscellaneous" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                            <ComboBoxItem Content="Skip"/>
+                                            <ComboBoxItem Content="Enable"/>
+                                            <ComboBoxItem Content="Disable"/>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="PhotoViewer">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <DataGrid Name="_PhotoViewer" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                            <ComboBoxItem Content="Skip"/>
+                                            <ComboBoxItem Content="Enable"/>
+                                            <ComboBoxItem Content="Disable"/>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Windows Store">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <DataGrid Name="_WindowsStore" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                            <ComboBoxItem Content="Skip"/>
+                                            <ComboBoxItem Content="Enable"/>
+                                            <ComboBoxItem Content="Disable"/>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="Windows Update">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <DataGrid Name="_WindowsUpdate" Margin="5" AutoGenerateColumns="False" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="150" Binding="{Binding ID}" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox SelectedIndex="{Binding Slot, Mode=TwoWay, NotifyOnTargetUpdated=True}">
+                                            <ComboBoxItem Content="Skip"/>
+                                            <ComboBoxItem Content="Enable"/>
+                                            <ComboBoxItem Content="Disable"/>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="AppX">
+                <GroupBox Style="{StaticResource xGroupBox}">
+                    <DataGrid Name="_AppX" FrozenColumnCount="2" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended" Margin="5">
+                        <DataGrid.RowStyle>
+                            <Style TargetType="{x:Type DataGridRow}">
+                                <Style.Triggers>
+                                    <Trigger Property="AlternationIndex" Value="0">
+                                        <Setter Property="Background" Value="White"/>
+                                    </Trigger>
+                                    <Trigger Property="AlternationIndex" Value="1">
+                                        <Setter Property="Background" Value="#FFD8D8D8"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Display Name" Width="150" Binding="{Binding CName}" CanUserSort="True" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Header="Option" Width="80" SortMemberPath="AppSelected" CanUserSort="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding AppOptions}" Text="{Binding Path=AppSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Appx Name" Width="180" Binding="{Binding AppxName}" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </GroupBox>
+            </TabItem>
+        </TabControl>
+        <Button Name="_Start" Grid.Row="2" Width="200" Content="Run Script" VerticalAlignment="Center" Height="20" FontWeight="Bold"/>
+    </Grid>
+</Window>
