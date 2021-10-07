@@ -87,11 +87,11 @@ Function Get-FEModule
         }
         AdapterInfo()
         {
-            # Write-Theme (Get-FENetwork2 -Adapter -Text) -Title Adapters -Prompt $This.ModPrompt()
+            Write-Theme (Get-FENetwork -Adapter -Text) -Title Adapters -Prompt $This.ModPrompt()
         }
         InterfaceInfo()
         {
-            # Write-Theme (Get-FENetwork2 -Interface -Text) -Title Interfaces -Prompt $This.ModPrompt()
+            Write-Theme (Get-FENetwork -Interface -Text) -Title Interfaces -Prompt $This.ModPrompt()
         }
         ServiceInfo()
         {
