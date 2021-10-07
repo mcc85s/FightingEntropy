@@ -1,6 +1,9 @@
 Function Get-FEService
 {
-    Class _Service
+    [CmdLetBinding(DefaultParameterSetName=0)]
+    Param([Parameter(ParameterSetName=1,Mandatory)][Switch]$Output)
+
+    Class FEService
     {
         [Int32]               $Index
         [String]               $Name 
@@ -14,8 +17,7 @@ Function Get-FEService
         [String]        $DisplayName
         [String]           $PathName 
         [String]        $Description 
-
-        _Service([Int32]$Index,[Object]$WMI)
+        FEService([Int32]$Index,[Object]$WMI)
         {
             $This.Index              = $Index
             $This.Name               = $WMI.Name
@@ -27,7 +29,6 @@ Function Get-FEService
             $This.PathName           = $WMI.PathName
             $This.Description        = $WMI.Description
         }
-
         SetProfile([Int32]$Slot)
         {
             If ($Slot -notin 0..9)
@@ -39,11 +40,10 @@ Function Get-FEService
         }
     }
 
-    Class _Services
+    Class FEServices
     {
         [String]       $QMark
         [Hashtable]   $Config = @{
-            
             Names   = (("AJRouter;ALG;AppHostSvc;AppIDSvc;Appinfo;AppMgmt;AppReadiness;AppVClient;aspnet_state;AssignedAccessManagerSvc;" + 
                         "AudioEndpointBuilder;AudioSrv;AxInstSV;BcastDVRUserService_{0};BDESVC;BFE;BITS;BluetoothUserService_{0};Browser;B" +
                         "TAGService;BthAvctpSvc;BthHFSrv;bthserv;c2wts;camsvc;CaptureService_{0};CDPSvc;CDPUserSvc_{0};CertPropSvc;COMSysA" + 
@@ -67,25 +67,20 @@ Function Get-FEService
                         "WFDSConSvc;WiaRpc;WinHttpAutoProxySvc;Winmgmt;WinRM;wisvc;WlanSvc;wlidsvc;wlpasvc;wmiApSrv;WMPNetworkSvc;WMSVC;wo" + 
                         "rkfolderssvc;WpcMonSvc;WPDBusEnum;WpnService;WpnUserService_{0};wscsvc;WSearch;wuauserv;wudfsvc;WwanSvc;xbgm;XblA" + 
                         "uthManager;XblGameSave;XboxGipSvc;XboxNetApiSvc"))
-
             Masks   = (("0;1;2;3;3;4;3;5;3;6;2;2;3;3;3;2;7;3;3;0;0;0;0;3;3;4;7;2;0;3;2;8;3;3;3;3;3;2;3;3;2;3;1;2;7;3;2;3;3;3;2;3;3;3;2;2" + 
                         ";1;3;3;3;2;3;1;2;3;3;6;3;3;1;1;3;3;9;0;1;3;3;2;2;1;3;3;3;2;3;1;0;3;3;1;11;2;2;0;3;3;0;0;3;2;2;3;3;2;1;2;2;7;3;3;" + 
                         "2;8;3;1;3;3;3;3;3;2;3;3;2;3;3;3;3;12;12;1;3;1;2;12;1;1;3;3;1;2;6;13;13;13;0;7;1;3;2;12;3;1;1;3;2;3;3;3;3;3;3;3;2" + 
                         ";13;3;0;2;3;3;3;2;3;12;5;3;0;3;2;3;3;3;6;1;1;1;1;1;1;1;1;14;3;3;3;2;3;3;3;3;3;3;2;0;3;3;0;3;3;3;3;13;3;3;2;1;1;1" + 
                         "5;3;3;3;1;3;1;1;3;2;2;7;7;3;3;1;3;1;1;3;1").Split(";"))
-
             Values   = (("2,2,2,2,2,2,1,1,2,2;2,2,2,2,1,1,1,1,1,1;3,0,3,0,3,0,3,0,3,0;2,0,2,0,2,0,2,0,2,0;0,0,2,2,2,2,1,1,2,2;0,0,1,0,1,0" + 
                         ",1,0,1,0;0,0,2,0,2,0,2,0,2,0;4,0,4,0,4,0,4,0,4,0;0,0,2,2,1,1,1,1,1,1;3,3,3,3,3,3,1,1,3,3;4,4,4,4,1,1,1,1,1,1;0,0" + 
                         ",0,0,0,0,0,0,0,0;1,0,1,0,1,0,1,0,1,0;2,2,2,2,1,1,1,1,2,2;0,0,3,0,3,0,3,0,3,0;3,3,3,3,2,2,2,2,3,3").Split(";"))
         }
-
         [Hashtable]  $Template
-        [Object[]]  $WMIObject
-        [Object[]]            $Output
-
-        _Services()
+        [Object[]]     $Output
+        FEServices()
         {
-            $This.QMark                = (( Get-Service *_* | ? ServiceType -eq 224 )[0].Name -Split '_')[-1]
+            $This.QMark                = (Get-Service | ? ServiceType -eq 224 )[0].Name.Split('_')[-1]
             $This.Config.Names         = $This.Config.Names -f $This.QMark -Split ";"
             $This.Template             = @{ }
 
@@ -94,31 +89,24 @@ Function Get-FEService
                 $This.Template.Add($This.Config.Names[$I],$This.Config.Values[$This.Config.Masks[$I]])
             }
 
-            $This.WMIObject    = [wmiclass]"\\.\ROOT\CIMV2:Win32_Service" | % GetInstances | Select-Object Name, 
-            DelayedAutoStart, StartMode, State, Status, DisplayName, PathName, Description | Sort-Object Name
-            
-            $This.Output     = @( )
+            $This.Output               = @( )
 
-            ForEach ( $I in 0..( $This.WMIObject.Count - 1 ) )
-            {
-                $Item           = [_Service]::New($I,$This.WMIObject[$I])
+            Get-WMIObject -Class Win32_Service | Sort-Object Name | % {
 
-                If (!$This.Template[$Item.Name])
+                $Item                  = [FEService]::New($This.Output.Count,$_)
+                If ($This.Template[$Item.Name])
                 {
-                    $Item.Scope   = 0
-                    $Item.Profile = 0,0,0,0,0,0,0,0,0,0
+                    $Item.Scope        = 1
+                    $Item.Profile      = $This.Template[$Item.Name] -Split ","
                 }
-
                 Else
                 {
-                    $Item.Scope   = 1
-                    $Item.Profile = $This.Template[$Item.Name] -Split ","
+                    $Item.Scope        = 0
+                    $Item.Profile      = @(0) * 10
                 }
-
-                $This.Output   += $Item
+                $This.Output          += $Item
             }
         }
-
         SetProfile([Int32]$Slot)
         {
             ForEach ( $I in 0..( $This.Output.Count - 1 ) )
@@ -126,7 +114,40 @@ Function Get-FEService
                 $This.Output[$I].Slot = $This.Output[$I].Profile[$Slot]
             }
         }
+        [String] Buffer([String]$Type,[String]$String)
+        {
+            $Buffer = Switch ($Type)
+            {
+                State { 7 } Name { 32 } DisplayName { 45 }
+            }
+            If ($String.Length -gt $Buffer)
+            {
+                $String = $String.Substring(0,($Buffer-3)) + "..."
+                Return $String
+            }
+            Else
+            {
+                Return @( $String, (" " * ($Buffer - $String.Length) -join '') -join '')
+            }
+        }
+        [String[]] ToString()
+        {
+            Return @( 
+            "Status  Name                             DisplayName                                  "
+            "------  ----                             -----------                                  "
+            ForEach ($Item in $This.Output)
+            {
+                $This.Buffer("State",$Item.State),
+                $This.Buffer("Name",$Item.Name),
+                $This.Buffer("DisplayName",$Item.DisplayName) -join ' '
+            })
+        }
     }
 
-    [_Services]::New()
+    $Object = [FeServices]::New()
+    Switch($PSCmdLet.ParameterSetName)
+    {
+        0 { $Object.Output }
+        1 { $Object.ToString() }
+    }
 }
