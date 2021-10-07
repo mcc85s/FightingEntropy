@@ -1,0 +1,260 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Promotion" Width="800" Height="800" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="GroupBox" x:Key="xGroupBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">
+                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Button" x:Key="xButton">
+            <Setter Property="TextBlock.TextAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="5" Background="#007bff" BorderBrush="Black" BorderThickness="3">
+                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type ToolTip}">
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="Foreground" Value="LightGreen"/>
+        </Style>
+        <Style TargetType="TextBox" x:Key="LTextBox">
+            <Setter Property="TextAlignment" Value="Left"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+        <Style TargetType="DataGridCell">
+            <Setter Property="TextBlock.TextAlignment" Value="Left" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.Background>
+            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0" Height="20">
+            <MenuItem Header="Command">
+                <MenuItem Name="Forest" Header="Install-ADDSForest" IsCheckable="True"/>
+                <MenuItem Name="Tree" Header="Install-ADDSDomain(Tree)" IsCheckable="True"/>
+                <MenuItem Name="Child" Header="Install-ADDSDomain(Child)" IsCheckable="True"/>
+                <MenuItem Name="Clone" Header="Install-ADDSDomainController" IsCheckable="True"/>
+            </MenuItem>
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.Background>
+                <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>
+            </Grid.Background>
+            <GroupBox Style="{StaticResource xGroupBox}">
+                <Grid Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="10*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Name="_ForestMode" Header="[Forest Mode]" Grid.Column="0" Margin="5">
+                            <ComboBox Name="ForestMode" Height="24" SelectedIndex="0">
+                                <ComboBoxItem Content="Windows Server 2000 (Default)"/>
+                                <ComboBoxItem Content="Windows Server 2003"/>
+                                <ComboBoxItem Content="Windows Server 2008"/>
+                                <ComboBoxItem Content="Windows Server 2008 R2"/>
+                                <ComboBoxItem Content="Windows Server 2012"/>
+                                <ComboBoxItem Content="Windows Server 2012 R2"/>
+                                <ComboBoxItem Content="Windows Server 2016"/>
+                                <ComboBoxItem Content="Windows Server 2019"/>
+                            </ComboBox>
+                        </GroupBox>
+                        <GroupBox Header="[Domain Mode]" Name="_DomainMode" Grid.Column="1" Margin="5">
+                            <ComboBox Name="DomainMode" Height="24" SelectedIndex="0">
+                                <ComboBoxItem Content="Windows Server 2000 (Default)"/>
+                                <ComboBoxItem Content="Windows Server 2003"/>
+                                <ComboBoxItem Content="Windows Server 2008"/>
+                                <ComboBoxItem Content="Windows Server 2008 R2"/>
+                                <ComboBoxItem Content="Windows Server 2012"/>
+                                <ComboBoxItem Content="Windows Server 2012 R2"/>
+                                <ComboBoxItem Content="Windows Server 2016"/>
+                                <ComboBoxItem Content="Windows Server 2019"/>
+                            </ComboBox>
+                        </GroupBox>
+                        <GroupBox Header="[Parent Domain Name]" Name="_ParentDomainName" Grid.Column="0" Margin="5">
+                            <TextBox Name="ParentDomainName" Text="&lt;Domain Name&gt;" Height="20" Margin="5"/>
+                        </GroupBox>
+                        <GroupBox Header="[Replication Source DC]" Name="_ReplicationSourceDC" Grid.Column="1" Margin="5">
+                            <TextBox Name="ReplicationSourceDC" Text="&lt;Any&gt;" Height="20" Margin="5"/>
+                        </GroupBox>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2.5*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <GroupBox Header="[Required Features]" Grid.Row="0" Margin="5">
+                                <DataGrid Grid.Row="0" Grid.Column="0" Margin="5" Name="DataGrid" AutoGenerateColumns="False" HeadersVisibility="Column" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Single">
+                                    <DataGrid.RowStyle>
+                                        <Style TargetType="{x:Type DataGridRow}">
+                                            <Style.Triggers>
+                                                <Trigger Property="AlternationIndex" Value="0">
+                                                    <Setter Property="Background" Value="White"/>
+                                                </Trigger>
+                                                <Trigger Property="AlternationIndex" Value="1">
+                                                    <Setter Property="Background" Value="SkyBlue"/>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="ToolTip">
+                                                        <Setter.Value>
+                                                            <TextBlock Text="{Binding DisplayName}" TextWrapping="Wrap" Width="400" Background="#000000" Foreground="#00FF00"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Setter Property="ToolTipService.ShowDuration" Value="360000000"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </DataGrid.RowStyle>
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Width="200" Binding="{Binding Name}" CanUserSort="True" IsReadOnly="True"/>
+                                        <DataGridTemplateColumn Header="Install" Width="65">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsEnabled="{Binding Installed}" IsChecked="True"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="1" Header="[Roles]" Margin="5">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="5*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Margin="5" TextAlignment="Left" VerticalAlignment="Center" Text="Install DNS"/>
+                                    <TextBlock Grid.Column="1" Grid.Row="1" Margin="5" TextAlignment="Left" VerticalAlignment="Center" Text="Create DNS Delegation"/>
+                                    <TextBlock Grid.Column="1" Grid.Row="2" Margin="5" TextAlignment="Left" VerticalAlignment="Center" Text="No Global Catalog"/>
+                                    <TextBlock Grid.Column="1" Grid.Row="3" Margin="5" TextAlignment="Left" VerticalAlignment="Center" Text="Critical Replication Only"/>
+                                    <CheckBox Grid.Column="0" Grid.Row="0" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center" Name="InstallDNS"/>
+                                    <CheckBox Grid.Column="0" Grid.Row="1" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center" Name="CreateDNSDelegation"/>
+                                    <CheckBox Grid.Column="0" Grid.Row="2" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center" Name="NoGlobalCatalog"/>
+                                    <CheckBox Grid.Column="0" Grid.Row="3" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center" Name="CriticalReplicationOnly"/>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="1.2*"/>
+                                <RowDefinition Height="1.2*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.5*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Grid.Column="0" Header="[Domain Name]" Name="_DomainName">
+                                    <TextBox Style="{StaticResource LTextBox}" Name="DomainName"/>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Header="[NetBIOS Name]" Name="_DomainNetBIOSName">
+                                    <TextBox Style="{StaticResource LTextBox}" Name="DomainNetBIOSName"/>
+                                </GroupBox>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.5*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <GroupBox Grid.Column="0" Header="[New Domain Name]" Name="_NewDomainName">
+                                    <TextBox Style="{StaticResource LTextBox}" Name="NewDomainName"/>
+                                </GroupBox>
+                                <GroupBox Grid.Column="1" Header="[New NetBIOS Name]" Name="_NewDomainNetBIOSName">
+                                    <TextBox Style="{StaticResource LTextBox}" Name="NewDomainNetBIOSName"/>
+                                </GroupBox>
+                            </Grid>
+                            <GroupBox Grid.Row="2" Header="[Site Name]" Name="_SiteName">
+                                <TextBox Style="{StaticResource LTextBox}" Name="SiteName"/>
+                            </GroupBox>
+                            <GroupBox Grid.Row="3" Header="[Database Path]" Name="_DatabasePath">
+                                <TextBox Style="{StaticResource LTextBox}" Name="DatabasePath"/>
+                            </GroupBox>
+                            <GroupBox Grid.Row="4" Header="[Sysvol Path]" Name="_SysvolPath">
+                                <TextBox Style="{StaticResource LTextBox}" Name="SysvolPath"/>
+                            </GroupBox>
+                            <GroupBox Grid.Row="5" Header="[Log Path]" Name="_LogPath">
+                                <TextBox Style="{StaticResource LTextBox}" Name="LogPath"/>
+                            </GroupBox>
+                            <GroupBox Grid.Row="6" Header="[Directory Services Recovery Mode Administrator (Password/Confirm)]">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <PasswordBox Grid.Column="0" HorizontalContentAlignment="Left" Name="SafeModeAdministratorPassword" Margin="5,0,5,0" Height="20" PasswordChar="*"/>
+                                    <PasswordBox Grid.Column="1" HorizontalContentAlignment="Left" Name="Confirm" Height="20" Margin="5,0,5,0" PasswordChar="*"/>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="7" Header="[Credential]" Name="_Credential">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Content="Credential" Style="{StaticResource xButton}" Name="CredentialButton" Grid.Column="0"/>
+                                    <TextBox Style="{StaticResource LTextBox}" Name="Credential" Grid.Column="1"/>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Grid.Row="8" Header="[Initialize]">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Name="Start" Style="{StaticResource xButton}" Grid.Column="0" Content="Start" />
+                                    <Button Name="Cancel" Style="{StaticResource xButton}" Grid.Column="1" Content="Cancel"/>
+                                </Grid>
+                            </GroupBox>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </Grid>
+</Window>
