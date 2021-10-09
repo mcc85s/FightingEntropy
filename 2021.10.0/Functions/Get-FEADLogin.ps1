@@ -4,7 +4,7 @@ Function Get-FEADLogin
     Param(
         [ValidatePattern("(\d+\.){3}\d+")]
         [Parameter(ParameterSetName=1)][IPAddress]$IPAddress,
-        [ValidatePattern("^((?!-)[A-Za-z0–9-]{1, 63}(?<!-)\.)+[A-Za-z]{2, 6}$")]
+        [ValidatePattern("^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2, 6}$")]
         [Parameter(ParameterSetName=2)][String]$DNSName,
         [ValidateScript({$_.IPAddress,$_.Domain,$_.NetBIOS})]
         [Parameter(ParameterSetName=3)][Object]$Target
@@ -308,7 +308,6 @@ Function Get-FEADLogin
             $This.Username     = $Xaml.IO.Username.Text
             $This.Password     = $Xaml.IO.Password.SecurePassword
             $This.Confirm      = $Xaml.IO.Confirm.SecurePassword
-            $Resolve           = [System.Net.Dns]::Resolve($Xaml.IO.Server.Text)
 
             If (!$This.Port)
             {
@@ -333,65 +332,65 @@ Function Get-FEADLogin
                 [System.Windows.Messagebox]::Show("Confirm","Error")
                 $This.ClearADCredential()
             }
-
-            ElseIf (!$Resolve)
+            
+            Else
             {
-                [System.Windows.MessageBox]::Show("Invalid server address defined","Error")
+                $This.Credential   = [System.Management.Automation.PSCredential]::New($This.Username,$This.Password)
+            }
+        }
+        CheckADServer([Object]$Xaml)
+        {
+            $Resolve = [System.Net.Dns]::Resolve($Xaml.IO.Server.Text)
+
+            If ($Resolve -eq $Null)
+            {
+                [System.Windows.MessageBox]::Show("Invalid server address defined","Error") 
+                $This.DC = $Null
+            }
+            ElseIf ($Resolve.Hostname -inotmatch $Env:UserDNSDomain.ToLower())
+            {
+                [System.Windows.MessageBox]::Show("Unable to resolve the domain name","Error")
+                $This.DC = $Null
+            }
+            ElseIf ($Resolve.Hostname -ieq $Env:UserDNSDomain.ToLower())
+            {
+                $This.Domain   = $Resolve.HostName
+                $This.DNSName  = [System.Net.DNS]::Resolve($Resolve.AddressList[0]).HostName
+                $This.DC       = $This.DNSName
             }
             Else
             {
-                If ($Resolve.Hostname -ieq $Env:UserDNSDomain)
-                {
-                    $This.Domain   = $Resolve.HostName
-                    $This.DNSName  = [System.Net.DNS]::Resolve($Resolve.AddressList[0]).HostName
-                }
-                ElseIf ($Resolve.Hostname -match $Env:UserDNSDomain)
-                {
-                    $Split         = $Resolve.Hostname.Split(".")
-                    $Join          = $Split[1..($Split.Count-1)] -join '.'
-                    $Check         = [System.Net.Dns]::Resolve($Join)
-                    If (!$Check)
-                    {
-                        [System.Windows.MessageBox]::Show("Unable to resolve the domain name","Error")
-                    }
-                    Else
-                    {
-                        $This.Domain  = $Check.HostName
-                        $This.DNSName = [System.Net.DNS]::Resolve($Check.AddressList[0]).Hostname
-                    }
-                }
-                ElseIf ($Resolve.HostName -notmatch $Env:UserDNSDomain)
-                {
-                    [System.Windows.MessageBox]::Show("Unable to resolve the domain name","Error")
-                }
-
-                $This.Credential   = [System.Management.Automation.PSCredential]::New($This.Username,$This.Password)
-                $This.Directory    = "LDAP://$($This.DNSName):$($This.Port)/CN=Partitions,CN=Configuration,DC=$($This.Domain.Split('.') -join ',DC=')"
-
-                Try 
-                {
-                    $This.Test     = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
-                }
-
-                Catch
-                {
-                    [System.Windows.Messagebox]::Show("Login","Error")
-                    $This.ClearADCredential()
-                }
-
-                If ($This.Test)
-                {
-                    Write-Theme "Success [+] Searching Directory..." 10,2,15,0
-                    $This.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
-                    $This.Searcher            | % { 
+                $HostID        = $Resolve.Hostname.Replace($Env:UserDNSDomain.ToLower(),"")
+                $This.Domain   = [System.Net.DNS]::Resolve($Resolve.HostName).HostName.Replace($HostID,"")
+                $This.DNSName  = [System.Net.DNS]::Resolve($Resolve.HostName).Hostname
+                $This.DC       = $This.DNSName
+            }
+        }
+        TestADCredential()
+        {       
+            $This.Directory    = "LDAP://$($This.DNSName):$($This.Port)/CN=Partitions,CN=Configuration,DC=$($This.Domain.Split('.') -join ',DC=')"
+            $This.Test         = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
+            Try 
+            {
+                $This.Test
+                $This.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
+                $This.Searcher            | % { 
                     
-                        $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
-                        $_.PageSize         = 1000
-                        $_.PropertiestoLoad.Clear()
-                    }
-
-                    $This.Result              = $This.Searcher | % FindAll
+                    $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
+                    $_.PageSize         = 1000
+                    $_.PropertiestoLoad.Clear()
                 }
+
+                $This.Result              = $This.Searcher | % FindAll
+            }
+
+            Catch
+            {
+                [System.Windows.Messagebox]::Show("Login","Error")
+                $This.ClearADCredential()
+                $This.Directory = $Null
+                $This.DC        = $Null
+                $This.Test      = $Null
             }
         }
         [Object] Search([String]$Field)
@@ -468,7 +467,19 @@ Function Get-FEADLogin
     $Xaml.IO.Ok.Add_Click(
     {
         $Main.CheckADCredential($Xaml)
-        If ($Main.Test)
+        If ($Main.Credential)
+        {
+            $Main.CheckADServer($Xaml)
+        }
+        If ($Main.DC)
+        {
+            $Main.TestADCredential()
+        }
+        If (!$Main.Test.DistinguishedName)
+        {
+            [System.Windows.MessageBox]::Show("Invalid login","Error")
+        }
+        If ($Main.Test.DistinguishedName)
         {
             $Xaml.IO.DialogResult = $True
         }
@@ -486,6 +497,7 @@ Function Get-FEADLogin
         {
             $Main.NetBIOS = $Main.GetNetBIOSName()
         }
+        $Main
     }
     If (!$Xaml.IO.DialogResult)
     {
