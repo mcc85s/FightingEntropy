@@ -408,44 +408,13 @@ Function Get-FEADLogin
     }
 
     $Xaml = [XamlWindow][FEADLoginGUI]::Tab
-
-    Switch(0) #$PSCmdLet.ParameterSetName)
+    $Main = Switch($PSCmdLet.ParameterSetName)
     {
-        0
-        {
-            $Main = [Main]::New()
-        }
-        1
-        {
-            $Main = [Main]::New([IPAddress]$IPAddress)
-        }
-        2
-        {
-            $Main = [Main]::New([String]$Domain)
-        }
-        3
-        {
-            $Main = [Main]::New([Object]$Target)
-        }
+        0 { [Main]::New() }
+        1 { [Main]::New([IPAddress]$IPAddress) }
+        2 { [Main]::New([String]$Domain) }
+        3 { [Main]::New([Object]$Target) }
     }
-
-    <# $Xaml.Names | ? { $_ -notin "ContentPresenter","Border","ContentSite" } | % {
-        
-        $X = "    # `$Xaml.IO.$_"
-        $Y = $Xaml.IO.$_.GetType().Name 
-        "{0}{1} # $Y" -f $X,(" "*(60-$X.Length) -join '')
-    
-    } | Set-Clipboard #>
-
-    # $Xaml.IO.UserName                                      # TextBox
-    # $Xaml.IO.Password                                      # PasswordBox
-    # $Xaml.IO.Confirm                                       # PasswordBox
-    # $Xaml.IO.Server                                        # TextBox
-    # $Xaml.IO.Switch                                        # RadioButton
-    # $Xaml.IO.Port                                          # TextBox
-    # $Xaml.IO.ServerList                                    # DataGrid
-    # $Xaml.IO.Ok                                            # Button
-    # $Xaml.IO.Cancel                                        # Button
 
     $Xaml.IO.ServerList.ItemsSource = @( )
     ForEach ($Item in "IPAddress DNSName Domain NetBIOS" -Split " ")
