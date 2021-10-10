@@ -102,7 +102,10 @@ Function FightingEntropy
                 "Shortcut Brand Branding DNSSuffix DomainName ADLogin ADConnection ADReplication FEDCPromo Certificate Company Key RootVar Share Source",
                 "Target ServerDependency ServerFeature ServerFeatures IISFeatures IIS Image Images Updates DCFound LocaleList LocaleItem" -join ' ') -Split " " | % { "_$_.ps1" })
         [String[]]    $Control = "Computer.png DefaultApps.xml header-image.png MDT_LanguageUI.xml vendorlist.txt zipcode.txt $( "FE","MDT","PSD" | % { "$_`Client","$_`Server" } | % { "$_`Mod.xml" } )" -Split " "
-        [String[]]  $Functions = ("Add-ACL","Complete-IISServer","Export-Ini","Get-FECertificate","Get-DiskInfo","Get-FEDCPromo","Get-FEDCPromoProfile",
+        [String[]]  $Functions = ("Add-ACL","Complete-IISServer","Export-Ini","Get-FECertificate","Get-DiskInfo",
+        "Get-FEADLogin",
+        "Get-FEDCPromo",
+        "Get-FEDCPromoProfile",
                 "Get-FEHive",
                 "Get-FEHost",
                 "Get-FEImage",
