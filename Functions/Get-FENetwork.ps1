@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-FENetwork.ps1
+          Solution: FightingEntropy Module
+          Purpose: For collecting network adapters, interfaces, as well as a network service controller
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-07
+          Modified: 2021-10-10
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
 Function Get-FENetwork
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
