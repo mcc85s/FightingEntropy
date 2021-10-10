@@ -6,7 +6,7 @@ Function Get-FEManifest
         [String[]]    $Classes = @(("FirewallRule Drive Drives ViperBomb File Cache Icons",
                 "Shortcut Brand Branding DNSSuffix DomainName ADLogin ADConnection ADReplication FEDCPromo Certificate Company Key RootVar Share Source",
                 "Target ServerDependency ServerFeature ServerFeatures IISFeatures IIS Image Images Updates DCFound LocaleList LocaleItem" -join ' ') -Split " " | % { "_$_.ps1" })
-        [String[]]    $Control = "Computer.png DefaultApps.xml header-image.png MDT_LanguageUI.xml zipcode.txt $( "FE","MDT","PSD" | % { "$_`Client","$_`Server" } | % { "$_`Mod.xml" } )" -Split " "
+        [String[]]    $Control = "Computer.png success.png failure.png DefaultApps.xml header-image.png MDT_LanguageUI.xml zipcode.txt $( "FE","MDT","PSD" | % { "$_`Client","$_`Server" } | % { "$_`Mod.xml" } )" -Split " "
         [String[]]  $Functions = ("Add-ACL","Complete-IISServer","Export-Ini","Get-FECertificate","Get-DiskInfo",
         "Get-FEADLogin",
         "Get-FEDCPromo",
