@@ -8,27 +8,137 @@ Function Get-FEDCPromo
     [Parameter(ParameterSetname=1)][String]$Type,
     [Parameter()][Switch]$Test)
 
-    $ADDS = Get-WindowsFeature | ? Name -match AD-Domain-Services
+    # Load Assemblies
+    Add-Type -AssemblyName PresentationFramework
+    Add-Type -AssemblyName System.Windows.Forms
+    Import-Module FightingEntropy
     
-    If ( $ADDS.InstallState -eq "Available" )
+    # Check for server operating system
+    If (Get-CimInstance Win32_OperatingSystem | ? Caption -notmatch Server)
     {
-        Write-Theme "Exception [!] Must have ADDS installed first" 12,4,15,0
-        
-        Switch($Host.UI.PromptForChoice("Exception [!] ","Must have ADDS installed first, install it?",
-        [System.Management.Automation.Host.ChoiceDescription[]]@("&Yes","&No"),0))
+        Throw "Must use Windows Server operating system"
+    }
+
+    # Profile Classes
+    Class ProfileItem
+    {
+        [String]                  $Name
+        [Bool]               $IsEnabled
+        [String]              $Property
+        [Object]                 $Value
+        [Object]                 $Check
+        [Object]                $Reason
+        ProfileItem([String]$Name,[Bool]$IsEnabled)
         {
-            0 
-            {  
-                Install-WindowsFeature -Name $ADDS.Name -IncludeAllSubFeature -IncludeManagementTools
-            } 
-            
-            1 
-            {  
-                Throw "Exception [!] Must have ADDS installed first" 
+            $This.Name      = $Name
+            $This.IsEnabled = $IsEnabled
+            $This.Check     = $False
+        }
+    }
+    Class ProfileRole
+    {
+        [String] $Name
+        [Bool]   $IsEnabled
+        [Bool]   $IsChecked
+        ProfileRole([String]$Name,[Bool]$IsEnabled,[Bool]$IsChecked)
+        {
+            $This.Name      = $Name
+            $This.IsEnabled = $IsEnabled
+            $This.IsChecked = $IsChecked
+        }
+    }
+    Class ProfileDSRM
+    {
+        [String] $Name
+        [SecureString] $Password
+        [SecureString] $Confirm
+        [Object] $Check
+        [Object] $Reason
+        ProfileDSRM()
+        {
+            $This.Name = "DSRM"
+        }
+    }
+    Class Profile
+    {
+        [UInt32]              $Mode
+        Hidden [Hashtable]    $Tags = @{ 
+
+            Slot                    = "Forest Tree Child Clone" -Split " "
+            Item                    = "ForestMode DomainMode ReplicationSourceDC SiteName Parent{0} {0} Domain{1} New{0} NewDomain{1}" -f "DomainName","NetBIOSName" -Split " "
+            Role                    = "InstallDns CreateDnsDelegation CriticalReplicationOnly NoGlobalCatalog" -Split " "
+        }
+        [Object]              $Slot
+        [Object]              $Item
+        [Object]              $Role
+        [Object]              $DSRM
+        Profile([UInt32]$Mode)
+        {
+            If ($Mode -notin 0..3)
+            {
+                Throw "Invalid Entry"
             }
+
+            $This.Mode              = $Mode
+            $This.Slot              = $This.Tags.Slot[$Mode]
+            $This.Item              = $This.Tags.Item | % { $This.GetFEDCPromoItem($Mode,$_) }
+            $This.Role              = $This.Tags.Role | % { $This.GetFEDCPromoRole($Mode,$_) }
+            $This.DSRM              = [ProfileDSRM]::New()
+
+            ForEach ($X in 0..($This.Item.Count-1))
+            {
+                $IX                 = $This.Item[$X]
+                $IX.Property        = @("SelectedIndex","Text")[@(0,0,0,0,1,1,1,1,1)[$X]]
+                $IX.Value           = Switch ($IX.Name)
+                {
+                    ForestMode           { 0 }
+                    DomainMode           { 0 }
+                    ReplicationSourceDC  { 0 }
+                    SiteName             { 0 }
+                    ParentDomainName     { "<Enter Domain Name> or <Credential>"  }
+                    DomainName           { "<Enter Domain Name> or <Credential>"  }
+                    DomainNetBIOSName    { "<Enter NetBIOS Name> or <Credential>" }
+                    NewDomainName        { "<Enter New Domain Name>"              }
+                    NewDomainNetBIOSName { "<Enter New NetBIOS Name>"             }
+                }
+            }
+        }
+        [Object] GetFEDCPromoItem([UInt32]$Mode,[String]$Type)
+        {
+            $X                   = Switch($Type)
+            {
+                ForestMode            {1,0,0,0}
+                DomainMode            {1,1,1,0}
+                ReplicationSourceDC   {0,0,0,1}
+                SiteName              {0,1,1,1}
+                ParentDomainName      {0,1,1,0}
+                DomainName            {1,0,0,1}
+                DomainNetBIOSName     {1,0,0,0}
+                NewDomainName         {0,1,1,0}
+                NewDomainNetBIOSName  {0,1,1,0}
+            }
+
+            Return [ProfileItem]::New($Type,$X[$Mode])
+        }
+        [Object] GetFEDCPromoRole([UInt32]$Mode,[String]$Type)
+        {
+            $X                   = Switch($Type)
+            {
+                InstallDNS              {(1,1,1,1),(1,1,1,1)}
+                CreateDNSDelegation     {(1,1,1,1),(0,0,1,0)}
+                NoGlobalCatalog         {(0,1,1,1),(0,0,0,0)}
+                CriticalReplicationOnly {(0,0,0,1),(0,0,0,0)}
+            }
+
+            Return [ProfileRole]::New($Type,$X[0][$Mode],$X[1][$Mode])
+        }
+        SetItem([String]$Name,[Object]$Value)
+        {
+            $This.Item | ? Name -eq $Name | % { $_.Value = $Value }
         }
     }
 
+    # Usable classes
     Class XamlWindow 
     {
         Hidden [Object]        $XAML
@@ -71,11 +181,12 @@ Function Get-FEDCPromo
         }
     }
 
+    # (Get-Content $Home\Desktop\FEDCFound.xaml) | % { "'$_'," } | Set-Clipboard
     Class FEDCFoundGUI
     {
         Static [String] $Tab = ('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Found" Width="550" Height="260" HorizontalAlignment="Center" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
-        '        <Style TargetType="GroupBox" x:Key="xGroupBox">',
+        '        <Style TargetType="GroupBox">',
         '            <Setter Property="Margin" Value="10"/>',
         '            <Setter Property="Padding" Value="10"/>',
         '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
@@ -89,42 +200,67 @@ Function Get-FEDCPromo
         '                </Setter.Value>',
         '            </Setter>',
         '        </Style>',
-        '        <Style TargetType="Button" x:Key="xButton">',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
-        '            <Setter Property="VerticalAlignment" Value="Center"/>',
-        '            <Setter Property="FontWeight" Value="Medium"/>',
-        '            <Setter Property="Foreground" Value="White"/>',
-        '            <Setter Property="Padding" Value="10"/>',
-        '            <Setter Property="Margin" Value="10"/>',
-        '            <Setter Property="Template">',
-        '                <Setter.Value>',
-        '                    <ControlTemplate TargetType="Button">',
-        '                        <Border CornerRadius="10" Background="#007bff" BorderBrush="Black" BorderThickness="3">',
-        '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
-        '                        </Border>',
-        '                    </ControlTemplate>',
-        '                </Setter.Value>',
-        '            </Setter>',
+        '        <Style TargetType="Button">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="Height" Value="30"/>',
+        '            <Setter Property="FontWeight" Value="Semibold"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="Foreground" Value="Black"/>',
+        '            <Setter Property="Background" Value="#DFFFBA"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
         '        </Style>',
         '        <Style TargetType="DataGridCell">',
         '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
         '        </Style>',
+        '        <Style TargetType="DataGrid">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="AutoGenerateColumns" Value="False"/>',
+        '            <Setter Property="AlternationCount" Value="2"/>',
+        '            <Setter Property="HeadersVisibility" Value="Column"/>',
+        '            <Setter Property="CanUserResizeRows" Value="False"/>',
+        '            <Setter Property="CanUserAddRows" Value="False"/>',
+        '            <Setter Property="IsReadOnly" Value="True"/>',
+        '            <Setter Property="IsTabStop" Value="True"/>',
+        '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
+        '            <Setter Property="SelectionMode" Value="Extended"/>',
+        '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
+        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
+        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
+        '        </Style>',
+        '        <Style TargetType="DataGridRow">',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Style.Triggers>',
+        '                <Trigger Property="AlternationIndex" Value="0">',
+        '                    <Setter Property="Background" Value="White"/>',
+        '                </Trigger>',
+        '                <Trigger Property="AlternationIndex" Value="1">',
+        '                    <Setter Property="Background" Value="#FFD6FFFB"/>',
+        '                </Trigger>',
+        '            </Style.Triggers>',
+        '        </Style>',
         '    </Window.Resources>',
         '    <Grid>',
         '        <Grid.Background>',
-        '            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>',
+        '            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
         '        </Grid.Background>',
-        '        <GroupBox Style="{StaticResource xGroupBox}">',
+        '        <GroupBox>',
         '            <Grid Margin="5">',
         '                <Grid.RowDefinitions>',
         '                    <RowDefinition Height="*"/>',
         '                    <RowDefinition Height="50"/>',
         '                </Grid.RowDefinitions>',
-        '                <DataGrid Grid.Row="0" Grid.Column="0" Name="DataGrid" AutoGenerateColumns="False" AlternationCount="2" HeadersVisibility="Column" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Extended">',
+        '                <DataGrid Grid.Row="0" Grid.Column="0" Name="DomainControllers">',
         '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Address" Width="140" Binding="{Binding IPAddress}" CanUserSort="True" IsReadOnly="True"/>',
-        '                        <DataGridTextColumn Header="Hostname" Width="200" Binding="{Binding HostName}" CanUserSort="True" IsReadOnly="True"/>',
-        '                        <DataGridTextColumn Header="NetBIOS" Width="140" Binding="{Binding NetBIOS}" CanUserSort="True" IsReadOnly="True"/>',
+        '                        <DataGridTextColumn Header="Address"  Width="140" Binding="{Binding IPAddress}"/>',
+        '                        <DataGridTextColumn Header="Hostname" Width="200" Binding="{Binding HostName}"/>',
+        '                        <DataGridTextColumn Header="NetBIOS"  Width="140" Binding="{Binding NetBIOS}"/>',
         '                    </DataGrid.Columns>',
         '                </DataGrid>',
         '                <Grid Grid.Row="1">',
@@ -132,8 +268,8 @@ Function Get-FEDCPromo
         '                        <ColumnDefinition Width="*"/>',
         '                        <ColumnDefinition Width="*"/>',
         '                    </Grid.ColumnDefinitions>',
-        '                    <Button Name="Ok" Style="{StaticResource xButton}" Content="Ok" Grid.Column="0" Grid.Row="1" Margin="10"/>',
-        '                    <Button Name="Cancel" Style="{StaticResource xButton}" Content="Cancel" Grid.Column="1" Grid.Row="1" Margin="10"/>',
+        '                    <Button Grid.Row="1" Grid.Column="0" Name="Ok"        Content="Ok" />',
+        '                    <Button Grid.Row="1" Grid.Column="1" Content="Cancel" Name="Cancel"/>',
         '                </Grid>',
         '            </Grid>',
         '        </GroupBox>',
@@ -141,57 +277,152 @@ Function Get-FEDCPromo
         '</Window>' -join "`n")
     }
 
+    # (Get-Content $Home\Desktop\FEDCPromo.xaml) | % { "'$_'," } | Set-Clipboard
     Class FEDCPromoGUI
     {
-        Static [String] $Tab = ('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Promotion" Width="800" Height="800" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
+        Static [String] $Tab = ('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Promotion" Width="800" Height="780" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
-        '        <Style TargetType="GroupBox" x:Key="xGroupBox">',
+        '        <Style x:Key="DropShadow">',
+        '            <Setter Property="TextBlock.Effect">',
+        '                <Setter.Value>',
+        '                    <DropShadowEffect ShadowDepth="1"/>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="4"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="Foreground" Value="#000000"/>',
+        '            <Setter Property="TextWrapping" Value="Wrap"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="2"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource DropShadow}">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+        '            <Setter Property="Margin" Value="4"/>',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="PasswordChar" Value="*"/>',
+        '        </Style>',
+        '        <Style TargetType="CheckBox">',
+        '            <Setter Property="VerticalAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalAlignment" Value="Right"/>',
+        '            <Setter Property="Margin" Value="3"/>',
+        '        </Style>',
+        '        <Style TargetType="Button">',
         '            <Setter Property="Margin" Value="5"/>',
         '            <Setter Property="Padding" Value="5"/>',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
-        '            <Setter Property="Template">',
-        '                <Setter.Value>',
-        '                    <ControlTemplate TargetType="GroupBox">',
-        '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
-        '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
-        '                        </Border>',
-        '                    </ControlTemplate>',
-        '                </Setter.Value>',
-        '            </Setter>',
-        '        </Style>',
-        '        <Style TargetType="Button" x:Key="xButton">',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
-        '            <Setter Property="VerticalAlignment" Value="Center"/>',
+        '            <Setter Property="Height" Value="30"/>',
+        '            <Setter Property="FontWeight" Value="Semibold"/>',
         '            <Setter Property="FontSize" Value="12"/>',
-        '            <Setter Property="FontWeight" Value="Medium"/>',
-        '            <Setter Property="Foreground" Value="White"/>',
-        '            <Setter Property="Margin" Value="3"/>',
-        '            <Setter Property="Template">',
+        '            <Setter Property="Foreground" Value="Black"/>',
+        '            <Setter Property="Background" Value="#DFFFBA"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style TargetType="ComboBox">',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '        </Style>',
+        '        <Style TargetType="TabControl">',
+        '            <Setter Property="TabStripPlacement" Value="Top"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Center"/>',
+        '            <Setter Property="Background" Value="LightYellow"/>',
+        '        </Style>',
+        '        <Style TargetType="GroupBox">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Setter Property="Foreground" Value="Black"/>',
+        '            <Setter Property="FontWeight" Value="SemiBold"/>',
+        '        </Style>',
+        '        <Style TargetType="TextBox" x:Key="Block">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="Height" Value="170"/>',
+        '            <Setter Property="FontFamily" Value="System"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '            <Setter Property="AcceptsReturn" Value="True"/>',
+        '            <Setter Property="VerticalAlignment" Value="Top"/>',
+        '            <Setter Property="TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Top"/>',
+        '            <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>',
+        '            <Setter Property="TextBlock.Effect">',
         '                <Setter.Value>',
-        '                    <ControlTemplate TargetType="Button">',
-        '                        <Border CornerRadius="5" Background="#007bff" BorderBrush="Black" BorderThickness="3">',
-        '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
-        '                        </Border>',
-        '                    </ControlTemplate>',
+        '                    <DropShadowEffect ShadowDepth="1"/>',
         '                </Setter.Value>',
         '            </Setter>',
         '        </Style>',
-        '        <Style TargetType="{x:Type ToolTip}">',
-        '            <Setter Property="Background" Value="Black"/>',
-        '            <Setter Property="Foreground" Value="LightGreen"/>',
+        '        <Style TargetType="TextBlock">',
+        '            <Setter Property="VerticalAlignment" Value="Center"/>',
         '        </Style>',
-        '        <Style TargetType="TextBox" x:Key="LTextBox">',
-        '            <Setter Property="TextAlignment" Value="Left"/>',
-        '            <Setter Property="Height" Value="20"/>',
+        '        <Style TargetType="DataGrid">',
         '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="AutoGenerateColumns" Value="False"/>',
+        '            <Setter Property="AlternationCount" Value="2"/>',
+        '            <Setter Property="HeadersVisibility" Value="Column"/>',
+        '            <Setter Property="CanUserResizeRows" Value="False"/>',
+        '            <Setter Property="CanUserAddRows" Value="False"/>',
+        '            <Setter Property="IsReadOnly" Value="True"/>',
+        '            <Setter Property="IsTabStop" Value="True"/>',
+        '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
+        '            <Setter Property="SelectionMode" Value="Extended"/>',
+        '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
+        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
+        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
         '        </Style>',
-        '        <Style TargetType="DataGridCell">',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
+        '        <Style TargetType="DataGridRow">',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Style.Triggers>',
+        '                <Trigger Property="AlternationIndex" Value="0">',
+        '                    <Setter Property="Background" Value="White"/>',
+        '                </Trigger>',
+        '                <Trigger Property="AlternationIndex" Value="1">',
+        '                    <Setter Property="Background" Value="#FFD6FFFB"/>',
+        '                </Trigger>',
+        '            </Style.Triggers>',
+        '        </Style>',
+        '        <Style TargetType="DataGridColumnHeader">',
+        '            <Setter Property="FontSize"   Value="10"/>',
+        '            <Setter Property="FontWeight" Value="Medium"/>',
+        '            <Setter Property="Margin" Value="2"/>',
+        '            <Setter Property="Padding" Value="2"/>',
+        '        </Style>',
+        '        <Style TargetType="Label">',
+        '            <Setter Property="VerticalAlignment" Value="Center"/>',
+        '            <Setter Property="Margin" Value="3"/>',
+        '            <Setter Property="FontWeight" Value="Bold"/>',
+        '            <Setter Property="Background" Value="Black"/>',
+        '            <Setter Property="Foreground" Value="White"/>',
+        '            <Setter Property="BorderBrush" Value="Gray"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
         '        </Style>',
         '    </Window.Resources>',
         '    <Grid>',
         '        <Grid.Background>',
-        '            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>',
+        '            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
         '        </Grid.Background>',
         '        <Grid.RowDefinitions>',
         '            <RowDefinition Height="24"/>',
@@ -206,49 +437,31 @@ Function Get-FEDCPromo
         '            </MenuItem>',
         '        </Menu>',
         '        <Grid Grid.Row="1">',
-        '            <Grid.Background>',
-        '                <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\background.jpg"/>',
-        '            </Grid.Background>',
-        '            <GroupBox Style="{StaticResource xGroupBox}">',
+        '            <GroupBox>',
+        '                <GroupBox.Background>',
+        '                    <SolidColorBrush Color="LightYellow"/>',
+        '                </GroupBox.Background>',
         '                <Grid Margin="5">',
         '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="80"/>',
         '                        <RowDefinition Height="*"/>',
-        '                        <RowDefinition Height="10*"/>',
         '                    </Grid.RowDefinitions>',
         '                    <Grid Grid.Row="0">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="*"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <GroupBox Name="_ForestMode" Header="[Forest Mode]" Grid.Column="0" Margin="5">',
-        '                            <ComboBox Name="ForestMode" Height="24" SelectedIndex="0">',
-        '                                <ComboBoxItem Content="Windows Server 2000 (Default)"/>',
-        '                                <ComboBoxItem Content="Windows Server 2003"/>',
-        '                                <ComboBoxItem Content="Windows Server 2008"/>',
-        '                                <ComboBoxItem Content="Windows Server 2008 R2"/>',
-        '                                <ComboBoxItem Content="Windows Server 2012"/>',
-        '                                <ComboBoxItem Content="Windows Server 2012 R2"/>',
-        '                                <ComboBoxItem Content="Windows Server 2016"/>',
-        '                                <ComboBoxItem Content="Windows Server 2019"/>',
-        '                            </ComboBox>',
+        '                        <GroupBox Grid.Column="0" Name="_ForestMode" Header="[Forest Mode]" Visibility="Collapsed">',
+        '                            <ComboBox Name="ForestMode"/>',
         '                        </GroupBox>',
-        '                        <GroupBox Header="[Domain Mode]" Name="_DomainMode" Grid.Column="1" Margin="5">',
-        '                            <ComboBox Name="DomainMode" Height="24" SelectedIndex="0">',
-        '                                <ComboBoxItem Content="Windows Server 2000 (Default)"/>',
-        '                                <ComboBoxItem Content="Windows Server 2003"/>',
-        '                                <ComboBoxItem Content="Windows Server 2008"/>',
-        '                                <ComboBoxItem Content="Windows Server 2008 R2"/>',
-        '                                <ComboBoxItem Content="Windows Server 2012"/>',
-        '                                <ComboBoxItem Content="Windows Server 2012 R2"/>',
-        '                                <ComboBoxItem Content="Windows Server 2016"/>',
-        '                                <ComboBoxItem Content="Windows Server 2019"/>',
-        '                            </ComboBox>',
+        '                        <GroupBox Grid.Column="1" Name="_DomainMode" Header="[Domain Mode]" Visibility="Collapsed">',
+        '                            <ComboBox Name="DomainMode"/>',
         '                        </GroupBox>',
-        '                        <GroupBox Header="[Parent Domain Name]" Name="_ParentDomainName" Grid.Column="0" Margin="5">',
-        '                            <TextBox Name="ParentDomainName" Text="&lt;Domain Name&gt;" Height="20" Margin="5"/>',
+        '                        <GroupBox Grid.Column="0" Name="_ParentDomainName" Header="[Parent Domain Name]" Visibility="Collapsed">',
+        '                            <TextBox Name="ParentDomainName" Text="&lt;Domain Name&gt;"/>',
         '                        </GroupBox>',
-        '                        <GroupBox Header="[Replication Source DC]" Name="_ReplicationSourceDC" Grid.Column="1" Margin="5">',
-        '                            <TextBox Name="ReplicationSourceDC" Text="&lt;Any&gt;" Height="20" Margin="5"/>',
+        '                        <GroupBox Grid.Column="1" Name="_ReplicationSourceDC" Header="[Replication Source DC]" Visibility="Collapsed">',
+        '                            <ComboBox Name="ReplicationSourceDC"/>',
         '                        </GroupBox>',
         '                    </Grid>',
         '                    <Grid Grid.Row="1">',
@@ -256,147 +469,132 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="1.5*"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Grid>',
+        '                        <Grid.RowDefinitions>',
+        '                            <RowDefinition Height="400"/>',
+        '                            <RowDefinition Height="200"/>',
+        '                        </Grid.RowDefinitions>',
+        '                        <GroupBox Grid.Row="0" Grid.Column="0" Header="[Required Features]">',
+        '                            <DataGrid Name="Features">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name" Width="180" Binding="{Binding Name}" CanUserSort="True" IsReadOnly="True"/>',
+        '                                    <DataGridTemplateColumn Header="Install" Width="50">',
+        '                                        <DataGridTemplateColumn.CellTemplate>',
+        '                                            <DataTemplate>',
+        '                                                <CheckBox IsEnabled="{Binding Installed}" IsChecked="True" Margin="0" Height="18" HorizontalAlignment="Left"/>',
+        '                                            </DataTemplate>',
+        '                                        </DataGridTemplateColumn.CellTemplate>',
+        '                                    </DataGridTemplateColumn>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                        </GroupBox>',
+        '                        <GroupBox Grid.Row="1" Grid.Column="0" Header="[Roles]">',
+        '                            <Grid>',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="24"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <CheckBox Grid.Column="0" Grid.Row="0" Name="InstallDNS"/>',
+        '                                <CheckBox Grid.Column="0" Grid.Row="1" Name="CreateDNSDelegation"/>',
+        '                                <CheckBox Grid.Column="0" Grid.Row="2" Name="NoGlobalCatalog"/>',
+        '                                <CheckBox Grid.Column="0" Grid.Row="3" Name="CriticalReplicationOnly"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="0" Content="Install DNS"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="1" Content="Create DNS Delegation"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="2" Content="No Global Catalog"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="3" Content="Critical Replication Only"/>',
+        '                            </Grid>',
+        '                        </GroupBox>',
+        '                        <Grid Grid.Row="0" Grid.Column="1">',
         '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="2.5*"/>',
-        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="240"/>',
+        '                                <RowDefinition Height="160"/>',
+        '                                <RowDefinition Height="160"/>',
         '                            </Grid.RowDefinitions>',
-        '                            <GroupBox Header="[Required Features]" Grid.Row="0" Margin="5">',
-        '                                <DataGrid Grid.Row="0" Grid.Column="0" Margin="5" Name="DataGrid" AutoGenerateColumns="False" HeadersVisibility="Column" AlternationCount="2" CanUserResizeRows="False" CanUserAddRows="False" IsTabStop="True" IsTextSearchEnabled="True" SelectionMode="Single">',
-        '                                    <DataGrid.RowStyle>',
-        '                                        <Style TargetType="{x:Type DataGridRow}">',
-        '                                            <Style.Triggers>',
-        '                                                <Trigger Property="AlternationIndex" Value="0">',
-        '                                                    <Setter Property="Background" Value="White"/>',
-        '                                                </Trigger>',
-        '                                                <Trigger Property="AlternationIndex" Value="1">',
-        '                                                    <Setter Property="Background" Value="SkyBlue"/>',
-        '                                                </Trigger>',
-        '                                                <Trigger Property="IsMouseOver" Value="True">',
-        '                                                    <Setter Property="ToolTip">',
-        '                                                        <Setter.Value>',
-        '                                                            <TextBlock Text="{Binding DisplayName}" TextWrapping="Wrap" Width="400" Background="#000000" Foreground="#00FF00"/>',
-        '                                                        </Setter.Value>',
-        '                                                    </Setter>',
-        '                                                    <Setter Property="ToolTipService.ShowDuration" Value="360000000"/>',
-        '                                                </Trigger>',
-        '                                            </Style.Triggers>',
-        '                                        </Style>',
-        '                                    </DataGrid.RowStyle>',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name" Width="200" Binding="{Binding Name}" CanUserSort="True" IsReadOnly="True"/>',
-        '                                        <DataGridTemplateColumn Header="Install" Width="65">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <CheckBox IsEnabled="{Binding Installed}" IsChecked="True"/>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
-        '                            </GroupBox>',
-        '                            <GroupBox Grid.Row="1" Header="[Roles]" Margin="5">',
+        '                            <GroupBox Grid.Row="0" Header="[Names]">',
         '                                <Grid>',
         '                                    <Grid.RowDefinitions>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
         '                                    </Grid.RowDefinitions>',
         '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="100"/>',
         '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="5*"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <TextBlock Grid.Column="1" Grid.Row="0" Margin="5" TextAlignment="Left" VerticalAlignment="Center" Text="Install DNS"/>',
-        '                                    <TextBlock Grid.Column="1" Grid.Row="1" Margin="5" TextAlignment="Left" VerticalAlignment="Center" Text="Create DNS Delegation"/>',
-        '                                    <TextBlock Grid.Column="1" Grid.Row="2" Margin="5" TextAlignment="Left" VerticalAlignment="Center" Text="No Global Catalog"/>',
-        '                                    <TextBlock Grid.Column="1" Grid.Row="3" Margin="5" TextAlignment="Left" VerticalAlignment="Center" Text="Critical Replication Only"/>',
-        '                                    <CheckBox Grid.Column="0" Grid.Row="0" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center" Name="InstallDNS"/>',
-        '                                    <CheckBox Grid.Column="0" Grid.Row="1" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center" Name="CreateDNSDelegation"/>',
-        '                                    <CheckBox Grid.Column="0" Grid.Row="2" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center" Name="NoGlobalCatalog"/>',
-        '                                    <CheckBox Grid.Column="0" Grid.Row="3" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Center" Name="CriticalReplicationOnly"/>',
+        '                                    <Label    Grid.Row="0" Grid.Column="0" Content="Domain"/>',
+        '                                    <TextBox  Grid.Row="0" Grid.Column="1" Name="DomainName"/>',
+        '                                    <Label    Grid.Row="1" Grid.Column="0" Content="New Domain"/>',
+        '                                    <TextBox  Grid.Row="1" Grid.Column="1" Name="NewDomainName"/>',
+        '                                    <Label    Grid.Row="2" Grid.Column="0" Content="NetBIOS"/>',
+        '                                    <TextBox  Grid.Row="2" Grid.Column="1" Name="DomainNetBIOSName"/>',
+        '                                    <Label    Grid.Row="3" Grid.Column="0" Content="New NetBIOS"/>',
+        '                                    <TextBox  Grid.Row="3" Grid.Column="1" Name="NewDomainNetBIOSName"/>',
+        '                                    <Label    Grid.Row="4" Grid.Column="0" Content="Site"/>',
+        '                                    <ComboBox Grid.Row="4" Grid.Column="1" Name="SiteName"/>',
+        '                                </Grid>',
+        '                            </GroupBox>',
+        '                            <GroupBox Grid.Row="1" Header="[Paths]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="100"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <Label   Grid.Row="0" Grid.Column="0" Content="Database"/>',
+        '                                    <Label   Grid.Row="1" Grid.Column="0" Content="SysVol"/>',
+        '                                    <Label   Grid.Row="2" Grid.Column="0" Content="Log"/>',
+        '                                    <TextBox Grid.Row="0" Grid.Column="1" Name="DatabasePath"/>',
+        '                                    <TextBox Grid.Row="1" Grid.Column="1" Name="SysvolPath"/>',
+        '                                    <TextBox Grid.Row="2" Grid.Column="1" Name="LogPath"/>',
         '                                </Grid>',
         '                            </GroupBox>',
         '                        </Grid>',
-        '                        <Grid Grid.Column="1">',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="*"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                                <RowDefinition Height="1.2*"/>',
-        '                                <RowDefinition Height="1.2*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Grid Grid.Row="0">',
-        '                                <Grid.ColumnDefinitions>',
-        '                                    <ColumnDefinition Width="1.5*"/>',
-        '                                    <ColumnDefinition Width="*"/>',
-        '                                </Grid.ColumnDefinitions>',
-        '                                <GroupBox Grid.Column="0" Header="[Domain Name]" Name="_DomainName">',
-        '                                    <TextBox Style="{StaticResource LTextBox}" Name="DomainName"/>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Column="1" Header="[NetBIOS Name]" Name="_DomainNetBIOSName">',
-        '                                    <TextBox Style="{StaticResource LTextBox}" Name="DomainNetBIOSName"/>',
-        '                                </GroupBox>',
+        '                        <GroupBox Grid.Row="1" Grid.Column="1" Header="[Credential] - [Domain Services Restore Mode Password]">',
+        '                            <Grid>',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Grid Grid.Row="0">',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="100"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <Button  Grid.Column="0" Content="Credential" Name="CredentialButton"/>',
+        '                                    <TextBox Grid.Column="1" Name="Credential"/>',
+        '                                </Grid>',
+        '                                <Grid Grid.Row="1">',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="100"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <Label Grid.Column="0" Content="Password"/>',
+        '                                    <PasswordBox Grid.Column="1" Name="SafeModeAdministratorPassword"/>',
+        '                                    <PasswordBox Grid.Column="2" Name="Confirm"/>',
+        '                                </Grid>',
+        '                                <Grid Grid.Row="2">',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <Button      Grid.Column="0" Name="Start" Content="Start" />',
+        '                                    <Button      Grid.Column="1" Name="Cancel" Content="Cancel"/>',
+        '                                </Grid>',
         '                            </Grid>',
-        '                            <Grid Grid.Row="1">',
-        '                                <Grid.ColumnDefinitions>',
-        '                                    <ColumnDefinition Width="1.5*"/>',
-        '                                    <ColumnDefinition Width="*"/>',
-        '                                </Grid.ColumnDefinitions>',
-        '                                <GroupBox Grid.Column="0" Header="[New Domain Name]" Name="_NewDomainName">',
-        '                                    <TextBox Style="{StaticResource LTextBox}" Name="NewDomainName"/>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Column="1" Header="[New NetBIOS Name]" Name="_NewDomainNetBIOSName">',
-        '                                    <TextBox Style="{StaticResource LTextBox}" Name="NewDomainNetBIOSName"/>',
-        '                                </GroupBox>',
-        '                            </Grid>',
-        '                            <GroupBox Grid.Row="2" Header="[Site Name]" Name="_SiteName">',
-        '                                <TextBox Style="{StaticResource LTextBox}" Name="SiteName"/>',
-        '                            </GroupBox>',
-        '                            <GroupBox Grid.Row="3" Header="[Database Path]" Name="_DatabasePath">',
-        '                                <TextBox Style="{StaticResource LTextBox}" Name="DatabasePath"/>',
-        '                            </GroupBox>',
-        '                            <GroupBox Grid.Row="4" Header="[Sysvol Path]" Name="_SysvolPath">',
-        '                                <TextBox Style="{StaticResource LTextBox}" Name="SysvolPath"/>',
-        '                            </GroupBox>',
-        '                            <GroupBox Grid.Row="5" Header="[Log Path]" Name="_LogPath">',
-        '                                <TextBox Style="{StaticResource LTextBox}" Name="LogPath"/>',
-        '                            </GroupBox>',
-        '                            <GroupBox Grid.Row="6" Header="[Directory Services Recovery Mode Administrator (Password/Confirm)]">',
-        '                                <Grid>',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <PasswordBox Grid.Column="0" HorizontalContentAlignment="Left" Name="SafeModeAdministratorPassword" Margin="5,0,5,0" Height="20" PasswordChar="*"/>',
-        '                                    <PasswordBox Grid.Column="1" HorizontalContentAlignment="Left" Name="Confirm" Height="20" Margin="5,0,5,0" PasswordChar="*"/>',
-        '                                </Grid>',
-        '                            </GroupBox>',
-        '                            <GroupBox Grid.Row="7" Header="[Credential]" Name="_Credential">',
-        '                                <Grid>',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="3*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Content="Credential" Style="{StaticResource xButton}" Name="CredentialButton" Grid.Column="0"/>',
-        '                                    <TextBox Style="{StaticResource LTextBox}" Name="Credential" Grid.Column="1"/>',
-        '                                </Grid>',
-        '                            </GroupBox>',
-        '                            <GroupBox Grid.Row="8" Header="[Initialize]">',
-        '                                <Grid>',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Name="Start" Style="{StaticResource xButton}" Grid.Column="0" Content="Start" />',
-        '                                    <Button Name="Cancel" Style="{StaticResource xButton}" Grid.Column="1" Content="Cancel"/>',
-        '                                </Grid>',
-        '                            </GroupBox>',
-        '                        </Grid>',
+        '                        </GroupBox>',
         '                    </Grid>',
         '                </Grid>',
         '            </GroupBox>',
@@ -405,207 +603,18 @@ Function Get-FEDCPromo
         '</Window>' -join "`n")
     }
 
-    Class ProfileType
-    {
-        [String]                  $Name
-        [Bool]               $IsEnabled
-        [Object]                 $Value
-        ProfileType([String]$Name,[Bool]$IsEnabled)
-        {
-            $This.Name      = $Name
-            $This.IsEnabled = $IsEnabled
-        }
-    }
-
-    Class ProfileText
-    {
-        [String]                  $Name
-        [Bool]               $IsEnabled
-        [String]                  $Text
-        ProfileText([String]$Name,[Bool]$IsEnabled)
-        {
-            $This.Name      = $Name
-            $This.IsEnabled = $IsEnabled
-            $This.Text      = ""
-        }
-    }
-
-    Class ProfileRole
-    {
-        [String] $Name
-        [Bool]   $IsEnabled
-        [Bool]   $IsChecked
-        ProfileRole([String]$Name,[Bool]$IsEnabled,[Bool]$IsChecked)
-        {
-            $This.Name      = $Name
-            $This.IsEnabled = $IsEnabled
-            $This.IsChecked = $IsChecked
-        }
-    }
-
-    Class Profile
-    {
-        [UInt32]              $Mode
-        Hidden [Hashtable]    $Tags = @{ 
-
-            Slot                    = "Forest Tree Child Clone" -Split " "
-            Type                    = "ForestMode DomainMode ReplicationSourceDC ParentDomainName" -Split " "
-            Text                    = "Parent{0} {0} Domain{1} SiteName New{0} NewDomain{1}" -f "DomainName","NetBIOSName" -Split " "
-            Role                    = "InstallDns CreateDnsDelegation CriticalReplicationOnly NoGlobalCatalog" -Split " "
-        }
-        [Object]              $Slot
-        [Object]              $Type
-        [Object]              $Text
-        [Object]              $Role
-        Profile([UInt32]$Mode)
-        {
-            If ( $Mode -notin 0..3 )
-            {
-                Throw "Invalid Entry"
-            }
-
-            $This.Mode              = $Mode
-            $This.Slot              = $This.Tags.Slot[$Mode]
-            $This.Type              = $This.Tags.Type | % { $This.GetFEDCPromoType($Mode,$_) }
-            $This.Text              = $This.Tags.Text | % { $This.GetFEDCPromoText($Mode,$_) }
-            $This.Role              = $This.Tags.Role | % { $This.GetFEDCPromoRole($Mode,$_) }
-        }
-        [Object] GetFEDCPromoType([UInt32]$Mode,[String]$Type)
-        {
-            $Item                   = Switch($Type)
-            {
-                ForestMode            {1,0,0,0}
-                DomainMode            {1,1,1,0}
-                ParentDomainName      {0,1,1,0}
-                ReplicationSourceDC   {0,0,0,1}
-            }
-
-            Return @([_Type]::New($Type,$Item[$Mode]) )
-        }
-        [Object] GetFEDCPromoText([UInt32]$Mode,[String]$Type)
-        {
-            $Item                   = Switch($Type)
-            {
-                ParentDomainName      {0,1,1,0}
-	            DomainName            {1,0,0,1}
-	            DomainNetBIOSName     {1,0,0,0}
-	            SiteName              {0,1,1,1}
-	            NewDomainName         {0,1,1,0}
-	            NewDomainNetBIOSName  {0,1,1,0}
-            }
-
-            Return @([_Text]::New($Type,$Item[$Mode]))
-        }
-        [Object] GetFEDCPromoRole([UInt32]$Mode,[String]$Type)
-        {
-            $Item                   = Switch($Type)
-            {
-                InstallDNS              {(1,1,1,1),(1,1,1,1)}
-                CreateDNSDelegation     {(1,1,1,1),(0,0,1,0)}
-                NoGlobalCatalog         {(0,1,1,1),(0,0,0,0)}
-                CriticalReplicationOnly {(0,0,0,1),(0,0,0,0)}
-            }
-
-            Return @([ProfileRole]::New($Type,$Item[0][$Mode],$Item[1][$Mode]))
-        }
-    }
-
-    Class DomainName
-    {
-        [String]             $String
-        [String]               $Type
-        Hidden [Object]        $Slot = @{ NetBIOS = @{ Min = 1; Max = 15 }; Domain = @{ Min = 2; Max = 63 }; SiteName = @{ Min = 2; Max = 63 } }
-        Hidden [Char[]]       $Allow = [Char[]]@(45,46;48..57;65..90;97..122)
-        Hidden [Char[]]        $Deny = [Char[]]@(32..44;47;58..64;91..96;123..126)
-        Hidden [Hashtable] $Reserved = @{
-    
-            Words             = ( "ANONYMOUS;AUTHENTICATED USER;BATCH;BUILTIN;CREATOR GROUP;CREATOR GROUP SERVER;CREATOR OWNER;CREATOR OWNER SERVER;" + 
-                                  "DIALUP;DIGEST AUTH;INTERACTIVE;INTERNET;LOCAL;LOCAL SYSTEM;NETWORK;NETWORK SERVICE;NT AUTHORITY;NT DOMAIN;NTLM AU" + 
-                                  "TH;NULL;PROXY;REMOTE INTERACTIVE;RESTRICTED;SCHANNEL AUTH;SELF;SERVER;SERVICE;SYSTEM;TERMINAL SERVER;THIS ORGANIZ" + 
-                                  "ATION;USERS;WORLD") -Split ";"
-            DNSHost           = ( "-GATEWAY","-GW","-TAC" )
-            SDDL              = ( "AN,AO,AU,BA,BG,BO,BU,CA,CD,CG,CO,DA,DC,DD,DG,DU,EA,ED,HI,IU,LA,LG,LS,LW,ME,MU,NO,NS,NU,PA,PO,PS,PU,RC,RD,RE,RO,RS," + 
-                                  "RU,SA,SI,SO,SU,SY,WD") -Split ','
-        }
-        DomainName([String]$Type,[String]$String)
-        {
-            If ( $Type -notin $This.Slot.Keys )
-            {
-                Throw "Invalid type"
-            }
-
-            $This.String = $String
-            $This.Type   = $Type
-            $This.Slot   = $This.Slot["$($Type)"]
-
-            If ( $This.String -in $This.Reserved.Words )
-            {
-                Throw "Entry is reserved"
-            }
-
-            If ( $This.String.Length -le $This.Slot.Min )
-            {
-                Throw "Input does not meet minimum length"
-            }
-
-            If ( $This.String.Length -ge $This.Slot.Max )
-            {
-                Throw "Input exceeds maximum length"
-            }
-
-            If ( $This.String.ToCharArray() | ? { $_ -notin $This.Allow -or $_ -in $This.Deny } )
-            { 
-                Throw "Name has invalid characters"
-            }
-        
-            If ( $This.String[0,-1] -notmatch "(\w)" )
-            {
-                Throw "First/Last Character not alphanumeric" 
-            }
-
-            Switch($This.Type)
-            {
-                NetBIOS  
-                { 
-                    If ( "." -in $This.String.ToCharArray() ) 
-                    { 
-                        Throw "Period found in NetBIOS Domain Name, breaking" 
-                    }
-                }
-
-                Domain
-                { 
-                    If ( $This.String.Split('.').Count -lt 2 )
-                    {
-                        Throw "Not a valid domain name, single label domain names are disabled"
-                    }
-                
-                    If ( $This.String -in $This.Reserved.SDDL )
-                    { 
-                        Throw "Name is reserved" 
-                    }
-
-                    If ( ( $This.String.Split('.')[-1].ToCharArray() | ? { $_ -match "(\D)" } ).Count -eq 0 )
-                    {
-                        Throw "Top Level Domain must contain a non-numeric."   
-                    }
-                }
-
-                Default {}
-            }
-        }
-    }
-
     Class ServerFeature
     {
+        [UInt32] $Index
         [String] $Name
         [String] $DisplayName
         [Bool]   $Installed
-        ServerFeature([String]$Name,[String]$DisplayName,[Int32]$Installed)
+        ServerFeature([UInt32]$Index,[Object]$Object)
         {
-            $This.Name           = $Name -Replace "-","_"
-            $This.DisplayName    = $Displayname
-            $This.Installed      = $Installed
+            $This.Index          = $Index
+            $This.Name           = $Object.Name
+            $This.DisplayName    = $Object.Displayname
+            $This.Installed      = $Object.Installed
         }
     }
 
@@ -618,479 +627,640 @@ Function Get-FEDCPromo
         ServerFeatures()
         { 
             $This.Output         =  @( )
-            Get-WindowsFeature   | ? Name -in ([ServerFeatures]::Names) | % { 
-        
-                $This.Output    += [ServerFeature]::New($_.Name, $_.DisplayName, $_.Installed)
+            ForEach ($Item in Get-WindowsFeature | ? Name -in ([ServerFeatures]::Names))
+            { 
+                $This.Output    += [ServerFeature]::New($This.Output.Count,$Item)
             }    
         }
     }
 
-    Class DCFound
+    Class Connection
     {
-        [Object]  $Window
-        [Object]      $IO
-        [Object] $Control
-
-        DCFound([Object]$Connection)
+        [String] $IPAddress
+        [String] $DNSName
+        [String] $Domain
+        [String] $NetBIOS
+        [PSCredential] $Credential
+        Hidden [String] $Site
+        [String[]] $Sitename
+        [String[]] $ReplicationDC
+        Connection([Object]$Login)
         {
-            $This.Window  = Get-XamlWindow -Type FEDCFound
-            $This.IO      = $This.Window.IO
-            $This.Control = $Connection
+            $This.IPAddress            = $Login.IPAddress
+            $This.DNSName              = $Login.DNSName
+            $This.Domain               = $Login.Domain
+            $This.NetBIOS              = $Login.NetBIOS
+            $This.Credential           = $Login.Credential
+            $This.Site                 = $Login.GetSitename()
+            $Login.Directory           = $Login.Directory.Replace("CN=Partitions,","")
+            $Login.Searcher.SearchRoot = $Login.Directory
+            $Login.Result              = $Login.Searcher.FindAll()
+            $This.Sitename             = @( )
+            $This.Sitename            += $This.Site
+            ForEach ($Item in $Login.Result | ? Path -Match "NTDS Site Settings")
+            {
+                $Item.Path.Split(",")[1].Replace("CN=","") | ? { $_ -ne $This.Site } | % { $This.Sitename += $_ }
+            }
+        }
+        AddReplicationDCs([Object[]]$DCs)
+        {
+            $This.ReplicationDC        = $DCs.Hostname | Select-Object -Unique
         }
     }
 
     Class FEDCPromo
     {
-        [Object]                              $Window
-        [Object]                                  $IO
-        [Object]                             $Control
-        [Object]                             $HostMap
-        [Object]                          $Connection
-        [Object]                            $Features
-        [String]                             $Command
-        [Int32]                                 $Mode
-        [Object]                             $Profile
-        [Object]                          $ForestMode
-        [Object]                          $DomainMode
-        [Object]                          $DomainType
-        [Object]                          $InstallDNS
-        [Object]                 $CreateDNSDelegation
-        [Object]                     $NoGlobalCatalog
-        [Object]             $CriticalReplicationOnly
-        [Object]                    $ParentDomainName
-        [Object]                          $DomainName
-        [Object]                   $DomainNetBIOSName
-        [Object]                       $NewDomainName
-        [Object]                $NewDomainNetBIOSName
-        [Object]                 $ReplicationSourceDC
-        [Object]                            $SiteName
-        [Object]                        $DatabasePath
-        [Object]                             $LogPath
-        [Object]                          $SysvolPath
-        [Object]       $SafeModeAdministratorPassword
-        [Object]                          $Credential
-        [Object]                              $Output
+        [Object]            $Features
+        [String]             $Caption = (Get-CimInstance -Class Win32_OperatingSystem | % Caption)
+        [UInt32]              $Server
+        Hidden [Object]         $Xaml
+        [String]             $Command
+        [String]          $DomainType
+        [UInt32]                $Mode
+        [Object]             $Profile
+        [Object]             $Network
+        [Object]          $Connection
         FEDCPromo()
         {
-            $This.Window                            = Get-XamlWindow -Type FEDCPromo
-            $This.IO                                = $This.Window.IO
-            $This.Control                           = Get-FENetwork
+            # Collect features
+            $This.Features                               = [ServerFeatures]::New().Output
 
-            If (!$This.Control)
+            # Test Active Directory to import module
+            If ($This.Features | ? Name -match AD-Domain-Services | ? Installed -eq 0)
             {
-                Throw "No network detected"
+                Write-Theme "Exception [!] Must have ADDS installed first" 12,4,15,0
+                Switch([System.Windows.MessageBox]::Show("Exception [!] ","Must have ADDS installed first, install it?","YesNo"))
+                {
+                    Yes {  Install-WindowsFeature -Name AD-Domain-Services -IncludeAllSubFeature -IncludeManagementTools } 
+                    No  {  Write-Theme "Error [!] ADDS was not installed" 12,4,15,0; Break }
+                }
             }
 
-            Write-Host "Scanning [~] Detected network hosts for NetBIOS Nodes"
-                
-            $This.Control                           | % NetBIOSScan
-            $This.HostMap                           = $This.Control.NbtScan | ? NetBIOS | ? { $_.NBT.ID -match "(1B|1C)" }
-            $This.Features                          = [_ServerFeatures]::New().Output
+            Import-Module ADDSDeployment -Verbose
+            $This.Server                                 =  Switch -Regex ($This.Caption)
+            {
+                "(2000)"        { 0 } "(2003)"        { 1 } "(2008 (?!R2))" { 2 } 
+                "(2008 R2)"     { 3 } "(2012 (?!R2))" { 4 } "(2012 R2)"     { 5 } 
+                "(2016)"        { 6 } "(2019)"        { 7 } "(2022)"        { 8 } 
+            }
 
-            $This.IO.DataGrid.ItemsSource           = $This.Features
-
-            "$Env:SystemRoot\NTDS"                  | % {
-
-                $This.DatabasePath                  = $_
-                $This.IO.DatabasePath.Text          = $_
-                $This.LogPath                       = $_
-                $This.IO.LogPath.Text               = $_
-                $This.SysvolPath                    = $_.Replace("NTDS","SYSVOL")
-                $This.IO.SysvolPath.Text            = $_.Replace("NTDS","SYSVOL")
+            $This.Network = Get-FENetwork
+            If ($This.Network)
+            {
+                Switch([System.Windows.MessageBox]::Show(("This will run a thorough scan for potential domain controllers.",
+                "Depending on the number of adapters in the system, this process can be lengthy.",
+                "-",
+                "It is not necessary for a new forest, choose no if this is the case.",
+                "-",
+                "Otherwise, proceed?" -join "`n"),"NetBIOS Scan [~]","YesNo"))
+                {
+                    Yes { $This.Network.NetBIOSScan() } No { Break }
+                }
+            }
+            If (!$This.Network)
+            {
+                Write-Theme "Error [!] No network detected" 12,4,15,0
+                Break
             }
         }
-        SetMode([Int32]$Mode)
+        SetMode([UInt32]$Mode,[Object]$Xaml)
         {
-            $This.Command                              = ("{0}Forest {0}{1} {0}{1} {0}{1}Controller" -f "Install-ADDS","Domain").Split(" ")[$Mode]
-            $This.Mode                                 = $Mode
-            $This.Profile                              = (Get-FEDCPromoProfile -Mode $Mode)
+            $This.Xaml      = $Xaml
+            $This.Mode      = $Mode
+            $This.Profile   = [Profile]::New($Mode)
 
-            $This.IO.Forest.IsChecked                  = $False
-            $This.IO.Tree.IsChecked                    = $False
-            $This.IO.Child.IsChecked                   = $False
-            $This.IO.Clone.IsChecked                   = $False
+            $This.Profile.Item[0].Value = $This.Server
+            $This.Profile.Item[1].Value = $This.Server
 
-            $This.IO.$($This.Profile.Slot).IsChecked   = $True
-
-            # Domain Type/Parent/RepDC
-            ForEach ( $Type in $This.Profile.Type )
+            If ($Mode -eq 0)
             {
-                $This.IO."_$($Type.Name)".Visibility   = @("Collapsed","Visible")[$Type.IsEnabled]
+                $This.Profile.Item[5,6] | % { $_.Value = $_.Value -Replace " or \<Credential\>","" }
+            }
             
-                If ( $Type.IsEnabled )
-                {
-                    $Type.Value                        = Switch($Type.Name)
-                    {
-                        ForestMode          { $This.IO.ForestMode.SelectedIndex  }
-                        DomainMode          { $This.IO.DomainMode.SelectedIndex  }
-                        ParentDomainName    {                         "<Domain>" }
-                        ReplicationSourceDC {                            "<Any>" }
-                    }
-                }
+            # Command
+            Write-Host "Command"
+            $This.Command   = ("{0}Forest {0}{1} {0}{1} {0}{1}Controller" -f "Install-ADDS","Domain").Split(" ")[$Mode]
 
-                Else 
-                {
-                    $Type.Value                        = ""
-                }
-
-                $This.IO.$($Type.Name).IsEnabled       = $Type.IsEnabled
+            # Menu Items
+            Write-Host "Menu items"
+            "Forest","Tree","Child","Clone" | ? { $_ -ne $This.Profile.Slot } | % {
             
-                @("Text","SelectedIndex")[$Type.Name -match "Mode"] | % { 
-            
-                    $This.IO.$($Type.Name).$($_)       = $Type.Value
-                }
+                $This.Xaml.IO.$($_).IsChecked                = $False
             }
 
-            # Domain/Text
-            ForEach ( $Text in $This.Profile.Text )
-            {
-                $This.IO.$(   $Text.Name ).IsEnabled  = $Text.IsEnabled
-                $This.IO."_$( $Text.Name )".Visibility = @("Collapsed","Visible")[$Text.IsEnabled]
-                $This.IO.$(   $Text.Name ).Text       = $Text.Text
-            }
-
-            # Roles
-            ForEach ( $Role in $This.Profile.Role )
-            {
-                $This.IO.$( $Role.Name ).IsEnabled     = $Role.IsEnabled
-                $This.IO.$( $Role.Name ).IsChecked     = $Role.IsChecked
-            }
+            # DomainType
+            Write-Host "Domain Type"
+            $This.DomainType                                 = @("-","Tree","Child","-")[$Mode]
 
             # Credential
-            If ( $Mode -eq 0 )
+            Write-Host "Credential"
+            $This.Xaml.IO.CredentialButton.IsEnabled         = @(0,1)[[UInt32]($This.Mode -in 1..3)]
+
+            # Roles
+            Write-Host "Roles"
+            ForEach ($Item in $This.Profile.Role)
             {
-                $This.IO._Credential.Visibility        = "Collapsed"
-                $This.IO.Credential.Text               = ""
-                $This.IO.Credential.IsEnabled          = $False
+                $This.Xaml.IO.$($Item.Name).IsEnabled        = $Item.IsEnabled -eq $True
+                $This.Xaml.IO.$($Item.Name).IsChecked        = $Item.IsChecked -eq $True
             }
-
-            Else
+            
+            # Profile Items
+            Write-Host "Profile Items"
+            ForEach ($Item in $This.Profile.Item)
             {
-                $This.IO._Credential.Visibility        = "Visible"
-                $This.IO.Credential.Text               = $This.Connection.Credential | ? Username | % Username
-                $This.IO.Credential.IsEnabled          = $False
-            }
-
-            $This.Output                               = @( )
-        }
-    
-        GetADConnection()
-        {
-            $This.Connection                         = [_ADConnection]::New($This.Hostmap)
-        }
-    }
-
-    Write-Host "Loading Network [~] FightingEntropy Domain Controller Promotion Tool"
-
-    $UI                   = [_FEDCPromo]::New()
-    If ($Type)
-    {
-        $Mode = Switch ($Type) { Forest {0} Tree {1} Child {2} Clone {3} }
-    }
-
-    $UI.SetMode($Mode)
-
-    $UI.IO.Forest.Add_Click({$UI.SetMode(0)})
-    $UI.IO.Tree.Add_Click({$UI.SetMode(1)})
-    $UI.IO.Child.Add_Click({$UI.SetMode(2)})
-    $UI.IO.Clone.Add_Click({$UI.SetMode(3)})
-    $UI.IO.Cancel.Add_Click({$UI.IO.DialogResult = $False})
-
-    $Max                  = Switch -Regex ($UI.Module.Role.Caption)
-    {
-        "(2000)"         { 0 }
-        "(2003)"         { 1 }
-        "(2008)+(R2){0}" { 2 }
-        "(2008 R2){1}"   { 3 }
-        "(2012)+(R2){0}" { 4 }
-        "(2012 R2){1}"   { 5 }
-        "(2016|2019)"    { 6 }
-    }
-
-    $UI.IO.ForestMode.SelectedIndex = $Max
-    $UI.IO.DomainMode.SelectedIndex = $Max
-    $UI.GetADConnection()
-
-    $UI.IO.CredentialButton.Add_Click({
-
-        $UI.Connection.Target           = $Null
-        $DC                             = [_DCFound]::New($UI.Connection)
-        $DC.IO.DataGrid.ItemsSource     = $DC.Control.Output
-        $DC.IO.DataGrid.SelectedIndex   = 0
-        [Void]$DC.IO.DataGrid.Focus()
-
-        $DC.IO.Cancel.Add_Click(
-        {
-            $DC.IO.DialogResult         = $False
-        })
-
-        $DC.IO.Ok.Add_Click(
-        {
-            $UI.Connection.Target       = $UI.Connection.Output[$DC.IO.DataGrid.SelectedIndex]
-            $DC.IO.DialogResult         = $True
-        })
-
-        $DC.Window.Invoke()
-
-        If ($DC.IO.DialogResult -eq $True -and $UI.Connection.Target -ne $Null)
-        {
-            $DC                         = [_ADLogin]::New($UI.Connection.Target)
-
-            $DC.IO.Switch.Add_Click({
-
-                $DC.IO.Port.IsEnabled = $True
-            })
-
-            $DC.IO.Cancel.Add_Click(
-            {
-                $UI.Credential          = $Null
-                $UI.IO.Credential.Text  = ""
-                $DC.IO.DialogResult     = $False
-            })
-
-            $DC.IO.Ok.Add_Click(
-            {
-                $DC.CheckADCredential()
-
-                If ( $DC.Test.distinguishedName )
+                Write-Host $Item.Name
+                If ($Item.Name -in $This.Profile.Item[0,1,2,4].Name)
                 {
-                    $DC.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
-                    $DC.Searcher            | % { 
-                    
-                        $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($DC.Directory,$DC.Credential.Username,$DC.Credential.GetNetworkCredential().Password)
-                        $_.PageSize         = 1000
-                        $_.PropertiestoLoad.Clear()
-                    }
-
-                    $DC.Result              = $DC.Searcher | % FindAll
-                    $DC.IO.DialogResult     = $True
+                    $This.Xaml.IO."_$($Item.Name)".Visibility  = @("Collapsed","Visible")[$Item.IsEnabled]
                 }
 
+                $This.Xaml.IO.$($Item.Name).IsEnabled         = $Item.IsEnabled
+
+                If ($Item.Property -eq "SelectedIndex")
+                {
+                    If ($Item.Name -match "Mode")
+                    {
+                        $This.Xaml.IO.$($Item.Name).$($Item.Property) = $This.Server
+                    }
+                    If ($Item.Name -notmatch "Mode")
+                    {
+                        $This.Xaml.IO.$($Item.Name).$($Item.Property) = 0
+                    }
+                }
+                If ($Item.Property -match "Text")
+                {
+                    $This.Xaml.IO.$($Item.Name).$($Item.Property) = @($Null,$Item.Value)[$Item.IsEnabled]
+                }
+            }
+        }
+        SetItem([String]$Name,[Object]$Value)
+        {
+            $This.Profile.SetItem($Name,$Value)
+            $This.Profile | ? Name -eq $Name | % { 
+                
+                $This.IO.Xaml.$($Name).$($_.Property) = $_.Value
+            }
+        }
+        Login()
+        {
+            $This.Connection = $Null
+            $Dcs             = $This.Network.NBTScan | ? NetBIOS | ? {$_.NBT.ID -Match "1B|1C"}
+            If ($DCs)
+            {
+                $DC      = [XamlWindow][FEDCFoundGUI]::Tab
+                $DC.IO.DomainControllers.ItemsSource = @( )
+                $DC.IO.DomainControllers.ItemsSource = @($DCs)
+                $DC.IO.DomainControllers.Add_SelectionChanged(
+                {
+                    If ($DC.IO.DomainControllers.SelectedIndex -ne -1)
+                    {
+                        $DC.IO.Ok.IsEnabled = 1
+                    }
+                })
+                $DC.IO.Ok.IsEnabled = 0
+                $DC.IO.Cancel.Add_Click(
+                {
+                    $DC.IO.DialogResult = $False
+                })
+                $DC.IO.Ok.Add_Click(
+                {
+                    $DC.IO.DialogResult = $True
+                })
+                $DC.Invoke()
+
+                If ($DC.IO.DialogResult)
+                {
+                    $Connect = Get-FEADLogin -Target $DC.IO.DomainControllers.SelectedItem
+                    If (!$Connect.Test.DistinguishedName)
+                    {
+                        $This.Connection = $Null
+                    }
+                    If ($Connect.Test.DistinguishedName)
+                    {
+                        $This.Connection = [Connection]::New($Connect)
+                        $This.Connection.AddReplicationDCs($DCs)
+                    }
+                }
+            }
+            If (!$DCs)
+            {
+                $Connect = Get-FEADLogin
+                If (!$Connect.Test.DistinguishedName)
+                {
+                    $This.Connection = $Null
+                }
+                If ($Connect.Test.DistinguishedName)
+                {
+                    $This.Connection = [Connection]::New($Connect)
+                }
+            }
+            If ($This.Connection)
+            {
+                # [Set Credential]
+                $This.Xaml.IO.Credential.Text            = $This.Connection.Credential.Username
+                $This.Xaml.IO.CredentialButton.IsEnabled = 0
+
+                # [Set Domain Name]
+                If ($This.Mode -in 1,2)
+                {
+                    $This.Xaml.IO.ParentDomainName       = $This.Connection.Domain
+                    $This.Profile.Item | ? Name -eq ParentDomainName | % { $_.Value = $This.Connection.Domain }
+                }
+                If ($This.Mode -eq 3)
+                {
+                    $This.Xaml.IO.DomainName.Text        = $This.Connection.Domain
+                    $This.Profile.Item | ? Name -eq DomainName | % { $_.Value = $This.Connection.Domain }
+                }
+
+                # [Set NetBIOS]
+                $This.Xaml.IO.DomainNetBIOSName.Text     = $This.Connection.NetBIOS
+                $This.Profile.Item | ? Name -eq DomainNetBIOSName.Text = $This.Connection.NetBIOS
+
+                # [Set Sitename]
+                $This.Xaml.IO.SiteName.ItemsSource                = @( )
+                $This.Xaml.IO.SiteName.ItemsSource                = @($This.Connection.Sitename)
+                $This.Xaml.IO.SiteName.SelectedIndex              = 0
+
+                # [Set Replication Source DCs]
+                $This.Xaml.IO.ReplicationSourceDC.ItemsSource     = @( )
+                If ($This.Connection.ReplicationDC.Count -gt 0)
+                {
+                    $This.Xaml.IO.ReplicationSourceDC.ItemsSource = @($DCs)
+                }
                 Else
                 {
-                    [System.Windows.MessageBox]::Show("Invalid Credentials")
+                    $This.Xaml.IO.ReplicationSourceDC.ItemsSource = @("<Any>")
                 }
-            })
-
-            $DC.Window.Invoke()
-
-            $UI.Credential             = $DC.Credential
-                                         $DC.ClearADCredential()
-
-            $UI.Connection.Return      = $DC
-            $UI.IO.Credential          | % {
-                
-                $_.Text                = $UI.Credential.UserName
-                $_.IsEnabled           = $False
+                $This.Xaml.IO.ReplicationSourceDC.SelectedIndex   = 0
             }
-
-            Switch ($UI.Mode)
+        }
+        [String[]] Reserved()
+        {
+            Return @(("ANONYMOUS;AUTHENTICATED USER;BATCH;BUILTIN;CREATOR GROUP;CREATOR GROUP SERVER;CREATOR OWNER;CREATOR OWNER SERVER;" + 
+            "DIALUP;DIGEST AUTH;INTERACTIVE;INTERNET;LOCAL;LOCAL SYSTEM;NETWORK;NETWORK SERVICE;NT AUTHORITY;NT DOMAIN;NTLM AUTH;NULL;PROXY;REMO" +
+            "TE INTERACTIVE;RESTRICTED;SCHANNEL AUTH;SELF;SERVER;SERVICE;SYSTEM;TERMINAL SERVER;THIS ORGANIZATION;USERS;WORLD") -Split ";" )
+        }
+        [String[]] Legacy()
+        {
+            Return @("-GATEWAY","-GW","-TAC")
+        }
+        [String[]] SecurityDescriptors()
+        {
+            Return @(("AN,AO,AU,BA,BG,BO,BU,CA,CD,CG,CO,DA,DC,DD,DG,DU,EA,ED,HI,IU,LA,LG,LS,LW,ME,MU,NO,NS,NU,PA,PO,PS,PU,RC,RD,RE,RO,RS,RU,SA," +
+            "SI,SO,SU,SY,WD") -Split ',')
+        }
+        CheckObject([Object]$Object)
+        {
+            Switch -Regex ($Object.Name)
             {
-                0
+                "(ParentDomainName|DomainName)"
                 {
-                    $UI.IO.ParentDomainName.Text     = ""
-                    $UI.IO.DomainName.Text           = "<New Forest Name>"
-                    $UI.IO.DomainNetBIOSName.Text    = "<New Forest NetBIOS Name>"
-                    $UI.IO.SiteName.Text             = "<New Forest Sitename>"
-                    $UI.IO.NewDomainName.Text        = ""
-                    $UI.IO.NewDomainNetBIOSName.Text = ""
-                    $UI.ReplicationSourceDC.Text     = ""
-                }
+                    If ($Object.Value.Length -lt 2 -or $Object.Value.Length -gt 63)
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Length not between 2 and 63 characters" 
+                    }
 
-                1
-                {
-                    $UI.IO.ParentDomainName.Text     = $DC.Domain
-                    $UI.IO.DomainName.Text           = ""
-                    $UI.IO.DomainNetBIOSName.Text    = ""
-                    $UI.IO.Sitename.Text             = $DC.GetSiteName()
-                    $UI.IO.NewDomainName.Text        = "<New Domain Name>"
-                    $UI.IO.NewDomainNetBIOSName.Text = "<New Domain NetBIOS Name"
-                    $UI.IO.ReplicationSourceDC.Text  = ""
-                }
+                    ElseIf ($Object.Value -in $This.Reserved())
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Entry is in reserved words list"
+                    }
 
-                2
-                {
-                    $UI.IO.ParentDomainName.Text     = $DC.Domain
-                    $UI.IO.DomainName.Text           = ""
-                    $UI.IO.DomainNetBIOSName.Text    = ""
-                    $UI.IO.Sitename.Text             = $DC.GetSiteName()
-                    $UI.IO.NewDomainName.Text        = "<New Domain Name>"
-                    $UI.IO.NewDomainNetBIOSName.Text = "<New Domain NetBIOS Name"
-                    $UI.IO.ReplicationSourceDC.Text  = ""
-                }
+                    ElseIf ($Object.Value -in $This.Legacy())
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Entry is in the legacy words list" 
+                    }
 
-                3
+                    ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    { 
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Invalid characters"
+                    }
+        
+                    ElseIf ($Object.Value[0,-1] -match "(\W)")
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
+                    }
+                    ElseIf ($Object.Value.Split(".").Count -lt 2)
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Single label domain names are disabled"
+                    }
+                        
+                    ElseIf ($Object.Value.Split('.')[-1] -notmatch "\w")
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Top Level Domain must contain a non-numeric"
+                    }
+                    Else
+                    {
+                        $Object.Check  = $True
+                        $Object.Reason = "[+] Passed"
+                    }
+                }
+                "(DomainNetBIOSName|NewDomainNetBIOSName)"
                 {
-                    $UI.IO.ParentDomainName.Text     = ""
-                    $UI.IO.DomainName.Text           = $DC.Domain
-                    $UI.IO.DomainNetBIOSName         = $DC.GetNetBIOSName()
-                    $UI.IO.SiteName.Text             = $DC.GetSiteName()
-                    $UI.IO.NewDomainName.Text        = ""
-                    $UI.IO.NewDomainNetBIOSName.Text = ""
-                    $UI.IO.ReplicationSourceDC.Text  = $UI.Connection.Target.Hostname
+                    If ($This.Profile.Mode -in 1,2 -and $Object.Value -match $This.Connection.NetBIOS)
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] New NetBIOS ID cannot be the same as the parent domain NetBIOS"
+                    }
+                        
+                    ElseIf ($Object.Value.Length -lt 1 -or $Object.Value.Length -gt 15)
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Length not between 1 and 15 characters" 
+                    }
+
+                    ElseIf ($Object.Value -in $This.Reserved())
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Entry is in reserved words list"
+                    }
+
+                    ElseIf ($Object.Value -in $This.Legacy())
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Entry is in the legacy words list" 
+                    }
+
+                    ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    { 
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Invalid characters"
+                    }
+        
+                    ElseIf ($Object.Value[0,-1] -match "(\W)")
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
+                    }                        
+                    ElseIf ($Object.Value -match "\.")
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] NetBIOS cannot contain a '.'"
+                    }
+                    ElseIf ($Object.Value -in $This.SecurityDescriptors())
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Matches a security descriptor"
+                    }
+                    Else
+                    {
+                        $Object.Check  = $True
+                        $Object.Reason = "[+] Passed"
+                    }
+                }
+                NewDomainName
+                {
+                    Switch($This.Profile.Type)
+                    {
+                        1
+                        {
+                            If ($Object.Value -match ".$($This.Xaml.IO.ParentDomainName.Text)")
+                            {
+                                $Object.Check  = $False
+                                $Object.Reason = "[!] Cannot be a (child/host) of the parent"
+                            }
+                            
+                            ElseIf ($Object.Value.Split(".").Count -lt 2)
+                            {
+                                $Object.Check  = $False
+                                $Object.Reason = "[!] Single label domain names are disabled"
+                            }
+                                
+                            ElseIf ($Object.Value.Split('.')[-1] -notmatch "\w")
+                            {
+                                $Object.Check  = $False
+                                $Object.Reason = "[!] Top Level Domain must contain a non-numeric"
+                            }
+                        }
+
+                        2
+                        {
+                            If ($Object.Value -notmatch ".$($This.Xaml.IO.ParentDomainName.Text)")
+                            {
+                                $Object.Check  = $False
+                                $Object.Reason = "[!] Must be a (child/host) of the parent"
+                            }
+                        }
+                    }
+
+                    ElseIf ($Object.Value.Length -lt 2 -or $Object.Value.Length -gt 63)
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Length not between 2 and 63 characters"
+                    }
+
+                    ElseIf ($Object.Value -in $This.Reserved())
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Entry is in reserved words list"
+                    }
+
+                    ElseIf ($Object.Value -in $This.Legacy())
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Entry is in the legacy words list" 
+                    }
+
+                    ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    { 
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] Invalid characters"
+                    }
+                    ElseIf ($Object.Value[0,-1] -match "(\W)")
+                    {
+                        $Object.Check  = $False
+                        $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
+                    }
+
+                    Else
+                    {
+                        $Object.Check  = $True
+                        $Object.Reason = "[+] Passed"
+                    }
                 }
             }
         }
-    })
+        CheckDSRM([Object]$Object)
+        {
+            If ($Object.Password -notmatch "([0-9a-zA-Z:punct:]{10})")
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number" 
+            }
+            ElseIf ($Object.Password -notmatch $Object.Confirm)
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Confirmation error"
+            }
+            Else
+            {
+                $Object.Check  = $True
+                $Object.Reason = "[+] Passed"
+            }
+        }
+        Total()
+        {
+            If ($This.Profile.Item | ? IsEnabled | ? Property -eq Text | ? Check -eq 0).Count -eq 0 -and ($This.Profile.DSRM | ? Check))
+            {
+                $This.Xaml.IO.Start.IsEnabled = 1
+            }
+            Else
+            {
+                $This.Xaml.IO.Start.IsEnabled = 0
+            }
+        }
+    }
 
-    $UI.IO.Start.Add_Click(
+    $Xaml                                      = [XamlWindow][FEDCPromoGUI]::Tab
+    $Main                                      = [FEDCPromo]::New()
+
+    $Xaml.IO.ForestMode.ItemsSource            = @( )
+    $Xaml.IO.ForestMode.ItemsSource            = @("2000 (Default)","2003","2008","2008 R2","2012","2012 R2","2016","2019","2022" | % { "Windows Server $_" })
+    $Xaml.IO.DomainMode.ItemsSource            = @( )
+    $Xaml.IO.DomainMode.ItemsSource            = @("2000 (Default)","2003","2008","2008 R2","2012","2012 R2","2016","2019","2022" | % { "Windows Server $_" })
+    $Xaml.IO.Features.ItemsSource              = @( )
+    $Xaml.IO.Features.ItemsSource              = @($Main.Features)
+    $Xaml.IO.ReplicationSourceDC.ItemsSource   = @()
+    $Xaml.IO.ReplicationSourceDC.ItemsSource   = @("<Any>")
+    $Xaml.IO.Sitename.ItemsSource              = @( )
+    $Xaml.IO.Sitename.ItemsSource              = @("-")
+    $Xaml.IO.Credential.IsEnabled              = 0
+
+    # Name Defaults
+    $Xaml.IO.DomainName.IsEnabled              = 0
+    $Xaml.IO.NewDomainName.IsEnabled           = 0
+    $Xaml.IO.DomainNetBIOSName.IsEnabled       = 0
+    $Xaml.IO.NewDomainNetBIOSName.IsEnabled    = 0
+    $Xaml.IO.SiteName.IsEnabled                = 0
+
+    # Path Defaults
+    $Xaml.IO.DataBasePath.Text                 = "$Env:SystemRoot\NTDS"
+    $Xaml.IO.SysVolPath.Text                   = "$Env:SystemRoot\SYSVOL"
+    $Xaml.IO.LogPath.Text                      = "$Env:SystemRoot\NTDS"
+
+    # Role Defaults
+    $Xaml.IO.InstallDNS.IsEnabled              = 0
+    $Xaml.IO.CreateDNSDelegation.IsEnabled     = 0
+    $Xaml.IO.NoGlobalCatalog.IsEnabled         = 0
+    $Xaml.IO.CriticalReplicationOnly.IsEnabled = 0
+
+    # Button Defaults
+    $Xaml.IO.Start.IsEnabled                   = 0
+    $Xaml.IO.CredentialButton.IsEnabled        = 0
+
+    <# $Last = $Null
+    $Xaml.Names | ? { $_ -notin "ContentPresenter","Border","ContentSite" } | % {
+        
+        $X = "    # `$Xaml.IO.$_"
+        $Y = $Xaml.IO.$_.GetType().Name 
+        "{0}{1} # $Y" -f $X,(" "*(60-$X.Length) -join '')
+    
+    } | Set-Clipboard #>
+
+    $Xaml.IO.Forest.Add_Checked(
     {
-        $Password                             = $UI.IO.SafeModeAdministratorPassword
-        $Confirm                              = $UI.IO.Confirm
-
-        If (!$Password.Password)
-        {
-            [System.Windows.MessageBox]::Show("Invalid password")
-        }
-
-        ElseIf ($Password.Password -ne $Confirm.Password)
-        {
-            [System.Windows.Messagebox]::Show("Password does not match")
-        }
-
-        Else
-        {
-            $UI.SafeModeAdministratorPassword = $Password.SecurePassword
-            # Types
-
-            $UI.DomainType = @("-","TreeDomain","ChildDomain","-")[$UI.Mode]
-
-            ForEach ( $Type in $UI.Profile.Type )
-            {
-                If ($Type.IsEnabled)
-                {
-                    Switch ($Type.Name)
-                    {
-                        ForestMode          
-                        { 
-                            $UI.ForestMode          = $UI.IO.ForestMode.SelectedIndex
-                        }
-
-                        DomainMode
-                        { 
-                            $UI.DomainMode          = $UI.IO.DomainMode.SelectedIndex
-                        }
-
-                        ReplicationSourceDC 
-                        {
-                            $UI.ReplicationSourceDC = [_DomainName]::New("Domain",$UI.IO.ReplicationSourceDC.Text).String
-                        }
-
-                        ParentDomainName    
-                        { 
-                            $UI.ParentDomainName    = [_DomainName]::New("Domain",$UI.IO.ParentDomainName.Text).String
-                        }
-                    }
-                }
-
-                If (!$Type.IsEnabled)
-                {
-                    Switch($Type.Name)
-                    {
-                        ForestMode          { $UI.ForestMode          = "-" }
-                        DomainMode          { $UI.DomainMode          = "-" }
-                        ReplicationSourceDC { $UI.ReplicationSourceDC = "-" }
-                        ParentDomainName    { $UI.ParentDomainName    = "-" }
-                    }
-                }
-            }
-
-            ForEach ( $Type in $UI.Profile.Text )
-            {
-                If ( $Type.IsEnabled )
-                {
-                    Switch ($Type.Name)
-                    {
-                        ParentDomainName     
-                        { 
-                            $UI.ParentDomainName     = [_DomainName]::New("Domain",$UI.IO.ParentDomainName.Text).String
-                        }
-
-                        DomainName
-                        {
-                            $UI.DomainName           = [_DomainName]::New("Domain",$UI.IO.DomainName.Text).String
-                        }
-
-                        DomainNetBIOSName
-                        { 
-                            $UI.DomainNetBIOSName    = [_DomainName]::New("NetBIOS",$UI.IO.DomainNetBIOSName.Text).String
-                        }
-
-                        SiteName             
-                        {
-                            $UI.SiteName             = [_DomainName]::New("SiteName",$UI.IO.SiteName.Text).String
-                        }
-
-                        NewDomainName        
-                        { 
-                            $UI.NewDomainName        = [_DomainName]::New("Domain",$UI.IO.NewDomainName.Text).String
-                        }
-
-                        NewDomainNetBIOSName 
-                        { 
-                            $UI.NewDomainNetBIOSName = [_DomainName]::New("NetBIOS",$UI.IO.NewDomainNetBIOSName.Text).String
-                        }
-                    }
-                }
-
-                If (!$Type.IsEnabled)
-                {
-                    Switch($Type.Name)
-                    {
-                        ParentDomainName     { $UI.ForestMode           = "-" }
-                        DomainName           { $UI.DomainMode           = "-" }
-                        DomainNetBIOSName    { $UI.DomainNetBIOSName    = "-" }
-                        Sitename             { $UI.ParentDomainName     = "-" }
-                        NewDomainName        { $UI.NewDomainName        = "-" }
-                        NewDomainNetBIOSName { $UI.NewDomainNetBIOSName = "-" }
-                    }
-                }
-            }
-
-            ForEach ( $Type in $UI.Profile.Role )
-            {
-                If ( $Type.IsEnabled )
-                {
-                    Switch ($Type.Name)
-                    {
-                        InstallDns              
-                        {
-                            $UI.InstallDNS              = $UI.IO.InstallDNS.IsChecked
-                        }
-
-                        CreateDnsDelegation     
-                        {
-                            $UI.CreateDnsDelegation     = $UI.IO.CreateDnsDelegation.IsChecked
-                        }
-
-                        CriticalReplicationOnly
-                        {
-                            $UI.CriticalReplicationOnly = $UI.IO.CriticalReplicationOnly.IsChecked
-                        }
-
-                        NoGlobalCatalog         
-                        {
-                            $UI.NoGlobalCatalog         = $UI.IO.NoGlobalCatalog.IsChecked
-                        }
-                    }
-                }
-
-                If (!$Type.IsEnabled)
-                {
-                    Switch($Type.Name)
-                    {
-                        InstallDns               { $UI.InstallDNS              = $False }
-                        CreateDnsDelegation      { $UI.CreateDNSDelegation     = $False }
-                        CriticalReplicationOnly  { $UI.CriticalReplicationOnly = $False }
-                        NoGlobalCatalog          { $UI.NoGlobalCatalog         = $False }
-                    }
-                }
-            }
-
-            $UI.IO.DialogResult               = $True
-        }
+        $Main.SetMode(0,$Xaml)
+    })
+    $Xaml.IO.Tree.Add_Checked(
+    {
+        $Main.SetMode(1,$Xaml)
+    })
+    $Xaml.IO.Child.Add_Checked(
+    {
+        $Main.SetMode(2,$Xaml)
+    })
+    $Xaml.IO.Clone.Add_Checked(
+    {
+        $Main.SetMode(3,$Xaml)
     })
 
+    $Xaml.IO.ParentDomainName.Add_TextChanged(
+    {
+        $Object          = $Main.Profile.Item | ? Name -eq ParentDomainName
+        $Object.Value    = $Xaml.IO.ParentDomainName.Text
+        $Main.CheckObject($Object)
+        $Main.Total()
+    })
+
+    $Xaml.IO.DomainName.Add_TextChanged(
+    {
+        $Object          = $Main.Profile.Item | ? Name -eq DomainName
+        $Object.Value    = $Xaml.IO.DomainName.Text
+        $Main.CheckObject($Object)
+        $Main.Total()
+    })
+
+    $Xaml.IO.NewDomainName.Add_TextChanged(
+    {
+        $Object          = $Main.Profile.Item | ? Name -eq NewDomainName
+        $Object.Value    = $Xaml.IO.NewDomainName.Text
+        $Main.CheckObject($Object)
+        $Main.Total()
+    })
+
+    $Xaml.IO.DomainNetBIOSName.Add_TextChanged(
+    {
+        $Object          = $Main.Profile.Item | ? Name -eq DomainNetBIOSName
+        $Object.Value    = $Xaml.IO.DomainNetBIOSName.Text
+        $Main.CheckObject($Object)
+        $Main.Total()
+    })
+
+    $Xaml.IO.NewDomainNetBIOSName.Add_TextChanged(
+    {
+        $Object          = $Main.Profile.Item | ? Name -eq NewDomainNetBIOSName
+        $Object.Value    = $Xaml.IO.NewDomainNetBIOSName.Text
+        $Main.CheckObject($Object)
+        $Main.Total()
+    })
+
+    $Xaml.IO.SafeModeAdministratorPassword.Add_TextChanged(
+    {
+        $Object          = $Main.Profile.DSRM
+        $Object.Password = $Xaml.IO.SafeModeAdministratorPassword.Password
+        $Main.CheckDSRM($Object)
+        $Main.Total()
+    })
+
+    $Xaml.IO.Confirm.Add_TextChanged(
+    {
+        $Object          = $Main.Profile.DSRM
+        $Object.Confirm  = $Xaml.IO.Confirm.Password
+        $Main.CheckDSRM($Object)
+        $Main.Total()
+    })
+
+    # $Xaml.IO.SafeModeAdministratorPassword                 # PasswordBox
+    # $Xaml.IO.Confirm                                       # PasswordBox
+    # $Xaml.IO.Start                                         # Button
+    # $Xaml.IO.Cancel                                        # Button
+
+    $Xaml.IO.CredentialButton.Add_Click(
+    {
+        $Main.Login()
+    })
+
+    $Xaml.IO.Start.Add_Click(
+    {
+        [System.Windows.MessageBox]::Show("All checks passed","Success")
+        $Xaml.IO.DialogResult = $True
+    })
+
+    $Xaml.IO.Cancel.Add_Click(
+    {
+        $Xaml.IO.DialogResult = $False
+    })
+
+    $Xaml.Invoke()
+}
+
+    <#
     $UI.Window.Invoke()
 
     If ($UI.IO.DialogResult)
@@ -1222,3 +1392,4 @@ Function Get-FEDCPromo
         Write-Theme "Exception [!] Either the user cancelled, or the dialog failed" 12,4,15,0
     }
 }
+#>
