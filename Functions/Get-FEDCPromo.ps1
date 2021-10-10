@@ -73,8 +73,8 @@ Function Get-FEDCPromo
     Class ProfileDSRM
     {
         [String] $Name
-        [SecureString] $Password
-        [SecureString] $Confirm
+        [String] $Password
+        [String] $Confirm
         [Object] $Check
         [Object] $Reason
         ProfileDSRM()
@@ -305,12 +305,41 @@ Function Get-FEDCPromo
     {
         Static [String] $Tab = ('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Promotion" Width="800" Height="780" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
+        '        <Style TargetType="GroupBox" x:Key="xGroupBox">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
+        '            <Setter Property="Padding" Value="10"/>',
+        '            <Setter Property="Margin" Value="10"/>',
+        '            <Setter Property="Template">',
+        '                <Setter.Value>',
+        '                    <ControlTemplate TargetType="GroupBox">',
+        '                        <Border CornerRadius="10" Background="LightYellow" BorderBrush="Black" BorderThickness="3">',
+        '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
+        '                        </Border>',
+        '                    </ControlTemplate>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
         '                <Setter.Value>',
         '                    <DropShadowEffect ShadowDepth="1"/>',
         '                </Setter.Value>',
         '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="Label">',
+        '            <Setter Property="Margin" Value="3"/>',
+        '            <Setter Property="FontWeight" Value="Bold"/>',
+        '            <Setter Property="Background" Value="Black"/>',
+        '            <Setter Property="Foreground" Value="White"/>',
+        '            <Setter Property="BorderBrush" Value="Gray"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="VerticalAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Center"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
         '        </Style>',
         '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
         '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
@@ -428,19 +457,9 @@ Function Get-FEDCPromo
         '            <Setter Property="Margin" Value="2"/>',
         '            <Setter Property="Padding" Value="2"/>',
         '        </Style>',
-        '        <Style TargetType="Label">',
-        '            <Setter Property="VerticalAlignment" Value="Center"/>',
-        '            <Setter Property="Margin" Value="3"/>',
-        '            <Setter Property="FontWeight" Value="Bold"/>',
+        '        <Style TargetType="{x:Type ToolTip}">',
         '            <Setter Property="Background" Value="Black"/>',
-        '            <Setter Property="Foreground" Value="White"/>',
-        '            <Setter Property="BorderBrush" Value="Gray"/>',
-        '            <Setter Property="BorderThickness" Value="2"/>',
-        '            <Style.Resources>',
-        '                <Style TargetType="Border">',
-        '                    <Setter Property="CornerRadius" Value="5"/>',
-        '                </Style>',
-        '            </Style.Resources>',
+        '            <Setter Property="Foreground" Value="LightGreen"/>',
         '        </Style>',
         '    </Window.Resources>',
         '    <Grid>',
@@ -453,14 +472,14 @@ Function Get-FEDCPromo
         '        </Grid.RowDefinitions>',
         '        <Menu Grid.Row="0" Height="20">',
         '            <MenuItem Header="Command">',
-        '                <MenuItem Name="Forest" Header="Install-ADDSForest" IsCheckable="True"/>',
-        '                <MenuItem Name="Tree" Header="Install-ADDSDomain(Tree)" IsCheckable="True"/>',
-        '                <MenuItem Name="Child" Header="Install-ADDSDomain(Child)" IsCheckable="True"/>',
-        '                <MenuItem Name="Clone" Header="Install-ADDSDomainController" IsCheckable="True"/>',
+        '                <MenuItem Name="Forest" Header="Install-ADDSForest"           IsCheckable="True"/>',
+        '                <MenuItem Name="Tree"   Header="Install-ADDSDomain(Tree)"     IsCheckable="True"/>',
+        '                <MenuItem Name="Child"  Header="Install-ADDSDomain(Child)"    IsCheckable="True"/>',
+        '                <MenuItem Name="Clone"  Header="Install-ADDSDomainController" IsCheckable="True"/>',
         '            </MenuItem>',
         '        </Menu>',
         '        <Grid Grid.Row="1">',
-        '            <GroupBox>',
+        '            <GroupBox Style="{StaticResource xGroupBox}">',
         '                <GroupBox.Background>',
         '                    <SolidColorBrush Color="LightYellow"/>',
         '                </GroupBox.Background>',
@@ -480,8 +499,15 @@ Function Get-FEDCPromo
         '                        <GroupBox Grid.Column="1" Name="_DomainMode" Header="[Domain Mode]" Visibility="Collapsed">',
         '                            <ComboBox Name="DomainMode"/>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Column="0" Name="_ParentDomainName" Header="[Parent Domain Name]" Visibility="Collapsed">',
-        '                            <TextBox Name="ParentDomainName" Text="&lt;Domain Name&gt;"/>',
+        '                        <GroupBox Grid.Column="0" Name="_ParentDomainName" Header="[Parent Domain Name]" Visibility="Visible">',
+        '                            <Grid>',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="25"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <TextBox Grid.Column="0" Name="ParentDomainName"     Text="&lt;Domain Name&gt;"/>',
+        '                                <Image   Grid.Column="1" Name="ParentDomainNameIcon"/>',
+        '                            </Grid>',
         '                        </GroupBox>',
         '                        <GroupBox Grid.Column="1" Name="_ReplicationSourceDC" Header="[Replication Source DC]" Visibility="Collapsed">',
         '                            <ComboBox Name="ReplicationSourceDC"/>',
@@ -522,14 +548,14 @@ Function Get-FEDCPromo
         '                                    <ColumnDefinition Width="24"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <CheckBox Grid.Column="0" Grid.Row="0" Name="InstallDNS"/>',
+        '                                <CheckBox Grid.Column="0" Grid.Row="0" Name="InstallDNS" IsChecked="True"/>',
         '                                <CheckBox Grid.Column="0" Grid.Row="1" Name="CreateDNSDelegation"/>',
         '                                <CheckBox Grid.Column="0" Grid.Row="2" Name="NoGlobalCatalog"/>',
         '                                <CheckBox Grid.Column="0" Grid.Row="3" Name="CriticalReplicationOnly"/>',
-        '                                <Label    Grid.Column="1" Grid.Row="0" Content="Install DNS"/>',
-        '                                <Label    Grid.Column="1" Grid.Row="1" Content="Create DNS Delegation"/>',
-        '                                <Label    Grid.Column="1" Grid.Row="2" Content="No Global Catalog"/>',
-        '                                <Label    Grid.Column="1" Grid.Row="3" Content="Critical Replication Only"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="0" Content="Install DNS"               HorizontalContentAlignment="Left"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="1" Content="Create DNS Delegation"     HorizontalContentAlignment="Left"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="2" Content="No Global Catalog"         HorizontalContentAlignment="Left"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="3" Content="Critical Replication Only" HorizontalContentAlignment="Left"/>',
         '                            </Grid>',
         '                        </GroupBox>',
         '                        <Grid Grid.Row="0" Grid.Column="1">',
@@ -550,17 +576,23 @@ Function Get-FEDCPromo
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="100"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="25"/>',
         '                                    </Grid.ColumnDefinitions>',
         '                                    <Label    Grid.Row="0" Grid.Column="0" Content="Domain"/>',
         '                                    <TextBox  Grid.Row="0" Grid.Column="1" Name="DomainName"/>',
+        '                                    <Image    Grid.Row="0" Grid.Column="2" Name="DomainNameIcon"/>',
         '                                    <Label    Grid.Row="1" Grid.Column="0" Content="New Domain"/>',
         '                                    <TextBox  Grid.Row="1" Grid.Column="1" Name="NewDomainName"/>',
+        '                                    <Image    Grid.Row="0" Grid.Column="2" Name="NewDomainNameIcon"/>',
         '                                    <Label    Grid.Row="2" Grid.Column="0" Content="NetBIOS"/>',
         '                                    <TextBox  Grid.Row="2" Grid.Column="1" Name="DomainNetBIOSName"/>',
+        '                                    <Image    Grid.Row="0" Grid.Column="2" Name="DomainNetBIOSNameIcon"/>',
         '                                    <Label    Grid.Row="3" Grid.Column="0" Content="New NetBIOS"/>',
         '                                    <TextBox  Grid.Row="3" Grid.Column="1" Name="NewDomainNetBIOSName"/>',
+        '                                    <Image    Grid.Row="0" Grid.Column="2" Name="NewDomainNetBIOSNameIcon"/>',
         '                                    <Label    Grid.Row="4" Grid.Column="0" Content="Site"/>',
         '                                    <ComboBox Grid.Row="4" Grid.Column="1" Name="SiteName"/>',
+        '                                    <Image    Grid.Row="0" Grid.Column="2" Name="SiteNameIcon"/>',
         '                                </Grid>',
         '                            </GroupBox>',
         '                            <GroupBox Grid.Row="1" Header="[Paths]">',
@@ -573,12 +605,13 @@ Function Get-FEDCPromo
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="100"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="25"/>',
         '                                    </Grid.ColumnDefinitions>',
         '                                    <Label   Grid.Row="0" Grid.Column="0" Content="Database"/>',
-        '                                    <Label   Grid.Row="1" Grid.Column="0" Content="SysVol"/>',
-        '                                    <Label   Grid.Row="2" Grid.Column="0" Content="Log"/>',
         '                                    <TextBox Grid.Row="0" Grid.Column="1" Name="DatabasePath"/>',
+        '                                    <Label   Grid.Row="1" Grid.Column="0" Content="SysVol"/>',
         '                                    <TextBox Grid.Row="1" Grid.Column="1" Name="SysvolPath"/>',
+        '                                    <Label   Grid.Row="2" Grid.Column="0" Content="Log"/>',
         '                                    <TextBox Grid.Row="2" Grid.Column="1" Name="LogPath"/>',
         '                                </Grid>',
         '                            </GroupBox>',
@@ -594,26 +627,30 @@ Function Get-FEDCPromo
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="100"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="25"/>',
         '                                    </Grid.ColumnDefinitions>',
         '                                    <Button  Grid.Column="0" Content="Credential" Name="CredentialButton"/>',
         '                                    <TextBox Grid.Column="1" Name="Credential"/>',
+        '                                    <Image   Grid.Column="2" Name="CredentialIcon"/>',
         '                                </Grid>',
         '                                <Grid Grid.Row="1">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="100"/>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="25"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label Grid.Column="0" Content="Password"/>',
+        '                                    <Label       Grid.Column="0" Content="Password"/>',
         '                                    <PasswordBox Grid.Column="1" Name="SafeModeAdministratorPassword"/>',
         '                                    <PasswordBox Grid.Column="2" Name="Confirm"/>',
+        '                                    <Image       Grid.Column="3" Name="SafeModeAdministratorPasswordIcon"/>',
         '                                </Grid>',
         '                                <Grid Grid.Row="2">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button      Grid.Column="0" Name="Start" Content="Start" />',
+        '                                    <Button      Grid.Column="0" Name="Start" Content="Start"/>',
         '                                    <Button      Grid.Column="1" Name="Cancel" Content="Cancel"/>',
         '                                </Grid>',
         '                            </Grid>',
@@ -697,6 +734,8 @@ Function Get-FEDCPromo
         [String]             $Caption = (Get-CimInstance -Class Win32_OperatingSystem | % Caption)
         [UInt32]              $Server
         Hidden [Object]         $Xaml
+        Hidden [String]         $Pass = (Get-FEModule -Control | ? Name -eq success.png)
+        Hidden [String]         $Fail = (Get-FEModule -Control | ? Name -eq failure.png)
         [String]             $Command
         [String]          $DomainType
         [UInt32]                $Mode
@@ -737,7 +776,17 @@ Function Get-FEDCPromo
                 "-",
                 "Otherwise, proceed?" -join "`n"),"NetBIOS Scan [~]","YesNo"))
                 {
-                    Yes { $This.Network.NetBIOSScan() } No { Break }
+                    Yes 
+                    { 
+                        $Time = [System.Diagnostics.Stopwatch]::StartNew()
+                        $This.Network.NetBIOSScan() 
+                        $Time.Stop()
+                        Write-Host "$($Time.Elapsed)"
+                    } 
+                    No 
+                    { 
+                        Break 
+                    }
                 }
             }
             If (!$This.Network)
@@ -880,35 +929,41 @@ Function Get-FEDCPromo
             If ($This.Connection)
             {
                 # [Set Credential]
+                Write-Host "Credential"
                 $This.Xaml.IO.Credential.Text            = $This.Connection.Credential.Username
                 $This.Xaml.IO.CredentialButton.IsEnabled = 0
 
                 # [Set Domain Name]
                 If ($This.Mode -in 1,2)
                 {
+                    Write-Host "Parent Domain Name"
                     $This.Xaml.IO.ParentDomainName       = $This.Connection.Domain
                     $This.Profile.Item | ? Name -eq ParentDomainName | % { $_.Value = $This.Connection.Domain }
                 }
                 If ($This.Mode -eq 3)
                 {
+                    Write-Host "Domain Name"
                     $This.Xaml.IO.DomainName.Text        = $This.Connection.Domain
                     $This.Profile.Item | ? Name -eq DomainName | % { $_.Value = $This.Connection.Domain }
                 }
 
                 # [Set NetBIOS]
+                Write-Host "NetBIOS"
                 $This.Xaml.IO.DomainNetBIOSName.Text     = $This.Connection.NetBIOS
-                $This.Profile.Item | ? Name -eq DomainNetBIOSName.Text = $This.Connection.NetBIOS
+                $This.Profile.Item | ? Name -eq DomainNetBIOSName | % { $_.Value = $This.Connection.NetBIOS }
 
                 # [Set Sitename]
+                Write-Host "SiteName"
                 $This.Xaml.IO.SiteName.ItemsSource                = @( )
                 $This.Xaml.IO.SiteName.ItemsSource                = @($This.Connection.Sitename)
                 $This.Xaml.IO.SiteName.SelectedIndex              = 0
 
                 # [Set Replication Source DCs]
+                Write-Host "Replication Source DCs"
                 $This.Xaml.IO.ReplicationSourceDC.ItemsSource     = @( )
                 If ($This.Connection.ReplicationDC.Count -gt 0)
                 {
-                    $This.Xaml.IO.ReplicationSourceDC.ItemsSource = @($DCs)
+                    $This.Xaml.IO.ReplicationSourceDC.ItemsSource = @($This.Connection.Replication.DC)
                 }
                 Else
                 {
@@ -941,47 +996,55 @@ Function Get-FEDCPromo
                     If ($Object.Value.Length -lt 2 -or $Object.Value.Length -gt 63)
                     {
                         $Object.Check  = $False
-                        $Object.Reason = "[!] Length not between 2 and 63 characters" 
+                        $Object.Reason = "[!] Length not between 2 and 63 characters"
+                        Write-Host $Object.Reason
                     }
 
                     ElseIf ($Object.Value -in $This.Reserved())
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] Entry is in reserved words list"
+                        Write-Host $Object.Reason
                     }
 
                     ElseIf ($Object.Value -in $This.Legacy())
                     {
                         $Object.Check  = $False
-                        $Object.Reason = "[!] Entry is in the legacy words list" 
+                        $Object.Reason = "[!] Entry is in the legacy words list"
+                        Write-Host $Object.Reason
                     }
 
                     ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
                     { 
                         $Object.Check  = $False
                         $Object.Reason = "[!] Invalid characters"
+                        Write-Host $Object.Reason
                     }
         
                     ElseIf ($Object.Value[0,-1] -match "(\W)")
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
+                        Write-Host $Object.Reason
                     }
                     ElseIf ($Object.Value.Split(".").Count -lt 2)
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] Single label domain names are disabled"
+                        Write-Host $Object.Reason
                     }
                         
                     ElseIf ($Object.Value.Split('.')[-1] -notmatch "\w")
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] Top Level Domain must contain a non-numeric"
+                        Write-Host $Object.Reason
                     }
                     Else
                     {
                         $Object.Check  = $True
                         $Object.Reason = "[+] Passed"
+                        Write-Host $Object.Reason
                     }
                 }
                 "(DomainNetBIOSName|NewDomainNetBIOSName)"
@@ -990,84 +1053,100 @@ Function Get-FEDCPromo
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] New NetBIOS ID cannot be the same as the parent domain NetBIOS"
+                        Write-Host $Object.Reason
                     }
                         
                     ElseIf ($Object.Value.Length -lt 1 -or $Object.Value.Length -gt 15)
                     {
                         $Object.Check  = $False
-                        $Object.Reason = "[!] Length not between 1 and 15 characters" 
+                        $Object.Reason = "[!] Length not between 1 and 15 characters"
+                        Write-Host $Object.Reason
                     }
 
                     ElseIf ($Object.Value -in $This.Reserved())
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] Entry is in reserved words list"
+                        Write-Host $Object.Reason
                     }
 
                     ElseIf ($Object.Value -in $This.Legacy())
                     {
                         $Object.Check  = $False
-                        $Object.Reason = "[!] Entry is in the legacy words list" 
+                        $Object.Reason = "[!] Entry is in the legacy words list"
+                        Write-Host $Object.Reason
                     }
 
                     ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
                     { 
                         $Object.Check  = $False
                         $Object.Reason = "[!] Invalid characters"
+                        Write-Host $Object.Reason
                     }
         
                     ElseIf ($Object.Value[0,-1] -match "(\W)")
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
+                        Write-Host $Object.Reason
                     }                        
                     ElseIf ($Object.Value -match "\.")
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] NetBIOS cannot contain a '.'"
+                        Write-Host $Object.Reason
                     }
                     ElseIf ($Object.Value -in $This.SecurityDescriptors())
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] Matches a security descriptor"
+                        Write-Host $Object.Reason
                     }
                     Else
                     {
                         $Object.Check  = $True
                         $Object.Reason = "[+] Passed"
+                        Write-Host $Object.Reason
                     }
                 }
                 NewDomainName
                 {
-                    Switch($This.Profile.Type)
+                    If ($This.Profile.Type -in 1,2)
                     {
-                        1
+                        Switch($This.Profile.Type)
                         {
-                            If ($Object.Value -match ".$($This.Xaml.IO.ParentDomainName.Text)")
+                            1
                             {
-                                $Object.Check  = $False
-                                $Object.Reason = "[!] Cannot be a (child/host) of the parent"
-                            }
-                            
-                            ElseIf ($Object.Value.Split(".").Count -lt 2)
-                            {
-                                $Object.Check  = $False
-                                $Object.Reason = "[!] Single label domain names are disabled"
-                            }
+                                If ($Object.Value -match ".$($This.Xaml.IO.ParentDomainName.Text)")
+                                {
+                                    $Object.Check  = $False
+                                    $Object.Reason = "[!] Cannot be a (child/host) of the parent"
+                                    Write-Host $Object.Reason
+                                }
                                 
-                            ElseIf ($Object.Value.Split('.')[-1] -notmatch "\w")
-                            {
-                                $Object.Check  = $False
-                                $Object.Reason = "[!] Top Level Domain must contain a non-numeric"
+                                ElseIf ($Object.Value.Split(".").Count -lt 2)
+                                {
+                                    $Object.Check  = $False
+                                    $Object.Reason = "[!] Single label domain names are disabled"
+                                    Write-Host $Object.Reason
+                                }
+                                    
+                                ElseIf ($Object.Value.Split('.')[-1] -notmatch "\w")
+                                {
+                                    $Object.Check  = $False
+                                    $Object.Reason = "[!] Top Level Domain must contain a non-numeric"
+                                    Write-Host $Object.Reason
+                                }
                             }
-                        }
 
-                        2
-                        {
-                            If ($Object.Value -notmatch ".$($This.Xaml.IO.ParentDomainName.Text)")
+                            2
                             {
-                                $Object.Check  = $False
-                                $Object.Reason = "[!] Must be a (child/host) of the parent"
+                                If ($Object.Value -notmatch ".$($This.Xaml.IO.ParentDomainName.Text)")
+                                {
+                                    $Object.Check  = $False
+                                    $Object.Reason = "[!] Must be a (child/host) of the parent"
+                                    Write-Host $Object.Reason
+                                }
                             }
                         }
                     }
@@ -1076,35 +1155,41 @@ Function Get-FEDCPromo
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] Length not between 2 and 63 characters"
+                        Write-Host $Object.Reason
                     }
 
                     ElseIf ($Object.Value -in $This.Reserved())
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] Entry is in reserved words list"
+                        Write-Host $Object.Reason
                     }
 
                     ElseIf ($Object.Value -in $This.Legacy())
                     {
                         $Object.Check  = $False
-                        $Object.Reason = "[!] Entry is in the legacy words list" 
+                        $Object.Reason = "[!] Entry is in the legacy words list"
+                        Write-Host $Object.Reason
                     }
 
                     ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
                     { 
                         $Object.Check  = $False
                         $Object.Reason = "[!] Invalid characters"
+                        Write-Host $Object.Reason
                     }
                     ElseIf ($Object.Value[0,-1] -match "(\W)")
                     {
                         $Object.Check  = $False
                         $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
+                        Write-Host $Object.Reason
                     }
 
                     Else
                     {
                         $Object.Check  = $True
                         $Object.Reason = "[+] Passed"
+                        Write-Host $Object.Reason
                     }
                 }
             }
@@ -1115,16 +1200,19 @@ Function Get-FEDCPromo
             {
                 $Object.Check  = $False
                 $Object.Reason = "[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number" 
+                Write-Host $Object.Reason
             }
             ElseIf ($Object.Password -notmatch $Object.Confirm)
             {
                 $Object.Check  = $False
                 $Object.Reason = "[!] Confirmation error"
+                Write-Host $Object.Reason
             }
             Else
             {
                 $Object.Check  = $True
                 $Object.Reason = "[+] Passed"
+                Write-Host $Object.Reason
             }
         }
         Total()
@@ -1208,6 +1296,23 @@ Function Get-FEDCPromo
         $Object          = $Main.Profile.Item | ? Name -eq ParentDomainName
         $Object.Value    = $Xaml.IO.ParentDomainName.Text
         $Main.CheckObject($Object)
+        If ($Object.IsEnabled)
+        {
+            If (!$Object.Check)
+            {
+                $Xaml.IO.ParentDomainNameIcon.Source = $Main.Fail
+            }
+            If ($Object.Check)
+            {
+                $Xaml.IO.ParentDomainNameIcon.Source = $Main.Pass
+            }
+            $Xaml.IO.ParentDomainNameIcon.Tooltip    = $Object.Reason
+        }
+        If (!$Object.IsEnabled)
+        {
+            $Xaml.IO.ParentDomainNameIcon.Source     = $Null
+            $Xaml.IO.ParentDomainNameIcon.Tooltip    = $Null
+        }
         $Main.Total()
     })
 
@@ -1216,6 +1321,23 @@ Function Get-FEDCPromo
         $Object          = $Main.Profile.Item | ? Name -eq DomainName
         $Object.Value    = $Xaml.IO.DomainName.Text
         $Main.CheckObject($Object)
+        If ($Object.IsEnabled)
+        {
+            If (!$Object.Check)
+            {
+                $Xaml.IO.DomainNameIcon.Source = $Main.Fail
+            }
+            If ($Object.Check)
+            {
+                $Xaml.IO.DomainNameIcon.Source = $Main.Pass
+            }
+            $Xaml.IO.DomainNameIcon.Tooltip    = $Object.Reason
+        }
+        If (!$Object.IsEnabled)
+        {
+            $Xaml.IO.DomainNameIcon.Source     = $Null
+            $Xaml.IO.DomainNameIcon.Tooltip    = $Null
+        }
         $Main.Total()
     })
 
@@ -1224,6 +1346,23 @@ Function Get-FEDCPromo
         $Object          = $Main.Profile.Item | ? Name -eq NewDomainName
         $Object.Value    = $Xaml.IO.NewDomainName.Text
         $Main.CheckObject($Object)
+        If ($Object.IsEnabled)
+        {
+            If (!$Object.Check)
+            {
+                $Xaml.IO.NewDomainNameIcon.Source = $Main.Fail
+            }
+            If ($Object.Check)
+            {
+                $Xaml.IO.NewDomainNameIcon.Source = $Main.Pass
+            }
+            $Xaml.IO.NewDomainNameIcon.Tooltip    = $Object.Reason
+        }
+        If (!$Object.IsEnabled)
+        {
+            $Xaml.IO.NewDomainNameIcon.Source     = $Null
+            $Xaml.IO.NewDomainNameIcon.Tooltip    = $Null
+        }
         $Main.Total()
     })
 
@@ -1232,6 +1371,24 @@ Function Get-FEDCPromo
         $Object          = $Main.Profile.Item | ? Name -eq DomainNetBIOSName
         $Object.Value    = $Xaml.IO.DomainNetBIOSName.Text
         $Main.CheckObject($Object)
+        If ($Object.IsEnabled)
+        {
+            If (!$Object.Check)
+            {
+                $Xaml.IO.DomainNetBIOSNameIcon.Source = $Main.Fail
+            }
+            If ($Object.Check)
+            {
+                $Xaml.IO.DomainNetBIOSNameIcon.Source = $Main.Pass
+            }
+            $Xaml.IO.DomainNetBIOSNameIcon.Tooltip    = $Object.Reason
+        }
+        If (!$Object.IsEnabled)
+        {
+            $Xaml.IO.DomainNetBIOSNameIcon.Source     = $Null
+            $Xaml.IO.DomainNetBIOSNameIcon.Tooltip    = $Null
+        }
+        
         $Main.Total()
     })
 
@@ -1240,6 +1397,23 @@ Function Get-FEDCPromo
         $Object          = $Main.Profile.Item | ? Name -eq NewDomainNetBIOSName
         $Object.Value    = $Xaml.IO.NewDomainNetBIOSName.Text
         $Main.CheckObject($Object)
+        If ($Object.IsEnabled)
+        {
+            If (!$Object.Check)
+            {
+                $Xaml.IO.NewDomainNetBIOSNameIcon.Source = $Main.Fail
+            }
+            If ($Object.Check)
+            {
+                $Xaml.IO.NewDomainNetBIOSNameIcon.Source = $Main.Pass
+            }
+            $Xaml.IO.NewDomainNetBIOSNameIcon.Tooltip    = $Object.Reason
+        }
+        If (!$Object.IsEnabled)
+        {
+            $Xaml.IO.NewDomainNetBIOSNameIcon.Source     = $Null
+            $Xaml.IO.NewDomainNetBIOSNameIcon.Tooltip    = $Null
+        }
         $Main.Total()
     })
 
@@ -1248,6 +1422,15 @@ Function Get-FEDCPromo
         $Object          = $Main.Profile.DSRM
         $Object.Password = $Xaml.IO.SafeModeAdministratorPassword.Password
         $Main.CheckDSRM($Object)
+        If (!$Object.Check)
+        {
+            $Xaml.IO.SafeModeAdministratorPasswordIcon.Source = $Main.Fail
+        }
+        If ($Object.Check)
+        {
+            $Xaml.IO.SafeModeAdministratorPasswordIcon.Source = $Main.Pass
+        }
+        $Xaml.IO.SafeModeAdministratorPasswordIcon.Tooltip    = $Main.Profile.DSRM.Reason 
         $Main.Total()
     })
 
@@ -1256,6 +1439,15 @@ Function Get-FEDCPromo
         $Object          = $Main.Profile.DSRM
         $Object.Confirm  = $Xaml.IO.Confirm.Password
         $Main.CheckDSRM($Object)
+        If (!$Object.Check)
+        {
+            $Xaml.IO.SafeModeAdministratorPasswordIcon.Source = $Main.Fail
+        }
+        If ($Object.Check)
+        {
+            $Xaml.IO.SafeModeAdministratorPasswordIcon.Source = $Main.Pass
+        }
+        $Xaml.IO.SafeModeAdministratorPasswordIcon.Tooltip    = $Main.Profile.DSRM.Reason 
         $Main.Total()
     })
 
