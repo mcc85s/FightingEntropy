@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-FEDCPromo.ps1
+          Solution: FightingEntropy Module
+          Purpose: For the promotion of a FightingEntropy (ADDS/Various) Domain Controller
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-10-10
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
 Function Get-FEDCPromo
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
