@@ -1106,7 +1106,7 @@ Function Get-FEDCPromo
         }
         Total()
         {
-            If ($This.Profile.Item | ? IsEnabled | ? Property -eq Text | ? Check -eq 0).Count -eq 0 -and ($This.Profile.DSRM | ? Check))
+            If (($This.Profile.Item | ? IsEnabled | ? Property -eq Text | ? Check -eq 0).Count -eq 0 -and ($This.Profile.DSRM | ? Check))
             {
                 $This.Xaml.IO.Start.IsEnabled = 1
             }
@@ -1220,7 +1220,7 @@ Function Get-FEDCPromo
         $Main.Total()
     })
 
-    $Xaml.IO.SafeModeAdministratorPassword.Add_TextChanged(
+    $Xaml.IO.SafeModeAdministratorPassword.Add_PasswordChanged(
     {
         $Object          = $Main.Profile.DSRM
         $Object.Password = $Xaml.IO.SafeModeAdministratorPassword.Password
@@ -1228,7 +1228,7 @@ Function Get-FEDCPromo
         $Main.Total()
     })
 
-    $Xaml.IO.Confirm.Add_TextChanged(
+    $Xaml.IO.Confirm.Add_PasswordChanged(
     {
         $Object          = $Main.Profile.DSRM
         $Object.Confirm  = $Xaml.IO.Confirm.Password
