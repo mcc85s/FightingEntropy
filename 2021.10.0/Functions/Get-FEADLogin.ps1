@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-FEADLogin.ps1
+          Solution: FightingEntropy Module
+          Purpose: For validating an ADDS login, and then accessing NTDS information
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-10-10
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
 Function Get-FEADLogin
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
@@ -6,7 +29,7 @@ Function Get-FEADLogin
         [Parameter(ParameterSetName=1)][IPAddress]$IPAddress,
         [ValidatePattern("^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2, 6}$")]
         [Parameter(ParameterSetName=2)][String]$DNSName,
-        [ValidateScript({$_.IPAddress,$_.Domain,$_.NetBIOS})]
+        [ValidateScript({$_.IPAddress,$_.Hostname,$_.NetBIOS})]
         [Parameter(ParameterSetName=3)][Object]$Target
     )
 
@@ -275,7 +298,7 @@ Function Get-FEADLogin
         {
             $This.IPAddress    = $IPAddress
             $This.DNSName      = [System.Net.Dns]::Resolve($This.IPAddress).HostName
-            $This.Domain       = $This.DNSName.Split(".")[0] + "." | % { $This.DnsName.Replace($_,"") }
+            $This.Domain       = $This.PullDomain($This.DNSName)
             $This.NetBIOS      = $Null
             $This.Port         = 389
         }
@@ -291,9 +314,13 @@ Function Get-FEADLogin
         {
             $This.IPAddress    = $Target.IPAddress
             $This.DNSName      = $Target.Hostname
-            $This.Domain       = $Target.Domain
+            $This.Domain       = $This.PullDomain($Target.Hostname)
             $This.NetBIOS      = $Target.NetBIOS
             $This.Port         = 389
+        }
+        [String] PullDomain([String]$Hostname)
+        {
+            Return $Hostname.Replace($Hostname.Split(".")[0],'').TrimStart(".")
         }
         ClearADCredential()
         {
