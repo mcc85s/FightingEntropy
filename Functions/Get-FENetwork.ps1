@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-07
-          Modified: 2021-10-10
+          Modified: 2021-10-13
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -454,7 +454,7 @@ Function Get-FENetwork
     }
 
     # [V4 Network Classes]
-    Class V4PingObject          # Object returned from a ping (sweep/scan)
+    Class V4PingObject           # Object returned from a ping (sweep/scan)
     {
         Hidden [Object]   $Reply
         [UInt32]          $Index
@@ -467,29 +467,14 @@ Function Get-FENetwork
             $This.Index          = $Index
             $This.Status         = $Reply.Result.Status -match "Success"
             $This.IPAddress      = $Address
-            $This.Hostname       = Switch ($This.Status)
-            {
-                1
-                {
-                    Try 
-                    {
-                        [System.Net.Dns]::Resolve($This.IPAddress).HostName
-                    }
-                    Catch
-                    {
-                        "<unknown>"
-                    }
-                }
-
-                Default
-                {
-                    "-"
-                }
-            }
+        }
+        GetHostname()
+        {
+            $This.Hostname       = Try {[System.Net.Dns]::Resolve($This.IPAddress).Hostname} Catch {"<Unknown>"}
         }
         Domain([String]$Domain)
         {
-            If ( $This.Hostname -notmatch $Domain )
+            If ($This.Hostname -match $Domain)
             {
                 $This.Hostname = ("{0}.{1}" -f $This.Hostname, $Domain)
             }
@@ -500,31 +485,40 @@ Function Get-FENetwork
         }
     }
 
-    Class V4PingSweep           # Scans a network range for potential hosts
+    Class V4PingSweep             # Scans a network range for potential hosts
     {
+        Static [Object]     $Buffer = @( 97..119 + 97..105 | % { "0x{0:X}" -f $_ } )
+        Static [Object]    $Options = [System.Net.NetworkInformation.PingOptions]::new()
         Hidden [String]     $Domain
         [String]         $HostRange
         [String[]]       $IPAddress
         Hidden [Hashtable] $Process
-        [Object] $Buffer         = @(97..119 + 97..105 | % { "0x{0:X}" -f $_ })
-        [Object] $Options
-        [Object] $Output
-        [Object] $Result
+        Hidden [Object]   $Response
+        [Object]            $Output
         V4PingSweep([String]$HostRange)
         {
             $This.HostRange = $HostRange
+            $Item           = $HostRange -Split "/"
+            
+            $Table          = @{ }
             $This.Process   = @{ }
-            $Item           = $This.Hostrange.Split("/")
 
-            ForEach ($0 in $Item[0] | Invoke-Expression)
+            ForEach ( $X in 0..3 )
             {
-                ForEach ($1 in $Item[1] | Invoke-Expression)
+                $Table.Add( $X, (Invoke-Expression $Item[$X]) )
+            }
+            
+            $X = 0
+
+            ForEach ( $0 in $Table[0] )
+            {
+                ForEach ( $1 in $Table[1] )
                 {
-                    ForEach ($2 in $Item[2] | Invoke-Expression) 
+                    ForEach ( $2 in $Table[2] ) 
                     {
-                        ForEach ($3 in $Item[3] | Invoke-Expression)
+                        ForEach ( $3 in $Table[3] )
                         {
-                            $This.Process.Add($This.Process.Count,"$0.$1.$2.$3")
+                            $This.Process.Add($X++,"$0.$1.$2.$3")
                         }
                     }
                 }
@@ -536,22 +530,46 @@ Function Get-FENetwork
         Refresh()
         {
             $This.Process        = @{ }
+            $This.Response       = @( )
+            $This.Output         = @( )
 
+            $Time = [System.Diagnostics.Stopwatch]::StartNew()
+            Write-Host "Scanning [~] ($($This.IPAddress.Count)) Hosts [$($Time.Elapsed)]"
             ForEach ($X in 0..($This.IPAddress.Count - 1))
             {
                 $IP              = $This.IPAddress[$X]
-
-                $This.Options    = [System.Net.NetworkInformation.PingOptions]::new()
-                $This.Process.Add($X,[System.Net.NetworkInformation.Ping]::new().SendPingAsync($IP,100,$This.Buffer,$This.Options))
+                $This.Process.Add($X,[System.Net.NetworkInformation.Ping]::new().SendPingAsync($IP,100,[V4PingSweep]::Buffer,[V4PingSweep]::Options))
             }
-
-            $This.Output         = @( )
         
             ForEach ($X in 0..($This.IPAddress.Count - 1)) 
             {
                 $IP              = $This.IPAddress[$X] 
-                $This.Output    += [V4PingObject]::New($X,$IP,$This.Process[$X])
+                $This.Response  += [V4PingObject]::New($X,$IP,$This.Process[$X])
             }
+
+            $This.Output         = $This.Response | ? Status
+            Write-Host "Scanned [+] ($($This.Output.Count)) Host(s) reponded [$($Time.Elapsed)]"
+
+            If ($This.Output.Count -gt 1)
+            {
+                Write-Progress -Activity "Resolving [~] Hostnames... [$($Time.Elapsed)]" -PercentComplete 0
+                ForEach ($X in 0..($This.Output.Count-1))
+                {
+                    Write-Progress -Activity "Resolving [~] Hostnames... [$($Time.Elapsed)]" -Status "($X/$($This.Output.Count))" -PercentComplete (($X/$This.Output.Count)*100)
+                    $Item             = $This.Output[$X]
+                    $Item.Index       = $X
+                    $Item.GetHostname()
+                }
+                Write-Progress -Activity "Resolving [~] Hostnames... [$($Time.Elapsed)]" -Completed
+            }
+            If ($This.Output.Count -eq 1)
+            {
+                $Item                 = $This.Output[0]
+                $Item.Index           = 0
+                $Item.GetHostname()
+            }
+            $Time.Stop()
+            Write-Host "Sweep [+] Complete [$($Time.Elapsed)]"
         }
     }
 
@@ -775,6 +793,32 @@ Function Get-FENetwork
         }
     }
 
+    Class HostObject
+    {
+        [UInt32]    $Index
+        [IPAddress] $IPAddress
+        [String] $Hostname
+        HostObject([Uint32]$Index,[Object]$xHost)
+        {
+            $This.Index     = $Index
+            $This.IPAddress = $xHost.IPAddress
+            $This.Hostname  = $xHost.Hostname 
+        }
+    }
+
+    Class HostMap
+    {
+        [Object] $Output
+        Hostmap()
+        {
+            $This.Output = @( )
+        }
+        AddHost([Object]$xHost)
+        {
+            $This.Output += [HostObject]::New($This.Output.Count,$xHost)
+        }
+    }
+
     Class FENetworkControllerInterface
     {
         Hidden [Object] $Interface
@@ -855,7 +899,8 @@ Function Get-FENetwork
         [Object]         $NbtScan
         FENetworkController()
         {
-            Write-Host "Collecting [~] FightingEntropy Network Controller"
+            $Time                  = [System.Diagnostics.Stopwatch]::StartNew()
+            Write-Host "[$($Time.Elapsed)] Collecting [~] FightingEntropy Network Controller"
 
             $This.Suffix           = [DnsSuffix]::New()
             $This.VendorList       = [VendorList]::New()
@@ -870,13 +915,13 @@ Function Get-FENetwork
                 $This.Interface   += $Int
             }
             
-            Write-Host "Collecting [~] NbtStat Table"
+            Write-Host "[$($Time.Elapsed)] Collecting [~] NbtStat Table"
             $This.NBT              = [NbtStat]::New($This.Interface).Output
 
-            Write-Host "Collecting [~] Arp Table"
+            Write-Host "[$($Time.Elapsed)] Collecting [~] Arp Table"
             $This.ARP              = [ArpStat]::New($This.Interface).Output
 
-            Write-Host "Collecting [~] NbtStat Host Objects"
+            Write-Host "[$($Time.Elapsed)] Collecting [~] NbtStat Host Objects"
             ForEach ($Interface in $This.NBT)
             {
                 ForEach ($xHost in $Interface.Hosts)
@@ -885,7 +930,7 @@ Function Get-FENetwork
                 }
             }
 
-            Write-Host "Collecting [~] Interface Host Objects"
+            Write-Host "[$($Time.Elapsed)] Collecting [~] Interface Host Objects"
             ForEach ($I in 0..( $This.Interface.Count - 1 ))
             {
                 $IPAddress         = $This.Interface[$I].IPV4.IPAddress
@@ -915,11 +960,16 @@ Function Get-FENetwork
                 $This.Interface[$I].Load($xNbt,$xArp)
             }
 
-            Write-Host "Collecting [~] Active Interfaces"
+            Write-Host "[$($Time.Elapsed)] Collecting [~] Active Interfaces"
             $This.Active = $This.Interface | ? { $_.IPV4.Gateway }
 
-            Write-Host "Running [~] Ping Sweep"
+            Write-Host "[$($Time.Elapsed)] Running [~] Ping Sweep"
             $This.RefreshIPv4Scan()
+
+            $Time.Stop()
+            Write-Theme $This.Hostmap
+
+            Write-Host "[$($Time.Elapsed)] Loaded [+] FightingEntropy Network Controller"
         }
         [Object[]] NetStat()
         {
@@ -933,17 +983,21 @@ Function Get-FENetwork
             }
 
             Else
-            {                
-                $This.Hostmap = @( )
-                ForEach ( $Item in $This.Active.IPv4.ScanV4() )
+            {
+                $This.Hostmap = @( )  
+                $Map          = [Hostmap]::New()
+
+                ForEach ($Item in $This.Active.IPv4.ScanV4())
                 {
                     $This.Active.Arp | ? IpAddress -match $Item.IpAddress | % { $_.HostName = $Item.Hostname }
                     
-                    If ( $Item.IPAddress -notin $This.Hostmap.IPAddress )
+                    If ($Item.IPAddress -notin $Map.Output.IPAddress)
                     {
-                        $This.Hostmap += $Item
+                        $Map.AddHost($Item)
                     }
                 }
+
+                $This.Hostmap = $Map.Output
             }
         }
         NetBIOSScan()
@@ -987,7 +1041,7 @@ Function Get-FENetwork
     {
         0 
         { 
-            $Object = [FENetworkController]::New() 
+            $Object = [FeNetworkController]::New() 
             $Object
         } 
         1 
