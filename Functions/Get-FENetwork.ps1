@@ -386,10 +386,10 @@ Function Get-FENetwork
 
     Class NbtSection                # Collects/formats a remote or local Nbtstat table
     {
-        [String] $Alias
-        [String] $Slot
-        [String] $Address
-        [Object[]] $Entry
+        [String]      $Alias
+        [String]       $Slot
+        [IPAddress] $Address
+        [Object[]]    $Entry
         NbtSection([String]$Slot,[String]$Line)
         {
             $This.Alias = $Line.TrimEnd(":")
@@ -439,10 +439,10 @@ Function Get-FENetwork
 
     Class NbtDc                     # Retrieves Domain Controllers from Arp stack
     {
-        [String] $IPAddress
+        [IPAddress] $IPAddress
         [String] $Hostname
         [String] $NetBIOS
-        NbtDomain([Object]$Object)
+        NbtDc([Object]$Object)
         {
             $This.IPAddress  = $Object.Address
             $This.Hostname   = [System.Net.Dns]::Resolve($Object.Address).Hostname
@@ -483,7 +483,7 @@ Function Get-FENetwork
                 }
             }
             $This.GetSwap()
-            #$This.GetOutput()
+            $This.GetOutput()
         }
         GetLocal()
         {
