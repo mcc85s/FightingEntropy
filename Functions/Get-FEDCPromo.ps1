@@ -865,6 +865,8 @@ Function Get-FEDCPromo
                     $This.Xaml.IO.$($Item.Name).$($Item.Property) = @($Null,$Item.Value)[$Item.IsEnabled]
                 }
             }
+            $This.Xaml.IO.SafeModeAdministratorPassword.IsEnabled = 1
+            $This.Xaml.IO.Confirm.IsEnabled                       = 1
         }
         SetItem([String]$Name,[Object]$Value)
         {
@@ -1255,6 +1257,8 @@ Function Get-FEDCPromo
     $Xaml.IO.Sitename.ItemsSource              = @( )
     $Xaml.IO.Sitename.ItemsSource              = @("-")
     $Xaml.IO.Credential.IsEnabled              = 0
+    $Xaml.IO.SafeModeAdministratorPassword.IsEnabled = 0
+    $Xaml.IO.Confirm.IsEnabled = 0
 
     # Name Defaults
     $Xaml.IO.DomainName.IsEnabled              = 0
