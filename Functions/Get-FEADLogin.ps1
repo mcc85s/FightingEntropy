@@ -326,6 +326,7 @@ Function Get-FEADLogin
             $This.IPAddress    = $IPAddress
             $This.DNSName      = [System.Net.Dns]::Resolve($This.IPAddress).HostName
             $This.Domain       = $This.PullDomain($This.DNSName)
+            $This.DnsDomain    = $This.DnsDomain
             $This.NetBIOS      = $Null
             $This.Port         = 389
         }
@@ -334,6 +335,7 @@ Function Get-FEADLogin
             $This.Domain       = $Domain.ToString()
             $This.IPAddress    = [System.Net.Dns]::Resolve($Domain).AddressList      | Select-Object -First 1 | % IPAddressToString
             $This.DNSName      = [System.Net.Dns]::Resolve($This.IPAddress).HostName
+            $This.DnsDomain    = $This.DnsName
             $This.NetBIOS      = $Null
             $This.Port         = 389
         }
@@ -342,6 +344,7 @@ Function Get-FEADLogin
             $This.IPAddress    = $Target.IPAddress
             $This.DNSName      = $Target.Hostname
             $This.Domain       = $This.PullDomain($Target.Hostname)
+            $This.DnsDomain    = $This.Domain
             $This.NetBIOS      = $Target.NetBIOS
             $This.Port         = 389
         }
