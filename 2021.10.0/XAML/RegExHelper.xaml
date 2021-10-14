@@ -1,0 +1,143 @@
+<!-- Originally by Boe Prox @ https://github.com/proxb/RegExHelper/blob/master/Invoke-RegExHelper.ps1 -->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Powershell Regular Expression Helper" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Width="820" Height="625" ShowInTaskbar="True" Background="lightgray">
+    <Window.Resources>
+        <Style x:Key="DropShadow">
+            <Setter Property="TextBlock.Effect">
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Background" Value="Black"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="Gray"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="5"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">
+            <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#000000"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="2"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="FontSize" Value="10"/>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="AlternationCount" Value="2"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="IsTabStop" Value="True"/>
+            <Setter Property="IsTextSearchEnabled" Value="True"/>
+            <Setter Property="SelectionMode" Value="Extended"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        </Style>
+        <Style TargetType="DataGridRow">
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Style.Triggers>
+                <Trigger Property="AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="White"/>
+                </Trigger>
+                <Trigger Property="AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#FFD6FFFB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="FontSize"   Value="10"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Padding" Value="2"/>
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="LightYellow"/>
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Grid.Column="0" Header="[Input String]">
+                <TextBox Name="String"/>
+            </GroupBox>
+            <GroupBox Grid.Column="1" Header="[Regular Expression String]">
+                <TextBox Name="Regex"/>
+            </GroupBox>
+        </Grid>
+        <GroupBox Grid.Row="1" Header="Regular Expression Matches">
+            <DataGrid Name="Matches">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Group"        Binding="{Binding Key}"   IsReadOnly="True" Width="390"/>
+                    <DataGridTextColumn Header="MatchedValue" Binding="{Binding Value}" IsReadOnly="True" Width="390"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+        <GroupBox Grid.Row="3" Header="Regular Expression Options">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Row="0" Grid.Column="0" Name="None" Content="None" ToolTip="Specifies that no options are set."/>
+                <CheckBox Grid.Row="0" Grid.Column="1" Name="IgnoreCase" Content="IgnoreCase" ToolTip="Specifies case-insensitive matching."/>
+                <CheckBox Grid.Row="0" Grid.Column="2" Name="IgnorePatternWhitespace" Content="IgnorePatternWhitespace" ToolTip="Eliminates unescaped white space from the pattern and enables comments marked with #. However, this value does not affect or eliminate white space in, numeric, or tokens that mark the beginning of individual."/>
+                <CheckBox Grid.Row="0" Grid.Column="3" Name="Compiled" Content="Compiled" ToolTip="Specifies that the regular expression is compiled to an assembly."/>
+                <CheckBox Grid.Row="0" Grid.Column="4" Name="Multiline" Content="MultiLine" ToolTip="Multiline mode. Changes the meaning of ^ and $ so they match at the beginning and end, respectively, of any line, and not just the beginning and end of the entire string."/>
+                <CheckBox Grid.Row="1" Grid.Column="0" Name="CultureInvariant" Content="CultureInvariant" ToolTip="Specifies that cultural differences in language is ignored."/>
+                <CheckBox Grid.Row="1" Grid.Column="1" Name="SingleLine" Content="SingleLine" ToolTip="Specifies single-line mode. Changes the meaning of the dot (.) so it matches every character (instead of every character except \n)."/>
+                <CheckBox Grid.Row="1" Grid.Column="2" Name="RightToLeft" Content="RightToLeft" ToolTip="Specifies that the search will be from right to left instead of from left to right."/>
+                <CheckBox Grid.Row="1" Grid.Column="3" Name="ECMAScript" Content="ECMAScript" ToolTip="Enables ECMAScript-compliant behavior for the expression. This value can be used only in conjunction with the IgnoreCase, Multiline, and Compiled values. The use of this value with any other values results in an exception."/>
+                <CheckBox Grid.Row="1" Grid.Column="4" Name="ExplicitCapture" Content="ExplicitCapture" ToolTip="Specifies that the only valid captures are explicitly named or numbered groups of the form. This allows unnamed parentheses to act as noncapturing groups without the syntactic clumsiness of the expression (?:…)."/>
+            </Grid>
+        </GroupBox>
+    </Grid>
+</Window>
