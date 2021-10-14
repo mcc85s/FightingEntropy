@@ -768,28 +768,6 @@ Function Get-FEDCPromo
             }
 
             $This.Network = Get-FENetwork
-            If ($This.Network)
-            {
-                Switch([System.Windows.MessageBox]::Show(("This will run a thorough scan for potential domain controllers.",
-                "Depending on the number of adapters in the system, this process can be lengthy.",
-                "-",
-                "It is not necessary for a new forest, choose no if this is the case.",
-                "-",
-                "Otherwise, proceed?" -join "`n"),"NetBIOS Scan [~]","YesNo"))
-                {
-                    Yes 
-                    { 
-                        $Time = [System.Diagnostics.Stopwatch]::StartNew()
-                        $This.Network.NetBIOSScan() 
-                        $Time.Stop()
-                        Write-Host "$($Time.Elapsed)"
-                    } 
-                    No 
-                    { 
-                        Break 
-                    }
-                }
-            }
             If (!$This.Network)
             {
                 Write-Theme "Error [!] No network detected" 12,4,15,0
