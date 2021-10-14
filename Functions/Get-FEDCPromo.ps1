@@ -25,8 +25,6 @@ Function Get-FEDCPromo
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
-    [ValidateSet(0,1,2,3)]
-    [Parameter(ParameterSetName=0)][UInt32]$Mode = 0,
     [ValidateSet("Forest","Tree","Child","Clone")]
     [Parameter(ParameterSetname=1)][String]$Type,
     [Parameter()][Switch]$Test)
@@ -768,6 +766,28 @@ Function Get-FEDCPromo
             }
 
             $This.Network = Get-FENetwork
+            If ($This.Network)
+            {
+                Switch([System.Windows.MessageBox]::Show(("This will run a thorough scan for potential domain controllers.",
+                "Depending on the number of adapters in the system, this process can be lengthy.",
+                "-",
+                "It is not necessary for a new forest, choose no if this is the case.",
+                "-",
+                "Otherwise, proceed?" -join "`n"),"NetBIOS Scan [~]","YesNo"))
+                {
+                    Yes 
+                    { 
+                        $Time = [System.Diagnostics.Stopwatch]::StartNew()
+                        $This.Network.NetBIOSScan() 
+                        $Time.Stop()
+                        Write-Host "$($Time.Elapsed)"
+                    } 
+                    No 
+                    { 
+                        Break 
+                    }
+                }
+            }
             If (!$This.Network)
             {
                 Write-Theme "Error [!] No network detected" 12,4,15,0
@@ -857,7 +877,7 @@ Function Get-FEDCPromo
         Login()
         {
             $This.Connection = $Null
-            $Dcs             = $This.Network.NBTScan | ? NetBIOS | ? {$_.NBT.ID -Match "1B|1C"}
+            $Dcs             = $This.Network.NBT.Output
             If ($DCs)
             {
                 $DC      = [XamlWindow][FEDCFoundGUI]::Tab
@@ -1195,13 +1215,13 @@ Function Get-FEDCPromo
                 $This.Profile.DSRM[1].Reason = "[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number" 
                 Write-Host $This.Profile.DSRM[1].Reason
             }
-            If ($This.Profile.DSRM[0].Value -notmatch $This.Profile.DSRM[1].Value)
+            If ($This.Profile.DSRM[0].Value -ne $This.Profile.DSRM[1].Value)
             {
                 $This.Profile.DSRM[1].Check  = $False
                 $This.Profile.DSRM[1].Reason = "[!] Confirmation error"
                 Write-Host $This.Profile.DSRM[1].Reason
             }
-            If ($This.Profile.DSRM[0].Check -eq 1 -and $This.Profile.DSRM[1].Check -eq 1)
+            If ($This.Profile.DSRM[0].Check -eq 1 -and $This.Profile.DSRM[0].Value -eq $This.Profile.DSRM[1].Value)
             {
                 $This.Profile.DSRM[1].Check  = $True
                 $This.Profile.DSRM[1].Reason = "[+] Passed"
@@ -1587,3 +1607,4 @@ Function Get-FEDCPromo
     }
 }
 #>
+
