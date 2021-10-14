@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-07
-          Modified: 2021-10-13
+          Modified: 2021-10-14
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -555,7 +555,15 @@ Function Get-FENetwork
         }
         GetOutput()
         {
-            $This.Output = $This.Swap | ? ID -match "1b|1c" | Sort-Object Address | Select-Object Address -Unique | % {[NbtDc]::New($_) }
+            $This.Output = @( )
+            ForEach ($Item in $This.Swap | ? ID -match "1b|1c")
+            {
+                If ($Item.Address -notin $This.Output.IPAddress)
+                {
+                    $This.Output += [NbtDc]::New($Item)
+                }
+            }
+            $This.Output = $This.Output | Sort-Object IPAddress
         }
     }
 
@@ -808,12 +816,6 @@ Function Get-FENetwork
             Return $This.HostRange
         }
     }
-
-    #$Config    = Get-NetIPConfiguration -Detailed
-    #$IPAddress = $Config.IPV4Address[0]
-    #$V4Network = [V4Network]::New($IPAddress)
-    #$Range     = $V4Network.Range
-    #$V4network.PingSweep()
 
     # [V6 Network Class(es)]    # Provisions an entire IPV6 network
     Class V6Network
