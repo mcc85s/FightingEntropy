@@ -272,6 +272,7 @@ Function Get-FEADLogin
 
     Class Main
     {
+        Hidden [String] $DnsDomain
         [String]                           $IPAddress
         [String]                             $DNSName
         [String]                              $Domain
@@ -288,33 +289,33 @@ Function Get-FEADLogin
         [Object]                              $Result
         Main()                            # ParamSet0
         {
-            $DNSDomain         = $Null
+            $This.DNSDomain         = $Null
             $TestDnsServer     = $Null
             If ($Env:UserDNSDomain)
             {
-                $DNSDomain   = $Env:UserDNSDomain.ToLower()
+                $This.DNSDomain   = $Env:UserDNSDomain.ToLower()
             }
             If (!$Env:UserDNSDomain)
             {
-                $DNSDomain   = Get-WMIObject -Class Win32_NetworkAdapterConfiguration -Filter "IPEnabled='True' AND DHCPEnabled='True'" | % DNSDomain
-                If ($DNSDomain.Count -gt 1)
+                $This.DNSDomain   = Get-WMIObject -Class Win32_NetworkAdapterConfiguration -Filter "IPEnabled='True' AND DHCPEnabled='True'" | % DNSDomain
+                If ($This.DNSDomain.Count -gt 1)
                 {
-                    ForEach ($Server in $DnsDomain)
+                    ForEach ($Server in $This.DnsDomain)
                     {
                         $TestDnsServer = [System.Net.Dns]::Resolve($Server)
                         If ($TestDnsServer)
                         {
-                            $DnsDomain = $TestDnsServer.Hostname
+                            $This.DnsDomain = $TestDnsServer.Hostname
                             Break
                         }
                     }
                 }
-                If ($DnsDomain.Count -eq 0)
+                If ($This.DnsDomain.Count -eq 0)
                 {
                     Throw "Could not locate a valid server"
                 }
             }
-            $This.Domain       = $DnsDomain
+            $This.Domain       = $This.DnsDomain
             $This.IPAddress    = [System.Net.Dns]::Resolve($This.Domain).AddressList | Select-Object -First 1 | % IPAddressToString
             $This.DNSName      = [System.Net.Dns]::Resolve($This.IPAddress).Hostname
             $This.NetBIOS      = $Null
@@ -395,17 +396,17 @@ Function Get-FEADLogin
         {
             $Resolve = [System.Net.Dns]::Resolve($Xaml.IO.Server.Text)
 
-            If ($Resolve -eq $Null)
+            If (!$Resolve)
             {
                 [System.Windows.MessageBox]::Show("Invalid server address defined","Error") 
-                $This.DC = $Null
+                $This.DC       = $Null
             }
-            ElseIf ($Resolve.Hostname -inotmatch $Env:UserDNSDomain.ToLower())
+            ElseIf ($Resolve.Hostname -inotmatch $This.DnsDomain)
             {
                 [System.Windows.MessageBox]::Show("Unable to resolve the domain name","Error")
-                $This.DC = $Null
+                $This.DC       = $Null
             }
-            ElseIf ($Resolve.Hostname -ieq $Env:UserDNSDomain.ToLower())
+            ElseIf ($Resolve.Hostname -ieq $This.DnsDomain)
             {
                 $This.Domain   = $Resolve.HostName
                 $This.DNSName  = [System.Net.DNS]::Resolve($Resolve.AddressList[0]).HostName
@@ -413,7 +414,7 @@ Function Get-FEADLogin
             }
             Else
             {
-                $HostID        = $Resolve.Hostname.Replace($Env:UserDNSDomain.ToLower(),"")
+                $HostID        = $Resolve.Hostname.Replace($This.DnsDomain,"")
                 $This.Domain   = [System.Net.DNS]::Resolve($Resolve.HostName).HostName.Replace($HostID,"")
                 $This.DNSName  = [System.Net.DNS]::Resolve($Resolve.HostName).Hostname
                 $This.DC       = $This.DNSName
@@ -435,6 +436,10 @@ Function Get-FEADLogin
                 }
 
                 $This.Result              = $This.Searcher | % FindAll
+                If (!$This.NetBIOS)
+                {
+                    $This.NetBIOS         = $This.GetNetBIOSName()
+                }
             }
 
             Catch
@@ -515,12 +520,9 @@ Function Get-FEADLogin
     $Xaml.Invoke()
     If ($Xaml.IO.DialogResult)
     {
-        If (!$Main.NetBIOS)
-        {
-            $Main.NetBIOS = $Main.GetNetBIOSName()
-        }
         $Main
     }
+
     If (!$Xaml.IO.DialogResult)
     {
         Write-Theme "Error [!] Either the user cancelled or the dialog failed" 12,4,15,0
