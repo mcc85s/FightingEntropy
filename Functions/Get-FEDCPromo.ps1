@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-10
+          Modified: 2021-10-14
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -70,16 +70,15 @@ Function Get-FEDCPromo
             $This.IsChecked = $IsChecked
         }
     }
-    Class ProfileDSRM
+    Class ProfilePassword
     {
         [String] $Name
-        [String] $Password
-        [String] $Confirm
+        [Object] $Value
         [Object] $Check
         [Object] $Reason
-        ProfileDSRM()
+        ProfilePassword([String]$Name)
         {
-            $This.Name = "DSRM"
+            $This.Name = $Name
         }
     }
     Class Profile
@@ -106,7 +105,7 @@ Function Get-FEDCPromo
             $This.Slot              = $This.Tags.Slot[$Mode]
             $This.Item              = $This.Tags.Item | % { $This.GetFEDCPromoItem($Mode,$_) }
             $This.Role              = $This.Tags.Role | % { $This.GetFEDCPromoRole($Mode,$_) }
-            $This.DSRM              = [ProfileDSRM]::New()
+            $This.DSRM              = "Password","Confirm" | % { [ProfilePassword]::New($_) }
 
             ForEach ($X in 0..($This.Item.Count-1))
             {
@@ -303,7 +302,7 @@ Function Get-FEDCPromo
     # (Get-Content $Home\Desktop\FEDCPromo.xaml) | % { "'$_'," } | Set-Clipboard
     Class FEDCPromoGUI
     {
-        Static [String] $Tab = ('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Promotion" Width="800" Height="780" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
+        Static [String] $Tab = ('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Promotion" Width="800" Height="800" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style TargetType="GroupBox" x:Key="xGroupBox">',
         '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
@@ -637,13 +636,15 @@ Function Get-FEDCPromo
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="100"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="25"/>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="25"/>',
         '                                    </Grid.ColumnDefinitions>',
         '                                    <Label       Grid.Column="0" Content="Password"/>',
         '                                    <PasswordBox Grid.Column="1" Name="SafeModeAdministratorPassword"/>',
-        '                                    <PasswordBox Grid.Column="2" Name="Confirm"/>',
-        '                                    <Image       Grid.Column="3" Name="SafeModeAdministratorPasswordIcon"/>',
+        '                                    <Image       Grid.Column="2" Name="SafeModeAdministratorPasswordIcon"/>',
+        '                                    <PasswordBox Grid.Column="3" Name="Confirm"/>',
+        '                                    <Image       Grid.Column="4" Name="ConfirmIcon"/>',
         '                                </Grid>',
         '                                <Grid Grid.Row="2">',
         '                                    <Grid.ColumnDefinitions>',
@@ -734,8 +735,8 @@ Function Get-FEDCPromo
         [String]             $Caption = (Get-CimInstance -Class Win32_OperatingSystem | % Caption)
         [UInt32]              $Server
         Hidden [Object]         $Xaml
-        Hidden [String]         $Pass = (Get-FEModule -Control | ? Name -eq success.png)
-        Hidden [String]         $Fail = (Get-FEModule -Control | ? Name -eq failure.png)
+        Hidden [String]         $Pass = (Get-FEModule -Control | ? Name -eq success.png | % FullName)
+        Hidden [String]         $Fail = (Get-FEModule -Control | ? Name -eq failure.png | % FullName)
         [String]             $Command
         [String]          $DomainType
         [UInt32]                $Mode
@@ -963,7 +964,7 @@ Function Get-FEDCPromo
                 $This.Xaml.IO.ReplicationSourceDC.ItemsSource     = @( )
                 If ($This.Connection.ReplicationDC.Count -gt 0)
                 {
-                    $This.Xaml.IO.ReplicationSourceDC.ItemsSource = @($This.Connection.Replication.DC)
+                    $This.Xaml.IO.ReplicationSourceDC.ItemsSource = @($This.Connection.ReplicationDC)
                 }
                 Else
                 {
@@ -1194,30 +1195,42 @@ Function Get-FEDCPromo
                 }
             }
         }
-        CheckDSRM([Object]$Object)
+        CheckDSRM()
         {
-            If ($Object.Password -notmatch "([0-9a-zA-Z:punct:]{10})")
+            If ($This.Profile.DSRM[0].Value -notmatch "(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[:punct:]).{10}")
             {
-                $Object.Check  = $False
-                $Object.Reason = "[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number" 
-                Write-Host $Object.Reason
+                $This.Profile.DSRM[0].Check  = $False
+                $This.Profile.DSRM[0].Reason = "[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number" 
+                Write-Host $This.Profile.DSRM[0].Reason
             }
-            ElseIf ($Object.Password -notmatch $Object.Confirm)
+            If ($This.Profile.DSRM[0].Value -match "(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[:punct:]).{10}")
             {
-                $Object.Check  = $False
-                $Object.Reason = "[!] Confirmation error"
-                Write-Host $Object.Reason
+                $This.Profile.DSRM[0].Check  = $True
+                $This.Profile.DSRM[0].Reason = "[+] Passed"
+                Write-Host $This.Profile.DSRM[0].Reason
             }
-            Else
+            If ($This.Profile.DSRM[1].Value -notmatch "(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[:punct:]).{10}")
             {
-                $Object.Check  = $True
-                $Object.Reason = "[+] Passed"
-                Write-Host $Object.Reason
+                $This.Profile.DSRM[1].Check  = $False
+                $This.Profile.DSRM[1].Reason = "[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number" 
+                Write-Host $This.Profile.DSRM[1].Reason
+            }
+            If ($This.Profile.DSRM[0].Value -ne $This.Profile.DSRM[1].Value)
+            {
+                $This.Profile.DSRM[1].Check  = $False
+                $This.Profile.DSRM[1].Reason = "[!] Confirmation error"
+                Write-Host $This.Profile.DSRM[1].Reason
+            }
+            If ($This.Profile.DSRM[0].Check -eq 1 -and $This.Profile.DSRM[1].Check -eq 1)
+            {
+                $This.Profile.DSRM[1].Check  = $True
+                $This.Profile.DSRM[1].Reason = "[+] Passed"
+                Write-Host $This.Profile.DSRM[1].Reason
             }
         }
         Total()
         {
-            If (($This.Profile.Item | ? IsEnabled | ? Property -eq Text | ? Check -eq 0).Count -eq 0 -and ($This.Profile.DSRM | ? Check))
+            If (($This.Profile.Item | ? IsEnabled | ? Property -eq Text | ? Check -eq 0).Count -eq 0 -and ($This.Profile.DSRM | ? Check -eq 0).Count -eq 0)
             {
                 $This.Xaml.IO.Start.IsEnabled = 1
             }
@@ -1419,35 +1432,19 @@ Function Get-FEDCPromo
 
     $Xaml.IO.SafeModeAdministratorPassword.Add_PasswordChanged(
     {
-        $Object          = $Main.Profile.DSRM
-        $Object.Password = $Xaml.IO.SafeModeAdministratorPassword.Password
-        $Main.CheckDSRM($Object)
-        If (!$Object.Check)
-        {
-            $Xaml.IO.SafeModeAdministratorPasswordIcon.Source = $Main.Fail
-        }
-        If ($Object.Check)
-        {
-            $Xaml.IO.SafeModeAdministratorPasswordIcon.Source = $Main.Pass
-        }
-        $Xaml.IO.SafeModeAdministratorPasswordIcon.Tooltip    = $Main.Profile.DSRM.Reason 
+        $Main.Profile.DSRM[0].Value = $Xaml.IO.SafeModeAdministratorPassword.Password
+        $Main.CheckDSRM()
+        $Xaml.IO.SafeModeAdministratorPasswordIcon.Source  = @($Main.Fail,$Main.Pass)[($Main.Profile.DSRM[0].Check)]
+        $Xaml.IO.SafeModeAdministratorPasswordIcon.Tooltip = $Main.Profile.DSRM[0].Reason 
         $Main.Total()
     })
 
     $Xaml.IO.Confirm.Add_PasswordChanged(
     {
-        $Object          = $Main.Profile.DSRM
-        $Object.Confirm  = $Xaml.IO.Confirm.Password
-        $Main.CheckDSRM($Object)
-        If (!$Object.Check)
-        {
-            $Xaml.IO.SafeModeAdministratorPasswordIcon.Source = $Main.Fail
-        }
-        If ($Object.Check)
-        {
-            $Xaml.IO.SafeModeAdministratorPasswordIcon.Source = $Main.Pass
-        }
-        $Xaml.IO.SafeModeAdministratorPasswordIcon.Tooltip    = $Main.Profile.DSRM.Reason 
+        $Main.Profile.DSRM[1].Value = $Xaml.IO.Confirm.Password
+        $Main.CheckDSRM()
+        $Xaml.IO.ConfirmIcon.Source  = @($Main.Fail,$Main.Pass)[($Main.Profile.DSRM[1].Check)]
+        $Xaml.IO.ConfirmIcon.Tooltip = $Main.Profile.DSRM[1].Reason 
         $Main.Total()
     })
 
