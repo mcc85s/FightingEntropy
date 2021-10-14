@@ -1215,7 +1215,7 @@ Function Get-FEDCPromo
                 $This.Profile.DSRM[1].Reason = "[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number" 
                 Write-Host $This.Profile.DSRM[1].Reason
             }
-            If ($This.Profile.DSRM[0].Value -ne $This.Profile.DSRM[1].Value)
+            If ($This.Profile.DSRM[0].Value -notmatch $This.Profile.DSRM[1].Value)
             {
                 $This.Profile.DSRM[1].Check  = $False
                 $This.Profile.DSRM[1].Reason = "[!] Confirmation error"
