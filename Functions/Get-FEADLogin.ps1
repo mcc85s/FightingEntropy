@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-10
+          Modified: 2021-10-14
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -288,7 +288,33 @@ Function Get-FEADLogin
         [Object]                              $Result
         Main()                            # ParamSet0
         {
-            $This.Domain       = $Env:UserDNSDomain.ToLower()
+            $DNSDomain         = $Null
+            $TestDnsServer     = $Null
+            If ($Env:UserDNSDomain)
+            {
+                $DNSDomain   = $Env:UserDNSDomain.ToLower()
+            }
+            If (!$Env:UserDNSDomain)
+            {
+                $DNSDomain   = Get-WMIObject -Class Win32_NetworkAdapterConfiguration -Filter "IPEnabled='True' AND DHCPEnabled='True'" | % DNSDomain
+                If ($DNSDomain.Count -gt 1)
+                {
+                    ForEach ($Server in $DnsDomain)
+                    {
+                        $TestDnsServer = [System.Net.Dns]::Resolve($Server)
+                        If ($TestDnsServer)
+                        {
+                            $DnsDomain = $TestDnsServer.Hostname
+                            Break
+                        }
+                    }
+                }
+                If ($DnsDomain.Count -eq 0)
+                {
+                    Throw "Could not locate a valid server"
+                }
+            }
+            $This.Domain       = $DnsDomain
             $This.IPAddress    = [System.Net.Dns]::Resolve($This.Domain).AddressList | Select-Object -First 1 | % IPAddressToString
             $This.DNSName      = [System.Net.Dns]::Resolve($This.IPAddress).Hostname
             $This.NetBIOS      = $Null
