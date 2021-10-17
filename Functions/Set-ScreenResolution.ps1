@@ -1,10 +1,34 @@
-Function Set-ScreenResolution  # https://stackoverflow.com/questions/37678996/setting-screen-resolution-on-windows-10 // Works in WinPE
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+          Source: https://stackoverflow.com/questions/37678996/setting-screen-resolution-on-windows-10
+.NOTES
+          FileName: Set-ScreenResolution.ps1
+          Solution: FightingEntropy Module
+          Purpose: Allows the resolution to be changed in a PXE environment, as well as in native Windows
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-07
+          Modified: 2021-10-07
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+          TODO:
+.Example
+#>
+Function Set-ScreenResolution
 { 
-    param([Parameter(Mandatory)][int]$Width,[Parameter(Mandatory)][int]$Height) 
+    Param(
+    [Parameter(Mandatory)][UInt32]$Width,
+    [Parameter(Mandatory)][UInt32]$Height)
 
 $pinvokeCode = @" 
 using System; 
-using System.Runtime.InteropServices; namespace Resolution 
+using System.Runtime.InteropServices; 
+namespace Resolution 
 { 
     [StructLayout(LayoutKind.Sequential)] 
     public struct DEVMODE1 
@@ -111,5 +135,5 @@ using System.Runtime.InteropServices; namespace Resolution
 "@ 
 
 Add-Type $pinvokeCode -ErrorAction SilentlyContinue 
-[Resolution.PrmaryScreenResolution]::ChangeResolution($width,$height) 
+[Resolution.PrmaryScreenResolution]::ChangeResolution($width,$height)
 } 
