@@ -1,4 +1,27 @@
-Function Copy-FileStream # Renamed - https://stackoverflow.com/questions/2434133/progress-during-large-file-copy-copy-item-write-progress
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+          Original: https://stackoverflow.com/questions/2434133/progress-during-large-file-copy-copy-item-write-progress
+.NOTES
+          FileName: Copy-FileStream.ps1
+          Solution: FightingEntropy Module
+          Purpose: For copying larger files with a progress indicator (Modified version of the above script)
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-10-17
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
+Function Copy-FileStream
 {
     [CmdLetBinding()]
     Param( 
