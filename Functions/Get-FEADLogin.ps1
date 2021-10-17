@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-14
+          Modified: 2021-10-17
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -429,19 +429,20 @@ Function Get-FEADLogin
             $This.Test         = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
             Try 
             {
-                $This.Test
-                $This.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
-                $This.Searcher            | % { 
-                    
-                    $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
-                    $_.PageSize         = 1000
-                    $_.PropertiestoLoad.Clear()
-                }
-
-                $This.Result              = $This.Searcher | % FindAll
-                If (!$This.NetBIOS)
+                If ($This.Test.DistinguishedName)
                 {
-                    $This.NetBIOS         = $This.GetNetBIOSName()
+                    $This.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
+                    $This.Searcher            | % { 
+                    
+                        $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
+                        $_.PageSize         = 1000
+                        $_.PropertiestoLoad.Clear()
+
+                    $This.Result              = $This.Searcher | % FindAll
+                    If (!$This.NetBIOS)
+                    {
+                        $This.NetBIOS         = $This.GetNetBIOSName()
+                    }
                 }
             }
 
