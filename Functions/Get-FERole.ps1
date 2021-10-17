@@ -1,16 +1,37 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-FERole.ps1
+          Solution: FightingEntropy Module
+          Purpose: For extended information regarding the host operating system, and hosts specialized functions
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-10-17
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
 Function Get-FERole
 {
-    Class _Win32_Client
+    Class Win32_Client
     {
         [String]                $Name
         [String]                 $DNS
         [String]             $NetBIOS
-
         [String]            $Hostname
         [String]            $Username
         [Object]           $Principal
         [Bool]               $IsAdmin
-
         [String]             $Caption
         [String]             $Version
         [UInt32]               $Build
@@ -20,15 +41,12 @@ Function Get-FERole
         [String]             $Chassis
         [Object]               $Drive
         [Object]             $Process
-    
         [Object]             $Network
         [Object]             $Service
-
         Hidden [String[]]      $Tools = ("ViperBomb Chocolatey" -Split " ")
         [Object]                $Tool
         [Object]             $Feature
-
-        _Win32_Client()
+        Win32_Client()
         {
             Get-FEHost                 | % { 
 
@@ -43,7 +61,7 @@ Function Get-FERole
             $This.Principal           = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
             $This.IsAdmin             = $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
         
-            If ( $This.IsAdmin -eq 0 )
+            If ($This.IsAdmin -eq 0)
             {
                 Throw "Must run as administrator"
             }
@@ -59,27 +77,22 @@ Function Get-FERole
                 $This.Chassis          = $_.Chassis
             }
         }
-    
         GetServices()
         {
             $This.Service             = (Get-FEService)
         }
-    
         GetProcesses()
         {
-            $This.Process             = (Get-Process)
+            $This.Process             = (Get-FEProcess)
         }
-    
         GetNetwork()
         {
             $This.Network             = (Get-FENetwork)
         }
-
         GetFeatures()
         {
         
         }
-
         LoadEnvironmentKey([String]$Path)
         {
             $Key = Get-EnvironmentKey -Path $Path -Convert
@@ -88,24 +101,21 @@ Function Get-FERole
                 New-EnvironmentKey -Key $Key | % Apply 
             }
         }
-    
         Choco()
         {
             Invoke-Expression ( Invoke-RestMethod https://chocolatey.org/install.ps1 )
         }
     }
 
-    Class _Win32_Server
+    Class Win32_Server
     {
         [String]                $Name
         [String]                 $DNS
         [String]             $NetBIOS
-
         [String]            $Hostname
         [String]            $Username
         [Object]           $Principal
         [Bool]               $IsAdmin
-
         [String]             $Caption
         [String]             $Version
         [UInt32]               $Build
@@ -115,15 +125,12 @@ Function Get-FERole
         [String]             $Chassis
         [Object]               $Drive
         [Object]             $Process
-    
         [Object]             $Network
         [Object]             $Service
-
         Hidden [String[]]      $Tools = ("ViperBomb Chocolatey MDT WinPE WinADK WDS IIS/BITS ASP.Net DNS DHCP ADDS" -Split " ")
         [Object]                $Tool
         [Object]             $Feature
-
-        _Win32_Server()
+        Win32_Server()
         {
             Get-FEHost                 | % { 
 
@@ -138,7 +145,7 @@ Function Get-FERole
             $This.Principal           = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
             $This.IsAdmin             = $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
         
-            If ( $This.IsAdmin -eq 0 )
+            If ($This.IsAdmin -eq 0)
             {
                 Throw "Must run as administrator"
             }
@@ -154,28 +161,23 @@ Function Get-FERole
                 $This.Chassis          = $_.Chassis
             }
         }
-    
         GetServices()
         {
             $This.Service             = (Get-FEService)
         }
-    
         GetProcesses()
         {
-            $This.Process             = (Get-Process)
+            $This.Process             = (Get-FEProcess)
         }
-    
         GetNetwork()
         {
             $This.Network             = (Get-FENetwork)
         }
-
         GetFeatures()
         {
             Install-PackageProvider -Name NuGet -Confirm:$False -Force
             Find-Module -Name PoshRSJob | Install-Module -Confirm:$False -Force
         }
-
         LoadEnvironmentKey([String]$Path)
         {
             $Key = Get-EnvironmentKey -Path $Path -Convert
@@ -191,7 +193,7 @@ Function Get-FERole
         }
     }
 
-    Class _RHELCentOS
+    Class RHELCentOS
     {
         [Object] $Host
         [Object] $Info
@@ -200,8 +202,7 @@ Function Get-FERole
         [Object] $Processes
         [Object] $Network
         [Object] $Control
-
-        _RHELCentOS()
+        RHELCentOS()
         {
             $This.Host      = @( )
             $This.Info      = @( )
@@ -212,7 +213,7 @@ Function Get-FERole
         }
     }
 
-    Class _UnixBSD
+    Class Ubuntu
     {
         [Object] $Host
         [Object] $Info
@@ -221,8 +222,27 @@ Function Get-FERole
         [Object] $Processes
         [Object] $Network
         [Object] $Control
-
-        _UnixBSD()
+        Ubuntu()
+        {
+            $This.Host      = @( )
+            $This.Info      = @( )
+            $This.Tools     = @( )
+            $This.Services  = @( )
+            $This.Processes = @( )
+            $This.Network   = @( )
+        }
+    }
+    
+    Class UnixBSD
+    {
+        [Object] $Host
+        [Object] $Info
+        [Object] $Tools
+        [Object] $Services
+        [Object] $Processes
+        [Object] $Network
+        [Object] $Control
+        UnixBSD()
         {
             $This.Host      = @( )
             $This.Info      = @( )
@@ -233,21 +253,23 @@ Function Get-FERole
         }
     }
 
-    Class _Role
+    Class Role
     {
         [String] $Name
         [Object] $Output
-
-        _Role([String]$Name)
+        Role([String]$Name)
         {
             $This.Name   = $Name
             $This.Output = Switch($Name)
             {
-                Win32_Client { [_Win32_Client]::New() } Win32_Server { [_Win32_Server]::New() } 
-                UnixBSD      { [_UnixBSD]::New()      } RHELCentOS   { [_RHELCentOS]::New()   }
+                Win32_Client { [Win32_Client]::New() } 
+                Win32_Server { [Win32_Server]::New() }
+                RHELCentOS   { [RHELCentOS]::New()   }
+                Ubuntu       { [Ubuntu]::New()       }
+                UnixBSD      { [UnixBSD]::New()      }
             }
         }
     }
-
-    [_Role]::New((Get-FEOS | % Type)).Output 
+    $Type = Get-FEOS | % Type
+    [Role]::New($Type).Output 
 }
