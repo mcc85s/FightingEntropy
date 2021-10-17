@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: New-EnvironmentKey.ps1
+          Solution: FightingEntropy Module
+          Purpose: Instantiates an environment key for FightingEntropy
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-07
+          Modified: 2021-10-07
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
 Function New-EnvironmentKey
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
