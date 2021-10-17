@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-FEOS.ps1
+          Solution: FightingEntropy Module
+          Purpose: For detecting the currently running operating system, meant for cross compatibility
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-10-17
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
 Function Get-FEOS
 {
     Class EnumType
@@ -55,7 +78,10 @@ Function Get-FEOS
                 $This.GetWinType()
             })
         }
+        [String] ToString()
+        {
+            Return ("[{0}/{1}]" -f $This.Type, $This.Ver)
+        }
     }
-
     [OS]::New()
 }
