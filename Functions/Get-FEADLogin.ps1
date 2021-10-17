@@ -429,11 +429,11 @@ Function Get-FEADLogin
             $This.Test         = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
             Try 
             {
-                If ($This.Test.DistinguishedName)
-                {
+                $This.Test | ? DistinguishedName | % {
+
                     $This.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
                     $This.Searcher            | % { 
-                    
+                        
                         $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
                         $_.PageSize         = 1000
                         $_.PropertiestoLoad.Clear()
