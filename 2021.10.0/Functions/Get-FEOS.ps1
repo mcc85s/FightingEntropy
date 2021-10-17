@@ -28,7 +28,6 @@ Function Get-FEOS
             $This.Major = $This.Ver.Major
             $This.Type  = $This.GetOSType()
         }
-
         [String] GetWinType()
         {
             Return @( Switch -Regex ( Invoke-Expression "[wmiclass]'Win32_OperatingSystem' | % GetInstances | % Caption" )
@@ -36,7 +35,6 @@ Function Get-FEOS
                 "Windows 10" { "Win32_Client" } "Windows Server" { "Win32_Server" }
             })
         }
-
         [String] GetOSType()
         {
             Return @( If ( $This.Major -gt 5 )
@@ -56,6 +54,10 @@ Function Get-FEOS
             {
                 $This.GetWinType()
             })
+        }
+        [String] ToString()
+        {
+            Return ("[{0}/{1}]" -f $This.Type, $This.Ver)
         }
     }
 
