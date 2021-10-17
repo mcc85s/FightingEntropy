@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-PSDModule.ps1
+          Solution: FightingEntropy Module
+          Purpose: Retrieves the PowerShell Deployment modification by FriendsOfMDT and the FightingEntropy customizations
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-10-17
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO: 10/17/2021 - Integrate with the Get-MDTModule function
+
+.Example
+#>
 Function Get-PSDModule
 {
     $MDTDir = Get-ItemProperty "HKLM:\Software\Microsoft\Deployment 4" | % Install_Dir | % TrimEnd \
