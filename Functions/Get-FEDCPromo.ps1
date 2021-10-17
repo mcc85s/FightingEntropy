@@ -40,10 +40,142 @@ Function Get-FEDCPromo
         Throw "Must use Windows Server operating system"
     }
 
+    # [System Classes]
+    Class SysNetwork
+    {
+        [String]$Name
+        [UInt32]$Index
+        [String]$IPAddress
+        [String]$SubnetMask
+        [String]$Gateway
+        [String[]] $DnsServer
+        [String] $DhcpServer
+        [String] $MacAddress
+        SysNetwork([Object]$If)
+        {
+            $This.Name       = $IF.Description
+            $This.Index      = $IF.Index
+            $This.IPAddress  = $IF.IPAddress            | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.SubnetMask = $IF.IPSubnet             | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.Gateway    = $IF.DefaultIPGateway     | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.DnsServer  = $IF.DnsServerSearchOrder | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.DhcpServer = $IF.DhcpServer           | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.MacAddress = $IF.MacAddress
+        }
+    }
+
+    Class SysDisk
+    {
+        [String] $Name
+        [String] $Label
+        [String] $FileSystem
+        [String] $Size
+        [String] $Free
+        [String] $Used
+        SysDisk([Object]$Disk)
+        {
+            $This.Name       = $Disk.DeviceID
+            $This.Label      = $Disk.VolumeName
+            $This.FileSystem = $Disk.FileSystem
+            $This.Size       = "{0:n2} GB" -f ($Disk.Size/1GB)
+            $This.Free       = "{0:n2} GB" -f ($Disk.FreeSpace/1GB)
+            $This.Used       = "{0:n2} GB" -f (($Disk.Size-$Disk.FreeSpace)/1GB)
+        }
+    }
+
+    Class SysProcessor
+    {
+        [String]$Name
+        [String]$Caption
+        [String]$DeviceID
+        [String]$Manufacturer
+        [UInt32]$Speed
+        SysProcessor([Object]$CPU)
+        {
+            $This.Name         = $CPU.Name -Replace "\s+"," "
+            $This.Caption      = $CPU.Caption
+            $This.DeviceID     = $CPU.DeviceID
+            $This.Manufacturer = $CPU.Manufacturer
+            $This.Speed        = $CPU.MaxClockSpeed
+        }
+    }
+
+    Class System
+    {
+        [Object] $Manufacturer
+        [Object] $Model
+        [Object] $Product
+        [Object] $Serial
+        [Object[]] $Processor
+        [String] $Memory
+        [String] $Architecture
+        [Object] $UUID
+        [Object] $Chassis
+        [Object] $BiosUEFI
+        [Object] $AssetTag
+        [Object[]] $Disk
+        [Object[]] $Network
+        System()
+        {
+            Write-Host "Collecting [~] Disks"
+            $This.Disk             = Get-WmiObject -Class Win32_LogicalDisk    | % {     [SysDisk]$_ }
+            
+            Write-Host "Collecting [~] Network"
+            $This.Network          = Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter "IPEnabled = 1" | ? DefaultIPGateway | % { [SysNetwork]$_ }
+            
+            Write-Host "Collecting [~] Processor"
+            $This.Processor        = Get-WmiObject -Class Win32_Processor      | % { [SysProcessor]$_ }
+            
+            Write-Host "Collecting [~] Computer"
+            Get-WmiObject Win32_ComputerSystem        | % { 
+
+                $This.Manufacturer = $_.Manufacturer; 
+                $This.Model        = $_.Model; 
+                $This.Memory       = "{0}GB" -f [UInt32]($_.TotalPhysicalMemory/1GB)
+            }
+
+            Write-Host "Collecting [~] Product"
+            Get-WmiObject Win32_ComputerSystemProduct | % { 
+                $This.UUID         = $_.UUID 
+            }
+
+            Write-Host "Collecting [~] Motherboard"
+            Get-WmiObject Win32_BaseBoard             | % { 
+                $This.Product      = $_.Product
+                $This.Serial       = $_.SerialNumber -Replace "\.",""
+            }
+            Try
+            {
+                Get-SecureBootUEFI -Name SetupMode | Out-Null 
+                $This.BiosUefi = "UEFI"
+            }
+            Catch
+            {
+                $This.BiosUefi = "BIOS"
+            }
+        
+            Write-Host "Collecting [~] Chassis"
+            Get-WmiObject Win32_SystemEnclosure | % {
+                $This.AssetTag    = $_.SMBIOSAssetTag.Trim()
+                $This.Chassis     = Switch([UInt32]$_.ChassisTypes[0])
+                {
+                    {$_ -in 8..12+14,18,21} {"Laptop"}
+                    {$_ -in 3..7+15,16}     {"Desktop"}
+                    {$_ -in 23}             {"Server"}
+                    {$_ -in 34..36}         {"Small Form Factor"}
+                    {$_ -in 30..32+13}      {"Tablet"}
+                }
+            }
+
+            $This.Architecture = @{x86="x86";AMD64="x64"}[$Env:PROCESSOR_ARCHITECTURE]
+        }
+    }
+
     # Profile Classes
     Class ProfileItem
     {
         [String]                  $Name
+        [String]                  $Type
         [Bool]               $IsEnabled
         [String]              $Property
         [Object]                 $Value
@@ -108,6 +240,7 @@ Function Get-FEDCPromo
             ForEach ($X in 0..($This.Item.Count-1))
             {
                 $IX                 = $This.Item[$X]
+                $IX.Type            = @("ComboBox","TextBox")[@(0,0,0,0,1,1,1,1,1)[$X]]
                 $IX.Property        = @("SelectedIndex","Text")[@(0,0,0,0,1,1,1,1,1)[$X]]
                 $IX.Value           = Switch ($IX.Name)
                 {
@@ -155,6 +288,16 @@ Function Get-FEDCPromo
         SetItem([String]$Name,[Object]$Value)
         {
             $This.Item | ? Name -eq $Name | % { $_.Value = $Value }
+        }
+    }
+
+    Class Execution
+    {
+        [Object] $Services
+        [Object] $Output
+        Execution()
+        {
+
         }
     }
 
@@ -331,7 +474,7 @@ Function Get-FEDCPromo
         '            <Setter Property="BorderBrush" Value="Gray"/>',
         '            <Setter Property="BorderThickness" Value="2"/>',
         '            <Setter Property="VerticalAlignment" Value="Center"/>',
-        '            <Setter Property="HorizontalContentAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
         '            <Style.Resources>',
         '                <Style TargetType="Border">',
         '                    <Setter Property="CornerRadius" Value="5"/>',
@@ -439,6 +582,7 @@ Function Get-FEDCPromo
         '        </Style>',
         '        <Style TargetType="DataGridRow">',
         '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
         '            <Style.Triggers>',
         '                <Trigger Property="AlternationIndex" Value="0">',
         '                    <Setter Property="Background" Value="White"/>',
@@ -496,7 +640,7 @@ Function Get-FEDCPromo
         '                        <GroupBox Grid.Column="1" Name="_DomainMode" Header="[Domain Mode]" Visibility="Collapsed">',
         '                            <ComboBox Name="DomainMode"/>',
         '                        </GroupBox>',
-        '                        <GroupBox Grid.Column="0" Name="_ParentDomainName" Header="[Parent Domain Name]" Visibility="Visible">',
+        '                        <GroupBox Grid.Column="0" Name="_ParentDomainName" Header="[Parent Domain Name]" Visibility="Collapsed">',
         '                            <Grid>',
         '                                <Grid.ColumnDefinitions>',
         '                                    <ColumnDefinition Width="*"/>',
@@ -513,7 +657,7 @@ Function Get-FEDCPromo
         '                    <Grid Grid.Row="1">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="1.5*"/>',
+        '                            <ColumnDefinition Width="1.25*"/>',
         '                        </Grid.ColumnDefinitions>',
         '                        <Grid.RowDefinitions>',
         '                            <RowDefinition Height="400"/>',
@@ -523,10 +667,11 @@ Function Get-FEDCPromo
         '                            <DataGrid Name="Features">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name" Width="180" Binding="{Binding Name}" CanUserSort="True" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Type" Width="60"  Binding="{Binding Type}" CanUserSort="True" IsReadOnly="True"/>',
         '                                    <DataGridTemplateColumn Header="Install" Width="50">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <CheckBox IsEnabled="{Binding Installed}" IsChecked="True" Margin="0" Height="18" HorizontalAlignment="Left"/>',
+        '                                                <CheckBox IsEnabled="{Binding Enabled}" IsChecked="{Binding Install,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,NotifyOnTargetUpdated=True}" Margin="0" Height="18" HorizontalAlignment="Left"/>',
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
@@ -549,10 +694,10 @@ Function Get-FEDCPromo
         '                                <CheckBox Grid.Column="0" Grid.Row="1" Name="CreateDNSDelegation"/>',
         '                                <CheckBox Grid.Column="0" Grid.Row="2" Name="NoGlobalCatalog"/>',
         '                                <CheckBox Grid.Column="0" Grid.Row="3" Name="CriticalReplicationOnly"/>',
-        '                                <Label    Grid.Column="1" Grid.Row="0" Content="Install DNS"               HorizontalContentAlignment="Left"/>',
-        '                                <Label    Grid.Column="1" Grid.Row="1" Content="Create DNS Delegation"     HorizontalContentAlignment="Left"/>',
-        '                                <Label    Grid.Column="1" Grid.Row="2" Content="No Global Catalog"         HorizontalContentAlignment="Left"/>',
-        '                                <Label    Grid.Column="1" Grid.Row="3" Content="Critical Replication Only" HorizontalContentAlignment="Left"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="0" Content="Install DNS"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="1" Content="Create DNS Delegation"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="2" Content="No Global Catalog"/>',
+        '                                <Label    Grid.Column="1" Grid.Row="3" Content="Critical Replication Only"/>',
         '                            </Grid>',
         '                        </GroupBox>',
         '                        <Grid Grid.Row="0" Grid.Column="1">',
@@ -575,21 +720,21 @@ Function Get-FEDCPromo
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="25"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Row="0" Grid.Column="0" Content="Domain"/>',
+        '                                    <Label    Grid.Row="0" Grid.Column="0" Content="Domain" HorizontalContentAlignment="Center"/>',
         '                                    <TextBox  Grid.Row="0" Grid.Column="1" Name="DomainName"/>',
         '                                    <Image    Grid.Row="0" Grid.Column="2" Name="DomainNameIcon"/>',
-        '                                    <Label    Grid.Row="1" Grid.Column="0" Content="New Domain"/>',
+        '                                    <Label    Grid.Row="1" Grid.Column="0" Content="New Domain" HorizontalContentAlignment="Center"/>',
         '                                    <TextBox  Grid.Row="1" Grid.Column="1" Name="NewDomainName"/>',
-        '                                    <Image    Grid.Row="0" Grid.Column="2" Name="NewDomainNameIcon"/>',
-        '                                    <Label    Grid.Row="2" Grid.Column="0" Content="NetBIOS"/>',
+        '                                    <Image    Grid.Row="1" Grid.Column="2" Name="NewDomainNameIcon"/>',
+        '                                    <Label    Grid.Row="2" Grid.Column="0" Content="NetBIOS" HorizontalContentAlignment="Center"/>',
         '                                    <TextBox  Grid.Row="2" Grid.Column="1" Name="DomainNetBIOSName"/>',
-        '                                    <Image    Grid.Row="0" Grid.Column="2" Name="DomainNetBIOSNameIcon"/>',
-        '                                    <Label    Grid.Row="3" Grid.Column="0" Content="New NetBIOS"/>',
+        '                                    <Image    Grid.Row="2" Grid.Column="2" Name="DomainNetBIOSNameIcon"/>',
+        '                                    <Label    Grid.Row="3" Grid.Column="0" Content="New NetBIOS" HorizontalContentAlignment="Center"/>',
         '                                    <TextBox  Grid.Row="3" Grid.Column="1" Name="NewDomainNetBIOSName"/>',
-        '                                    <Image    Grid.Row="0" Grid.Column="2" Name="NewDomainNetBIOSNameIcon"/>',
-        '                                    <Label    Grid.Row="4" Grid.Column="0" Content="Site"/>',
+        '                                    <Image    Grid.Row="3" Grid.Column="2" Name="NewDomainNetBIOSNameIcon"/>',
+        '                                    <Label    Grid.Row="4" Grid.Column="0" Content="Site" HorizontalContentAlignment="Center"/>',
         '                                    <ComboBox Grid.Row="4" Grid.Column="1" Name="SiteName"/>',
-        '                                    <Image    Grid.Row="0" Grid.Column="2" Name="SiteNameIcon"/>',
+        '                                    <Image    Grid.Row="4" Grid.Column="2" Name="SiteNameIcon"/>',
         '                                </Grid>',
         '                            </GroupBox>',
         '                            <GroupBox Grid.Row="1" Header="[Paths]">',
@@ -604,11 +749,11 @@ Function Get-FEDCPromo
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="25"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label   Grid.Row="0" Grid.Column="0" Content="Database"/>',
+        '                                    <Label   Grid.Row="0" Grid.Column="0" Content="Database" HorizontalContentAlignment="Center"/>',
         '                                    <TextBox Grid.Row="0" Grid.Column="1" Name="DatabasePath"/>',
-        '                                    <Label   Grid.Row="1" Grid.Column="0" Content="SysVol"/>',
+        '                                    <Label   Grid.Row="1" Grid.Column="0" Content="SysVol" HorizontalContentAlignment="Center"/>',
         '                                    <TextBox Grid.Row="1" Grid.Column="1" Name="SysvolPath"/>',
-        '                                    <Label   Grid.Row="2" Grid.Column="0" Content="Log"/>',
+        '                                    <Label   Grid.Row="2" Grid.Column="0" Content="Log" HorizontalContentAlignment="Center"/>',
         '                                    <TextBox Grid.Row="2" Grid.Column="1" Name="LogPath"/>',
         '                                </Grid>',
         '                            </GroupBox>',
@@ -638,7 +783,7 @@ Function Get-FEDCPromo
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="25"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label       Grid.Column="0" Content="Password"/>',
+        '                                    <Label       Grid.Column="0" Content="Password" HorizontalContentAlignment="Center"/>',
         '                                    <PasswordBox Grid.Column="1" Name="SafeModeAdministratorPassword"/>',
         '                                    <Image       Grid.Column="2" Name="SafeModeAdministratorPasswordIcon"/>',
         '                                    <PasswordBox Grid.Column="3" Name="Confirm"/>',
@@ -665,31 +810,105 @@ Function Get-FEDCPromo
     Class ServerFeature
     {
         [UInt32] $Index
+        [String] $Type
         [String] $Name
         [String] $DisplayName
         [Bool]   $Installed
-        ServerFeature([UInt32]$Index,[Object]$Object)
+        [Bool]   $Enabled
+        [Bool]   $Install
+        ServerFeature([Object]$Features,[UInt32]$Index,[String]$Type,[String]$Name)
         {
+            $Object              = $Features | ? Name -eq $Name 
             $This.Index          = $Index
-            $This.Name           = $Object.Name
+            $This.Type           = $Type
+            $This.Name           = $Name
             $This.DisplayName    = $Object.Displayname
             $This.Installed      = $Object.Installed
+            $This.Enabled        = If ($Object.Installed) {$False} Else {$True}
+            $This.Install        = $This.Enabled
+        }
+        Check()
+        {
+            If ($This.Install)
+            {
+                $This.Install    = 0
+            }
+            If (!$This.Install)
+            {
+                $This.Install    = 1
+            }
+        }
+    }
+
+    Class BaseFeatures
+    {
+        Static [String[]] $Names = ("AD-Domain-Services DHCP DNS GPMC RSAT RSAT-AD-AdminCenter RSAT-AD-PowerShell RSAT-AD-T" +
+        "ools RSAT-ADDS RSAT-ADDS-Tools RSAT-DHCP RSAT-DNS-Server RSAT-Role-Tools").Split(" ")
+        BaseFeatures()
+        {
+
+        }
+    }
+
+    Class WDSFeatures
+    {
+        Static [String[]]  $Names = "WDS WDS-AdminPack WDS-Deployment WDS-Transport".Split(" ")
+        WDSFeatures()
+        {
+
+        }
+    }
+
+    Class IISFeatures
+    {
+        Static [String[]] $Names = (("BITS BITS-IIS-Ext DSC-Service FS-SMBBW ManagementOData Net-Framework-45-ASPNet Net-WCF-HTTP-Activation45 " +
+        "RSAT-BITS-Server WAS WAS-Config-APIs WAS-Process-Model WebDAV-Redirector {0}HTTP-Errors {0}HTTP-Logging {0}HTTP-Redirect {0}HTTP-Traci" +
+        "ng {0}App-Dev {0}AppInit {0}Asp-Net45 {0}Basic-Auth {0}Common-Http {0}Custom-Logging {0}DAV-Publishing {0}Default-Doc {0}Digest-Auth {" +
+        "0}Dir-Browsing {0}Filtering {0}Health {0}Includes {0}Log-Libraries {0}Metabase {0}Mgmt-Console {0}Net-Ext45 {0}Performance {0}Request-" +
+        "Monitor {0}Security {0}Stat-Compression {0}Static-Content {0}Url-Auth {0}WebServer {0}Windows-Auth Web-ISAPI-Ext Web-ISAPI-Filter Web-" +
+        "Server WindowsPowerShellWebAccess" -join " ") -f "Web-").Split(" ")
+        IISFeatures()
+        {
+
+        }
+    }
+
+    Class VeridianFeatures
+    {
+        Static [String[]] $Names = "Hyper-V RSAT-Hyper-V-Tools Hyper-V-Tools Hyper-V-PowerShell".Split(" ")
+        VeridianFeatures()
+        {
+
         }
     }
 
     Class ServerFeatures
     {
-        Static [String[]] $Names = ("AD-Domain-Services DHCP DNS GPMC RSAT RSAT-AD-AdminCenter RSAT-AD-PowerShell RSAT-AD-T" +
-                                    "ools RSAT-ADDS RSAT-ADDS-Tools RSAT-DHCP RSAT-DNS-Server RSAT-Role-Tools WDS WDS-Admin" + 
-                                    "Pack WDS-Deployment WDS-Transport").Split(" ")
+        [Object]       $Registry
+        [Object]       $Features
         [Object[]]       $Output
         ServerFeatures()
-        { 
-            $This.Output         =  @( )
-            ForEach ($Item in Get-WindowsFeature | ? Name -in ([ServerFeatures]::Names))
+        {
+            $This.Registry = @("" , "\WOW6432Node" | % { "HKLM:\SOFTWARE$_\Microsoft\Windows\CurrentVersion\Uninstall\*"  } | Get-ItemProperty)
+            $This.Features = Get-WindowsFeature
+            $This.Output   =  @( )
+            ForEach ($Type in "Base","WDS","IIS","Veridian")
             { 
-                $This.Output    += [ServerFeature]::New($This.Output.Count,$Item)
-            }    
+                ForEach ($Name in $This.GetSlot($Type))
+                {
+                    $This.Output    += [ServerFeature]::New($This.Features,$This.Output.Count,$Type,$Name)
+                }
+            }
+        }
+        [String[]] GetSlot([String]$Type)
+        {
+            Return @( Switch($Type)
+            {
+                Base     {[BaseFeatures]::Names}
+                WDS      {[WDSFeatures]::Names}
+                IIS      {[IISFeatures]::Names}
+                Veridian {[VeridianFeatures]::Names}
+            })
         }
     }
 
@@ -729,9 +948,11 @@ Function Get-FEDCPromo
 
     Class FEDCPromo
     {
+        [Object]              $System
         [Object]            $Features
         [String]             $Caption = (Get-CimInstance -Class Win32_OperatingSystem | % Caption)
         [UInt32]              $Server
+        Hidden [Bool]        $Staging = $False
         Hidden [Object]         $Xaml
         Hidden [String]         $Pass = (Get-FEModule -Control | ? Name -eq success.png | % FullName)
         Hidden [String]         $Fail = (Get-FEModule -Control | ? Name -eq failure.png | % FullName)
@@ -743,8 +964,16 @@ Function Get-FEDCPromo
         [Object]          $Connection
         FEDCPromo()
         {
+            # Collect System
+            $This.System                                 = [System]::New()
+
             # Collect features
             $This.Features                               = [ServerFeatures]::New().Output
+
+            If ($This.System.Model -match "Virtual")
+            {
+                $This.Features | ? Type -eq Veridian | % { $_.Enabled = $False }
+            }
 
             # Test Active Directory to import module
             If ($This.Features | ? Name -match AD-Domain-Services | ? Installed -eq 0)
@@ -772,19 +1001,18 @@ Function Get-FEDCPromo
                 Break
             }
         }
-        SetMode([UInt32]$Mode,[Object]$Xaml)
+        LoadXaml([Object]$Xaml)
         {
             $This.Xaml      = $Xaml
+        }
+        SetMode([UInt32]$Mode)
+        {
             $This.Mode      = $Mode
             $This.Profile   = [Profile]::New($Mode)
+            $This.Staging   = $True
 
             $This.Profile.Item[0].Value = $This.Server
             $This.Profile.Item[1].Value = $This.Server
-
-            If ($Mode -eq 0)
-            {
-                $This.Profile.Item[5,6] | % { $_.Value = $_.Value -Replace " or \<Credential\>","" }
-            }
             
             # Command
             Write-Host "Command"
@@ -812,44 +1040,140 @@ Function Get-FEDCPromo
                 $This.Xaml.IO.$($Item.Name).IsEnabled        = $Item.IsEnabled -eq $True
                 $This.Xaml.IO.$($Item.Name).IsChecked        = $Item.IsChecked -eq $True
             }
-            
-            # Profile Items
-            Write-Host "Profile Items"
+
+            # Profile Main Items
+            Write-Host "Profile Main Items"
             ForEach ($Item in $This.Profile.Item)
             {
-                Write-Host $Item.Name
-                If ($Item.Name -in $This.Profile.Item[0,1,2,4].Name)
+                Write-Host $($Item.Name)
+
+                # ComboBoxes
+                If ($Item.Type -eq "ComboBox")
                 {
-                    $This.Xaml.IO."_$($Item.Name)".Visibility  = @("Collapsed","Visible")[$Item.IsEnabled]
+                    $Item.Value   = @(0,$This.Server)[$Item.Name -Match "Mode"]
                 }
 
-                $This.Xaml.IO.$($Item.Name).IsEnabled         = $Item.IsEnabled
-
-                If ($Item.Property -eq "SelectedIndex")
+                # TextBoxes
+                If ($Item.Type -eq "TextBox")
                 {
-                    If ($Item.Name -match "Mode")
-                    {
-                        $This.Xaml.IO.$($Item.Name).$($Item.Property) = $This.Server
-                    }
-                    If ($Item.Name -notmatch "Mode")
-                    {
-                        $This.Xaml.IO.$($Item.Name).$($Item.Property) = 0
-                    }
-                }
-                If ($Item.Property -match "Text")
-                {
-                    $This.Xaml.IO.$($Item.Name).$($Item.Property) = @($Null,$Item.Value)[$Item.IsEnabled]
+                    $Item.Value   = @("",$Item.Value)[$Item.IsEnabled]
                 }
             }
-            $This.Xaml.IO.SafeModeAdministratorPassword.IsEnabled = 1
-            $This.Xaml.IO.Confirm.IsEnabled                       = 1
-        }
-        SetItem([String]$Name,[Object]$Value)
-        {
-            $This.Profile.SetItem($Name,$Value)
-            $This.Profile | ? Name -eq $Name | % { 
-                
-                $This.IO.Xaml.$($Name).$($_.Property) = $_.Value
+
+            # Add connection values
+            If ($This.Connection)
+            {
+                Switch($This.Mode)
+                {
+                    0
+                    {
+                        $This.Connection = $Null
+                    }
+
+                    1
+                    {
+                        $This.Profile.Item[4].Value = $This.Connection.Domain
+                        $This.Profile.Item[6].Value = $This.Connection.NetBIOS
+                    }
+
+                    2
+                    {
+                        $This.Profile.Item[4].Value = $This.Connection.Domain
+                        $This.Profile.Item[6].Value = $This.Connection.NetBIOS
+                    }
+
+                    3
+                    {
+                        $This.Profile.Item[5].Value = $This.Connection.Domain
+                        $This.Profile.Item[6].Value = $This.Connection.NetBIOS
+                    }
+                }
+            }
+
+            # Connection Objects [Credential, Sitename, and ReplicationDCs]
+            If ($This.Mode -ne 0 -and $This.Connection)
+            {
+                $This.Xaml.IO.Credential.Text                       = $This.Connection.Credential.Username
+                $This.Xaml.IO.CredentialButton.IsEnabled            = 1
+                If ($This.Connection.Sitename.Count -gt 0)
+                {
+                    $This.Xaml.IO.Sitename.ItemsSource              = @($This.Connection.Sitename)
+                }
+                If ($This.Connection.Sitename.Count -eq 0)
+                {
+                    $This.Xaml.IO.Sitename.ItemsSource              = @("-")
+                }
+                If ($This.Connection.ReplicationSourceDC.Count -gt 0)
+                {
+                    $This.Xaml.IO.ReplicationSourceDC.ItemsSource   = @($This.Connection.ReplicationDC;"<Any>")
+                }
+                If ($This.Connection.ReplicationSourceDC.Count -eq 0)
+                {
+                    $This.Xaml.IO.ReplicationSourceDC.ItemsSource   = @("<Any>")
+                }
+                $This.Xaml.IO.Sitename.SelectedIndex                = 0
+                $This.Xaml.IO.ReplicationSourceDC.SelectedIndex     = 0
+            }
+            If ($This.Mode -eq 0)
+            {
+                $This.Xaml.IO.Credential.Text                       = ""
+                $This.Xaml.IO.CredentialButton.IsEnabled            = 0
+            }
+
+            # Profile Xaml Items [Disabled]
+            Write-Host "Profile Xaml Items [Disabled]"
+            ForEach ($Item in $This.Profile.Item | ? IsEnabled -eq 0)
+            {
+                Write-Host "[-] $($Item.Name)"
+                If ($Item.Name -in "ForestMode","DomainMode","ReplicationSourceDC","ParentDomainName")
+                {
+                    $This.Xaml.IO."_$($Item.Name)".Visibility       = "Collapsed"
+                }
+
+                If ($Item.Type -eq "TextBox")
+                {
+                    $This.Xaml.IO."$($Item.Name    )".Text          = ""
+                    $This.Xaml.IO."$($Item.Name    )".IsEnabled     = 0
+                    $This.Xaml.IO."$($Item.Name)Icon".Visibility    = "Collapsed" 
+                }
+
+                If ($Item.Type -eq "ComboBox")
+                {
+                    $This.Xaml.IO."$($Item.Name    )".SelectedIndex = 0
+                    $This.Xaml.IO."$($Item.Name    )".IsEnabled     = 0
+                }
+            }
+
+            # Profile Xaml Items [Enabled]
+            Write-Host "Profile Xaml Items [Enabled]"
+            ForEach ($Item in $This.Profile.Item | ? IsEnabled -eq 1)
+            {
+                Write-Host "[+] $($Item.Name)"
+                If ($Item.Name -in "ForestMode","DomainMode","ReplicationSourceDC","ParentDomainName")
+                {
+                    $This.Xaml.IO."_$($Item.Name)".Visibility       = "Visible"
+                }
+                If ($Item.Type -eq "TextBox")
+                {
+                    $This.Xaml.IO."$($Item.Name    )".Text          = $Item.Value
+                    $This.Xaml.IO."$($Item.Name    )".IsEnabled     = 1
+                    $This.Xaml.IO."$($Item.Name)Icon".Visibility    = "Visible" 
+                }
+
+                If ($Item.Type -eq "ComboBox")
+                {
+                    $This.Xaml.IO."$($Item.Name    )".SelectedIndex = @($Item.Value,$This.Server)[$Item.Name -Match "Mode"]
+                    $This.Xaml.IO."$($Item.Name    )".IsEnabled     = 1
+                }
+            }
+
+            $This.Xaml.IO.SafeModeAdministratorPassword.IsEnabled   = 1
+            $This.Xaml.IO.Confirm.IsEnabled                         = 1
+            $This.Staging                                           = $False
+
+            ForEach ($Item in $This.Profile.Item | ? Type -eq TextBox)
+            {
+                $This.Check($Item.Name)
             }
         }
         Login()
@@ -905,51 +1229,15 @@ Function Get-FEDCPromo
                     $This.Connection = [Connection]::New($Connect)
                 }
             }
-            If ($This.Connection)
-            {
-                # [Set Credential]
-                Write-Host "Credential"
-                $This.Xaml.IO.Credential.Text            = $This.Connection.Credential.Username
-                $This.Xaml.IO.CredentialButton.IsEnabled = 0
-
-                # [Set Domain Name]
-                If ($This.Mode -in 1,2)
-                {
-                    Write-Host "Parent Domain Name"
-                    $This.Xaml.IO.ParentDomainName       = $This.Connection.Domain
-                    $This.Profile.Item | ? Name -eq ParentDomainName | % { $_.Value = $This.Connection.Domain }
-                }
-                If ($This.Mode -eq 3)
-                {
-                    Write-Host "Domain Name"
-                    $This.Xaml.IO.DomainName.Text        = $This.Connection.Domain
-                    $This.Profile.Item | ? Name -eq DomainName | % { $_.Value = $This.Connection.Domain }
-                }
-
-                # [Set NetBIOS]
-                Write-Host "NetBIOS"
-                $This.Xaml.IO.DomainNetBIOSName.Text     = $This.Connection.NetBIOS
-                $This.Profile.Item | ? Name -eq DomainNetBIOSName | % { $_.Value = $This.Connection.NetBIOS }
-
-                # [Set Sitename]
-                Write-Host "SiteName"
-                $This.Xaml.IO.SiteName.ItemsSource                = @( )
-                $This.Xaml.IO.SiteName.ItemsSource                = @($This.Connection.Sitename)
-                $This.Xaml.IO.SiteName.SelectedIndex              = 0
-
-                # [Set Replication Source DCs]
-                Write-Host "Replication Source DCs"
-                $This.Xaml.IO.ReplicationSourceDC.ItemsSource     = @( )
-                If ($This.Connection.ReplicationDC.Count -gt 0)
-                {
-                    $This.Xaml.IO.ReplicationSourceDC.ItemsSource = @($This.Connection.ReplicationDC)
-                }
-                Else
-                {
-                    $This.Xaml.IO.ReplicationSourceDC.ItemsSource = @("<Any>")
-                }
-                $This.Xaml.IO.ReplicationSourceDC.SelectedIndex   = 0
-            }
+            $This.SetMode($This.Mode)
+        }
+        [Object] Get([String]$Name)
+        {
+            Return @( $This.Profile.Item | ? Name -eq $Name )
+        }
+        [Void] Set([String]$Name,[String]$Value)
+        {
+            $This.Profile.Item | ? Name -eq $Name | % { $_.Value = $Value }
         }
         [String[]] Reserved()
         {
@@ -966,211 +1254,260 @@ Function Get-FEDCPromo
             Return @(("AN,AO,AU,BA,BG,BO,BU,CA,CD,CG,CO,DA,DC,DD,DG,DU,EA,ED,HI,IU,LA,LG,LS,LW,ME,MU,NO,NS,NU,PA,PO,PS,PU,RC,RD,RE,RO,RS,RU,SA," +
             "SI,SO,SU,SY,WD") -Split ',')
         }
+        Check([String]$Name)
+        {
+            If (!$This.Staging)
+            {
+                $Object                                        = $This.Profile.Item | ? Name -eq $Name
+                Write-Host "[~] $($Object.Name)"
+                If ($Object.IsEnabled)
+                {
+                    $This.Profile.Item | ? Name -eq $Name | % { $_.Value = $This.Xaml.IO.$Name.Text }
+                    $This.CheckObject($Object)
+                    $Object                                    = $This.Profile.Item | ? Name -eq $Name
+                    $This.Xaml.IO."$Name`Icon".Source          = @($This.Fail,$This.Pass)[$Object.Check]
+                    $This.Xaml.IO."$Name`Icon".Tooltip         = $Object.Reason
+                }
+                $This.Xaml.IO."$($Object.Name)".Visibility     = @("Collapsed","Visible")[$Object.IsEnabled]
+                $This.Xaml.IO."$($Object.Name)Icon".Visibility = @("Collapsed","Visible")[$Object.IsEnabled]
+                $This.Total()
+            }
+        }
+        CheckDomain([Object]$Object)
+        {
+            If ($Object.Value.Length -lt 2 -or $Object.Value.Length -gt 63)
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Length not between 2 and 63 characters"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -in $This.Reserved())
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Entry is in reserved words list"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -in $This.Legacy())
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Entry is in the legacy words list"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
+            { 
+                $Object.Check  = $False
+                $Object.Reason = "[!] Invalid characters"
+                Write-Host $Object.Reason
+            }
+
+            ElseIf ($Object.Value[0,-1] -match "(\W)")
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value.Split(".").Count -lt 2)
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Single label domain names are disabled"
+                Write-Host $Object.Reason
+            }
+                
+            ElseIf ($Object.Value.Split('.')[-1] -notmatch "\w")
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Top Level Domain must contain a non-numeric"
+                Write-Host $Object.Reason
+            }
+            Else
+            {
+                $Object.Check  = $True
+                $Object.Reason = "[+] Passed"
+                Write-Host $Object.Reason
+            }
+        }
+        CheckNetBIOS([Object]$Object)
+        {
+            If ($Object.Value -eq $This.Connection.NetBIOS)
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] New NetBIOS ID cannot be the same as the parent domain NetBIOS"
+                Write-Host $Object.Reason
+            }
+                
+            ElseIf ($Object.Value.Length -lt 1 -or $Object.Value.Length -gt 15)
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Length not between 1 and 15 characters"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -in $This.Reserved())
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Entry is in reserved words list"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -in $This.Legacy())
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Entry is in the legacy words list"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
+            { 
+                $Object.Check  = $False
+                $Object.Reason = "[!] Invalid characters"
+                Write-Host $Object.Reason
+            }
+
+            ElseIf ($Object.Value[0,-1] -match "(\W)")
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
+                Write-Host $Object.Reason
+            }                        
+            ElseIf ($Object.Value -match "\.")
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] NetBIOS cannot contain a '.'"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -in $This.SecurityDescriptors())
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Matches a security descriptor"
+                Write-Host $Object.Reason
+            }
+            Else
+            {
+                $Object.Check  = $True
+                $Object.Reason = "[+] Passed"
+                Write-Host $Object.Reason
+            }
+        }
+        CheckTree([Object]$Object)
+        {
+            If ($Object.Value -match "\.$($This.Xaml.IO.ParentDomainName.Text.Replace(".","\.").Replace("-","\-"))")
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Cannot be a (child/host) of the parent"
+                Write-Host $Object.Reason
+            }
+            
+            ElseIf ($Object.Value.Split(".").Count -lt 2)
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Single label domain names are disabled"
+                Write-Host $Object.Reason
+            }
+                
+            ElseIf ($Object.Value.Split('.')[-1] -notmatch "\w")
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Top Level Domain must contain a non-numeric"
+                Write-Host $Object.Reason
+            }
+
+            ElseIf ($Object.Value.Length -lt 2 -or $Object.Value.Length -gt 63)
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Length not between 2 and 63 characters"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -in $This.Reserved())
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Entry is in reserved words list"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -in $This.Legacy())
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Entry is in the legacy words list"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
+            { 
+                $Object.Check  = $False
+                $Object.Reason = "[!] Invalid characters"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value[0,-1] -match "(\W)")
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
+                Write-Host $Object.Reason
+            }
+            Else
+            {
+                $Object.Check  = $True
+                $Object.Reason = "[+] Passed"
+                Write-Host $Object.Reason
+            }
+        }
+        CheckChild([Object]$Object)
+        {
+            If ($Object.Value -notmatch ".$($This.Xaml.IO.ParentDomainName.Text)")
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Must be a (child/host) of the parent"
+                Write-Host $Object.Reason
+            }
+
+            ElseIf ($Object.Value.Length -lt 2 -or $Object.Value.Length -gt 63)
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Length not between 2 and 63 characters"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -in $This.Reserved())
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Entry is in reserved words list"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -in $This.Legacy())
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] Entry is in the legacy words list"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
+            { 
+                $Object.Check  = $False
+                $Object.Reason = "[!] Invalid characters"
+                Write-Host $Object.Reason
+            }
+            ElseIf ($Object.Value[0,-1] -match "(\W)")
+            {
+                $Object.Check  = $False
+                $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
+                Write-Host $Object.Reason
+            }
+            Else
+            {
+                $Object.Check  = $True
+                $Object.Reason = "[+] Passed"
+                Write-Host $Object.Reason
+            }
+        }
         CheckObject([Object]$Object)
         {
-            Switch -Regex ($Object.Name)
+            If ($Object.Name -in "ParentDomainName","DomainName")
             {
-                "(ParentDomainName|DomainName)"
-                {
-                    If ($Object.Value.Length -lt 2 -or $Object.Value.Length -gt 63)
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Length not between 2 and 63 characters"
-                        Write-Host $Object.Reason
-                    }
-
-                    ElseIf ($Object.Value -in $This.Reserved())
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Entry is in reserved words list"
-                        Write-Host $Object.Reason
-                    }
-
-                    ElseIf ($Object.Value -in $This.Legacy())
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Entry is in the legacy words list"
-                        Write-Host $Object.Reason
-                    }
-
-                    ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
-                    { 
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Invalid characters"
-                        Write-Host $Object.Reason
-                    }
-        
-                    ElseIf ($Object.Value[0,-1] -match "(\W)")
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
-                        Write-Host $Object.Reason
-                    }
-                    ElseIf ($Object.Value.Split(".").Count -lt 2)
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Single label domain names are disabled"
-                        Write-Host $Object.Reason
-                    }
-                        
-                    ElseIf ($Object.Value.Split('.')[-1] -notmatch "\w")
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Top Level Domain must contain a non-numeric"
-                        Write-Host $Object.Reason
-                    }
-                    Else
-                    {
-                        $Object.Check  = $True
-                        $Object.Reason = "[+] Passed"
-                        Write-Host $Object.Reason
-                    }
-                }
-                "(DomainNetBIOSName|NewDomainNetBIOSName)"
-                {
-                    If ($This.Profile.Mode -in 1,2 -and $Object.Value -match $This.Connection.NetBIOS)
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] New NetBIOS ID cannot be the same as the parent domain NetBIOS"
-                        Write-Host $Object.Reason
-                    }
-                        
-                    ElseIf ($Object.Value.Length -lt 1 -or $Object.Value.Length -gt 15)
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Length not between 1 and 15 characters"
-                        Write-Host $Object.Reason
-                    }
-
-                    ElseIf ($Object.Value -in $This.Reserved())
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Entry is in reserved words list"
-                        Write-Host $Object.Reason
-                    }
-
-                    ElseIf ($Object.Value -in $This.Legacy())
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Entry is in the legacy words list"
-                        Write-Host $Object.Reason
-                    }
-
-                    ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
-                    { 
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Invalid characters"
-                        Write-Host $Object.Reason
-                    }
-        
-                    ElseIf ($Object.Value[0,-1] -match "(\W)")
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
-                        Write-Host $Object.Reason
-                    }                        
-                    ElseIf ($Object.Value -match "\.")
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] NetBIOS cannot contain a '.'"
-                        Write-Host $Object.Reason
-                    }
-                    ElseIf ($Object.Value -in $This.SecurityDescriptors())
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Matches a security descriptor"
-                        Write-Host $Object.Reason
-                    }
-                    Else
-                    {
-                        $Object.Check  = $True
-                        $Object.Reason = "[+] Passed"
-                        Write-Host $Object.Reason
-                    }
-                }
-                NewDomainName
-                {
-                    If ($This.Profile.Type -in 1,2)
-                    {
-                        Switch($This.Profile.Type)
-                        {
-                            1
-                            {
-                                If ($Object.Value -match ".$($This.Xaml.IO.ParentDomainName.Text)")
-                                {
-                                    $Object.Check  = $False
-                                    $Object.Reason = "[!] Cannot be a (child/host) of the parent"
-                                    Write-Host $Object.Reason
-                                }
-                                
-                                ElseIf ($Object.Value.Split(".").Count -lt 2)
-                                {
-                                    $Object.Check  = $False
-                                    $Object.Reason = "[!] Single label domain names are disabled"
-                                    Write-Host $Object.Reason
-                                }
-                                    
-                                ElseIf ($Object.Value.Split('.')[-1] -notmatch "\w")
-                                {
-                                    $Object.Check  = $False
-                                    $Object.Reason = "[!] Top Level Domain must contain a non-numeric"
-                                    Write-Host $Object.Reason
-                                }
-                            }
-
-                            2
-                            {
-                                If ($Object.Value -notmatch ".$($This.Xaml.IO.ParentDomainName.Text)")
-                                {
-                                    $Object.Check  = $False
-                                    $Object.Reason = "[!] Must be a (child/host) of the parent"
-                                    Write-Host $Object.Reason
-                                }
-                            }
-                        }
-                    }
-
-                    ElseIf ($Object.Value.Length -lt 2 -or $Object.Value.Length -gt 63)
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Length not between 2 and 63 characters"
-                        Write-Host $Object.Reason
-                    }
-
-                    ElseIf ($Object.Value -in $This.Reserved())
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Entry is in reserved words list"
-                        Write-Host $Object.Reason
-                    }
-
-                    ElseIf ($Object.Value -in $This.Legacy())
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Entry is in the legacy words list"
-                        Write-Host $Object.Reason
-                    }
-
-                    ElseIf ($Object.Value -notmatch "([\.\-0-9a-zA-Z])")
-                    { 
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] Invalid characters"
-                        Write-Host $Object.Reason
-                    }
-                    ElseIf ($Object.Value[0,-1] -match "(\W)")
-                    {
-                        $Object.Check  = $False
-                        $Object.Reason = "[!] First/Last Character cannot be a '.' or '-'"
-                        Write-Host $Object.Reason
-                    }
-
-                    Else
-                    {
-                        $Object.Check  = $True
-                        $Object.Reason = "[+] Passed"
-                        Write-Host $Object.Reason
-                    }
-                }
+                $This.CheckDomain($Object)
+            }
+            If ($Object.Name -in "DomainNetBIOSName","NewDomainNetBIOSName")
+            {
+                $This.CheckNetBIOS($Object)
+            }
+            If ($Object.Name -in "NewDomainName" -and $This.Profile.Mode -eq 1)
+            {
+                $This.CheckTree($Object)
+            }
+            If ( $Object.Name -in "NewDomainName" -and $This.Profile.Mode -eq 2)
+            {
+                $This.CheckChild($Object)
             }
         }
         CheckDSRM()
@@ -1206,6 +1543,16 @@ Function Get-FEDCPromo
                 Write-Host $This.Profile.DSRM[1].Reason
             }
         }
+        Role([String]$Name)
+        {
+            $This.Profile.Role | ? Name -eq $Name | % { 
+
+                If ($_.IsEnabled)
+                {
+                    $_.IsChecked = @(1,0)[$This.Xaml.IO.$Name.IsChecked]
+                }
+            }
+        }
         Total()
         {
             If (($This.Profile.Item | ? IsEnabled | ? Property -eq Text | ? Check -eq 0).Count -eq 0 -and ($This.Profile.DSRM | ? Check -eq 0).Count -eq 0)
@@ -1220,7 +1567,6 @@ Function Get-FEDCPromo
     }
 
     $Main                                      = [FEDCPromo]::New()
-
     $Xaml                                      = [XamlWindow][FEDCPromoGUI]::Tab
     $Xaml.IO.ForestMode.ItemsSource            = @( )
     $Xaml.IO.ForestMode.ItemsSource            = @("2000 (Default)","2003","2008","2008 R2","2012","2012 R2","2016","2019","2022" | % { "Windows Server $_" })
@@ -1232,6 +1578,8 @@ Function Get-FEDCPromo
     $Xaml.IO.ReplicationSourceDC.ItemsSource   = @("<Any>")
     $Xaml.IO.Sitename.ItemsSource              = @( )
     $Xaml.IO.Sitename.ItemsSource              = @("-")
+    $Main.LoadXaml($Xaml)
+
     $Xaml.IO.Credential.IsEnabled              = 0
     $Xaml.IO.SafeModeAdministratorPassword.IsEnabled = 0
     $Xaml.IO.Confirm.IsEnabled = 0
@@ -1268,163 +1616,62 @@ Function Get-FEDCPromo
     } | Set-Clipboard #>
 
     $Xaml.IO.Forest.Add_Checked(
-    {
-        $Main.SetMode(0,$Xaml)
+    { 
+        $Main.SetMode(0)
     })
     $Xaml.IO.Tree.Add_Checked(
-    {
-        $Main.SetMode(1,$Xaml)
+    { 
+        $Main.SetMode(1) 
     })
     $Xaml.IO.Child.Add_Checked(
     {
-        $Main.SetMode(2,$Xaml)
+        $Main.SetMode(2)
     })
     $Xaml.IO.Clone.Add_Checked(
     {
-        $Main.SetMode(3,$Xaml)
+        $Main.SetMode(3)
     })
 
     $Xaml.IO.ParentDomainName.Add_TextChanged(
     {
-        $Object          = $Main.Profile.Item | ? Name -eq ParentDomainName
-        $Object.Value    = $Xaml.IO.ParentDomainName.Text
-        $Main.CheckObject($Object)
-        If ($Object.IsEnabled)
-        {
-            If (!$Object.Check)
-            {
-                $Xaml.IO.ParentDomainNameIcon.Source = $Main.Fail
-            }
-            If ($Object.Check)
-            {
-                $Xaml.IO.ParentDomainNameIcon.Source = $Main.Pass
-            }
-            $Xaml.IO.ParentDomainNameIcon.Tooltip    = $Object.Reason
-        }
-        If (!$Object.IsEnabled)
-        {
-            $Xaml.IO.ParentDomainNameIcon.Source     = $Null
-            $Xaml.IO.ParentDomainNameIcon.Tooltip    = $Null
-        }
-        $Main.Total()
+        $Main.Check("ParentDomainName")
     })
 
     $Xaml.IO.DomainName.Add_TextChanged(
     {
-        $Object          = $Main.Profile.Item | ? Name -eq DomainName
-        $Object.Value    = $Xaml.IO.DomainName.Text
-        $Main.CheckObject($Object)
-        If ($Object.IsEnabled)
-        {
-            If (!$Object.Check)
-            {
-                $Xaml.IO.DomainNameIcon.Source = $Main.Fail
-            }
-            If ($Object.Check)
-            {
-                $Xaml.IO.DomainNameIcon.Source = $Main.Pass
-            }
-            $Xaml.IO.DomainNameIcon.Tooltip    = $Object.Reason
-        }
-        If (!$Object.IsEnabled)
-        {
-            $Xaml.IO.DomainNameIcon.Source     = $Null
-            $Xaml.IO.DomainNameIcon.Tooltip    = $Null
-        }
-        $Main.Total()
+        $Main.Check("DomainName")
     })
 
     $Xaml.IO.NewDomainName.Add_TextChanged(
     {
-        $Object          = $Main.Profile.Item | ? Name -eq NewDomainName
-        $Object.Value    = $Xaml.IO.NewDomainName.Text
-        $Main.CheckObject($Object)
-        If ($Object.IsEnabled)
-        {
-            If (!$Object.Check)
-            {
-                $Xaml.IO.NewDomainNameIcon.Source = $Main.Fail
-            }
-            If ($Object.Check)
-            {
-                $Xaml.IO.NewDomainNameIcon.Source = $Main.Pass
-            }
-            $Xaml.IO.NewDomainNameIcon.Tooltip    = $Object.Reason
-        }
-        If (!$Object.IsEnabled)
-        {
-            $Xaml.IO.NewDomainNameIcon.Source     = $Null
-            $Xaml.IO.NewDomainNameIcon.Tooltip    = $Null
-        }
-        $Main.Total()
+        $Main.Check("NewDomainName")
     })
 
     $Xaml.IO.DomainNetBIOSName.Add_TextChanged(
     {
-        $Object          = $Main.Profile.Item | ? Name -eq DomainNetBIOSName
-        $Object.Value    = $Xaml.IO.DomainNetBIOSName.Text
-        $Main.CheckObject($Object)
-        If ($Object.IsEnabled)
-        {
-            If (!$Object.Check)
-            {
-                $Xaml.IO.DomainNetBIOSNameIcon.Source = $Main.Fail
-            }
-            If ($Object.Check)
-            {
-                $Xaml.IO.DomainNetBIOSNameIcon.Source = $Main.Pass
-            }
-            $Xaml.IO.DomainNetBIOSNameIcon.Tooltip    = $Object.Reason
-        }
-        If (!$Object.IsEnabled)
-        {
-            $Xaml.IO.DomainNetBIOSNameIcon.Source     = $Null
-            $Xaml.IO.DomainNetBIOSNameIcon.Tooltip    = $Null
-        }
-        
-        $Main.Total()
+        $Main.Check("DomainNetBIOSName")
     })
 
     $Xaml.IO.NewDomainNetBIOSName.Add_TextChanged(
     {
-        $Object          = $Main.Profile.Item | ? Name -eq NewDomainNetBIOSName
-        $Object.Value    = $Xaml.IO.NewDomainNetBIOSName.Text
-        $Main.CheckObject($Object)
-        If ($Object.IsEnabled)
-        {
-            If (!$Object.Check)
-            {
-                $Xaml.IO.NewDomainNetBIOSNameIcon.Source = $Main.Fail
-            }
-            If ($Object.Check)
-            {
-                $Xaml.IO.NewDomainNetBIOSNameIcon.Source = $Main.Pass
-            }
-            $Xaml.IO.NewDomainNetBIOSNameIcon.Tooltip    = $Object.Reason
-        }
-        If (!$Object.IsEnabled)
-        {
-            $Xaml.IO.NewDomainNetBIOSNameIcon.Source     = $Null
-            $Xaml.IO.NewDomainNetBIOSNameIcon.Tooltip    = $Null
-        }
-        $Main.Total()
+        $Main.Check("NewDomainNetBIOSName")
     })
 
     $Xaml.IO.SafeModeAdministratorPassword.Add_PasswordChanged(
     {
-        $Main.Profile.DSRM[0].Value = $Xaml.IO.SafeModeAdministratorPassword.Password
+        $Main.Profile.DSRM[0].Value                        = $Xaml.IO.SafeModeAdministratorPassword.Password
         $Main.CheckDSRM()
-        $Xaml.IO.SafeModeAdministratorPasswordIcon.Source  = @($Main.Fail,$Main.Pass)[($Main.Profile.DSRM[0].Check)]
+        $Xaml.IO.SafeModeAdministratorPasswordIcon.Source  = @($Main.Fail,$Main.Pass)[$Main.Profile.DSRM[0].Check]
         $Xaml.IO.SafeModeAdministratorPasswordIcon.Tooltip = $Main.Profile.DSRM[0].Reason 
         $Main.Total()
     })
 
     $Xaml.IO.Confirm.Add_PasswordChanged(
     {
-        $Main.Profile.DSRM[1].Value = $Xaml.IO.Confirm.Password
+        $Main.Profile.DSRM[1].Value                        = $Xaml.IO.Confirm.Password
         $Main.CheckDSRM()
-        $Xaml.IO.ConfirmIcon.Source  = @($Main.Fail,$Main.Pass)[($Main.Profile.DSRM[1].Check)]
-        $Xaml.IO.ConfirmIcon.Tooltip = $Main.Profile.DSRM[1].Reason 
+        $Xaml.IO.ConfirmIcon.Source                        = @($Main.Fail,$Main.Pass)[$Main.Profile.DSRM[1].Check]
+        $Xaml.IO.ConfirmIcon.Tooltip                       = $Main.Profile.DSRM[1].Reason 
         $Main.Total()
     })
 
@@ -1440,6 +1687,27 @@ Function Get-FEDCPromo
 
     $Xaml.IO.Start.Add_Click(
     {
+        0,1 | % { 
+            $Item = $Main.Profile.Item[$_]
+            If ($Item.IsEnabled -and $Item.Value -gt 6)
+            {
+                $Item.Value = 6
+            }
+        }
+        If ($Main.Profile.Item[2].IsEnabled)
+        {
+            $Main.Profile.Item[2].Value = $Xaml.IO.ReplicationSourceDC.SelectedItem
+        }
+        If ($Main.Profile.Item[3].IsEnabled)
+        {
+            $Main.Profile.Item[3].Value = $Xaml.IO.Sitename.SelectedItem
+        }
+        ForEach ($Item in $Main.Profile.Role)
+        {
+            $Item.IsChecked = $Item.IsEnabled -and $Xaml.IO.$($Item.Name).IsChecked
+        }
+        $Main.Profile.DSRM[0] | % { $_.Value = $_.Value | ConvertTo-SecureString -AsPlainText -Force }
+
         [System.Windows.MessageBox]::Show("All checks passed","Success")
         $Xaml.IO.DialogResult = $True
     })
@@ -1450,6 +1718,46 @@ Function Get-FEDCPromo
     })
 
     $Xaml.Invoke()
+
+    If ($Xaml.IO.DialogResult)
+    {
+        $Execute = [Execution]::New()
+
+        # [Install Features]
+        $Execute.Services = $Main.Features | ? Enabled | ? Install
+
+        # [Output]
+        $Execute.Output = @{ }
+
+        If ($Main.Mode -in 1,2)
+        {
+            $Execute.Output.Add("DomainType",$Main.DomainType)
+        }
+
+        # [Profile Items]
+        $Main.Profile.Item | ? IsEnabled | % { 
+
+            $Execute.Output.Add($_.Name,$_.Value)
+        }
+
+        # [Profile Roles]
+        $Main.Profile.Role | ? IsEnabled | % {
+
+            $Execute.Output.Add($_.Name,$_.IsChecked)
+        }
+
+        # [Database/Sysvol/Log Paths]
+        "Database Log Sysvol".Split(" ") | % { "$_`Path"} | % { $Execute.Output.Add($_,$Xaml.IO.$_.Text) }
+        $Execute.Output.Add("SafeModeAdministratorPassword",$Main.Profile.DSRM[0].Value)
+
+        # Credential
+        If ($Main.Connection.Credential)
+        {
+            $Execute.Output.Add("Credential",$Main.Connection.Credential)
+        }
+
+        $Execute
+    }
 }
 
     <#
@@ -1585,4 +1893,3 @@ Function Get-FEDCPromo
     }
 }
 #>
-
