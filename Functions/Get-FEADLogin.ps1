@@ -429,21 +429,7 @@ Function Get-FEADLogin
             $This.Test         = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
             Try 
             {
-                $This.Test | ? DistinguishedName | % {
-
-                    $This.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
-                    $This.Searcher            | % { 
-                        
-                        $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
-                        $_.PageSize         = 1000
-                        $_.PropertiestoLoad.Clear()
-
-                    $This.Result              = $This.Searcher | % FindAll
-                    If (!$This.NetBIOS)
-                    {
-                        $This.NetBIOS         = $This.GetNetBIOSName()
-                    }
-                }
+                $This.Test.DistinguishedName
             }
 
             Catch
@@ -453,6 +439,22 @@ Function Get-FEADLogin
                 $This.Directory = $Null
                 $This.DC        = $Null
                 $This.Test      = $Null
+            }
+            
+            If ($This.Test.DistinguishedName)
+            {
+                $This.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
+                $This.Searcher            | % { 
+                        
+                    $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
+                    $_.PageSize         = 1000
+                    $_.PropertiestoLoad.Clear()
+
+                $This.Result              = $This.Searcher | % FindAll
+                If (!$This.NetBIOS)
+                {
+                    $This.NetBIOS         = $This.GetNetBIOSName()
+                }
             }
         }
         [Object] Search([String]$Field)
