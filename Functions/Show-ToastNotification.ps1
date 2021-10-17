@@ -1,3 +1,24 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Show-ToastNotification.ps1
+          Solution: FightingEntropy Module
+          Purpose: Almost like Burnt Toast (which is probably cooler than this is)
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-07
+          Modified: 2021-10-07
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+          TODO:
+.Example
+#>
 Function Show-ToastNotification
 {
     [CmdLetBinding(DefaultParameterSetName="Text")]Param(
@@ -19,27 +40,58 @@ Function Show-ToastNotification
     [{0}.ToastNotification,{0},{1}]
     [{2},{2},{1}]" -f "Windows.UI.Notifications","ContentType = WindowsRuntime","Windows.Data.Xml.Dom.XmlDocument")
 
-    Class _Toast
+    Class Cache
+    {
+        [String] $Path
+        [Object] $File
+        Cache([Object]$Image)
+        {
+            Switch -Regex ($Image)
+            {
+                "http[s]*://" 
+                {
+                    [Net.ServicePointManager]::SecurityProtocol = 3072
+                    $This.Path            = $Image
+                    $This.File            = "$Env:Temp{0}" -f (Split-Path -Leaf $Image)
+                    Invoke-WebRequest -URI $This.Path -OutFile $This.File #| ? StatusDescription -ne OK | % { Throw "Exception" }
+                    $This.Path            = "file:///{0}" -f $This.File.Replace("\","/")
+                }
+
+                "(\w+:\\\w+)"
+                {
+                    If ( ! ( Test-Path $Image ) )
+                    {
+                        Throw "Invalid path to image" 
+                    }
+
+                    $This.Path            = "file:///{0}" -f $Image.Replace("\","/")
+                }
+
+                "(ms-app)+([x|data])+(:///)"
+                {
+                    Throw "ms-app* Not yet implemented"
+                }
+            }
+        }
+    }
+
+    Class Toast
     {
         [Validateset(1,2,3,4)]
         [Int32]             $Type
-
         [Object]         $Message
         [String]            $GUID
         [String]            $Time = (Get-Date)
         [_Cache]             $File
-
         [String]          $Header
         [String]            $Body
         [String]          $Footer
-
         Hidden [Hashtable]  $Temp
         Hidden [Int32] $TempCount
         [String]        $Template
         [Object]             $XML
         [Object]           $Toast
-
-        _Toast([Int32]$Type,[Object]$Message,[String]$GUID)
+        Toast([Int32]$Type,[Object]$Message,[String]$GUID)
         {
             $This.Type       = $Type
             $This.Message    = $Message
@@ -47,8 +99,7 @@ Function Show-ToastNotification
             $This.File       = $Null
             $This.Load()
         }
-
-        _Toast([Int32]$Type,[Object]$Message,[String]$GUID,[String]$File)
+        Toast([Int32]$Type,[Object]$Message,[String]$GUID,[String]$File)
         {
             $This.Type       = $Type
             $This.Message    = $Message
@@ -56,7 +107,6 @@ Function Show-ToastNotification
             $This.File       = [_Cache]::New($File)
             $This.Load()
         }
-
         Load()
         {
             $This.Temp            = @{ }
@@ -87,14 +137,12 @@ Function Show-ToastNotification
 
             $This.Template        = ( $This.Temp.GetEnumerator() | Sort Name | % Value ).Replace("_","    ") -join "`n"
         }
-
         GetXML()
         {
             $This.XML             = Invoke-Expression "[Windows.Data.Xml.Dom.XmlDocument]::new()"
             $This.XML.LoadXml($This.Template)
             $This.Toast           = Invoke-Expression ( "[Windows.UI.Notifications.ToastNotification]::new({0})" -f $This.XML )
         }
-
         ShowMessage()
         {
             Invoke-Expression ( "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier({0}).Show({1})" -f $This.GUID,$This.Toast )
@@ -103,8 +151,8 @@ Function Show-ToastNotification
 
     $Return                       = Switch([Int32]($Image -eq $Null)) 
     { 
-        0 { [_Toast]::New($Type,$Message,$GUID,$Image) } 
-        1 { [_Toast]::New($Type,$Message,$GUID) }
+        0 { [Toast]::New($Type,$Message,$GUID,$Image) } 
+        1 { [Toast]::New($Type,$Message,$GUID) }
     }
     
     $Return.Header                = If ( $Header -eq $Null ) {    "Message" } Else { $Header }
