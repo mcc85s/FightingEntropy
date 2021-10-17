@@ -1,7 +1,10 @@
 <#
 .SYNOPSIS
+
 .DESCRIPTION
+
 .LINK
+
 .NOTES
           FileName: Invoke-KeyEntry.ps1
           Solution: FightingEntropy Module
