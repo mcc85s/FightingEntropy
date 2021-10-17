@@ -8,7 +8,7 @@
 .NOTES
           FileName: Write-Theme.ps1
           Solution: FightingEntropy Write Theme
-          Purpose: For stylizing a PowerShell command prompt console
+          Purpose: The lifeblood of [FightingEntropy(π)]... With it? You can stylize the hell out a PowerShell command prompt console.
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
@@ -174,9 +174,9 @@ Function Write-Theme
         "@(0)*25;1;1;0").Split(" ") | % { "@($_)" })
         Hidden [String[]] $BackStr = ( 0..16 | % { "@({0})" -f ( @(0)*30 -join ',' ) } )
         [String]        $Name
-        [Int32]      $Header
-        [Int32]        $Body
-        [Int32]      $Footer
+        [Int32]       $Header
+        [Int32]         $Body
+        [Int32]       $Footer
         [String[]]    $String
         [String[]]      $Fore
         [String[]]      $Back
