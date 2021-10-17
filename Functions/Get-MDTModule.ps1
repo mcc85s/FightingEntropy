@@ -84,7 +84,7 @@ Function Get-MDTModule
 
             ForEach ( $Tool in $This.MDT, $This.WinADK, $This.WinPE )
             {
-                $Item              = [_MDTDependency]::New($Tool)
+                $Item              = [MDTDependency]::New($Tool)
                 $Item.Path         = $Item.Path -f $Path
                 $This.Output      += $Item
             }
