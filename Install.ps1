@@ -92,6 +92,10 @@ Function FightingEntropy
                 $This.GetWinType()
             })
         }
+        [String] ToString()
+        {
+            Return ("[{0}/{1}]" -f $This.Type, $This.Ver)
+        }
     }
 
     Class Manifest
@@ -107,6 +111,10 @@ Function FightingEntropy
         Manifest()
         {
 
+        }
+        [String] ToString()
+        {
+            Return "FEModuleManifest:\*"
         }
     }
 
@@ -160,9 +168,9 @@ Function FightingEntropy
             $This.Path           = $Path
             $This.Type           = $Type
             $This.Status         = "Initialized"
-            ForEach ( $Key in $This.Order )
+            ForEach ($Key in $This.Order)
             {
-                If ((Get-ItemProperty $This.RegPath ).$Key -ne $This.$Key )
+                If ((Get-ItemProperty $This.RegPath).$Key -ne $This.$Key)
                 {
                     Write-Host "[+] $Key set to [$($This.$Key)]"
                     Set-ItemProperty $This.RegPath -Name $Key -Value $This.$Key
@@ -172,6 +180,10 @@ Function FightingEntropy
                     Write-Host "[!] $Key already set to [$($This.$Key)]"
                 }
             }
+        }
+        [String] ToString()
+        {
+            Return @($This.RegPath)
         }
     }
 
@@ -348,6 +360,10 @@ Function FightingEntropy
                 RootModule           = $This.ModPath
                 RequiredAssemblies   = "PresentationFramework"
             }                        | % { New-ModuleManifest @_ }
+        }
+        [String] ToString()
+        {
+            Return $This.Version
         }
     }
     
