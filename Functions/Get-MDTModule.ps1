@@ -1,6 +1,29 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-MDTModule.ps1
+          Solution: FightingEntropy Module
+          Purpose: Retrieves the location of the main MDTToolkit.psd file, and installs (MDT/WinADK/WinPE) if they are not present
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-10-17
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
 Function Get-MDTModule
 {
-    Class _MDTDependency
+    Class MDTDependency
     {
         [String]        $Name
         [String] $DisplayName
@@ -10,8 +33,7 @@ Function Get-MDTModule
         [String]        $File
         [String]   $Arguments
         [UInt32] $IsInstalled
-        
-        _MDTDependency([Object]$Item)
+        MDTDependency([Object]$Item)
         {
             $This.Name        = $Item.Name
             $This.DisplayName = $Item.DisplayName
@@ -23,10 +45,9 @@ Function Get-MDTModule
         }
     }
 
-    Class _MDTStatus
+    Class MDTStatus
     {
         [Object]           $Output
-
         [Object]              $MDT = @{ 
 
             Name                   = "MDT"
@@ -37,7 +58,6 @@ Function Get-MDTModule
             File                   = "MicrosoftDeploymentToolkit_x{0}.msi" -f @{x86 = 86; AMD64 = 64 }[$Env:Processor_Architecture]
             Arguments              = "/quiet /norestart"
         }
-
         [Object]           $WinADK = @{ 
 
             Name                   = "WinADK"
@@ -48,7 +68,6 @@ Function Get-MDTModule
             File                   = "winadk1903.exe"
             Arguments              = "/quiet /norestart /log $env:temp\winadk.log /features +" 
         }
-
         [Object]            $WinPE = @{  
         
             Name                   = "WinPE"
@@ -59,8 +78,7 @@ Function Get-MDTModule
             File                   = "winpe1903.exe"
             Arguments              = "/quiet /norestart /log $env:temp\winpe.log /features +" 
         }
-        
-        _MDTStatus([Object]$Path)
+        MDTStatus([Object]$Path)
         {
             $This.Output           = @( )
 
@@ -73,20 +91,19 @@ Function Get-MDTModule
         }
     }
 
-    Class _MDTControl
+    Class MDTControl
     {
         Hidden [Object] $Registry
         [Object]          $Module = (Get-FEModule)
-        [String]            $Role
+        [String]           $Tools
         [Object]          $Status
-
-        _MDTControl()
+        MDTControl()
         {
             $This.Registry = "" , "\WOW6432Node" | % { "HKLM:\SOFTWARE$_\Microsoft\Windows\CurrentVersion\Uninstall\*"  } | Get-ItemProperty
-            $This.Role     =  $This.Module.Hive.Path,"Role" -join "\"
+            $This.Tools    =  $Env:ProgramData,"Role" -join "\"
             $This.Status   = @( )
 
-            ForEach ( $Package in [_MDTStatus]::New($This.Role).Output )
+            ForEach ($Package in [MDTStatus]::New($This.Role).Output)
             {
                 $Item      = $This.Registry | ? DisplayName -match $Package.DisplayName
 
@@ -135,21 +152,21 @@ Function Get-MDTModule
         }
     }
 
-    $MDT = [_MDTControl]::New()
+    $MDT = [MDTControl]::New()
 
-    If ( 0 -in $MDT.Status.IsInstalled )
+    If (0 -in $MDT.Status.IsInstalled)
     {
         $MDT.Status | ? IsInstalled -eq 0
     }
 
     Else
     {
-        If ( $MDT.Registry | ? DisplayName -match "Microsoft Deployment Toolkit" )
+        If ($MDT.Registry | ? DisplayName -match "Microsoft Deployment Toolkit")
         {
             $Install   = Get-ItemProperty "HKLM:\Software\Microsoft\Deployment 4" | % Install_Dir | % TrimEnd \
             $Templates = Get-FEModule -Control | ? Name -match Mod.xml
 
-            ForEach ( $Template in Get-FEModule -Control | ? Name -match Mod.xml )
+            ForEach ($Template in Get-FEModule -Control | ? Name -match Mod.xml)
             {
                 If (!(Test-Path $Install\Templates\$($Template.Name)))
                 {
