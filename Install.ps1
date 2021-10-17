@@ -102,7 +102,7 @@ Function FightingEntropy
         [String[]]  $Functions = ("Copy-FileStream","Get-DiskInfo","Get-EnvironmentKey","Get-FEADLogin","Get-FEDCPromo","Get-FEHost","Get-FEImageManifest",
                                   "Get-FEInfo","Get-FEManifest","Get-FEModule","Get-FENetwork","Get-FEOS","Get-FEProcess","Get-FERole","Get-FEService",
                                   "Get-MadBomb","Get-MDTModule","Get-PSDModule","Get-ViperBomb","Get-XamlWindow","Install-FEModule","Install-IISServer",
-                                  "Invoke-cimdb","Invoke-KeyEntry","New-EnvironmentKey","New-FEDeploymentShare","New-FEInfrastructure","Remove-FEModule",
+                                  "Invoke-cimdb","Invoke-KeyEntry","New-EnvironmentKey","New-FEInfrastructure","Remove-FEModule",
                                   "Set-ScreenResolution","Show-ToastNotification","Write-Theme" | % { "$_.ps1" })
         [String[]]   $Graphics = "background.jpg banner.png icon.ico OEMbg.jpg OEMlogo.bmp sdplogo.png" -Split " "
         Manifest()
@@ -176,7 +176,7 @@ Function FightingEntropy
         }
     }
 
-    Class Module
+    Class FEModule
     {
         [String]        $Base = "github.com/mcc85s/FightingEntropy/blob/main"
         [String]        $Name = "FightingEntropy"
@@ -201,6 +201,36 @@ Function FightingEntropy
         [Object[]] $Functions
         [Object[]]  $Graphics
         [Object]        $Role
+        FEModule([String]$Version)
+        {
+            $This.Version            = $Version
+            $This.Path               = $Env:ProgramData, $This.Company, $This.Name -join "\"
+            Write-Host ("   Module: [{0}]" -f $This.Path)
+            $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" } | Select-Object -First 1
+            $This.Main               = $This.Default + "\FightingEntropy"
+            $This.Trunk              = $This.Main    + "\$Version"
+            $This.ModPath            = $This.Trunk   + "\FightingEntropy.psm1"
+            $This.ManPath            = $This.Trunk   + "\FightingEntropy.psd1"
+            $This.Registry           = [Registry]::New($This.Base, $This.Name, $This.Description, 
+                                        $This.Author, $This.Company, $This.Copyright, $This.GUID, 
+                                        $This.Version, $This.Default, $This.Main, $This.Trunk,
+                                        $This.ModPath, $This.ManPath, $This.Path, $This.OS.Type )
+
+            Write-Host "[+] Module Staging complete"
+            $This.Build()
+
+            ForEach ( $Item in "Classes","Control","Functions","Graphics")
+            {
+                Write-Host "Prestaging [$Item]"
+                $This.$Item          = $This.Manifest.$Item | % { [File]::New($_,$Item,"$($This.Path)\$Item") }
+            }
+            $This.Gather()
+            $This.Save()
+            $This.Write()
+
+            $This.Tree                = Get-ChildItem $This.Path | ? Name -in $This.Manifest.Names
+            $This.Role                = $This.OS.Type
+        }
         Build()
         {
             $_Path = $Null
@@ -221,8 +251,8 @@ Function FightingEntropy
                     New-Item $_Path -ItemType Directory -Verbose
                 }
             }
-            ForEach ( $Item in "Classes","Control","Functions","Graphics" )
-            { 
+            ForEach ($Item in "Classes","Control","Functions","Graphics")
+            {
                 If (!(Test-Path "$_Path\$Item"))
                 {
                     New-Item "$_Path\$Item" -ItemType Directory -Verbose
@@ -240,7 +270,7 @@ Function FightingEntropy
                 ForEach ($Item in $Object)
                 {
                     Write-Host "Downloading $Type [$I/$($Object.Count)] $($Item.Name)"
-                    $Item._Content($This.Base)
+                    $Item.GetContent($This.Base)
                     $I ++
                 }
                 $O ++
@@ -258,7 +288,7 @@ Function FightingEntropy
                 ForEach ( $Item in $Object )
                 {
                     Write-Host "Writing $Type [$I/$($Object.Count)] $($Item.Name)"
-                    $Item._Write($This.OS.Major)
+                    $Item.Write($This.OS.Major)
                     $I++
                 }
 
@@ -320,39 +350,9 @@ Function FightingEntropy
                 RequiredAssemblies   = "PresentationFramework"
             }                        | % { New-ModuleManifest @_ }
         }
-        Module([String]$Version)
-        {
-            $This.Version            = $Version
-            $This.Path               = $Env:ProgramData, $This.Company, $This.Name -join "\"
-            Write-Host ("   Module: [{0}]" -f $This.Path)
-            $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" } | Select-Object -First 1
-            $This.Main               = $This.Default + "\FightingEntropy"
-            $This.Trunk              = $This.Main    + "\$Version"
-            $This.ModPath            = $This.Trunk   + "\FightingEntropy.psm1"
-            $This.ManPath            = $This.Trunk   + "\FightingEntropy.psd1"
-            $This.Registry           = [Registry]::New($This.Base, $This.Name, $This.Description, 
-                                        $This.Author, $This.Company, $This.Copyright, $This.GUID, 
-                                        $This.Version, $This.Default, $This.Main, $This.Trunk,
-                                        $This.ModPath, $This.ManPath, $This.Path, $This.OS.Type )
-
-            Write-Host "[+] Module Staging complete"
-            $This.Build()
-
-            ForEach ( $Item in "Classes","Control","Functions","Graphics")
-            {
-                Write-Host "Prestaging [$Item]"
-                $This.$Item          = $This.Manifest.$Item | % { [File]::New($_,$Item,"$($This.Path)\$Item") }
-            }
-            $This.Gather()
-            $This.Save()
-            $This.Write()
-
-            $This.Tree                = Get-ChildItem $This.Path | ? Name -in $This.Manifest.Names
-            $This.Role                = $This.OS.Type
-        }
     }
     
-    [Module]::New("2021.10.0")
+    [FEModule]::New("2021.10.0")
     
     $Path              = "$Env:Public\Desktop\FightingEntropy.lnk" 
     $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut($Path)
