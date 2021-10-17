@@ -21,7 +21,6 @@
 
 .Example
 #>
-
 Function Invoke-cimdb
 {
     Add-Type -AssemblyName PresentationFramework
