@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-14
+          Modified: 2021-10-17
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -25,9 +25,8 @@ Function Get-FEDCPromo
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
-    [ValidateSet("Forest","Tree","Child","Clone")]
-    [Parameter(ParameterSetname=1)][String]$Type,
-    [Parameter()][Switch]$Test)
+    [Parameter()][Switch]$Test,
+    [Parameter()][Switch]$Output)
 
     # Load Assemblies
     Add-Type -AssemblyName PresentationFramework
@@ -956,6 +955,7 @@ Function Get-FEDCPromo
         Hidden [Object]         $Xaml
         Hidden [String]         $Pass = (Get-FEModule -Control | ? Name -eq success.png | % FullName)
         Hidden [String]         $Fail = (Get-FEModule -Control | ? Name -eq failure.png | % FullName)
+        Hidden [Object]   $Credential
         [String]             $Command
         [String]          $DomainType
         [UInt32]                $Mode
@@ -1094,6 +1094,7 @@ Function Get-FEDCPromo
             If ($This.Mode -ne 0 -and $This.Connection)
             {
                 $This.Xaml.IO.Credential.Text                       = $This.Connection.Credential.Username
+                $This.Credential                                    = $This.Connection.Credential
                 $This.Xaml.IO.CredentialButton.IsEnabled            = 1
                 If ($This.Connection.Sitename.Count -gt 0)
                 {
@@ -1118,6 +1119,7 @@ Function Get-FEDCPromo
             {
                 $This.Xaml.IO.Credential.Text                       = ""
                 $This.Xaml.IO.CredentialButton.IsEnabled            = 0
+                $This.Credential                                    = $Null
             }
 
             # Profile Xaml Items [Disabled]
@@ -1675,11 +1677,6 @@ Function Get-FEDCPromo
         $Main.Total()
     })
 
-    # $Xaml.IO.SafeModeAdministratorPassword                 # PasswordBox
-    # $Xaml.IO.Confirm                                       # PasswordBox
-    # $Xaml.IO.Start                                         # Button
-    # $Xaml.IO.Cancel                                        # Button
-
     $Xaml.IO.CredentialButton.Add_Click(
     {
         $Main.Login()
@@ -1687,28 +1684,37 @@ Function Get-FEDCPromo
 
     $Xaml.IO.Start.Add_Click(
     {
-        0,1 | % { 
-            $Item = $Main.Profile.Item[$_]
+        ForEach ($Item in $Main.Profile.Item[0,1] )
+        {
             If ($Item.IsEnabled -and $Item.Value -gt 6)
             {
                 $Item.Value = 6
             }
         }
+
         If ($Main.Profile.Item[2].IsEnabled)
         {
             $Main.Profile.Item[2].Value = $Xaml.IO.ReplicationSourceDC.SelectedItem
         }
+
         If ($Main.Profile.Item[3].IsEnabled)
         {
             $Main.Profile.Item[3].Value = $Xaml.IO.Sitename.SelectedItem
         }
+
         ForEach ($Item in $Main.Profile.Role)
         {
             $Item.IsChecked = $Item.IsEnabled -and $Xaml.IO.$($Item.Name).IsChecked
         }
+
+        If ($Main.Mode -eq 2)
+        {
+            $Item       = $Main.Profile[5]
+            $Item.Value = $Item.Value.Replace($Main.Profile[4].Value,"").TrimEnd(".")
+        }
+
         $Main.Profile.DSRM[0] | % { $_.Value = $_.Value | ConvertTo-SecureString -AsPlainText -Force }
 
-        [System.Windows.MessageBox]::Show("All checks passed","Success")
         $Xaml.IO.DialogResult = $True
     })
 
@@ -1751,122 +1757,30 @@ Function Get-FEDCPromo
         $Execute.Output.Add("SafeModeAdministratorPassword",$Main.Profile.DSRM[0].Value)
 
         # Credential
-        If ($Main.Connection.Credential)
+        If ($Main.Credential)
         {
-            $Execute.Output.Add("Credential",$Main.Connection.Credential)
+            $Execute.Output.Add("Credential",$Main.Credential)
         }
 
-        $Execute
-    }
-}
-
-    <#
-    $UI.Window.Invoke()
-
-    If ($UI.IO.DialogResult)
-    {
-        $Reboot = 0
-
-        ForEach ( $Feature in $UI.Features )
+        If ($Execute.Output.ReplicationSourceDC -eq "<Any>")
         {
-            $Feature.Name = $Feature.Name -Replace "_","-"
-            
-            If (!$Feature.Installed)
-            {
-                If ($Test) 
-                { 
-                    Write-Host "Install-WindowsFeature -Name $($Feature.Name) -IncludeAllSubFeature -IncludeManagementTools" -F Cyan
-                } 
-                
-                Else 
-                {
-                    $X = Install-WindowsFeature -Name $($Feature.Name) -IncludeAllSubFeature -IncludeManagementTools
-                    If ($X.RestartNeeded)
-                    {
-                        $Reboot = 1
-                    }
-                }
-            }
-
-            If ($Feature.Installed)
-            {
-                Write-Host "$($Feature.Name) is already installed." -F Red
-            }
+            $Execute.Output.ReplicationSourceDC = $Null
         }
 
-        $UI.Output = @{ }
-
-        ForEach ( $Group in $UI.Profile.Type, $UI.Profile.Role, $UI.Profile.Text )
+        If ($Output)
         {
-            ForEach ( $Item in $Group )
-            {
-                If ( $Item.IsEnabled )
-                {
-                    If ( !$UI.Output[$Item.Name] )
-                    {
-                        $UI.Output.Add($Item.Name,$UI.$($Item.Name))
-                    }
-                }
-            }
+            Set-Content -Path "$Home\Desktop\FEDCPromo-Services-$(Get-Date -uformat %Y%m%d).json" -Value (ConvertTo-Json $Execute.Services) -Verbose
+            Set-Content -Path "$Home\Desktop\FEDCPromo-ADControl-$(Get-Date -uformat %Y%m%d).csv" -Value (ConvertTo-Json $Execute.Output) -Verbose
         }
 
-        "Database Log Sysvol".Split(" ") | % { "$_`Path"} | % { $UI.Output.Add($_,$UI.$_) }
-
-        If ( $UI.Credential )
-        {
-            $UI.Output.Add("Credential",$UI.Credential)
-            $UI.Output.Add("SafeModeAdministratorPassword",$UI.SafeModeAdministratorPassword)
-        }
-
-        $Splat = $UI.Output
-
-        If ($Reboot -eq 1)
-        {
-            Write-Host "Reboot [!] required to proceed."
-
-            $Value = @(
-            "Remove-Item $Env:Public\script.ps1 -Force -EA 0",
-            "Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:`$False"
-            "@{"," "
-            ForEach ( $Item in $Splat.GetEnumerator() )
-            {
-                Switch ($Item.Name)
-                {
-                    SafeModeAdministratorPassword 
-                    { 
-                        "    SafeModeAdministratorPassword = '{0}' | ConvertTo-SecureString -AsPlainText -Force" -f $UI.IO.Confirm.Password 
-                    }
-                    Credential 
-                    { 
-                        "    Credential = [System.Management.Automation.PSCredential]::New('{0}',('{1}' | ConvertTo-SecureString -AsPlainText -Force))" -f $UI.Credential.UserName,$UI.Credential.GetNetworkCredential().Password 
-                    }
-
-                    Default    
-                    { 
-                        If ( $Item.Value -in "True","False")
-                        {
-                            "    {0}=$`{1}" -f $Item.Name,$Item.Value
-                        }
-
-                        Else
-                        {
-                            "    {0}='{1}'" -f $Item.Name,$Item.Value
-                        }
-                    }
-                }
-            }
-            " ","} | % { $($UI.Command) @_ -Force }")
-
-            Set-Content "$Env:Public\script.ps1" -Value $Value -Force
-            $Action = New-ScheduledTaskAction -Execute PowerShell -Argument "-ExecutionPolicy Bypass -Command (& $Env:Public\script.ps1)"
-            $Trigger = New-ScheduledTaskTrigger -AtLogon
-            Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -Description "Restarting, then promote system"
-            Restart-Computer
-        }
-        
+        $Splat = $Execute.Output
         If ($Test)
         {
-            Switch ($UI.Mode)
+            Write-Theme "Testing [~] [FightingEntropy(Ï€)] Service Installation..."
+            $Execute.Services | % { Write-Host "Install-WindowsFeature -Name $($_.Name) -IncludeAllSubFeature -IncludeManagementTools" -F Cyan }
+
+            Write-Theme "Testing [~] [FightingEntropy(Ï€)] Domain Controller Promotion..."
+            Switch($Main.Profile.Mode)
             {
                 0 { Test-ADDSForestInstallation @Splat }
                 1 { Test-ADDSDomainInstallation @Splat }
@@ -1875,8 +1789,12 @@ Function Get-FEDCPromo
             }
         }
 
-        Else
+        If (!$Test)
         {
+            Write-Theme "Installing [~] [FightingEntropy(Ï€)] Services..."
+            $Execute.Services | % { Install-WindowsFeature -Name $_.Name -IncludeAllSubfeature -IncludeManagementTools }
+
+            Write-Theme "Installing [~] [FightingEntropy(Ï€)] Domain Controller..."
             Switch ( $UI.Mode )
             {
                 0 { Install-ADDSForest @Splat }
@@ -1886,10 +1804,46 @@ Function Get-FEDCPromo
             }
         }
     }
-
-    Else
-    {
-        Write-Theme "Exception [!] Either the user cancelled, or the dialog failed" 12,4,15,0
-    }
 }
+
+    <#
+    If ($Reboot -eq 1)
+    {
+        Write-Host "Reboot [!] required to proceed."
+        $Value = @(
+        "Remove-Item $Env:Public\script.ps1 -Force -EA 0",
+        "Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:`$False"
+        "@{"," "
+        ForEach ($Item in $Splat.GetEnumerator())
+        {
+            Switch ($Item.Name)
+            {
+                SafeModeAdministratorPassword 
+                { 
+                    "    SafeModeAdministratorPassword = '{0}' | ConvertTo-SecureString -AsPlainText -Force" -f $UI.IO.Confirm.Password 
+                }
+                Credential 
+                { 
+                    "    Credential = [System.Management.Automation.PSCredential]::New('{0}',('{1}' | ConvertTo-SecureString -AsPlainText -Force))" -f $UI.Credential.UserName,$UI.Credential.GetNetworkCredential().Password 
+                }
+                Default    
+                { 
+                    If ( $Item.Value -in "True","False")
+                    {
+                        "    {0}=$`{1}" -f $Item.Name,$Item.Value
+                    }
+                    Else
+                    {
+                        "    {0}='{1}'" -f $Item.Name,$Item.Value
+                    }
+                }
+            }
+        }
+        " ","} | % { $($UI.Command) @_ -Force }")
+        Set-Content "$Env:Public\script.ps1" -Value $Value -Force
+        $Action = New-ScheduledTaskAction -Execute PowerShell -Argument "-ExecutionPolicy Bypass -Command (& $Env:Public\script.ps1)"
+        $Trigger = New-ScheduledTaskTrigger -AtLogon
+        Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -Description "Restarting, then promote system"
+        Restart-Computer
+    }
 #>
