@@ -8,7 +8,7 @@
 .NOTES
           FileName: Invoke-cimdb.ps1
           Solution: FightingEntropy Module
-          Purpose: Company Inventory Management Database 
+          Purpose: Launches the [FightingEntropy(π)] Company Inventory Management Database 
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
