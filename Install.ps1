@@ -2,36 +2,36 @@ Function FightingEntropy
 {
     [Net.ServicePointManager]::SecurityProtocol = 3072
 
-    Class _Enum
+    Class EnumType
     {
         [String] $Name
         [Object] $Value
-        _Enum([String]$Name,[Object]$Value)
+        EnumType([String]$Name,[Object]$Value)
         {
             $This.Name  = $Name
             $This.Value = $Value
         }
     }
 
-    Class _File
+    Class File
     {
         [String] $Type
         [String] $Name
         [String] $Path
         Hidden [String] $URL
         [Object] $Content
-        _File([String]$Name,[String]$Type,[String]$Root)
+        File([String]$Name,[String]$Type,[String]$Root)
         {
             $This.Name    = $Name
             $This.Type    = $Type
             $This.Path    = "$Root\$Name"
         }
-        _Content([String]$Base)
+        GetContent([String]$Base)
         {
             $This.URL     = "$Base/$($This.Type)/$($This.Name)?raw=true"
             $This.Content = Invoke-WebRequest -Uri $This.URL -UseBasicParsing | % Content
         }
-        _Write([UInt32]$PSVersion)
+        Write([UInt32]$PSVersion)
         {
             If ( $This.Name -match "\.+(jpg|jpeg|png|bmp|ico)" )
             {
@@ -41,7 +41,6 @@ Function FightingEntropy
                     1 { Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -Encoding Byte }
                 }
             }
-
             Else
             {
                 Set-Content -Path $This.Path -Value $This.Content
@@ -49,7 +48,7 @@ Function FightingEntropy
         }
     }
 
-    Class _OS
+    Class OS
     {
         [Object] $Env
         [Object] $Var
@@ -57,11 +56,11 @@ Function FightingEntropy
         [Object] $Ver
         [Object] $Major
         [Object] $Type
-        _OS()
+        OS()
         {
-            $This.Env   = Get-ChildItem Env:\      | % { [_Enum]::New($_.Key,$_.Value) }
-            $This.Var   = Get-ChildItem Variable:\ | % { [_Enum]::New($_.Name,$_.Value) }
-            $This.PS    = $This.Var | ? Name -eq PSVersionTable | % Value | % GetEnumerator | % { [_Enum]::New($_.Name,$_.Value) }
+            $This.Env   = Get-ChildItem Env:\      | % { [EnumType]::New($_.Key,$_.Value) }
+            $This.Var   = Get-ChildItem Variable:\ | % { [EnumType]::New($_.Name,$_.Value) }
+            $This.PS    = $This.Var | ? Name -eq PSVersionTable | % Value | % GetEnumerator | % { [EnumType]::New($_.Name,$_.Value) }
             $This.Ver   = $This.PS | ? Name -eq PSVersion | % Value
             $This.Major = $This.Ver.Major
             $This.Type  = $This.GetOSType()
@@ -95,42 +94,24 @@ Function FightingEntropy
         }
     }
 
-    Class _Manifest
+    Class Manifest
     {
         [String[]]      $Names = "Classes","Control","Functions","Graphics"
-        [String[]]    $Classes = @(("FirewallRule Drive Drives ViperBomb File Cache Icons",
-                "Shortcut Brand Branding DNSSuffix DomainName ADLogin ADConnection ADReplication FEDCPromo Certificate Company Key RootVar Share Source",
-                "Target ServerDependency ServerFeature ServerFeatures IISFeatures IIS Image Images Updates DCFound LocaleList LocaleItem" -join ' ') -Split " " | % { "_$_.ps1" })
+        [String[]]    $Classes = @("FirewallRule Drive Drives ViperBomb File Cache Icons Shortcut".Split(" ") | % { "_$_.ps1" })
         [String[]]    $Control = "Computer.png success.png failure.png DefaultApps.xml header-image.png MDT_LanguageUI.xml vendorlist.txt zipcode.txt $( "FE","MDT","PSD" | % { "$_`Client","$_`Server" } | % { "$_`Mod.xml" } )" -Split " "
-        [String[]]  $Functions = ("Add-ACL","Complete-IISServer","Export-Ini","Get-FECertificate","Get-DiskInfo",
-        "Get-FEADLogin",
-        "Get-FEDCPromo",
-        "Get-FEDCPromoProfile",
-                "Get-FEHive",
-                "Get-FEHost",
-                "Get-FEImage",
-                "Get-FEManifest",
-                "Get-FERole",
-                "Get-FEInfo",
-                "Get-FEModule",
-                "Get-FENetwork",
-                "Get-FEOS",
-                "Get-FEProcess",
-                "Get-FEService",
-                "Get-FEShare",
-                "Get-MadBomb","Get-MDTModule","Get-ServerDependency","Get-ViperBomb","Get-XamlWindow","Import-FEImage","Install-FEModule",
-                "Install-IISServer","New-ACLObject","New-Company","New-EnvironmentKey","New-FEImage","New-FEShare","Remove-FEModule","Remove-FEShare",
-                "Show-ToastNotification","Update-FEShare","Write-Theme","Get-MDTOData","New-FEDeploymentShare","Start-VMGroup",
-                "Install-VMGroup","Invoke-KeyEntry","Copy-FileStream","Get-EnvironmentKey","Get-FEImageManifest","Invoke-cimdb",
-                "Set-ScreenResolution","Get-PSDModule","New-FEInfrastructure" | % { "$_.ps1" })
+        [String[]]  $Functions = ("Copy-FileStream","Get-DiskInfo","Get-EnvironmentKey","Get-FEADLogin","Get-FEDCPromo","Get-FEHost","Get-FEImageManifest",
+                                  "Get-FEInfo","Get-FEManifest","Get-FEModule","Get-FENetwork","Get-FEOS","Get-FEProcess","Get-FERole","Get-FEService",
+                                  "Get-MadBomb","Get-MDTModule","Get-PSDModule","Get-ViperBomb","Get-XamlWindow","Install-FEModule","Install-IISServer",
+                                  "Invoke-cimdb","Invoke-KeyEntry","New-EnvironmentKey","New-FEDeploymentShare","New-FEInfrastructure","Remove-FEModule",
+                                  "Set-ScreenResolution","Show-ToastNotification","Write-Theme" | % { "$_.ps1" })
         [String[]]   $Graphics = "background.jpg banner.png icon.ico OEMbg.jpg OEMlogo.bmp sdplogo.png" -Split " "
-        _Manifest()
+        Manifest()
         {
 
         }
     }
 
-    Class _Registry
+    Class Registry
     {
         [String[]]        $Order = ("Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status Type" -Split " ")
         [String]           $Base
@@ -151,7 +132,7 @@ Function FightingEntropy
         [String]           $Path
         [String]         $Status
         [String]           $Type
-        _Registry([String]$Base, [String]$Name, [String]$Description, [String]$Author, [String]$Company, [String]$Copyright, [String]$GUID, 
+        Registry([String]$Base, [String]$Name, [String]$Description, [String]$Author, [String]$Company, [String]$Copyright, [String]$GUID, 
         [String]$Version, [String]$Default, [String]$Main, [String]$Trunk, [String]$ModPath, [String]$ManPath, [String]$Path, [String]$Type)
         {
             $This.Base           = $Base
@@ -164,27 +145,22 @@ Function FightingEntropy
             $This.Version        = $Version
             $This.Date           = Get-Date -UFormat "%Y_%m%d-%H%M%S"
             $This.RegPath        = "HKLM:\Software\Policies"
-
             ForEach ( $Item in $Company, $Name, $Version )
             {
                 $This.RegPath    = $This.RegPath, $Item -join "\"
-
                 If (!(Test-Path $This.RegPath))
                 {
                     New-Item -Path (Split-Path $This.RegPath) -Name $Item -Verbose
                 }
             }
-
             $This.Default        = $Default
             $This.Main           = $Main
             $This.Trunk          = $Trunk
             $This.ModPath        = $ModPath
             $This.ManPath        = $ManPath
-
             $This.Path           = $Path
             $This.Type           = $Type
             $This.Status         = "Initialized"
-
             ForEach ( $Key in $This.Order )
             {
                 If ((Get-ItemProperty $This.RegPath ).$Key -ne $This.$Key )
@@ -192,7 +168,6 @@ Function FightingEntropy
                     Write-Host "[+] $Key set to [$($This.$Key)]"
                     Set-ItemProperty $This.RegPath -Name $Key -Value $This.$Key
                 }
-
                 Else 
                 {
                     Write-Host "[!] $Key already set to [$($This.$Key)]"
@@ -201,7 +176,7 @@ Function FightingEntropy
         }
     }
 
-    Class _Module
+    Class Module
     {
         [String]        $Base = "github.com/mcc85s/FightingEntropy/blob/main"
         [String]        $Name = "FightingEntropy"
@@ -211,8 +186,8 @@ Function FightingEntropy
         [String]   $Copyright = "(c) 2021 (mcc85s/mcc85sx/sdp). All rights reserved."
         [String]        $GUID = "64ab3ba6-064a-4929-b9a1-ffe27a55972a"
         [String]     $Version = ""
-        [Object]          $OS = [_OS]::New()
-        [Object]    $Manifest = [_Manifest]::New()
+        [Object]          $OS = [OS]::New()
+        [Object]    $Manifest = [Manifest]::New()
         [Object]    $Registry
         [String]     $Default
         [String]        $Main
@@ -226,10 +201,9 @@ Function FightingEntropy
         [Object[]] $Functions
         [Object[]]  $Graphics
         [Object]        $Role
-        _Build()
+        Build()
         {
             $_Path = $Null
-        
             ForEach ( $Item in $This.Path.Split("\") )
             {
                 If (!($_Path))
@@ -247,7 +221,6 @@ Function FightingEntropy
                     New-Item $_Path -ItemType Directory -Verbose
                 }
             }
-        
             ForEach ( $Item in "Classes","Control","Functions","Graphics" )
             { 
                 If (!(Test-Path "$_Path\$Item"))
@@ -256,26 +229,24 @@ Function FightingEntropy
                 }
             }
         }
-        _Gather()
+        Gather()
         {
             $O = 1
-            ForEach ( $Object in $This.Classes, $This.Control, $This.Functions, $This.Graphics )
+            ForEach ($Object in $This.Classes, $This.Control, $This.Functions, $This.Graphics)
             {
                 $Type = "Classes Control Functions Graphics".Split(" ")[$O-1]
                 Write-Host "Gathering $Type [$O/4]"
                 $I = 1
-
-                ForEach ( $Item in $Object )
+                ForEach ($Item in $Object)
                 {
                     Write-Host "Downloading $Type [$I/$($Object.Count)] $($Item.Name)"
                     $Item._Content($This.Base)
                     $I ++
                 }
-
                 $O ++
             }
         }
-        _Save()
+        Save()
         {
             $O = 1
             ForEach ( $Object in $This.Classes, $This.Control, $This.Functions, $This.Graphics )
@@ -294,7 +265,7 @@ Function FightingEntropy
                 $O ++
             }
         }
-        _Write()
+        Write()
         {
             $Module        = @( )
             $Module       += "# Downloaded from {0}" -f $This.Base
@@ -349,44 +320,39 @@ Function FightingEntropy
                 RequiredAssemblies   = "PresentationFramework"
             }                        | % { New-ModuleManifest @_ }
         }
-        _Module([String]$Version)
+        Module([String]$Version)
         {
             $This.Version            = $Version
-
             $This.Path               = $Env:ProgramData, $This.Company, $This.Name -join "\"
             Write-Host ("   Module: [{0}]" -f $This.Path)
-
             $This.Default            = $Env:PSModulePath -Split ";" | ? { $_ -match "Program Files" } | Select-Object -First 1
             $This.Main               = $This.Default + "\FightingEntropy"
             $This.Trunk              = $This.Main    + "\$Version"
             $This.ModPath            = $This.Trunk   + "\FightingEntropy.psm1"
             $This.ManPath            = $This.Trunk   + "\FightingEntropy.psd1"
-
-            $This.Registry           = [_Registry]::New($This.Base, $This.Name, $This.Description, 
+            $This.Registry           = [Registry]::New($This.Base, $This.Name, $This.Description, 
                                         $This.Author, $This.Company, $This.Copyright, $This.GUID, 
                                         $This.Version, $This.Default, $This.Main, $This.Trunk,
                                         $This.ModPath, $This.ManPath, $This.Path, $This.OS.Type )
 
             Write-Host "[+] Module Staging complete"
-
-            $This._Build()
+            $This.Build()
 
             ForEach ( $Item in "Classes","Control","Functions","Graphics")
             {
                 Write-Host "Prestaging [$Item]"
-                $This.$Item          = $This.Manifest.$Item | % { [_File]::New($_,$Item,"$($This.Path)\$Item") }
+                $This.$Item          = $This.Manifest.$Item | % { [File]::New($_,$Item,"$($This.Path)\$Item") }
             }
-
-            $This._Gather()
-            $This._Save()
-            $This._Write()
+            $This.Gather()
+            $This.Save()
+            $This.Write()
 
             $This.Tree                = Get-ChildItem $This.Path | ? Name -in $This.Manifest.Names
             $This.Role                = $This.OS.Type
         }
     }
     
-    [_Module]::New("2021.10.0")
+    [Module]::New("2021.10.0")
     
     $Path              = "$Env:Public\Desktop\FightingEntropy.lnk" 
     $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut($Path)
@@ -403,8 +369,9 @@ Function FightingEntropy
 }
 
 $Install = FightingEntropy
+Get-Item "Function:\FightingEntropy" | Remove-Item -Verbose
 $Line    = (@("-")*120 -join "")
     
-$Line, "[ Installation Details (stored under variable `$Install) ]"
+$Line, "[Installation Details (stored under variable `$Install)]"
 $Install
-$Line, "[ Command (Get-FEModule) provides an extension of the above information ]", $Line
+$Line, "[Command (Get-FEModule) provides an extension of the above information]", $Line
