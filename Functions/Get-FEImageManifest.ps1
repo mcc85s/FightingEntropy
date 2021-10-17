@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-FEImageManifest.ps1
+          Solution: FightingEntropy Module
+          Purpose: For retrieving a list of images to use on a forward FE Server
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-10-17
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
 Function Get-FEImageManifest
 {
     [CmdLetBinding()]Param(
