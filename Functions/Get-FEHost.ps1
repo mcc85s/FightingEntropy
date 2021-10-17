@@ -39,7 +39,7 @@ Function Get-FEHost
             $This.Hostname            = @($This.Name;"{0}.{1}" -f $This.Name, $This.DNS)[(Get-CimInstance Win32_ComputerSystem).PartOfDomain].ToLower()
             $This.IsAdmin             = $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
         
-            If ( $This.IsAdmin -eq 0 )
+            If ($This.IsAdmin -eq 0)
             {
                 Throw "Must run as administrator"
             }
