@@ -1,18 +1,16 @@
 Function Get-FEHost
 {
-    Class _Host
+    Class Host
     {
         [String]                $Name = [Environment]::MachineName.ToLower()
         [String]                 $DNS
         [String]             $NetBIOS = [Environment]::UserDomainName.ToLower()
-
         [String]            $Hostname
         [String]            $Username = [Environment]::UserName
         [Object]           $Principal = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
         [Bool]               $IsAdmin
         [Object]             $Network
-
-        _Host()
+        Host()
         {
             $This.DNS                 = @($Env:UserDNSDomain,"-")[!$env:USERDNSDOMAIN]
             $This.Hostname            = @($This.Name;"{0}.{1}" -f $This.Name, $This.DNS)[(Get-CimInstance Win32_ComputerSystem).PartOfDomain].ToLower()
@@ -23,12 +21,10 @@ Function Get-FEHost
                 Throw "Must run as administrator"
             }
         }
-
-        _Network()
+        Network()
         {
             $This.Network             = Get-FENetwork
         }
     }
-
-    [_Host]::New()
+    [Host]::New()
 }
