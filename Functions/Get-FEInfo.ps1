@@ -1,11 +1,33 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-FEInfo.ps1
+          Solution: FightingEntropy Module
+          Purpose: For retrieving information about a Windows Operating system
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-10-17
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO: 10/17/21 - Needs an update through to 21H1
+
+.Example
+#>
 Function Get-FEInfo
 {
-    Class _Info
+    Class Info
     {
         [Object]          $OS = (Get-CimInstance -ClassName Win32_OperatingSystem)
         [Object]          $CS = (Get-CimInstance -ClassName Win32_ComputerSystem)
         [Object]         $Env = (Get-ChildItem Env:\)
-
         Hidden [Hashtable] $Hash = @{ 
 
             Edition           = ("10240,Threshold 1,Release To Manufacturing;10586,Threshold 2,November {1};14393,{0} 1,Anniversary {1};15063," + 
@@ -27,7 +49,6 @@ Function Get-FEInfo
                                  ",-,-,-,-,-,{1} RT,-,-,Single Language N,{1} Home,-,{1} Professional with Media Center,{1} Mobile,-,-,-,-,-,-" + 
                                  ",-,-,-,-,-,-,-,{1} Embedded Handheld,-,-,-,-,{1} IoT Core") -f "Edition","Windows","Server","Enterprise" -Split ","
         }
-
         Hidden [Object] $VTable = (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion')
         [String]     $Caption
         [Object]     $Version
@@ -37,8 +58,7 @@ Function Get-FEInfo
         [String]        $Name
         [String]         $SKU
         [String]     $Chassis
-
-        _Info()
+        Info()
         {
             $This.Version     = (Get-Host).Version.ToString()
             $This.ReleaseID   = $This.VTable.ReleaseID
@@ -55,6 +75,5 @@ Function Get-FEInfo
             $This.Chassis            = $This.Hash.Chassis[$This.CS.PCSystemType]
         }
     }
-
-    [_Info]::New()
+    [Info]::New()
 }
