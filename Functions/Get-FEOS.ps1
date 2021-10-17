@@ -1,18 +1,17 @@
 Function Get-FEOS
 {
-    Class _Enum
+    Class EnumType
     {
         [String] $Name
         [Object] $Value
-
-        _Enum([String]$Name,[Object]$Value)
+        EnumType([String]$Name,[Object]$Value)
         {
             $This.Name  = $Name
             $This.Value = $Value
         }
     }
 
-    Class _OS
+    Class OS
     {
         [Object] $Env
         [Object] $Var
@@ -20,17 +19,15 @@ Function Get-FEOS
         [Object] $Ver
         [Object] $Major
         [Object] $Type
-
-        _OS()
+        OS()
         {
-            $This.Env   = Get-ChildItem Env:\      | % { [_Enum]::New($_.Key,$_.Value) }
-            $This.Var   = Get-ChildItem Variable:\ | % { [_Enum]::New($_.Name,$_.Value) }
-            $This.PS    = $This.Var | ? Name -eq PSVersionTable | % Value | % GetEnumerator | % { [_Enum]::New($_.Name,$_.Value) }
+            $This.Env   = Get-ChildItem Env:\      | % { [EnumType]::New($_.Key,$_.Value) }
+            $This.Var   = Get-ChildItem Variable:\ | % { [EnumType]::New($_.Name,$_.Value) }
+            $This.PS    = $This.Var | ? Name -eq PSVersionTable | % Value | % GetEnumerator | % { [EnumType]::New($_.Name,$_.Value) }
             $This.Ver   = $This.PS | ? Name -eq PSVersion | % Value
             $This.Major = $This.Ver.Major
             $This.Type  = $This.GetOSType()
         }
-
         [String] GetWinType()
         {
             Return @( Switch -Regex ( Invoke-Expression "[wmiclass]'Win32_OperatingSystem' | % GetInstances | % Caption" )
@@ -38,14 +35,13 @@ Function Get-FEOS
                 "Windows 10" { "Win32_Client" } "Windows Server" { "Win32_Server" }
             })
         }
-
         [String] GetOSType()
         {
             Return @( If ( $This.Major -gt 5 )
             {
                 If ( Get-Item Variable:\IsLinux | % Value )
                 {
-                    "RHELCentOS"
+                    (hostnamectl | ? { $_ -match "Operating System" }).Split(";")[1].TrimStart(" ")
                 }
 
                 Else
@@ -61,5 +57,5 @@ Function Get-FEOS
         }
     }
 
-    [_OS]::New()
+    [OS]::New()
 }
