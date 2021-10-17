@@ -441,19 +441,23 @@ Function Get-FEADLogin
                 $This.Test      = $Null
             }
             
-            If ($This.Test.DistinguishedName)
+            Finally
             {
-                $This.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
-                $This.Searcher            | % { 
-                        
-                    $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
-                    $_.PageSize         = 1000
-                    $_.PropertiestoLoad.Clear()
-
-                $This.Result              = $This.Searcher | % FindAll
-                If (!$This.NetBIOS)
+                If ($This.Test.DistinguishedName)
                 {
-                    $This.NetBIOS         = $This.GetNetBIOSName()
+                    $This.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
+                    $This.Searcher            | % { 
+                        
+                        $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
+                        $_.PageSize         = 1000
+                        $_.PropertiestoLoad.Clear()
+                    }
+
+                    $This.Result              = $This.Searcher | % FindAll
+                    If (!$This.NetBIOS)
+                    {
+                        $This.NetBIOS         = $This.GetNetBIOSName()
+                    }
                 }
             }
         }
