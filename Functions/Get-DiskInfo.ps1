@@ -1,6 +1,29 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: Get-DiskInfo.ps1
+          Solution: FightingEntropy Module
+          Purpose: For retrieving information about installed hard drives
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-10-17
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
 Function Get-DiskInfo
 {
-    Class _DiskDrive
+    Class DiskDrive
     {
         [String]       $Drive
         [String]       $Label
@@ -8,7 +31,7 @@ Function Get-DiskInfo
         [String]        $Free
         [String]        $Used
 
-        _DiskDrive([Object]$Disk)
+        DiskDrive([Object]$Disk)
         {
             @{  Size    = $Disk.Size / 1GB
                 Free    = $Disk.FreeSpace / 1GB
@@ -23,8 +46,8 @@ Function Get-DiskInfo
         }
     }
 
-    ForEach ( $Disk in [wmiclass]"Win32_LogicalDisk" | % GetInstances | ? DriveType -eq 3 )
+    ForEach ($Disk in [wmiclass]"Win32_LogicalDisk" | % GetInstances | ? DriveType -eq 3)
     {
-        [_DiskDrive]::New($Disk)
+        [DiskDrive]::New($Disk)
     }
 }
