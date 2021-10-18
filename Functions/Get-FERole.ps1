@@ -196,12 +196,10 @@ Function Get-FERole
             $This.Principal           = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
             $This.IsAdmin             = $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
         
-            If ( $This.IsAdmin -eq 0 )
+            If ($This.IsAdmin -eq 0)
             {
                 Throw "Must run as administrator"
             }
-
-            $This.System              = [Win32_System]::New()
 
             Get-FEInfo                 | % { 
 
@@ -214,19 +212,23 @@ Function Get-FERole
                 $This.Chassis          = $_.Chassis
             }
         }
-        GetServices()
+        GetSystem()
         {
-            $This.Service             = (Get-FEService)
+            $This.System               = [Win32_System]::New()
         }
-        GetProcesses()
+        GetService()
         {
-            $This.Process             = (Get-FEProcess)
+            $This.Service              = (Get-FEService)
+        }
+        GetProcess()
+        {
+            $This.Process              = (Get-FEProcess)
         }
         GetNetwork()
         {
-            $This.Network             = (Get-FENetwork)
+            $This.Network              = (Get-FENetwork)
         }
-        GetFeatures()
+        GetFeature()
         {
         
         }
@@ -240,7 +242,7 @@ Function Get-FERole
         }
         Choco()
         {
-            Invoke-Expression ( Invoke-RestMethod https://chocolatey.org/install.ps1 )
+            Invoke-RestMethod https://chocolatey.org/install.ps1 | Invoke-Expression
         }
     }
 
@@ -283,12 +285,10 @@ Function Get-FERole
             $This.Principal            = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
             $This.IsAdmin              = $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
         
-            If ( $This.IsAdmin -eq 0 )
+            If ($This.IsAdmin -eq 0)
             {
                 Throw "Must run as administrator"
             }
-
-            $This.System               = [Win32_System]::New()
 
             Get-FEInfo                 | % { 
 
@@ -301,19 +301,23 @@ Function Get-FERole
                 $This.Chassis          = $_.Chassis
             }
         }
-        GetServices()
+        GetSystem()
         {
-            $This.Service             = (Get-FEService)
+            $This.System               = [Win32_System]::New()
         }
-        GetProcesses()
+        GetService()
         {
-            $This.Process             = (Get-Process)
+            $This.Service              = (Get-FEService)
+        }
+        GetProcess()
+        {
+            $This.Process              = (Get-FEProcess)
         }
         GetNetwork()
         {
-            $This.Network             = (Get-FENetwork)
+            $This.Network              = (Get-FENetwork)
         }
-        GetFeatures()
+        GetFeature()
         {
             Install-PackageProvider -Name NuGet -Confirm:$False -Force
             Find-Module -Name PoshRSJob | Install-Module -Confirm:$False -Force
@@ -328,7 +332,7 @@ Function Get-FERole
         }
         Choco()
         {
-            Invoke-Expression ( Invoke-RestMethod https://chocolatey.org/install.ps1 )
+            Invoke-RestMethod https://chocolatey.org/install.ps1 | Invoke-Expression
         }
     }
 
