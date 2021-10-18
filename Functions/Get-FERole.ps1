@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-17
+          Modified: 2021-10-18
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -23,6 +23,140 @@
 #>
 Function Get-FERole
 {
+    # [System Classes]
+    Class SysNetwork
+    {
+        [String]$Name
+        [UInt32]$Index
+        [String]$IPAddress
+        [String]$SubnetMask
+        [String]$Gateway
+        [String[]] $DnsServer
+        [String] $DhcpServer
+        [String] $MacAddress
+        SysNetwork([Object]$If)
+        {
+            $This.Name       = $IF.Description
+            $This.Index      = $IF.Index
+            $This.IPAddress  = $IF.IPAddress            | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.SubnetMask = $IF.IPSubnet             | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.Gateway    = $IF.DefaultIPGateway     | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.DnsServer  = $IF.DnsServerSearchOrder | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.DhcpServer = $IF.DhcpServer           | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.MacAddress = $IF.MacAddress
+        }
+    }
+
+    Class SysDisk
+    {
+        [String] $Name
+        [String] $Label
+        [String] $FileSystem
+        [String] $Size
+        [String] $Free
+        [String] $Used
+        SysDisk([Object]$Disk)
+        {
+            $This.Name       = $Disk.DeviceID
+            $This.Label      = $Disk.VolumeName
+            $This.FileSystem = $Disk.FileSystem
+            $This.Size       = "{0:n2} GB" -f ($Disk.Size/1GB)
+            $This.Free       = "{0:n2} GB" -f ($Disk.FreeSpace/1GB)
+            $This.Used       = "{0:n2} GB" -f (($Disk.Size-$Disk.FreeSpace)/1GB)
+        }
+    }
+
+    Class SysProcessor
+    {
+        [String]$Name
+        [String]$Caption
+        [String]$DeviceID
+        [String]$Manufacturer
+        [UInt32]$Speed
+        SysProcessor([Object]$CPU)
+        {
+            $This.Name         = $CPU.Name -Replace "\s+"," "
+            $This.Caption      = $CPU.Caption
+            $This.DeviceID     = $CPU.DeviceID
+            $This.Manufacturer = $CPU.Manufacturer
+            $This.Speed        = $CPU.MaxClockSpeed
+        }
+    }
+
+    Class Win32_System
+    {
+        [Object] $Manufacturer
+        [Object] $Model
+        [Object] $Product
+        [Object] $Serial
+        [Object[]] $Processor
+        [String] $Memory
+        [String] $Architecture
+        [Object] $UUID
+        [Object] $Chassis
+        [Object] $BiosUEFI
+        [Object] $AssetTag
+        [Object[]] $Disk
+        [Object[]] $Network
+        Win32_System()
+        {
+            Write-Host "Collecting [~] Disks"
+            $This.Disk             = Invoke-Expression "[wmiclass]'Win32_LogicalDisk'" | % GetInstances | % { [SysDisk]$_ }
+            
+            Write-Host "Collecting [~] Network"
+            $This.Network          = Invoke-Expression "[wmiclass]'Win32_NetworkAdapterConfiguration'" | % GetInstances | ? DefaultIPGateway | % { [SysNetwork]$_ }
+            
+            Write-Host "Collecting [~] Processor"
+            $This.Processor        = Invoke-Expression "[wmiclass]'Win32_Processor' | % GetInstances" | % { [SysProcessor]$_ }
+            
+            Write-Host "Collecting [~] Computer"
+            Invoke-Expression "[wmiclass]'Win32_ComputerSystem'" | % GetInstances | % { 
+
+                $This.Manufacturer = $_.Manufacturer; 
+                $This.Model        = $_.Model; 
+                $This.Memory       = "{0}GB" -f [UInt32]($_.TotalPhysicalMemory/1GB)
+            }
+
+            Write-Host "Collecting [~] Product"
+            Invoke-Expression "[wmiclass]'Win32_ComputerSystemProduct'" | % GetInstances | % { 
+
+                $This.UUID         = $_.UUID 
+            }
+
+            Write-Host "Collecting [~] Motherboard"
+            Invoke-Expression "[wmiclass]'Win32_BaseBoard'" | % GetInstances | % { 
+
+                $This.Product      = $_.Product
+                $This.Serial       = $_.SerialNumber -Replace "\.",""
+            }
+            Try
+            {
+                Get-SecureBootUEFI -Name SetupMode | Out-Null 
+                $This.BiosUefi = "UEFI"
+            }
+            Catch
+            {
+                $This.BiosUefi = "BIOS"
+            }
+        
+            Write-Host "Collecting [~] Chassis"
+            Invoke-Expression "[wmiclass]'Win32_SystemEnclosure'" | % GetInstances | % {
+
+                $This.AssetTag    = $_.SMBIOSAssetTag.Trim()
+                $This.Chassis     = Switch([UInt32]$_.ChassisTypes[0])
+                {
+                    {$_ -in 8..12+14,18,21} {"Laptop"}
+                    {$_ -in 3..7+15,16}     {"Desktop"}
+                    {$_ -in 23}             {"Server"}
+                    {$_ -in 34..36}         {"Small Form Factor"}
+                    {$_ -in 30..32+13}      {"Tablet"}
+                }
+            }
+
+            $This.Architecture = @{x86="x86";AMD64="x64"}[$Env:PROCESSOR_ARCHITECTURE]
+        }
+    }
+
     Class Win32_Client
     {
         [String]                $Name
@@ -32,6 +166,7 @@ Function Get-FERole
         [String]            $Username
         [Object]           $Principal
         [Bool]               $IsAdmin
+        [Object]              $System
         [String]             $Caption
         [String]             $Version
         [UInt32]               $Build
@@ -61,10 +196,12 @@ Function Get-FERole
             $This.Principal           = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
             $This.IsAdmin             = $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
         
-            If ($This.IsAdmin -eq 0)
+            If ( $This.IsAdmin -eq 0 )
             {
                 Throw "Must run as administrator"
             }
+
+            $This.System              = [Win32_System]::New()
 
             Get-FEInfo                 | % { 
 
@@ -116,6 +253,7 @@ Function Get-FERole
         [String]            $Username
         [Object]           $Principal
         [Bool]               $IsAdmin
+        [Object]              $System
         [String]             $Caption
         [String]             $Version
         [UInt32]               $Build
@@ -142,13 +280,15 @@ Function Get-FERole
                 $This.Drive            = (Get-PSDrive)
             }
 
-            $This.Principal           = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
-            $This.IsAdmin             = $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
+            $This.Principal            = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
+            $This.IsAdmin              = $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
         
-            If ($This.IsAdmin -eq 0)
+            If ( $This.IsAdmin -eq 0 )
             {
                 Throw "Must run as administrator"
             }
+
+            $This.System               = [Win32_System]::New()
 
             Get-FEInfo                 | % { 
 
@@ -167,7 +307,7 @@ Function Get-FERole
         }
         GetProcesses()
         {
-            $This.Process             = (Get-FEProcess)
+            $This.Process             = (Get-Process)
         }
         GetNetwork()
         {
@@ -186,7 +326,6 @@ Function Get-FERole
                 New-EnvironmentKey -Key $Key | % Apply 
             }
         }
-        
         Choco()
         {
             Invoke-Expression ( Invoke-RestMethod https://chocolatey.org/install.ps1 )
@@ -232,7 +371,7 @@ Function Get-FERole
             $This.Network   = @( )
         }
     }
-    
+
     Class UnixBSD
     {
         [Object] $Host
@@ -262,14 +401,30 @@ Function Get-FERole
             $This.Name   = $Name
             $This.Output = Switch($Name)
             {
-                Win32_Client { [Win32_Client]::New() } 
-                Win32_Server { [Win32_Server]::New() }
-                RHELCentOS   { [RHELCentOS]::New()   }
-                Ubuntu       { [Ubuntu]::New()       }
-                UnixBSD      { [UnixBSD]::New()      }
+                Win32_Client 
+                { 
+                    [Win32_Client]::New() 
+                } 
+                Win32_Server 
+                { 
+                    [Win32_Server]::New() 
+                } 
+                UnixBSD      
+                { 
+                    [UnixBSD]::New()      
+                } 
+                Ubuntu
+                {
+                    [Ubuntu]::New()
+                }
+                RHELCentOS   
+                { 
+                    [RHELCentOS]::New()   
+                }
             }
         }
     }
+
     $Type = Get-FEOS | % Type
     [Role]::New($Type).Output 
 }
