@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-17
+          Modified: 2021-10-19
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -842,7 +842,7 @@ Function Get-FEDCPromo
                 $This.System   = $_.Role.System
             }
 
-            If ($This.System.Network | ? DhcpServer)
+            If ($This.System.Network.DhcpServer -match "(\d+{3})\d")
             {
                 Write-Host "Warning [!] Static IP Address not set..."
             }
@@ -1564,11 +1564,27 @@ Function Get-FEDCPromo
 
     $Xaml.IO.Start.Add_Click(
     {
-        ForEach ($Item in $Main.Profile.Item[0,1] )
+        If ($Main.Profile.Item[0].IsEnabled)
         {
-            If ($Item.IsEnabled -and $Item.Value -gt 6)
+            If ($Xaml.IO.ForestMode.SelectedIndex -ge 6)
             {
-                $Item.Value = 6
+                $Main.Profile.Item[0].Value = "WinThreshold"
+            }
+            Else
+            {
+                $Main.Profile.Item[0].Value = $Xaml.IO.ForestMode.SelectedIndex
+            }
+        }
+
+        If ($Main.Profile.Item[1].IsEnabled)
+        {
+            If ($Xaml.IO.DomainMode.SelectedIndex -ge 6)
+            {
+                $Main.Profile.Item[1].Value = "WinThreshold"
+            }
+            Else
+            {
+                $Main.Profile.Item[1].Value = $Xaml.IO.DomainMode.SelectedIndex
             }
         }
 
@@ -1589,8 +1605,8 @@ Function Get-FEDCPromo
 
         If ($Main.Mode -eq 2)
         {
-            $Item       = $Main.Profile[5]
-            $Item.Value = $Item.Value.Replace($Main.Profile[4].Value,"").TrimEnd(".")
+            $Item       = $Main.Profile.Item[5]
+            $Item.Value = $Item.Value.Replace($Main.Profile.Item[4].Value,"").TrimEnd(".")
         }
 
         $Main.Profile.DSRM[0] | % { $_.Value = $_.Value | ConvertTo-SecureString -AsPlainText -Force }
@@ -1656,10 +1672,10 @@ Function Get-FEDCPromo
         $Splat = $Execute.Output
         If ($Test)
         {
-            Write-Theme "Testing [~] [FightingEntropy(π)] Service Installation..."
+            Write-Theme "Testing [~] [FightingEntropy(p)] Service Installation..."
             $Execute.Services | % { Write-Host "Install-WindowsFeature -Name $($_.Name) -IncludeAllSubFeature -IncludeManagementTools" -F Cyan }
 
-            Write-Theme "Testing [~] [FightingEntropy(π)] Domain Controller Promotion..."
+            Write-Theme "Testing [~] [FightingEntropy(p)] Domain Controller Promotion..."
             Switch($Main.Profile.Mode)
             {
                 0 { Test-ADDSForestInstallation @Splat }
@@ -1671,10 +1687,10 @@ Function Get-FEDCPromo
 
         If (!$Test)
         {
-            Write-Theme "Installing [~] [FightingEntropy(π)] Services..."
+            Write-Theme "Installing [~] [FightingEntropy(p)] Services..."
             $Execute.Services | % { Install-WindowsFeature -Name $_.Name -IncludeAllSubfeature -IncludeManagementTools }
 
-            Write-Theme "Installing [~] [FightingEntropy(π)] Domain Controller..."
+            Write-Theme "Installing [~] [FightingEntropy(p)] Domain Controller..."
             Switch ( $UI.Mode )
             {
                 0 { Install-ADDSForest @Splat }
