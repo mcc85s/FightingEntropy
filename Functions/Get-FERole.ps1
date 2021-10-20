@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-18
+          Modified: 2021-10-19
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -244,6 +244,13 @@ Function Get-FERole
         {
             Invoke-RestMethod https://chocolatey.org/install.ps1 | Invoke-Expression
         }
+        Status()
+        {
+            $This.GetSystem()
+            $This.GetService()
+            $This.GetProcess()
+            $This.GetNetwork()
+        }
     }
 
     Class Win32_Server
@@ -333,6 +340,13 @@ Function Get-FERole
         Choco()
         {
             Invoke-RestMethod https://chocolatey.org/install.ps1 | Invoke-Expression
+        }
+        Status()
+        {
+            $This.GetSystem()
+            $This.GetService()
+            $This.GetProcess()
+            $This.GetNetwork()
         }
     }
 
