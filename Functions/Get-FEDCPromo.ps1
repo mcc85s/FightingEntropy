@@ -1605,8 +1605,7 @@ Function Get-FEDCPromo
 
         If ($Main.Mode -eq 2)
         {
-            $Item       = $Main.Profile.Item[5]
-            $Item.Value = $Item.Value.Replace($Main.Profile.Item[4].Value,"").TrimEnd(".")
+            $Main.Profile.Item[5].Value = $Main.Profile.Item[5].Value.Replace($Main.Profile.Item[4].Value,"").TrimEnd(".")
         }
 
         $Main.Profile.DSRM[0] | % { $_.Value = $_.Value | ConvertTo-SecureString -AsPlainText -Force }
