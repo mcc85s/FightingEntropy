@@ -844,7 +844,7 @@ Function Get-FEDCPromo
 
             If ($This.System.Network | ? DhcpServer)
             {
-                Write-Host "Warning [!] IP Address not set..."
+                Write-Host "Warning [!] Static IP Address not set..."
             }
 
             # Collect features
