@@ -842,7 +842,7 @@ Function Get-FEDCPromo
                 $This.System   = $_.Role.System
             }
 
-            If ($This.System.Network.DhcpServer -match "(\d+{3})\d")
+            If ($This.System.Network.DhcpServer -match "(\d+\.){3}\d+")
             {
                 Write-Host "Warning [!] Static IP Address not set..."
             }
