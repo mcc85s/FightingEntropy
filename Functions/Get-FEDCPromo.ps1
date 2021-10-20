@@ -39,137 +39,6 @@ Function Get-FEDCPromo
         Throw "Must use Windows Server operating system"
     }
 
-    # [System Classes]
-    Class SysNetwork
-    {
-        [String]$Name
-        [UInt32]$Index
-        [String]$IPAddress
-        [String]$SubnetMask
-        [String]$Gateway
-        [String[]] $DnsServer
-        [String] $DhcpServer
-        [String] $MacAddress
-        SysNetwork([Object]$If)
-        {
-            $This.Name       = $IF.Description
-            $This.Index      = $IF.Index
-            $This.IPAddress  = $IF.IPAddress            | ? {$_ -match "(\d+\.){3}\d+"}
-            $This.SubnetMask = $IF.IPSubnet             | ? {$_ -match "(\d+\.){3}\d+"}
-            $This.Gateway    = $IF.DefaultIPGateway     | ? {$_ -match "(\d+\.){3}\d+"}
-            $This.DnsServer  = $IF.DnsServerSearchOrder | ? {$_ -match "(\d+\.){3}\d+"}
-            $This.DhcpServer = $IF.DhcpServer           | ? {$_ -match "(\d+\.){3}\d+"}
-            $This.MacAddress = $IF.MacAddress
-        }
-    }
-
-    Class SysDisk
-    {
-        [String] $Name
-        [String] $Label
-        [String] $FileSystem
-        [String] $Size
-        [String] $Free
-        [String] $Used
-        SysDisk([Object]$Disk)
-        {
-            $This.Name       = $Disk.DeviceID
-            $This.Label      = $Disk.VolumeName
-            $This.FileSystem = $Disk.FileSystem
-            $This.Size       = "{0:n2} GB" -f ($Disk.Size/1GB)
-            $This.Free       = "{0:n2} GB" -f ($Disk.FreeSpace/1GB)
-            $This.Used       = "{0:n2} GB" -f (($Disk.Size-$Disk.FreeSpace)/1GB)
-        }
-    }
-
-    Class SysProcessor
-    {
-        [String]$Name
-        [String]$Caption
-        [String]$DeviceID
-        [String]$Manufacturer
-        [UInt32]$Speed
-        SysProcessor([Object]$CPU)
-        {
-            $This.Name         = $CPU.Name -Replace "\s+"," "
-            $This.Caption      = $CPU.Caption
-            $This.DeviceID     = $CPU.DeviceID
-            $This.Manufacturer = $CPU.Manufacturer
-            $This.Speed        = $CPU.MaxClockSpeed
-        }
-    }
-
-    Class System
-    {
-        [Object] $Manufacturer
-        [Object] $Model
-        [Object] $Product
-        [Object] $Serial
-        [Object[]] $Processor
-        [String] $Memory
-        [String] $Architecture
-        [Object] $UUID
-        [Object] $Chassis
-        [Object] $BiosUEFI
-        [Object] $AssetTag
-        [Object[]] $Disk
-        [Object[]] $Network
-        System()
-        {
-            Write-Host "Collecting [~] Disks"
-            $This.Disk             = Get-WmiObject -Class Win32_LogicalDisk    | % {     [SysDisk]$_ }
-            
-            Write-Host "Collecting [~] Network"
-            $This.Network          = Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter "IPEnabled = 1" | ? DefaultIPGateway | % { [SysNetwork]$_ }
-            
-            Write-Host "Collecting [~] Processor"
-            $This.Processor        = Get-WmiObject -Class Win32_Processor      | % { [SysProcessor]$_ }
-            
-            Write-Host "Collecting [~] Computer"
-            Get-WmiObject Win32_ComputerSystem        | % { 
-
-                $This.Manufacturer = $_.Manufacturer; 
-                $This.Model        = $_.Model; 
-                $This.Memory       = "{0}GB" -f [UInt32]($_.TotalPhysicalMemory/1GB)
-            }
-
-            Write-Host "Collecting [~] Product"
-            Get-WmiObject Win32_ComputerSystemProduct | % { 
-                $This.UUID         = $_.UUID 
-            }
-
-            Write-Host "Collecting [~] Motherboard"
-            Get-WmiObject Win32_BaseBoard             | % { 
-                $This.Product      = $_.Product
-                $This.Serial       = $_.SerialNumber -Replace "\.",""
-            }
-            Try
-            {
-                Get-SecureBootUEFI -Name SetupMode | Out-Null 
-                $This.BiosUefi = "UEFI"
-            }
-            Catch
-            {
-                $This.BiosUefi = "BIOS"
-            }
-        
-            Write-Host "Collecting [~] Chassis"
-            Get-WmiObject Win32_SystemEnclosure | % {
-                $This.AssetTag    = $_.SMBIOSAssetTag.Trim()
-                $This.Chassis     = Switch([UInt32]$_.ChassisTypes[0])
-                {
-                    {$_ -in 8..12+14,18,21} {"Laptop"}
-                    {$_ -in 3..7+15,16}     {"Desktop"}
-                    {$_ -in 23}             {"Server"}
-                    {$_ -in 34..36}         {"Small Form Factor"}
-                    {$_ -in 30..32+13}      {"Tablet"}
-                }
-            }
-
-            $This.Architecture = @{x86="x86";AMD64="x64"}[$Env:PROCESSOR_ARCHITECTURE]
-        }
-    }
-
     # Profile Classes
     Class ProfileItem
     {
@@ -965,7 +834,18 @@ Function Get-FEDCPromo
         FEDCPromo()
         {
             # Collect System
-            $This.System                                 = [System]::New()
+            Get-FEModule       | % { 
+
+                $This.Pass     = $_.Control | ? Name -eq success.png | % FullName
+                $This.Fail     = $_.Control | ? Name -eq failure.png | % FullName
+                $_.Role.GetSystem()
+                $This.System   = $_.Role.System
+            }
+
+            If ($This.System.Network | ? DhcpServer)
+            {
+                Write-Host "Warning [!] IP Address not set..."
+            }
 
             # Collect features
             $This.Features                               = [ServerFeatures]::New().Output
@@ -1776,10 +1656,10 @@ Function Get-FEDCPromo
         $Splat = $Execute.Output
         If ($Test)
         {
-            Write-Theme "Testing [~] [FightingEntropy(Ï€)] Service Installation..."
+            Write-Theme "Testing [~] [FightingEntropy(π)] Service Installation..."
             $Execute.Services | % { Write-Host "Install-WindowsFeature -Name $($_.Name) -IncludeAllSubFeature -IncludeManagementTools" -F Cyan }
 
-            Write-Theme "Testing [~] [FightingEntropy(Ï€)] Domain Controller Promotion..."
+            Write-Theme "Testing [~] [FightingEntropy(π)] Domain Controller Promotion..."
             Switch($Main.Profile.Mode)
             {
                 0 { Test-ADDSForestInstallation @Splat }
@@ -1791,10 +1671,10 @@ Function Get-FEDCPromo
 
         If (!$Test)
         {
-            Write-Theme "Installing [~] [FightingEntropy(Ï€)] Services..."
+            Write-Theme "Installing [~] [FightingEntropy(π)] Services..."
             $Execute.Services | % { Install-WindowsFeature -Name $_.Name -IncludeAllSubfeature -IncludeManagementTools }
 
-            Write-Theme "Installing [~] [FightingEntropy(Ï€)] Domain Controller..."
+            Write-Theme "Installing [~] [FightingEntropy(π)] Domain Controller..."
             Switch ( $UI.Mode )
             {
                 0 { Install-ADDSForest @Splat }
