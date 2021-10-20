@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-09-30
-          Modified: 2021-10-07
+          Modified: 2021-10-19
 
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -33,7 +33,7 @@ Function Get-FEModule
         [Parameter(ParameterSetName =  "Graphics" )][Switch]  $Graphics , 
         [Parameter(ParameterSetName =      "Role" )][Switch]      $Role )
 
-    Class _Module
+    Class Root
     {
         Hidden [Object] $Order = @(("Base Name Description Author Company Copyright GUID Version Date OS Manifest RegPath Default Main " +
                                    "Trunk ModPath ManPath Tree Classes Control Functions Graphics Status") -Split " ")
@@ -63,7 +63,7 @@ Function Get-FEModule
         [Object]      $Status
         [Object]        $Type
         [Object]        $Role
-        _Module([Object]$ID)
+        Root([Object]$ID)
         {
             $This.Base        = $ID.Base
             $This.Name        = $ID.Name
@@ -122,14 +122,14 @@ Function Get-FEModule
         }
     }
 
-    Class _Version
+    Class Version
     {
         [UInt32] $Exists
         [UInt32] $Year
         [UInt32] $Month
         [UInt32] $Slot
         [String] $RegPath
-        _Version([Object]$Object)
+        Version([Object]$Object)
         {
             $ID           = $Object.PSChildName.Split(".")
             $This.Year    = $ID[0]
@@ -158,16 +158,16 @@ Function Get-FEModule
         Throw "Registry not found"
     }
     
-    $Child     = Get-ChildItem $Default | % { [_Version]::New($_) } | ? Exists | Sort-Object Year | Select-Object -First 1
+    $Child     = Get-ChildItem $Default | % { [Version]::New($_) } | ? Exists | Sort-Object Year | Select-Object -First 1
     $RegPath   = Get-ItemProperty $Child.RegPath
     
     Switch($PSCmdLet.ParameterSetName)
     {
-        Default   {[_Module]::New($RegPath)}
-        Classes   {[_Module]::New($RegPath).Classes}
-        Functions {[_Module]::New($RegPath).Functions}
-        Control   {[_Module]::New($RegPath).Control}
-        Graphics  {[_Module]::New($RegPath).Graphics}
-        Role      {[_Module]::New($RegPath).Role}
+        Default   {[Root]::New($RegPath)}
+        Classes   {[Root]::New($RegPath).Classes}
+        Functions {[Root]::New($RegPath).Functions}
+        Control   {[Root]::New($RegPath).Control}
+        Graphics  {[Root]::New($RegPath).Graphics}
+        Role      {[Root]::New($RegPath).Role}
     }
 }
