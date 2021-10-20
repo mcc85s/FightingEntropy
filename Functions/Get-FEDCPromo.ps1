@@ -1671,10 +1671,10 @@ Function Get-FEDCPromo
         $Splat = $Execute.Output
         If ($Test)
         {
-            Write-Theme "Testing [~] [FightingEntropy(p)] Service Installation..."
+            Write-Theme "Testing [~] [FightingEntropy($([char]960))] Service Installation..."
             $Execute.Services | % { Write-Host "Install-WindowsFeature -Name $($_.Name) -IncludeAllSubFeature -IncludeManagementTools" -F Cyan }
 
-            Write-Theme "Testing [~] [FightingEntropy(p)] Domain Controller Promotion..."
+            Write-Theme "Testing [~] [FightingEntropy($([char]960))] Domain Controller Promotion..."
             Switch($Main.Profile.Mode)
             {
                 0 { Test-ADDSForestInstallation @Splat }
@@ -1686,10 +1686,10 @@ Function Get-FEDCPromo
 
         If (!$Test)
         {
-            Write-Theme "Installing [~] [FightingEntropy(p)] Services..."
+            Write-Theme "Installing [~] [FightingEntropy($([char]960))] Services..."
             $Execute.Services | % { Install-WindowsFeature -Name $_.Name -IncludeAllSubfeature -IncludeManagementTools }
 
-            Write-Theme "Installing [~] [FightingEntropy(p)] Domain Controller..."
+            Write-Theme "Installing [~] [FightingEntropy($([char]960))] Domain Controller..."
             Switch ( $UI.Mode )
             {
                 0 { Install-ADDSForest @Splat }
