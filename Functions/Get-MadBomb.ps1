@@ -13,10 +13,15 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-21
+          Modified: 2021-10-22
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 	  
+	  Updated: 10/22/2021 - Changed the look of the UI
+	  		      - Fixed datagrid stuff
+			      - Working to integrate the classes for editing registry.
+	                      - AppX stuff added back in
+			      - All of the donation stuff still goes back to MadBomb
 	  Updated: 10/21/2021 - Many new classes added to reintegrate the original script by MadBomb122, not finished yet. 
           TODO: 10/17/2021    - Get items bound to the class structures
 
@@ -69,21 +74,11 @@ Function Get-MadBomb
     # (Get-Content $Home\Desktop\MadBomb.Xaml) | % { "'$_'," } | Set-Clipboard
     Class MadBombGUI
     {
-    	Static [String] $Tab = ('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Windows 10 Settings/Tweaks Script By Madbomb122" Height="620" Width="800" BorderBrush="Black" Background="White">',
+    	Static [String] $Tab = ('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://MadBomb122&apos;s Windows 10 (Settings/Tweaks) [Modified]" Height="620" Width="800" BorderBrush="Black">',
         '    <Window.Resources>',
-        '        <Style x:Key="SeparatorStyle1" TargetType="{x:Type Separator}">',
-        '            <Setter Property="SnapsToDevicePixels" Value="True"/>',
-        '            <Setter Property="Margin" Value="0,0,0,0"/>',
-        '            <Setter Property="Template">',
-        '                <Setter.Value>',
-        '                    <ControlTemplate TargetType="{x:Type Separator}">',
-        '                        <Border Height="24" SnapsToDevicePixels="True" Background="#FF4D4D4D" BorderBrush="#FF4D4D4D" BorderThickness="0,0,0,1"/>',
-        '                    </ControlTemplate>',
-        '                </Setter.Value>',
-        '            </Setter>',
-        '        </Style>',
-        '        <Style TargetType="{x:Type ToolTip}">',
-        '            <Setter Property="Background" Value="#FFFFFFBF"/>',
+        '        <Style TargetType="ToolTip">',
+        '            <Setter Property="Background" Value="#000000"/>',
+        '            <Setter Property="Foreground" Value="#66D066"/>',
         '        </Style>',
         '        <Style TargetType="CheckBox">',
         '            <Setter Property="HorizontalAlignment" Value="Left"/>',
@@ -93,8 +88,8 @@ Function Get-MadBomb
         '        <Style TargetType="Button">',
         '            <Setter Property="Margin" Value="5"/>',
         '            <Setter Property="Padding" Value="5"/>',
-        '            <Setter Property="Height" Value="30"/>',
         '            <Setter Property="FontWeight" Value="Semibold"/>',
+        '            <Setter Property="Height" Value="30"/>',
         '            <Setter Property="FontSize" Value="12"/>',
         '            <Setter Property="Foreground" Value="Black"/>',
         '            <Setter Property="Background" Value="#DFFFBA"/>',
@@ -105,6 +100,14 @@ Function Get-MadBomb
         '                    <Setter Property="CornerRadius" Value="5"/>',
         '                </Style>',
         '            </Style.Resources>',
+        '        </Style>',
+        '        <Style TargetType="GroupBox">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Setter Property="Foreground" Value="Black"/>',
+        '            <Setter Property="FontWeight" Value="SemiBold"/>',
         '        </Style>',
         '        <Style TargetType="GroupBox" x:Key="xGroupBox">',
         '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
@@ -118,218 +121,140 @@ Function Get-MadBomb
         '                </Setter.Value>',
         '            </Setter>',
         '        </Style>',
+        '        <Style TargetType="TabItem">',
+        '            <Setter Property="Template">',
+        '                <Setter.Value>',
+        '                    <ControlTemplate TargetType="TabItem">',
+        '                        <Border Name="Border" BorderThickness="2" BorderBrush="Black" CornerRadius="2" Margin="2">',
+        '                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Right" ContentSource="Header" Margin="5"/>',
+        '                        </Border>',
+        '                        <ControlTemplate.Triggers>',
+        '                            <Trigger Property="IsSelected" Value="True">',
+        '                                <Setter TargetName="Border" Property="Background" Value="#4444FF"/>',
+        '                                <Setter Property="Foreground" Value="#FFFFFF"/>',
+        '                            </Trigger>',
+        '                            <Trigger Property="IsSelected" Value="False">',
+        '                                <Setter TargetName="Border" Property="Background" Value="#DFFFBA"/>',
+        '                                <Setter Property="Foreground" Value="#000000"/>',
+        '                            </Trigger>',
+        '                        </ControlTemplate.Triggers>',
+        '                    </ControlTemplate>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
         '        <Style TargetType="DataGrid">',
         '            <Setter Property="Margin" Value="5"/>',
         '            <Setter Property="AutoGenerateColumns" Value="False"/>',
         '            <Setter Property="AlternationCount" Value="2"/>',
+        '            <Setter Property="HeadersVisibility" Value="Column"/>',
         '            <Setter Property="CanUserResizeRows" Value="False"/>',
         '            <Setter Property="CanUserAddRows" Value="False"/>',
+        '            <Setter Property="IsReadOnly" Value="True"/>',
         '            <Setter Property="IsTabStop" Value="True"/>',
         '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
         '            <Setter Property="SelectionMode" Value="Extended"/>',
+        '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
+        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
+        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
         '        </Style>',
         '        <Style TargetType="DataGridRow">',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Setter Property="TextBlock.HorizontalAlignment" Value="Left"/>',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Style.Triggers>',
+        '                <Trigger Property="AlternationIndex" Value="0">',
+        '                    <Setter Property="Background" Value="White"/>',
+        '                </Trigger>',
+        '                <Trigger Property="AlternationIndex" Value="1">',
+        '                    <Setter Property="Background" Value="#FFD6FFFB"/>',
+        '                </Trigger>',
+        '            </Style.Triggers>',
+        '        </Style>',
+        '        <Style TargetType="DataGridColumnHeader">',
+        '            <Setter Property="FontSize"   Value="10"/>',
+        '            <Setter Property="FontWeight" Value="Medium"/>',
+        '            <Setter Property="Margin" Value="2"/>',
+        '            <Setter Property="Padding" Value="2"/>',
+        '        </Style>',
+        '        <Style TargetType="ComboBox" x:Key="DGCombo">',
+        '            <Setter Property="Margin" Value="0"/>',
+        '            <Setter Property="Padding" Value="2"/>',
+        '            <Setter Property="Height" Value="18"/>',
+        '            <Setter Property="FontSize" Value="10"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
         '        </Style>',
         '    </Window.Resources>',
-        '    <Grid>',
+        '    <Grid Background="LightYellow">',
         '        <Grid.RowDefinitions>',
         '            <RowDefinition Height="20"/>',
         '            <RowDefinition Height="*"/>',
         '            <RowDefinition Height="40"/>',
         '        </Grid.RowDefinitions>',
-        '        <Menu Grid.Row="0" VerticalAlignment="Top">',
+        '        <Menu Grid.Row="0" VerticalAlignment="Top" Background="LightYellow">',
         '            <MenuItem Header="Help">',
-        '                <MenuItem Name="MenuFeedback" Header="Feedback/Bug Report"/>',
-        '                <MenuItem Name="MenuFAQ" Header="FAQ"/>',
-        '                <MenuItem Name="MenuAbout" Header="About"/>',
+        '                <MenuItem Name="MenuFeedback"  Header="Feedback/Bug Report (MadBomb122)"/>',
+        '                <MenuItem Name="MenuFAQ"       Header="FAQ (MadBomb122)"/>',
+        '                <MenuItem Name="MenuAbout"     Header="About (MadBomb122)"/>',
         '                <MenuItem Name="MenuCopyright" Header="Copyright"/>',
-        '                <MenuItem Name="MenuContact" Header="Contact Me"/>',
+        '                <MenuItem Name="MenuContact"   Header="Contact Me (MadBomb122)"/>',
         '            </MenuItem>',
-        '            <MenuItem Name="MenuDonation" Header="Donate to Me" Background="#FFFFAD2F" FontWeight="Bold"/>',
+        '            <MenuItem Name="MenuDonation" Header="Donate to (MadBomb122)"  Background="#FFFFAD2F" FontWeight="Bold"/>',
         '            <MenuItem Name="MenuMadbomb" Header="Madbomb122&apos;s GitHub" Background="#FFFFDF4F" FontWeight="Bold"/>',
         '        </Menu>',
-        '        <TabControl Name="TabControl" Grid.Row="1" BorderBrush="Gainsboro" TabStripPlacement="Left">',
-        '            <TabControl.Resources>',
-        '                <Style TargetType="TabItem">',
-        '                    <Setter Property="Template">',
-        '                        <Setter.Value>',
-        '                            <ControlTemplate TargetType="TabItem">',
-        '                                <Border Name="Border" BorderThickness="1,1,1,0" BorderBrush="Gainsboro" CornerRadius="4" Margin="2">',
-        '                                    <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Right" ContentSource="Header" Margin="5"/>',
-        '                                </Border>',
-        '                                <ControlTemplate.Triggers>',
-        '                                    <Trigger Property="IsSelected" Value="True">',
-        '                                        <Setter TargetName="Border" Property="Background" Value="LightSkyBlue"/>',
-        '                                    </Trigger>',
-        '                                    <Trigger Property="IsSelected" Value="False">',
-        '                                        <Setter TargetName="Border" Property="Background" Value="GhostWhite"/>',
-        '                                    </Trigger>',
-        '                                </ControlTemplate.Triggers>',
-        '                            </ControlTemplate>',
-        '                        </Setter.Value>',
-        '                    </Setter>',
-        '                </Style>',
-        '            </TabControl.Resources>',
+        '        <TabControl Name="TabControl" Grid.Row="1" TabStripPlacement="Left" BorderBrush="LightYellow" Background="LightYellow">',
         '            <TabItem Header="Preferences">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
-        '                    <Grid>',
-        '                        <Grid.RowDefinitions>',
-        '                            <RowDefinition Height="160"/>',
-        '                            <RowDefinition Height="90"/>',
-        '                            <RowDefinition Height="90"/>',
-        '                        </Grid.RowDefinitions>',
-        '                        <GroupBox Grid.Row="0" Header="Global" Margin="5">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <CheckBox Grid.Row="0" Name="GlobalRestorePoint" Content="Create Restore Point"/>',
-        '                                <CheckBox Grid.Row="1" Name="GlobalShowSkipped" Content="Show Skipped Items"/>',
-        '                                <CheckBox Grid.Row="2" Name="GlobalRestart" Content="Restart When Done (Restart is Recommended)"/>',
-        '                                <CheckBox Grid.Row="3" Name="GlobalVersionCheck" Content="Check for Update (If found, will run with current settings)"/>',
-        '                                <CheckBox Grid.Row="4" Name="GlobalInternetCheck" Content="Skip Internet Check"/>',
-        '                            </Grid>',
-        '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="1" Header="Backup" Margin="5">',
-        '                            <Grid>',
-        '                                <Grid.ColumnDefinitions>',
-        '                                    <ColumnDefinition Width="*"/>',
-        '                                    <ColumnDefinition Width="*"/>',
-        '                                    <ColumnDefinition Width="*"/>',
-        '                                    <ColumnDefinition Width="*"/>',
-        '                                </Grid.ColumnDefinitions>',
-        '                                <Button Grid.Column="0" Name="BackupSave" Content="Save Settings"/>',
-        '                                <Button Grid.Column="1" Name="BackupLoad" Content="Load Settings"/>',
-        '                                <Button Grid.Column="2" Name="BackupWinDefault" Content="Windows Default"/>',
-        '                                <Button Grid.Column="3" Name="BackupResetDefault" Content="Reset All Items"/>',
-        '                            </Grid>',
-        '                        </GroupBox>',
-        '                        <GroupBox Grid.Row="2" Header="Script" Margin="5">',
-        '                            <ComboBox Margin="5" Height="24" IsEnabled="False">',
-        '                                <ComboBoxItem Content="Rewrite Module Version" IsSelected="True"/>',
-        '                            </ComboBox>',
-        '                        </GroupBox>',
-        '                    </Grid>',
-        '                </GroupBox>',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="160"/>',
+        '                        <RowDefinition Height="90"/>',
+        '                        <RowDefinition Height="90"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <GroupBox Grid.Row="0" Header="[Global]" Margin="5">',
+        '                        <Grid>',
+        '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="*"/>',
+        '                            </Grid.RowDefinitions>',
+        '                            <CheckBox Grid.Row="0" Name="GlobalRestorePoint" Content="Create Restore Point"/>',
+        '                            <CheckBox Grid.Row="1" Name="GlobalShowSkipped" Content="Show Skipped Items"/>',
+        '                            <CheckBox Grid.Row="2" Name="GlobalRestart" Content="Restart When Done (Restart is Recommended)"/>',
+        '                            <CheckBox Grid.Row="3" Name="GlobalVersionCheck" Content="Check for Update (If found, will run with current settings)"/>',
+        '                            <CheckBox Grid.Row="4" Name="GlobalInternetCheck" Content="Skip Internet Check"/>',
+        '                        </Grid>',
+        '                    </GroupBox>',
+        '                    <GroupBox Grid.Row="1" Header="[Backup]" Margin="5">',
+        '                        <Grid>',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Button Grid.Column="0" Name="BackupSave" Content="Save Settings"/>',
+        '                            <Button Grid.Column="1" Name="BackupLoad" Content="Load Settings"/>',
+        '                            <Button Grid.Column="2" Name="BackupWinDefault" Content="Windows Default"/>',
+        '                            <Button Grid.Column="3" Name="BackupResetDefault" Content="Reset All Items"/>',
+        '                        </Grid>',
+        '                    </GroupBox>',
+        '                    <GroupBox Grid.Row="2" Header="[Script]" Margin="5">',
+        '                        <ComboBox Margin="5" Height="24" IsEnabled="False">',
+        '                            <ComboBoxItem Content="Rewrite Module Version" IsSelected="True"/>',
+        '                        </ComboBox>',
+        '                    </GroupBox>',
+        '                </Grid>',
         '            </TabItem>',
         '            <TabItem Header="Privacy">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
-        '                    <Grid>',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <DataGrid Name="Privacy">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                                <DataGridTemplateColumn Header="Value" Width="100">',
-        '                                    <DataGridTemplateColumn.CellTemplate>',
-        '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
-        '                                                <ComboBoxItem Content="Skip"/>',
-        '                                                <ComboBoxItem Content="Enable"/>',
-        '                                                <ComboBoxItem Content="Disable"/>',
-        '                                            </ComboBox>',
-        '                                        </DataTemplate>',
-        '                                    </DataGridTemplateColumn.CellTemplate>',
-        '                                </DataGridTemplateColumn>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </Grid>',
-        '                </GroupBox>',
-        '            </TabItem>',
-        '            <TabItem Header="Service">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
-        '                    <Grid>',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <DataGrid Name="Service">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                                <DataGridTemplateColumn Header="Value" Width="100">',
-        '                                    <DataGridTemplateColumn.CellTemplate>',
-        '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
-        '                                                <ComboBoxItem Content="Skip"/>',
-        '                                                <ComboBoxItem Content="Enable"/>',
-        '                                                <ComboBoxItem Content="Disable"/>',
-        '                                            </ComboBox>',
-        '                                        </DataTemplate>',
-        '                                    </DataGridTemplateColumn.CellTemplate>',
-        '                                </DataGridTemplateColumn>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </Grid>',
-        '                </GroupBox>',
-        '            </TabItem>',
-        '            <TabItem Header="Context">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
-        '                    <Grid>',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <DataGrid Name="Context">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                                <DataGridTemplateColumn Header="Value" Width="100">',
-        '                                    <DataGridTemplateColumn.CellTemplate>',
-        '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
-        '                                                <ComboBoxItem Content="Skip"/>',
-        '                                                <ComboBoxItem Content="Enable"/>',
-        '                                                <ComboBoxItem Content="Disable"/>',
-        '                                            </ComboBox>',
-        '                                        </DataTemplate>',
-        '                                    </DataGridTemplateColumn.CellTemplate>',
-        '                                </DataGridTemplateColumn>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </Grid>',
-        '                </GroupBox>',
-        '            </TabItem>',
-        '            <TabItem Header="Taskbar">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
-        '                    <Grid>',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <DataGrid Name="Taskbar">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                                <DataGridTemplateColumn Header="Value" Width="100">',
-        '                                    <DataGridTemplateColumn.CellTemplate>',
-        '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
-        '                                                <ComboBoxItem Content="Skip"/>',
-        '                                                <ComboBoxItem Content="Enable"/>',
-        '                                                <ComboBoxItem Content="Disable"/>',
-        '                                            </ComboBox>',
-        '                                        </DataTemplate>',
-        '                                    </DataGridTemplateColumn.CellTemplate>',
-        '                                </DataGridTemplateColumn>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </Grid>',
-        '                </GroupBox>',
-        '            </TabItem>',
-        '            <TabItem Header="Explorer">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
-        '                    <DataGrid Name="Explorer">',
+        '                <GroupBox Header="[Privacy]">',
+        '                    <DataGrid Name="Privacy">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                            <DataGridTemplateColumn Header="Value" Width="100">',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
         '                                            <ComboBoxItem Content="Skip"/>',
         '                                            <ComboBoxItem Content="Enable"/>',
         '                                            <ComboBoxItem Content="Disable"/>',
@@ -341,15 +266,95 @@ Function Get-MadBomb
         '                    </DataGrid>',
         '                </GroupBox>',
         '            </TabItem>',
-        '            <TabItem Header="StartMenu">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
-        '                    <DataGrid Name="StartMenu">',
+        '            <TabItem Header="Service">',
+        '                <GroupBox Header="[Service]">',
+        '                    <DataGrid Name="Service">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                            <DataGridTemplateColumn Header="Value" Width="100">',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Skip"/>',
+        '                                            <ComboBoxItem Content="Enable"/>',
+        '                                            <ComboBoxItem Content="Disable"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </GroupBox>',
+        '            </TabItem>',
+        '            <TabItem Header="Context Menu">',
+        '                <GroupBox Header="[Context Menu]">',
+        '                    <DataGrid Name="Context">',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Skip"/>',
+        '                                            <ComboBoxItem Content="Enable"/>',
+        '                                            <ComboBoxItem Content="Disable"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </GroupBox>',
+        '            </TabItem>',
+        '            <TabItem Header="Taskbar">',
+        '                <GroupBox Header="[Taskbar]">',
+        '                    <DataGrid Name="Taskbar">',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Skip"/>',
+        '                                            <ComboBoxItem Content="Enable"/>',
+        '                                            <ComboBoxItem Content="Disable"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </GroupBox>',
+        '            </TabItem>',
+        '            <TabItem Header="Explorer">',
+        '                <GroupBox Header="[Explorer]">',
+        '                    <DataGrid Name="Explorer">',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
+        '                                            <ComboBoxItem Content="Skip"/>',
+        '                                            <ComboBoxItem Content="Enable"/>',
+        '                                            <ComboBoxItem Content="Disable"/>',
+        '                                        </ComboBox>',
+        '                                    </DataTemplate>',
+        '                                </DataGridTemplateColumn.CellTemplate>',
+        '                            </DataGridTemplateColumn>',
+        '                        </DataGrid.Columns>',
+        '                    </DataGrid>',
+        '                </GroupBox>',
+        '            </TabItem>',
+        '            <TabItem Header="Start Menu">',
+        '                <GroupBox Header="[Start Menu]">',
+        '                    <DataGrid Name="StartMenu">',
+        '                        <DataGrid.Columns>',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
+        '                                <DataGridTemplateColumn.CellTemplate>',
+        '                                    <DataTemplate>',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
         '                                            <ComboBoxItem Content="Skip"/>',
         '                                            <ComboBoxItem Content="Enable"/>',
         '                                            <ComboBoxItem Content="Disable"/>',
@@ -362,14 +367,14 @@ Function Get-MadBomb
         '                </GroupBox>',
         '            </TabItem>',
         '            <TabItem Header="Paths">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
+        '                <GroupBox Header="[Paths]">',
         '                    <DataGrid Name="Paths">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                            <DataGridTemplateColumn Header="Value" Width="100">',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
         '                                            <ComboBoxItem Content="Skip"/>',
         '                                            <ComboBoxItem Content="Enable"/>',
         '                                            <ComboBoxItem Content="Disable"/>',
@@ -382,14 +387,14 @@ Function Get-MadBomb
         '                </GroupBox>',
         '            </TabItem>',
         '            <TabItem Header="Icons">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
+        '                <GroupBox Header="[Icons]">',
         '                    <DataGrid Name="Icons">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                            <DataGridTemplateColumn Header="Value" Width="100">',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
         '                                            <ComboBoxItem Content="Skip"/>',
         '                                            <ComboBoxItem Content="Enable"/>',
         '                                            <ComboBoxItem Content="Disable"/>',
@@ -402,14 +407,14 @@ Function Get-MadBomb
         '                </GroupBox>',
         '            </TabItem>',
         '            <TabItem Header="Lock Screen">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
+        '                <GroupBox Header="[Lock Screen]">',
         '                    <DataGrid Name="LockScreen">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                            <DataGridTemplateColumn Header="Value" Width="100">',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
         '                                            <ComboBoxItem Content="Skip"/>',
         '                                            <ComboBoxItem Content="Enable"/>',
         '                                            <ComboBoxItem Content="Disable"/>',
@@ -422,14 +427,14 @@ Function Get-MadBomb
         '                </GroupBox>',
         '            </TabItem>',
         '            <TabItem Header="Miscellaneous">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
+        '                <GroupBox Header="[Miscellaneous]">',
         '                    <DataGrid Name="Miscellaneous">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                            <DataGridTemplateColumn Header="Value" Width="100">',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
         '                                            <ComboBoxItem Content="Skip"/>',
         '                                            <ComboBoxItem Content="Enable"/>',
         '                                            <ComboBoxItem Content="Disable"/>',
@@ -441,15 +446,15 @@ Function Get-MadBomb
         '                    </DataGrid>',
         '                </GroupBox>',
         '            </TabItem>',
-        '            <TabItem Header="PhotoViewer">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
+        '            <TabItem Header="Photo Viewer">',
+        '                <GroupBox Header="[Photo Viewer]">',
         '                    <DataGrid Name="PhotoViewer">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                            <DataGridTemplateColumn Header="Value" Width="100">',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
         '                                            <ComboBoxItem Content="Skip"/>',
         '                                            <ComboBoxItem Content="Enable"/>',
         '                                            <ComboBoxItem Content="Disable"/>',
@@ -462,14 +467,14 @@ Function Get-MadBomb
         '                </GroupBox>',
         '            </TabItem>',
         '            <TabItem Header="Windows Store">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
+        '                <GroupBox Header="[Windows Store]">',
         '                    <DataGrid Name="WindowsStore">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                            <DataGridTemplateColumn Header="Value" Width="100">',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
         '                                            <ComboBoxItem Content="Skip"/>',
         '                                            <ComboBoxItem Content="Enable"/>',
         '                                            <ComboBoxItem Content="Disable"/>',
@@ -482,14 +487,14 @@ Function Get-MadBomb
         '                </GroupBox>',
         '            </TabItem>',
         '            <TabItem Header="Windows Update">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
+        '                <GroupBox Header="[Windows Update]">',
         '                    <DataGrid Name="WindowsUpdate">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Name" Width="150" Binding="{Binding Name}" IsReadOnly="True"/>',
-        '                            <DataGridTemplateColumn Header="Value" Width="100">',
+        '                            <DataGridTextColumn Header="Name" Width="300" Binding="{Binding Name}" IsReadOnly="True"/>',
+        '                            <DataGridTemplateColumn Header="Value" Width="*">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}">',
+        '                                        <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
         '                                            <ComboBoxItem Content="Skip"/>',
         '                                            <ComboBoxItem Content="Enable"/>',
         '                                            <ComboBoxItem Content="Disable"/>',
@@ -502,42 +507,42 @@ Function Get-MadBomb
         '                </GroupBox>',
         '            </TabItem>',
         '            <TabItem Header="AppX">',
-        '                <GroupBox Style="{StaticResource xGroupBox}">',
+        '                <GroupBox Header="[AppX Catalog]">',
         '                    <DataGrid Name="AppX">',
-        '                        <DataGrid.RowStyle>',
-        '                            <Style TargetType="{x:Type DataGridRow}">',
-        '                                <Style.Triggers>',
-        '                                    <Trigger Property="AlternationIndex" Value="0">',
-        '                                        <Setter Property="Background" Value="White"/>',
-        '                                    </Trigger>',
-        '                                    <Trigger Property="AlternationIndex" Value="1">',
-        '                                        <Setter Property="Background" Value="#FFD8D8D8"/>',
-        '                                    </Trigger>',
-        '                                </Style.Triggers>',
-        '                            </Style>',
-        '                        </DataGrid.RowStyle>',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Display Name" Width="150" Binding="{Binding CName}" CanUserSort="True" IsReadOnly="True"/>',
-        '                            <DataGridTemplateColumn Header="Option" Width="80" SortMemberPath="AppSelected" CanUserSort="True">',
+        '                            <DataGridTextColumn Header="#"            Binding="{Binding Index}"        Width="40"/>',
+        '                            <DataGridTextColumn Header="Cfg"          Binding="{Binding Profile}"      Width="40"/>',
+        '                            <DataGridTextColumn Header="DisplayName"  Binding="{Binding DisplayName}"  Width="250"/>',
+        '                            <DataGridTextColumn Header="CName"        Binding="{Binding CName}"        Width="200"/>',
+        '                            <DataGridTextColumn Header="VarName"      Binding="{Binding VarName}"      Width="200"/>',
+        '                            <DataGridTextColumn Header="Version"      Binding="{Binding Version}"      Width="150"/>',
+        '                            <DataGridTextColumn Header="Arch"         Binding="{Binding Architecture}" Width="40"/>',
+        '                            <DataGridTextColumn Header="ResID"        Binding="{Binding ResourceID}"   Width="40"/>',
+        '                            <DataGridTextColumn Header="PackageName"  Binding="{Binding PackageName}"  Width="400"/>',
+        '                            <DataGridTemplateColumn Header="Slot" Width="80">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <ComboBox ItemsSource="{Binding AppOptions}" Text="{Binding Path=AppSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>',
+        '                                        <ComboBox SelectedIndex="{Binding Path=Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                            <ComboBoxItem Content="Skip"/>',
+        '                                            <ComboBoxItem Content="Unhide"/>',
+        '                                            <ComboBoxItem Content="Hide"/>',
+        '                                            <ComboBoxItem Content="Uninstall"/>',
+        '                                        </ComboBox>',
         '                                    </DataTemplate>',
         '                                </DataGridTemplateColumn.CellTemplate>',
         '                            </DataGridTemplateColumn>',
-        '                            <DataGridTextColumn Header="Appx Name" Width="180" Binding="{Binding AppxName}" IsReadOnly="True"/>',
         '                        </DataGrid.Columns>',
         '                    </DataGrid>',
         '                </GroupBox>',
         '            </TabItem>',
         '        </TabControl>',
-        '        <Button Name="Start" Grid.Row="2" Width="200" Content="Run Script" VerticalAlignment="Center" Height="20" FontWeight="Bold"/>',
+        '        <Button Name="Start" Grid.Row="2" Width="200" Content="Run Script"/>',
         '    </Grid>',
         '</Window>' -join "`n")
     }
 
     # Action Classes
-    Class Reg # Registry Class, allows for path creation, testing, key modification, removal, and changing types/values
+    Class Reg
     {
         [String] $Path
         [String] $Name
@@ -613,7 +618,9 @@ Function Get-MadBomb
             $This.Stack = @( 
             [Reg]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection','AllowTelemetry'),
             [Reg]::New('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection',               'AllowTelemetry'),
+            # 64 bit only
             [Reg]::New('HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection','AllowTelemetry'),
+            # Remove
             [Reg]::New('HKLM:\SOFTWARE\Policies\Microsoft\Windows\PreviewBuilds','AllowBuildPreview'),
             [Reg]::New('HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Software Protection Platform','NoGenTicket'),
             [Reg]::New('HKLM:\SOFTWARE\Policies\Microsoft\SQMClient\Windows','CEIPEnable'),
@@ -721,7 +728,7 @@ Function Get-MadBomb
         [Object] $Stack
         SmartScreen([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
-            $Path = Switch ($This.GetWinVersion() -ge 1703)
+            $Path = Switch($This.GetWinVersion() -ge 1703)
             { 
                 $False { $Null }
                 $True  { Get-AppxPackage -AllUsers Microsoft.MicrosoftEdge | % PackageFamilyName | Select-Object -Unique }
@@ -5042,48 +5049,100 @@ Function Get-MadBomb
         }
     }
     
-    Class AppXObject
+    Class AppXTemplate
     {
-        Hidden [String[]] $Line
         [String] $AppXName
         [String] $CName
-        [String] $VarName
-        AppXObject([String]$Line)
+        [String] $Varname
+        AppXTemplate([String]$Line)
         {
-            $This.Line     = $Line.Split(";")
-            $This.AppXName = $This.Line[0]
-            $This.CName    = $This.Line[1]
-            $This.VarName  = "`${0}" -f $This.Line[2]
+            $Split = $Line.Split("/")
+            $This.AppXName = $Split[0]
+            $This.CName    = $Split[1]
+            $This.Varname  = $Split[2]
         }
     }
 
-    Class AppXCollection
+    Class AppXProfile
     {
-        [String] $List     = ('Microsoft.3DBuilder;3DBuilder;APP_3DBuilder,Microsoft.Microsoft3DViewer;3DViewer;APP_3DViewer,Microsoft' +
-                              '.BingWeather;Bing Weather;APP_BingWeather,Microsoft.CommsPhone;Phone;APP_CommsPhone,Microsoft.windowsco' +
-                              'mmunicationsapps;Calendar & Mail;APP_Communications,Microsoft.GetHelp;Microsofts Self-Help;APP_GetHelp,' +
-                              'Microsoft.Getstarted;Get Started Link;APP_Getstarted,Microsoft.Messaging;Messaging;APP_Messaging,Micros' + 
-                              'oft.MicrosoftOfficeHub;Get Office Link;APP_MicrosoftOffHub,Microsoft.MovieMoments;Movie Moments;APP_Mov' + 
-                              'ieMoments,4DF9E0F8.Netflix;Netflix;APP_Netflix,Microsoft.Office.OneNote;Office OneNote;APP_OfficeOneNot' + 
-                              'e,Microsoft.Office.Sway;Office Sway;APP_OfficeSway,Microsoft.OneConnect;One Connect;APP_OneConnect,Micr' + 
-                              'osoft.People;People;APP_People,Microsoft.Windows.Photos;Photos;APP_Photos,Microsoft.SkypeApp;Skype;APP_' + 
-                              'SkypeApp1,Microsoft.MicrosoftSolitaireCollection;Microsoft Solitaire;APP_SolitaireCollect,Microsoft.Mic' + 
-                              'rosoftStickyNotes;Sticky Notes;APP_StickyNotes,Microsoft.WindowsSoundRecorder;Voice Recorder;APP_VoiceR' + 
-                              'ecorder,Microsoft.WindowsAlarms;Alarms and Clock;APP_WindowsAlarms,Microsoft.WindowsCalculator;Calculat' +
-                              'or;APP_WindowsCalculator,Microsoft.WindowsCamera;Camera;APP_WindowsCamera,Microsoft.WindowsFeedback;Win' + 
-                              'dows Feedback;APP_WindowsFeedbak1,Microsoft.WindowsFeedbackHub;Windows Feedback Hub;APP_WindowsFeedbak2' +
-                              ',Microsoft.WindowsMaps;Maps;APP_WindowsMaps,Microsoft.WindowsPhone;Phone Companion;APP_WindowsPhone,Mic' +
-                              'rosoft.WindowsStore;Microsoft Store;APP_WindowsStore,Microsoft.Wallet;Stores Credit and Debit Card Info' +
-                              'rmation;APP_WindowsWallet,$Xbox_Apps;Xbox Apps (All);APP_XboxApp,Microsoft.ZuneMusic;Groove Music;APP_Z' +
-                              'uneMusic,Microsoft.ZuneVideo;Groove Video;APP_ZuneVideo')
+        [String[]] $Profile = (('{0}.3DBuilder/3DBuilder/APP_3DBuilder;{0}.{0}3DViewer/3DViewer/APP_3DViewer;{0}' +
+        '.BingWeather/Bing Weather/APP_BingWeather;{0}.CommsPhone/Phone/APP_CommsPhone;{0}.windowscommunicationsapps' +
+        '/Calendar & Mail/APP_Communications;{0}.GetHelp/{0}s Self-Help/APP_GetHelp;{0}.Getstarted/Get Started Lin' +
+        'k/APP_Getstarted;{0}.Messaging/Messaging/APP_Messaging;{0}.{0}OfficeHub/Get Office Link/APP_{0}OffHub;{0}.M' + 
+        'ovieMoments/Movie Moments/APP_MovieMoments;4DF9E0F8.Netflix/Netflix/APP_Netflix;{0}.Office.OneNote/Office O' + 
+        'neNote/APP_OfficeOneNote;{0}.Office.Sway/Office Sway/APP_OfficeSway;{0}.OneConnect/One Connect/APP_OneConne' + 
+        'ct;{0}.People/People/APP_People;{0}.Windows.Photos/Photos/APP_Photos;{0}.SkypeApp/Skype/APP_SkypeApp1;{0}.{' + 
+        '0}SolitaireCollection/{0} Solitaire/APP_SolitaireCollect;{0}.{0}StickyNotes/Sticky Notes/APP_StickyNotes;{0' + 
+        '}.WindowsSoundRecorder/Voice Recorder/APP_VoiceRecorder;{0}.WindowsAlarms/Alarms and Clock/APP_WindowsAlarm' + 
+        's;{0}.WindowsCalculator/Calculator/APP_WindowsCalculator;{0}.WindowsCamera/Camera/APP_WindowsCamera;{0}.Win' + 
+        'dowsFeedback/Windows Feedback/APP_WindowsFeedbak1;{0}.WindowsFeedbackHub/Windows Feedback Hub/APP_WindowsFe' + 
+        'edbak2;{0}.WindowsMaps/Maps/APP_WindowsMaps;{0}.WindowsPhone/Phone Companion/APP_WindowsPhone;{0}.WindowsSt' + 
+        'ore/{0} Store/APP_WindowsStore;{0}.Wallet/Stores Credit and Debit Card Information/APP_WindowsWallet;{0}.Xb' + 
+        'ox.TCUI/Xbox Title-callable UI/App_XboxTCUI;{0}.XboxApp/Xbox App for Windows PC/App_XboxApp;{0}.XboxGameOve' + 
+        'rlay/Xbox In-Game Overlay/App_XboxGameOverlay;{0}.XboxGamingOverlay/Xbox Gaming Overlay UI/App_XboxGamingOv' + 
+        'erlay;{0}.XboxIdentityProvider/Xbox Identity Provider/App_XboxIdentityProvider;{0}.XboxSpeechtoTextOverlay/' + 
+        'Xbox Speech-to-Text UI/App_XboxSpeechToText;{0}.ZuneMusic/Groove Music/APP_ZuneMusic;{0}.ZuneVideo/Groove V' + 
+        'ideo/APP_ZuneVideo;') -f "Microsoft" -Split ";" )
         [Object] $Output
-        AppXCollection()
+        AppXProfile()
         {
-            $This.Output = @( )
-            ForEach ( $Item in $This.List -Split "," )
+            $This.Output = $This.Profile | % { [AppXTemplate]$_ }
+        }
+    }
+
+    Class AppXObject
+    {
+        Hidden [Object] $Object
+        [UInt32]         $Index
+        [UInt32]       $Profile
+        [String]         $CName
+        [String]       $VarName
+        [String]   $DisplayName
+        [String]       $Version
+        [String]  $Architecture
+        [String]    $ResourceID
+        [String]   $PackageName
+        [UInt32]          $Slot
+        [String]      $Selected
+        AppXObject([UInt32]$Index,[Object]$AppXProfile,[Object]$Object)
+        {
+            $This.Index        = $Index
+            $This.Object       = $Object
+            $This.DisplayName  = $Object.DisplayName
+            $This.Version      = $Object.Version
+            $This.Architecture = $Object.Architecture
+            $This.ResourceID   = $Object.ResourceID
+            $This.PackageName  = $Object.PackageName
+
+            If ($Object.DisplayName -in $AppXProfile.AppXName)
             {
-                $This.Output += [AppxObject]::New($Item)
+                $Item              = $AppXProfile | ? AppXName -match $This.DisplayName
+                $This.Profile      = 1
+                $This.CName        = $Item.CName
+                $This.VarName      = $Item.VarName
             }
+            Else
+            {
+                    $This.Profile      = 0
+                    $This.CName        = "-"
+                    $This.VarName      = "-"
+            }
+        }
+        SetSlot([UInt32]$Slot)
+        {
+            $This.Slot         = $Slot
+            $This.Selected     = @("Skip","Unhide","Hide","Uninstall")[$Slot]
+        }
+    }
+
+    Class AppXStack
+    {
+        [Object] $Profile = [AppXProfile]::New().Output
+        [Object] $Output
+        AppXStack()
+        {
+            $This.Output   = @( )
+            Get-AppxProvisionedPackage -Online | % { $This.Output += [AppXObject]::New($This.Output.Count,$This.Profile,$_) }
         }
     }
 
@@ -5122,7 +5181,7 @@ Function Get-MadBomb
             $This.PhotoViewer                = [PhotoViewerList]::New().Output
             $This.WindowsApps                = [WindowsAppsList]::New().Output
             $This.WindowsUpdate              = [WindowsUpdateList]::New().Output
-            $This.AppX                       = [AppXCollection]::New().Output
+            $This.AppX                       = [AppXStack]::New().Output
         }
     }
 
@@ -5181,6 +5240,9 @@ Function Get-MadBomb
 
     $Main   = [Main]::New()
     $Xaml   = [XamlWindow][MadBombGUI]::Tab
+
+    $Xaml.IO.AppX.ItemsSource = @( )
+    $Xaml.IO.AppX.ItemsSource = @($Main.Config.AppX)
 
     $Xaml.IO.MenuFeedback.Add_Click(
     {      
@@ -5262,20 +5324,19 @@ Function Get-MadBomb
         $Main.Toggle($Main.Control.ResetDefault)  
     }) 
 
-    $Xaml.IO.Privacy.ItemsSource       = $Main.Config.Privacy
-    $Xaml.IO.Service.ItemsSource       = $Main.Config.Service
-    $Xaml.IO.Context.ItemsSource       = $Main.Config.Context
-    $Xaml.IO.Taskbar.ItemsSource       = $Main.Config.Taskbar
-    $Xaml.IO.Explorer.ItemsSource      = $Main.Config.Explorer
-    $Xaml.IO.StartMenu.ItemsSource     = $Main.Config.StartMenu
-    $Xaml.IO.Paths.ItemsSource         = $Main.Config.Paths
-    $Xaml.IO.Icons.ItemsSource         = $Main.Config.Icons
-    $Xaml.IO.LockScreen.ItemsSource    = $Main.Config.LockScreen
-    $Xaml.IO.Miscellaneous.ItemsSource = $Main.Config.Miscellaneous
-    $Xaml.IO.PhotoViewer.ItemsSource   = $Main.Config.PhotoViewer
-    $Xaml.IO.WindowsStore.ItemsSource  = $Main.Config.WindowsApps
-    $Xaml.IO.WindowsUpdate.ItemsSource = $Main.Config.WindowsUpdate
-    $Xaml.IO.AppX.ItemsSource          = $Main.Config.AppX
+    $Xaml.IO.Privacy.ItemsSource       = @($Main.Config.Privacy)
+    $Xaml.IO.Service.ItemsSource       = @($Main.Config.Service)
+    $Xaml.IO.Context.ItemsSource       = @($Main.Config.Context)
+    $Xaml.IO.Taskbar.ItemsSource       = @($Main.Config.Taskbar)
+    $Xaml.IO.Explorer.ItemsSource      = @($Main.Config.Explorer)
+    $Xaml.IO.StartMenu.ItemsSource     = @($Main.Config.StartMenu)
+    $Xaml.IO.Paths.ItemsSource         = @($Main.Config.Paths)
+    $Xaml.IO.Icons.ItemsSource         = @($Main.Config.Icons)
+    $Xaml.IO.LockScreen.ItemsSource    = @($Main.Config.LockScreen)
+    $Xaml.IO.Miscellaneous.ItemsSource = @($Main.Config.Miscellaneous)
+    $Xaml.IO.PhotoViewer.ItemsSource   = @($Main.Config.PhotoViewer)
+    $Xaml.IO.WindowsStore.ItemsSource  = @($Main.Config.WindowsApps)
+    $Xaml.IO.WindowsUpdate.ItemsSource = @($Main.Config.WindowsUpdate)
 
     $Xaml.Invoke()
 }
