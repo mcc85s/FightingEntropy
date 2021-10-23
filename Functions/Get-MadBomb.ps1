@@ -18,12 +18,12 @@
           Version - 2021.10.0 - () - Finalized functional version 1.
       
 	      Updated: 10/22/2021 - Took some snapshots of the UI design
-                              - Changed the look of the UI
-	  		                  - Fixed datagrid stuff
-			                  - Working to integrate the classes for editing registry.
+                                  - Changed the look of the UI
+	  		          - Fixed datagrid stuff
+			          - Working to integrate the classes for editing registry
 	                          - AppX stuff added back in
 	      Updated: 10/21/2021 - Many new classes added to reintegrate the original script by MadBomb122, not finished yet. 
-          TODO: 10/17/2021    - Get items bound to the class structures
+              TODO: 10/17/2021    - Get items bound to the class structures
 
 .Example
 #>
