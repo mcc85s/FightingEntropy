@@ -6,7 +6,7 @@
 .LINK
 
 .NOTES
-          FileName: Get-MadBomb.ps1
+          FileName: Get-FESiteMap.ps1
           Solution: FightingEntropy Module
           Purpose: For populating a control object that removes all traces of specified Adds/Dhcp/Dns/Vm/VmSwitch instances 
           Author: Michael C. Cook Sr.
@@ -293,20 +293,25 @@ Function Get-FESitemap
                 {
                     Computer
                     {
-                        $Item | Remove-ADObject -Confirm:$False -Recursive -Verbose -EA 0
+                        Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
                     }
                     OrganizationalUnit
                     {
-                        $Item | Set-ADObject -ProtectedFromAccidentalDeletion 0 -Verbose | Remove-ADObject -Confirm:$False -Recursive -Verbose
+                        Set-ADObject -Identity $Item.DistinguishedName -ProtectedFromAccidentalDeletion $False -Verbose 
+                        Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose
                     }
                     Subnet
                     {
-                        $Item | Remove-ADObject -Confirm:$False 
+                        Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False 
                     }
                     Site
                     {
-                        Remove-ADObject -DistinguishedName $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
-                        Set-ADReplicationSiteLink -Identity $This.Sitelink -SitesIncluded @{ Remove = $Item.DistinguishedName } -Verbose
+                        Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
+                        Set-ADReplicationSiteLink -Identity $This.Sitelink.DistinguishedName -SitesIncluded @{ Remove = $Item.DistinguishedName } -Verbose
+                    }
+                    DHCPClass
+                    {
+                        Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
                     }
                 }
             }
@@ -348,7 +353,7 @@ Function Get-FESitemap
             {
                 Switch ($Item.RecordType)
                 {
-                    A    { $Item | ? {$_.RecordData.IPV4Address -notin $X } }
+                    A    { $Item | ? {$_.RecordData.IPV4Address -notin $This.GetSubnetRange() } }
                     AAAA { $Item | ? RecordName  -match $This.Server }
                     SRV  { $Item | ? {$_.RecordData.DomainName -match $This.Server } }
                 }
@@ -378,7 +383,12 @@ Function Get-FESitemap
             ForEach ($Item in $This.Dns)
             {
                 Write-Host "Removing [~] Dns Entry ($($Item.DisplayName))"
-                $Item | Remove-DNSServerResourceRecord -ZoneName $Item.ZoneName -Verbose -EA 0 -Confirm:$False -Force
+
+                Remove-DNSServerResourceRecord -ZoneName $Item.ZoneName -RRType $Item.RecordType -Name $Item.Hostname -Verbose -EA 0 -Confirm:$False -Force
+            }
+            ForEach ($Item in $This.DNS | ? DS | ? Reverse | % ZoneName | Select-Object -Unique)
+            {
+                Remove-DnsServerZone -Name $Item -Verbose -Confirm:$False -Force
             }
         }
         GetVM()
@@ -396,7 +406,7 @@ Function Get-FESitemap
         {
             ForEach ($Item in $This.VM)
             {
-                If ($This.Vm.State -ne "Off")
+                If ($Item.State -ne "Off")
                 {
                     Write-Host "Stopping [~] Vm $($Item.Name)"
                     Stop-VM -Name $Item.Name -Force -Confirm:$False -Verbose
@@ -405,7 +415,7 @@ Function Get-FESitemap
                 Remove-VM -Name $Item.Name -Force -Confirm:$False -Verbose
 
                 Write-Host "Removing [~] Vmx ($($Item.VMXPath))"
-                Remove-Item $Item.VMXPath -Force -Confirm:$False -Verbose
+                Remove-Item $Item.VMXPath -Force -Recurse -Confirm:$False -Verbose
 
                 Write-Host "Removing [~] Vhd ($($Item.VHDPath))"
                 Remove-Item $Item.VHDPath -Force -Confirm:$False -Verbose
@@ -430,7 +440,14 @@ Function Get-FESitemap
                 Remove-VMSwitch -Name $Item.Name -Force -Confirm:$False -Verbose
             }
         }
-
+        Remove()
+        {
+            $This.RemoveADDS()
+            $This.RemoveDhcp()
+            $This.RemoveDns()
+            $This.RemoveVm()
+            $This.RemoveVmSwitch()
+        }
     }
     [Master]::New($Zone,$Base,$Config,$OU,$Subnet,$Gateway,$Server,$Client)
 }
