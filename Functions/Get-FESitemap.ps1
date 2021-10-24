@@ -6,7 +6,7 @@
 .LINK
 
 .NOTES
-          FileName: Get-FESiteMap.ps1
+          FileName: Get-FESitemap.ps1
           Solution: FightingEntropy Module
           Purpose: For populating a control object that removes all traces of specified Adds/Dhcp/Dns/Vm/VmSwitch instances 
           Author: Michael C. Cook Sr.
