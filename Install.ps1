@@ -106,7 +106,7 @@ Function FightingEntropy
         [String[]]  $Functions = ("Copy-FileStream","Get-DiskInfo","Get-EnvironmentKey","Get-FEADLogin","Get-FEDCPromo","Get-FEHost","Get-FEImageManifest",
                                   "Get-FEInfo","Get-FEManifest","Get-FEModule","Get-FENetwork","Get-FEOS","Get-FEProcess","Get-FERole","Get-FEService",
                                   "Get-MadBomb","Get-MDTModule","Get-PSDModule","Get-ViperBomb","Install-IISServer","Invoke-cimdb","Invoke-KeyEntry",
-                                  "New-EnvironmentKey","New-FEInfrastructure","Set-ScreenResolution","Show-ToastNotification","Write-Theme" | % { "$_.ps1" })
+                                  "New-EnvironmentKey","New-FEInfrastructure","Set-ScreenResolution","Show-ToastNotification","Write-Theme","Get-FESitemap" | % { "$_.ps1" })
         [String[]]   $Graphics = "background.jpg banner.png icon.ico OEMbg.jpg OEMlogo.bmp sdplogo.png" -Split " "
         Manifest()
         {
