@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-23
-          Modified: 2021-10-23
+          Modified: 2021-10-24
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -32,14 +32,15 @@ Function Get-FESitemap
 {
     [CmdLetBinding()]
     Param(
-        [Parameter(Mandatory,Position=0)][String]    $Zone,
-        [Parameter(Mandatory,Position=1)][String]    $Base,
-        [Parameter(Mandatory,Position=2)][String]  $Config,
-        [Parameter(Mandatory,Position=3)][String]      $OU,
-        [Parameter(Mandatory,Position=4)][String]  $Subnet,
-        [Parameter(Mandatory,Position=5)][String] $Gateway,
-        [Parameter(Mandatory,Position=6)][String]  $Server,
-        [Parameter(Mandatory,Position=7)][String]  $Client)
+        [Parameter(Mandatory,ParameterSetName=0,Position=0)][Hashtable]$InputObject,
+        [Parameter(Mandatory,ParameterSetName=1,Position=0)][String]    $Zone,
+        [Parameter(Mandatory,ParameterSetName=1,Position=1)][String]    $Base,
+        [Parameter(Mandatory,ParameterSetName=1,Position=2)][String]  $Config,
+        [Parameter(Mandatory,ParameterSetName=1,Position=3)][String]      $OU,
+        [Parameter(Mandatory,ParameterSetName=1,Position=4)][String]  $Subnet,
+        [Parameter(Mandatory,ParameterSetName=1,Position=5)][String] $Gateway,
+        [Parameter(Mandatory,ParameterSetName=1,Position=6)][String]  $Server,
+        [Parameter(Mandatory,ParameterSetName=1,Position=7)][String]  $Client)
 
     Class ADDSObject
     {
@@ -288,31 +289,39 @@ Function Get-FESitemap
 
             ForEach ($Item in $This.ADDS | ? ObjectClass -ne Sitelink)
             {
-                Write-Host "Removing [~] Adds Object ($($Item.DistinguishedName))"
-                Switch ($Item.ObjectClass)
+                Try
                 {
-                    Computer
+                    Get-ADObject -Identity $Item.DistinguishedName
+                    Write-Host "Removing [~] Adds Object ($($Item.DistinguishedName))"
+                    Switch ($Item.ObjectClass)
                     {
-                        Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
+                        Computer
+                        {
+                            Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
+                        }
+                        OrganizationalUnit
+                        {
+                            Set-ADObject -Identity $Item.DistinguishedName -ProtectedFromAccidentalDeletion $False -Verbose 
+                            Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose
+                        }
+                        Subnet
+                        {
+                            Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False 
+                        }
+                        Site
+                        {
+                            Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
+                            Set-ADReplicationSiteLink -Identity $This.Sitelink.DistinguishedName -SitesIncluded @{ Remove = $Item.DistinguishedName } -Verbose
+                        }
+                        DHCPClass
+                        {
+                            Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
+                        }
                     }
-                    OrganizationalUnit
-                    {
-                        Set-ADObject -Identity $Item.DistinguishedName -ProtectedFromAccidentalDeletion $False -Verbose 
-                        Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose
-                    }
-                    Subnet
-                    {
-                        Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False 
-                    }
-                    Site
-                    {
-                        Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
-                        Set-ADReplicationSiteLink -Identity $This.Sitelink.DistinguishedName -SitesIncluded @{ Remove = $Item.DistinguishedName } -Verbose
-                    }
-                    DHCPClass
-                    {
-                        Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
-                    }
+                }
+                Catch
+                {
+
                 }
             }
         }
@@ -447,7 +456,32 @@ Function Get-FESitemap
             $This.RemoveDns()
             $This.RemoveVm()
             $This.RemoveVmSwitch()
+            $Root = Get-Item Variable:\Home | % Value
+            $Lab  = Get-ChildItem "$Root\Desktop" | ? Name -match "VM\(\d{8}\)" 
+            If ($Lab)
+            {
+                Switch([System.Windows.MessageBox]::Show("Lab folder $($Lab.Name) found","Remove?","YesNo"))
+                {
+                    Yes { $Lab | Remove-Item -Recurse -Verbose }
+                    No  { }
+                }
+            }
         }
     }
-    [Master]::New($Zone,$Base,$Config,$OU,$Subnet,$Gateway,$Server,$Client)
+
+    Switch ($PSCmdLet.ParameterSetName)
+    {
+        0 
+        {
+            $InputObject | % { 
+
+                [Master]::New($_.Zone,$_.Base,$_.Config,$_.OU,$_.Subnet,$_.Gateway,$_.Server,$_.Client)
+            }
+            
+        }
+        1
+        {
+            [Master]::New($Zone,$Base,$Config,$OU,$Subnet,$Gateway,$Server,$Client)
+        }
+    }
 }
