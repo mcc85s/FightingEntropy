@@ -30,7 +30,7 @@ $Master   = Get-FESitemap $Zone $Base $Config $OU $Subnet $Gateway $Server $Clie
 #>
 Function Get-FESitemap
 {
-    [CmdLetBinding()]
+    [CmdLetBinding(DefaultParameterSetName=1)]
     Param(
         [Parameter(Mandatory,ParameterSetName=0,Position=0)][Hashtable]$InputObject,
         [Parameter(Mandatory,ParameterSetName=1,Position=0)][String]    $Zone,
