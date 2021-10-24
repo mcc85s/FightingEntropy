@@ -371,486 +371,6 @@ Function New-FEInfrastructure
         }
     }
 
-    Class IPConfig
-    {
-        [String]   $Alias
-        [UInt32]   $Index
-        [String]   $Description
-        [String]   $Profile
-        [String[]] $IPV4Address
-        [String]   $IPV4Gateway
-        [String[]] $IPV6Address
-        [String]   $IPV6Gateway
-        [String[]] $DnsServer
-        IPConfig([Object]$Ip)
-        {
-            $This.Alias       = $IP.InterfaceAlias
-            $This.Index       = $IP.InterfaceIndex
-            $This.Description = $IP.InterfaceDescription
-            $This.Profile     = $IP.NetProfile.Name
-            $This.IPV4Address = $IP.IPV4Address | % IPAddress
-            $This.IPV4Gateway = $IP.IPV4DefaultGateway | % NextHop
-            $This.IPV6Address = $IP.IPV6Address | % IPAddress
-            $This.IPV6Address = $IP.IPV6DefaultGateway | % NextHop
-            $This.DNSServer   = $IP.DNSServer | % ServerAddresses
-        }
-    }
-
-    # [Dhcp Classes]
-    Class DhcpServerv4Reservation
-    {
-        [String] $IPAddress
-        [String] $ClientID
-        [String] $Name
-        [String] $Description
-        DhcpServerv4Reservation([Object]$Res)
-        {
-            $This.IPAddress   = $Res.IPAddress
-            $This.ClientID    = $Res.ClientID
-            $This.Name        = $Res.Name
-            $This.Description = $Res.Description
-        }
-    }
-
-    Class DhcpServerV4OptionValue
-    {
-        [UInt32] $OptionID
-        [String] $Name
-        [String] $Type
-        [String] $Value
-        DhcpServerV4OptionValue([Object]$Opt)
-        {
-            $This.OptionID = $Opt.OptionID
-            $This.Name     = $Opt.Name
-            $This.Type     = $Opt.Type
-            $This.Value    = $Opt.Value -join ", "
-        }
-    }
-
-    Class DhcpServerv4Scope
-    {
-        [String] $ScopeID
-        [String] $SubnetMask
-        [String] $Name
-        [UInt32] $State
-        [String] $StartRange
-        [String] $EndRange
-        [Object[]] $Reservations
-        [Object[]] $Options
-        DhcpServerv4Scope([Object]$Scope)
-        {
-            $This.ScopeID      = $Scope.ScopeID
-            $This.SubnetMask   = $Scope.SubnetMask
-            $This.Name         = $Scope.Name
-            $This.State        = @(0,1)[$Scope.State -eq "Active"]
-            $This.StartRange   = $Scope.StartRange
-            $This.EndRange     = $Scope.EndRange
-            $This.Reservations = Get-DhcpServerV4Reservation -ScopeID $Scope.ScopeID | % { [DhcpServerv4Reservation]$_ }
-            $This.Options      = Get-DhcpServerV4OptionValue -ScopeID $Scope.ScopeID | % { [DhcpServerV4OptionValue]$_ }
-        }
-    }
-
-    Class DhcpServer
-    {
-        [Object]$Scope
-        DhcpServer()
-        {
-            $This.Scope = Get-DhcpServerV4Scope | % { [DhcpServerv4Scope]$_ }
-        }
-    }
-
-    # [Dns Classes]
-    Class DnsServerResourceRecord
-    {
-        [Object] $Record
-        [String] $Type
-        [String] $Name
-        DnsServerResourceRecord([Object]$Type,[Object]$Record)
-        {
-            $This.Record = $Record
-            $This.Type   = $Type
-            $This.Name   = Switch($Type)
-            {
-                NS    { $Record.NameServer      } SOA   { $Record.PrimaryServer   }
-                MX    { $Record.MailExchange    } CNAME { $Record.HostNameAlias   }
-                SRV   { $Record.DomainName      } A     { $Record.IPV4Address     }
-                AAAA  { $Record.IPV6Address     } PTR   { $Record.PTRDomainName   }
-                TXT   { $Record.DescriptiveText } DHCID { $Record.DHCID           }
-            }
-        }
-        [String] ToString()
-        {
-            Return ( $This.Name )
-        }
-    }
-
-    Class DnsServerHostRecord
-    {
-        [String] $HostName
-        [String] $RecordType
-        [UInt32] $Type
-        [Object] $RecordData
-        DnsServerHostRecord([Object]$Record)
-        {
-            $This.HostName   = $Record.HostName
-            $This.RecordType = $Record.RecordType
-            $This.Type       = $Record.Type
-            $This.RecordData = [DnsServerResourceRecord]::New($Record.RecordType,$Record.RecordData).Name
-        }
-    }
-
-    Class DnsServerZone
-    {
-        [String] $Index
-        [String] $ZoneName
-        [String] $ZoneType
-        [UInt32] $IsReverseLookupZone
-        [Object[]] $Hosts
-        DnsServerZone([UInt32]$Index,[Object]$Zone)
-        {
-            $This.Index               = $Index
-            $This.ZoneName            = $Zone.ZoneName
-            $This.ZoneType            = $Zone.ZoneType
-            $This.IsReverseLookupZone = $Zone.IsReverseLookupZone
-            $This.Hosts               = Get-DNSServerResourceRecord -ZoneName $Zone.Zonename | % { [DnsServerHostRecord]::New($_) }
-        }
-    }
-
-    Class DnsServer
-    {
-        [Object]$Zone
-        DnsServer()
-        {
-            $This.Zone = @( )
-            ForEach ($Zone in Get-DnsServerZone)
-            {
-                Write-Host "Collecting [~] ($($Zone.Zonename))"
-                $This.Zone += [DnsServerZone]::New($This.Zone.Count,$Zone)
-            }
-        }
-    }
-
-    # [Adds Classes]
-    Class AddsObject
-    {
-        Hidden [Object] $Object
-        [String] $Name
-        [String] $Class
-        [String] $GUID
-        [String] $DistinguishedName
-        AddsObject([Object]$Object)
-        {
-            $This.Object            = $Object
-            $This.Name              = $Object.Name
-            $This.Class             = $Object.ObjectClass
-            $This.GUID              = $Object.ObjectGUID
-            $This.DistinguishedName = $Object.DistinguishedName
-        }
-        [String] ToString()
-        {
-            Return @( $This.Name )
-        }
-    }
-
-    Class AddsDomain
-    {
-        [String] $HostName
-        [String] $DCMode
-        [String] $DomainMode
-        [String] $ForestMode
-        [String] $Root
-        [String] $Config
-        [String] $Schema
-        [Object[]] $Site
-        [Object[]] $SiteLink
-        [Object[]] $Subnet
-        [Object[]] $DHCP
-        [Object[]] $OU
-        [Object[]] $Computer
-        AddsDomain()
-        {
-            Import-Module ActiveDirectory
-            $Domain          = Get-Item AD:
-            $This.Hostname   = $Domain.DNSHostName
-            $This.DCMode     = $Domain.domainControllerFunctionality
-            $This.DomainMode = $Domain.domainFunctionality
-            $This.ForestMode = $Domain.forestFunctionality
-            $This.Root       = $Domain.rootDomainNamingContext
-            $This.Config     = $Domain.configurationNamingContext
-            $This.Schema     = $Domain.schemaNamingContext
-
-            $Cfg             = Get-ADObject -Filter * -SearchBase $This.Config | ? ObjectClass -match "(Site|Sitelink|Subnet|Dhcpclass)" | % { [AddsObject]$_ }
-            $Base            = Get-ADObject -Filter * -SearchBase $This.Root   | ? ObjectClass -match "(OrganizationalUnit|Computer)"    | % { [AddsObject]$_ }
-
-            $This.Site       = $Cfg  | ? Class -eq Site
-            $This.SiteLink   = $Cfg  | ? Class -eq Sitelink
-            $This.Subnet     = $Cfg  | ? Class -eq Subnet
-            $This.Dhcp       = $Cfg  | ? Class -eq DhcpClass
-            $This.OU         = $Base | ? Class -eq OrganizationalUnit
-            $This.Computer   = $Base | ? Class -eq Computer
-        }
-    }
-
-    # [HyperV]
-    Class VmGuestNetwork
-    {
-        [String] $Name
-        [String] $VMName
-        [String] $SwitchName
-        [String] $MacAddress
-        VmGuestNetwork([Object]$Adapter)
-        {
-            $This.Name       = $Adapter.Name
-            $This.VMName     = $Adapter.VMName
-            $This.SwitchName = $Adapter.SwitchName
-            $This.MacAddress = $Adapter.MacAddress
-        }
-    }
-
-    Class VmGuest
-    {
-        [UInt32]   $Index
-        [String]   $Name
-        [String]   $ID
-        [String]   $Path
-        [String]   $Disk
-        [String]   $Size
-        [Object[]] $Network
-        [String[]] $Switch
-        VmGuest([UInt32]$Index,[Object]$VM)
-        {
-            Write-Host "Collecting [~] VM ($($Index+1))"
-            $This.Index = $Index
-            $This.Name = $VM.Name
-            $This.ID   = $VM.ID
-            $This.Path = $VM.Path
-            $This.Disk = $VM.HardDrives[0].Path
-            $This.Size = "{0:n2} GB" -f [Float]((Get-Item $This.Disk | % Length)/1GB)
-            $This.Network = $VM.NetworkAdapters | % { [VmGuestNetwork]$_ }
-            $This.Switch  = @($This.Network.SwitchName)
-        }
-    }
-
-    Class VmSwitch
-    {
-        [UInt32] $Index
-        [String] $Name
-        [String] $ID
-        [String] $Type
-        [String] $Description
-        [Object] $Interface
-        VmSwitch([UInt32]$Index,[Object]$IP,[Object]$Switch)
-        {
-            Write-Host "Collecting [~] Switch ($($Index+1))"
-            $This.Index       = $Index
-            $This.Name        = $Switch.Name
-            $This.ID          = $Switch.ID
-            $This.Type        = $Switch.SwitchType
-            $This.Description = @($Switch.NetAdapterInterfaceDescription,"-")[$Switch.NetAdapterInterfaceDescription -ne ""]
-            $This.Interface   = $IP | ? Alias -match $Switch.Name
-        }
-    }
-
-    Class VmHost
-    {
-        [String] $Name
-        [UInt32] $Processor
-        [String] $Memory
-        [String] $VHDPath
-        [String] $VMPath
-        [Object] $Switch
-        [Object] $Vm
-        VmHost([Object]$IP)
-        {
-            Write-Host "Collecting [~] Virtual Machine Host"
-            $VMHost         = Get-VMHost
-            $This.Name      = @($VMHost.ComputerName,"$($VMHost.ComputerName).$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
-            $This.Processor = $VMHost.LogicalProcessorCount
-            $This.Memory    = "{0:n2} GB" -f [Float]($VMHost.MemoryCapacity/1GB)
-            $This.VHDPath   = $VMHost.VirtualHardDiskPath
-            $This.VMPath    = $VMHost.VirtualMachinePath
-            
-            Write-Host "Collecting [~] Virtual Machine Switch(es)"
-            $This.Switch    = @( ) 
-            Get-VMSwitch    | % { $This.Switch += [VmSwitch]::New($This.Switch.Count,$IP,$_) }
-
-            Write-Host "Collecting [~] Virtual Machine Guest(s)"
-            $This.Vm        = @( )
-            Get-VM          | % { $This.Vm += [VmGuest]::New($This.Vm.Count,$_) }
-        }
-    }
-
-    # [WDS Classes]
-    Class WdsImage
-    {
-        [String] $Type
-        [String] $Arch
-        [String] $Created
-        [String] $Language
-        [String] $Description
-        [UInt32] $Enabled
-        [String] $FileName
-        [String] $ID
-        WdsImage([Object]$Type,[Object]$Image)
-        {
-            $This.Type        = $Type
-            $This.Arch        = @("x86","x64")[$Image.Architecture -eq 3]
-            $This.Created     = $Image.CreationTime
-            $This.Language    = $Image.DefaultLanguage
-            $This.Description = $Image.Description
-            $This.Enabled     = @(0,1)[$Image.Enabled -eq $True]
-            $This.FileName    = $Image.FileName
-            $This.ID          = $Image.ID
-        }
-    }
-
-    Class WdsServer
-    {
-        [String] $Server
-        [Object[]] $IPAddress
-        [Object] $Images
-        WdsServer([Object]$IP)
-        {
-            $This.Server    = @($Env:ComputerName,"$Env:ComputerName.$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
-            $This.IPAddress = @($IP)
-            $This.Images    = @( )
-            Write-Host "Collecting [~] Wds Install Images"
-            Get-WdsInstallImage -EA 0 | % { $This.Images += [WdsImage]::New("Install",$_) }
-            Write-Host "Collecting [~] Wds Boot Images"
-            Get-WdsBootImage    -EA 0 | % { $This.Images += [WdsImage]::New("Boot",$_) }
-        }
-    }
-
-    # [Mdt Classes]
-    Class MdtShare
-    {
-        [String] $Name
-        [String] $Type
-        [String] $Root
-        [String] $Share
-        [String] $Description
-        MdtShare([Object]$Drive)
-        {
-            $This.Name        = $Drive.Name
-            $This.Type        = If (Test-Path "$($Drive.Path)\PSDResources") { "PSD" } Else { "MDT" }
-            $This.Root        = $Drive.Path
-            $This.Share       = Get-SmbShare | ? Path -eq $Drive.Path | % Name
-            $This.Description = $Drive.Description
-        }
-    }
-
-    Class MdtServer
-    {
-        [String]      $Server
-        [Object[]] $IPAddress
-        [String]        $Path
-        [String]     $Version
-        [String]  $AdkVersion
-        [String]   $PEVersion
-        [Object]      $Shares
-        MdtServer([Object]$IP,[Object]$Registry)
-        {
-            $This.Server     = @($Env:ComputerName,"$Env:ComputerName.$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
-            $This.IPAddress  = @($IP)
-            $This.Path       = Get-ItemProperty "HKLM:\Software\Microsoft\Deployment*" | % Install_Dir
-            $This.Version    = Get-ItemProperty $Registry | ? DisplayName -match "Microsoft Deployment Toolkit" | % DisplayVersion | % TrimEnd \
-            $This.AdkVersion = Get-ItemProperty $Registry | ? DisplayName -match "Windows Assessment and Deployment Kit - Windows 10" | % DisplayVersion
-            $This.PeVersion  = Get-ItemProperty $Registry | ? DisplayName -match "Preinstallation Environment Add-ons - Windows 10"   | % DisplayVersion
-            $This.Shares     = @( )
-            Get-MDTModule | Import-Module
-            Get-MDTPersistentDrive | % { $This.Shares += [MdtShare]$_ }
-        }
-    }
-
-    # [IIS Classes]
-    Class IISSiteBinding
-    {
-        [UInt32]      $Index
-        [String]   $Protocol
-        [String]    $Binding
-        [String]   $SslFlags
-        IISSiteBinding([UInt32]$Index,[Object]$Bind)
-        {
-            $This.Index    = $Index
-            $This.Protocol = $Bind.Protocol
-            $This.Binding  = $Bind.BindingInformation
-            $This.SslFlags = $Bind.SslFlags
-        }
-        [String] ToString()
-        {
-            Return @( $This.Binding)
-        }
-    }
-
-    Class IISSite
-    {
-        [String]        $Name
-        [UInt32]          $ID
-        [String]       $State
-        [String]        $Path
-        [Object[]]  $Bindings
-        [UInt32]   $BindCount
-        IISSite([Object]$Site)
-        {
-            $This.Name     = $Site.Name
-            $This.ID       = $Site.ID
-            $This.State    = $Site.State
-            $This.Path     = $Site.Applications[0].VirtualDirectories[0].PhysicalPath
-            $This.Bindings = @( )
-            If ( $Site.Bindings.Count -gt 1 )
-            {
-                ForEach ( $Binding in $Site.Bindings)
-                {
-                    $This.Bindings += [IISSiteBinding]::New($This.Bindings.Count,$Binding)
-                }
-            }
-            Else
-            {
-                $This.Bindings += [IISSiteBinding]::New(0,$Site.Bindings)
-            }
-            $This.BindCount = $This.Bindings.Count
-        }
-    }
-
-    Class IISAppPool
-    {
-        [String]         $Name
-        [String]       $Status
-        [String]    $AutoStart
-        [String]   $CLRVersion
-        [String] $PipelineMode
-        [String]    $StartMode
-        IISAppPool([Object]$AppPool)
-        {
-            $This.Name         = $AppPool.Name
-            $This.Status       = $AppPool.State
-            $This.AutoStart    = $AppPool.Attributes | ? Name -eq autoStart             | % Value
-            $This.CLRVersion   = $AppPool.Attributes | ? Name -eq managedRuntimeVersion | % Value
-            $This.PipelineMode = $AppPool.ManagedPipelineMode
-            $This.StartMode    = $AppPool.StartMode
-        }
-    }
-
-    Class IISServer
-    {
-        [Object]     $AppDefaults
-        [Object] $AppPoolDefaults
-        [Object]    $SiteDefaults
-        [Object] $VirtualDefaults
-        [Object[]]      $AppPools
-        [Object[]]         $Sites
-        IISServer()
-        {
-            Import-Module WebAdministration
-            $IIS                  = Get-IISServerManager
-            $This.AppDefaults     = $IIS.ApplicationDefaults
-            $This.AppPoolDefaults = $IIS.ApplicationPoolDefaults
-            $This.AppPools        = $IIS.ApplicationPools | % { [IISAppPool]$_ }
-            $This.SiteDefaults    = $IIS.SiteDefaults
-            $This.Sites           = $IIS.Sites | % { [IISSite]$_ }
-        }
-    }
-
     # [GUI Classes]
     Class DcTopology
     {
@@ -938,7 +458,7 @@ Function New-FEInfrastructure
             $This.Netmask   = $Network.Netmask
             $This.Start     = $Network.Start
             $This.End       = $Network.End
-            $This.Range     = $Network.Range
+            $This.Range     = $Network.HostRange
             $This.Broadcast = $Network.Broadcast
         }
     }
@@ -1224,11 +744,19 @@ Function New-FEInfrastructure
     {
         [Object] $Name
         [Bool] $Exists
-        VmTest([String]$Name)
+        VmTest([String]$Type,[String]$Name)
         {
+            $Return      = $Null
             $This.Name   = $Name
-            $Return      = Get-VM -Name $Name -EA 0
-            $This.Exists = $Return -ne $Null
+            If ($Type -eq "VM")
+            {
+                $Return  = Get-VM -Name $Name -EA 0
+            }
+            If ($Type -eq "Switch")
+            {
+                $Return  = Get-VMSwitch -Name $Name -EA 0
+            }
+            $This.Exists = !!$Return
         }
     }
 
@@ -1264,6 +792,17 @@ Function New-FEInfrastructure
         }
     }
 
+    Class VmSwitch
+    {
+        [String] $Type = "Switch"
+        [Object] $Name
+        [Bool] $Create = $True
+        VmSwitch([String]$Name)
+        {
+            $This.Name = $Name
+        }
+    }
+
     Class VMObject
     {
         [Object]$Item
@@ -1292,29 +831,8 @@ Function New-FEInfrastructure
                 Throw "Invalid path"
             }
 
-            ElseIf (Get-VM -Name $This.Name -EA 0)
-            {
-                Write-Host "VM exists..."
-                If (Get-VM -Name $This.Name | ? Status -ne Off)
-                {
-                    $This.Stop()
-                }
-
-                $This.Remove()
-            }
-
             $This.Path             = $This.Path -f $Path
             $This.NewVhdPath       = $This.NewVhdPath -f $Path
-
-            If (Test-Path $This.Path)
-            {
-                Remove-Item $This.Path -Recurse -Confirm:$False -Verbose
-            }
-
-            If (Test-Path $This.NewVhdPath)
-            {
-                Remove-Item $This.NewVhdPath -Recurse -Confirm:$False -Verbose
-            }
 
             $Object                = @{
 
@@ -2887,11 +2405,30 @@ Function New-FEInfrastructure
         '                                </GroupBox>',
         '                            </Grid>',
         '                        </TabItem>',
+        '                        <TabItem Header="Switch">',
+        '                            <GroupBox Grid.Row="0" Header="[VmSwitch] - (Provision virtual switches)">',
+        '                                <DataGrid Grid.Row="0" Name="VmSwitch">',
+        '                                    <DataGrid.Columns>',
+        '                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
+        '                                        <DataGridTemplateColumn Header="Exists" Width="100">',
+        '                                            <DataGridTemplateColumn.CellTemplate>',
+        '                                                <DataTemplate>',
+        '                                                    <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                        <ComboBoxItem Content="False"/>',
+        '                                                        <ComboBoxItem Content="True"/>',
+        '                                                    </ComboBox>',
+        '                                                </DataTemplate>',
+        '                                            </DataGridTemplateColumn.CellTemplate>',
+        '                                        </DataGridTemplateColumn>',
+        '                                    </DataGrid.Columns>',
+        '                                </DataGrid>',
+        '                            </GroupBox>',
+        '                        </TabItem>',
         '                        <TabItem Header="Gateway">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="180"/>',
+        '                                    <RowDefinition Height="270"/>',
         '                                </Grid.RowDefinitions>',
         '                                <GroupBox Grid.Row="0" Header="[VmGateway] - (Provision physical/virtual machine gateways)">',
         '                                    <DataGrid Grid.Row="0" Name="VmGateway">',
@@ -2914,12 +2451,23 @@ Function New-FEInfrastructure
         '                                    <Grid.RowDefinitions>',
         '                                        <RowDefinition Height="*"/>',
         '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="*"/>',
         '                                    </Grid.RowDefinitions>',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="120"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Row="0" Grid.Column="0" Header="[VmGatewayScript] - (Script to install gateway item)" IsEnabled="False">',
+        '                                    <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Header="[VmGatewayPath] - (Path to the VMX/VHD files)">',
+        '                                        <Grid>',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Button Grid.Column="0" Name="VmGatewayPathSelect" Content="Select"/>',
+        '                                            <TextBox Grid.Column="1" Name="VmGatewayPath"/>',
+        '                                        </Grid>',
+        '                                    </GroupBox>',
+        '                                    <GroupBox Grid.Row="1" Grid.Column="0" Header="[VmGatewayScript] - (Script to install gateway item)" IsEnabled="False">',
         '                                        <Grid>',
         '                                            <Grid.ColumnDefinitions>',
         '                                                <ColumnDefinition Width="100"/>',
@@ -2929,10 +2477,10 @@ Function New-FEInfrastructure
         '                                            <TextBox Grid.Column="1" Name="VmGatewayScript"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="0" Grid.Column="1" Header="[(RAM/MB)]">',
+        '                                    <GroupBox Grid.Row="1" Grid.Column="1" Header="[(RAM/MB)]">',
         '                                        <TextBox Name="VmGatewayMemory"/>',
         '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Grid.Column="0" Header="[VmGatewayImage] - (Image to install gateway item)">',
+        '                                    <GroupBox Grid.Row="2" Grid.Column="0" Header="[VmGatewayImage] - (Image to install gateway item)">',
         '                                        <Grid>',
         '                                            <Grid.ColumnDefinitions>',
         '                                                <ColumnDefinition Width="100"/>',
@@ -2942,7 +2490,7 @@ Function New-FEInfrastructure
         '                                            <TextBox Grid.Column="1" Name="VmGatewayImage"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Grid.Column="1" Header="[(HDD/GB)]">',
+        '                                    <GroupBox Grid.Row="2" Grid.Column="1" Header="[(HDD/GB)]">',
         '                                        <TextBox Name="VmGatewayDrive"/>',
         '                                    </GroupBox>',
         '                                </Grid>',
@@ -2952,7 +2500,7 @@ Function New-FEInfrastructure
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="180"/>',
+        '                                    <RowDefinition Height="270"/>',
         '                                </Grid.RowDefinitions>',
         '                                <GroupBox Grid.Row="0" Header="[VmServer] - (Provision physical/virtual machine servers)">',
         '                                    <DataGrid  Name="VmServer">',
@@ -2975,12 +2523,23 @@ Function New-FEInfrastructure
         '                                    <Grid.RowDefinitions>',
         '                                        <RowDefinition Height="*"/>',
         '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="*"/>',
         '                                    </Grid.RowDefinitions>',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="120"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Row="0" Grid.Column="0" Header="[VmServerScript] - (Script to install virtual servers)" IsEnabled="False">',
+        '                                    <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Header="[VmServerPath] - (Path to the VMX/VHD files)">',
+        '                                        <Grid>',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Button Grid.Column="0" Name="VmServerPathSelect" Content="Select"/>',
+        '                                            <TextBox Grid.Column="1" Name="VmServerPath"/>',
+        '                                        </Grid>',
+        '                                    </GroupBox>',
+        '                                    <GroupBox Grid.Row="1" Grid.Column="0" Header="[VmServerScript] - (Script to install virtual servers)" IsEnabled="False">',
         '                                        <Grid>',
         '                                            <Grid.ColumnDefinitions>',
         '                                                <ColumnDefinition Width="100"/>',
@@ -2990,10 +2549,10 @@ Function New-FEInfrastructure
         '                                            <TextBox Grid.Column="1" Name="VmServerScript"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="0" Grid.Column="1" Header="[(RAM/MB)]">',
+        '                                    <GroupBox Grid.Row="1" Grid.Column="1" Header="[(RAM/MB)]">',
         '                                        <TextBox Name="VmServerMemory"/>',
         '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Grid.Column="0" Header="[VmServerImage] - (Image to install virtual servers)">',
+        '                                    <GroupBox Grid.Row="2" Grid.Column="0" Header="[VmServerImage] - (Image to install virtual servers)">',
         '                                        <Grid>',
         '                                            <Grid.ColumnDefinitions>',
         '                                                <ColumnDefinition Width="100"/>',
@@ -3003,7 +2562,7 @@ Function New-FEInfrastructure
         '                                            <TextBox Grid.Column="1" Name="VmServerImage"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Grid.Column="1" Header="[(HDD/GB)]">',
+        '                                    <GroupBox Grid.Row="2" Grid.Column="1" Header="[(HDD/GB)]">',
         '                                        <TextBox Name="VmServerDrive"/>',
         '                                    </GroupBox>',
         '                                </Grid>',
@@ -3504,31 +3063,587 @@ Function New-FEInfrastructure
         }
     }
 
-    Class Config
+    Function Config
     {
-        [Object] $Output
-        Config([Object]$Features,[Object]$Registry)
-        {
-            $This.Output = @(
+        [CmdLetbinding()]Param([Parameter(Mandatory)][Object]$Module)
 
-                ForEach ( $Item in "DHCP","DNS","AD-Domain-Services","Hyper-V","WDS","Web-WebServer")
-                {
-                    [DGList]::New($Item, [Bool]($Features | ? Name -eq $Item | % Installed))
-                }
-                
-                ForEach ( $Item in "MDT","WinADK","WinPE")
-                {
-                    $Slot = Switch($Item)
-                    {
-                        MDT    { $Registry[0], "Microsoft Deployment Toolkit"                       , "6.3.8456.1000" }
-                        WinADK { $Registry[1], "Windows Assessment and Deployment Kit - Windows 10" , "10.1.17763.1"  }
-                        WinPE  { $Registry[1], "Preinstallation Environment Add-ons - Windows 10"   , "10.1.17763.1"  }
-                    }
-                        
-                    [DGList]::New($Item, [Bool](Get-ItemProperty $Slot[0] | ? DisplayName -match $Slot[1] | ? DisplayVersion -ge $Slot[2]))
-                }
-            )
+        Class DGList
+        {
+            [String]$Name
+            [Object]$Value
+            DGList([String]$Name,[Object]$Value)
+            {
+                $This.Name  = $Name
+                $This.Value = $Value
+            }
         }
+
+        Class IPConfig
+        {
+            [String]   $Alias
+            [UInt32]   $Index
+            [String]   $Description
+            [String]   $Profile
+            [String[]] $IPV4Address
+            [String]   $IPV4Gateway
+            [String[]] $IPV6Address
+            [String]   $IPV6Gateway
+            [String[]] $DnsServer
+            IPConfig([Object]$Ip)
+            {
+                $This.Alias       = $IP.InterfaceAlias
+                $This.Index       = $IP.InterfaceIndex
+                $This.Description = $IP.InterfaceDescription
+                $This.Profile     = $IP.NetProfile.Name
+                $This.IPV4Address = $IP.IPV4Address | % IPAddress
+                $This.IPV4Gateway = $IP.IPV4DefaultGateway | % NextHop
+                $This.IPV6Address = $IP.IPV6Address | % IPAddress
+                $This.IPV6Address = $IP.IPV6DefaultGateway | % NextHop
+                $This.DNSServer   = $IP.DNSServer | % ServerAddresses
+            }
+        }
+
+        # [Dhcp Classes]
+        Class DhcpServerv4Reservation
+        {
+            [String] $IPAddress
+            [String] $ClientID
+            [String] $Name
+            [String] $Description
+            DhcpServerv4Reservation([Object]$Res)
+            {
+                $This.IPAddress   = $Res.IPAddress
+                $This.ClientID    = $Res.ClientID
+                $This.Name        = $Res.Name
+                $This.Description = $Res.Description
+            }
+        }
+
+        Class DhcpServerV4OptionValue
+        {
+            [UInt32] $OptionID
+            [String] $Name
+            [String] $Type
+            [String] $Value
+            DhcpServerV4OptionValue([Object]$Opt)
+            {
+                $This.OptionID = $Opt.OptionID
+                $This.Name     = $Opt.Name
+                $This.Type     = $Opt.Type
+                $This.Value    = $Opt.Value -join ", "
+            }
+        }
+
+        Class DhcpServerv4Scope
+        {
+            [String] $ScopeID
+            [String] $SubnetMask
+            [String] $Name
+            [UInt32] $State
+            [String] $StartRange
+            [String] $EndRange
+            [Object[]] $Reservations
+            [Object[]] $Options
+            DhcpServerv4Scope([Object]$Scope)
+            {
+                $This.ScopeID      = $Scope.ScopeID
+                $This.SubnetMask   = $Scope.SubnetMask
+                $This.Name         = $Scope.Name
+                $This.State        = @(0,1)[$Scope.State -eq "Active"]
+                $This.StartRange   = $Scope.StartRange
+                $This.EndRange     = $Scope.EndRange
+                $This.Reservations = Get-DhcpServerV4Reservation -ScopeID $Scope.ScopeID | % { [DhcpServerv4Reservation]$_ }
+                $This.Options      = Get-DhcpServerV4OptionValue -ScopeID $Scope.ScopeID | % { [DhcpServerV4OptionValue]$_ }
+            }
+        }
+
+        Class DhcpServer
+        {
+            [Object]$Scope
+            DhcpServer()
+            {
+                $This.Scope = Get-DhcpServerV4Scope | % { [DhcpServerv4Scope]$_ }
+            }
+        }
+
+        # [Dns Classes]
+        Class DnsServerResourceRecord
+        {
+            [Object] $Record
+            [String] $Type
+            [String] $Name
+            DnsServerResourceRecord([Object]$Type,[Object]$Record)
+            {
+                $This.Record = $Record
+                $This.Type   = $Type
+                $This.Name   = Switch($Type)
+                {
+                    NS    { $Record.NameServer      } SOA   { $Record.PrimaryServer   }
+                    MX    { $Record.MailExchange    } CNAME { $Record.HostNameAlias   }
+                    SRV   { $Record.DomainName      } A     { $Record.IPV4Address     }
+                    AAAA  { $Record.IPV6Address     } PTR   { $Record.PTRDomainName   }
+                    TXT   { $Record.DescriptiveText } DHCID { $Record.DHCID           }
+                }
+            }
+            [String] ToString()
+            {
+                Return ( $This.Name )
+            }
+        }
+
+        Class DnsServerHostRecord
+        {
+            [String] $HostName
+            [String] $RecordType
+            [UInt32] $Type
+            [Object] $RecordData
+            DnsServerHostRecord([Object]$Record)
+            {
+                $This.HostName   = $Record.HostName
+                $This.RecordType = $Record.RecordType
+                $This.Type       = $Record.Type
+                $This.RecordData = [DnsServerResourceRecord]::New($Record.RecordType,$Record.RecordData).Name
+            }
+        }
+
+        Class DnsServerZone
+        {
+            [String] $Index
+            [String] $ZoneName
+            [String] $ZoneType
+            [UInt32] $IsReverseLookupZone
+            [Object[]] $Hosts
+            DnsServerZone([UInt32]$Index,[Object]$Zone)
+            {
+                $This.Index               = $Index
+                $This.ZoneName            = $Zone.ZoneName
+                $This.ZoneType            = $Zone.ZoneType
+                $This.IsReverseLookupZone = $Zone.IsReverseLookupZone
+                $This.Hosts               = Get-DNSServerResourceRecord -ZoneName $Zone.Zonename | % { [DnsServerHostRecord]::New($_) }
+            }
+        }
+
+        Class DnsServer
+        {
+            [Object]$Zone
+            DnsServer()
+            {
+                $This.Zone = @( )
+                ForEach ($Zone in Get-DnsServerZone)
+                {
+                    Write-Host "Collecting [~] ($($Zone.Zonename))"
+                    $This.Zone += [DnsServerZone]::New($This.Zone.Count,$Zone)
+                }
+            }
+        }
+
+        # [Adds Classes]
+        Class AddsObject
+        {
+            Hidden [Object] $Object
+            [String] $Name
+            [String] $Class
+            [String] $GUID
+            [String] $DistinguishedName
+            AddsObject([Object]$Object)
+            {
+                $This.Object            = $Object
+                $This.Name              = $Object.Name
+                $This.Class             = $Object.ObjectClass
+                $This.GUID              = $Object.ObjectGUID
+                $This.DistinguishedName = $Object.DistinguishedName
+            }
+            [String] ToString()
+            {
+                Return @( $This.Name )
+            }
+        }
+
+        Class AddsDomain
+        {
+            [String] $HostName
+            [String] $DCMode
+            [String] $DomainMode
+            [String] $ForestMode
+            [String] $Root
+            [String] $Config
+            [String] $Schema
+            [Object[]] $Site
+            [Object[]] $SiteLink
+            [Object[]] $Subnet
+            [Object[]] $DHCP
+            [Object[]] $OU
+            [Object[]] $Computer
+            AddsDomain()
+            {
+                Import-Module ActiveDirectory
+                $Domain          = Get-Item AD:
+                $This.Hostname   = $Domain.DNSHostName
+                $This.DCMode     = $Domain.domainControllerFunctionality
+                $This.DomainMode = $Domain.domainFunctionality
+                $This.ForestMode = $Domain.forestFunctionality
+                $This.Root       = $Domain.rootDomainNamingContext
+                $This.Config     = $Domain.configurationNamingContext
+                $This.Schema     = $Domain.schemaNamingContext
+
+                $Cfg             = Get-ADObject -Filter * -SearchBase $This.Config | ? ObjectClass -match "(Site|Sitelink|Subnet|Dhcpclass)" | % { [AddsObject]$_ }
+                $Base            = Get-ADObject -Filter * -SearchBase $This.Root   | ? ObjectClass -match "(OrganizationalUnit|Computer)"    | % { [AddsObject]$_ }
+
+                $This.Site       = $Cfg  | ? Class -eq Site
+                $This.SiteLink   = $Cfg  | ? Class -eq Sitelink
+                $This.Subnet     = $Cfg  | ? Class -eq Subnet
+                $This.Dhcp       = $Cfg  | ? Class -eq DhcpClass
+                $This.OU         = $Base | ? Class -eq OrganizationalUnit
+                $This.Computer   = $Base | ? Class -eq Computer
+            }
+        }
+
+        # [HyperV]
+        Class VmGuestNetwork
+        {
+            [String] $Name
+            [String] $VMName
+            [String] $SwitchName
+            [String] $MacAddress
+            VmGuestNetwork([Object]$Adapter)
+            {
+                $This.Name       = $Adapter.Name
+                $This.VMName     = $Adapter.VMName
+                $This.SwitchName = $Adapter.SwitchName
+                $This.MacAddress = $Adapter.MacAddress
+            }
+        }
+
+        Class VmGuest
+        {
+            [UInt32]   $Index
+            [String]   $Name
+            [String]   $ID
+            [String]   $Path
+            [String]   $Disk
+            [String]   $Size
+            [Object[]] $Network
+            [String[]] $Switch
+            VmGuest([UInt32]$Index,[Object]$VM)
+            {
+                Write-Host "Collecting [~] VM ($($Index+1))"
+                $This.Index = $Index
+                $This.Name = $VM.Name
+                $This.ID   = $VM.ID
+                $This.Path = $VM.Path
+                $This.Disk = $VM.HardDrives[0].Path
+                $This.Size = "{0:n2} GB" -f [Float]((Get-Item $This.Disk | % Length)/1GB)
+                $This.Network = $VM.NetworkAdapters | % { [VmGuestNetwork]$_ }
+                $This.Switch  = @($This.Network.SwitchName)
+            }
+        }
+
+        Class VmSwitch
+        {
+            [UInt32] $Index
+            [String] $Name
+            [String] $ID
+            [String] $Type
+            [String] $Description
+            [Object] $Interface
+            VmSwitch([UInt32]$Index,[Object]$IP,[Object]$Switch)
+            {
+                Write-Host "Collecting [~] Switch ($($Index+1))"
+                $This.Index       = $Index
+                $This.Name        = $Switch.Name
+                $This.ID          = $Switch.ID
+                $This.Type        = $Switch.SwitchType
+                $This.Description = @($Switch.NetAdapterInterfaceDescription,"-")[$Switch.NetAdapterInterfaceDescription -ne ""]
+                $This.Interface   = $IP | ? Alias -match $Switch.Name
+            }
+        }
+
+        Class VmHost
+        {
+            [String] $Name
+            [UInt32] $Processor
+            [String] $Memory
+            [String] $VHDPath
+            [String] $VMPath
+            [Object] $Switch
+            [Object] $Vm
+            VmHost([Object]$IP)
+            {
+                Write-Host "Collecting [~] Virtual Machine Host"
+                $VMHost         = Get-VMHost
+                $This.Name      = @($VMHost.ComputerName,"$($VMHost.ComputerName).$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+                $This.Processor = $VMHost.LogicalProcessorCount
+                $This.Memory    = "{0:n2} GB" -f [Float]($VMHost.MemoryCapacity/1GB)
+                $This.VHDPath   = $VMHost.VirtualHardDiskPath
+                $This.VMPath    = $VMHost.VirtualMachinePath
+                
+                Write-Host "Collecting [~] Virtual Machine Switch(es)"
+                $This.Switch    = @( ) 
+                Get-VMSwitch    | % { $This.Switch += [VmSwitch]::New($This.Switch.Count,$IP,$_) }
+
+                Write-Host "Collecting [~] Virtual Machine Guest(s)"
+                $This.Vm        = @( )
+                Get-VM          | % { $This.Vm += [VmGuest]::New($This.Vm.Count,$_) }
+            }
+        }
+
+        # [WDS Classes]
+        Class WdsImage
+        {
+            [String] $Type
+            [String] $Arch
+            [String] $Created
+            [String] $Language
+            [String] $Description
+            [UInt32] $Enabled
+            [String] $FileName
+            [String] $ID
+            WdsImage([Object]$Type,[Object]$Image)
+            {
+                $This.Type        = $Type
+                $This.Arch        = @("x86","x64")[$Image.Architecture -eq 3]
+                $This.Created     = $Image.CreationTime
+                $This.Language    = $Image.DefaultLanguage
+                $This.Description = $Image.Description
+                $This.Enabled     = @(0,1)[$Image.Enabled -eq $True]
+                $This.FileName    = $Image.FileName
+                $This.ID          = $Image.ID
+            }
+        }
+
+        Class WdsServer
+        {
+            [String] $Server
+            [Object[]] $IPAddress
+            [Object] $Images
+            WdsServer([Object]$IP)
+            {
+                $This.Server    = @($Env:ComputerName,"$Env:ComputerName.$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+                $This.IPAddress = @($IP)
+                $This.Images    = @( )
+                Write-Host "Collecting [~] Wds Install Images"
+                Get-WdsInstallImage -EA 0 | % { $This.Images += [WdsImage]::New("Install",$_) }
+                Write-Host "Collecting [~] Wds Boot Images"
+                Get-WdsBootImage    -EA 0 | % { $This.Images += [WdsImage]::New("Boot",$_) }
+            }
+        }
+
+        # [Mdt Classes]
+        Class MdtShare
+        {
+            [String] $Name
+            [String] $Type
+            [String] $Root
+            [String] $Share
+            [String] $Description
+            MdtShare([Object]$Drive)
+            {
+                $This.Name        = $Drive.Name
+                $This.Type        = If (Test-Path "$($Drive.Path)\PSDResources") { "PSD" } Else { "MDT" }
+                $This.Root        = $Drive.Path
+                $This.Share       = Get-SmbShare | ? Path -eq $Drive.Path | % Name
+                $This.Description = $Drive.Description
+            }
+        }
+
+        Class MdtServer
+        {
+            [String]      $Server
+            [Object[]] $IPAddress
+            [String]        $Path
+            [String]     $Version
+            [String]  $AdkVersion
+            [String]   $PEVersion
+            [Object]      $Shares
+            MdtServer([Object]$IP,[Object]$Registry)
+            {
+                $This.Server     = @($Env:ComputerName,"$Env:ComputerName.$Env:UserDNSDomain")[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+                $This.IPAddress  = @($IP)
+                $This.Path       = Get-ItemProperty "HKLM:\Software\Microsoft\Deployment*" | % Install_Dir
+                $This.Version    = Get-ItemProperty $Registry | ? DisplayName -match "Microsoft Deployment Toolkit" | % DisplayVersion | % TrimEnd \
+                $This.AdkVersion = Get-ItemProperty $Registry | ? DisplayName -match "Windows Assessment and Deployment Kit - Windows 10" | % DisplayVersion
+                $This.PeVersion  = Get-ItemProperty $Registry | ? DisplayName -match "Preinstallation Environment Add-ons - Windows 10"   | % DisplayVersion
+                $This.Shares     = @( )
+                Get-MDTModule | Import-Module
+                Get-MDTPersistentDrive | % { $This.Shares += [MdtShare]$_ }
+            }
+        }
+
+        # [IIS Classes]
+        Class IISSiteBinding
+        {
+            [UInt32]      $Index
+            [String]   $Protocol
+            [String]    $Binding
+            [String]   $SslFlags
+            IISSiteBinding([UInt32]$Index,[Object]$Bind)
+            {
+                $This.Index    = $Index
+                $This.Protocol = $Bind.Protocol
+                $This.Binding  = $Bind.BindingInformation
+                $This.SslFlags = $Bind.SslFlags
+            }
+            [String] ToString()
+            {
+                Return @( $This.Binding)
+            }
+        }
+
+        Class IISSite
+        {
+            [String]        $Name
+            [UInt32]          $ID
+            [String]       $State
+            [String]        $Path
+            [Object[]]  $Bindings
+            [UInt32]   $BindCount
+            IISSite([Object]$Site)
+            {
+                $This.Name     = $Site.Name
+                $This.ID       = $Site.ID
+                $This.State    = $Site.State
+                $This.Path     = $Site.Applications[0].VirtualDirectories[0].PhysicalPath
+                $This.Bindings = @( )
+                If ( $Site.Bindings.Count -gt 1 )
+                {
+                    ForEach ( $Binding in $Site.Bindings)
+                    {
+                        $This.Bindings += [IISSiteBinding]::New($This.Bindings.Count,$Binding)
+                    }
+                }
+                Else
+                {
+                    $This.Bindings += [IISSiteBinding]::New(0,$Site.Bindings)
+                }
+                $This.BindCount = $This.Bindings.Count
+            }
+        }
+
+        Class IISAppPool
+        {
+            [String]         $Name
+            [String]       $Status
+            [String]    $AutoStart
+            [String]   $CLRVersion
+            [String] $PipelineMode
+            [String]    $StartMode
+            IISAppPool([Object]$AppPool)
+            {
+                $This.Name         = $AppPool.Name
+                $This.Status       = $AppPool.State
+                $This.AutoStart    = $AppPool.Attributes | ? Name -eq autoStart             | % Value
+                $This.CLRVersion   = $AppPool.Attributes | ? Name -eq managedRuntimeVersion | % Value
+                $This.PipelineMode = $AppPool.ManagedPipelineMode
+                $This.StartMode    = $AppPool.StartMode
+            }
+        }
+
+        Class IISServer
+        {
+            [Object]     $AppDefaults
+            [Object] $AppPoolDefaults
+            [Object]    $SiteDefaults
+            [Object] $VirtualDefaults
+            [Object[]]      $AppPools
+            [Object[]]         $Sites
+            IISServer()
+            {
+                Import-Module WebAdministration
+                $IIS                  = Get-IISServerManager
+                $This.AppDefaults     = $IIS.ApplicationDefaults
+                $This.AppPoolDefaults = $IIS.ApplicationPoolDefaults
+                $This.AppPools        = $IIS.ApplicationPools | % { [IISAppPool]$_ }
+                $This.SiteDefaults    = $IIS.SiteDefaults
+                $This.Sites           = $IIS.Sites | % { [IISSite]$_ }
+            }
+        }
+
+        Class Config
+        {
+            [Object] $Module
+            [Object] $IPConfig
+            [Object] $IP
+            [Object] $Dhcp
+            [Object] $Dns
+            [Object] $Adds
+            [Object] $HyperV
+            [Object] $Wds
+            [Object] $Mdt
+            [Object] $IIS
+            [Object] $Output
+            Config([Object]$Module)
+            {
+                $This.Module            = $Module
+
+                Write-Host "Collecting [~] Network IP Config"
+                $This.IPConfig          = Get-NetIPConfiguration | % { [IPConfig]$_ }
+                $This.IP                = Get-NetIPAddress | % IPAddress
+                $Features               = Get-WindowsFeature
+                $Registry               = @( "","\WOW6432Node" | % { "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall\*" })
+                $This.Output            = @(
+
+                    ForEach ( $Item in "DHCP","DNS","AD-Domain-Services","Hyper-V","WDS","Web-WebServer")
+                    {
+                        [DGList]::New($Item, [Bool]($Features | ? Name -eq $Item | % Installed))
+                    }
+                    
+                    ForEach ( $Item in "MDT","WinADK","WinPE")
+                    {
+                        $Slot = Switch($Item)
+                        {
+                            MDT    { $Registry[0], "Microsoft Deployment Toolkit"                       , "6.3.8456.1000" }
+                            WinADK { $Registry[1], "Windows Assessment and Deployment Kit - Windows 10" , "10.1.17763.1"  }
+                            WinPE  { $Registry[1], "Preinstallation Environment Add-ons - Windows 10"   , "10.1.17763.1"  }
+                        }
+                            
+                        [DGList]::New($Item, [Bool](Get-ItemProperty $Slot[0] | ? DisplayName -match $Slot[1] | ? DisplayVersion -ge $Slot[2]))
+                    }
+                )
+
+                If ($This.Output | ? Name -match DHCP | ? Value -eq 1)
+                {
+                    Write-Host "Collecting [~] Dhcp Server"
+                    $This.Dhcp              = [DhcpServer]::New().Scope
+                }
+
+                If ($This.Output | ? Name -match DNS | ? Value -eq 1)
+                {
+                    Write-Host "Collecting [~] Dns Server"
+                    $This.Dns               = [DnsServer]::New().Zone
+                }
+
+                If ($This.Output | ? Name -match AD-Domain-Services | ? Value -eq 1)
+                {
+                    Write-Host "Collecting [~] Adds Server"
+                    $This.Adds              = [AddsDomain]::New()
+                }
+
+                If ($This.Output | ? Name -match Hyper-V | ? Value -eq 1)
+                {
+                    Write-Host "Collecting [~] Hyper-V Server"
+                    $This.HyperV            = [VmHost]::New($This.IPConfig)
+                }
+
+                If ($This.Output | ? Name -match WDS | ? Value -eq 1)
+                {
+                    Write-Host "Collecting [~] WDS Server"
+                    $This.WDS               = [WDSServer]::New($This.Module.Role.System.Network.IPAddress)
+                }
+
+                If ($This.Output | ? Name -match MDT | ? Value -eq 1)
+                {
+                    Write-Host "Collecting [~] MDT/WinPE/WinADK Server"
+                    $This.MDT               = [MdtServer]::New($This.Module.Role.System.Network.IPAddress,$Registry)
+                }
+
+                If ($This.Output | ? Name -match Web-WebServer | ? Value -eq 1)
+                {
+                    Write-Host "Collecting [~] IIS Server"
+                    $This.IIS               = [IISServer]::New()
+                }
+            }
+        }
+        [Config]::New($Module)
     }
 
     # Controller class
@@ -3542,18 +3657,7 @@ Function New-FEInfrastructure
         Static [String] $Background = "$([Main]::GFX)\OEMbg.jpg"
         Hidden [Object]   $ZipStack
         [Object]            $System
-        [Object]          $Features
-        [Object]          $Registry
         [Object]            $Config
-        [Object]          $IPConfig
-        [Object]                $IP
-        [Object]              $Dhcp
-        [Object]               $Dns
-        [Object]           $CfgAdds
-        [Object]            $HyperV
-        [Object]               $WDS
-        [Object]               $MDT
-        [Object]               $IIS
         [String]               $Org
         [String]                $CN
         [Object]        $Credential
@@ -3583,7 +3687,7 @@ Function New-FEInfrastructure
         [Object]             $Share
         Main()
         {
-            ForEach ( $Item in $This.Module.Tree.Name )
+            ForEach ($Item in $This.Module.Tree.Name)
             {
                 $This.Module.$Item = @( $This.Module.$Item | % { [ModuleFile]$_ } )
             }
@@ -3592,81 +3696,11 @@ Function New-FEInfrastructure
 
             $This.System            = $This.Module.Role.System
 
-            Write-Host "Collecting [~] Windows Features"
-            $This.Features          = Get-WindowsFeature
-
-            Write-Host "Collecting [~] Windows Registry"
-            $This.Registry          = @( "","\WOW6432Node" | % { "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall\*" })
-
             Write-Host "Collecting [~] Config"
-            $This.Config            = @(
-
-                ForEach ( $Item in "DHCP","DNS","AD-Domain-Services","Hyper-V","WDS","Web-WebServer")
-                {
-                    [DGList]::New( $Item, [Bool]( $This.Win | ? Name -eq $Item | % Installed ) )
-                }
-                
-                ForEach ( $Item in "MDT","WinADK","WinPE")
-                {
-                    $Slot = Switch($Item)
-                    {
-                        MDT    { $This.Reg[0], "Microsoft Deployment Toolkit"                       , "6.3.8456.1000" }
-                        WinADK { $This.Reg[1], "Windows Assessment and Deployment Kit - Windows 10" , "10.1.17763.1"  }
-                        WinPE  { $This.Reg[1], "Preinstallation Environment Add-ons - Windows 10"   , "10.1.17763.1"  }
-                    }
-                        
-                    [DGList]::New( $Item, [Bool]( Get-ItemProperty $Slot[0] | ? DisplayName -match $Slot[1] | ? DisplayVersion -ge $Slot[2] ) )
-                }
-            )
-
-            Write-Host "Collecting [~] Network IP Config"
-            $This.IPConfig          = Get-NetIPConfiguration | % { [IPConfig]$_ }
-            $This.IP                = Get-NetIPAddress | % IPAddress
-            
-            If ($This.Config | ? Name -match DHCP | ? Value -eq 1)
-            {
-                Write-Host "Collecting [~] Dhcp Server"
-                $This.DHCP              = [DhcpServer]::New().Scope
-            }
-
-            If ($This.Config | ? Name -match DNS | ? Value -eq 1)
-            {
-                Write-Host "Collecting [~] Dns Server"
-                $This.DNS               = [DnsServer]::New().Zone
-            }
-
-            If ($This.Config | ? Name -match AD-Domain-Services | ? Value -eq 1)
-            {
-                Write-Host "Collecting [~] Adds Server"
-                $This.CfgAdds           = [AddsDomain]::New()
-            }
-
-            If ($This.Config | ? Name -match Hyper-V | ? Value -eq 1)
-            {
-                Write-Host "Collecting [~] Hyper-V Server"
-                $This.HyperV            = [VmHost]::New($This.IPConfig)
-            }
-
-            If ($This.Config | ? Name -match WDS | ? Value -eq 1)
-            {
-                Write-Host "Collecting [~] WDS Server"
-                $This.WDS               = [WDSServer]::New($This.System.Network.IPAddress)
-            }
-
-            If ($This.Config | ? Name -match MDT | ? Value -eq 1)
-            {
-                Write-Host "Collecting [~] MDT/WinPE/WinADK Server"
-                $This.MDT               = [MdtServer]::New($This.System.Network.IPAddress,$This.Reg)
-            }
-
-            If ($This.Config | ? Name -match Web-WebServer | ? Value -eq 1)
-            {
-                Write-Host "Collecting [~] IIS Server"
-                $This.IIS               = [IISServer]::New()
-            }
+            $This.Config            = Config $This.Module
 
             Write-Host "Collecting [~] Zipcode Database"
-            $This.ZipStack              = [ZipStack]::New("$($This.Module.Path)\Control\zipcode.txt")
+            $This.ZipStack          = [ZipStack]::New("$($This.Module.Path)\Control\zipcode.txt")
 
             $This.SmTemplate = [SmTemplate]::New().Stack
             $This.Domain     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
@@ -3684,6 +3718,7 @@ Function New-FEInfrastructure
             }
             $This.Virtual    = @{ 
 
+                Switch       = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
                 Gateway      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
                 Server       = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
             }
@@ -3694,11 +3729,11 @@ Function New-FEInfrastructure
         {
             If ($Xaml.System.Network.Count -eq 1)
             {
-                $IPInfo                                       = $This.System.Network
+                $IPInfo                                       = $This.Module.Role.System.Network
             }
             Else
             {
-                $IPInfo                                       = $This.System.Network[$Index]
+                $IPInfo                                       = $This.Module.Role.System.Network[$Index]
             }
 
             $X                                                = $IPInfo.DhcpServer -eq ""
@@ -3997,11 +4032,11 @@ Function New-FEInfrastructure
             $Output = $Null
             $Port   = $Null
             $Exists = Get-Item "$UNC\Control\CustomSettings.ini" -EA 0
-            If ($Exists -eq $Null)
+            If (!$Exists)
             {
                 $Port = $This.GetNextEventPort()
             }
-            If ($Exists -ne $Null)
+            If ($Exists)
             {
                 $Port = [UInt32][Regex]::Matches((Get-Content "$UNC\Control\CustomSettings.ini"),"\/\/.+\:\d{4}").Value.Split(":")[-1]
             }
@@ -4066,7 +4101,7 @@ Function New-FEInfrastructure
     
     # These two variables do most of the work
     $Main                           = [Main]::New()
-    $Xaml                           = [XamlWindow][FEInfrastructureGUI]::Tab     
+    $Xaml                           = [XamlWindow][FEInfrastructureGUI]::Tab
 
     $Xaml.IO.Module_Info.ItemsSource    = @( )
     $Xaml.IO.Module_Info.ItemsSource    = @( ForEach ( $Item in "Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status" -Split " ")
@@ -4119,7 +4154,7 @@ Function New-FEInfrastructure
     })
 
     $Xaml.IO.CfgServices.ItemsSource                  = @( )
-    $Xaml.IO.CfgServices.ItemsSource                  = @($Main.Config)
+    $Xaml.IO.CfgServices.ItemsSource                  = @($Main.Config.Output)
 
     # [System]
     $Xaml.IO.System_Manufacturer.Text                 = $Main.System.Manufacturer
@@ -4189,7 +4224,7 @@ Function New-FEInfrastructure
     $Xaml.IO.CfgDhcpScopeID.ItemsSource                = @( )
     $Xaml.IO.CfgDhcpScopeReservations.ItemsSource      = @( )
     $Xaml.IO.CfgDhcpScopeOptions.ItemsSource           = @( )
-    $Xaml.IO.CfgDhcpScopeID.ItemsSource                = @($Main.Dhcp)
+    $Xaml.IO.CfgDhcpScopeID.ItemsSource                = @($Main.Config.Dhcp)
     $Xaml.IO.CfgDhcpScopeID.Add_SelectionChanged(
     {
         If ($Xaml.IO.CfgDhcpScopeID.SelectedIndex -ne -1)
@@ -4207,7 +4242,7 @@ Function New-FEInfrastructure
     # [Dns]
     $Xaml.IO.CfgDnsZone.ItemsSource              = @( )
     $Xaml.IO.CfgDnsZoneHosts.ItemsSource         = @( )
-    $Xaml.IO.CfgDnsZone.ItemsSource              = @( $Main.Dns )
+    $Xaml.IO.CfgDnsZone.ItemsSource              = @( $Main.Config.Dns )
     $Xaml.IO.CfgDnsZone.Add_SelectionChanged(
     {
         If ($Xaml.IO.CfgDnsZone.SelectedIndex -ne -1)
@@ -4220,25 +4255,25 @@ Function New-FEInfrastructure
     })
 
     # [Adds]
-    $Xaml.IO.Adds_Hostname.Text         = $Main.CfgAdds.Hostname
+    $Xaml.IO.Adds_Hostname.Text         = $Main.Config.Adds.Hostname
     $Xaml.IO.Adds_Hostname.IsReadOnly   = 1
 
-    $Xaml.IO.Adds_DCMode.Text           = $Main.CfgAdds.DCMode
+    $Xaml.IO.Adds_DCMode.Text           = $Main.Config.Adds.DCMode
     $Xaml.IO.Adds_DCMode.IsreadOnly     = 1
     
-    $Xaml.IO.Adds_DomainMode.Text       = $Main.CfgAdds.DomainMode
+    $Xaml.IO.Adds_DomainMode.Text       = $Main.Config.Adds.DomainMode
     $Xaml.IO.Adds_DomainMode.IsReadOnly = 1
 
-    $Xaml.IO.Adds_ForestMode.Text       = $Main.CfgAdds.ForestMode
+    $Xaml.IO.Adds_ForestMode.Text       = $Main.Config.Adds.ForestMode
     $Xaml.IO.Adds_ForestMode.IsReadOnly = 1
 
-    $Xaml.IO.Adds_Root.Text             = $Main.CfgAdds.Root
+    $Xaml.IO.Adds_Root.Text             = $Main.Config.Adds.Root
     $Xaml.IO.Adds_Root.IsReadOnly       = 1
 
-    $Xaml.IO.Adds_Config.Text           = $Main.CfgAdds.Config
+    $Xaml.IO.Adds_Config.Text           = $Main.Config.Adds.Config
     $Xaml.IO.Adds_Config.IsReadOnly     = 1
 
-    $Xaml.IO.Adds_Schema.Text           = $Main.CfgAdds.Schema
+    $Xaml.IO.Adds_Schema.Text           = $Main.Config.Adds.Schema
     $Xaml.IO.Adds_Schema.IsReadOnly     = 1
 
     $Xaml.IO.CfgAddsObject.ItemsSource     = @( )
@@ -4255,59 +4290,59 @@ Function New-FEInfrastructure
         Start-Sleep -Milliseconds 50
         $Xaml.IO.CfgAddsFilter.Text        = $Null
         $Xaml.IO.CfgAddsObject.ItemsSource = @( )
-        $Xaml.IO.CfgAddsObject.ItemsSource = @( $Main.CfgAdds."$($Xaml.IO.CfgAddsType.SelectedItem)" )
+        $Xaml.IO.CfgAddsObject.ItemsSource = @( $Main.Config.Adds."$($Xaml.IO.CfgAddsType.SelectedItem)" )
     })
 
     $Xaml.IO.CfgAddsFilter.Add_TextChanged(
     {
         Start-Sleep -Milliseconds 50
         $Xaml.IO.CfgAddsObject.ItemsSource = @( )
-        $Xaml.IO.CfgAddsObject.ItemsSource = @( $Main.CfgAdds."$($Xaml.IO.CfgAddsType.SelectedItem)" | ? $Xaml.IO.CfgAddsProperty.SelectedItem -match $Xaml.IO.CfgAddsFilter.Text )
+        $Xaml.IO.CfgAddsObject.ItemsSource = @( $Main.Config.Adds."$($Xaml.IO.CfgAddsType.SelectedItem)" | ? $Xaml.IO.CfgAddsProperty.SelectedItem -match $Xaml.IO.CfgAddsFilter.Text )
     })
 
     # [HyperV]
     $Xaml.IO.CfgHyperV.ItemsSource        = @( )
-    $Xaml.IO.CfgHyperV.ItemsSource        = @( $Main.HyperV )
+    $Xaml.IO.CfgHyperV.ItemsSource        = @( $Main.Config.HyperV )
     If ($Main.HyperV)
     {
         $Xaml.IO.VmHost.Text = $Main.HyperV.Name
     }
     $Xaml.IO.CfgHyperV_Switch.ItemsSource = @( )
-    $Xaml.IO.CfgHyperV_Switch.ItemsSource = @($Main.HyperV.Switch)
+    $Xaml.IO.CfgHyperV_Switch.ItemsSource = @($Main.Config.HyperV.Switch)
     $Xaml.IO.CfgHyperV_VM.ItemsSource     = @( )
-    $Xaml.IO.CfgHyperV_VM.ItemsSource     = @($Main.HyperV.VM)
+    $Xaml.IO.CfgHyperV_VM.ItemsSource     = @($Main.Config.HyperV.VM)
 
-    $Xaml.IO.WDS_Server.Text              = $Main.WDS.Server
+    $Xaml.IO.WDS_Server.Text              = $Main.Config.WDS.Server
     $Xaml.IO.WDS_IPAddress.ItemsSource    = @( )
-    $Xaml.IO.WDS_IPAddress.ItemsSource    = @($Main.WDS.IPAddress)
+    $Xaml.IO.WDS_IPAddress.ItemsSource    = @($Main.Config.WDS.IPAddress)
     $Xaml.IO.WDS_IPAddress.SelectedIndex  = 0
 
     $Xaml.IO.WDS_Images.ItemsSource       = @( )
-    $Xaml.IO.WDS_Images.ItemsSource       = @($Main.WDS.Images)
+    $Xaml.IO.WDS_Images.ItemsSource       = @($Main.Config.WDS.Images)
 
     # [Mdt/Adk/WinPE]
-    $Xaml.IO.MDT_Server.Text              = $Main.MDT.Server
+    $Xaml.IO.MDT_Server.Text              = $Main.Config.MDT.Server
     $Xaml.IO.MDT_IPAddress.ItemsSource    = @( )
-    $Xaml.IO.MDT_IPAddress.ItemsSource    = @($Main.MDT.IPAddress)
+    $Xaml.IO.MDT_IPAddress.ItemsSource    = @($Main.Config.MDT.IPAddress)
     $Xaml.IO.MDT_IPAddress.SelectedIndex  = 0
     
-    $Xaml.IO.MDT_Path.Text                = $Main.MDT.Path
-    $Xaml.IO.MDT_Version.Text             = $Main.MDT.Version
-    $Xaml.IO.MDT_ADK_Version.Text         = $Main.MDT.AdkVersion
-    $Xaml.IO.MDT_PE_Version.Text          = $Main.MDT.PeVersion
+    $Xaml.IO.MDT_Path.Text                = $Main.Config.MDT.Path
+    $Xaml.IO.MDT_Version.Text             = $Main.Config.MDT.Version
+    $Xaml.IO.MDT_ADK_Version.Text         = $Main.Config.MDT.AdkVersion
+    $Xaml.IO.MDT_PE_Version.Text          = $Main.Config.MDT.PeVersion
     $Xaml.IO.MDT_Shares.ItemsSource       = @( )
-    $Xaml.IO.MDT_Shares.ItemsSource       = @($Main.MDT.Shares)
+    $Xaml.IO.MDT_Shares.ItemsSource       = @($Main.Config.MDT.Shares)
 
     # [IIS]
     $Xaml.IO.IIS_AppPools.ItemsSource     = @( )
-    $Xaml.IO.IIS_AppPools.ItemsSource     = @($Main.IIS.AppPools)
+    $Xaml.IO.IIS_AppPools.ItemsSource     = @($Main.Config.IIS.AppPools)
 
     $Xaml.IO.IIS_Sites.ItemsSource        = @( )
-    $Xaml.IO.IIS_Sites.ItemsSource        = @($Main.IIS.Sites)
+    $Xaml.IO.IIS_Sites.ItemsSource        = @($Main.Config.IIS.Sites)
 
     $Xaml.IO.DsAggregate.ItemsSource      = @( )
 
-    If ($Main.Config | ? Name -eq MDT | ? Value -eq $True)
+    If ($Main.Config.Output | ? Name -eq MDT | ? Value -eq $True)
     {   
         Get-MDTModule | Import-Module
         Restore-MDTPersistentDrive
@@ -4318,7 +4353,7 @@ Function New-FEInfrastructure
         
         ForEach ($Drive in $Main.Drives)
         {
-            $Xaml.IO.DsAggregate.ItemsSource += [DsShare]$Drive
+            $Xaml.IO.DsAggregate.ItemsSource += [DsShare]::New($Drive)
         }
     }
 
@@ -4426,9 +4461,14 @@ Function New-FEInfrastructure
     {
         ForEach ( $Item in $Xaml.IO.DcTopology.ItemsSource )
         {
-            If ( $Item.Exists -eq 0 )
+            If ($Item.Exists)
+            {
+                Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+            }
+            If (!$Item.Exists)
             {
                 New-ADReplicationSite -Name $Item.Sitelink -Verbose
+                $Item.Exists              = 1
             }
         }
 
@@ -4535,9 +4575,14 @@ Function New-FEInfrastructure
     {
         ForEach ($Item in $Xaml.IO.NwTopology.ItemsSource)
         {
+            If ($Item.Exists)
+            {
+                Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+            }
             If (!$Item.Exists)
             {
                 New-ADReplicationSubnet -Name $Item.Name -Verbose
+                $Item.Exists              = 1
             }
         }
 
@@ -4611,7 +4656,11 @@ Function New-FEInfrastructure
         {
             $Item               = $Xaml.IO.SmTopology.Items[$X]
             $Site               = $Main.Sitemap | ? Name -match ([Regex]::Matches($Item.DistinguishedName,"(\w{2}\-){3}\d+").Value)
-            If ($Item.Exists -eq $False)
+            If ($Item.Exists)
+            {
+                Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+            }
+            If (!$Item.Exists)
             {
                 $OU             = @{
 
@@ -4623,18 +4672,21 @@ Function New-FEInfrastructure
                     State       = $Site.Region
                     Name        = $Item.Name
                     Path        = $Item.DistinguishedName -Replace "OU=$($Item.Name),",""
-                }        
+                }
+                
                 New-ADOrganizationalUnit @OU -Verbose
-                Set-ADReplicationSiteLink -Identity $Xaml.IO.SmSiteLink.SelecteItem.DistinguishedName -SitesIncluded @{"Add"=$OU.Path} -Verbose
-                $Location       = ("{0}, {1} {2}" -f $OU.City, $OU.State, $OU.PostalCode)
-                Get-ADReplicationSubnet -Filter * | ? Name -match $OU.Description | Set-ADReplicationSubnet -Location $Location -Site $Item.Name -Verbose
-
+                If ($Item.Type -eq "Main")
+                {
+                    $Location       = ("{0}, {1} {2}" -f $OU.City, $OU.State, $OU.PostalCode)
+                    Get-ADReplicationSubnet -Filter * | ? Name -match $OU.Description | Set-ADReplicationSubnet -Location $Location -Site $Item.Name -Verbose
+                    
+                    $Config = "CN={0},CN=Sites,CN=Configuration,{1}" -f $Item.Name, $Item.DistinguishedName.Replace("OU=$($Item.Name),","")
+                    If (Get-ADReplicationSiteLink -Filter * | ? DistinguishedName -eq $Xaml.IO.SmSiteLink.SelectedItem.DistinguishedName | ? $Config -notin SitesIncluded)
+                    {
+                        Set-ADReplicationSiteLink -Identity $Xaml.IO.SmSiteLink.SelectedItem.DistinguishedName -SitesIncluded @{"Add"=$Config} -Verbose
+                    }
+                }
                 $Item.Exists    = $True
-            }
-
-            Else
-            {
-                Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
             }
         }
         
@@ -4646,30 +4698,10 @@ Function New-FEInfrastructure
         $Xaml.IO.SrAggregate.ItemsSource  = $Main.Server
     })
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Gateway Tab    ]______________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
-    # [Gateway]://Variables
-    # $Xaml.IO.GwSiteCount               # TextBox
-    # $Xaml.IO.GwNetworkCount            # TextBox
-    # $Xaml.IO.GwAggregate               # DataGrid
-    # $Xaml.IO.GwAddGateway              # Button
-    # $Xaml.IO.GwGateway                 # TextBox
-    # $Xaml.IO.GwRemoveGateway           # Button
-    # $Xaml.IO.GwViewer                  # DataGrid
-    # $Xaml.IO.GwTopology                # DataGrid
-    # $Xaml.IO.GwGetGateway              # Button
-    # $Xaml.IO.GwNewGateway              # Button
-
-    # [DataGrid(s)]://Initialize
+    # [Gateway Tab]
     $Xaml.IO.GwAggregate.ItemsSource    = @()
     $Xaml.IO.GwViewer.ItemsSource       = @()
     $Xaml.IO.GwTopology.ItemsSource     = @()
-
-    # [Gateway]://Events
 
     $Xaml.IO.GwAggregate.Add_SelectionChanged(
     {
@@ -4693,7 +4725,7 @@ Function New-FEInfrastructure
         If ( $Xaml.IO.GwAggregate.SelectedIndex -gt -1)
         {
             $Tmp = $Main.Sitemap | ? Name -eq ([Regex]::Matches($Xaml.IO.GwAggregate.SelectedItem.DistinguishedName,"(\w{2}\-){3}\d+").Value)
-            If ( $Tmp.Name -in $Main.Sitemap.Name)
+            If ($Tmp.Name -in $Main.Sitemap.Name)
             {
                 $Main.RemoveGateway($Tmp.Name)
                 $Xaml.IO.GwAggregate.ItemsSource = @( )
@@ -4720,17 +4752,16 @@ Function New-FEInfrastructure
         ForEach ( $X in 0..($Xaml.IO.GwTopology.ItemsSource.Count - 1))
         {
             $Item = $Xaml.IO.GwTopology.Items[$X]
-            If ($Item.Exists -eq $False)
+            If ($Item.Exists)
+            {
+                Write-Host ("Item Exists [+] [{0}]" -f $Item.DistinguishedName) -F 12
+            }
+            If (!$Item.Exists)
             {
                 $Split = $Item.DistinguishedName -Split ","
                 $Path  = $Split[1..($Split.Count-1)] -join ","
                 New-ADComputer -Name $Item.Name -DNSHostName $Item.Sitename -Path $Path -TrustedForDelegation:$True -Verbose
-                $Item.Exists = $True
-            }
-
-            Else
-            {
-                Write-Host ("Item Exists [+] [{0}]" -f $Item.DistinguishedName) -F 10
+                $Item.Exists = 1
             }
         }
     })
@@ -4748,7 +4779,7 @@ Function New-FEInfrastructure
         {
             $Server                           = $Main.Sitemap | ? Name -eq ([Regex]::Matches($Xaml.IO.SrAggregate.SelectedItem.DistinguishedName,"(\w{2}\-){3}\d+").Value)
             
-            $List = ForEach ( $Item in "Location Region Country Postal TimeZone SiteLink SiteName Name Network Prefix Netmask Start End Range Broadcast".Split(" ") )
+            $List = ForEach ( $Item in "Location Region Country Postal TimeZone SiteLink SiteName Name Network Prefix Netmask Start End HostRange Broadcast".Split(" ") )
             {     
                 [DGList]::New($Item,$Server.$Item) 
             }
@@ -4796,15 +4827,15 @@ Function New-FEInfrastructure
             $Item.Name = $Split[0].Replace("CN=","")
             $Split     = $Item.SiteName -Split "."
             $DNSName   = $Item.Name,$Split[1..($Split.Count-1)] -join "."
-            If ($Item.Exists -eq $False)
+
+            If ($Item.Exists)
+            {
+                Write-Host ("Item Exists [+] [{0}]" -f $Item.DistinguishedName) -F 12
+            }
+            If (!$Item.Exists)
             {
                 New-ADComputer -Name $Item.Name -DNSHostName $DNSName -Path $Path -TrustedForDelegation:$True -Verbose
-                $Item.Exists = $True
-            }
-
-            Else
-            {
-                Write-Host ("Item Exists [+] [{0}]" -f $Item.DistinguishedName) -F 10
+                $Item.Exists = 1
             }
         }
     })
@@ -4818,7 +4849,7 @@ Function New-FEInfrastructure
             Return [System.Windows.Messagebox]::Show("Must enter a server hostname or IP address","Error")
         }
 
-        ElseIf ((Test-Connection -ComputerName $Xaml.IO.VmHost.Text -Count 1 -EA 0) -eq $Null)
+        ElseIf (!(Test-Connection -ComputerName $Xaml.IO.VmHost.Text -Count 1 -EA 0))
         {
             Return [System.Windows.Messagebox]::Show("Not a valid server hostname or IP Address","Error")
         }
@@ -4836,7 +4867,7 @@ Function New-FEInfrastructure
 
         If ( $Xaml.IO.VmHost.Text -match "localhost" -or $Xaml.IO.VmHost.Text -in $Main.IP -or $Xaml.IO.VmHost.Text -match $Main.Module.Role.Name)
         {
-            $Main.Vm    = [VmStack]::New($Main.HyperV,$Main.HyperV.Switch)
+            $Main.Vm    = [VmStack]::New($Main.Config.HyperV,$Main.Config.HyperV.Switch)
             If (Get-Service -Name vmms -EA 0 | ? Status -ne Running)
             {
                 Return [System.Windows.MessageBox]::Show("The Hyper-V Virtual Machine Management service is not (installed/running)","Error")
@@ -4853,17 +4884,17 @@ Function New-FEInfrastructure
         $Xaml.IO.VmSelect.ItemsSource             = @( )
         $Collect                                  = @( )
 
-        If ( $Main.ADDS.Gateway.Count -gt 0 )
+        If ($Main.ADDS.Gateway.Count -gt 0)
         {
-            $Main.ADDS.Gateway           | % { $Collect += $_ }
+            $Main.ADDS.Gateway                    | % { $Collect += $_ }
         }
 
-        If ( $Main.ADDS.Server.Count -gt 0 )
+        If ($Main.ADDS.Server.Count -gt 0 )
         {
-            $Main.ADDS.Server            | % { $Collect += $_ }
+            $Main.ADDS.Server                     | % { $Collect += $_ }
         }
 
-        $Xaml.IO.VmSelect.ItemsSource    = @([VmSelect[]]$Collect)
+        $Xaml.IO.VmSelect.ItemsSource             = @([VmSelect[]]$Collect)
         
         Write-Host "Retrieved [+] VMHost"
     })
@@ -4873,6 +4904,19 @@ Function New-FEInfrastructure
         $NetRoute = Get-NetAdapter | ? Name -match $Xaml.IO.VmControllerSwitch.SelectedItem | Get-NetRoute -AddressFamily IPV4
         $Xaml.IO.VmControllerNetwork.Text = $NetRoute | ? NextHop -eq 0.0.0.0 | Select-Object -Last 1 | % DestinationPrefix
         $Xaml.IO.VmControllerGateway.Text = $NetRoute | ? NextHop -ne 0.0.0.0 | % NextHop
+    })
+
+    $Xaml.IO.VmGatewayPathSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        $Xaml.IO.VmGatewayPath.Text = $Item.SelectedPath
     })
 
     $Xaml.IO.VmGatewayScriptSelect.Add_Click(
@@ -4903,6 +4947,19 @@ Function New-FEInfrastructure
         }
     
         $Xaml.IO.VmGatewayImage.Text = $Item.FileName
+    })
+
+    $Xaml.IO.VmServerPathSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        $Xaml.IO.VmServerPath.Text = $Item.SelectedPath
     })
 
     $Xaml.IO.VmServerScriptSelect.Add_Click(
@@ -4942,10 +4999,11 @@ Function New-FEInfrastructure
 
     $Xaml.IO.VMGetArchitecture.Add_Click(
     {
+        $Main.Virtual.Switch             = @( )
         $Main.Virtual.Gateway            = @( )
         $Main.Virtual.Server             = @( )
 
-        ForEach ( $Item in $Xaml.IO.VmSelect.Items )
+        ForEach ($Item in $Xaml.IO.VmSelect.Items)
         {
             Switch($Item.Type)
             {
@@ -4954,6 +5012,7 @@ Function New-FEInfrastructure
                     If ($Item.Create -eq 1 )
                     {
                         $Main.Virtual.Gateway += $Main.Adds.Gateway | ? Name -eq $Item.Name
+                        $Main.Virtual.Switch  += [VmSwitch]::New($Item.Name)
                     } 
                 }
                 Server  
@@ -4966,18 +5025,39 @@ Function New-FEInfrastructure
             }
         }
 
-        $Xaml.IO.VmGateway.ItemsSource   = @($Main.Virtual.Gateway | % { [VmTest]$_.Name } )
-        $Xaml.IO.VmServer.ItemsSource    = @($Main.Virtual.Server  | % { [VmTest]$_.Name } )
+        $Xaml.IO.VmSwitch.ItemsSource    = @($Main.Virtual.Switch  | % { [VmTest]::New("Switch",$_.Name)})
+        $Xaml.IO.VmGateway.ItemsSource   = @($Main.Virtual.Gateway | % { [VmTest]::New(    "VM",$_.Name)})
+        $Xaml.IO.VmServer.ItemsSource    = @($Main.Virtual.Server  | % { [VmTest]::New(    "VM",$_.Name)})
     })
     
     $Xaml.IO.VMNewArchitecture.Add_Click(
     {
+        If (!$Xaml.IO.VmGatewayPath.Text)
+        {
+            Return [System.Windows.MessageBox]::Show("Must input an image to install virtual gateway(s)","Error")
+        }
+
+        If (!(Test-Path $Xaml.IO.VmGatewayPath.Text))
+        {
+            Return [System.Windows.MessageBox]::Show("Not a valid image (path/file)","Error")
+        }
+
         If (!$Xaml.IO.VmGatewayImage.Text)
         {
             Return [System.Windows.MessageBox]::Show("Must input an image to install virtual gateway(s)","Error")
         }
 
         If (!(Test-Path $Xaml.IO.VmGatewayImage.Text) -or $Xaml.IO.VmGatewayImage.Text.Split(".")[-1] -ne "iso" )
+        {
+            Return [System.Windows.MessageBox]::Show("Not a valid image (path/file)","Error")
+        }
+
+        If (!$Xaml.IO.VmServerPath.Text)
+        {
+            Return [System.Windows.MessageBox]::Show("Must input an image to install virtual gateway(s)","Error")
+        }
+
+        If (!(Test-Path $Xaml.IO.VmServerPath.Text))
         {
             Return [System.Windows.MessageBox]::Show("Not a valid image (path/file)","Error")
         }
@@ -5002,9 +5082,9 @@ Function New-FEInfrastructure
         # Create the virtual switches
         Write-Theme "Deploying [~] [VMSwitch[]]" 14,6,15
         $Main.Sw = @( )
-        ForEach ( $X in 0..($Main.Virtual.Gateway.Count-1))
+        ForEach ( $X in 0..($Main.Virtual.Switch.Count-1))
         {
-            $Sw = $Main.Virtual.Gateway[$X]
+            $Sw = $Main.Virtual.Switch[$X]
             If (Get-VMSwitch -Name $Sw.Name -EA 0)
             {
                 Write-Theme "Removing [~] [Switch: $($Sw.Name)]" 12,4,15
@@ -5028,13 +5108,16 @@ Function New-FEInfrastructure
             $Gw = $Main.Virtual.Gateway[$X]
             If (Get-VM -Name $Gw.Name -EA 0)
             {
+                $Vm = Get-VM -Name $Gw.Name
                 Write-Theme "Removing [~] [Gateway: $($Gw.Name)]" 12,4,15
-                Remove-VM -Name $Gw.Name -Verbose -Confirm:$False -Force
+                Remove-VM   -Name $Gw.Name -Verbose -Confirm:$False -Force
+                Remove-Item -Path $VM.Path -Recurse -Force -Verbose -Confirm:$False
+                Remove-Item -Path $VM.HardDrives[0].Path -Force -Verbose -Confirm:$False
             }
 
             Write-Theme "Creating [~] [Gateway: $($Gw.Name)]" 9,1,15
-            $Item     = [VMObject]::New($Gw,$Xaml.IO.VmGatewayMemory.Text,$Xaml.IO.VmGatewayDrive.Text,1,$Main.Vm.External.Name)
-            $Item.New($Main.VM.Host.VirtualMachinePath)
+            $Item     = [VMObject]::New($Gw,$Xaml.IO.VmGatewayMemory.Text,$Xaml.IO.VmGatewayDrive.Text,1,$Xaml.IO.VmControllerSwitch.SelectedItem)
+            $Item.New($Xaml.IO.VmGatewayPath.Text)
             Add-VMNetworkAdapter -VMName $Item.Name -SwitchName $Item.Name -Verbose
             $Item.LoadISO($Xaml.IO.VmGatewayImage.Text)
             $Item.Start()
@@ -5053,13 +5136,16 @@ Function New-FEInfrastructure
             $Sr = $Main.Virtual.Server[$X]
             If (Get-VM -Name $Sr.Name -EA 0)
             {
-                Write-Theme "Removing [~] [Server: $($Sr.Name)]" 12,4,15
-                Remove-VM -Name $Sr.Name -Verbose -Confirm:$False -Force
+                $Vm = Get-VM -Name $Sr.Name
+                Write-Theme "Removing [~] [Gateway: $($Sr.Name)]" 12,4,15
+                Remove-VM   -Name $Sr.Name -Verbose -Confirm:$False -Force
+                Remove-Item -Path $Vm.Path -Recurse -Force -Verbose -Confirm:$False
+                Remove-Item -Path $Vm.HardDrives[0].Path -Force -Verbose -Confirm:$False
             }
                     
             Write-Theme "Creating [~] [Server: $($Sr.Name)]" 9,1,15
             $Item     = [VMObject]::New($Sr,$Xaml.IO.VmServerMemory.Text,$Xaml.IO.VmServerDrive.Text,2,$Main.Sw[$X].Name)
-            $Item.New($Main.VM.Host.VirtualMachinePath)
+            $Item.New($Xaml.IO.VmServerPath.Text)
             $VM       = Get-VM -Name $Item.Name
             $VM       | Add-VMDVDDrive -Verbose
             $Item.LoadISO($Xaml.IO.VmServerImage.Text)
@@ -5074,28 +5160,47 @@ Function New-FEInfrastructure
         Start-Sleep 2
 
         # Preparing [DNS/DHCP/MacAddress Stuff]
-        $DNS      = Get-DNSServerResourceRecord -Zonename $Main.CN
-
-        ForEach ( $Name in $Main.Gw.Name )
+        ForEach ($Name in $Main.Gw.Name)
         {
-            $DNS  | ? HostName -match $Item | Remove-DNSServerResourceRecord -ZoneName $Main.CN -Verbose -Confirm:$False -Force
+            # Dns
+            ForEach ($Item in $Main.Config.DNS | ? {$_.Hosts.Hostname -eq $Name})
+            {
+                $Item.Hosts | ? Hostname -eq $Name | Remove-DNSServerResourceRecord -ZoneName $Item.ZoneName -Name $Name -Force -Confirm:$False -Verbose
+            }
+
+            # Dhcp
+            ForEach ($Item in $Main.Config.Dhcp.Reservations | ? Name -eq $Name)
+            {
+                $Item | Remove-DHCPV4Reservation -Verbose EA 0
+            }
         }
 
-        $ScopeID  = Get-DhcpServerv4Scope
-        $DHCP     = Get-DhcpServerv4Reservation -ScopeID $ScopeID.ScopeID
-
-        $DHCP     | ? Name -match "((\w{2}-){3}(\d{5})|OPNsense)" | Remove-DHCPServerV4Reservation -Verbose -EA 0
-
-        $DHCP     = Get-DhcpServerv4Reservation -ScopeID $ScopeID.ScopeID
-        $Slot     = $DHCP[-1].IPAddress.ToString().Split(".")
-
-        If ( $Main.Gw.Count -gt 1 )
+        # Get DHCP Reservations
+        $DHCP     = Get-DHCPServerV4Reservation -ScopeID $Main.Config.DHCP.ScopeID
+        $Collect  = @( )
+        $Slot     = [UInt32[]]($DHCP[-1].IPAddress.ToString().Split("."))
+        If ($Main.GW.Count -eq 1)
         {
-            $Spot    = [UInt32]$Slot[3]
-
-            ForEach ( $X in 0..($Main.Gw.Count - 1))
+            $Slot[3] = $Slot[3] ++
+            $Collect += $Slot -join "."
+        }
+        If ($Main.GW.Count -gt 1)
+        {
+            ForEach ($X in 1..($Main.GW.Count))
             {
-                $Reserve = Get-DhcpServerv4Reservation -ScopeID $ScopeID.ScopeID
+                $Collect += @($Slot[0..2];$Slot[3] + $X) -join "."
+            }
+        }
+
+        If ($Main.GW.Count -eq 1)
+        {
+            Throw "Add logic for a single gateway"
+        }
+
+        If ($Main.Gw.Count -gt 1)
+        {
+            ForEach ($X in 0..($Main.Gw.Count - 1))
+            {
                 $Gw      = $Main.Gw[$X]
                 $Item    = $Gw.Item
                 $Mac     = Get-VMNetworkAdapter -VMName $Gw.Name | ? SwitchName -ne $Gw.Name | % MacAddress
@@ -5104,8 +5209,8 @@ Function New-FEInfrastructure
                 $Spot ++
                 $Obj             = @{
         
-                    ScopeID      = $ScopeID.ScopeID
-                    IPAddress    = @($Slot[0,1,2];$Spot) -join '.'
+                    ScopeID      = $Main.Config.DHCP.ScopeID
+                    IPAddress    = $Collect[$X]
                     ClientID     = $Mac
                     Name         = $Item.SiteLink
                     Description  = "[$($Item.Network)/$($Item.Prefix)]@[$($Item.Sitename)]"
@@ -5118,48 +5223,48 @@ Function New-FEInfrastructure
 
         Write-Theme "Writing [~] Gateway Objects"
 
-        $Date       = Get-Date -UFormat %Y%m%d
-        $Path       = "$Home\Desktop\VM($Date)\GW"
-        $VMX        = $Main.Gw
-        $Filter     = $Main | Select-Object CN, SearchBase, VM | ConvertTo-Json
-        $Credential = $Main.Credential
+        $Path       = "$Home\Desktop\VM($(Get-Date -UFormat %Y%m%d))"
         If (!(Test-Path $Path))
         {
             New-Item $Path -ItemType Directory -Verbose -Force
         }
 
+        $VMX        = $Main.Gw
+        $Filter     = $Main | Select-Object CN, SearchBase, VM | ConvertTo-Json
+        If (!(Test-Path "$Path\GW"))
+        {
+            New-Item "$Path\GW" -ItemType Directory -Verbose -Force
+        }
+
         ForEach ( $X in 0..($Main.Sr.Count-1))
         {
-            If (!(Test-Path "$Path\$X"))
+            If (!(Test-Path "$Path\GW\$X"))
             {
-                New-Item "$Path\$X" -ItemType Directory -Verbose -Force
+                New-Item "$Path\GW\$X" -ItemType Directory -Verbose -Force
             }
-            Set-Content -Path "$Path\$X\vmx.txt" -Value ( $VMX[$X] | ConvertTo-Json ) -Verbose -Force
-            Set-Content -Path "$Path\$X\host.txt" -Value $Filter -Verbose -Force
-            Export-CliXml -Path "$Path\$X\cred.txt" -InputObject $Credential -Verbose -Force
+            Set-Content -Path "$Path\GW\$X\vmx.txt" -Value ( $VMX[$X] | ConvertTo-Json ) -Verbose -Force
+            Set-Content -Path "$Path\GW\$X\host.txt" -Value $Filter -Verbose -Force
+            Export-CliXml -Path "$Path\GW\$X\cred.txt" -InputObject $Main.Credential -Verbose -Force
         }
 
         Write-Theme "Writing [~] Server Objects"
 
-        $Date       = Get-Date -UFormat %Y%m%d
-        $Path       = "$Home\Desktop\VM($Date)\SR"
         $VMX        = $Main.Sr
         $Filter     = $Main | Select-Object CN, SearchBase, VM | ConvertTo-Json
-        $Credential = $Main.Credential
-        If (!(Test-Path $Path))
+        If (!(Test-Path "$Path\SR"))
         {
-            New-Item $Path -ItemType Directory -Verbose -Force
+            New-Item "$Path\SR" -ItemType Directory -Verbose -Force
         }
 
         ForEach ( $X in 0..($Main.Sr.Count-1))
         {
-            If (!(Test-Path "$Path\$X"))
+            If (!(Test-Path "$Path\SR\$X"))
             {
-                New-Item "$Path\$X" -ItemType Directory -Verbose -Force
+                New-Item "$Path\SR\$X" -ItemType Directory -Verbose -Force
             }
-            Set-Content -Path "$Path\$X\vmx.txt" -Value ( $VMX[$X] | ConvertTo-Json ) -Verbose -Force
-            Set-Content -Path "$Path\$X\host.txt" -Value $Filter -Verbose -Force
-            Export-CliXml -Path "$Path\$X\cred.txt" -InputObject $Credential -Verbose -Force
+            Set-Content -Path "$Path\SR\$X\vmx.txt" -Value ( $VMX[$X] | ConvertTo-Json ) -Verbose -Force
+            Set-Content -Path "$Path\SR\$X\host.txt" -Value $Filter -Verbose -Force
+            Export-CliXml -Path "$Path\SR\$X\cred.txt" -InputObject $Main.Credential -Verbose -Force
         }
 
         Write-Theme "Creating [~] Script Initialization"
@@ -5813,7 +5918,7 @@ Function New-FEInfrastructure
         {
             $Ds                            = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsBootstrap.Text      = @( ) 
-            ForEach ( $Line in $Main.Bootstrap($Ds.Type,$Xaml.IO.DsNetBiosName.Text,"\\$($Main.MDT.Server)\$($Ds.Share)",$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
+            ForEach ( $Line in $Main.Bootstrap($Ds.Type,$Xaml.IO.DsNetBiosName.Text,"\\$($Main.Config.MDT.Server)\$($Ds.Share)",$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
             {
                 $Xaml.IO.DsBootstrap.Text += $Line
             }
@@ -5859,7 +5964,7 @@ Function New-FEInfrastructure
             $Ds                               = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsCustomSettings.Text      = @() 
             ForEach ($Line in $Main.CustomSettings($Ds.Type,$Ds.Share,$Xaml.IO.DsOrganization.Text,$Xaml.IO.DsNetBiosName.Text,
-                                                $Main.MDT.Server,$Xaml.IO.DsDnsName.Text,$Xaml.IO.DsMachineOU.Text,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
+                                                $Main.Config.MDT.Server,$Xaml.IO.DsDnsName.Text,$Xaml.IO.DsMachineOU.Text,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
             {
                 $Xaml.IO.DsCustomSettings.Text += $Line
             }
@@ -5876,7 +5981,7 @@ Function New-FEInfrastructure
         {
             $Ds                           = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsPostConfig.Text      = @( )
-            ForEach ( $Line in $Main.PostConfig("\\$($Main.MDT.Server)\$($Ds.Share)\DSKey.csv") )
+            ForEach ( $Line in $Main.PostConfig("\\$($Main.Config.MDT.Server)\$($Ds.Share)\DSKey.csv") )
             {
                 $Xaml.IO.DsPostConfig.Text += $Line
             }
@@ -6026,8 +6131,6 @@ Function New-FEInfrastructure
                 New-Item $Ds.Root -ItemType Directory -Verbose
             }
 
-            $Hostname       = $Main.MDT.Server
-
             $SMB            = @{
 
                 Name        = $Ds.Share
@@ -6042,10 +6145,10 @@ Function New-FEInfrastructure
                 PSProvider  = "MDTProvider"
                 Root        = $Ds.Root
                 Description = $Ds.Description
-                NetworkPath = ("\\{0}\{1}" -f $Hostname, $Ds.Share)
+                NetworkPath = ("\\{0}\{1}" -f $Main.Config.MDT.Server, $Ds.Share)
             }
 
-            $MDT            = Get-ItemProperty HKLM:\Software\Microsoft\Deployment* | % Install_Dir | % TrimEnd \
+            $MDT            = $Main.Config.MDT.Path | % TrimEnd \
 
             New-SMBShare @SMB
             New-PSDrive  @PSD -Verbose | Add-MDTPersistentDrive -Verbose
@@ -6179,11 +6282,10 @@ Function New-FEInfrastructure
             }
 
             # Load Module / Share Drive Mount
-            $Module                = Get-FEModule
             $Root                  = "$($Ds.Name):"
             $Control               = "$($Ds.Root)\Control"
             $Script                = "$($Ds.Root)\Scripts"
-            $Network               = "\\$Hostname\$($Ds.Share)"
+            $Network               = "\\$($Main.Config.MDT.Server)\$($Ds.Share)"
 
             # [Propogate the variables as an environment key for (server/client) child items to restore]
             $DSKey                 = @($Network,
@@ -6197,7 +6299,6 @@ Function New-FEInfrastructure
 
             $Key                   = [Key]$DSKey
 
-            
             # Copies the background and logo if they were selected and are found
             ForEach ($File in $Xaml.IO.DsBrBackground.Text,$Xaml.IO.DsBrLogo.Text)
             {
@@ -6218,13 +6319,13 @@ Function New-FEInfrastructure
             }
 
             # For the PXE environment images
-            ForEach ( $File in $Module.Control | ? Extension -eq .png )
+            ForEach ($File in $Main.Module.Control | ? Extension -eq .png)
             {
                 Copy-Item -Path $File.FullName -Destination $Script -Force -Verbose
             }
 
             # Copies custom template for FightingEntropy to post install/configure
-            ForEach ( $File in $Module.Control | ? Name -match Mod.xml )
+            ForEach ($File in $Main.Module.Control | ? Name -match Mod.xml)
             {
                 Copy-Item -Path $File.FullName -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates" -Force -Verbose
             }
@@ -6310,26 +6411,29 @@ Function New-FEInfrastructure
             Write-Theme "Setting [~] Share properties [$Root]"
             # Share Settings
             Set-ItemProperty $Root -Name Comments    -Value $("[FightingEntropy({0})]{1}[{2}]" -f [Char]960,(Get-Date -UFormat "[%Y-%m%d (MCC/SDP)]"),$Ds.Type ) -Verbose
-            Set-ItemProperty $Root -Name MonitorHost -Value $HostName -Verbose
+            Set-ItemProperty $Root -Name MonitorHost -Value $Main.Config.MDT.Server -Verbose
 
             # Image Names/Background
             ForEach ($x in 64,86)
             {
                 $Names  = $X | % { "Boot.x$_" } | % { "$_.Generate{0}ISO $_.{0}WIMDescription $_.{0}ISOName $_.BackgroundFile" -f "LiteTouch" -Split " " }
-                $Values = $X | % { "$($Module.Name)[$($Module.Version)][$($Ds.Type)](x$_)" } | % { "True;$_;$_.iso;$($Xaml.IO.DsBrBackground.Text)" -Split ";" }
+                $Values = $X | % { "$($Main.Module.Name)[$($Main.Module.Version)][$($Ds.Type)](x$_)" } | % { "True;$_;$_.iso;$($Xaml.IO.DsBrBackground.Text)" -Split ";" }
                 0..3         | % { Set-ItemProperty -Path $Root -Name $Names[$_] -Value $Values[$_] -Verbose } 
             }
 
-            $Encoding = New-Object System.Text.UTF8Encoding $False
+            # 
+            New-Object System.Text.UTF8Encoding $False | % {
 
             # [Bootstrap.ini]
-            [System.IO.File]::WriteAllLines("$Control\Bootstrap.ini",($Xaml.IO.DsBootstrap.Text -Split "`n"),$Encoding)
+            [System.IO.File]::WriteAllLines("$Control\Bootstrap.ini",($Xaml.IO.DsBootstrap.Text -Split "`n"),$_)
 
             # [CustomSettings.ini]
-            [System.IO.File]::WriteAllLines("$Control\CustomSettings.ini",($Xaml.IO.DsBootstrap.Text -Split "`n"),$Encoding)
+            [System.IO.File]::WriteAllLines("$Control\CustomSettings.ini",($Xaml.IO.DsBootstrap.Text -Split "`n"),$_)
 
             # [FightingEntropy Installation propogation]
-            [System.IO.File]::WriteAllLines("$Script\Install-FightingEntropy.ps1",($Xaml.IO.DsPostConfig.Text -Split "`n"),$Encoding)
+            [System.IO.File]::WriteAllLines("$Script\Install-FightingEntropy.ps1",($Xaml.IO.DsPostConfig.Text -Split "`n"),$_)
+
+            }
 
             # Write Environment Key to the share
             Set-Content -Path "$($Ds.Root)\DSKey.csv" -Value ($Key | ConvertTo-CSV) -Verbose
@@ -6358,9 +6462,9 @@ Function New-FEInfrastructure
                     Extension   = $_.Extension
                 }
 
-                If ( $Image.Name -match "LiteTouchPE_" )
+                If ($Image.Name -match "LiteTouchPE_")
                 {
-                    If ( Test-Path $Image.NewName )
+                    If (Test-Path $Image.NewName)
                     {
                         Remove-Item -Path $Image.NewName -Force -Verbose
                     }
@@ -6398,8 +6502,8 @@ Function New-FEInfrastructure
     })
 
     # Set initial TextBox values
-    $Xaml.IO.DsNetBIOSName.Text   = $Env:UserDomain.ToLower()
-    $Xaml.IO.DsDNSName.Text       = $Env:UserDNSDomain.ToLower()
+    $Xaml.IO.DsNetBIOSName.Text   = $Main.Module.Role.NetBIOS
+    $Xaml.IO.DsDNSName.Text       = $Main.Module.Role.DNS
     $Xaml.IO.DsLmUsername.Text    = "Administrator"
     
     $Xaml.Invoke()
