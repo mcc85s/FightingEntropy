@@ -4058,7 +4058,7 @@ Function New-FEInfrastructure
             "Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | Invoke-Expression",
             "`$Module = Get-FEModule","`$Module.Role.LoadEnvironmentKey(`"$Key`")","`$Module.Role.Choco()" -join "`n")
         }
-        GetHostname()
+        [String] GetHostname()
         {
             Return @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
         }
@@ -4118,7 +4118,6 @@ Function New-FEInfrastructure
         [DGList]::New($Item,$Main.Module.Role.$Item)
     })
 
-    # [CfgServices]://$Main.Config
     $Xaml.IO.CfgServices.ItemsSource                  = @( )
     $Xaml.IO.CfgServices.ItemsSource                  = @($Main.Config)
 
@@ -4136,7 +4135,7 @@ Function New-FEInfrastructure
     $Xaml.IO.System_UUID.Text                         = $Main.System.UUID
     $Xaml.IO.System_UUID.IsReadOnly                   = 1
         
-    # Processor
+    # [Processor]
     $Xaml.IO.System_Processor.ItemsSource             = @( )
     $Xaml.IO.System_Processor.ItemsSource             = @($Main.System.Processor.Name)
     $Xaml.IO.System_Processor.SelectedIndex           = 0
@@ -4146,7 +4145,7 @@ Function New-FEInfrastructure
     $Xaml.IO.System_Architecture.SelectedIndex        = $Main.System.Architecture -eq "x64"
     $Xaml.IO.System_Architecture.IsEnabled            = 0
     
-    # Chassis
+    # [Chassis]
     $Xaml.IO.System_IsVM.IsChecked                    = 0
     $Xaml.IO.System_Chassis.ItemsSource               = @( )
     $Xaml.IO.System_Chassis.ItemsSource               = @("Desktop;Laptop;Small Form Factor;Server;Tablet" -Split ";")
@@ -4158,7 +4157,7 @@ Function New-FEInfrastructure
     $Xaml.IO.System_BiosUefi.SelectedIndex            = $Main.System.BiosUEFI -eq "UEFI"
     $Xaml.IO.System_BiosUefi.IsEnabled                = 0
     
-    $Xaml.IO.System_Name.Text                         = @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+    $Xaml.IO.System_Name.Text                         = $Main.GetHostname()
     
     # Disks
     $Xaml.IO.System_Disk.ItemsSource                  = @( )
@@ -4306,10 +4305,8 @@ Function New-FEInfrastructure
     $Xaml.IO.IIS_Sites.ItemsSource        = @( )
     $Xaml.IO.IIS_Sites.ItemsSource        = @($Main.IIS.Sites)
 
-    # [DataGrid]://PersistentDrives
     $Xaml.IO.DsAggregate.ItemsSource      = @( )
 
-    # [CfgMdt]://Installed ? -> Load persistent drives
     If ($Main.Config | ? Name -eq MDT | ? Value -eq $True)
     {   
         Get-MDTModule | Import-Module
@@ -4325,32 +4322,11 @@ Function New-FEInfrastructure
         }
     }
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Domain Tab ]__________________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
-    # [Domain]://Variables
-    # $Xaml.IO.DcOrganization           # Text
-    # $Xaml.IO.DcCommonName             # Text
-    # $Xaml.IO.DcGetSitename            # Button
-    # $Xaml.IO.DcAggregate              # DataGrid
-    # $Xaml.IO.DcAddSitename            # Button
-    # $Xaml.IO.DcAddSitenameZip         # Text
-    # $Xaml.IO.DcAddSitenameTown        # Text
-    # $Xaml.IO.DcRemoveSitename         # Button
-    # $Xaml.IO.DcViewer                 # DataGrid
-    # $Xaml.IO.DcTopology               # DataGrid
-    # $Xaml.IO.DcGetTopology            # Button
-    # $Xaml.IO.DcNewTopology            # Button
-
-    # [DataGrid(s)]://Initialize
+    # [Domain Tab]
     $Xaml.IO.DcAggregate.ItemsSource    = @( )
     $Xaml.IO.DcViewer.ItemsSource       = @( )
     $Xaml.IO.DcTopology.ItemsSource     = @( )
 
-    # [Domain]://Events
     $Xaml.IO.DcGetSitename.Add_Click(
     {
         If (!$Xaml.IO.DcOrganization.Text)
@@ -4364,7 +4340,7 @@ Function New-FEInfrastructure
         }
 
         Else
-        {   # $Main.LoadSite("Secure Digits Plus LLC","securedigitsplus.com")
+        {
             $Main.LoadSite($Xaml.IO.DcOrganization.Text,$Xaml.IO.DcCommonName.Text)
             $Xaml.IO.DcAggregate.ItemsSource   = @( )
             $Xaml.IO.DcAggregate.ItemsSource   = @( $Main.Domain )
@@ -4463,29 +4439,11 @@ Function New-FEInfrastructure
         $Xaml.IO.SmSiteCount.Text         = $Main.Domain.Count
     })
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Network Tab    ]______________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
-    # [Network]://Variables
-    # $Xaml.IO.NwScope                  # Text
-    # $Xaml.IO.NwScopeLoad              # Button
-    # $Xaml.IO.NwAggregate              # DataGrid
-    # $Xaml.IO.NwViewer                 # DataGrid
-    # $Xaml.IO.NwAddNetwork             # Button
-    # $Xaml.IO.NwRemoveNetwork          # Button
-    # $Xaml.IO.NwTopology               # DataGrid
-    # $Xaml.IO.NwGetNetwork             # Button
-    # $Xaml.IO.NwNewNetwork             # Button
-
-    # [DataGrid(s)]://Initialize
+    # [Network Tab]
     $Xaml.IO.NwAggregate.ItemsSource    = @( )
     $Xaml.IO.NwViewer.ItemsSource       = @( )
     $Xaml.IO.NwTopology.ItemsSource     = @( )
 
-    # [Network]://Events
     $Xaml.IO.NwScopeLoad.Add_Click(
     {
         If ($Xaml.IO.NwScope.Text -notmatch "((\d+\.+){3}\d+\/\d+)")
@@ -4494,7 +4452,7 @@ Function New-FEInfrastructure
         }
 
         Else
-        {   # $Main.LoadNetwork("172.16.0.1/19")
+        {
             $Main.LoadNetwork($Xaml.IO.NwScope.Text)
             $Xaml.IO.NwScope.Text              = ""
             $Xaml.IO.NwAggregate.ItemsSource   = @( )
@@ -4590,19 +4548,7 @@ Function New-FEInfrastructure
         $Xaml.IO.SmNetworkCount.Text      = $Main.Network.Count
     })
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Sitemap Tab    ]______________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
-    # $Xaml.IO.SmSiteCount               # TextBox
-    # $Xaml.IO.SmNetworkCount            # TextBox
-    # $Xaml.IO.SmLoadSitemap             # Button
-    # $Xaml.IO.SmAggregate               # DataGrid
-    # $Xaml.IO.SmTemplate                # DataGrid
-    # $Xaml.IO.SmGetSitemap              # Button
-    # $Xaml.IO.SmNewSitemap              # Button
+    # [Sitemap Tab]
 
     $Xaml.IO.SmTemplate.ItemsSource  = @( )
     $Xaml.IO.SmAggregate.ItemsSource = @( )
@@ -4789,30 +4735,11 @@ Function New-FEInfrastructure
         }
     })
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Server Tab    ]______________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
-    # [Server]://Variables
-    # $Xaml.IO.SrSiteCount               # TextBox
-    # $Xaml.IO.SrNetworkCount            # TextBox
-    # $Xaml.IO.SrAggregate               # DataGrid
-    # $Xaml.IO.SrAddGateway              # Button
-    # $Xaml.IO.SrGateway                 # TextBox
-    # $Xaml.IO.SrRemoveGateway           # Button
-    # $Xaml.IO.SrViewer                  # DataGrid
-    # $Xaml.IO.SrTopology                # DataGrid
-    # $Xaml.IO.SrGetGateway              # Button
-    # $Xaml.IO.SrNewGateway              # Button
-
-    # [DataGrid(s)]://Initialize
+    # [Server Tab]  
     $Xaml.IO.SrAggregate.ItemsSource    = @()
     $Xaml.IO.SrViewer.ItemsSource       = @()
     $Xaml.IO.SrTopology.ItemsSource     = @()
 
-    # [Server]://Events
     $Xaml.IO.SrAggregate.Add_SelectionChanged(
     {
         $Xaml.IO.SrViewer.ItemsSource     = @( )
@@ -4882,33 +4809,7 @@ Function New-FEInfrastructure
         }
     })
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Virtual Tab    ]______________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
-    # $Xaml.IO.VmSelect                  # DataGrid
-    # $Xaml.IO.VmHostSelect              # Button
-    # $Xaml.IO.VmHost                    # TextBox
-    # $Xaml.IO.VmPopulate                # Button
-    # $Xaml.IO.VmGateway                 # DataGrid
-    # $Xaml.IO.VmGatewayScriptSelect     # Button
-    # $Xaml.IO.VmGatewayScript           # TextBox
-    # $Xaml.IO.VmGatewayImageSelect      # Button
-    # $Xaml.IO.VmGatewayImage            # TextBox
-    # $Xaml.IO.VmGatewayMemory           # TextBox
-    # $Xaml.IO.VmGatewayDrive            # TextBox
-    # $Xaml.IO.VmServer                  # DataGrid
-    # $Xaml.IO.VmServerScriptSelect      # Button
-    # $Xaml.IO.VmServerScript            # TextBox
-    # $Xaml.IO.VmServerImageSelect       # Button
-    # $Xaml.IO.VmServerImage             # TextBox
-    # $Xaml.IO.VmServerMemory            # TextBox
-    # $Xaml.IO.VmServerDrive             # TextBox
-    # $Xaml.IO.VmGetArchitecture         # Button
-    # $Xaml.IO.VmNewArchitecture         # Button
-
+    # [Virtual Tab]
     $Xaml.IO.VmSelect.ItemsSource        = @( )
     $Xaml.IO.VmHostSelect.Add_Click(
     {
@@ -4949,7 +4850,6 @@ Function New-FEInfrastructure
         }
         
         $Xaml.IO.VmControllerSwitch.ItemsSource   = @( $Main.Vm.Switch | ? Type -eq External | % Name )
-        # $Xaml.IO.VmControllerSwitch.SelectedIndex = 0
         $Xaml.IO.VmSelect.ItemsSource             = @( )
         $Collect                                  = @( )
 
@@ -5216,12 +5116,6 @@ Function New-FEInfrastructure
 
         Write-Theme "Added [+] DHCP Reservations"
 
-        #    ____                                                                                            ________    
-        #   //¯¯\\__________________________________________________________________________________________//¯¯\\__//   
-        #   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-        #    ¯¯\\__[ Gateway Template ]____________________________________________________________________//¯¯        
-        #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
         Write-Theme "Writing [~] Gateway Objects"
 
         $Date       = Get-Date -UFormat %Y%m%d
@@ -5244,12 +5138,6 @@ Function New-FEInfrastructure
             Set-Content -Path "$Path\$X\host.txt" -Value $Filter -Verbose -Force
             Export-CliXml -Path "$Path\$X\cred.txt" -InputObject $Credential -Verbose -Force
         }
-
-        #    ____                                                                                            ________    
-        #   //¯¯\\__________________________________________________________________________________________//¯¯\\__//   
-        #   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-        #    ¯¯\\__[ Server Template ]_____________________________________________________________________//¯¯        
-        #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
         Write-Theme "Writing [~] Server Objects"
 
@@ -5274,41 +5162,11 @@ Function New-FEInfrastructure
             Export-CliXml -Path "$Path\$X\cred.txt" -InputObject $Credential -Verbose -Force
         }
 
-        #    ____                                                                                            ________    
-        #   //¯¯\\__________________________________________________________________________________________//¯¯\\__//   
-        #   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-        #    ¯¯\\__[ Script Initialization  ]______________________________________________________________//¯¯        
-        #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
         Write-Theme "Creating [~] Script Initialization"
         Return [System.Windows.MessageBox]::Show("Virtual (Switch/Gateway/Server) item(s) have been created","Success")
     })
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Imaging Tab    ]______________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
-    # [Imaging]://Variables
-    # $Xaml.IO.IsoSelect                # Button
-    # $Xaml.IO.IsoPath                  # Text
-    # $Xaml.IO.IsoScan                  # Button
-    # $Xaml.IO.IsoList                  # DataGrid
-    # $Xaml.IO.IsoMount                 # Button
-    # $Xaml.IO.IsoDismount              # Button
-    # $Xaml.IO.IsoView                  # DataGrid
-    # $Xaml.IO.WimQueue                 # Button
-    # $Xaml.IO.WimDequeue               # Button
-    # $Xaml.IO.WimIsoUp                 # Button
-    # $Xaml.IO.WimIsoDown               # Button
-    # $Xaml.IO.WimIso                   # DataGrid
-    # $Xaml.IO.WimSelect                # Button
-    # $Xaml.IO.WimPath                  # Text
-    # $Xaml.IO.WimExtract               # Button
-
-    # $Xaml                           = [XamlWindow][FEInfrastructureGUI]::Tab
-    # [DataGrid]://Initialize
+    # [Imaging Tab]
     $Xaml.IO.IsoList.ItemsSource        = @( )
     $Xaml.IO.IsoView.ItemsSource        = @( )
     $Xaml.IO.WimIso.ItemsSource         = @( )
@@ -5316,7 +5174,6 @@ Function New-FEInfrastructure
     $Xaml.IO.WimIsoDown.IsEnabled       = 0
     $Xaml.IO.IsoPath.IsEnabled          = 0
 
-    # [Imaging]://Events
     $Xaml.IO.IsoSelect.Add_Click(
     {
         $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
@@ -5488,7 +5345,6 @@ Function New-FEInfrastructure
         If (Test-Path $Target)
         {
             $Children = Get-ChildItem $Target *.wim -Recurse | % FullName
-
             If ($Children.Count -gt 0)
             {
                 Switch([System.Windows.MessageBox]::Show("Wim files detected at provided path.","Purge and rebuild?","YesNo"))
@@ -5623,29 +5479,11 @@ Function New-FEInfrastructure
         }
     })
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Updates Tab    ]______________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
-    # [Updates]://Variables
-    # $Xaml.IO.UpdSelect                 # Button
-    # $Xaml.IO.UpdPath                   # TextBox
-    # $Xaml.IO.UpdAggregate              # DataGrid
-    # $Xaml.IO.UpdAddUpdate              # Button
-    # $Xaml.IO.UpdRemoveUpdate           # Button
-    # $Xaml.IO.UpdViewer                 # DataGrid
-    # $Xaml.IO.UpdWim                    # DataGrid
-    # $Xaml.IO.UpdInstallUpdate          # Button
-    # $Xaml.IO.UpdUninstallUpdate        # Button
-
-    # [DataGrid(s)]://Initialize
+    # [Updates Tab]
     $Xaml.IO.UpdAggregate.ItemsSource   = @( )
     $Xaml.IO.UpdViewer.ItemsSource      = @( )
     $Xaml.IO.UpdWim.ItemsSource         = @( )
 
-    # [Updates]://Events
     $Xaml.IO.UpdSelect.Add_Click(
     {
         $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
@@ -5668,48 +5506,7 @@ Function New-FEInfrastructure
         }
     })
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Share Tab  ]__________________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-    
-    # [Share]://Variables
-    # $Xaml.IO.DsAggregate              # DataGrid
-
-    # $Xaml.IO.DsRootSelect             # Button
-    # $Xaml.IO.DsRootPath               # Text
-    # $Xaml.IO.DsShareName              # Text
-    # $Xaml.IO.DsDriveName              # Text
-    # $Xaml.IO.DsDescription            # Text
-    # $Xaml.IO.DsType                   # ComboBox
-    # $Xaml.IO.DsDcUsername             # Text
-    # $Xaml.IO.DsDcPassword             # Password
-    # $Xaml.IO.DsDcConfirm              # Password
-    # $Xaml.IO.DsLmUsername             # Text
-    # $Xaml.IO.DsLmPassword             # Password
-    # $Xaml.IO.DsLmConfirm              # Password
-    # $Xaml.IO.DsBrCollect              # Button
-    # $Xaml.IO.DsBrPhone                # Text
-    # $Xaml.IO.DsBrHours                # Text
-    # $Xaml.IO.DsBrWebsite              # Text
-    # $Xaml.IO.DsBrLogoSelect           # Button
-    # $Xaml.IO.DsBrLogo                 # Text
-    # $Xaml.IO.DsBrBackgroundSelect     # Button
-    # $Xaml.IO.DsBrBackground           # Text
-    # $Xaml.IO.DsNetBiosName            # Text
-    # $Xaml.IO.DsDnsName                # Text
-    # $Xaml.IO.DsMachineOuName          # Text
-    # $Xaml.IO.DsSelectBootstrap         # Button
-    # $Xaml.IO.DsGetBootstrap            # Button
-    # $Xaml.IO.DsBootstrap               # TextBlock
-    # $Xaml.IO.DsSelectCustomSettings    # Button
-    # $Xaml.IO.DsGetCustomSettings       # Button
-    # $Xaml.IO.DsCustomSettings          # TextBlock
-    # $Xaml.IO.DsCreate                  # Button
-    # $Xaml.IO.DsUpdate                  # Button
-
-    # [Share]://Events
+    # [Share Tab]
     $Xaml.IO.DsAggregate.Add_SelectionChanged(
     {
         $Ds = $Xaml.IO.DsAggregate.SelectedItem
@@ -6061,15 +5858,6 @@ Function New-FEInfrastructure
         {
             $Ds                               = $Xaml.IO.DsAggregate.SelectedItem
             $Xaml.IO.DsCustomSettings.Text      = @() 
-            <#[String]$Type,
-            [String]$UNC,
-            [String]$Org,
-            [String]$NetBIOS,
-            [String]$DNS,
-            [String]$Server,
-            [String]$OU,
-            [String]$UserID,
-            [String]$Password#>
             ForEach ($Line in $Main.CustomSettings($Ds.Type,$Ds.Share,$Xaml.IO.DsOrganization.Text,$Xaml.IO.DsNetBiosName.Text,
                                                 $Main.MDT.Server,$Xaml.IO.DsDnsName.Text,$Xaml.IO.DsMachineOU.Text,$Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.Password))
             {
@@ -6549,11 +6337,7 @@ Function New-FEInfrastructure
             # Update FEShare(MDT)
             Update-MDTDeploymentShare -Path $Root -Force -Verbose
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ WDS Section    ]______________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+            # [WDS Section]    
 
             # Update/Flush FEShare(Images)
             $ImageLabel = Get-ItemProperty -Path $Root | % { 
