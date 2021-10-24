@@ -78,7 +78,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-09-11
-          Modified: 2021-10-23
+          Modified: 2021-10-24
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -218,38 +218,15 @@ Function New-FEInfrastructure
     
     Class Scope
     {
-        [String]  $Name
-        [String]$Network
-        Hidden [UInt32[]]$Network_
-        [UInt32] $Prefix
-        [String]$Netmask
-        Hidden [UInt32[]]$Netmask_
-        [UInt32]$HostCount
-        [Object]$HostObject
-        [String]$Start
-        [String]$End
-        [String]$Range
-        [String]$Broadcast
-        [Object] GetSubnetMask([UInt32]$Int)
-        {
-            $Bin   = @(0..($Int-1) | % {1};$Int..31| % {0})
-            $Hash  = @{ }
-            $Mask  = @{ }
-            0..3 | % {
-
-                $Hash.Add($_,$Bin[($_*8)..(($_*8) + 8)])
-                $Mask.Add($_,(@(ForEach ($I in 0..7 )
-                { 
-                    Switch($Hash[$_][$I])
-                    {
-                        0 { 0 }
-                        1 { (128,64,32,16,8,4,2,1)[$I] }
-                    }
-                }) -join "+" | Invoke-Expression ))
-            }
-
-            Return @( $Mask[0..3] -join '.' )
-        }
+        [String]       $Name
+        [String]    $Network
+        [UInt32]     $Prefix
+        [String]    $Netmask
+        [UInt32]  $HostCount
+        [String]  $HostRange
+        [String]      $Start
+        [String]        $End
+        [String]  $Broadcast
         Scope([String]$Prefix)
         {
             $This.Name     = $Prefix
@@ -267,64 +244,83 @@ Function New-FEInfrastructure
             $This.Netmask    = $Netmask
             $This.Remain()
         }
+        [Object] GetSubnetMask([UInt32]$CIDR)
+        {
+            Return @( @( 0,8,16,24 | % {[Convert]::ToInt32(("{0}{1}" -f ("1" * $CIDR -join ''),("0" * (32-$CIDR) -join '')).Substring($_,8),2)} ) -join '.' )
+        }
         Remain()
         {
-            $This.Network_   = $This.Network -Split "\."
-            $This.Netmask_   = $This.Netmask -Split "\."
-
-            $WC             = ForEach ( $X in 0..3 )
-            { 
-                Switch($This.Netmask_[$X])
+            $NW             = [UInt32[]]$This.Network.Split(".")
+            $NM             = [UInt32[]]$This.Netmask.Split(".")
+            $This.HostCount = (( $NM | % { 256 - $_ } ) -join "*" | Invoke-Expression) - 2
+            $This.HostRange = @( ForEach ($I in 0..3)
+            {
+                Switch ($NM[$I])
                 {
-                    255 { 1 } 0 { 256 } Default { 256 - $This.Netmask_[$X] }
+                    255 
+                    { 
+                        $NW[$I]  
+                    }
+                    0   
+                    { 
+                        "0..255" 
+                    } 
+                    Default 
+                    { 
+                        "{0}..{1}" -f $NW[$I],($NW[$I]+((256-$NM[$I])-1))
+                    }
+                }
+            } ) -join '/'
+
+            $H           = @{ }
+            ForEach ($I in 0..3)
+            {
+                Switch ($NM[$I])
+                {
+                    255     
+                    { 
+                        $H.Add($I,$NW[$I])
+                    }
+                    0       
+                    { 
+                        $H.Add($I,@(0,255))
+                    }
+                    Default 
+                    { 
+                        $H.Add($I,@($NW[$I],($NW[$I] + ((256 - $NM[$I]) - 1))))
+                    }
                 }
             }
-
-            $This.HostCount = (Invoke-Expression ($WC -join "*")) - 2
-            $SRange = @{}
-
-            ForEach ( $X in 0..3 )
+            $I        = @{ }
+            ForEach ($0 in $H[0])
             {
-                $SRange.Add($X,@(Switch($WC[$X])
+                ForEach ($1 in $H[1])
                 {
-                    1 { $This.Network_[$X] }
-                    Default 
+                    ForEach ($2 in $H[2])
                     {
-                        "{0}..{1}" -f $This.Network_[$X],(([UInt32]$This.Network_[$X] + (256-$This.Netmask_[$X]))-1)
-                    }
-                    256 { "0..255" }
-                }))
-            }
-
-            $This.Range      = @( 0..3 | % { $SRange[$_] }) -join '/'
-
-            $XRange          = @{ }
-
-            ForEach ( $0 in $SRange[0] | Invoke-Expression )
-            {
-                ForEach ( $1 in $SRange[1] | Invoke-Expression )
-                {
-                    ForEach ( $2 in $SRange[2] | Invoke-Expression )
-                    {
-                        ForEach ( $3 in $SRange[3] | Invoke-Expression )
+                        ForEach ($3 in $H[3])
                         {
-                            $XRange.Add($XRange.Count,"$0.$1.$2.$3")
+                            $I.Add($I.Count,"$0.$1.$2.$3")
                         }
                     }
                 }
             }
+            $X              = [UInt32[]]$I[0].Split(".")
+            $X[-1]          = $X[-1] + 1
+            $This.Start     = $X -join "."
 
-            $This.HostObject = @( 0..($XRange.Count-1) | % { $XRange[$_] } )
-            $This.Start     = $This.HostObject[1]
-            $This.End       = $This.HostObject[-2]
-            $This.Broadcast = $This.HostObject[-1]
+            $Y              = [UInt32[]]$I[$I.Count-1].Split(".")
+            $Y[-1]          = $Y[-1] - 1
+            $This.End       = $Y -join "."
+
+            $This.Broadcast = $I[$I.Count-1]
         }
         [String] ToString()
         {
             Return @($This.Network)
         }
     }
-    
+
     Class Network
     {
         [String]$Network
@@ -333,97 +329,45 @@ Function New-FEInfrastructure
         [Object[]]$Aggregate
         Network([String]$Network)
         {
+            $X              = $Network.Split("/")
+            $This.Network   = $X[0]
+            $This.Prefix    = [UInt32]$X[1]
+            $Octet          = $This.Network.Split(".")
+            $NM             = 0,8,16,24 | % { [Convert]::ToInt32(("{0}{1}" -f ("1" * $X[1] -join ''),("0" * (32-$X[1]) -join '')).Substring($_,8),2)}
+            $This.Netmask   = $NM -join "."
             $Hash           = @{ }
-            $NetworkHash    = @{ }
-            $NetmaskHash    = @{ }
-            $HostHash       = @{ }
-
-            $This.Network   = $Network.Split("/")[0]
-            $This.Prefix    = $Network.Split("/")[1]
-
-            $NWSplit        = $This.Network.Split(".")
-            $BinStr         = "{0}{1}" -f ("1" * $this.Prefix),("0" * (32-$This.Prefix))
-
-            ForEach ( $I in 0..3 )
+            $Contain        = @{ }
+            ForEach ($I in 0..3)
             {
-                $Hash.Add($I,$BinStr.Substring(($I*8),8).ToCharArray())
-            }
-
-            ForEach ( $I in 0..3 )
-            {
-                Switch([UInt32]("0" -in $Hash[$I]))
+                If ($NM[$I] -notmatch "(0|255)")
                 {
-                    0
+                    $Hash.Add($I,@(0..255 | ? { $_ % (256 - $NM[$I]) -eq 0 }))
+                }
+                Else
+                {
+                    $Hash.Add($I,$Octet[$I])
+                }
+            }
+            ForEach ($0 in $Hash[0])
+            {
+                ForEach ($1 in $Hash[1])
+                {
+                    ForEach ($2 in $Hash[2])
                     {
-                        $NetworkHash.Add($I,$NWSplit[$I])
-                        $NetmaskHash.Add($I,255)
-                        $HostHash.Add($I,1)
-                    }
-
-                    1
-                    {
-                        $NwCt = ($Hash[$I] | ? { $_ -eq "1" }).Count
-                        $HostHash.Add($I,(256,128,64,32,16,8,4,2,1)[$NwCt])
-
-                        If ( $NwCt -eq 0)
+                        ForEach ($3 in $Hash[3])
                         {
-                            $NetworkHash.Add($I,0)
-                            $NetmaskHash.Add($I,0)
-                        }
-
-                        Else
-                        {
-                            $NetworkHash.Add($I,(128,64,32,16,8,4,2,1)[$NwCt-1])
-                            $NetmaskHash.Add($I,(128,192,224,240,248,252,254,255)[$NwCt-1])
+                            $Contain.Add($Contain.Count,"$0.$1.$2.$3/$($This.Prefix)")
                         }
                     }
                 }
             }
-
-            $This.Netmask = $NetmaskHash[0..3] -join '.'
-
-            $Hosts   = @{ }
-
-            ForEach ( $I in 0..3 )
-            {
-                Switch ($HostHash[$I])
-                {
-                    1
-                    {
-                        $Hosts.Add($I,$NetworkHash[$I])
-                    }
-
-                    256
-                    {
-                        $Hosts.Add($I,0)
-                    }
-
-                    Default
-                    {
-                        $Hosts.Add($I,@(0..255 | ? { $_ % $HostHash[$I] -eq 0 }))
-                    }
-                }
+            Write-Host "Found [~] ($($Contain.Count)) Networks"
+            $This.Aggregate = 0..($Contain.Count-1) | % {
+            
+                $Item = $Contain[$_]
+                Write-Host "Collecting [~] ($Item)"
+                [Scope]::New($Item) 
             }
-
-            $Wildcard = $HostHash[0..3] -join ','
-
-            $Contain = @{ }
-
-            ForEach ( $0 in $Hosts[0] )
-            {
-                ForEach ( $1 in $Hosts[1] )
-                {
-                    ForEach ( $2 in $Hosts[2] )
-                    {
-                        ForEach ( $3 in $Hosts[3] )
-                        {
-                            $Contain.Add($Contain.Count,"$0.$1.$2.$3")
-                        }
-                    }
-                }
-            }
-
-            $This.Aggregate = 0..( $Contain.Count - 1 ) | % { [Scope]::New($Contain[$_],$This.Prefix,$This.Netmask) }
         }
     }
 
@@ -580,7 +524,7 @@ Function New-FEInfrastructure
             $This.Zone = @( )
             ForEach ($Zone in Get-DnsServerZone)
             {
-                Write-Host "Collecting [~] ($Zone)"
+                Write-Host "Collecting [~] ($($Zone.Zonename))"
                 $This.Zone += [DnsServerZone]::New($This.Zone.Count,$Zone)
             }
         }
@@ -1492,8 +1436,6 @@ Function New-FEInfrastructure
                 Start-Sleep -Milliseconds 100
             }
             Until ($This.GetDiskImage() | ? Attached -eq $True)
-            
-            $This.Letter    = $This.GetDiskImage() | Get-Volume | % DriveLetter
         }
         DismountDiskImage()
         {
@@ -1541,7 +1483,7 @@ Function New-FEInfrastructure
                 $This.Store  = @( )
                 $This.Source = $Source
 
-                ForEach ( $Item in Get-ChildItem $This.Source *.iso )
+                ForEach ($Item in Get-ChildItem $This.Source *.iso)
                 {
                     $This.Store += [ImageFile]::New($This.Store.Count,$Item.FullName)
                 }
@@ -1559,13 +1501,9 @@ Function New-FEInfrastructure
             If ( $This.Selected.GetDiskImage() | ? Attached -eq $False )
             {
                 $This.Selected.MountDiskImage()
-                Start-Sleep 1
-            }
-            If ( $This.Selected.GetDiskImage() | ? Attached -eq $True )
-            {
-                $This.Selected.Letter = Get-DiskImage -ImagePath $This.Selected.Path | Get-Volume | % DriveLetter
             }
 
+            $This.Selected.Letter = $This.Selected.GetDiskImage() | Get-Volume | % DriveLetter
             $Path      = "$($This.Selected.Letter):\sources\install.wim"
 
             If (!(Test-Path $Path))
@@ -1638,7 +1576,7 @@ Function New-FEInfrastructure
             $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
             $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
 
-            ForEach ( $I in 0..( $This.Names.Count - 1 ) )
+            ForEach ($I in 0..($This.Names.Count - 1))
             {
                 $Name                = $This.Names[$I]
                 $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $This.IO.FindName($Name) -Force 
@@ -3565,6 +3503,33 @@ Function New-FEInfrastructure
         }
     }
 
+    Class Config
+    {
+        [Object] $Output
+        Config([Object]$Features,[Object]$Registry)
+        {
+            $This.Output = @(
+
+                ForEach ( $Item in "DHCP","DNS","AD-Domain-Services","Hyper-V","WDS","Web-WebServer")
+                {
+                    [DGList]::New($Item, [Bool]($Features | ? Name -eq $Item | % Installed))
+                }
+                
+                ForEach ( $Item in "MDT","WinADK","WinPE")
+                {
+                    $Slot = Switch($Item)
+                    {
+                        MDT    { $Registry[0], "Microsoft Deployment Toolkit"                       , "6.3.8456.1000" }
+                        WinADK { $Registry[1], "Windows Assessment and Deployment Kit - Windows 10" , "10.1.17763.1"  }
+                        WinPE  { $Registry[1], "Preinstallation Environment Add-ons - Windows 10"   , "10.1.17763.1"  }
+                    }
+                        
+                    [DGList]::New($Item, [Bool](Get-ItemProperty $Slot[0] | ? DisplayName -match $Slot[1] | ? DisplayVersion -ge $Slot[2]))
+                }
+            )
+        }
+    }
+
     # Controller class
     Class Main
     {
@@ -3576,8 +3541,8 @@ Function New-FEInfrastructure
         Static [String] $Background = "$([Main]::GFX)\OEMbg.jpg"
         Hidden [Object]   $ZipStack
         [Object]            $System
-        [Object]               $Win
-        [Object]               $Reg
+        [Object]          $Features
+        [Object]          $Registry
         [Object]            $Config
         [Object]          $IPConfig
         [Object]                $IP
@@ -3627,10 +3592,10 @@ Function New-FEInfrastructure
             $This.System            = $This.Module.Role.System
 
             Write-Host "Collecting [~] Windows Features"
-            $This.Win               = Get-WindowsFeature
+            $This.Features          = Get-WindowsFeature
 
             Write-Host "Collecting [~] Windows Registry"
-            $This.Reg               = @( "","\WOW6432Node" | % { "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall\*" })
+            $This.Registry          = @( "","\WOW6432Node" | % { "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall\*" })
 
             Write-Host "Collecting [~] Config"
             $This.Config            = @(
@@ -4092,32 +4057,15 @@ Function New-FEInfrastructure
             "Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | Invoke-Expression",
             "`$Module = Get-FEModule","`$Module.Role.LoadEnvironmentKey(`"$Key`")","`$Module.Role.Choco()" -join "`n")
         }
+        GetHostname()
+        {
+            Return @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+        }
     }
     
     # These two variables do most of the work
     $Main                           = [Main]::New()
-    $Xaml                           = [XamlWindow][FEInfrastructureGUI]::Tab
-
-    <# $Last = $Null
-    $Xaml.Names | ? { $_ -notin "ContentPresenter","Border","ContentSite" } | % {
-        
-        $Item = $_[0,1] -join ""
-        If ($Last -eq $Null -or $Item -ne $Last)
-        {
-            Write-Theme "$Item Tab" -Text
-        }
-        $X = "    # `$Xaml.IO.$_"
-        $Y = $Xaml.IO.$_.GetType().Name 
-        "{0}{1} # $Y" -f $X,(" "*(60-$X.Length) -join '')
-        $Last = $_[0,1] -join ""
-    
-    } | Set-Clipboard #>
-
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Module Tab ]__________________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+    $Xaml                           = [XamlWindow][FEInfrastructureGUI]::Tab     
 
     $Xaml.IO.Module_Info.ItemsSource    = @( )
     $Xaml.IO.Module_Info.ItemsSource    = @( ForEach ( $Item in "Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status" -Split " ")
@@ -4163,35 +4111,11 @@ Function New-FEInfrastructure
 
     $Xaml.IO.Module_List.ItemsSource       = @( $Main.Module.Classes )
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Role Tab   ]__________________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
     $Xaml.IO.Role_Info.ItemsSource = @( )
     $Xaml.IO.Role_Info.ItemsSource = @( ForEach ( $Item in "Name DNS NetBIOS Hostname Username IsAdmin Caption Version Build ReleaseID Code SKU Chassis" -Split " ")
     {
         [DGList]::New($Item,$Main.Module.Role.$Item)
     })
-
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯    
-#    ¯¯\\__[ Configuration Tab  ]__________________________________________________________________________//¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
-    # [Config]://Variables
-    # $Xaml.IO.CfgServices              # DataGrid
-    # $Xaml.IO.CfgDhcp                  # DataGrid
-    # $Xaml.IO.CfgDns                   # DataGrid
-    # $Xaml.IO.CfgAdds                  # DataGrid
-    # $Xaml.IO.CfgHyperV                # DataGrid
-    # $Xaml.IO.CfgWds                   # DataGrid
-    # $Xaml.IO.CfgMdt                   # DataGrid
-    # $Xaml.IO.CfgWinAdk                # DataGrid
-    # $Xaml.IO.CfgWinPE                 # DataGrid
-    # $Xaml.IO.CfgIIS                   # DataGrid
 
     # [CfgServices]://$Main.Config
     $Xaml.IO.CfgServices.ItemsSource                  = @( )
@@ -4200,19 +4124,14 @@ Function New-FEInfrastructure
     # [System]
     $Xaml.IO.System_Manufacturer.Text                 = $Main.System.Manufacturer
     $Xaml.IO.System_Manufacturer.IsReadOnly           = 1
-    
     $Xaml.IO.System_Model.Text                        = $Main.System.Model
     $Xaml.IO.System_Model.IsReadOnly                  = 1
-    
     $Xaml.IO.System_Product.Text                      = $Main.System.Product
     $Xaml.IO.System_Product.IsReadOnly                = 1
-    
     $Xaml.IO.System_Serial.Text                       = $Main.System.Serial
     $Xaml.IO.System_Serial.IsReadOnly                 = 1
-    
     $Xaml.IO.System_Memory.Text                       = $Main.System.Memory
     $Xaml.IO.System_Memory.IsReadOnly                 = 1
-    
     $Xaml.IO.System_UUID.Text                         = $Main.System.UUID
     $Xaml.IO.System_UUID.IsReadOnly                   = 1
         
