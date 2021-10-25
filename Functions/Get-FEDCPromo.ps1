@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-24
+          Modified: 2021-10-19
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -163,10 +163,13 @@ Function Get-FEDCPromo
     Class Execution
     {
         [Object] $Services
+        [Object] $Result
         [Object] $Output
         Execution()
         {
-
+            $This.Services = @( )
+            $This.Result   = @( )
+            $This.Output   = @{ }
         }
     }
 
@@ -188,7 +191,7 @@ Function Get-FEDCPromo
         }
         XamlWindow([String]$XAML)
         {           
-            If ( !$Xaml )
+            If (!$Xaml)
             {
                 Throw "Invalid XAML Input"
             }
@@ -904,8 +907,6 @@ Function Get-FEDCPromo
                     $This.Xaml.IO.Confirm.Password       = $In.SafeModeAdministratorPassword.GetNetworkCredential().Password
                 }
             }
-            $This.Xaml.IO.Start.Focus()
-            $This.Xaml.IO.Start.PerformClick()
         }
         SetMode([UInt32]$Mode)
         {
@@ -1468,6 +1469,54 @@ Function Get-FEDCPromo
                 $This.Xaml.IO.Start.IsEnabled = 0
             }
         }
+        Complete()
+        {
+            If ($This.Profile.Item[0].IsEnabled)
+            {
+                If ($This.Xaml.IO.ForestMode.SelectedIndex -ge 6)
+                {
+                    $This.Profile.Item[0].Value = "WinThreshold"
+                }
+                Else
+                {
+                    $This.Profile.Item[0].Value = $This.Xaml.IO.ForestMode.SelectedIndex
+                }
+            }
+
+            If ($This.Profile.Item[1].IsEnabled)
+            {
+                If ($This.Xaml.IO.DomainMode.SelectedIndex -ge 6)
+                {
+                    $This.Profile.Item[1].Value = "WinThreshold"
+                }
+                Else
+                {
+                    $This.Profile.Item[1].Value = $This.Xaml.IO.DomainMode.SelectedIndex
+                }
+            }
+
+            If ($This.Profile.Item[2].IsEnabled)
+            {
+                $This.Profile.Item[2].Value = $This.Xaml.IO.ReplicationSourceDC.SelectedItem
+            }
+
+            If ($This.Profile.Item[3].IsEnabled)
+            {
+                $This.Profile.Item[3].Value = $This.Xaml.IO.Sitename.SelectedItem
+            }
+
+            ForEach ($Item in $This.Profile.Role)
+            {
+                $Item.IsChecked = $Item.IsEnabled -and $This.IO.$($Item.Name).IsChecked
+            }
+
+            If ($This.Mode -eq 2)
+            {
+                $This.Profile.Item[7].Value = $This.Profile.Item[7].Value.Replace($This.Connection.Domain,"").TrimEnd(".")
+            }
+
+            $This.Profile.DSRM[0] | % { $_.Value = $_.Value | ConvertTo-SecureString -AsPlainText -Force }
+        }
     }
 
     $Main                                      = [FEDCPromo]::New()
@@ -1586,6 +1635,7 @@ Function Get-FEDCPromo
 
     $Xaml.IO.Start.Add_Click(
     {
+        $Main.Complete()
         $Xaml.IO.DialogResult = $True
     })
 
@@ -1599,63 +1649,22 @@ Function Get-FEDCPromo
         0 
         {
             $Xaml.Invoke()
+            $Alt = 0
         }
         1 
         {
             $Main.SetMode($InputObject.Mode)
             $Main.SetInputObject($InputObject)
-            $Xaml.Invoke()
+            $Xaml.IO.Show()
+            Start-Sleep 3
+            $Main.Complete()
+            $Xaml.IO.Close()
+            $Alt = 1
         }
     }
 
-    If ($Xaml.IO.DialogResult)
+    If ($Xaml.IO.DialogResult -or $Alt -eq 1)
     {
-        If ($Main.Profile.Item[0].IsEnabled)
-        {
-            If ($Xaml.IO.ForestMode.SelectedIndex -ge 6)
-            {
-                $Main.Profile.Item[0].Value = "WinThreshold"
-            }
-            Else
-            {
-                $Main.Profile.Item[0].Value = $Xaml.IO.ForestMode.SelectedIndex
-            }
-        }
-
-        If ($Main.Profile.Item[1].IsEnabled)
-        {
-            If ($Xaml.IO.DomainMode.SelectedIndex -ge 6)
-            {
-                $Main.Profile.Item[1].Value = "WinThreshold"
-            }
-            Else
-            {
-                $Main.Profile.Item[1].Value = $Xaml.IO.DomainMode.SelectedIndex
-            }
-        }
-
-        If ($Main.Profile.Item[2].IsEnabled)
-        {
-            $Main.Profile.Item[2].Value = $Xaml.IO.ReplicationSourceDC.SelectedItem
-        }
-
-        If ($Main.Profile.Item[3].IsEnabled)
-        {
-            $Main.Profile.Item[3].Value = $Xaml.IO.Sitename.SelectedItem
-        }
-
-        ForEach ($Item in $Main.Profile.Role)
-        {
-            $Item.IsChecked = $Item.IsEnabled -and $Xaml.IO.$($Item.Name).IsChecked
-        }
-
-        If ($Main.Mode -eq 2)
-        {
-            $Main.Profile.Item[7].Value = $Main.Profile.Item[7].Value.Replace($Main.Connection.Domain,"").TrimEnd(".")
-        }
-
-        $Main.Profile.DSRM[0] | % { $_.Value = $_.Value | ConvertTo-SecureString -AsPlainText -Force }
-
         $Execute = [Execution]::New()
 
         # [Install Features]
@@ -1721,58 +1730,58 @@ Function Get-FEDCPromo
         If (!$Test)
         {
             Write-Theme "Installing [~] [FightingEntropy($([char]960))] Services..."
-            $Execute.Services | % { Install-WindowsFeature -Name $_.Name -IncludeAllSubfeature -IncludeManagementTools }
-
-            Write-Theme "Installing [~] [FightingEntropy($([char]960))] Domain Controller..."
-            Switch ( $UI.Mode )
+            If ($Execute.Services)
             {
-                0 { Install-ADDSForest @Splat }
-                1 { Install-ADDSDomain @Splat }
-                2 { Install-ADDSDomain @Splat }
-                3 { Install-ADDSDomainController @Splat }
+                $Execute.Result = @( ) 
+                ForEach ($Item in $Execute.Services)
+                {
+                    $Execute.Result += Install-WindowsFeature -Name $Item.Name -IncludeAllSubfeature -IncludeManagementTools
+                }
+            }
+
+            If (($Execute.Result | ? RestartNeeded -eq No).Count -gt 0)
+            {
+                Write-Host "Reboot [!] required to proceed."
+                If ($InputObject)
+                {
+                    Export-CliXml $Home\Desktop\Cred.txt $InputObject.Credential
+                    Export-CliXml $Home\Desktop\DSRM.txt $InputObject.SafeModeAdministratorPassword
+                    Set-Content $Home\Desktop\Inputobject.json (ConvertTo-Json $InputObject)
+                    $Value = @( 
+
+                        '$InputObject                               = Get-Content $Home\Desktop\InputObject.json | ConvertFrom-Json',
+                        '$InputObject.Credential                    = Import-CliXml $Home\Desktop\Cred.txt',
+                        '$InputObject.SafeModeAdministratorPassword = Import-CliXml $Home\Desktop\DSRM.Txt',
+                        'Remove-Item $Home\Desktop\InputObject.Json',
+                        'Remove-Item $Home\Desktop\Cred.txt',
+                        'Remove-Item $Home\Desktop\DSRM.txt',
+                        'Remove-Item $Env:Public\script.ps1',
+                        'Unregister-ScheduledTask -Taskname FEDCPromo -Confirm:$False',
+                        'Get-FEDCPromo -InputObject $InputObject'
+                    )
+
+                    Set-Content "$Env:Public\script.ps1" -Value $Value -Force
+                    $Action  = New-ScheduledTaskAction -Execute PowerShell -Argument '-ExecutionPolicy Bypass -Command ((Get-Content $Env:Public\script.ps1) -join "`n" | Invoke-Expression)'
+                    $Trigger = New-ScheduledTaskTrigger -AtLogon
+                    Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -Description "Restarting, then promote system"
+                    Restart-Computer
+                }
+                If (!$InputObject)
+                {
+                    Throw "Write logic here"
+                }
+            }
+            If (($Execute.Result | ? RestartNeeded -eq No).Count -eq 0)
+            {
+                Write-Theme "Installing [~] [FightingEntropy($([char]960))] Domain Controller..."
+                Switch ($Main.Profile.Mode)
+                {
+                    0 { Install-ADDSForest @Splat -Confirm:$False }
+                    1 { Install-ADDSDomain @Splat -Confirm:$False }
+                    2 { Install-ADDSDomain @Splat -Confirm:$False }
+                    3 { Install-ADDSDomainController @Splat -Confirm:$False }
+                }
             }
         }
     }
 }
-
-    <#
-    If ($Reboot -eq 1)
-    {
-        Write-Host "Reboot [!] required to proceed."
-        $Value = @(
-        "Remove-Item $Env:Public\script.ps1 -Force -EA 0",
-        "Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:`$False"
-        "@{"," "
-        ForEach ($Item in $Splat.GetEnumerator())
-        {
-            Switch ($Item.Name)
-            {
-                SafeModeAdministratorPassword 
-                { 
-                    "    SafeModeAdministratorPassword = '{0}' | ConvertTo-SecureString -AsPlainText -Force" -f $UI.IO.Confirm.Password 
-                }
-                Credential 
-                { 
-                    "    Credential = [System.Management.Automation.PSCredential]::New('{0}',('{1}' | ConvertTo-SecureString -AsPlainText -Force))" -f $UI.Credential.UserName,$UI.Credential.GetNetworkCredential().Password 
-                }
-                Default    
-                { 
-                    If ( $Item.Value -in "True","False")
-                    {
-                        "    {0}=$`{1}" -f $Item.Name,$Item.Value
-                    }
-                    Else
-                    {
-                        "    {0}='{1}'" -f $Item.Name,$Item.Value
-                    }
-                }
-            }
-        }
-        " ","} | % { $($UI.Command) @_ -Force }")
-        Set-Content "$Env:Public\script.ps1" -Value $Value -Force
-        $Action = New-ScheduledTaskAction -Execute PowerShell -Argument "-ExecutionPolicy Bypass -Command (& $Env:Public\script.ps1)"
-        $Trigger = New-ScheduledTaskTrigger -AtLogon
-        Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -Description "Restarting, then promote system"
-        Restart-Computer
-    }
-#>
