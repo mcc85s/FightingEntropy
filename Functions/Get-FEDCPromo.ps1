@@ -1748,15 +1748,17 @@ Function Get-FEDCPromo
                 If ($InputObject)
                 {
                     Set-Content $Home\Desktop\Inputobject.json (ConvertTo-Json $InputObject)
-                    Export-CLIXml -Path $Home\Desktop\Cred.txt -InputObject $InputObject.Credential -Force
-                    Export-CLIXml -Path $Home\Desktop\DSRM.txt -InputObject $InputObject.SafeModeAdministratorPassword -Force
+                    Export-CliXml -Path $Home\Desktop\Cred.txt -InputObject $InputObject.Credential -Force
+                    Export-CliXml -Path $Home\Desktop\DSRM.txt -InputObject $InputObject.SafeModeAdministratorPassword -Force
                     $Value = @( 
 
                         '$InputObject                               = Get-Content $Home\Desktop\InputObject.json | ConvertFrom-Json',
-                        '$ADDS = [Hashtable]@{Credential=Import-CliXml $Home\Desktop\Cred.txt;SafeModeAdministratorPassword=Import-CliXml $Home\Desktop\DSRM.txt }',
+                        '$ADDS = [Hashtable]@{Credential=Import-CliXml $Home\Desktop\Cred.txt;SafeModeAdministratorPassword=Import-CliXml $Home\Desktop\DSRM.txt}',
                         'ForEach ($Name in $InputObject.PSObject.Properties.Name) { If ($Name.Length -gt 0 -and $Name -notin "Credential","SafeModeAdministratorPassword") { $ADDS.Add($Name,$InputObject.$Name) } };',
-                        'Remove-Item $Home\Desktop\InputObject.Json',
-                        'Remove-Item $Home\Desktop\script.ps1',
+                        'Remove-Item $Home\Desktop\Cred.txt -Verbose',
+                        'Remove-Item $Home\Desktop\DSRM.txt -Verbose',
+                        'Remove-Item $Home\Desktop\InputObject.Json -Verbose',
+                        'Remove-Item $Home\Desktop\script.ps1 -Verbose',
                         'Unregister-ScheduledTask -Taskname FEDCPromo -Confirm:$False',
                         'Get-FEDCPromo -InputObject $ADDS'
                     )
@@ -1765,9 +1767,9 @@ Function Get-FEDCPromo
 
                     $Action  = New-ScheduledTaskAction -Execute powershell -Argument "-NoExit -ExecutionPolicy Bypass -Command `"Add-Type -AssemblyName PresentationFramework;Import-Module FightingEntropy;& `$Home\Desktop\script.ps1"
                     $Trigger = New-ScheduledTaskTrigger -AtLogon
-                    Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -RunLevel Highest -Description "Restarting, then promote system"
+                    Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -RunLevel Highest -Description "Restart, then promote the system"
                     Write-Theme "Restarting [~] $Env:ComputerName"
-                    Restart-Computer
+                    Restart-Computer -Wait -Delay 3
                 }
                 If (!$InputObject)
                 {
