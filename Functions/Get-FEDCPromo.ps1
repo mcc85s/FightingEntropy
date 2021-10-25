@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-19
+          Modified: 2021-10-25
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -1735,7 +1735,10 @@ Function Get-FEDCPromo
                 $Execute.Result = @( ) 
                 ForEach ($Item in $Execute.Services)
                 {
-                    $Execute.Result += Install-WindowsFeature -Name $Item.Name -IncludeAllSubfeature -IncludeManagementTools
+                    If ($Item.Name -notmatch "DNS")
+                    {
+                        $Execute.Result += Install-WindowsFeature -Name $Item.Name -IncludeAllSubfeature -IncludeManagementTools
+                    }
                 }
             }
 
@@ -1745,38 +1748,24 @@ Function Get-FEDCPromo
                 If ($InputObject)
                 {
                     Set-Content $Home\Desktop\Inputobject.json (ConvertTo-Json $InputObject)
+                    Export-CLIXml -Path $Home\Desktop\Cred.txt -InputObject $InputObject.Credential -Force
+                    Export-CLIXml -Path $Home\Desktop\DSRM.txt -InputObject $InputObject.SafeModeAdministratorPassword -Force
                     $Value = @( 
 
-                        '$InputObject                               = [Hashtable](Get-Content $Home\Desktop\InputObject.json | ConvertFrom-Json)',
-                        ('$Credential                    = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText -Force)")' -f $InputObject.Credential.Username,"'",$InputObject.Credential.GetNetworkCredential().Password),
-                        ('$SafeModeAdministratorPassword = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText -Force)")' -f $InputObject.SafeModeAdministratorPassword.Username,"'",$InputObject.SafeModeAdministratorPassword.GetNetworkCredential().Password),
-                        '$ADDS = @{Credential = $Credential; SafeModeAdministratorPassword= $SafeModeAdministratorPassword }',
-                        '$InputObject.GetEnumerator | % { If ($_.Name -notin "Credential","SafeModeAdministratorPassword") { $ADDS.Add($_.Name,$_.Value) };',
+                        '$InputObject                               = Get-Content $Home\Desktop\InputObject.json | ConvertFrom-Json',
+                        '$ADDS = [Hashtable]@{Credential=Import-CliXml $Home\Desktop\Cred.txt;SafeModeAdministratorPassword=Import-CliXml $Home\Desktop\DSRM.txt }',
+                        'ForEach ($Name in $InputObject.PSObject.Properties.Name) { If ($Name.Length -gt 0 -and $Name -notin "Credential","SafeModeAdministratorPassword") { $ADDS.Add($Name,$InputObject.$Name) } };',
                         'Remove-Item $Home\Desktop\InputObject.Json',
                         'Remove-Item $Env:Public\script.ps1',
-                        'Remove-Item $Env:Public\FEDCPromo.lnk',
                         'Unregister-ScheduledTask -Taskname FEDCPromo -Confirm:$False',
                         'Get-FEDCPromo -InputObject $ADDS'
                     )
 
                     Set-Content "$Env:Public\script.ps1" -Value $Value -Force
 
-                    $Path              = "$Env:Public\Desktop\FEDCPromo.lnk" 
-                    $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut($Path)
-
-                    $Item.TargetPath   = "powershell"
-                    $Item.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command `"Add-Type -AssemblyName PresentationFramework;Import-Module FightingEntropy;& `$Env:Public\script.ps1"
-                    $Item.Description  = "Beginning the fight against identity theft and cybercriminal activities."
-                    $Item.IconLocation = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico"
-                    $Item.Save()
-                    
-                    $bytes             = [System.IO.File]::ReadAllBytes($Path)
-                    $bytes[0x15]       = $bytes[0x15] -bor 0x20
-                    [System.IO.File]::WriteAllBytes($Path, $bytes)
-
-                    $Action  = New-ScheduledTaskAction -Execute "$Env:Public\Desktop\FEDCPromo.lnk" 
+                    $Action  = New-ScheduledTaskAction -Execute powershell -Argument "-NoExit -ExecutionPolicy Bypass -Command `"Add-Type -AssemblyName PresentationFramework;Import-Module FightingEntropy;& `$Env:Public\script.ps1"
                     $Trigger = New-ScheduledTaskTrigger -AtLogon
-                    Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -Description "Restarting, then promote system"
+                    Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -RunLevel Highest -Description "Restarting, then promote system"
                     Restart-Computer
                 }
                 If (!$InputObject)
