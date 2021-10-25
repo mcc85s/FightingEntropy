@@ -1748,8 +1748,8 @@ Function Get-FEDCPromo
                     $Value = @( 
 
                         '$InputObject                               = [Hashtable](Get-Content $Home\Desktop\InputObject.json | ConvertFrom-Json)',
-                        ('$InputObject.Credential                    = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText)"),' -f $InputObject.Credential.Username,"'",$InputObject.Credential.GetNetworkCredential().Password),
-                        ('$InputObject.SafeModeAdministratorPassword = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText)"),' -f $InputObject.SafeModeAdministratorPassword.Username,"'",$InputObject.SafeModeAdministratorPassword.GetNetworkCredential().Password),
+                        ('$InputObject.Credential                    = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText)")' -f $InputObject.Credential.Username,"'",$InputObject.Credential.GetNetworkCredential().Password),
+                        ('$InputObject.SafeModeAdministratorPassword = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText)")' -f $InputObject.SafeModeAdministratorPassword.Username,"'",$InputObject.SafeModeAdministratorPassword.GetNetworkCredential().Password),
                         'Remove-Item $Home\Desktop\InputObject.Json',
                         'Remove-Item $Env:Public\script.ps1',
                         'Unregister-ScheduledTask -Taskname FEDCPromo -Confirm:$False',
