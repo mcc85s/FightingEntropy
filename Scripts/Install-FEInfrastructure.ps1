@@ -1,23 +1,187 @@
-$Path        = Get-ChildItem $home\desktop | ? Name -match "(\d{8})" | % Fullname
-$GW          = Get-ChildItem $Path\GW | % FullName
-$SR          = Get-ChildItem $Path\SR | % FullName
-Import-Module FightingEntropy
-$Cred2       = Get-Credential
-
-ForEach ( $X in 0..($GW.Count - 1 ))
+Class Status
 {
-    # $X = 6
-    $Vm0         = Get-Content "$($Gw[$X])\vmx.txt" | ConvertFrom-Json
-    $Mx0         = Get-Content "$($Gw[$X])\host.txt" | ConvertFrom-Json
-    $Cred0       = Import-CliXml "$($Gw[$X])\cred.txt"
+    [UInt32]   $Index
+    Hidden [String]    $Path
+    [String]  $Status
+    Status([UInt32]$Index,[String]$Path)
+    {
+        $This.Index  = $Index
+        $This.Path   = $Path
+        $This.GetStatus()
+    }
+    GetStatus()
+    {
+        $This.Status = Get-Content $This.Path
+    }
+    [String] Buffer([String]$Type,[String]$String)
+    {
+        $Buffer = Switch ($Type)
+        {
+            Index    {  5 }
+            Status   { 10 }
+        }
+        If ($String.Length -gt $Buffer)
+        {
+            Return $String.Substring(0,($Buffer-3)) + "..."
+        }
+        Else
+        {
+            Return @( (" " * ($Buffer - $String.Length) -join ''), $String -join '')
+        }
+    }
+    [String] ToString()
+    {
+        Return @( $This.Buffer("Index",$This.Index), $This.Buffer("Status",$This.Status) -join " " )
+    }
+}
+
+Class StatusBank
+{
+    [Object]      $Path
+    [Object]   $Process
+    [String]     $Title
+    [Object]      $Time
+    [Bool]   $Completed = $False
+    StatusBank([String]$Path,[String]$Title)
+    {
+        $This.Path    = $Path
+        $This.Process = @( )
+        $This.Title   = $Title
+    }
+    AddQuery([UInt32]$Index)
+    {
+        $This.Process += [Status]::New($Index,("{0}\$Index.txt" -f $This.Path))
+    }
+    Start()
+    {
+        $This.Time     = [System.Diagnostics.Stopwatch]::StartNew()
+    }
+    UpdateStatus()
+    {
+        ForEach ($Item in $This.Process)
+        {
+            $Item.GetStatus()
+        }
+
+        If ($This.Complete() -eq $This.Process.Count)
+        {
+            $This.Time.Stop()
+            $This.Completed = $True
+        }
+    }
+    [String[]] Status()
+    {
+        $This.UpdateStatus()
+        Return @( 
+        "Index Status",
+        "----- ------";
+        ForEach ($Item in $This.Process)
+        {
+            $Item
+        };
+        " ",
+        "[$($This.Time.Elapsed)][$($This.Title) ($($This.Complete())/$($This.Process.Count)) Complete]",
+        " ")
+    }
+    [UInt32] Complete()
+    {
+        Return ($This.Process | ? Status -eq Complete).Count
+    }
+    [UInt32] Incomplete()
+    {
+        Return ($This.Process | ? Status -eq Incomplete).Count
+    }
+}
+
+Class Node
+{
+    [String] $Type
+    [String] $Path
+    [Object] $Vm
+    [Object] $Host
+    [Object] $Cred
+    [Object] $Ctrl
+    Node([String]$Type,[String]$Path)
+    {
+        $This.Type = $Type
+        $This.Path = $Path
+        $This.Vm   = Get-Content   $Path\vmx.txt | ConvertFrom-Json
+        $This.Host = Get-Content   $Path\host.txt  | ConvertFrom-Json
+        $This.Cred = Import-CliXml $Path\cred.txt
+        $This.Ctrl = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $This.VM.Name
+    }
+    [String] ToString()
+    {
+        Return $This.VM.Name
+    }
+    Reset()
+    {
+        $DVD = Get-VM -Name $This.Vm.Name | % DVDDrives | % Path
+        Stop-Vm $This.Vm.Name -Confirm:$False -Force -Verbose
+        Switch ($This.Type)
+        {
+            Gateway
+            {
+                Remove-VMHardDiskDrive -VMName $This.Vm.Name -ControllerType IDE -ControllerNumber 0 -ControllerLocation 0 -Verbose
+                Remove-Item $This.Vm.NewVHDPath -Force -Verbose
+                New-VHD -Path $This.Vm.NewVHDPath -SizeBytes 20GB -Verbose
+                Add-VMHardDiskDrive -VMName $This.VM.Name -ControllerType IDE -ControllerNumber 0 -ControllerLocation 0 -Path $This.VM.NewVHDPath -Verbose | Set-VMHardDiskDrive
+            }
+            Server
+            {
+                Remove-VMHardDiskDrive -VMName $This.Vm.Name -ControllerType SCSI -ControllerNumber 0 -ControllerLocation 0 -Verbose
+                Remove-Item $This.Vm.NewVHDPath -Force -Verbose
+                New-VHD -Path $This.VM.NewVHDPath -SizeBytes 100GB -Verbose
+                Add-VMHardDiskDrive -VMName $This.VM.Name -ControllerType SCSI -ControllerNumber 0 -ControllerLocation 0 -Path $This.VM.NewVHDPath -Verbose | Set-VMHardDiskDrive
+            }
+        }
+        Set-VMDvdDrive -VMName $This.VM.Name -Path $DVD -Verbose
+    }
+}
+
+Class Infrastructure
+{
+    [String] $Path
+    [Object] $Gateway
+    [Object] $Server
+    [Object] $Switch
+    [Object] $External
+    [Object] $Internal
+    [Object] $Credential
+    Infrastructure([String]$Path,[Object]$Credential)
+    {
+        $This.Path       = $Path
+        $This.Gateway    = Get-ChildItem $Path\GW | % { [Node]::New("Gateway",$_.FullName) }
+        $This.Server     = Get-ChildItem $Path\SR | % { [Node]::New( "Server",$_.FullName) }
+        $This.Switch     = Get-VMSwitch
+        $This.External   = $This.Switch | ? SwitchType -eq External
+        $This.Internal   = $This.Switch | ? SwitchType -eq Internal
+        $This.Credential = $Credential
+    }
+}
+
+$Cred2       = Get-Credential
+$Path        = Get-ChildItem $home\desktop | ? Name -match "(\d{8})" | % Fullname
+$Inf         = [Infrastructure]::New($Path,$Cred2)
+Import-Module FightingEntropy
+
+ForEach ($X in 0..($GW.Count - 1 ))
+{
+    # $X = 0; $Inf.Gateway[$X].Reset() ; $Inf.Server[$X].Reset()
+    $Vm0         = $Inf.Gateway[$X].Vm
+    $Mx0         = $Inf.Gateway[$X].Host
+    $Cred0       = $Inf.Gateway[$X].Cred
+    $Ctrl0       = $Inf.Gateway[$X].Ctrl
+
     $User0       = $Cred0.Username
     $Pass0       = $Cred0.GetNetworkCredential().Password
     $VMDisk0     = $Vm0.NewVHDPath
     $Id0         = $Vm0.Name
                 
-    $Vm1         = Get-Content "$($Sr[$X])\vmx.txt" | ConvertFrom-Json
-    $Mx1         = Get-Content "$($Sr[$X])\host.txt" | ConvertFrom-Json
-    $Cred1       = Import-CliXml "$($Sr[$X])\cred.txt"
+    $Vm1         = $Inf.Server[$X].Vm
+    $Mx1         = $Inf.Server[$X].Host
+    $Cred1       = $Inf.Server[$X].Cred
+    $Ctrl1       = $Inf.Server[$X].Ctrl
     $User1       = $Cred1.Username
     $Pass1       = $Cred1.GetNetworkCredential().Password
     $VmDisk1     = $Vm1.NewVHDPath
@@ -27,7 +191,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     $Base        = $Mx1.SearchBase
     $Cfg         = "CN=Configuration,$Base"
     $DhcpOpt     = Get-DhcpServerV4OptionValue
-    $External    = Get-NetAdapter | ? Name -match $Mx1.Vm.External.Name
+    $External    = Get-NetAdapter | ? Name -match $Inf.External.Name
     $Network     = $External | Get-NetRoute | ? DestinationPrefix -match "(\d+\.){3}\d+\/$($Vm1.Item.Prefix)" | % { $_.DestinationPrefix.Split("/")[0] }
     $DNS         = $External | Get-NetIPAddress | % IPAddress
     
@@ -40,7 +204,6 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     $Lx0.Add($Lx0.Count,"[$($Tx0.Elapsed)] Starting [~] [$Id0]")
     Write-Host $Lx0[$Lx0.Count-1]
 
-    $Ctrl0      = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $Id0
     $Kb0        = Get-WmiObject -Query "ASSOCIATORS OF {$($Ctrl0.Path.Path)} WHERE resultClass = Msvm_Keyboard" -Namespace "root\virtualization\v2"
     Start-Process vmconnect -ArgumentList ($Mx0.VM.Host.Name,$Vm0.Name)
 
@@ -48,7 +211,6 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)] Starting [~] [$Id1]")
     Write-Host $Lx1[$Lx1.Count-1]
 
-    $Ctrl1      = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $Id1
     $Kb1        = Get-WmiObject -Query "ASSOCIATORS OF {$($Ctrl1.path.path)} WHERE resultClass = Msvm_Keyboard" -Namespace "root\virtualization\v2"
     Start-Process vmconnect -ArgumentList ($Mx1.VM.Host.Name,$Vm1.Name)
 
@@ -233,7 +395,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
                 
         Start-Sleep -Seconds 1
     }
-    Until((Get-Item $Item.HardDrives[0].Path).Length/1GB -gt 1.56)
+    Until((Get-Item $Item.HardDrives[0].Path).Length/1GB -gt 1.5)
 
     $C = 0
     Do
@@ -415,6 +577,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     Invoke-KeyEntry $Kb0 "y"
     $Kb0.TypeKey(13)
     Start-Sleep 1
+    $Tx0.Stop()
 
     # [Server Config]
     # For the 'join network' 
@@ -740,17 +903,16 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     }
     Until ($Sum -gt 100)
     $Tx2.Reset()
+    $Tx1.Stop()
+
 
     $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][System [~] (Hostname/Network/Domain) ($($Tx2.Elapsed))]")
     Write-Host $Lx1[$Lx1.Count-1]
         
-    $Kb1.PressKey(91)
-    $Kb1.TypeKey(82)
-    $Kb1.ReleaseKey(91)
     Start-Sleep 1
-    $Kb1.TypeText("control panel")
+    $Kb1.TypeText("control")
     $Kb1.TypeKey(13)
-    Start-Sleep 3
+    Start-Sleep 1
     $Kb1.PressKey(17)
     $Kb1.TypeKey(76)
     $Kb1.ReleaseKey(17)
@@ -767,38 +929,32 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     $Kb1.TypeText($Id1)
     Start-Sleep 1
     $Kb1.TypeKey(9)
-    $Kb1.TypeKey(32)
-    Start-Sleep 1
-    $Kb1.TypeText($Mx1.CN)
-    13,13,27,9,38,9 | % { $Kb1.TypeKey($_); Start-Sleep -M 100 }
-    $Kb1.TypeText($Mx1.CN)
     $Kb1.TypeKey(9)
+    $Kb1.TypeKey(38)
+    $Kb1.TypeKey(9)
+    $Kb1.TypeText($Mx1.CN)
     $Kb1.TypeKey(13)
-    Start-Sleep 10
-    $Kb1.TypeText("$User1@$Domain")
+    Start-Sleep 3
+    $Kb1.TypeText($Inf.Credential.Username)
     $Kb1.TypeKey(9)
     Start-Sleep 1
-    Invoke-KeyEntry $Kb1 "$Pass1"
+    Invoke-KeyEntry $Kb1 "$($Inf.Credential.GetNetworkCredential().Password)"
     $Kb1.TypeKey(9)
     Start-Sleep 1
-
+    $Kb1.TypeKey(13)
     $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][System [~] (Joining domain...) ($($Tx2.Elapsed))]")
     Write-Host $Lx1[$Lx1.Count-1]
+    Start-Sleep 5
     $Kb1.TypeKey(13)
-    Start-Sleep 25
-
-    $Kb1.TypeKey(13)
-    Start-Sleep 10
-
+    Start-Sleep 3
     $Kb1.TypeKey(13)
     Start-Sleep 1
-
-    # [Alt + A] to apply
     $Kb1.PressKey(18)
     $Kb1.TypeKey(65)
     $Kb1.ReleaseKey(18)
     Start-Sleep 1
-
+    $Kb1.TypeKey(13)
+    Start-Sleep 1
     $Kb1.TypeKey(13)
     $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][System [+] (Hostname/Network/Domain) ($($Tx2.Elapsed))]")
     Write-Host $Lx1[$Lx1.Count-1]
@@ -818,7 +974,7 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     {
         $Item = Get-VM -Name $Id1
 
-        Switch($Item.CPUUsage)
+        Switch ($Item.CPUUsage)
         {
             Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
         }
@@ -843,12 +999,12 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     9,9,9,13 | % { $Kb1.TypeKey($_); Start-Sleep -M 100 }
     Start-Sleep 1
 
-    $Kb1.TypeText("$User1@$Domain")
+    $Kb1.TypeText($Inf.Credential.Username)
     $Kb1.TypeKey(9)
     Start-Sleep 1
-    $Kb1.TypeText("$Pass1")
+    Invoke-KeyEntry $Kb1 "$($Inf.Credential.GetNetworkCredential().Password)"
     $Kb1.TypeKey(13)
-    Start-Sleep 35
+    Start-Sleep 25
 
     $Kb1.PressKey(91)
     $Kb1.TypeKey(82)
@@ -862,7 +1018,9 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     $Kb1.TypeKey(9)
     $Kb1.TypeKey(9)
     $Kb1.TypeKey(13)
-    Start-Sleep 25
+
+    # First login requires extra time to set up the admin users' profile
+    Start-Sleep 30
 
     $Kb1.TypeText("Stop-Process -Name ServerManager")
     $Kb1.TypeKey(13)
@@ -939,58 +1097,26 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     Write-Host $Lx1[$Lx1.Count-1]
     $Tx2.Reset()
 
-    $Kb1.TypeText("`$Module = Get-FEModule")
-    $Kb1.TypeKey(13)
-
-    $Kb1.TypeText("(`$Module.Classes | ? Name -match ServerFeature | Get-Content ) -join `"``n`" | IEX")
-    $Kb1.TypeKey(13)
-
-    # [Install Server Features]
-    $Kb1.TypeText('[_ServerFeatures]::New().Output | ? { !($_.Installed) } | % { $_.Name.Replace("_","-") } | Install-WindowsFeature -Verbose')
-    $Kb1.TypeKey(13)
-
-    $C = 0
-    Do
-    {
-        $Item = Get-VM -Name $Id1
-        Start-Sleep 1
-        $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Installing [~] (Adds/Rsat/Dhcp/Dns) Suite ($($Tx2.Elapsed))][(Timer:$C/180)]")
-        Write-Host $Lx1[$Lx1.Count-1]
-
-        $C ++
-    }
-    Until ($C -gt 180)
-
-    $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Installed [+] (Adds/Rsat/Dhcp/Dns) Suite ($($Tx2.Elapsed))]")
-    Write-Host $Lx1[$Lx1.Count-1]
-    $Tx2.Reset()
-
-    $Tx2.Start()
-    $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Deploying [~] (Domain Controller) ($($Tx2.Elapsed))]")
-    Write-Host $Lx1[$Lx1.Count-1]
-
-    $Kb1.TypeText('Import-Module ADDSDeployment')
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
-
+    ### [Prepare DCPromo]
     $Kb1.TypeText("`$Pw = Read-Host 'Enter password' -AsSecureString")
     $Kb1.TypeKey(13)
-    Start-Sleep 2
-
+    Start-Sleep 1
+    Invoke-KeyEntry $Kb1 "$($Inf.Credential.GetNetworkCredential().Password)"
+    $Kb1.TypeKey(13)
+    Start-Sleep 1
+    $Kb1.TypeText("`$Admin = Read-Host 'Enter DSRM' -AsSecureString")
+    $Kb1.TypeKey(13)
+    Start-Sleep 1
     Invoke-KeyEntry $Kb1 "$Pass1"
     $Kb1.TypeKey(13)
-    Start-Sleep 2
-
-    $Kb1.TypeText("`$Credential=[System.Management.Automation.PSCredential]::New(`"$User1@$Domain`",`$Pw)")
+    Start-Sleep 1
+    $Kb1.TypeText("`$ADDS=@{Mode=3;Credential=[PSCredential]::New(`"$($Inf.Credential.Username)`",`$PW);DomainName=`"$($Mx1.CN)`";SiteName=`"$($Vm1.Item.Sitelink)`";SafeModeAdministratorPassword=[PSCredential]::New(`"DSRM`",`$Admin)}")
     $Kb1.TypeKey(13)
-    Start-Sleep 2
-
-    $Kb1.TypeText("`$ADDS=@{NoGlobalCatalog=0;CreateDnsDelegation=0;Credential=`$Credential;CriticalReplicationOnly=0;DatabasePath='C:\Windows\NTDS';DomainName='$($Mx1.CN)';InstallDns=1;LogPath='C:\Windows\NTDS';NoRebootOnCompletion=0;SiteName='$($Vm1.Item.SiteLink)';SysVolPath='C:\Windows\SYSVOL';Force=1;SafeModeAdministratorPassword=`$Pw}")
+    $Kb1.TypeText("Get-FEDCPromo -InputObject `$ADDS")
     $Kb1.TypeKey(13)
-    Start-Sleep 8
-
-    $Kb1.TypeText("Install-ADDSDomainController @ADDS -Verbose")
+    Start-Sleep 6
     $Kb1.TypeKey(13)
+
     $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Deploying [~] (Domain Controller) ($($Tx2.Elapsed))]")
     Write-Host $Lx1[$Lx1.Count-1]
 
@@ -1025,11 +1151,189 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     }
     Until ($Sum -gt 100)
 
+    $Check = Get-ADObject -LDAPFilter "(objectclass=Computer)" | ? DistinguishedName -eq $Vm1.Item.DistinguishedName
+    If ($Check)
+    {
+        $Kb1.TypeCtrlAltDel()
+        Start-Sleep 3
+        9,9,9,13 | % { $Kb1.TypeKey($_); Start-Sleep -M 100 }
+        Start-Sleep 3
+
+        $Kb1.TypeText($Inf.Credential.Username)
+        $Kb1.TypeKey(9)
+        Start-Sleep 1
+        Invoke-KeyEntry $Kb1 "$($Inf.Credential.GetNetworkCredential().Password)"
+        $Kb1.TypeKey(13)
+
+        $Tx2.Start()
+        Do
+        {
+            $Item = Get-VM -Name $Id1
+            $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Deploying [~] (Domain Controller) ($($Tx2.Elapsed))]")
+            Write-Host $Lx1[$Lx1.Count-1]
+            Start-Sleep 1
+        }
+        Until($Item.Uptime.TotalSeconds -le 5)
+
+        $C = @( )
+        Do
+        {
+            $Item = Get-VM -Name $Id1
+
+            Switch($Item.CPUUsage)
+            {
+                Default { $C = @( ) } 0 { $C += 1 } 1 { $C += 1 } 
+            }
+
+            $Sum = @( Switch($C.Count)
+            {
+                0 { 0 } 1 { $C } Default { (0..($C.Count-1) | % {$C[$_]*$_}) -join "+" }
+            } ) | Invoke-Expression
+
+            $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Booting [~] Domain Controller ($($Tx2.Elapsed))][(Inactivity:$Sum/100)]")
+            Write-Host $Lx1[$Lx1.Count-1]
+            Start-Sleep 1
+        }
+        Until ($Sum -gt 100)
+    }
+
+    $Check = Get-ADObject -LDAPFilter "(objectclass=Computer)" | ? DistinguishedName -eq $Vm1.Item.DistinguishedName
+    If ($Check)
+    {
+        Throw "DCPromo [!] Failure"
+    }
+    If (!$Check)
+    {
+        Write-Host "DCPromo [+] Success"
+        Get-ADObject -LDAPFilter "(objectclass=Computer)" | ? Name -eq $Vm1.Item.Name | % { $Vm1.Item.DistinguishedName = $_.DistinguishedName }
+    }
+
+    # [Imaging MDT/WDS Configuration]
     $Kb1.TypeCtrlAltDel()
-    Start-Sleep 10
+    Start-Sleep 3
     9,9,9,13 | % { $Kb1.TypeKey($_); Start-Sleep -M 100 }
+    Start-Sleep 3
+    $Kb1.TypeText($Inf.Credential.Username)
+    $Kb1.TypeKey(9)
+    Start-Sleep 1
+    Invoke-KeyEntry $Kb1 "$($Inf.Credential.GetNetworkCredential().Password)"
+    $Kb1.TypeKey(13)
+
+    # [Logged in]
+    Start-Sleep 25
+
+    $Kb1.PressKey(91)
+    $Kb1.TypeKey(82)
+    $Kb1.ReleaseKey(91)
+    Start-Sleep 2
+
+    $Kb1.TypeText("%PUBLIC%\Desktop\FightingEntropy.lnk")
+    $Kb1.TypeKey(13)
+    Start-Sleep 8
+
+    $Kb1.TypeKey(9)
+    $Kb1.TypeKey(9)
+    $Kb1.TypeKey(13)
+    Start-Sleep 35
+
+    # [Stop processes]
+    $Kb1.TypeText("`"ServerManager`",`"Shutdown`" | % { Stop-Process -Name `$_ -EA 0 };")
+    $Kb1.TypeKey(13)
     Start-Sleep 4
 
+    # [Create status directory/share]
+    $Kb1.TypeText('New-Item C:\Status -ItemType Directory -Verbose')
+    $Kb1.TypeKey(13)
+    Start-Sleep 2
+
+    $Kb1.TypeText('New-SMBShare -Name Status$ -Path C:\Status -Description "Configuration Status" -FullAccess Administrators -Verbose')
+    $Kb1.TypeKey(13)
+    Start-Sleep 4
+
+    # [Create server deployment manifest information]
+    $Kb1.TypeText("`$Item='$($Vm1.Item | ConvertTo-Json)';Set-Content -Path `$Home\Desktop\server.txt -Value `$Item;")
+    $Kb1.TypeKey(13)
+    Start-Sleep 15
+
+    # [Start Shell 2]
+    $Kb1.TypeText('start $Env:Public\Desktop\FightingEntropy.lnk')
+    $Kb1.TypeKey(13)
+    Start-Sleep 1
+
+    $Kb1.PressKey(18)
+    $Kb1.TypeKey(9)
+    $Kb1.ReleaseKey(18)
+    Start-Sleep 1
+
+    # [Shell 1 - Instructions]
+    ForEach ($Line in "`$Content=@'",
+    'Set-Content C:\Status\0.txt "Incomplete"',
+    'Add-DHCPServerInDC;','Add-DhcpServerSecurityGroup;','$Module = Get-FEModule;',
+    '$Module.Role.LoadEnvironmentKey("\\dsc0\FlightTest$\DSKey.csv");','Get-MDTModule;','$Module.Role.GetFeature();',
+    'Set-Content C:\Status\0.txt "Complete"',"'@;","Set-Content `$Home\Desktop\Shell1.ps1 `$Content -Verbose -Force")
+    {
+        $Kb1.TypeText($Line)
+        $Kb1.TypeKey(13)
+    }
+    Start-Sleep 10
+
+    # [Shell 2 - Instructions]
+    ForEach ($Line in "`$Content=@'",
+    'Set-Content C:\Status\1.txt "Incomplete"',
+    '$Images="\\dsc0\images";',
+    '$Manifest="2021_0919-(FightingEntropy).txt";',
+    '$Path="\\dsc0\images\2021_0919-(FightingEntropy).txt";',
+    'Get-FEImageManifest $Images\$Manifest $Images C:\Images;',
+    '$Image=(Get-ChildItem C:\Images | ? Name -match 17763);',
+    'Rename-Item $Image.FullName -NewName "Windows Server 2019.iso";',
+    '$File="C:\Images\Windows Server 2019.iso";',
+    'Mount-DiskImage $File;',
+    '$Path="{0}:\sources\install.wim" -f (Get-DiskImage $File | Get-Volume | % DriveLetter);',
+    '$Group=(Get-Content $home\desktop\server.txt | ConvertFrom-Json).SiteLink;',
+    '$ImageName=(Get-WindowsImage -ImagePath $Path -Index 4 | % ImageName) -Replace "Datacenter.+","SERVERDATACENTER";',
+    'wdsutil /initialize-server /reminst:"C:\RemoteInstall";',
+    'New-WDSInstallImageGroup -Name $Group;',
+    '64,86|%{irm "github.com/mcc85sx/FightingEntropy/blob/master/Boot/x$_/wdsmgfw.efi?raw=true" -Outfile "C:\RemoteInstall\Boot\x$_\wdsmgfw.efi"};',
+    'Import-WDSInstallImage -ImageGroup $Group -Path $Path -ImageName $ImageName -EA 0;',
+    'Set-Content C:\Status\1.txt "Complete"',"'@;",'Set-Content $Home\Desktop\Shell2.ps1 $Content -Verbose -Force')
+    {
+        $Kb1.TypeText($Line)
+        $Kb1.TypeKey(13)
+    }
+    Start-Sleep 22
+
+    # [Start Shell 1 Script]
+    $Kb1.TypeText('. $home\Desktop\Shell1.ps1')
+    $Kb1.TypeKey(13)
+    Start-Sleep 1
+
+    # [Start Shell 2 Script]
+    $Kb1.PressKey(18)
+    $Kb1.TypeKey(9)
+    $Kb1.ReleaseKey(18)
+    Start-Sleep 1
+
+    $Kb1.TypeText('. $home\Desktop\Shell2.ps1')
+    $Kb1.TypeKey(13)
+    Start-Sleep 1
+
+    # [Remote processes kickstarted, now monitor until completed]
+    $S = [StatusBank]::New("\\$($Vm1.Name)\Status$","Imaging MDT/WDS Configuration")
+    $S.AddQuery(0)
+    $S.AddQuery(1)
+    $S.Start()
+    $S.Status()
+    Do
+    {
+        Start-Sleep 5
+
+        Clear-Host
+        $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][ ($($S.Complete())/$($S.Process.Count)) Complete]")
+        $S.Status()
+    }
+    Until ($S.Completed)
+
+<#
     $Kb1.TypeText("$User1@$Domain")
     $Kb1.TypeKey(9)
     Start-Sleep 1
@@ -1075,20 +1379,11 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     }
     Until ($Sum -gt 100)
 
-    # [Shell 1]
-    $Kb1.TypeText("Start-Sleep 10;`$Module = Get-FEModule;`$Module.Role.LoadEnvironmentKey(`"\\dsc0\FlightTest$\DSKey.csv`");Get-MDTModule;`$Module.Role.GetFeatures();Add-DHCPServerInDC;Add-DhcpServerSecurityGroup;Exit")
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
 
-    # [Shell 2]
-    $Kb1.PressKey(18)
-    $Kb1.TypeKey(9)
-    $Kb1.ReleaseKey(18)
-    Start-Sleep 1
 
     $Kb1.TypeText("`$Images=`"\\dsc0\images`";")
-    $Kb1.TypeText("`$Manifest=`"2021_0912-(FightingEntropy).txt`";"
-    $Kb1.TypeText("`$Path=`"\\dsc0\images\2021_0912-(FightingEntropy).txt`";"
+    $Kb1.TypeText("`$Manifest=`"2021_0912-(FightingEntropy).txt`";")
+    $Kb1.TypeText("`$Path=`"\\dsc0\images\2021_0912-(FightingEntropy).txt`";")
     $Kb1.TypeText("Get-FEImageManifest `$Images\`$Manifest `$Images C:\Images;")
     $Kb1.TypeText("`$Image=(Get-ChildItem C:\Images | ? Name -match 17763);")
     $Kb1.TypeText("Rename-Item `$Image.FullName -NewName `"Windows Server 2019.iso`";")
@@ -1608,5 +1903,5 @@ ForEach ( $X in 0..($GW.Count - 1 ))
     Start-Sleep 3
 
     $Lw0.Add($Lw0.Count,"[$($Tw0.Elapsed)][FEDeploymentShare [+] Complete]")
-    Write-Host $Lw0[$Lw0.Count-1]
+    Write-Host $Lw0[$Lw0.Count-1] #>
 }
