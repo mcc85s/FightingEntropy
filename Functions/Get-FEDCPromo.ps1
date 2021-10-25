@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-25
+          Modified: 2021-10-19
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -1748,16 +1748,33 @@ Function Get-FEDCPromo
                     $Value = @( 
 
                         '$InputObject                               = [Hashtable](Get-Content $Home\Desktop\InputObject.json | ConvertFrom-Json)',
-                        ('$InputObject.Credential                    = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText -Force)")' -f $InputObject.Credential.Username,"'",$InputObject.Credential.GetNetworkCredential().Password),
-                        ('$InputObject.SafeModeAdministratorPassword = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText -Force)")' -f $InputObject.SafeModeAdministratorPassword.Username,"'",$InputObject.SafeModeAdministratorPassword.GetNetworkCredential().Password),
+                        ('$Credential                    = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText -Force)")' -f $InputObject.Credential.Username,"'",$InputObject.Credential.GetNetworkCredential().Password),
+                        ('$SafeModeAdministratorPassword = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText -Force)")' -f $InputObject.SafeModeAdministratorPassword.Username,"'",$InputObject.SafeModeAdministratorPassword.GetNetworkCredential().Password),
+                        '$ADDS = @{Credential = $Credential; SafeModeAdministratorPassword= $SafeModeAdministratorPassword }',
+                        '$InputObject.GetEnumerator | % { If ($_.Name -notin "Credential","SafeModeAdministratorPassword") { $ADDS.Add($_.Name,$_.Value) };',
                         'Remove-Item $Home\Desktop\InputObject.Json',
                         'Remove-Item $Env:Public\script.ps1',
+                        'Remove-Item $Env:Public\FEDCPromo.lnk',
                         'Unregister-ScheduledTask -Taskname FEDCPromo -Confirm:$False',
-                        'Get-FEDCPromo -InputObject $InputObject'
+                        'Get-FEDCPromo -InputObject $ADDS'
                     )
 
                     Set-Content "$Env:Public\script.ps1" -Value $Value -Force
-                    $Action  = New-ScheduledTaskAction -Execute PowerShell -Argument '-NoExit -ExecutionPolicy Bypass -Command "& $Env:Public\script.ps1"'
+
+                    $Path              = "$Env:Public\Desktop\FEDCPromo.lnk" 
+                    $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut($Path)
+
+                    $Item.TargetPath   = "powershell"
+                    $Item.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command `"Add-Type -AssemblyName PresentationFramework;Import-Module FightingEntropy;& `$Env:Public\script.ps1"
+                    $Item.Description  = "Beginning the fight against identity theft and cybercriminal activities."
+                    $Item.IconLocation = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico"
+                    $Item.Save()
+                    
+                    $bytes             = [System.IO.File]::ReadAllBytes($Path)
+                    $bytes[0x15]       = $bytes[0x15] -bor 0x20
+                    [System.IO.File]::WriteAllBytes($Path, $bytes)
+
+                    $Action  = New-ScheduledTaskAction -Execute "$Env:Public\Desktop\FEDCPromo.lnk" 
                     $Trigger = New-ScheduledTaskTrigger -AtLogon
                     Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -Description "Restarting, then promote system"
                     Restart-Computer
