@@ -1744,24 +1744,20 @@ Function Get-FEDCPromo
                 Write-Host "Reboot [!] required to proceed."
                 If ($InputObject)
                 {
-                    Export-CliXml $Home\Desktop\Cred.txt $InputObject.Credential
-                    Export-CliXml $Home\Desktop\DSRM.txt $InputObject.SafeModeAdministratorPassword
                     Set-Content $Home\Desktop\Inputobject.json (ConvertTo-Json $InputObject)
                     $Value = @( 
 
-                        '$InputObject                               = Get-Content $Home\Desktop\InputObject.json | ConvertFrom-Json',
-                        '$InputObject.Credential                    = Import-CliXml $Home\Desktop\Cred.txt',
-                        '$InputObject.SafeModeAdministratorPassword = Import-CliXml $Home\Desktop\DSRM.Txt',
+                        '$InputObject                               = [Hashtable](Get-Content $Home\Desktop\InputObject.json | ConvertFrom-Json)',
+                        ('$InputObject.Credential                    = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText)"),' -f $InputObject.Credential.Username,"'",$InputObject.Credential.GetNetworkCredential().Password),
+                        ('$InputObject.SafeModeAdministratorPassword = [PSCredential]::New("{0}","$({1}{2}{1} | ConvertTo-SecureString -AsPlainText)"),' -f $InputObject.SafeModeAdministratorPassword.Username,"'",$InputObject.SafeModeAdministratorPassword.GetNetworkCredential().Password),
                         'Remove-Item $Home\Desktop\InputObject.Json',
-                        'Remove-Item $Home\Desktop\Cred.txt',
-                        'Remove-Item $Home\Desktop\DSRM.txt',
                         'Remove-Item $Env:Public\script.ps1',
                         'Unregister-ScheduledTask -Taskname FEDCPromo -Confirm:$False',
                         'Get-FEDCPromo -InputObject $InputObject'
                     )
 
                     Set-Content "$Env:Public\script.ps1" -Value $Value -Force
-                    $Action  = New-ScheduledTaskAction -Execute PowerShell -Argument '-ExecutionPolicy Bypass -Command ((Get-Content $Env:Public\script.ps1) -join "`n" | Invoke-Expression)'
+                    $Action  = New-ScheduledTaskAction -Execute PowerShell -Argument '-NoExit -ExecutionPolicy Bypass -Command "& $Env:Public\script.ps1"'
                     $Trigger = New-ScheduledTaskTrigger -AtLogon
                     Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -Description "Restarting, then promote system"
                     Restart-Computer
