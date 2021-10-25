@@ -837,6 +837,29 @@ Function Get-FEDCPromo
         [Object]          $Connection
         FEDCPromo()
         {
+            $This.Prime()
+            # Test Active Directory to import module
+            If ($This.Features | ? Name -match AD-Domain-Services | ? Installed -eq 0)
+            {
+                Write-Theme "Exception [!] Must have ADDS installed first" 12,4,15,0
+                Switch([System.Windows.MessageBox]::Show("Exception [!] ","Must have ADDS installed first, install it?","YesNo"))
+                {
+                    Yes {  Install-WindowsFeature -Name AD-Domain-Services -IncludeAllSubFeature -IncludeManagementTools } 
+                    No  {  Write-Theme "Error [!] ADDS was not installed" 12,4,15,0; Break }
+                }
+            }
+        }
+        FEDCPromo([Object]$InputObject)
+        {
+            $This.Prime()
+            # Test Active Directory to import module
+            If ($This.Features | ? Name -match AD-Domain-Services | ? Installed -eq 0)
+            {
+                Install-WindowsFeature -Name AD-Domain-Services -IncludeAllSubFeature -IncludeManagementTools
+            }
+        }
+        Prime()
+        {
             # Collect System
             Get-FEModule       | % { 
 
@@ -857,17 +880,6 @@ Function Get-FEDCPromo
             If ($This.System.Model -match "Virtual")
             {
                 $This.Features | ? Type -eq Veridian | % { $_.Enabled = $False }
-            }
-
-            # Test Active Directory to import module
-            If ($This.Features | ? Name -match AD-Domain-Services | ? Installed -eq 0)
-            {
-                Write-Theme "Exception [!] Must have ADDS installed first" 12,4,15,0
-                Switch([System.Windows.MessageBox]::Show("Exception [!] ","Must have ADDS installed first, install it?","YesNo"))
-                {
-                    Yes {  Install-WindowsFeature -Name AD-Domain-Services -IncludeAllSubFeature -IncludeManagementTools } 
-                    No  {  Write-Theme "Error [!] ADDS was not installed" 12,4,15,0; Break }
-                }
             }
 
             Import-Module ADDSDeployment -Verbose
@@ -1519,7 +1531,18 @@ Function Get-FEDCPromo
         }
     }
 
-    $Main                                      = [FEDCPromo]::New()
+    Switch($PSCmdLet.ParameterSetName)
+    {
+        0 
+        {
+            $Main = [FEDCPromo]::New()
+        }
+        1 
+        {
+            $Main = [FEDCPromo]::New($InputObject)
+        }
+    }
+    
     $Xaml                                      = [XamlWindow][FEDCPromoGUI]::Tab
     $Xaml.IO.ForestMode.ItemsSource            = @( )
     $Xaml.IO.ForestMode.ItemsSource            = @("2000 (Default)","2003","2008","2008 R2","2012","2012 R2","2016","2019","2022" | % { "Windows Server $_" })
@@ -1558,15 +1581,6 @@ Function Get-FEDCPromo
     # Button Defaults
     $Xaml.IO.Start.IsEnabled                   = 0
     $Xaml.IO.CredentialButton.IsEnabled        = 0
-
-    <# $Last = $Null
-    $Xaml.Names | ? { $_ -notin "ContentPresenter","Border","ContentSite" } | % {
-        
-        $X = "    # `$Xaml.IO.$_"
-        $Y = $Xaml.IO.$_.GetType().Name 
-        "{0}{1} # $Y" -f $X,(" "*(60-$X.Length) -join '')
-    
-    } | Set-Clipboard #>
 
     $Xaml.IO.Forest.Add_Checked(
     { 
@@ -1730,14 +1744,18 @@ Function Get-FEDCPromo
         If (!$Test)
         {
             Write-Theme "Installing [~] [FightingEntropy($([char]960))] Services..."
+            $Time = [System.Diagnostics.Stopwatch]::StartNew()
             If ($Execute.Services)
             {
                 $Execute.Result = @( ) 
                 ForEach ($Item in $Execute.Services)
                 {
                     If ($Item.Name -notmatch "DNS")
-                    {
+                    {                    
+                        Write-Host "[$($Time.Elapsed)][Installing: $($Item.Name)]"
                         $Execute.Result += Install-WindowsFeature -Name $Item.Name -IncludeAllSubfeature -IncludeManagementTools
+                        $Execute.Result[$Execute.Result.Count-1]
+                        Write-Host "[$($Time.Elapsed)][Installed: $($Item.Name)]"
                     }
                 }
             }
