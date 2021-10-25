@@ -1747,9 +1747,9 @@ Function Get-FEDCPromo
                 Write-Host "Reboot [!] required to proceed."
                 If ($InputObject)
                 {
-                    Set-Content $Home\Desktop\Inputobject.json (ConvertTo-Json $ADDS)
-                    Export-CLIXml -Path $Home\Desktop\Cred.txt -InputObject $ADDS.Credential -Force
-                    Export-CLIXml -Path $Home\Desktop\DSRM.txt -InputObject $ADDS.SafeModeAdministratorPassword -Force
+                    Set-Content $Home\Desktop\Inputobject.json (ConvertTo-Json $InputObject)
+                    Export-CLIXml -Path $Home\Desktop\Cred.txt -InputObject $InputObject.Credential -Force
+                    Export-CLIXml -Path $Home\Desktop\DSRM.txt -InputObject $InputObject.SafeModeAdministratorPassword -Force
                     $Value = @( 
 
                         '$InputObject                               = Get-Content $Home\Desktop\InputObject.json | ConvertFrom-Json',
