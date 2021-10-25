@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-19
+          Modified: 2021-10-24
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -25,8 +25,9 @@ Function Get-FEDCPromo
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
-    [Parameter()][Switch]$Test,
-    [Parameter()][Switch]$Output)
+    [Parameter(ParameterSetName=0)][Switch]$Test,
+    [Parameter(ParameterSetName=0)][Switch]$Output,
+    [Parameter(ParameterSetName=1)][Hashtable]$InputObject)
 
     # Load Assemblies
     Add-Type -AssemblyName PresentationFramework
@@ -885,6 +886,27 @@ Function Get-FEDCPromo
         {
             $This.Xaml      = $Xaml
         }
+        SetInputObject([Object]$In)
+        {
+            $This.SetMode($In.Mode)
+            Switch ($In.Mode)
+            {
+                Default {}
+                3
+                {
+                    $This.Credential                     = $In.Credential
+                    $This.Xaml.IO.Credential.Text        = $In.Credential.Username
+                    $This.Xaml.IO.SiteName.ItemsSource   = @( )
+                    $This.Xaml.IO.SiteName.ItemsSource   = @($In.Sitename)
+                    $This.Xaml.IO.SiteName.SelectedIndex = 0
+                    $This.Xaml.IO.DomainName.Text        = $In.DomainName
+                    $This.Xaml.IO.SafeModeAdministratorPassword.Password = $In.SafeModeAdministratorPassword.GetNetworkCredential().Password
+                    $This.Xaml.IO.Confirm.Password       = $In.SafeModeAdministratorPassword.GetNetworkCredential().Password
+                }
+            }
+            $This.Xaml.IO.Start.Focus()
+            $This.Xaml.IO.Start.PerformClick()
+        }
         SetMode([UInt32]$Mode)
         {
             $This.Mode      = $Mode
@@ -1564,6 +1586,30 @@ Function Get-FEDCPromo
 
     $Xaml.IO.Start.Add_Click(
     {
+        $Xaml.IO.DialogResult = $True
+    })
+
+    $Xaml.IO.Cancel.Add_Click(
+    {
+        $Xaml.IO.DialogResult = $False
+    })
+    
+    Switch($PSCmdLet.ParameterSetName)
+    {
+        0 
+        {
+            $Xaml.Invoke()
+        }
+        1 
+        {
+            $Main.SetMode($InputObject.Mode)
+            $Main.SetInputObject($InputObject)
+            $Xaml.Invoke()
+        }
+    }
+
+    If ($Xaml.IO.DialogResult)
+    {
         If ($Main.Profile.Item[0].IsEnabled)
         {
             If ($Xaml.IO.ForestMode.SelectedIndex -ge 6)
@@ -1610,18 +1656,6 @@ Function Get-FEDCPromo
 
         $Main.Profile.DSRM[0] | % { $_.Value = $_.Value | ConvertTo-SecureString -AsPlainText -Force }
 
-        $Xaml.IO.DialogResult = $True
-    })
-
-    $Xaml.IO.Cancel.Add_Click(
-    {
-        $Xaml.IO.DialogResult = $False
-    })
-
-    $Xaml.Invoke()
-
-    If ($Xaml.IO.DialogResult)
-    {
         $Execute = [Execution]::New()
 
         # [Install Features]
