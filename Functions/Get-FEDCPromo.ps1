@@ -1769,7 +1769,15 @@ Function Get-FEDCPromo
                     $Trigger = New-ScheduledTaskTrigger -AtLogon
                     Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName FEDCPromo -RunLevel Highest -Description "Restart, then promote the system"
                     Write-Theme "Restarting [~] $Env:ComputerName"
-                    Restart-Computer -Wait -Delay 3
+                    $X = 5
+                    Do
+                    {
+                        Write-Host $X
+                        Start-Sleep 1
+                        $X --
+                    }
+                    Until ($X -eq 0)
+                    Restart-Computer
                 }
                 If (!$InputObject)
                 {
