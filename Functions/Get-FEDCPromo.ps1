@@ -1699,7 +1699,7 @@ Function Get-FEDCPromo
         }
 
         # [Profile Roles]
-        $Main.Profile.Role | ? IsEnabled | % {
+        $Main.Profile.Role | % {
 
             $Execute.Output.Add($_.Name,$_.IsChecked)
         }
