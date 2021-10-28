@@ -4302,15 +4302,16 @@ Function New-FEInfrastructure
 
     # [HyperV]
     $Xaml.IO.CfgHyperV.ItemsSource        = @( )
-    $Xaml.IO.CfgHyperV.ItemsSource        = @( $Main.Config.HyperV )
-    If ($Main.HyperV)
-    {
-        $Xaml.IO.VmHost.Text = $Main.HyperV.Name
-    }
     $Xaml.IO.CfgHyperV_Switch.ItemsSource = @( )
-    $Xaml.IO.CfgHyperV_Switch.ItemsSource = @($Main.Config.HyperV.Switch)
     $Xaml.IO.CfgHyperV_VM.ItemsSource     = @( )
-    $Xaml.IO.CfgHyperV_VM.ItemsSource     = @($Main.Config.HyperV.VM)
+
+    If ($Main.Config.HyperV)
+    {
+        $Xaml.IO.VmHost.Text                  = $Main.HyperV.Name
+        $Xaml.IO.CfgHyperV.ItemsSource        = @($Main.Config.HyperV)
+        $Xaml.IO.CfgHyperV_Switch.ItemsSource = @($Main.Config.HyperV.Switch)
+        $Xaml.IO.CfgHyperV_VM.ItemsSource     = @($Main.Config.HyperV.VM)
+    }
 
     $Xaml.IO.WDS_Server.Text              = $Main.Config.WDS.Server
     $Xaml.IO.WDS_IPAddress.ItemsSource    = @( )
