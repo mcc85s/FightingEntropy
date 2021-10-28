@@ -1078,94 +1078,6 @@ ForEach ($X in 0..($GW.Count - 1 ))
     $Kb1.TypeText("Stop-Process -Name ServerManager")
     $Kb1.TypeKey(13)
 
-    # Install Dhcp
-    $Kb1.TypeText("Set-Content C:\Status\0.txt 'Incomplete' -Verbose -Force;Get-WindowsFeature | ? Name -match DHCP | Install-WindowsFeature;Set-Content C:\Status\0.txt 'Complete' -Verbose -Force")
-    $Kb1.TypeKey(13)
-
-    $S = [StatusBank]::New("\\$($Vm1.Name)\Status$","DHCP Configuration")
-    $S.AddQuery(0)
-    $S.Start()
-    $S.Status()
-    Do
-    {
-        Start-Sleep 5
-
-        $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][ ($($S.Complete())/$($S.Process.Count)) Complete]")
-        $S.Status()
-    }
-    Until ($S.Completed)
-
-    $Kb1.TypeText("Remove-Item C:\Status\0.txt -Verbose")
-    $Kb1.TypeKey(13)
-    Start-Sleep 1
-
-    $Kb1.TypeText("`$Dhcp=@{StartRange=`"$($Vm1.Item.Start)`";EndRange=`"$($Vm1.Item.End)`";Name=`"$($Vm1.Item.Network)/$($Vm1.Item.Prefix)`";Description=`"$($Vm1.Item.Sitelink)`";SubnetMask=`"$($Vm1.Item.Netmask)`"}")
-    $Kb1.TypeKey(13)
-    Start-Sleep 5
-
-    # Add the Dhcp scope
-    $Kb1.TypeText('Add-DhcpServerV4Scope @Dhcp -Verbose')
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
-
-    # Get NetIPConfig
-    $Kb1.TypeText('$Config = Get-NetIPConfiguration -Detailed')
-    $Kb1.TypeKey(13)
-    Start-Sleep 10
-
-    # [Get Router MacAddress]
-    $Kb1.TypeText("`$ClientID = (arp -a | ? { `$_ -match '(dynamic|$($Vm1.Item.Start))'}).Substring(24,17).Replace('-','')")
-    $Kb1.TypeKey(13)
-    Start-Sleep 6
-
-    # Set Initial DHCP Reservations
-    $Kb1.TypeText("Add-DhcpServerv4Reservation -ScopeID $($Vm1.Item.Network) -IPAddress $($Vm1.Item.Start) -ClientID `$ClientID -Name Router -Verbose")
-    $Kb1.TypeKey(13)
-    Start-Sleep 4
-
-    $Kb1.TypeText("Add-DhcpServerv4Reservation -ScopeID $($Vm1.Item.Network) -IPAddress `$Config.IPv4Address.IPAddress -ClientID `$Config.NetAdapter.LinkLayerAddress.Replace('-','').ToLower() -Name Server -Verbose")
-    $Kb1.TypeKey(13)
-    Start-Sleep 6
-
-    # Set Dhcp Scope Options
-    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 3 -Value `$Config.IPV4DefaultGateway.NextHop -Verbose") # (Router)
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
-
-    $Value = ( $DhcpOpt | ? OptionID -eq 4 | % Value ) -join ','
-    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 4 -Value $Value -Verbose") # (Time Servers)
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
-
-    $Value = ( $DhcpOpt | ? OptionID -eq 5 | % Value ) -join ','
-    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 5 -Value $Value -Verbose") # (Name Servers)
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
-
-    $Kb1.TypeText("`$Value = ( `$Config.DNSServer | ? AddressFamily -eq 2 | % ServerAddresses )")
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
-
-    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 6 -Value `$Value -Verbose") # (Dns Servers)
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
-
-    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 15 -Value $($Mx1.CN) -Verbose") # (Dns Domain Name)
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
-
-    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 28 -Value $($Vm1.Item.Broadcast) -Verbose") # (Broadcast Address)
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
-        
-    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 66 -Value `"$Id1.$($Mx1.CN)`" -Verbose") # (WDS Server Address)
-    $Kb1.TypeKey(13)
-    Start-Sleep 2
-
-    $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Services [+] (Dhcp Configured) ($($Tx2.Elapsed))]")
-    Write-Host $Lx1[$Lx1.Count-1]
-    $Tx2.Reset()
-
     ### [Prepare DCPromo]
     $Kb1.TypeText("`$Pw = Read-Host 'Enter password' -AsSecureString")
     $Kb1.TypeKey(13)
@@ -1295,6 +1207,94 @@ ForEach ($X in 0..($GW.Count - 1 ))
         )
         Set-Content "\\$($Vm1.Item.Name)\Status$\Server.ps1" -Value $Value -Verbose
     }
+
+    # Install Dhcp
+    $Kb1.TypeText("Set-Content C:\Status\0.txt 'Incomplete' -Verbose -Force;Get-WindowsFeature | ? Name -match DHCP | Install-WindowsFeature;Set-Content C:\Status\0.txt 'Complete' -Verbose -Force")
+    $Kb1.TypeKey(13)
+
+    $S = [StatusBank]::New("\\$($Vm1.Name)\Status$","DHCP Configuration")
+    $S.AddQuery(0)
+    $S.Start()
+    $S.Status()
+    Do
+    {
+        Start-Sleep 5
+
+        $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][ ($($S.Complete())/$($S.Process.Count)) Complete]")
+        $S.Status()
+    }
+    Until ($S.Completed)
+
+    $Kb1.TypeText("Remove-Item C:\Status\0.txt -Verbose")
+    $Kb1.TypeKey(13)
+    Start-Sleep 1
+
+    $Kb1.TypeText("`$Dhcp=@{StartRange=`"$($Vm1.Item.Start)`";EndRange=`"$($Vm1.Item.End)`";Name=`"$($Vm1.Item.Network)/$($Vm1.Item.Prefix)`";Description=`"$($Vm1.Item.Sitelink)`";SubnetMask=`"$($Vm1.Item.Netmask)`"}")
+    $Kb1.TypeKey(13)
+    Start-Sleep 5
+
+    # Add the Dhcp scope
+    $Kb1.TypeText('Add-DhcpServerV4Scope @Dhcp -Verbose')
+    $Kb1.TypeKey(13)
+    Start-Sleep 2
+
+    # Get NetIPConfig
+    $Kb1.TypeText('$Config = Get-NetIPConfiguration -Detailed')
+    $Kb1.TypeKey(13)
+    Start-Sleep 10
+
+    # [Get Router MacAddress]
+    $Kb1.TypeText("`$ClientID = (arp -a | ? { `$_ -match '(dynamic|$($Vm1.Item.Start))'}).Substring(24,17).Replace('-','')")
+    $Kb1.TypeKey(13)
+    Start-Sleep 6
+
+    # Set Initial DHCP Reservations
+    $Kb1.TypeText("Add-DhcpServerv4Reservation -ScopeID $($Vm1.Item.Network) -IPAddress $($Vm1.Item.Start) -ClientID `$ClientID -Name Router -Verbose")
+    $Kb1.TypeKey(13)
+    Start-Sleep 4
+
+    $Kb1.TypeText("Add-DhcpServerv4Reservation -ScopeID $($Vm1.Item.Network) -IPAddress `$Config.IPv4Address.IPAddress -ClientID `$Config.NetAdapter.LinkLayerAddress.Replace('-','').ToLower() -Name Server -Verbose")
+    $Kb1.TypeKey(13)
+    Start-Sleep 6
+
+    # Set Dhcp Scope Options
+    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 3 -Value `$Config.IPV4DefaultGateway.NextHop -Verbose") # (Router)
+    $Kb1.TypeKey(13)
+    Start-Sleep 2
+
+    $Value = ( $DhcpOpt | ? OptionID -eq 4 | % Value ) -join ','
+    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 4 -Value $Value -Verbose") # (Time Servers)
+    $Kb1.TypeKey(13)
+    Start-Sleep 2
+
+    $Value = ( $DhcpOpt | ? OptionID -eq 5 | % Value ) -join ','
+    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 5 -Value $Value -Verbose") # (Name Servers)
+    $Kb1.TypeKey(13)
+    Start-Sleep 2
+
+    $Kb1.TypeText("`$Value = ( `$Config.DNSServer | ? AddressFamily -eq 2 | % ServerAddresses )")
+    $Kb1.TypeKey(13)
+    Start-Sleep 2
+
+    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 6 -Value `$Value -Verbose") # (Dns Servers)
+    $Kb1.TypeKey(13)
+    Start-Sleep 2
+
+    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 15 -Value $($Mx1.CN) -Verbose") # (Dns Domain Name)
+    $Kb1.TypeKey(13)
+    Start-Sleep 2
+
+    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 28 -Value $($Vm1.Item.Broadcast) -Verbose") # (Broadcast Address)
+    $Kb1.TypeKey(13)
+    Start-Sleep 2
+        
+    $Kb1.TypeText("Set-DhcpServerv4OptionValue -OptionID 66 -Value `"$Id1.$($Mx1.CN)`" -Verbose") # (WDS Server Address)
+    $Kb1.TypeKey(13)
+    Start-Sleep 2
+
+    $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Services [+] (Dhcp Configured) ($($Tx2.Elapsed))]")
+    Write-Host $Lx1[$Lx1.Count-1]
+    $Tx2.Reset()
 
     # [Imaging MDT/WDS Configuration]
     $Kb1.TypeCtrlAltDel()
