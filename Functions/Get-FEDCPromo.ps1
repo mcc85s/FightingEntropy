@@ -1778,6 +1778,7 @@ Function Get-FEDCPromo
                         'Remove-Item $Home\Desktop\InputObject.Json -Verbose',
                         'Remove-Item $Home\Desktop\script.ps1 -Verbose',
                         'Unregister-ScheduledTask -Taskname FEDCPromo -Confirm:$False',
+                        'Get-Process -Name ServerManager -EA 0 | Stop-Process -EA 0',
                         'Get-FEDCPromo -InputObject $ADDS'
                     )
 
