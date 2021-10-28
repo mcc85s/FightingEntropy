@@ -837,29 +837,6 @@ Function Get-FEDCPromo
         [Object]          $Connection
         FEDCPromo()
         {
-            $This.Prime()
-            # Test Active Directory to import module
-            If ($This.Features | ? Name -match AD-Domain-Services | ? Installed -eq 0)
-            {
-                Write-Theme "Exception [!] Must have ADDS installed first" 12,4,15,0
-                Switch([System.Windows.MessageBox]::Show("Exception [!] ","Must have ADDS installed first, install it?","YesNo"))
-                {
-                    Yes {  Install-WindowsFeature -Name AD-Domain-Services -IncludeAllSubFeature -IncludeManagementTools } 
-                    No  {  Write-Theme "Error [!] ADDS was not installed" 12,4,15,0; Break }
-                }
-            }
-        }
-        FEDCPromo([Object]$InputObject)
-        {
-            $This.Prime()
-            # Test Active Directory to import module
-            If ($This.Features | ? Name -match AD-Domain-Services | ? Installed -eq 0)
-            {
-                Install-WindowsFeature -Name AD-Domain-Services -IncludeAllSubFeature -IncludeManagementTools
-            }
-        }
-        Prime()
-        {
             # Collect System
             Get-FEModule       | % { 
 
@@ -954,6 +931,7 @@ Function Get-FEDCPromo
             {
                 $This.Xaml.IO.$($Item.Name).IsEnabled        = $Item.IsEnabled -eq $True
                 $This.Xaml.IO.$($Item.Name).IsChecked        = $Item.IsChecked -eq $True
+                $This.Role($Item.Name)
             }
 
             # Profile Main Items
@@ -1466,7 +1444,7 @@ Function Get-FEDCPromo
 
                 If ($_.IsEnabled)
                 {
-                    $_.IsChecked = @(1,0)[$This.Xaml.IO.$Name.IsChecked]
+                    $_.IsChecked = @(0,1)[$This.Xaml.IO.$Name.IsChecked]
                 }
             }
         }
@@ -1528,18 +1506,65 @@ Function Get-FEDCPromo
             }
 
             $This.Profile.DSRM[0] | % { $_.Value = $_.Value | ConvertTo-SecureString -AsPlainText -Force }
+
+            ForEach ($Item in $This.Profile.Role)
+            {
+                $This.Role($Item.Name)
+            }
         }
     }
+
+    $Main = [FEDCPromo]::New()
 
     Switch($PSCmdLet.ParameterSetName)
     {
         0 
         {
-            $Main = [FEDCPromo]::New()
+            If ($Main.Features | ? Name -match AD-Domain-Services | ? Installed -eq 0)
+            {
+                Write-Theme "Exception [!] Must have ADDS installed first" 12,4,15,0
+                Switch([System.Windows.MessageBox]::Show("Exception [!] ","Must have ADDS installed first, install it?","YesNo"))
+                {
+                    Yes 
+                    {  
+                        Install-WindowsFeature -Name AD-Domain-Services -IncludeAllSubFeature -IncludeManagementTools 
+                        If ($? -eq $True)
+                        {
+                            $Item           = $Main.Features[0]
+                            $Item.Installed = $True
+                            $Item.Enabled   = $False
+                            $Item.Install   = $False
+                        }
+                        Else
+                        {
+                            Throw "Unable to install ADDS-Domain-Services"
+                        }
+                    } 
+                    No  
+                    {  
+                        Write-Theme "Error [!] ADDS was not installed" 12,4,15,0; 
+                        Break 
+                    }
+                }
+            }
         }
         1 
         {
-            $Main = [FEDCPromo]::New($InputObject)
+            If ($Main.Features | ? Name -match AD-Domain-Services | ? Installed -eq 0)
+            {
+                Install-WindowsFeature -Name AD-Domain-Services -IncludeAllSubFeature -IncludeManagementTools
+                If ($? -eq $True)
+                {
+                    $Item           = $Main.Features[0]
+                    $Item.Installed = $True
+                    $Item.Enabled   = $False
+                    $Item.Install   = $False
+                }
+                Else
+                {
+                    Throw "Unable to install ADDS-Domain-Services"
+                }
+            }
         }
     }
     
@@ -1693,7 +1718,7 @@ Function Get-FEDCPromo
         }
 
         # [Profile Items]
-        $Main.Profile.Item | ? IsEnabled | % { 
+        $Main.Profile.Item | ? IsEnabled | % {
 
             $Execute.Output.Add($_.Name,$_.Value)
         }
