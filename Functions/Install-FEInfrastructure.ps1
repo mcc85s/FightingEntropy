@@ -1,4 +1,3 @@
-
 If ($Host.Version.Major -gt 5)
 {
     Throw "Must use PowerShell Version 5"
@@ -189,7 +188,7 @@ $Inf         = [Infrastructure]::New($Path,$DomainCred.Credential)
 
 ForEach ($X in 0..($GW.Count - 1 ))
 {
-    # $X = 4; $Inf.Gateway[$X].Reset() ; $Inf.Server[$X].Reset()
+    # $X = 5; $Inf.Gateway[$X].Reset() ; $Inf.Server[$X].Reset()
 
     # // Gateway Variables //
     $Vm0         = $Inf.Gateway[$X].Vm
@@ -987,9 +986,9 @@ ForEach ($X in 0..($GW.Count - 1 ))
     $Kb1.TypeKey(13)
     $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][System [~] (Joining domain...) ($($Tx2.Elapsed))]")
     Write-Host $Lx1[$Lx1.Count-1]
-    Start-Sleep 5
+    Start-Sleep 8
     $Kb1.TypeKey(13)
-    Start-Sleep 1
+    Start-Sleep 8
     Try
     {
         [System.Net.Dns]::Resolve($Id1)
@@ -1180,6 +1179,8 @@ ForEach ($X in 0..($GW.Count - 1 ))
     Invoke-KeyEntry $Kb1 "$Pass1"
     $Kb1.TypeKey(13)
     Start-Sleep 1
+
+    #####
     $Kb1.TypeText("`$ADDS=@{Mode=3;Credential=[PSCredential]::New(`"$($Inf.Credential.Username)`",`$PW);DomainName=`"$($Mx1.CN)`";SiteName=`"$($Vm1.Item.Sitelink)`";SafeModeAdministratorPassword=[PSCredential]::New(`"DSRM`",`$Admin)}")
     $Kb1.TypeKey(13)
     $Kb1.TypeText("Get-FEDCPromo -InputObject `$ADDS")
@@ -1504,9 +1505,8 @@ ForEach ($X in 0..($GW.Count - 1 ))
     $Kb1.TypeKey(13)
     Start-Sleep 1
 
-<#
-    # [New-FEDeploymentShare]
-    $Kb1.TypeText("New-FEDeploymentShare")
+<#  # [New-FEInfrastructure]
+    $Kb1.TypeText("New-FEInfrastructure")
     $Kb1.TypeKey(13)
     $C = 0
     Do
