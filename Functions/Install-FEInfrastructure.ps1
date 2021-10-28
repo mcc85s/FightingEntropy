@@ -188,7 +188,7 @@ $Inf         = [Infrastructure]::New($Path,$DomainCred.Credential)
 
 ForEach ($X in 0..($GW.Count - 1 ))
 {
-    # $X = 5; $Inf.Gateway[$X].Reset() ; $Inf.Server[$X].Reset()
+    # $X = 6; $Inf.Gateway[$X].Reset() ; $Inf.Server[$X].Reset()
 
     # // Gateway Variables //
     $Vm0         = $Inf.Gateway[$X].Vm
@@ -947,7 +947,6 @@ ForEach ($X in 0..($GW.Count - 1 ))
     Until ($Sum -gt 100)
     $Tx2.Reset()
 
-    $Tx1.Start()
     $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][System [~] (Hostname/Network/Domain) ($($Tx2.Elapsed))]")
     Write-Host $Lx1[$Lx1.Count-1]
         
@@ -1045,7 +1044,6 @@ ForEach ($X in 0..($GW.Count - 1 ))
 
     $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Domain [+] (Joined to domain) ($($Tx2.Elapsed))]")
     Write-Host $Lx1[$Lx1.Count-1]
-    $Tx2.Reset()
 
     $Kb1.TypeCtrlAltDel()
     Start-Sleep 6
@@ -1208,26 +1206,38 @@ ForEach ($X in 0..($GW.Count - 1 ))
         Set-Content "\\$($Vm1.Item.Name)\Status$\Server.ps1" -Value $Value -Verbose
     }
 
-    # Install Dhcp
-    $Kb1.TypeText("Set-Content C:\Status\0.txt 'Incomplete' -Verbose -Force;Get-WindowsFeature | ? Name -match DHCP | Install-WindowsFeature;Set-Content C:\Status\0.txt 'Complete' -Verbose -Force")
-    $Kb1.TypeKey(13)
-
-    $S = [StatusBank]::New("\\$($Vm1.Name)\Status$","DHCP Configuration")
-    $S.AddQuery(0)
-    $S.Start()
-    $S.Status()
-    Do
-    {
-        Start-Sleep 5
-
-        $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][ ($($S.Complete())/$($S.Process.Count)) Complete]")
-        $S.Status()
-    }
-    Until ($S.Completed)
-
-    $Kb1.TypeText("Remove-Item C:\Status\0.txt -Verbose")
-    $Kb1.TypeKey(13)
+    # [Imaging MDT/WDS Configuration]
+    $Kb1.TypeCtrlAltDel()
+    Start-Sleep 3
+    9,9,9,13 | % { $Kb1.TypeKey($_); Start-Sleep -M 100 }
+    Start-Sleep 3
+    $Kb1.TypeText($Inf.Credential.Username)
+    $Kb1.TypeKey(9)
     Start-Sleep 1
+    Invoke-KeyEntry $Kb1 "$($Inf.Credential.GetNetworkCredential().Password)"
+    $Kb1.TypeKey(13)
+
+    # [Logged in]
+    Start-Sleep 25
+
+    $Kb1.PressKey(91)
+    $Kb1.TypeKey(82)
+    $Kb1.ReleaseKey(91)
+    Start-Sleep 2
+
+    $Kb1.TypeText("%PUBLIC%\Desktop\FightingEntropy.lnk")
+    $Kb1.TypeKey(13)
+    Start-Sleep 8
+
+    $Kb1.TypeKey(9)
+    $Kb1.TypeKey(9)
+    $Kb1.TypeKey(13)
+    Start-Sleep 35
+
+    # [Stop processes]
+    $Kb1.TypeText("`"ServerManager`",`"Shutdown`" | % { Stop-Process -Name `$_ -EA 0 };")
+    $Kb1.TypeKey(13)
+    Start-Sleep 4
 
     $Kb1.TypeText("`$Dhcp=@{StartRange=`"$($Vm1.Item.Start)`";EndRange=`"$($Vm1.Item.End)`";Name=`"$($Vm1.Item.Network)/$($Vm1.Item.Prefix)`";Description=`"$($Vm1.Item.Sitelink)`";SubnetMask=`"$($Vm1.Item.Netmask)`"}")
     $Kb1.TypeKey(13)
@@ -1292,42 +1302,8 @@ ForEach ($X in 0..($GW.Count - 1 ))
     $Kb1.TypeKey(13)
     Start-Sleep 2
 
-    $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Services [+] (Dhcp Configured) ($($Tx2.Elapsed))]")
+    $Lx1.Add($Lx1.Count,"[$($Tx1.Elapsed)][Services [+] (Dhcp Configured)]")
     Write-Host $Lx1[$Lx1.Count-1]
-    $Tx2.Reset()
-
-    # [Imaging MDT/WDS Configuration]
-    $Kb1.TypeCtrlAltDel()
-    Start-Sleep 3
-    9,9,9,13 | % { $Kb1.TypeKey($_); Start-Sleep -M 100 }
-    Start-Sleep 3
-    $Kb1.TypeText($Inf.Credential.Username)
-    $Kb1.TypeKey(9)
-    Start-Sleep 1
-    Invoke-KeyEntry $Kb1 "$($Inf.Credential.GetNetworkCredential().Password)"
-    $Kb1.TypeKey(13)
-
-    # [Logged in]
-    Start-Sleep 25
-
-    $Kb1.PressKey(91)
-    $Kb1.TypeKey(82)
-    $Kb1.ReleaseKey(91)
-    Start-Sleep 2
-
-    $Kb1.TypeText("%PUBLIC%\Desktop\FightingEntropy.lnk")
-    $Kb1.TypeKey(13)
-    Start-Sleep 8
-
-    $Kb1.TypeKey(9)
-    $Kb1.TypeKey(9)
-    $Kb1.TypeKey(13)
-    Start-Sleep 35
-
-    # [Stop processes]
-    $Kb1.TypeText("`"ServerManager`",`"Shutdown`" | % { Stop-Process -Name `$_ -EA 0 };")
-    $Kb1.TypeKey(13)
-    Start-Sleep 4
 
     # [Start Shell 2]
     $Kb1.TypeText('start $Env:Public\Desktop\FightingEntropy.lnk')
