@@ -1,4 +1,4 @@
-# Testing an overhaul of New-FEInfrastructure
+
 Function Config
 {
     [CmdLetbinding()]Param([Parameter(Mandatory)][Object]$Module)
@@ -1401,10 +1401,7 @@ Function ADNode
         [Object] $Object
         ADNode()
         {
-            $This.Gateway     = @( )
-            $This.Server      = @( )
-            $This.Workstation = @( )
-            $This.Object      = @( )
+            $This.Object = @( )
         }
         [Object] GetNode([String]$Type,[String]$Name,[Object]$Site)
         {
