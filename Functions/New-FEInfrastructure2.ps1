@@ -1,4 +1,4 @@
-
+# Testing an overhaul of New-FEInfrastructure
 Function Config
 {
     [CmdLetbinding()]Param([Parameter(Mandatory)][Object]$Module)
@@ -847,15 +847,17 @@ Function NetworkList
         [String]           $Start
         [String]             $End
         [String]       $Broadcast
+        [String]      $ReverseDNS
         Hidden [Object] $SubnetDN
         Subnet([String]$Prefix)
         {
-            $This.Name     = $Prefix
-            $Object        = $Prefix.Split("/")
-            $This.Network  = $Object[0]
-            $This.Prefix   = $Object[1]
-            $This.Netmask  = $This.GetSubnetMask($Object[1])
+            $This.Name       = $Prefix
+            $Object          = $Prefix.Split("/")
+            $This.Network    = $Object[0]
+            $This.Prefix     = $Object[1]
+            $This.Netmask    = $This.GetSubnetMask($Object[1])
             $This.Remain()
+            $This.ReverseDNS = $This.GetReverseDNS()
         }
         Subnet([String]$Network,[String]$Prefix,[String]$Netmask)
         {
@@ -935,6 +937,13 @@ Function NetworkList
             $This.End       = $Y -join "."
 
             $This.Broadcast = $I[$I.Count-1]
+        }
+        [String] GetReverseDNS()
+        {
+            $Split = $This.Network.Split(".")
+            $Count = ($Split | ? { $_ -ne 0 }).Count
+            Return ("{0}.in-addr.arpa" -f ( $Split[($Count-1)..0] -join "."))
+            
         }
         [String] ToString()
         {
@@ -1152,6 +1161,7 @@ Function Sitemap
         [String]          $End
         [String]        $Range
         [String]    $Broadcast
+        [String]   $ReverseDNS
         [Object]     $Template
         Domain([Uint32]$Index,[Object]$Domain,[Object]$Network)
         {
@@ -1172,6 +1182,7 @@ Function Sitemap
             $This.End          = $Network.End
             $This.Range        = $Network.HostRange
             $This.Broadcast    = $Network.Broadcast
+            $This.ReverseDNS   = $Network.ReverseDNS
             $This.Template     = [DomainTemplate]::New($Domain.SiteDN,$Network.SubnetDN)
         }
     }
@@ -1362,6 +1373,7 @@ Function ADNode
         [String] $End
         [String] $Range
         [String] $Broadcast
+        [String] $ReverseDNS
         [String] $Parent
         [String] $DistinguishedName
         [UInt32] $Exists
@@ -1385,6 +1397,7 @@ Function ADNode
             $This.End               = $Site.End
             $This.Range             = $Site.Range
             $This.Broadcast         = $Site.Broadcast
+            $This.ReverseDNS        = $Site.ReverseDNS
             $Site.Template.Children | ? Type -eq $Type | % {
 
                 $This.DistinguishedName = "CN=$Name,$($_.DistinguishedName)"
@@ -1401,7 +1414,10 @@ Function ADNode
         [Object] $Object
         ADNode()
         {
-            $This.Object = @( )
+            $This.Gateway     = @( )
+            $This.Server      = @( )
+            $This.Workstation = @( )
+            $This.Object      = @( )
         }
         [Object] GetNode([String]$Type,[String]$Name,[Object]$Site)
         {
