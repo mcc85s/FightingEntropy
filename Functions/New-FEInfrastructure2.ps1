@@ -1,4 +1,4 @@
-
+# Testing an overhaul of New-FEInfrastructure
 Function Config
 {
     [CmdLetbinding()]Param([Parameter(Mandatory)][Object]$Module)
@@ -1340,6 +1340,148 @@ Function Sitemap
     [Sitemap]::New()
 }
 
+Function ADNode
+{
+    Class Topology
+    {
+        [String] $Organization
+        [String] $CommonName
+        [String] $Type
+        [String] $Name
+        [String] $DNSHostname
+        [String] $Location
+        [String] $Region
+        [String] $Country
+        [String] $Postal
+        [String] $Sitelink
+        [String] $Sitename
+        [String] $Network
+        [String] $Prefix
+        [String] $Netmask
+        [String] $Start
+        [String] $End
+        [String] $Range
+        [String] $Broadcast
+        [String] $Parent
+        [String] $DistinguishedName
+        [UInt32] $Exists
+        Topology([String]$Type,[String]$Name,[Object]$Site)
+        {
+            $This.Organization      = $Site.Organization
+            $This.CommonName        = $Site.CommonName
+            $This.Type              = $Type
+            $This.Name              = $Name
+            $This.DNSHostname       = ("{0}.{1}" -f $Name, $Site.CommonName)
+            $This.Location          = $Site.Location
+            $This.Region            = $Site.Region
+            $This.Country           = $Site.Country
+            $This.Postal            = $Site.Postal
+            $This.Sitelink          = $Site.Sitelink
+            $This.Sitename          = $Site.Sitename
+            $This.Network           = $Site.Network
+            $This.Prefix            = $Site.Prefix
+            $This.Netmask           = $Site.Netmask
+            $This.Start             = $Site.Start
+            $This.End               = $Site.End
+            $This.Range             = $Site.Range
+            $This.Broadcast         = $Site.Broadcast
+            $Site.Template.Children | ? Type -eq $Type | % {
+
+                $This.DistinguishedName = "CN=$Name,$($_.DistinguishedName)"
+                $This.Parent            =  $_.DistinguishedName
+            }
+        }
+    }
+
+    Class ADNode
+    {
+        [Object] $Gateway
+        [Object] $Server
+        [Object] $Workstation
+        [Object] $Object
+        ADNode()
+        {
+            $This.Object = @( )
+        }
+        [Object] GetNode([String]$Type,[String]$Name,[Object]$Site)
+        {
+            $Item = [Topology]::New($Type,$Name,$Site)
+            If (Get-ADObject -LDAPFilter "(ObjectClass=Computer)" -SearchBase $Item.Parent | ? Name -eq $Name)
+            {
+                $Item.Exists = 1
+            }
+            Return $Item
+        }
+        [Object] GetNode([String]$DistinguishedName)
+        {
+            Return $This.Object | ? DistinguishedName -eq $DistinguishedName
+        }
+        AddNode([String]$Type,[String]$Name,[Object]$Site)
+        {
+            $Item = $This.GetNode($Type,$Name,$Site)
+            Switch ($Item.Exists)
+            {
+                0
+                {
+                    Write-Host "New-ADComputer -Name $Name -DNSHostname $($Item.DNSHostname) -Path $($Item.DistinguishedName) -TrustedForDelegation:`$True -Force -Verbose"
+                    $This.Object += $Item
+                    Switch ($Item.Type)
+                    {
+                        Gateway
+                        {
+                            $This.Gateway     += $Item
+                        }
+                        Server
+                        {
+                            $This.Server      += $Item
+                        }
+                        Workstation
+                        {
+                            $This.Workstation += $Item
+                        }
+                    }
+                }
+                1
+                {
+                    Write-Host ("Item Exists [+] [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+            }
+        }
+        RemoveNode([String]$DistinguishedName)
+        {
+            $Item = $This.GetNode($DistinguishedName)
+            Switch ($Item.Exists)
+            {
+                0
+                {
+                    Write-Host ("Item does not exist [+] [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                1
+                {
+                    Write-Host "Remove-ADComputer -Identity $DistinguishedName -Verbose -Force -Confirm:`$False"
+                    $This.Object = $This.Object | ? DistinguishedName -ne $DistinguishedName
+                    Switch ($Item.Type)
+                    {
+                        Gateway
+                        {
+                            $This.Gateway     = $This.Gateway     | ? DistinguishedName -ne $DistinguishedName
+                        }
+                        Server
+                        {
+                            $This.Server      = $This.Server      | ? DistinguishedName -ne $DistinguishedName
+                        }
+                        Workstation
+                        {
+                            $This.Workstation = $This.Workstation | ? DistinguishedName -ne $DistinguishedName
+                        }
+                    }
+                }
+            }
+        }
+    }
+    [ADNode]::New()
+}
+
 Class ModuleFile
 {
     [String] $Mode
@@ -1377,6 +1519,7 @@ Class Main
     [Object]          $SiteList
     [Object]       $NetworkList
     [Object]           $Sitemap
+    [Object]            $ADNode
     [Object]        $Credential
     Main()
     {
@@ -1402,6 +1545,9 @@ Class Main
         }
 
         $This.Sitemap          = Sitemap
+
+        # AD Node factory
+        $This.ADNode           = ADNode
     }
 }
 
@@ -1430,3 +1576,16 @@ $Main.Sitemap.LoadSitelist($Main.Sitelist.Aggregate)
 $Main.Sitemap.LoadNetworkList($Main.NetworkList.Aggregate)
 $Main.Sitemap.LoadSitemap()
 $Main.Sitemap.GetSitemap()
+
+# AD Node
+# [Gateway]
+ForEach ($Site in $Main.Sitemap.Aggregate)
+{
+    $Main.ADNode.AddNode("Gateway",$Site.Name,$Site)
+}
+
+# [Server]
+ForEach ($Site in $Main.Sitemap.Aggregate)
+{
+    $Main.ADNode.AddNode("Server","dc2-$($Site.Postal)",$Site)
+}
