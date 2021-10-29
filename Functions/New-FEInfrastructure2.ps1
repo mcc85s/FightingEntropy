@@ -544,6 +544,7 @@ Function Config
     }
     [Config]::New($Module)
 }
+
 Function SiteList
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
@@ -1358,7 +1359,7 @@ Function Sitemap
     [Sitemap]::New()
 }
 
-Function ADNode
+Function AddsNode
 {
     Class Topology
     {
@@ -1413,20 +1414,20 @@ Function ADNode
         }
     }
 
-    Class ADNode
+    Class AddsNode
     {
         [Object] $Gateway
         [Object] $Server
         [Object] $Workstation
         [Object] $Object
-        ADNode()
+        AddsNode()
         {
             $This.Gateway     = @( )
             $This.Server      = @( )
             $This.Workstation = @( )
             $This.Object      = @( )
         }
-        [Object] GetNode([String]$Type,[String]$Name,[Object]$Site)
+        [Object] GetAddsNode([String]$Type,[String]$Name,[Object]$Site)
         {
             $Item = [Topology]::New($Type,$Name,$Site)
             If (Get-ADObject -LDAPFilter "(ObjectClass=Computer)" -SearchBase $Item.Parent | ? Name -eq $Name)
@@ -1435,13 +1436,13 @@ Function ADNode
             }
             Return $Item
         }
-        [Object] GetNode([String]$DistinguishedName)
+        [Object] GetAddsNode([String]$DistinguishedName)
         {
             Return $This.Object | ? DistinguishedName -eq $DistinguishedName
         }
-        AddNode([String]$Type,[String]$Name,[Object]$Site)
+        AddAddsNode([String]$Type,[String]$Name,[Object]$Site)
         {
-            $Item = $This.GetNode($Type,$Name,$Site)
+            $Item = $This.GetAddsNode($Type,$Name,$Site)
             Switch ($Item.Exists)
             {
                 0
@@ -1470,9 +1471,9 @@ Function ADNode
                 }
             }
         }
-        RemoveNode([String]$DistinguishedName)
+        RemoveAddsNode([String]$DistinguishedName)
         {
-            $Item = $This.GetNode($DistinguishedName)
+            $Item = $This.GetAddsNode($DistinguishedName)
             Switch ($Item.Exists)
             {
                 0
@@ -1502,7 +1503,614 @@ Function ADNode
             }
         }
     }
-    [ADNode]::New()
+    [AddsNode]::New()
+}
+
+Function VmNode
+{
+    [CmdLetBinding()]
+    Param(
+        [Parameter()][String]$HostName = "localhost",
+        [Parameter()][PSCredential]$Credential
+    )
+    Class Topology
+    {
+        [String] $Organization
+        [String] $CommonName
+        [String] $Type
+        [String] $Name
+        [String] $DNSHostname
+        [String] $Location
+        [String] $Region
+        [String] $Country
+        [String] $Postal
+        [String] $Sitelink
+        [String] $Sitename
+        [String] $Network
+        [String] $Prefix
+        [String] $Netmask
+        [String] $Start
+        [String] $End
+        [String] $Range
+        [String] $Broadcast
+        [String] $ReverseDNS
+        [String] $Parent
+        [String] $DistinguishedName
+        [UInt32] $Exists
+        Topology([Object]$Node,[Object]$VM)
+        {
+            $This.Organization      = $Node.Organization
+            $This.CommonName        = $Node.CommonName
+            $This.Type              = $Node.Type
+            $This.Name              = $Node.Name
+            $This.DNSHostname       = $Node.DNSHostName
+            $This.Location          = $Node.Location
+            $This.Region            = $Node.Region
+            $This.Country           = $Node.Country
+            $This.Postal            = $Node.Postal
+            $This.Sitelink          = $Node.Sitelink
+            $This.Sitename          = $Node.Sitename
+            $This.Network           = $Node.Network
+            $This.Prefix            = $Node.Prefix
+            $This.Netmask           = $Node.Netmask
+            $This.Start             = $Node.Start
+            $This.End               = $Node.End
+            $This.Range             = $Node.Range
+            $This.Broadcast         = $Node.Broadcast
+            $This.ReverseDNS        = $Node.ReverseDNS
+            $This.DistinguishedName = $Node.DistinguishedName
+            $This.Parent            = $Node.Parent
+        }
+    }
+
+    Class Select
+    {
+        [String] $Type
+        [String] $Name
+        [Bool]   $Create
+        Select([Object]$Item)
+        {
+            $This.Type   = $Item.Type
+            $This.Name   = $Item.Name
+            $This.Create = 1
+        }
+    }
+
+    Class Test
+    {
+        [Object] $Name
+        [Bool] $Exists
+        Test([String]$Type,[String]$Name)
+        {
+            $Return      = $Null
+            $This.Name   = $Name
+            If ($Type -eq "VM")
+            {
+                $Return  = Get-VM -Name $Name -EA 0
+            }
+            If ($Type -eq "Switch")
+            {
+                $Return  = Get-VMSwitch -Name $Name -EA 0
+            }
+            $This.Exists = !!$Return
+        }
+    }
+
+    Class VMSwitch
+    {
+        [String] $Type = "Switch"
+        [Object] $Name
+        [Bool] $Create = $True
+        VMSwitch([String]$Name)
+        {
+            $This.Name = $Name
+        }
+    }
+
+    Class VMObject
+    {
+        [Object]$Item
+        [Object]$Name
+        [Double]$MemoryStartupBytes
+        [Object]$Path
+        [Object]$NewVHDPath
+        [Double]$NewVHDSizeBytes
+        [Object]$Generation
+        [Object]$SwitchName
+        VMObject([Object]$Item,[UInt32]$Mem,[UInt32]$HD,[UInt32]$Gen,[String]$Switch)
+        {
+            $This.Item               = $Item
+            $This.Name               = $Item.Name
+            $This.MemoryStartupBytes = ([UInt32]$Mem)*1048576
+            $This.Path               = "{0}\$($Item.Name).vmx"
+            $This.NewVhdPath         = "{0}\$($Item.Name).vhdx"
+            $This.NewVhdSizeBytes    = ([UInt32]$HD)*1073741824
+            $This.Generation         = $Gen
+            $This.SwitchName         = $Switch
+        }
+        New([Object]$Path)
+        {
+            If (!(Test-Path $Path))
+            {
+                Throw "Invalid path"
+            }
+
+            $This.Path             = $This.Path -f $Path
+            $This.NewVhdPath       = $This.NewVhdPath -f $Path
+
+            $Object                = @{
+
+                Name               = $This.Name
+                MemoryStartupBytes = $This.MemoryStartupBytes
+                Path               = $This.Path
+                NewVhdPath         = $This.NewVhdPath
+                NewVhdSizeBytes    = $This.NewVhdSizebytes
+                Generation         = $This.Generation
+                SwitchName         = $This.SwitchName
+            }
+
+            New-VM @Object -Verbose
+            $Ct = @{Gateway=1;Server=2;Workstation=2}[$This.Item.Type]
+            Set-VMProcessor -VMName $This.Name -Count $Ct -Verbose
+        }
+        Start()
+        {
+            Get-VM -Name $This.Name | ? State -eq Off | Start-VM -Verbose
+        }
+        Remove()
+        {
+            Get-VM -Name $This.Name | Remove-VM -Force -Confirm:$False -Verbose
+        }
+        Stop()
+        {
+            Get-VM -Name $This.Name | ? State -ne Off | Stop-VM -Verbose -Force
+        }
+        LoadISO([String]$Path)
+        {
+            If (!(Test-Path $Path))
+            {
+                Throw "Invalid ISO path"
+            }
+
+            Else
+            {
+                Get-VM -Name $This.Name | % { Set-VMDVDDrive -VMName $_.Name -Path $Path -Verbose }
+            }
+        }
+    }
+
+    Class VmNode
+    {
+        [String]   $HostName
+        [String]     $Status
+        [String]   $Username
+        [String] $Credential
+        [Object]       $Host
+        [Object]     $Switch
+        [Object]    $Control
+        [Object]   $Internal
+        [Object]   $External
+        [Object]     $ADNode
+        [Object]     $VMNode
+        VmNode([String]$ID)
+        {
+            $This.Username   = $Env:Username
+            $This.Credential = Get-Credential $Env:Username
+            $This.GetHost($ID)
+        }
+        VmNode([String]$ID,[PSCredential]$Credential)
+        {
+            $This.Username   = $Credential.Username
+            $This.Credential = $Credential
+            $This.GetHost($ID)
+        }
+        GetHost([String]$ID)
+        {
+            If ($ID -eq "localhost")
+            {
+                $ID = $Env:ComputerName
+            }
+            $This.Hostname = [System.Net.DNS]::Resolve($ID).Hostname | Select-Object -First 1
+            $This.Status   = Get-Service -ComputerName $This.Hostname -Name vmms | % Status
+            If ($This.Status -ne "Running")
+            {
+                $This.Host     = $Null
+                $This.Switch   = $Null
+                $This.External = $Null
+                $This.Internal = $Null
+            }
+            If ($This.Status -eq "Running")
+            {
+                $This.Host     = Get-VMHost   -ComputerName $This.Hostname
+                $This.Switch   = Get-VMSwitch -ComputerName $This.Hostname
+                $This.External = $This.Switch | ? SwitchType -eq External
+                $This.Internal = $This.Switch | ? SwitchType -eq Internal
+            }
+        }
+        GetVmNode([Object]$DistinguishedName)
+        {
+
+        }
+        AddVmNode([Object]$AddsNode)
+        {
+
+        }
+    }
+    If ($Credential)
+    {
+        [VmNode]::New($Hostname,$Credential)
+    }
+    If (!$Credential)
+    {
+        [VmNode]::New($Hostname)
+    }
+}
+
+Function Image
+{
+    Class ImageLabel
+    {
+        [String] $Name
+        [String] $SelectedIndex
+        [Object[]] $Content
+        ImageLabel([Object]$Selected,[UInt32[]]$Index)
+        {
+            $This.Name          = $Selected.Path
+            $This.SelectedIndex = $Index -join ","
+            $This.Content       = @($Selected.Content | ? Index -in $Index)
+        }
+    }
+
+    Class ImageSlot
+    {
+        Hidden [Object] $ImageFile
+        Hidden [Object] $Arch
+        [UInt32] $Index
+        [String] $Name
+        [String] $Description
+        [String] $Size
+        [UInt32] $Architecture
+        ImageSlot([Object]$ImageFile,[UInt32]$Arch,[Object]$Slot)
+        {
+            $This.ImageFile    = $ImageFile
+            $This.Arch         = $Arch
+            $This.Index        = $Slot.ImageIndex
+            $This.Name         = $Slot.ImageName
+            $This.Description  = $Slot.ImageDescription
+            $This.Size         = "{0:n2} GB" -f ([Double]($Slot.ImageSize -Replace "(,|bytes|\s)","")/1073741824)
+            $This.Architecture = @(86,64)[$Arch -eq 9]
+        }
+    }
+
+    Class ImageFile
+    {
+        [UInt32]      $Index
+        [UInt32]       $Arch
+        [String]       $Type
+        [String]       $Name
+        [String]       $Path
+        [String]     $Letter
+        [Object[]]  $Content
+        ImageFile([UInt32]$Index,[String]$Path)
+        {
+            $This.Index     = $Index
+            $This.Name      = $Path | Split-Path -Leaf
+            $This.Path      = $Path
+            $This.Content   = @( )
+        }
+        [Object] GetDiskImage()
+        {
+            Return @( Get-DiskImage -ImagePath $This.Path )
+        }
+        MountDiskImage()
+        {
+            Mount-DiskImage -ImagePath $This.Path
+            Do
+            {
+                Start-Sleep -Milliseconds 100
+            }
+            Until ($This.GetDiskImage() | ? Attached -eq $True)
+        }
+        DismountDiskImage()
+        {
+            Dismount-DiskImage -ImagePath $This.Path
+        }
+        GetWindowsImage([String]$Path)
+        {
+            $This.Arch     = Get-WindowsImage -ImagePath $Path -Index 1 | % Architecture
+            $This.Content  = Get-WindowsImage -ImagePath $Path | % { [ImageSlot]::New($Path,$This.Arch,$_) }
+            $This.Type     = @("Client","Server")[$This.Content[0].Name -match "Server"]
+        }
+    }
+
+    Class ImageStack
+    {
+        [String] $Source
+        [String] $Target
+        [Object] $Selected
+        [Object] $Store
+        [Object] $Queue
+        [Object] $Swap
+        [Object] $Output
+        ImageStack()
+        {
+            $This.Source   = $Null
+            $This.Target   = $Null
+            $This.Selected = $Null
+            $This.Store    = @( )
+            $This.Queue    = @( )
+        }
+        [Void] LoadSilo([String]$Source)
+        {
+            If (!(Test-Path $Source))
+            {
+                Throw "Invalid source path"
+            }
+
+            ElseIf ((Get-ChildItem $Source *.iso).Count -eq 0)
+            {
+                [System.Windows.MessageBox]::Show("No ISO's detected")
+            }
+
+            Else
+            {
+                $This.Store  = @( )
+                $This.Source = $Source
+
+                ForEach ($Item in Get-ChildItem $This.Source *.iso)
+                {
+                    $This.Store += [ImageFile]::New($This.Store.Count,$Item.FullName)
+                }
+            }
+        }
+        LoadIso([UInt32]$Index)
+        {
+            If ($This.Store.Count -eq 0)
+            {
+                [System.Windows.MessageBox]::Show("No ISO's detected")
+            }
+
+            $This.Selected = $This.Store[$Index]
+
+            If ( $This.Selected.GetDiskImage() | ? Attached -eq $False )
+            {
+                $This.Selected.MountDiskImage()
+            }
+
+            $This.Selected.Letter = $This.Selected.GetDiskImage() | Get-Volume | % DriveLetter
+            $Path      = "$($This.Selected.Letter):\sources\install.wim"
+
+            If (!(Test-Path $Path))
+            {
+                $This.Selected.DismountDiskImage()
+                [System.Windows.MessageBox]::Show("Not a valid Windows image","Error")
+            }
+            Else
+            {
+                $This.Selected.GetWindowsImage($Path)
+                Do
+                {
+                    Start-Sleep -Milliseconds 100
+                }
+                Until ($This.Selected.Content.Count -gt 0)
+            }
+        }
+        [Void] UnloadIso()
+        {
+            $This.Selected.DismountDiskImage()
+            $This.Selected = $Null
+        }
+        AddQueue([UInt32[]]$Index)
+        {
+            If ($This.Selected.Path -in $This.Queue.Name)
+            {
+                [System.Windows.MessageBox]::Show("That image is already in the queue - remove, and reindex","Error")
+            }
+            Else
+            {
+                $This.Queue += [ImageLabel]::New($This.Selected,$Index)
+            }
+        }
+        [Void] DeleteQueue([String]$Name)
+        {
+            If ($Name -in $This.Queue.Name)
+            {
+                $This.Queue = @( $This.Queue | ? Name -ne $Name )
+            }
+        }
+    }
+    [ImageStack]::New()
+}
+
+Function MDT
+{
+    Class WimFile
+    {
+        [UInt32] $Rank
+        [Object] $Label
+        [UInt32] $ImageIndex            = 1
+        [String] $ImageName
+        [String] $ImageDescription
+        [String] $Version
+        [String] $Architecture
+        [String] $InstallationType
+        [String] $SourceImagePath
+        WimFile([UInt32]$Rank,[String]$Image)
+        {
+            If (!(Test-Path $Image))
+            {
+                Throw "Invalid Path"
+            }
+
+            $Item                       = Get-Item $Image
+            $Date                       = $Item.LastWriteTime.GetDateTimeFormats()[5].Split("-")
+            $This.SourceImagePath       = $Image
+            $This.Rank                  = $Rank
+
+            Get-WindowsImage -ImagePath $Image -Index 1 | % {
+                
+                $This.Version           = $_.Version
+                $This.Architecture      = @(86,64)[$_.Architecture -eq 9]
+                $This.InstallationType  = $_.InstallationType
+                $This.ImageName         = $_.ImageName
+                $This.Label             = $Item.BaseName
+                $This.ImageDescription  = "[{0}-{1}{2} (MCC/SDP)][{3}]" -f $Date[0],$Date[1],$Date[2],$This.Label
+
+                If ($This.ImageName -match "Evaluation")
+                {
+                    $This.ImageName     = $This.ImageName -Replace "Evaluation","" -Replace "\(Desktop Experience\)","" -Replace "(\s{2,})"," "
+                }
+            }
+        }
+    }
+
+    Class Share
+    {
+        [String]$Name
+        [String]$Root
+        [Object]$Share
+        [String]$Description
+        [String]$Type
+        [Object]$WimFiles
+        Share([Object]$Drive)
+        {
+            $This.Name        = $Drive.Name
+            $This.Root        = $Drive.Path
+            $This.Share       = Get-SMBShare | ? Path -eq $Drive.Path | % Name
+            $This.Description = $Drive.Description
+            If (Test-Path "$($This.Root)\PSDResources")
+            {
+                $This.Type    = "PSD"
+            }
+            Else
+            {
+                $This.Type    = "MDT"
+            }
+            If (Test-Path "$($This.Root)\Operating Systems")
+            {
+                $This.ImportWimFiles("$($This.Root)\Operating Systems")
+            }
+        }
+        Share([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
+        {
+            If (Get-SMBShare -Name $Share -EA 0)
+            {
+                Throw "Share name is already assigned"
+            }
+
+            $This.Name          = $Name
+            $This.Root          = $Root
+            $This.Share         = $Share
+            $This.Description   = $Description
+            $This.Type          = @("MDT","PSD","-")[$Type]
+        }
+        ImportWimFiles([String]$Path)
+        {
+            $This.WimFiles      = @( )
+            Write-Host "[Drive]://$($This.Name)"
+            ForEach ($Item in Get-ChildItem $Path *.wim -Recurse)
+            {
+                Write-Host "[Importing]://$($Item.Name)"
+                $This.WimFiles += [WimFile]::New($This.WimFiles.Count,$Item.FullName)
+            }
+        }
+    }
+
+    Class Brand
+    {
+        [String] $Wallpaper
+        [String] $Logo
+        [String] $Manufacturer
+        [String] $SupportPhone
+        [String] $SupportHours
+        [String] $SupportURL
+        Brand()
+        {
+            Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System -Ea 0 | % {
+
+                $This.Wallpaper    = $_.Wallpaper
+            }
+
+            Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\OEMInformation -EA 0 | % {
+
+                $This.Logo         = $_.Logo
+                $This.Manufacturer = $_.Manufacturer
+                $This.SupportPhone = $_.SupportPhone
+                $This.SupportHours = $_.SupportHours
+                $This.SupportURL   = $_.SupportURL
+            }
+        }
+    }
+    
+    Class Key
+    {
+        [String]     $NetworkPath
+        [String]    $Organization
+        [String]      $CommonName
+        [String]      $Background
+        [String]            $Logo
+        [String]           $Phone
+        [String]           $Hours
+        [String]         $Website
+        Key([Object]$Root)
+        {
+            $This.NetworkPath     = $Root[0]
+            $This.Organization    = $Root[1]
+            $This.CommonName      = $Root[2]
+            $This.Background      = $Root[3]
+            $This.Logo            = $Root[4]
+            $This.Phone           = $Root[5]
+            $This.Hours           = $Root[6]
+            $This.Website         = $Root[7]
+        }
+    }
+    Class Mdt
+    {
+        [Object]  $Path
+        [Object] $Share
+        [Object] $Brand
+        Mdt()
+        {
+            
+        }
+    }
+    [Mdt]::New()
+}
+
+Function Wds
+{
+    Class BootImage
+    {
+        [Object] $Path
+        [Object] $Name
+        [Object] $Type
+        [Object] $ISO
+        [Object] $WIM
+        [Object] $XML
+        BootImage([String]$Path,[String]$Name)
+        {
+            $This.Path = $Path
+            $This.Name = $Name
+            $This.Type = Switch ([UInt32]($This.Name -match "\(x64\)")) { 0 { "x86" } 1 { "x64" } }
+            $This.ISO  = "$Path\$Name.iso"
+            $This.WIM  = "$Path\$Name.wim"
+            $This.XML  = "$Path\$Name.xml"
+        }
+    }
+
+    Class BootImages
+    {
+        [Object] $Images
+        BootImages([Object]$Directory)
+        {
+            $This.Images = @( )
+
+            ForEach ( $Item in Get-ChildItem $Directory | ? Extension | % BaseName | Select-Object -Unique )
+            {
+                $This.Images += [BootImage]::New($Directory,$Item)
+            }
+        }
+    }
 }
 
 Class ModuleFile
@@ -1537,13 +2145,17 @@ Class Main
     Static [String] $Background = ("{0}\OEMbg.jpg"   -f [Main]::GFX)
     [String]      $Organization
     [String]        $CommonName
+    [Object]        $Credential
     [Object]            $System
     [Object]            $Config
     [Object]          $SiteList
     [Object]       $NetworkList
     [Object]           $Sitemap
-    [Object]            $ADNode
-    [Object]        $Credential
+    [Object]          $AddsNode
+    [Object]            $VmNode
+    [Object]             $Image
+    [Object]            $Update
+    [Object]               $MDT
     Main()
     {
         # Pulls system information
@@ -1570,7 +2182,16 @@ Class Main
         $This.Sitemap          = Sitemap
 
         # AD Node factory
-        $This.ADNode           = ADNode
+        $This.AddsNode         = AddsNode
+
+        # VM Node factory
+        If ($This.Config.HyperV)
+        {
+            $This.VmNode       = VmNode
+        }
+
+        # Imaging
+        $This.Image            = Image
     }
 }
 
@@ -1604,11 +2225,11 @@ $Main.Sitemap.GetSitemap()
 # [Gateway]
 ForEach ($Site in $Main.Sitemap.Aggregate)
 {
-    $Main.ADNode.AddNode("Gateway",$Site.Name,$Site)
+    $Main.AddsNode.AddAddsNode("Gateway",$Site.Name,$Site)
 }
 
 # [Server]
 ForEach ($Site in $Main.Sitemap.Aggregate)
 {
-    $Main.ADNode.AddNode("Server","dc2-$($Site.Postal)",$Site)
+    $Main.AddsNode.AddAddsNode("Server","dc1-$($Site.Postal)",$Site)
 }
