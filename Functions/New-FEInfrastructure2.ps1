@@ -866,6 +866,7 @@ Function NetworkList
             $This.Prefix     = $Prefix
             $This.Netmask    = $Netmask
             $This.Remain()
+            $This.ReverseDNS = $This.GetReverseDNS()
         }
         [Object] GetSubnetMask([UInt32]$CIDR)
         {
@@ -940,10 +941,16 @@ Function NetworkList
         }
         [String] GetReverseDNS()
         {
-            $Split = $This.Network.Split(".")
-            $Count = ($Split | ? { $_ -ne 0 }).Count
-            Return ("{0}.in-addr.arpa" -f ( $Split[($Count-1)..0] -join "."))
-            
+            $Mask    = $This.Netmask.Split(".") | % { 256 - $_ }
+            $NW      = $This.Network.Split(".")
+            $Reverse = ForEach ($X in 3..0)
+            {
+                If ($Mask[$X] -ne 256)
+                {
+                    $NW[$X]
+                }
+            }
+            Return @( "{0}.in-addr.arpa" -f ($Reverse -join ".") )
         }
         [String] ToString()
         {
