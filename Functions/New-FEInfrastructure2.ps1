@@ -1401,7 +1401,10 @@ Function ADNode
         [Object] $Object
         ADNode()
         {
-            $This.Object = @( )
+            $This.Gateway     = @( )
+            $This.Server      = @( )
+            $This.Workstation = @( )
+            $This.Object      = @( )
         }
         [Object] GetNode([String]$Type,[String]$Name,[Object]$Site)
         {
