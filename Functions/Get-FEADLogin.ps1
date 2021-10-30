@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-17
+          Modified: 2021-10-30
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -352,6 +352,27 @@ Function Get-FEADLogin
         {
             Return $Hostname.Replace($Hostname.Split(".")[0],'').TrimStart(".")
         }
+        [String] GetDomain([String]$Hostname)
+        {
+            $Node         = [System.Net.DNS]::Resolve($Hostname)
+            $HostID       = $Null
+            $DomainID     = $Null
+            $Temp         = $Null
+            If ($Node)
+            {
+                $Temp     = $Node.Hostname.Split(".")[0]
+                $HostID   = [System.Net.DNS]::Resolve($Temp)
+                If ($HostID)
+                {
+                    $DomainID = $Hostname.Replace($Temp,"").TrimStart(".")
+                }
+                If (!$HostID)
+                {
+                    $DomainID = $HostID.Hostname
+                }
+            }
+            Return $DomainID
+        }
         ClearADCredential()
         {
             $This.Credential   = $Null
@@ -503,6 +524,21 @@ Function Get-FEADLogin
     
     $Xaml.IO.Ok.Add_Click(
     {
+        Switch -Regex ($Xaml.IO.Server.Text)
+        {
+            "(\d+\.){3}\d+"
+            {
+                $Main.IPAddress = $Xaml.IO.Server.Text
+                $Xaml.IO.ServerList | ? Name -eq IPAddress | % { $_.Value = $Main.IPAddress }
+                $Node = [System.Net.DNS]::Resolve($Main.IPAddress)
+                $Main.DNSDomain = $Main.GetDomain($Node.Hostname)
+            }
+            "^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2, 6}$"
+            {
+                $Node = [System.Net.DNS]::Resolve($Xaml.IO.Server.Text)
+                $Main.DNSDomain = $Main.GetDomain($Node.Hostname)
+            }
+        }
         $Main.CheckADCredential($Xaml)
         If ($Main.Credential)
         {
