@@ -494,6 +494,10 @@ Function Get-FEADLogin
         {
             Return @( $This.Search("netbiosname").netbiosname )
         }
+        [String] ToString()
+        {
+            Return @($This.Directory.Replace("CN=Partitions,CN=Configuration,","")
+        }
     }
 
     $Xaml = [XamlWindow][FEADLoginGUI]::Tab
