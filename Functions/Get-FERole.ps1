@@ -155,6 +155,10 @@ Function Get-FERole
 
             $This.Architecture = @{x86="x86";AMD64="x64"}[$Env:PROCESSOR_ARCHITECTURE]
         }
+        [String] ToString()
+        {
+            Return ("<[{0}]|[{1}]|[{2}]({3})>" -f $This.Manufacturer, $This.Model, $This.Memory, $This.Architecture)
+        }
     }
 
     Class Win32_Client
