@@ -1073,6 +1073,10 @@ Function NetworkList
                 $This.Aggregate += [Subnet]::New($Network)
             }
         }
+        RemoveSubnet([String]$Network)
+        {
+            $This.Aggregate = $This.Aggregate | ? Network -ne $Network
+        }
         [String] SearchBase()
         {
             Return "CN=Configuration,{0}" -f (($This.CommonName.Split(".") | % { "DC=$_"} ) -join ',')
@@ -1171,7 +1175,7 @@ Function Sitemap
         [String]    $Broadcast
         [String]   $ReverseDNS
         [Object]     $Template
-        Domain([Uint32]$Index,[Object]$Domain,[Object]$Network)
+        Domain([UInt32]$Index,[Object]$Domain,[Object]$Network)
         {
             $This.Index        = $Index
             $This.Organization = $Domain.Organization
@@ -1227,22 +1231,22 @@ Function Sitemap
 
     Class Sitemap
     {
-        [String]$Organization
-        [String]$CommonName
-        [Object]$Sitelist
-        [Object]$Networklist
-        [Object]$Aggregate
-        [Object]$Sitelink
-        [Object]$SitelinkBridge
-        [Object]$Template
-        [Object]$Topology
+        [String]     $Organization
+        [String]       $CommonName
+        [Object]         $Sitelist
+        [Object]      $Networklist
+        [Object]         $Template
+        [Object]         $Sitelink
+        [Object]   $SitelinkBridge
+        [Object]        $Aggregate
+        [Object]         $Topology
         Sitemap()
         {
             $This.Sitelist     = @( )
             $This.NetworkList  = @( )
-            $This.Aggregate    = @( )
-            $This.Sitelink     = @( )
             $This.Template     = [SmTemplate]::New()
+            $This.Sitelink     = @( )
+            $This.Aggregate    = @( )
             $This.Topology     = @( )
         }
         SetDomain([String]$Organization,[String]$CommonName)
@@ -1283,11 +1287,15 @@ Function Sitemap
         }
         GetSitelinkList()
         {
-            $This.SiteLink = Get-ADObject -LDAPFilter "(ObjectClass=siteLink)" -SearchBase "CN=Configuration,$($This.SearchBase())"
+            $This.SiteLink = @( ) 
+            ForEach ($Item in Get-ADObject -LDAPFilter "(ObjectClass=siteLink)" -SearchBase "CN=Configuration,$($This.SearchBase())")
+            {
+                $This.SiteLink += $Item
+            }
         }
         SetSitelinkBridge([String]$DistinguishedName)
         {
-            $This.SitelinkBridge = $DistinguishedName
+            $This.SitelinkBridge = $This.Sitelink | ? DistinguishedName -eq $DistinguishedName
         }
         GetSitemap()
         {
@@ -1434,6 +1442,18 @@ Function AddsNode
             {
                 $Item.Exists = 1
             }
+            If ($Type -eq "Server" -and $Item.Exists -eq 0)
+            {
+                $Swap              = "OU=Server,OU=$($Item.Sitelink),","OU=Domain Controllers,"
+                $Parent            = $Item.Parent.Replace($Swap[0],$Swap[1])
+                $DistinguishedName = $Item.DistinguishedName.Replace($Swap[0],$Swap[1])
+                If (Get-ADObject -LDAPFilter "(ObjectClass=Computer)" | ? DistinguishedName -eq $DistinguishedName)
+                {
+                    $Item.Parent            = $Parent
+                    $Item.DistinguishedName = $DistinguishedName 
+                    $Item.Exists            = 1
+                }
+            }
             Return $Item
         }
         [Object] GetAddsNode([String]$DistinguishedName)
@@ -1443,27 +1463,30 @@ Function AddsNode
         AddAddsNode([String]$Type,[String]$Name,[Object]$Site)
         {
             $Item = $This.GetAddsNode($Type,$Name,$Site)
+            If ($Item.Name -notin $This.Object.Name)
+            {
+                $This.Object += $Item
+                Switch ($Item.Type)
+                {
+                    Gateway
+                    {
+                        $This.Gateway     += $Item
+                    }
+                    Server
+                    {
+                        $This.Server      += $Item
+                    }
+                    Workstation
+                    {
+                        $This.Workstation += $Item
+                    }
+                }
+            }
             Switch ($Item.Exists)
             {
                 0
                 {
-                    Write-Host "New-ADComputer -Name $Name -DNSHostname $($Item.DNSHostname) -Path $($Item.DistinguishedName) -TrustedForDelegation:`$True -Force -Verbose"
-                    $This.Object += $Item
-                    Switch ($Item.Type)
-                    {
-                        Gateway
-                        {
-                            $This.Gateway     += $Item
-                        }
-                        Server
-                        {
-                            $This.Server      += $Item
-                        }
-                        Workstation
-                        {
-                            $This.Workstation += $Item
-                        }
-                    }
+                    New-ADComputer -Name $Name -DNSHostname $Item.DNSHostname -Path $Item.DistinguishedName -TrustedForDelegation:$True -Force -Verbose
                 }
                 1
                 {
@@ -1473,7 +1496,23 @@ Function AddsNode
         }
         RemoveAddsNode([String]$DistinguishedName)
         {
-            $Item = $This.GetAddsNode($DistinguishedName)
+            $Item        = $This.GetAddsNode($DistinguishedName)
+            $This.Object = $This.Object | ? DistinguishedName -ne $DistinguishedName
+            Switch ($Item.Type)
+            {
+                Gateway
+                {
+                    $This.Gateway     = $This.Gateway     | ? DistinguishedName -ne $DistinguishedName
+                }
+                Server
+                {
+                    $This.Server      = $This.Server      | ? DistinguishedName -ne $DistinguishedName
+                }
+                Workstation
+                {
+                    $This.Workstation = $This.Workstation | ? DistinguishedName -ne $DistinguishedName
+                }
+            }
             Switch ($Item.Exists)
             {
                 0
@@ -1482,23 +1521,8 @@ Function AddsNode
                 }
                 1
                 {
-                    Write-Host "Remove-ADComputer -Identity $DistinguishedName -Verbose -Force -Confirm:`$False"
-                    $This.Object = $This.Object | ? DistinguishedName -ne $DistinguishedName
-                    Switch ($Item.Type)
-                    {
-                        Gateway
-                        {
-                            $This.Gateway     = $This.Gateway     | ? DistinguishedName -ne $DistinguishedName
-                        }
-                        Server
-                        {
-                            $This.Server      = $This.Server      | ? DistinguishedName -ne $DistinguishedName
-                        }
-                        Workstation
-                        {
-                            $This.Workstation = $This.Workstation | ? DistinguishedName -ne $DistinguishedName
-                        }
-                    }
+                    Remove-ADComputer -Identity $DistinguishedName -Verbose -Force -Confirm:$False
+                    
                 }
             }
         }
@@ -1918,16 +1942,137 @@ Function Image
                 $This.Queue = @( $This.Queue | ? Name -ne $Name )
             }
         }
+        SetTarget([String]$Target)
+        {
+            If (Test-Path $Target)
+            {
+                $Children = Get-ChildItem $Target *.wim -Recurse | % FullName
+                If ($Children.Count -gt 0)
+                {
+                    Switch([System.Windows.MessageBox]::Show("Wim files detected at provided path.","Purge and rebuild?","YesNo"))
+                    {
+                        Yes
+                        {
+                            ForEach ( $Child in $Children )
+                            {
+                                Get-ChildItem $Target | Remove-Item -Recurse -Confirm:$False -Force -Verbose
+                            }
+                        }
+
+                        No
+                        {
+                            Break
+                        }
+                    }
+                }
+            }
+
+            If (!(Test-Path $Target))
+            {
+                New-Item -Path $Target -ItemType Directory -Verbose
+            }
+
+            $This.Target = $Target
+        }
+        Extract()
+        {
+            $X               = 0
+            $DestinationName = $Null
+            $Label           = $Null
+
+            ForEach ($File in $This.Image.Queue)
+            {
+                $Disk        = Get-DiskImage -ImagePath $File.Name
+                $Name        = $File.Name | Split-Path -Leaf
+                If ($Name.Length -gt 65)
+                {
+                    $Name    = "$($Name.Substring(0,64))..."
+                }
+                If (!$Disk.Attached)
+                {
+                    Write-Theme "Mounting [~] $Name"
+                    Mount-DiskImage -ImagePath $Disk.ImagePath -Verbose
+                    $Disk    = Get-DiskImage -ImagePath $File.Name
+                }
+
+                $Path        = "{0}:\sources\install.wim" -f ($Disk | Get-Volume | % DriveLetter)
+
+                ForEach ($Item in $File.Content)
+                {
+                    Switch -Regex ($Item.Name)
+                    {
+                        Server
+                        {
+                            $Year               = [Regex]::Matches($Item.Name,"(\d{4})").Value
+                            $ID                 = $Item.Name -Replace "Windows Server \d{4} SERVER",''
+                            $Edition, $Tag      = Switch -Regex ($ID) 
+                            {
+                                "^STANDARDCORE$"   { "Standard Core",  "SDX" }
+                                "^STANDARD$"       { "Standard",        "SD" }
+                                "^DATACENTERCORE$" { "Datacenter Core","DCX" }
+                                "^DATACENTER$"     { "Datacenter",      "DC" }
+                            }
+                            $DestinationName    = "Windows Server $Year $Edition (x64)"
+                            $Label              = "{0}{1}" -f $Tag, $Year
+                        }
+
+                        Default
+                        {
+                            $ID                 = $Item.Name -Replace "Windows 10 "
+                            $Tag                = Switch -Regex ($ID)
+                            {
+                                "^Home$"             { "HOME"       } "^Home N$"            { "HOME_N"   }
+                                "^Home Sin.+$"       { "HOME_SL"    } "^Education$"         { "EDUC"     }
+                                "^Education N$"      { "EDUC_N"     } "^Pro$"               { "PRO"      }
+                                "^Pro N$"            { "PRO_N"      } "^Pro Education$"     { "PRO_EDUC" }
+                                "^Pro Education N$"  { "PRO_EDUC_N" } "^Pro for Work.+$"    { "PRO_WS"   }
+                                "^Pro N for Work.+$" { "PRO_N_WS"   } "Enterprise"          { "ENT"      }
+                            }
+                            $DestinationName    = "{0} (x{1})" -f $Item.Name, $Item.Architecture
+                            $Label              = "10{0}{1}" -f $Tag, $Item.Architecture
+                        }
+                    }
+
+                    $ISO                        = @{
+
+                        SourceIndex             = $Item.Index
+                        SourceImagePath         = $Path
+                        DestinationImagePath    = ("{0}\({1}){2}\{2}.wim" -f $This.Image.Target,$X,$Label)
+                        DestinationName         = $DestinationName
+                    }
+
+                    New-Item ($Iso.DestinationImagePath | Split-Path -Parent) -ItemType Directory -Verbose
+
+                    Write-Theme "Extracting [~] $DestinationName" 14,6,15
+                    Start-Sleep 1
+
+                    Export-WindowsImage @ISO
+                    Write-Theme "Extracted [~] $DestinationName" 10,2,15
+                    Start-Sleep 1
+
+                    $X ++
+                }
+                Write-Theme "Dismounting [~] $Name" 12,4,15
+                Start-Sleep 1
+
+                Get-DiskImage -ImagePath $File.Name | Dismount-DiskImage
+            }
+            Write-Theme "Complete [+] ($($This.Image.Queue.Content.Count)) *.wim files Extracted" 10,2,15
+        }
     }
     [ImageStack]::New()
 }
 
-Function MDT
+Function Mdt
 {
+    [CmdLetBinding()]
+    Param([Parameter()][Object]$Module)
+
     Class WimFile
     {
         [UInt32] $Rank
         [Object] $Label
+        [Object] $Date
         [UInt32] $ImageIndex            = 1
         [String] $ImageName
         [String] $ImageDescription
@@ -1943,7 +2088,8 @@ Function MDT
             }
 
             $Item                       = Get-Item $Image
-            $Date                       = $Item.LastWriteTime.GetDateTimeFormats()[5].Split("-")
+            $This.Date                  = $Item.LastWriteTime.GetDateTimeFormats()[5]
+            $SDate                      = $This.Date.Split("-")
             $This.SourceImagePath       = $Image
             $This.Rank                  = $Rank
 
@@ -1954,7 +2100,7 @@ Function MDT
                 $This.InstallationType  = $_.InstallationType
                 $This.ImageName         = $_.ImageName
                 $This.Label             = $Item.BaseName
-                $This.ImageDescription  = "[{0}-{1}{2} (MCC/SDP)][{3}]" -f $Date[0],$Date[1],$Date[2],$This.Label
+                $This.ImageDescription  = "[{0}-{1}{2} (MCC/SDP)][{3}]" -f $SDate[0],$SDate[1],$SDate[2],$This.Label
 
                 If ($This.ImageName -match "Evaluation")
                 {
@@ -2007,11 +2153,19 @@ Function MDT
         ImportWimFiles([String]$Path)
         {
             $This.WimFiles      = @( )
-            Write-Host "[Drive]://$($This.Name)"
+            Write-Host "[Drive]://$($This.Name)" -F 10
             ForEach ($Item in Get-ChildItem $Path *.wim -Recurse)
             {
-                Write-Host "[Importing]://$($Item.Name)"
-                $This.WimFiles += [WimFile]::New($This.WimFiles.Count,$Item.FullName)
+                $WimFile        = [WimFile]::New($This.WimFiles.Count,$Item.FullName)
+                If ($WimFile.Label -notin $This.WimFiles.Label)
+                {
+                    Write-Host "[Importing]://$($Item.Name)" -F 10
+                    $This.WimFiles += [WimFile]::New($This.WimFiles.Count,$Item.FullName)
+                }
+                ElseIf ($WimFile.Label -in $This.WimFiles.Label)
+                {
+                    Write-Host "[Skipping]://$($Item.Name) - duplicate label present" -F 12
+                }
             }
         }
     }
@@ -2040,6 +2194,24 @@ Function MDT
                 $This.SupportURL   = $_.SupportURL
             }
         }
+        SetBrand([Object]$Brand)
+        {
+            ForEach ($Item in $Brand.PSObject.Properties)
+            {
+                If ($Item.Value)
+                {
+                    Switch ($Item.Name)
+                    {
+                        Wallpaper    { $Brand.Wallpaper    = $Item.Value }
+                        Logo         { $Brand.Logo         = $Item.Value }
+                        Manufacturer { $Brand.Manufacturer = $Item.Value }
+                        SupportPhone { $Brand.SupportPhone = $Item.Value }
+                        SupportHours { $Brand.SupportHours = $Item.Value }
+                        SupportURL   { $Brand.SupportURL   = $Item.Value }
+                    }
+                }
+            }
+        }
     }
     
     Class Key
@@ -2064,17 +2236,264 @@ Function MDT
             $This.Website         = $Root[7]
         }
     }
+
     Class Mdt
     {
-        [Object]  $Path
-        [Object] $Share
-        [Object] $Brand
-        Mdt()
+        [Object]       $Module
+        [String]    $MDTModule
+        [Object]         $Path
+        [Object]        $Drive
+        [Object]        $Brand
+        [String]        $Admin
+        [String]     $Password
+        Mdt([Object]$Module)
         {
+            $This.Module    = $Module
+            $This.MDTModule = Get-MDTModule
+            $This.Path      = $This.MDTModule.Split("\")[0..2] -join '\'
+            $This.MDTModule | Import-Module
+            Restore-MDTPersistentDrive
+            $This.Drive     = Get-MDTPersistentDrive | % { [Share]$_ }
+        }
+        [Object] NewKey([Object]$Root)
+        {
+            Return [Key]::New($Root)
+        }
+        GetBrand()
+        {
+            $This.Brand = [Brand]::New()
+        }
+        [Object] UpdateMdtDriveList()
+        {
+            Return $This.Drive
+        }
+        AddMdtDrive([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
+        {
+            $This.Drive = [Share]::New($Name,$Root,$Share,$Description,$Type)
+        }
+        ImportWimFiles([String]$Name,[String]$Path,[UInt32]$Mode)
+        {
+            If (!$This.Brand)
+            {
+                Throw "Set a brand first"
+            }
+
+            If (!$This.Admin)
+            {
+                Throw "No local administrator username set"
+            }
+
+            If (!$This.Password)
+            {
+                Throw "No local administrator password set"
+            }
+
+            # [Import OS/TS to MDT Share]
+            $Select       = $This.Drive | ? Name -eq $Name
+            $Select.ImportWimFiles($Path)
+
+            $Root        = $Select.Root
+            $OS          = "$Root\Operating Systems"
+            $TS          = "$Root\Task Sequences"
+            $Comment     = Get-Date -UFormat "[%Y-%m%d (MCC/SDP)][$($Select.Type)]"
+
+            # [Create folders in the new MDT share]
+            ForEach ($Type in "Server","Client")
+            {
+                ForEach ($Version in $Select.WimFiles | ? InstallationType -eq $Type | % Version | Select-Object -Unique)
+                {
+                    ForEach ($Slot in $OS, $TS)
+                    {
+                        If (!(Test-Path "$Slot\$Type"))
+                        {
+                            New-Item -Path $Slot -Enable True -Name $Type -Comments $Comment -ItemType Folder -Verbose
+                        }
+
+                        If (!(Test-Path "$Slot\$Type\$Version"))
+                        {
+                            New-Item -Path "$Slot\$Type" -Enable True -Name $Version -Comments $comment -ItemType Folder -Verbose
+                        }
+                    }
+                }
+            }
+
+            # [Inject the Wim files into the MDT share]
+            ForEach ($Image in $Select.WimFiles)
+            {
+                $Type                   = $Image.InstallationType
+                $OSPath                 = "$OS\$Type\$($Image.Version)"
+
+                $OperatingSystem        = @{
+
+                    Path                = $OSPath
+                    SourceFile          = $Image.SourceImagePath
+                    DestinationFolder   = $Image.Label
+                }
+                
+                Switch ($Mode)
+                {
+                    0
+                    {
+                        Import-MDTOperatingSystem @OperatingSystem -Verbose
+                    }
+                    1
+                    {
+                        Import-MDTOperatingSystem @OperatingSystem -Move -Verbose
+                    }
+                }
+
+                $TaskSequence           = @{ 
+                    
+                    Path                = "$TS\$Type\$($Image.Version)"
+                    Name                = $Image.ImageName
+                    Template            = "{0}{1}Mod.xml" -f $Select.Type, $Type
+                    Comments            = $Comment
+                    ID                  = $Image.Label
+                    Version             = "1.0"
+                    OperatingSystemPath = Get-ChildItem -Path $OSPath | ? Name -match $Image.Label | % { "{0}\{1}" -f $OSPath, $_.Name }
+                    FullName            = $This.Admin
+                    OrgName             = $This.Brand.Manufacturer
+                    HomePage            = $This.Brand.SupportURL
+                    AdminPassword       = $This.Password
+                }
+
+                Import-MDTTaskSequence @TaskSequence -Verbose
+            }
+        }
+        [String] GetNextEventPort()
+        {
+            $Collect = $This.Drive | % { Get-ItemProperty "$($_.Name):" }
+            $Port    = @( 9800..9899 | ? { $_ % 2 -eq 0 } | ? { $_ -notin $Collect.MonitorEventPort } )
+            Return $Port[0]
+        }
+        [Object] Enumerate([Hashtable]$Object)
+        {
+            $Output = @( )
+            ForEach ($Item in $Object.GetEnumerator())
+            {     
+                If ($Item.Value.GetType().Name -eq "Hashtable")
+                {
+                    $Output += "[$($Item.Name)]"
+                    $Object.$($Item.Name).GetEnumerator() | % { $Output += "$($_.Name)=$($_.Value)" }
+                    $Output += ""
+                }
             
+                Else
+                {
+                    $Output += "$($Item.Name)=$($Item.Value)"
+                    $Output += ""
+                }
+            }
+            Return ($Output -join "`n")
+        }
+        [Object] Bootstrap([String]$Type,[String]$NetBIOS,[String]$UNC,[String]$UserID,[String]$Password)
+        {
+            $Output = $Null
+            If ($Type -eq "MDT")
+            {
+                $Output                = @{ 
+                    Settings           = @{ 
+                        Priority       = "Default" }; 
+                    Default            = @{
+                        DeployRoot     = $UNC
+                        UserID         = $UserID.Split("@")[0]
+                        UserPassword   = $Password
+                        UserDomain     = $NetBIOS
+                        SkipBDDWelcome = "YES"
+                    }
+                }
+            }
+
+            If ($Type -eq "PSD")
+            {
+                $Output                = @{
+                    Settings           = @{
+                        Priority       = "Default"
+                        Properties     = "PSDDeployRoots"
+                    }
+                    Default            = @{ 
+                        PSDDeployRoots = $UNC
+                        UserID         = $UserID.Split("@")[0]
+                        UserPassword   = $Password
+                        UserDomain     = $NetBIOS
+                    }
+                }
+            }
+
+            Return $This.Enumerate($Output)
+        }
+        [Object] CustomSettings([String]$Type,[String]$UNC,[String]$Org,[String]$NetBIOS,[String]$DNS,[String]$Server,[String]$OU,[String]$UserID,[String]$Password)
+        {
+            $Output = $Null
+            $Port   = $Null
+            $Exists = Get-Item "$UNC\Control\CustomSettings.ini" -EA 0
+            If (!$Exists)
+            {
+                $Port = $This.GetNextEventPort()
+            }
+            If ($Exists)
+            {
+                $Port = [UInt32][Regex]::Matches((Get-Content "$UNC\Control\CustomSettings.ini"),"\/\/.+\:\d{4}").Value.Split(":")[-1]
+            }
+
+            If ($Type -eq "MDT")
+            {
+                $Output                      = @{ 
+                    Settings                 = @{
+                        Priority             = "Default"
+                        Properties           = "MyCustomProperty"
+                    }
+                    Default                  = @{
+                        _SMSTSOrgName        = $Org
+                        JoinDomain           = $NetBIOS
+                        DomainAdmin          = $UserID.Split("@")[0]
+                        DomainAdminPassword  = $Password
+                        DomainAdminDomain    = $NetBIOS
+                        MachineObjectOU      = $OU
+                        SkipDomainMembership = "YES" 
+                        OSInstall            = "Y"
+                        SkipCapture          = "NO"
+                        SkipAdminPassword    = "YES"
+                        SkipProductKey       = "YES"
+                        SkipComputerBackup   = "NO"
+                        SkipBitlocker        = "YES"
+                        KeyboardLocale       = "en-US"
+                        TimeZoneName         = "$(Get-Timezone | % ID)"
+                        EventService         = ("http://{0}:{1}" -f $Server,$Port)
+                    }
+                }
+            }
+
+            If ($Type -eq "PSD")
+            {
+                $Output                      = @{
+                    Settings                 = @{
+                        Priority             = "Default"
+                        Properties           = "PSDDeployRoots"
+                    }
+                    Default                  = @{
+                        _SMSTSOrgName        = $Org
+                        TimeZoneName         = "$(Get-Timezone | % ID)"
+                        KeyboardLocale       = "en-US"
+                        EventService         = ("http://{0}:{1}" -f $Server,$Port)
+                    }
+                }
+            }
+
+            Return $This.Enumerate($Output)
+        }
+        [Object] PostConfig([String]$Key)
+        {
+            Return @("[Net.ServicePointManager]::SecurityProtocol = 3072",
+            "Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | Invoke-Expression",
+            "`$Module = Get-FEModule","`$Module.Role.LoadEnvironmentKey(`"$Key`")","`$Module.Role.Choco()" -join "`n")
+        }
+        [String] GetHostname()
+        {
+            Return @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
         }
     }
-    [Mdt]::New()
+    [Mdt]::New($Module)
 }
 
 Function Wds
@@ -2104,8 +2523,7 @@ Function Wds
         BootImages([Object]$Directory)
         {
             $This.Images = @( )
-
-            ForEach ( $Item in Get-ChildItem $Directory | ? Extension | % BaseName | Select-Object -Unique )
+            ForEach ($Item in Get-ChildItem $Directory | ? Extension | % BaseName | Select-Object -Unique)
             {
                 $This.Images += [BootImage]::New($Directory,$Item)
             }
@@ -2156,6 +2574,7 @@ Class Main
     [Object]             $Image
     [Object]            $Update
     [Object]               $MDT
+    [Object]               $WDS
     Main()
     {
         # Pulls system information
@@ -2192,6 +2611,10 @@ Class Main
 
         # Imaging
         $This.Image            = Image
+
+        $This.MDT              = MDT -Module $This.Module
+
+        $This.WDS              = WDS
     }
 }
 
@@ -2199,7 +2622,7 @@ $Main = [Main]::New()
 
 # Sitelist
 $Main.Sitelist.SetDomain("Secure Digits Plus LLC","securedigitsplus.com")
-$Main.Sitelist.AddSite(12065)
+#$Main.Sitelist.AddSite(12065)
 $Main.Sitelist.AddSite(12019)
 $Main.Sitelist.AddSite(12020)
 $Main.Sitelist.AddSite(12118)
@@ -2212,12 +2635,15 @@ $Main.Sitelist.GetSiteList()
 # NetworkList
 $Main.Networklist.SetDomain("Secure Digits Plus LLC","securedigitsplus.com")
 $Main.NetworkList.AddNetwork("172.16.0.0/19")
+$Main.NetworkList.RemoveSubnet("172.16.0.0")
 $Main.NetworkList.GetNetworkList()
 
 # Sitemap
 $Main.Sitemap.SetDomain("Secure Digits Plus LLC","securedigitsplus.com")
 $Main.Sitemap.LoadSitelist($Main.Sitelist.Aggregate)
 $Main.Sitemap.LoadNetworkList($Main.NetworkList.Aggregate)
+$Main.Sitemap.GetSitelinkList()
+$Main.Sitemap.SetSiteLinkBridge($Main.Sitemap.Sitelink[0].DistinguishedName)
 $Main.Sitemap.LoadSitemap()
 $Main.Sitemap.GetSitemap()
 
