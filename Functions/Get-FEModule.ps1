@@ -92,6 +92,10 @@ Function Get-FEModule
             $This.Type        = $This.OS.Type
             $This.Role        = Get-FERole
         }
+        [String] ToString()
+        {
+            Return @( "[FightingEntropy($([char]960))][$($This.Version)]" )
+        }
         [String] ModPrompt()
         {
             Return @( "[FightingEntropy($([char]960))][$($This.Version)]" )
@@ -161,7 +165,7 @@ Function Get-FEModule
     $Child     = Get-ChildItem $Default | % { [Version]::New($_) } | ? Exists | Sort-Object Year | Select-Object -First 1
     $RegPath   = Get-ItemProperty $Child.RegPath
     
-    Switch($PSCmdLet.ParameterSetName)
+    Switch ($PSCmdLet.ParameterSetName)
     {
         Default   {[Root]::New($RegPath)}
         Classes   {[Root]::New($RegPath).Classes}
