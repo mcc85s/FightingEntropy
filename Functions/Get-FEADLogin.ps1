@@ -496,7 +496,7 @@ Function Get-FEADLogin
         }
         [String] ToString()
         {
-            Return @($This.Directory.Replace("CN=Partitions,CN=Configuration,","")
+            Return @($This.Directory.Replace("CN=Partitions,CN=Configuration,",""))
         }
     }
 
