@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-10-19
+          Modified: 2021-10-31
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -85,6 +85,8 @@ Function Get-FERole
 
     Class Win32_System
     {
+        [Object] $Caption
+        [Object] $Version
         [Object] $Manufacturer
         [Object] $Model
         [Object] $Product
@@ -100,46 +102,48 @@ Function Get-FERole
         [Object[]] $Network
         Win32_System()
         {
-            Write-Host "Collecting [~] Disks"
+            Write-Host "Loading [~] (Operating/Computer) System Components"
+
+            Invoke-Expression "[wmiclass]'Win32_OperatingSystem'" | % GetInstances | % { 
+
+                $This.Caption = $_.Caption
+                $This.Version = $_.Version
+            }
+            Write-Host "[+] Operating System"
+
             $This.Disk             = Invoke-Expression "[wmiclass]'Win32_LogicalDisk'" | % GetInstances | % { [SysDisk]$_ }
-            
-            Write-Host "Collecting [~] Network"
+            Write-Host "[+] Disks"
+
             $This.Network          = Invoke-Expression "[wmiclass]'Win32_NetworkAdapterConfiguration'" | % GetInstances | ? DefaultIPGateway | % { [SysNetwork]$_ }
-            
-            Write-Host "Collecting [~] Processor"
+            Write-Host "[+] Network"
+
             $This.Processor        = Invoke-Expression "[wmiclass]'Win32_Processor' | % GetInstances" | % { [SysProcessor]$_ }
-            
-            Write-Host "Collecting [~] Computer"
+            Write-Host "[+] Processor"
+
             Invoke-Expression "[wmiclass]'Win32_ComputerSystem'" | % GetInstances | % { 
 
                 $This.Manufacturer = $_.Manufacturer; 
                 $This.Model        = $_.Model; 
                 $This.Memory       = "{0}GB" -f [UInt32]($_.TotalPhysicalMemory/1GB)
             }
+            Write-Host "[+] Computer"
 
-            Write-Host "Collecting [~] Product"
             Invoke-Expression "[wmiclass]'Win32_ComputerSystemProduct'" | % GetInstances | % { 
 
                 $This.UUID         = $_.UUID 
             }
+            Write-Host "[+] UUID"
 
-            Write-Host "Collecting [~] Motherboard"
             Invoke-Expression "[wmiclass]'Win32_BaseBoard'" | % GetInstances | % { 
 
                 $This.Product      = $_.Product
                 $This.Serial       = $_.SerialNumber -Replace "\.",""
             }
-            Try
-            {
-                Get-SecureBootUEFI -Name SetupMode | Out-Null 
-                $This.BiosUefi = "UEFI"
-            }
-            Catch
-            {
-                $This.BiosUefi = "BIOS"
-            }
+            Write-Host "[+] Motherboard"
+
+            $This.BiosUEFI         = Try { Get-SecureBootUEFI -Name SetupMode; "UEFI" } Catch { "BIOS" }
+            Write-Host "[+] Firmware"
         
-            Write-Host "Collecting [~] Chassis"
             Invoke-Expression "[wmiclass]'Win32_SystemEnclosure'" | % GetInstances | % {
 
                 $This.AssetTag    = $_.SMBIOSAssetTag.Trim()
@@ -152,8 +156,10 @@ Function Get-FERole
                     {$_ -in 30..32+13}      {"Tablet"}
                 }
             }
+            Write-Host "[+] Chassis"
 
             $This.Architecture = @{x86="x86";AMD64="x64"}[$Env:PROCESSOR_ARCHITECTURE]
+            Write-Host "[+] Architecture"
         }
         [String] ToString()
         {
