@@ -70,6 +70,8 @@ Function Get-FEADLogin
                 $Name                = $This.Names[$I]
                 $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $This.IO.FindName($Name) -Force 
             }
+
+            $This.IO.Dispatcher.Thread.ApartmentState = "MTA"
         }
         Invoke()
         {
