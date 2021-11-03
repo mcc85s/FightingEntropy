@@ -1,7 +1,7 @@
 Function New-FEInfrastructure2
 {
     # Testing an overhaul of New-FEInfrastructure
-    Add-Type -AssemblyName PresentationFramework
+    Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
     Import-Module FightingEntropy
 
     Function Config
@@ -1349,6 +1349,139 @@ Function New-FEInfrastructure2
             }
         }
 
+        Class AddsHost
+        {
+            [String] $Organization
+            [String] $CommonName
+            [String] $Site
+            [String] $Location
+            [String] $Region
+            [String] $Country
+            [UInt32] $Postal
+            [String] $Sitelink
+            [String] $Sitename
+            [String] $Network
+            [UInt32] $Prefix
+            [String] $Netmask
+            [String] $Start
+            [String] $End
+            [String] $Range
+            [String] $Broadcast
+            [String] $ReverseDNS
+            [Object] $Computer
+            [String] $Hostname
+            [String] $DnsName
+            [String] $Parent
+            [String] $DistinguishedName
+            [UInt32] $Exists
+            [String] $Guid
+            AddsHost([Object]$Site,[Object]$Node)
+            {
+                $This.Site              = $Site.Organization
+                $This.CommonName        = $Site.CommonName
+                $This.Site              = $Site.SiteLink
+                $This.Location          = $Site.Location
+                $This.Region            = $Site.Region
+                $This.Country           = $Site.Country
+                $This.Postal            = $Site.Postal
+                $This.SiteLink          = $Site.SiteLink
+                $This.Sitename          = $Site.Sitename
+                $This.Network           = $Site.Network
+                $This.Prefix            = $Site.Prefix
+                $This.Netmask           = $Site.Netmask
+                $This.Start             = $Site.Start
+                $This.End               = $Site.End
+                $This.Range             = $Site.Range
+                $This.Broadcast         = $Site.Broadcast
+                $This.ReverseDNS        = $Site.ReverseDNS
+                $This.Hostname          = $Node.Name
+                $This.Type              = $Node.Type
+                $This.DnsName           = ("{0}.{1}" -f $Node.Name, $Site.CommonName)
+                $This.Parent            = $Node.Parent
+                $This.DistinguishedName = $Node.DistinguishedName
+                $This.Exists            = $Node.Exists
+            }
+            Get()
+            {
+
+            }
+            New()
+            {
+
+            }
+            Remove()
+            {
+
+            }
+        }
+
+        Class AddsAccount
+        {
+            [String] $Organization
+            [String] $CommonName
+            [String] $Site
+            [String] $Location
+            [String] $Region
+            [String] $Country
+            [UInt32] $Postal
+            [String] $Sitelink
+            [String] $Sitename
+            [String] $Network
+            [UInt32] $Prefix
+            [String] $Netmask
+            [String] $Start
+            [String] $End
+            [String] $Range
+            [String] $Broadcast
+            [String] $ReverseDNS
+            [Object] $Account
+            [String] $Name
+            [String] $Type
+            [String] $SamName
+            [String] $UserPrincipalName
+            [String] $Parent
+            [String] $DistinguishedName
+            [UInt32] $Exists
+            [String] $Guid
+            AddsAccount([Object]$Site,[Object]$Node)
+            {
+                $This.Site              = $Site.Organization
+                $This.CommonName        = $Site.CommonName
+                $This.Site              = $Site.SiteLink
+                $This.Location          = $Site.Location
+                $This.Region            = $Site.Region
+                $This.Country           = $Site.Country
+                $This.Postal            = $Site.Postal
+                $This.SiteLink          = $Site.SiteLink
+                $This.Sitename          = $Site.Sitename
+                $This.Network           = $Site.Network
+                $This.Prefix            = $Site.Prefix
+                $This.Netmask           = $Site.Netmask
+                $This.Start             = $Site.Start
+                $This.End               = $Site.End
+                $This.Range             = $Site.Range
+                $This.Broadcast         = $Site.Broadcast
+                $This.ReverseDNS        = $Site.ReverseDNS
+                $This.Name              = $Node.Name
+                $This.Type              = $Node.Type
+                $This.Parent            = $Node.Parent
+                $This.DistinguishedName = $Node.DistinguishedName
+                $This.Exists            = $Node.Exists
+            }
+            Get()
+            {
+
+            }
+            New()
+            {
+
+            }
+            Remove()
+            {
+
+            }
+        }
+
         Class AddsNode
         {
             [String] $Name
@@ -1366,6 +1499,10 @@ Function New-FEInfrastructure2
                 }
                 $This.Parent            = $Base
                 $This.DistinguishedName = "CN=$Name,$Base"
+                If (Get-ADObject -Identity "CN=$Name,$Base")
+                {
+                    $This.Exists        = 1
+                }
             }
             [String] ToString()
             {
@@ -1388,6 +1525,7 @@ Function New-FEInfrastructure2
                 $This.Parent            = $Template.DistinguishedName.Replace($Template.DistinguishedName.Split(",")[0],'').TrimStart(",")
                 $This.DistinguishedName = $Template.DistinguishedName
                 $This.Children          = @( )
+                $This.Exists            = 1
             }
             [Object] GetNode([String]$Name)
             {
@@ -1465,34 +1603,93 @@ Function New-FEInfrastructure2
             [Object] $Workstation
             [Object] $User
             [Object] $Service
-            [Object] $Object
+            [Object] $Host
+            [Object] $Account
             AddsController()
             {
+                $This.Sitemap     = @( )
                 $This.Gateway     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
                 $This.Server      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
                 $This.Workstation = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
                 $This.User        = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
                 $This.Service     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-                $This.Object      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+                $This.Host        = @( )
+                $This.Account     = @( )
             }
             LoadSitemap([Object[]]$Sitemap)
             {
-                $This.Sitemap     = $Sitemap | % { [AddsSite]::New($_) }
+                $This.Sitemap     = @($Sitemap | % { [AddsSite]::New($_) })
             }
             [Object] GetSite([String]$Sitename)
             {
                 Return $This.Sitemap | ? Name -eq $Sitename
             }
-            GetNodeList([String]$Type)
+            GetGatewayList()
             {
-                $This.$Type.Clear()
+                $This.Gateway.Clear()
                 ForEach ($Site in $This.Sitemap)
                 {
-                    ForEach ($Container in $Site.$Type)
+                    ForEach ($Container in $Site.Gateway)
                     {
                         ForEach ($Child in $Container.Children)
                         {
-                            $This.$Type.Add($Child)
+                            $This.Gateway.Add($Child)
+                        }
+                    }
+                }
+            }
+            GetServerList()
+            {
+                $This.Server.Clear()
+                ForEach ($Site in $This.Sitemap)
+                {
+                    ForEach ($Container in $Site.Server)
+                    {
+                        ForEach ($Child in $Container.Children)
+                        {
+                            $This.Server.Add($Child)
+                        }
+                    }
+                }
+            }
+            GetWorkstationList()
+            {
+                $This.Workstation.Clear()
+                ForEach ($Site in $This.Sitemap)
+                {
+                    ForEach ($Container in $Site.Workstation)
+                    {
+                        ForEach ($Child in $Container.Children)
+                        {
+                            $This.Workstation.Add($Child)
+                        }
+                    }
+                }
+            }
+            GetUserList()
+            {
+                $This.User.Clear()
+                ForEach ($Site in $This.Sitemap)
+                {
+                    ForEach ($Container in $Site.User)
+                    {
+                        ForEach ($Child in $Container.Children)
+                        {
+                            $This.User.Add($Child)
+                        }
+                    }
+                }
+            }
+            GetServiceList()
+            {
+                $This.Service.Clear()
+                ForEach ($Site in $This.Sitemap)
+                {
+                    ForEach ($Container in $Site.Service)
+                    {
+                        ForEach ($Child in $Container.Children)
+                        {
+                            $This.Service.Add($Child)
                         }
                     }
                 }
@@ -1520,11 +1717,6 @@ Function New-FEInfrastructure2
                             }
                         }
                     }
-                }
-                $This.Object.Clear()
-                ForEach ($Item in $This.Gateway, $This.Server, $This.Workstation, $This.User, $This.Service)
-                {
-                    $This.Object.Add($Item)
                 }
             }
             AddNode([String]$Sitename,[String]$Type,[String]$Name)
@@ -1573,7 +1765,7 @@ Function New-FEInfrastructure2
             {
                 $Sitename  = ($DistinguishedName.Split(",") | ? { $_ -match "OU\=" })[-1] -Replace "OU=",""
                 $Type      = ($DistinguishedName.Split(",") | ? { $_ -match "OU\=" })[0]  -Replace "OU=",""
-                $Name      = ($DistinguishedName.Split(",") | ? { $_ -match "CN\=" })[0]  -Replace "CN=",""
+                $Name      = ($DistinguishedName.Split(",") | ? { $_ -match "CN\=" })  -Replace "CN=",""
                 $Site      = $This.GetSite($SiteName)
                 $Container = $Site.GetContainer($Type)
                 If ($Name -in $Container.Children.Name)
@@ -1583,6 +1775,20 @@ Function New-FEInfrastructure2
                 Else
                 {
                     Return $Null
+                }
+            }
+            NewHost([Object]$Site,[Object]$Node)
+            {
+                If ($Node.DistinguishedName -notin $This.Host.DistinguishedName)
+                {
+                    $This.Host    += [AddsHost]::New($Site,$Node)
+                }
+            }
+            NewAccount([Object]$Site,[Object]$Node)
+            {
+                If ($Node.DistinguishedName -notin $This.Account.DistinguishedName)
+                {
+                    $This.Account += [AddsAccount]::New($Site,$Node)
                 }
             }
             [String] ToString()
@@ -4177,6 +4383,7 @@ Function New-FEInfrastructure2
         '                                <ColumnDefinition Width="*"/>',
         '                                <ColumnDefinition Width="*"/>',
         '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="120"/>',
         '                            </Grid.ColumnDefinitions>',
         '                            <GroupBox Grid.Column="0" Header="[Name]">',
         '                                <ComboBox Name="AddsSite" ItemsSource="{Binding Name}"/>',
@@ -4187,6 +4394,7 @@ Function New-FEInfrastructure2
         '                            <GroupBox Grid.Column="2" Header="[Subnet]">',
         '                                <TextBox Name="AddsSubnetName" IsReadOnly="True"/>',
         '                            </GroupBox>',
+        '                            <Button Name="AddsSiteDefaults" Grid.Column="3" Content="Add All Defaults"/>',
         '                        </Grid>',
         '                    <TabControl Grid.Row="1">',
         '                        <TabItem Header="Control">',
@@ -4228,8 +4436,7 @@ Function New-FEInfrastructure2
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="90"/>',
-        '                                    <RowDefinition Height="160"/>',
-        '                                    <RowDefinition Height="160"/>',
+        '                                    <RowDefinition Height="200"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
@@ -4242,14 +4449,12 @@ Function New-FEInfrastructure2
         '                                        <Grid>',
         '                                            <Grid.ColumnDefinitions>',
         '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="100"/>',
         '                                                <ColumnDefinition Width="40"/>',
         '                                                <ColumnDefinition Width="40"/>',
         '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0"  Name="AddsGwName"/>',
-        '                                            <Button Grid.Column="1" Name="AddsGwDefault" Content="Add Default"/>',
-        '                                            <Button Grid.Column="2" Name="AddsGwAdd"     Content="+"/>',
-        '                                            <Button Grid.Column="3" Name="AddsGwRemove"  Content="-"/>',
+        '                                            <TextBox Grid.Column="0" Name="AddsGwName"/>',
+        '                                            <Button  Grid.Column="1" Name="AddsGwAdd"     Content="+"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsGwRemove"  Content="-"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
         '                                    <GroupBox Grid.Column="1" Header="[Gateway List] - (Input a file/list)">',
@@ -4261,7 +4466,7 @@ Function New-FEInfrastructure2
         '                                            </Grid.ColumnDefinitions>',
         '                                            <TextBox Grid.Column="0" Name="AddsGwFile"/>',
         '                                            <Button  Grid.Column="1" Name="AddsGwBrowse"  Content="Browse"/>',
-        '                                            <Button Grid.Column="2"  Name="AddsGwAddList" Content="+"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsGwAddList" Content="+"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
         '                                </Grid>',
@@ -4272,24 +4477,8 @@ Function New-FEInfrastructure2
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
-        '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="2" Header="[Gateway Viewer] - (View each gateways&apos; properties/attributes)">',
-        '                                    <DataGrid Name="AddsGwViewer">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
-        '                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="3" Header="[Gateway Topology] - (Output/Existence validation)">',
-        '                                    <DataGrid Grid.Row="0" Name="AddsGwTopology">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="SiteName"  Binding="{Binding SiteName}" Width="200"/>',
-        '                                            <DataGridTextColumn Header="Network"    Binding="{Binding Network}" Width="150"/>',
-        '                                            <DataGridTemplateColumn Header="Exists" Width="50">',
+        '                                            <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>',
+        '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                <DataGridTemplateColumn.CellTemplate>',
         '                                                    <DataTemplate>',
         '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
@@ -4299,11 +4488,20 @@ Function New-FEInfrastructure2
         '                                                    </DataTemplate>',
         '                                                </DataGridTemplateColumn.CellTemplate>',
         '                                            </DataGridTemplateColumn>',
-        '                                            <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>',
+        '                                            <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="350"/>',
+        '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
-        '                                <Grid Grid.Row="4">',
+        '                                <GroupBox Grid.Row="2" Header="[Gateway Viewer] - (View a gateways&apos; properties/attributes)">',
+        '                                    <DataGrid Name="AddsGwViewer">',
+        '                                        <DataGrid.Columns>',
+        '                                            <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
+        '                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
+        '                                        </DataGrid.Columns>',
+        '                                    </DataGrid>',
+        '                                </GroupBox>',
+        '                                <Grid Grid.Row="3">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
@@ -4317,8 +4515,7 @@ Function New-FEInfrastructure2
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="90"/>',
-        '                                    <RowDefinition Height="160"/>',
-        '                                    <RowDefinition Height="160"/>',
+        '                                    <RowDefinition Height="200"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
@@ -4331,14 +4528,12 @@ Function New-FEInfrastructure2
         '                                        <Grid>',
         '                                            <Grid.ColumnDefinitions>',
         '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="100"/>',
         '                                                <ColumnDefinition Width="40"/>',
         '                                                <ColumnDefinition Width="40"/>',
         '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0"  Name="AddsSrName"/>',
-        '                                            <Button Grid.Column="1" Name="AddsSrDefault" Content="Add Default"/>',
-        '                                            <Button Grid.Column="2" Name="AddsSrAdd"     Content="+"/>',
-        '                                            <Button Grid.Column="3" Name="AddsSrRemove"  Content="-"/>',
+        '                                            <TextBox Grid.Column="0" Name="AddsSrName"/>',
+        '                                            <Button  Grid.Column="1" Name="AddsSrAdd"     Content="+"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsSrRemove"  Content="-"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
         '                                    <GroupBox Grid.Column="1" Header="[Server List] - (Input a file/list)">',
@@ -4361,7 +4556,19 @@ Function New-FEInfrastructure2
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
-        '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>',
+        '                                            <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>',
+        '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                            <ComboBoxItem Content="False"/>',
+        '                                                            <ComboBoxItem Content="True"/>',
+        '                                                        </ComboBox>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="350"/>',
+        '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
@@ -4373,26 +4580,7 @@ Function New-FEInfrastructure2
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="3" Header="[Server Topology] - (Output/Existence validation)">',
-        '                                    <DataGrid Name="AddsSrTopology">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="SiteName"  Binding="{Binding SiteName}" Width="200"/>',
-        '                                            <DataGridTextColumn Header="Network"    Binding="{Binding Network}" Width="150"/>',
-        '                                            <DataGridTemplateColumn Header="Exists" Width="50">',
-        '                                                <DataGridTemplateColumn.CellTemplate>',
-        '                                                    <DataTemplate>',
-        '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
-        '                                                            <ComboBoxItem Content="False"/>',
-        '                                                            <ComboBoxItem Content="True"/>',
-        '                                                        </ComboBox>',
-        '                                                    </DataTemplate>',
-        '                                                </DataGridTemplateColumn.CellTemplate>',
-        '                                            </DataGridTemplateColumn>',
-        '                                            <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <Grid Grid.Row="4">',
+        '                                <Grid Grid.Row="3">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
@@ -4406,8 +4594,7 @@ Function New-FEInfrastructure2
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="90"/>',
-        '                                    <RowDefinition Height="160"/>',
-        '                                    <RowDefinition Height="160"/>',
+        '                                    <RowDefinition Height="200"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
@@ -4420,14 +4607,12 @@ Function New-FEInfrastructure2
         '                                        <Grid>',
         '                                            <Grid.ColumnDefinitions>',
         '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="100"/>',
         '                                                <ColumnDefinition Width="40"/>',
         '                                                <ColumnDefinition Width="40"/>',
         '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0"  Name="AddsWsName"/>',
-        '                                            <Button Grid.Column="1" Name="AddsWsDefault" Content="Add Default"/>',
-        '                                            <Button Grid.Column="2" Name="AddsWsAdd"     Content="+"/>',
-        '                                            <Button Grid.Column="3" Name="AddsWsRemove"  Content="-"/>',
+        '                                            <TextBox Grid.Column="0" Name="AddsWsName"/>',
+        '                                            <Button  Grid.Column="1" Name="AddsWsAdd"     Content="+"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsWsRemove"  Content="-"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
         '                                    <GroupBox Grid.Column="1" Header="[Workstation List] - (Input a file/list)">',
@@ -4450,7 +4635,19 @@ Function New-FEInfrastructure2
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
-        '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>',
+        '                                            <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>',
+        '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                            <ComboBoxItem Content="False"/>',
+        '                                                            <ComboBoxItem Content="True"/>',
+        '                                                        </ComboBox>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="350"/>',
+        '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
@@ -4462,26 +4659,7 @@ Function New-FEInfrastructure2
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="3" Header="[Workstation Topology] - (Output/Existence validation)">',
-        '                                    <DataGrid Name="AddsWsTopology">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="SiteName"  Binding="{Binding SiteName}" Width="200"/>',
-        '                                            <DataGridTextColumn Header="Network"    Binding="{Binding Network}" Width="150"/>',
-        '                                            <DataGridTemplateColumn Header="Exists" Width="50">',
-        '                                                <DataGridTemplateColumn.CellTemplate>',
-        '                                                    <DataTemplate>',
-        '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
-        '                                                            <ComboBoxItem Content="False"/>',
-        '                                                            <ComboBoxItem Content="True"/>',
-        '                                                        </ComboBox>',
-        '                                                    </DataTemplate>',
-        '                                                </DataGridTemplateColumn.CellTemplate>',
-        '                                            </DataGridTemplateColumn>',
-        '                                            <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <Grid Grid.Row="4">',
+        '                                <Grid Grid.Row="3">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
@@ -4495,8 +4673,7 @@ Function New-FEInfrastructure2
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="90"/>',
-        '                                    <RowDefinition Height="160"/>',
-        '                                    <RowDefinition Height="160"/>',
+        '                                    <RowDefinition Height="200"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
@@ -4509,14 +4686,12 @@ Function New-FEInfrastructure2
         '                                        <Grid>',
         '                                            <Grid.ColumnDefinitions>',
         '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="100"/>',
         '                                                <ColumnDefinition Width="40"/>',
         '                                                <ColumnDefinition Width="40"/>',
         '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0"  Name="AddsUserName"/>',
-        '                                            <Button Grid.Column="1" Name="AddsUserDefault" Content="Add Default"/>',
-        '                                            <Button Grid.Column="2" Name="AddsUserAdd"     Content="+"/>',
-        '                                            <Button Grid.Column="3" Name="AddsUserRemove"  Content="-"/>',
+        '                                            <TextBox Grid.Column="0" Name="AddsUserName"/>',
+        '                                            <Button  Grid.Column="1" Name="AddsUserAdd"     Content="+"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsUserRemove"  Content="-"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
         '                                    <GroupBox Grid.Column="1" Header="[User List] - (Input a file/list)">',
@@ -4539,7 +4714,19 @@ Function New-FEInfrastructure2
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
-        '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>',
+        '                                            <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>',
+        '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                            <ComboBoxItem Content="False"/>',
+        '                                                            <ComboBoxItem Content="True"/>',
+        '                                                        </ComboBox>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="350"/>',
+        '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
@@ -4551,26 +4738,7 @@ Function New-FEInfrastructure2
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="3" Header="[User Topology] - (Output/Existence validation)">',
-        '                                    <DataGrid Name="AddsUserTopology">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="SiteName"  Binding="{Binding SiteName}" Width="200"/>',
-        '                                            <DataGridTextColumn Header="Network"    Binding="{Binding Network}" Width="150"/>',
-        '                                            <DataGridTemplateColumn Header="Exists" Width="50">',
-        '                                                <DataGridTemplateColumn.CellTemplate>',
-        '                                                    <DataTemplate>',
-        '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
-        '                                                            <ComboBoxItem Content="False"/>',
-        '                                                            <ComboBoxItem Content="True"/>',
-        '                                                        </ComboBox>',
-        '                                                    </DataTemplate>',
-        '                                                </DataGridTemplateColumn.CellTemplate>',
-        '                                            </DataGridTemplateColumn>',
-        '                                            <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <Grid Grid.Row="4">',
+        '                                <Grid Grid.Row="3">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
@@ -4584,8 +4752,7 @@ Function New-FEInfrastructure2
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="90"/>',
-        '                                    <RowDefinition Height="160"/>',
-        '                                    <RowDefinition Height="160"/>',
+        '                                    <RowDefinition Height="200"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
@@ -4598,14 +4765,12 @@ Function New-FEInfrastructure2
         '                                        <Grid>',
         '                                            <Grid.ColumnDefinitions>',
         '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="100"/>',
         '                                                <ColumnDefinition Width="40"/>',
         '                                                <ColumnDefinition Width="40"/>',
         '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0"  Name="AddsSvcName"/>',
-        '                                            <Button Grid.Column="1" Name="AddsSvcDefault" Content="Add Default"/>',
-        '                                            <Button Grid.Column="2" Name="AddsSvcAdd"     Content="+"/>',
-        '                                            <Button Grid.Column="3" Name="AddsSvcRemove"  Content="-"/>',
+        '                                            <TextBox Grid.Column="0" Name="AddsSvcName"/>',
+        '                                            <Button  Grid.Column="1" Name="AddsSvcAdd"     Content="+"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsSvcRemove"  Content="-"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
         '                                    <GroupBox Grid.Column="1" Header="[Service List] - (Input a file/list)">',
@@ -4628,7 +4793,19 @@ Function New-FEInfrastructure2
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
-        '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>',
+        '                                            <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>',
+        '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                            <ComboBoxItem Content="False"/>',
+        '                                                            <ComboBoxItem Content="True"/>',
+        '                                                        </ComboBox>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="350"/>',
+        '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
@@ -4640,26 +4817,7 @@ Function New-FEInfrastructure2
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="3" Header="[User Topology] - (Output/Existence validation)">',
-        '                                    <DataGrid Name="AddsSvcTopology">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="SiteName"  Binding="{Binding SiteName}" Width="200"/>',
-        '                                            <DataGridTextColumn Header="Network"    Binding="{Binding Network}" Width="150"/>',
-        '                                            <DataGridTemplateColumn Header="Exists" Width="50">',
-        '                                                <DataGridTemplateColumn.CellTemplate>',
-        '                                                    <DataTemplate>',
-        '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
-        '                                                            <ComboBoxItem Content="False"/>',
-        '                                                            <ComboBoxItem Content="True"/>',
-        '                                                        </ComboBox>',
-        '                                                    </DataTemplate>',
-        '                                                </DataGridTemplateColumn.CellTemplate>',
-        '                                            </DataGridTemplateColumn>',
-        '                                            <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <Grid Grid.Row="4">',
+        '                                <Grid Grid.Row="3">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
@@ -6057,10 +6215,33 @@ Function New-FEInfrastructure2
     # <![Sitemap Tab]!> #
     # ----------------- #
 
-    $Xaml.IO.SmTemplate.ItemsSource  = @( )
-    $Xaml.IO.SmAggregate.ItemsSource = @( )
-    $Xaml.IO.SmSiteLink.ItemsSource  = @( )
-    $Xaml.IO.SmTopology.ItemsSource  = @( )
+    $Xaml.IO.SmTemplate.ItemsSource        = @( )
+    $Xaml.IO.SmAggregate.ItemsSource       = @( )
+    $Xaml.IO.SmSiteLink.ItemsSource        = @( )
+    $Xaml.IO.SmTopology.ItemsSource        = @( )
+
+    $Xaml.IO.AddsViewer.ItemsSource        = @( )
+    $Xaml.IO.AddsChildren.ItemsSource      = @( )
+
+    $Xaml.IO.AddsGwAggregate.ItemsSource   = @( )
+    $Xaml.IO.AddsGwViewer.ItemsSource      = @( )
+    $Xaml.IO.AddsGwTopology.ItemsSource    = @( )
+
+    $Xaml.IO.AddsSrAggregate.ItemsSource   = @( )
+    $Xaml.IO.AddsSrViewer.ItemsSource      = @( )
+    $Xaml.IO.AddsSrTopology.ItemsSource    = @( )
+
+    $Xaml.IO.AddsWsAggregate.ItemsSource   = @( )
+    $Xaml.IO.AddsWsViewer.ItemsSource      = @( )
+    $Xaml.IO.AddsWsTopology.ItemsSource    = @( )
+
+    $Xaml.IO.AddsUserAggregate.ItemsSource = @( )
+    $Xaml.IO.AddsUserViewer.ItemsSource    = @( )
+    $Xaml.IO.AddsUserTopology.ItemsSource  = @( )
+
+    $Xaml.IO.AddsSvcAggregate.ItemsSource  = @( )
+    $Xaml.IO.AddsSvcViewer.ItemsSource     = @( )
+    $Xaml.IO.AddsSvcTopology.ItemsSource   = @( )
 
     $Xaml.IO.SmLoadSitemap.Add_Click(
     {
@@ -6118,8 +6299,9 @@ Function New-FEInfrastructure2
             $Main.Sitemap.SetSitelinkBridge($Xaml.IO.SmSiteLink.SelectedItem.DistinguishedName)
             $Main.Sitemap.NewSitemap()
             $Main.AddsController.LoadSitemap($Main.Sitemap.Aggregate)
-            $Xaml.IO.AddsSite.ItemsSource = @( )
-            $Xaml.IO.AddsSite.ItemsSource = @($Main.Sitemap.Aggregate.Name)
+            $Xaml.IO.AddsSite.ItemsSource   = @( )
+            $Xaml.IO.AddsSite.ItemsSource   = @($Main.AddsController.Sitemap.Name)
+            $Xaml.IO.AddsSite.SelectedIndex = 0
         }
     })
 
@@ -6137,45 +6319,61 @@ Function New-FEInfrastructure2
     {
         If ($Xaml.IO.AddsSite.SelectedIndex -ne -1)
         {
-            $Object                                = $Main.Sitemap.Aggregate[$Xaml.IO.AddsSite.SelectedIndex]
+            $Object                                = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
 
             # Site TextBox
+            Write-Host "Site [+] Textbox"
             $Xaml.IO.AddsSiteName.Text             = $Object.Template.Site.Name
             
             # Subnet TextBox
+            Write-Host "Subnet [+] Textbox"
             $Xaml.IO.AddsSubnetName.Text           = $Object.Template.Subnet.Name
 
             # Viewer
-            $Xaml.IO.AddsViewer.ItemsSource        = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+            Write-Host "Viewer [+] ItemsSource"
+            $Xaml.IO.AddsViewer.ItemsSource        = @($Object.Control.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
 
             # Children
-            $Xaml.IO.AddsChildren.ItemsSource      = @($Object.Template.Children)
+            Write-Host "Site [+] Children"
+            $Xaml.IO.AddsChildren.ItemsSource      = @($Object.Main.Children)
+
+            $Main.AddsController.GetNodeList()
 
             # Gateway
-            $Main.AddsController.GetNodeList("Gateway")
-            $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
+            If ($Main.AddsController.Gateway.Count -gt 0)
+            {
+                $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
+            }
 
             # Server
-            $Main.AddsController.GetNodeList("Server")
-            $Xaml.IO.AddsSrAggregate.ItemsSource   = @($Main.AddsController.Server)
+            If ($Main.AddsController.Server.Count -gt 0)
+            {
+                $Xaml.IO.AddsSrAggregate.ItemsSource   = @($Main.AddsController.Server)
+            }
 
             # Workstation
-            $Main.AddsController.GetNodeList("Workstation")
-            $Xaml.IO.AddsWsAggregate.ItemsSource   = @($Main.AddsController.Workstation)
+            If ($Main.AddsController.Workstation.Count -gt 0)
+            {
+                $Xaml.IO.AddsWsAggregate.ItemsSource   = @($Main.AddsController.Workstation)
+            }
 
             # User
-            $Main.AddsController.GetNodeList("User")
-            $Xaml.IO.AddsUserAggregate.ItemsSource = @($Main.AddsController.User)
+            If ($Main.AddsController.UserAggregate.Count -gt 0)
+            {
+                $Xaml.IO.AddsUserAggregate.ItemsSource = @($Main.AddsController.User)
+            }
 
             # Service
-            $Main.AddsController.GetNodeList("Service")
-            $Xaml.IO.AddsSvcAggregate.ItemsSource  = @($Main.AddsController.Service)
+            If ($Main.AddsController.SvcAggregate.Count -gt 0)
+            {
+                $Xaml.IO.AddsSvcAggregate.ItemsSource  = @($Main.AddsController.Service)
+            }
         }
     })
 
     $Xaml.IO.AddsGwAdd.Add_Click(
     {
-        $Object                           = $Main.Sitemap.Aggregate[$Xaml.IO.AddsSite.SelectedIndex]
+        $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
         $Name                             = $Xaml.IO.AddsGwName.Text
         If (!$Object)
         {
@@ -6195,7 +6393,7 @@ Function New-FEInfrastructure2
         Else
         {
             $Main.AddsController.AddNode($Object.Name,"Gateway",$Name)
-            $Main.AddsController.GetNodeList("Gateway")
+            $Main.AddsController.GetGatewayList()
             $Xaml.IO.AddsGwAggregate.ItemsSource   = @( )
             $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
         }
@@ -6203,13 +6401,13 @@ Function New-FEInfrastructure2
 
     $Xaml.IO.AddsGwDefault.Add_Click(
     {
-        $Object                                    = $Main.Sitemap.Aggregate[$Xaml.IO.AddsSite.SelectedIndex]
+        $Object                                    = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
         $Name                                      = $Object.Name
 
         If ($Name -notin $Main.AddsController.Gateway)
         {
             $Main.AddsController.AddNode($Object.Name,"Gateway",$Name)
-            $Main.AddsController.GetNodeList("Gateway")
+            $Main.AddsController.GetGatewayList()
             $Xaml.IO.AddsGwAggregate.ItemsSource   = @( )
             $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
         }
@@ -6228,7 +6426,7 @@ Function New-FEInfrastructure2
             If ($Object)
             {
                 $Main.AddsController.RemoveNode($Object.DistinguishedName)
-                $Main.AddsController.GetNodeList("Gateway")
+                $Main.AddsController.GetGatewayList()
                 $Xaml.IO.AddsGwAggregate.ItemsSource   = @( )
                 $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
             }
@@ -6260,7 +6458,7 @@ Function New-FEInfrastructure2
                 $Main.AddsController.AddNode($Object.Name,"Gateway",$Name)
             }
         }
-        $Main.AddsController.GetNodeList("Gateway")
+        $Main.AddsController.GetGatewayList()
         $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
     })
 
@@ -6277,15 +6475,18 @@ Function New-FEInfrastructure2
     $Xaml.IO.AddsGwGet.Add_Click(
     {
         $Xaml.IO.AddsGwTopology.ItemsSource    = @( )
-        $Main.AddsController.GetNodeList("Gateway")
+        $Main.AddsController.GetGatewayList()
         ForEach ($Object in $Main.AddsController.Gateway)
         {
             If (Get-ADObject -LDAPFilter "(objectClass=Computer)" -SearchBase $Object.Parent)
             {
                 $Object.Exists = 1
             }
+            Else
+            {
+                New-ADComputer -Name $Item.Name -DNSHostName $DNSName -Path $Path -TrustedForDelegation:$True -Verbose
+            }
         }
-        $Xaml.IO.AddsGwTopology.ItemsSource    = @($Main.AddsController.Gateway)
     })
 
     # AddsGwAdd                 Button
