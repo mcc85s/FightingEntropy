@@ -1043,8 +1043,13 @@ Function New-FEInfrastructure2
             Topology([String]$Name,[String]$Type,[String]$Root)
             {
                 $This.Name              = $Name
-                $This.Type              = $Type
-                $This.DistinguishedName = @{$False="OU=$Type,OU=$Name,$Root"; $True="OU=$Name,$Root"}[$Type -eq "Main"]
+                $This.DistinguishedName = @("OU=$Type,OU=$Name,$Root","OU=$Name,$Root")[$Type -eq "Main"]
+                $This.Type              = Switch($Type)
+                {
+                    Default   { $Type         }
+                    Computers { "Workstation" }
+                    Users     { "User"        }
+                }
             }
             [String] ToString()
             {
@@ -1493,16 +1498,8 @@ Function New-FEInfrastructure2
             {
                 $This.Name              = $Name
                 $This.Type              = $Type
-                If ($This.Type -eq "Computers")
-                {
-                    $This.Type = "Workstation"
-                }
                 $This.Parent            = $Base
                 $This.DistinguishedName = "CN=$Name,$Base"
-                If (Get-ADObject -Identity "CN=$Name,$Base")
-                {
-                    $This.Exists        = 1
-                }
             }
             [String] ToString()
             {
@@ -1538,11 +1535,15 @@ Function New-FEInfrastructure2
                     $This.Children += [AddsContainer]::New($Container)
                 }         
             }
-            AddNode([String]$Name)
+            [Object] NewNode([String]$Name)
             {
-                If ($Name -notin $This.Children.Name)
+                Return [AddsNode]::New($Name,$This.Type,$This.DistinguishedName)
+            }
+            AddNode([Object]$Object)
+            {
+                If ($Object.Name -notin $This.Children.Name)
                 {
-                    $This.Children += [AddsNode]::New($Name,$This.Type,$This.DistinguishedName)
+                    $This.Children += $Object
                 }
             }
             RemoveNode([String]$Name)
@@ -1569,7 +1570,7 @@ Function New-FEInfrastructure2
             [Object] $Gateway
             [Object] $Server
             [Object] $Workstation
-            [Object] $User
+            [Object] $User 
             [Object] $Service
             AddsSite([Object]$Control)
             {
@@ -1585,8 +1586,8 @@ Function New-FEInfrastructure2
                 }
                 $This.Gateway     = $This.Main.Children | ? Type -eq Gateway
                 $This.Server      = $This.Main.Children | ? Type -eq Server
-                $This.Workstation = $This.Main.Children | ? Type -eq Computers
-                $This.User        = $This.Main.Children | ? Type -eq Users
+                $This.Workstation = $This.Main.Children | ? Type -eq Workstation
+                $This.User        = $This.Main.Children | ? Type -eq User
                 $This.Service     = $This.Main.Children | ? Type -eq Service
             }
             [Object] GetContainer([String]$Name)
@@ -1597,6 +1598,9 @@ Function New-FEInfrastructure2
 
         Class AddsController
         {
+            [String] $Organization
+            [String] $CommonName
+            [Object] $Object
             [Object] $Sitemap
             [Object] $Gateway
             [Object] $Server
@@ -1607,14 +1611,24 @@ Function New-FEInfrastructure2
             [Object] $Account
             AddsController()
             {
+                $This.Object      = Get-ADObject -Filter * | ? ObjectClass -match "(Computer|User)"
                 $This.Sitemap     = @( )
-                $This.Gateway     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-                $This.Server      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-                $This.Workstation = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-                $This.User        = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
-                $This.Service     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+                $This.Gateway     = @( )
+                $This.Server      = @( )
+                $This.Workstation = @( )
+                $This.User        = @( )
+                $This.Service     = @( )
                 $This.Host        = @( )
                 $This.Account     = @( )
+            }
+            SetDomain([String]$Organization,[String]$CommonName)
+            {
+                $This.Organization = $Organization
+                $This.CommonName   = $CommonName
+            }
+            [String] SearchBase()
+            {
+                Return (($This.CommonName.Split(".") | % { "DC=$_"} ) -join ',')
             }
             LoadSitemap([Object[]]$Sitemap)
             {
@@ -1624,96 +1638,115 @@ Function New-FEInfrastructure2
             {
                 Return $This.Sitemap | ? Name -eq $Sitename
             }
+            Validate([Object]$Node)
+            {
+                If ($Node.DistinguishedName -in $This.Object.Distinguishedname)
+                {
+                    $Node.Exists = 1
+                }
+                If ($Node.Type -eq "Server")
+                {
+                    $Parent                     = "OU=Domain Controllers,{0}" -f $This.SearchBase()
+                    $DN                         = "CN={0},$Parent" -f $Node.Name
+                    If ($DN -in $This.Object.DistinguishedName)
+                    {
+                        $Node.Type              = "Domain Controller"
+                        $Node.Parent            = $Parent
+                        $Node.DistinguishedName = $DN
+                        $Node.Exists            = 1
+                    }
+                }
+            }
             GetGatewayList()
             {
-                $This.Gateway.Clear()
+                $This.Gateway = @( )
                 ForEach ($Site in $This.Sitemap)
                 {
                     ForEach ($Container in $Site.Gateway)
                     {
                         ForEach ($Child in $Container.Children)
                         {
-                            $This.Gateway.Add($Child)
+                            $This.Gateway += $Child
                         }
                     }
                 }
             }
             GetServerList()
             {
-                $This.Server.Clear()
+                $This.Server = @( )
                 ForEach ($Site in $This.Sitemap)
                 {
                     ForEach ($Container in $Site.Server)
                     {
                         ForEach ($Child in $Container.Children)
                         {
-                            $This.Server.Add($Child)
+                            $This.Server += $Child
                         }
                     }
                 }
             }
             GetWorkstationList()
             {
-                $This.Workstation.Clear()
+                $This.Workstation = @( )
                 ForEach ($Site in $This.Sitemap)
                 {
                     ForEach ($Container in $Site.Workstation)
                     {
                         ForEach ($Child in $Container.Children)
                         {
-                            $This.Workstation.Add($Child)
+                            $This.Workstation += $Child
                         }
                     }
                 }
             }
             GetUserList()
             {
-                $This.User.Clear()
+                $This.User = @( )
                 ForEach ($Site in $This.Sitemap)
                 {
                     ForEach ($Container in $Site.User)
                     {
                         ForEach ($Child in $Container.Children)
                         {
-                            $This.User.Add($Child)
+                            $This.User += $Child
                         }
                     }
                 }
             }
             GetServiceList()
             {
-                $This.Service.Clear()
+                $This.Service = @( )
                 ForEach ($Site in $This.Sitemap)
                 {
                     ForEach ($Container in $Site.Service)
                     {
                         ForEach ($Child in $Container.Children)
                         {
-                            $This.Service.Add($Child)
+                            $This.Service += $Child
                         }
                     }
                 }
             }
             GetNodeList()
             {
-                $This.Gateway.Clear()
-                $This.Server.Clear()
-                $This.Workstation.Clear()
-                $This.User.Clear()
-                $This.Service.Clear()
+                $This.Gateway     = @( )
+                $This.Server      = @( )
+                $This.Workstation = @( )
+                $This.User        = @( )
+                $This.Service     = @( )
                 ForEach ($Site in $This.Sitemap)
                 {
                     ForEach ($Container in $Site.Gateway, $Site.Server, $Site.Workstation, $Site.User, $Site.Service)
                     {
                         ForEach ($Child in $Container.Children)
                         {
-                            Switch ($Child.Type)
+                            Switch -Regex ($Child.Type)
                             {
-                                Gateway     { $This.Gateway.Add($Child)     }
-                                Server      { $This.Server.Add($Child)      }
-                                Workstation { $This.Workstation.Add($Child) }
-                                User        { $This.User.Add($Child)        }
-                                Service     { $This.Service.Add($Child)     }
+                                "(Gateway)"                  { $This.Gateway     += $Child }
+                                "(Server|Domain Controller)" { $This.Server      += $Child }
+                                "(Workstation)"              { $This.Workstation += $Child }
+                                "(User)"                     { $This.User        += $Child }
+                                "(Service)"                  { $This.Service     += $Child }
                             }
                         }
                     }
@@ -1725,7 +1758,9 @@ Function New-FEInfrastructure2
                 $Container = $Site.GetContainer($Type)
                 If ($Name -notin $Container.Children.Name)
                 {
-                    $Container.AddNode($Name)
+                    $Item  = $Container.NewNode($Name)
+                    $This.Validate($Item)
+                    $Container.AddNode($Item)
                 }
             }
             RemoveNode([Object]$Object)
@@ -1766,6 +1801,12 @@ Function New-FEInfrastructure2
                 $Sitename  = ($DistinguishedName.Split(",") | ? { $_ -match "OU\=" })[-1] -Replace "OU=",""
                 $Type      = ($DistinguishedName.Split(",") | ? { $_ -match "OU\=" })[0]  -Replace "OU=",""
                 $Name      = ($DistinguishedName.Split(",") | ? { $_ -match "CN\=" })  -Replace "CN=",""
+                Switch($Type)
+                {
+                    Default   { $Type         }
+                    Computers { "Workstation" }
+                    Users     { "User"        }
+                }
                 $Site      = $This.GetSite($SiteName)
                 $Container = $Site.GetContainer($Type)
                 If ($Name -in $Container.Children.Name)
@@ -3319,6 +3360,8 @@ Function New-FEInfrastructure2
         [Object[]]            $Types
         [Object]               $Node
         [Object]                 $IO
+        [Object]         $Dispatcher
+        [Object]          $Exception
         [String[]] FindNames()
         {
             Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
@@ -3342,6 +3385,7 @@ Function New-FEInfrastructure2
             $This.Types              = @( )
             $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
             $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
+            $This.Dispatcher         = $This.IO.Dispatcher
 
             ForEach ($I in 0..($This.Names.Count - 1))
             {
@@ -3352,12 +3396,17 @@ Function New-FEInfrastructure2
                     $This.Types    += [DGList]::New($Name,$This.IO.$Name.GetType().Name)
                 }
             }
-
-            $This.IO.Dispatcher.Thread.ApartmentState = "MTA"
         }
         Invoke()
         {
-            $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
+            Try
+            {
+                $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
+            }
+            Catch
+            {
+                $This.Exception     = $PSItem
+            }
         }
     }
 
@@ -3419,6 +3468,10 @@ Function New-FEInfrastructure2
         '                            <Trigger Property="IsSelected" Value="False">',
         '                                <Setter TargetName="Border" Property="Background" Value="#DFFFBA"/>',
         '                                <Setter Property="Foreground" Value="#000000"/>',
+        '                            </Trigger>',
+        '                            <Trigger Property="IsEnabled" Value="False">',
+        '                                <Setter TargetName="Border" Property="Background" Value="#6F6F6F"/>',
+        '                                <Setter Property="Foreground" Value="#9F9F9F"/>',
         '                            </Trigger>',
         '                        </ControlTemplate.Triggers>',
         '                    </ControlTemplate>',
@@ -4427,6 +4480,13 @@ Function New-FEInfrastructure2
         '                                                </DataGridTemplateColumn.CellTemplate>',
         '                                            </DataGridTemplateColumn>',
         '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>',
+        '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox ItemsSource="{Binding Children}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center"/>                                                        ',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                </GroupBox>',
@@ -5656,6 +5716,7 @@ Function New-FEInfrastructure2
         [Object]  $UpdateController
         [Object]     $MdtController
         [Object]     $WdsController
+        [UInt32]         $Selection
         Main()
         {
             $This.Module          = Get-FEModule
@@ -5769,15 +5830,74 @@ Function New-FEInfrastructure2
         }
         SetDomain([String]$Organization,[String]$CommonName)
         {
-            $This.Organization = $Organization
-            $This.CommonName   = $CommonName
-            $This.Sitelist     | % SetDomain $Organization $CommonName
-            $This.NetworkList  | % SetDomain $Organization $CommonName
-            $This.Sitemap      | % SetDomain $Organization $CommonName
+            $This.Organization   = $Organization
+            $This.CommonName     = $CommonName
+            $This.Sitelist       | % SetDomain $Organization $CommonName
+            $This.NetworkList    | % SetDomain $Organization $CommonName
+            $This.Sitemap        | % SetDomain $Organization $CommonName
+            $This.AddsController | % SetDomain $Organization $CommonName
         }
         [Object] List([String]$Name,[Object]$Value)
         {
             Return [DGList]::New($Name,$Value)
+        }
+        [String[]] Reserved()
+        {
+            Return @(("ANONYMOUS;AUTHENTICATED USER;BATCH;BUILTIN;CREATOR GROUP;CREATOR GROUP SERVER;CREATOR OWNER;CREATOR OWNER SERVER;" + 
+            "DIALUP;DIGEST AUTH;INTERACTIVE;INTERNET;LOCAL;LOCAL SYSTEM;NETWORK;NETWORK SERVICE;NT AUTHORITY;NT DOMAIN;NTLM AUTH;NULL;PROXY;REMO" +
+            "TE INTERACTIVE;RESTRICTED;SCHANNEL AUTH;SELF;SERVER;SERVICE;SYSTEM;TERMINAL SERVER;THIS ORGANIZATION;USERS;WORLD") -Split ";" )
+        }
+        [String[]] Legacy()
+        {
+            Return @("-GATEWAY","-GW","-TAC")
+        }
+        [String[]] SecurityDescriptors()
+        {
+            Return @(("AN,AO,AU,BA,BG,BO,BU,CA,CD,CG,CO,DA,DC,DD,DG,DU,EA,ED,HI,IU,LA,LG,LS,LW,ME,MU,NO,NS,NU,PA,PO,PS,PU,RC,RD,RE,RO,RS,RU,SA," +
+            "SI,SO,SU,SY,WD") -Split ',')
+        }
+        Reset([Object]$Sender,[Object[]]$Content)
+        {
+            $Sender.Clear()
+            ForEach ($Item in $Content)
+            {
+                $Sender.Add($Item)
+            }
+        }
+        [Object] CheckHostname([String]$String)
+        {                
+            If ($String.Length -lt 1 -or $String.Length -gt 15)
+            {
+                Return [System.Windows.MessageBox]::Show("[!] Length not between 1 and 15 characters","Error")
+            }
+            ElseIf ($String -in $This.Reserved())
+            {
+                Return [System.Windows.MessageBox]::Show("[!] Entry is in reserved words list","Error")
+            }
+            ElseIf ($String -in $This.Legacy())
+            {
+                Return [System.Windows.MessageBox]::Show("[!] Entry is in the legacy words list","Error")
+            }
+            ElseIf ($String -notmatch "([\-0-9a-zA-Z])")
+            { 
+                Return [System.Windows.MessageBox]::Show("[!] Invalid characters","Error")
+            }
+            ElseIf ($String[0] -match "(\W)" -or $String[-1] -match "(\W)")
+            {
+                Return [System.Windows.MessageBox]::Show("[!] First/Last Character cannot be a '.' or '-'","Error")
+            }                        
+            ElseIf ($String -match "\.")
+            {
+                Return [System.Windows.MessageBox]::Show("[!] Hostname cannot contain a '.'","Error")
+            }
+            ElseIf ($String -in $This.SecurityDescriptors())
+            {
+                Return [System.Windows.MessageBox]::Show("[!] Matches a security descriptor","Error")
+            }
+            Else
+            {
+                Return $String
+            }
         }
     }
 
@@ -6220,28 +6340,25 @@ Function New-FEInfrastructure2
     $Xaml.IO.SmSiteLink.ItemsSource        = @( )
     $Xaml.IO.SmTopology.ItemsSource        = @( )
 
-    $Xaml.IO.AddsViewer.ItemsSource        = @( )
-    $Xaml.IO.AddsChildren.ItemsSource      = @( )
+    <#
+    $Xaml.IO.AddsViewer.Items              = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+    $Xaml.IO.AddsChildren.Items            = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
 
-    $Xaml.IO.AddsGwAggregate.ItemsSource   = @( )
-    $Xaml.IO.AddsGwViewer.ItemsSource      = @( )
-    $Xaml.IO.AddsGwTopology.ItemsSource    = @( )
+    $Xaml.IO.AddsGwAggregate.Items         = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+    $Xaml.IO.AddsGwViewer.Items            = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
 
-    $Xaml.IO.AddsSrAggregate.ItemsSource   = @( )
-    $Xaml.IO.AddsSrViewer.ItemsSource      = @( )
-    $Xaml.IO.AddsSrTopology.ItemsSource    = @( )
+    $Xaml.IO.AddsSrAggregate.Items         = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+    $Xaml.IO.AddsSrViewer.Items            = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
 
-    $Xaml.IO.AddsWsAggregate.ItemsSource   = @( )
-    $Xaml.IO.AddsWsViewer.ItemsSource      = @( )
-    $Xaml.IO.AddsWsTopology.ItemsSource    = @( )
+    $Xaml.IO.AddsWsAggregate.Items         = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+    $Xaml.IO.AddsWsViewer.Items            = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
 
-    $Xaml.IO.AddsUserAggregate.ItemsSource = @( )
-    $Xaml.IO.AddsUserViewer.ItemsSource    = @( )
-    $Xaml.IO.AddsUserTopology.ItemsSource  = @( )
+    $Xaml.IO.AddsUserAggregate.ItemsSource = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+    $Xaml.IO.AddsUserViewer.ItemsSource    = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
 
-    $Xaml.IO.AddsSvcAggregate.ItemsSource  = @( )
-    $Xaml.IO.AddsSvcViewer.ItemsSource     = @( )
-    $Xaml.IO.AddsSvcTopology.ItemsSource   = @( )
+    $Xaml.IO.AddsSvcAggregate.ItemsSource  = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+    $Xaml.IO.AddsSvcViewer.ItemsSource     = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+    #>
 
     $Xaml.IO.SmLoadSitemap.Add_Click(
     {
@@ -6299,8 +6416,7 @@ Function New-FEInfrastructure2
             $Main.Sitemap.SetSitelinkBridge($Xaml.IO.SmSiteLink.SelectedItem.DistinguishedName)
             $Main.Sitemap.NewSitemap()
             $Main.AddsController.LoadSitemap($Main.Sitemap.Aggregate)
-            $Xaml.IO.AddsSite.ItemsSource   = @( )
-            $Xaml.IO.AddsSite.ItemsSource   = @($Main.AddsController.Sitemap.Name)
+            $Main.Reset($Xaml.IO.AddsSite.Items,$Main.AddsController.Sitemap.Name)
             $Xaml.IO.AddsSite.SelectedIndex = 0
         }
     })
@@ -6315,9 +6431,10 @@ Function New-FEInfrastructure2
     # AddsViewer                DataGrid
     # AddsChildren              DataGrid
 
+    # [Adds.Site]
     $Xaml.IO.AddsSite.Add_SelectionChanged(
     {
-        If ($Xaml.IO.AddsSite.SelectedIndex -ne -1)
+        If ($Xaml.IO.AddsSite.SelectedIndex -ne -1 -and !$Main.Selection)
         {
             $Object                                = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
 
@@ -6331,163 +6448,418 @@ Function New-FEInfrastructure2
 
             # Viewer
             Write-Host "Viewer [+] ItemsSource"
-            $Xaml.IO.AddsViewer.ItemsSource        = @($Object.Control.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+            $Content = @($Object.Control.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+            $Main.Reset($Xaml.IO.AddsViewer.Items,$Content)
 
             # Children
             Write-Host "Site [+] Children"
-            $Xaml.IO.AddsChildren.ItemsSource      = @($Object.Main.Children)
+            $Main.Reset($Xaml.IO.AddsChildren.Items,$Object.Main.Children)
 
             $Main.AddsController.GetNodeList()
 
             # Gateway
             If ($Main.AddsController.Gateway.Count -gt 0)
             {
-                $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
+                $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
             }
 
             # Server
             If ($Main.AddsController.Server.Count -gt 0)
             {
-                $Xaml.IO.AddsSrAggregate.ItemsSource   = @($Main.AddsController.Server)
+                $Main.Reset($Xaml.IO.AddsSrAggregate.Items,$Main.AddsController.Server)
             }
 
             # Workstation
             If ($Main.AddsController.Workstation.Count -gt 0)
             {
-                $Xaml.IO.AddsWsAggregate.ItemsSource   = @($Main.AddsController.Workstation)
+                $Main.Reset($Xaml.IO.AddsWsAggregate.Items,$Main.AddsController.Workstation)
             }
 
             # User
             If ($Main.AddsController.UserAggregate.Count -gt 0)
             {
-                $Xaml.IO.AddsUserAggregate.ItemsSource = @($Main.AddsController.User)
+                $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.User)
             }
 
             # Service
             If ($Main.AddsController.SvcAggregate.Count -gt 0)
             {
-                $Xaml.IO.AddsSvcAggregate.ItemsSource  = @($Main.AddsController.Service)
+                $Main.Reset($Xaml.IO.AddsSvcAggregate.Items,$Main.AddsController.Service)
             }
         }
     })
 
+    $Xaml.IO.AddsSiteDefaults.Add_Click(
+    {
+        ForEach ($Site in $Main.AddsController.Sitemap)
+        {
+            Write-Host "Site [+] ($($Site.Name))"
+            ForEach ($Container in $Site.Gateway, $Site.Server, $Site.Workstation, $Site.User, $Site.Service)
+            {
+                Write-Host "Container [+] ($($Container.Type))"
+                $Item = Switch ($Container.Type)
+                {
+                    Gateway     { $Container.NewNode($Site.Name)               }
+                    Server      { $Container.NewNode("dc1-$($Site.Control.Postal)")    }
+                    Workstation { $Container.NewNode("ws1-$($Site.Control.Postal)")    }
+                    User        { $Container.NewNode("adm1-$($Site.Control.Postal)")   }
+                    Service     { $Container.NewNode("svc1-$($Site.Control.Postal)")   }
+                }
+                $Main.AddsController.Validate($Item)
+                $Container.AddNode($Item)
+            }
+        }
+        
+        $Main.AddsController.GetNodeList()
+
+        $Main.Reset($Xaml.IO.AddsGwAggregate.Items,   $Main.AddsController.Gateway)
+        $Main.Reset($Xaml.IO.AddsSrAggregate.Items,   $Main.AddsController.Server)
+        $Main.Reset($Xaml.IO.AddsWsAggregate.Items,   $Main.AddsController.Workstation)
+        $Main.Reset($Xaml.IO.AddsUserAggregate.Items, $Main.AddsController.User)
+        $Main.Reset($Xaml.IO.AddsSvcAggregate.Items,  $Main.AddsController.Service)
+
+        # Viewer
+        Write-Host "Viewer [+] ItemsSource"
+        $Object  = $Main.AddsController.Sitemap[0]
+        $Content = @($Object.Control.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+        $Main.Reset($Xaml.IO.AddsViewer.Items,$Content)
+        
+        # Children
+        Write-Host "Site [+] Children"
+        $Main.Reset($Xaml.IO.AddsChildren.Items,$Object.Main.Children)
+    })
+
+    # [Adds.Gateway]
     $Xaml.IO.AddsGwAdd.Add_Click(
     {
         $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
-        $Name                             = $Xaml.IO.AddsGwName.Text
+        $Name                             = $Main.CheckHostname($Xaml.IO.AddsGwName.Text)
+
+        Switch ([UInt32]($Name -ne $Null))
+        {
+            0 { Break }
+            1 { $Xaml.IO.AddsGwName.Text  = $Name }
+        }
+
         If (!$Object)
         {
             Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
         }
 
-        ElseIf ($Name -in @($Null,""))
+        ElseIf ($Name -in $Xaml.IO.AddsGwAggregate.Items.Name)
         {
-            Return [System.Windows.MessageBox]::Show("Must provide a name for the gateway to add")
-        }
-
-        ElseIf ($Name -in $Xaml.IO.AddsGwAggregate.ItemsSource.Name)
-        {
-            Return [System.Windows.MessageBox]::Show("That item already exists")
+            Return [System.Windows.MessageBox]::Show("That item already exists","Error")
         }
 
         Else
         {
             $Main.AddsController.AddNode($Object.Name,"Gateway",$Name)
             $Main.AddsController.GetGatewayList()
-            $Xaml.IO.AddsGwAggregate.ItemsSource   = @( )
-            $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
-        }
-    })
-
-    $Xaml.IO.AddsGwDefault.Add_Click(
-    {
-        $Object                                    = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
-        $Name                                      = $Object.Name
-
-        If ($Name -notin $Main.AddsController.Gateway)
-        {
-            $Main.AddsController.AddNode($Object.Name,"Gateway",$Name)
-            $Main.AddsController.GetGatewayList()
-            $Xaml.IO.AddsGwAggregate.ItemsSource   = @( )
-            $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
-        }
-        If ($Name -in $Main.AddsController.Gateway)
-        {
-            Return [System.Windows.MessageBox]::Show("Default item already added","Error")
+            $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
+            $Xaml.IO.AddsGwName.Text      = $Null
         }
     })
 
     $Xaml.IO.AddsGwRemove.Add_Click(
     {
-        $Xaml.IO.AddsGwAggregate.ItemsSource = @( )
         If ($Xaml.IO.AddsGwAggregate.SelectedIndex -ne -1)
         {
-            $Object                              = $Xaml.IO.AddsGwAggregate.SelectedItem
+            $Object                       = $Xaml.IO.AddsGwAggregate.SelectedItem
             If ($Object)
             {
                 $Main.AddsController.RemoveNode($Object.DistinguishedName)
                 $Main.AddsController.GetGatewayList()
-                $Xaml.IO.AddsGwAggregate.ItemsSource   = @( )
-                $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
+                $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
             }
         }
     })
 
     $Xaml.IO.AddsGwBrowse.Add_Click(
     {
-        $Item                  = New-Object System.Windows.Forms.OpenFileDialog
-        $Item.InitialDirectory = $Env:SystemDrive
-        $Item.Filter           = 'Text File (*.txt)| *.txt'
+        $Item                             = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory            = $Env:SystemDrive
+        $Item.Filter                      = 'Text File (*.txt)| *.txt'
         $Item.ShowDialog()
         
         If (!$Item.Filename)
         {
-            $Item.Filename     = ""
+            $Item.Filename                = ""
         }
 
-        $Xaml.IO.AddsGwFile.Text = $Item.FileName
+        $Xaml.IO.AddsGwFile.Text          = $Item.FileName
     })
 
     $Xaml.IO.AddsGwAddList.Add_Click(
     {
-        $Xaml.IO.AddsGwAggregate.ItemsSource   = @( )
-        ForEach ($Item in Get-Content $Xaml.IO.AddsGwFile.Text)
+        ForEach ($Item in Get-Content $Xaml.IO.AddsGwFile.Text )
         {
-            If ($Item -notin $Main.AddsController.Gateway)
+            $Name                         = $Main.CheckHostName($Item)  
+
+            Switch ([UInt32]($Name -ne $Null))
+            {
+                0 { Break }
+                1 { $Xaml.IO.AddsGwName.Text = $Name }
+            }
+
+            ElseIf (!$Object)
+            {
+                Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+            }
+
+            ElseIf ($Name -in $Xaml.IO.AddsGwAggregate.Items.Name)
+            {
+                Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+            }
+
+            Else
             {
                 $Main.AddsController.AddNode($Object.Name,"Gateway",$Name)
+                $Xaml.IO.AddsGwName.Text  = $Null
             }
         }
         $Main.AddsController.GetGatewayList()
-        $Xaml.IO.AddsGwAggregate.ItemsSource   = @($Main.AddsController.Gateway)
+        $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
     })
 
     $Xaml.IO.AddsGwAggregate.Add_SelectionChanged(
     {
-        $Object                                = $Main.AddsController.GetNode($Xaml.IO.AddsGwAggregate.SelectedItem.DistinguishedName)
-        $Xaml.IO.AddsGwViewer.ItemsSource      = @( )
-        If ($Object)
+        If ($Xaml.IO.AddsGwAggregate.SelectedIndex -ne -1)
         {
-            $Xaml.IO.AddsGwViewer.ItemsSource  = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+            $Object                                = $Main.AddsController.GetNode($Xaml.IO.AddsGwAggregate.SelectedItem.DistinguishedName)
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsGwViewer.Items,$Content)
+            }
         }
     })
 
-    $Xaml.IO.AddsGwGet.Add_Click(
+    # [Adds.Server]
+    $Xaml.IO.AddsSrAdd.Add_Click(
     {
-        $Xaml.IO.AddsGwTopology.ItemsSource    = @( )
-        $Main.AddsController.GetGatewayList()
-        ForEach ($Object in $Main.AddsController.Gateway)
+        $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+        $Name                             = $Main.CheckHostname($Xaml.IO.AddsSrName.Text)
+
+        Switch ([UInt32]($Name -ne $Null))
         {
-            If (Get-ADObject -LDAPFilter "(objectClass=Computer)" -SearchBase $Object.Parent)
+            0 { Break }
+            1 { $Xaml.IO.AddsSrName.Text  = $Name }
+        }
+
+        If (!$Object)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+        }
+
+        ElseIf ($Name -in $Xaml.IO.AddsSrAggregate.Items.Name)
+        {
+            Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+        }
+
+        Else
+        {
+            $Main.AddsController.AddNode($Object.Name,"Server",$Name)
+            $Main.AddsController.GetServerList()
+            $Main.Reset($Xaml.IO.AddsSrAggregate.Items,$Main.AddsController.Server)
+            $Xaml.IO.AddsSrName.Text      = $Null
+        }
+    })
+
+    $Xaml.IO.AddsSrRemove.Add_Click(
+    {
+        If ($Xaml.IO.AddsSrAggregate.SelectedIndex -ne -1)
+        {
+            $Object                       = $Xaml.IO.AddsSrAggregate.SelectedItem
+            If ($Object)
             {
-                $Object.Exists = 1
-            }
-            Else
-            {
-                New-ADComputer -Name $Item.Name -DNSHostName $DNSName -Path $Path -TrustedForDelegation:$True -Verbose
+                $Main.AddsController.RemoveNode($Object.DistinguishedName)
+                $Main.AddsController.GetServerList()
+                $Main.Reset($Xaml.IO.AddsSrAggregate.Items,$Main.AddsController.Server)
             }
         }
     })
+
+    $Xaml.IO.AddsSrBrowse.Add_Click(
+    {
+        $Item                             = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory            = $Env:SystemDrive
+        $Item.Filter                      = 'Text File (*.txt)| *.txt'
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename                = ""
+        }
+
+        $Xaml.IO.AddsSrFile.Text          = $Item.FileName
+    })
+
+    $Xaml.IO.AddsSrAddList.Add_Click(
+    {
+        ForEach ($Item in Get-Content $Xaml.IO.AddsSrFile.Text )
+        {
+            $Name                         = $Main.CheckHostName($Item)  
+
+            Switch ([UInt32]($Name -ne $Null))
+            {
+                0 { Break }
+                1 { $Xaml.IO.AddsSrName.Text = $Name }
+            }
+
+            ElseIf (!$Object)
+            {
+                Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+            }
+
+            ElseIf ($Name -in $Xaml.IO.AddsSrAggregate.Items.Name)
+            {
+                Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+            }
+
+            Else
+            {
+                $Main.AddsController.AddNode($Object.Name,"Server",$Name)
+                $Xaml.IO.AddsSrName.Text  = $Null
+            }
+        }
+        $Main.AddsController.GetServerList()
+        $Main.Reset($Xaml.IO.AddsSrAggregate.Items,$Main.AddsController.Server)
+    })
+
+    $Xaml.IO.AddsSrAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsSrAggregate.SelectedIndex -ne -1)
+        {
+            $Object                                = $Main.AddsController.GetNode($Xaml.IO.AddsSrAggregate.SelectedItem.DistinguishedName)
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsSrViewer.Items,$Content)
+            }
+        }
+    })
+
+    # [Adds.Workstation]
+    $Xaml.IO.AddsWsAdd.Add_Click(
+    {
+        $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+        $Name                             = $Main.CheckHostname($Xaml.IO.AddsWsName.Text)
+
+        Switch ([UInt32]($Name -ne $Null))
+        {
+            0 { Break }
+            1 { $Xaml.IO.AddsWsName.Text  = $Name }
+        }
+
+        If (!$Object)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+        }
+
+        ElseIf ($Name -in $Xaml.IO.AddsWsAggregate.Items.Name)
+        {
+            Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+        }
+
+        Else
+        {
+            $Main.AddsController.AddNode($Object.Name,"Workstation",$Name)
+            $Main.AddsController.GetWorkstationList()
+            $Main.Reset($Xaml.IO.AddsWsAggregate.Items,$Main.AddsController.Workstation)
+            $Xaml.IO.AddsWsName.Text      = $Null
+        }
+    })
+
+    $Xaml.IO.AddsWsRemove.Add_Click(
+    {
+        If ($Xaml.IO.AddsWsAggregate.SelectedIndex -ne -1)
+        {
+            $Object                       = $Xaml.IO.AddsWsAggregate.SelectedItem
+            If ($Object)
+            {
+                $Main.AddsController.RemoveNode($Object.DistinguishedName)
+                $Main.AddsController.GetWorkstationList()
+                $Main.Reset($Xaml.IO.AddsWsAggregate.Items,$Main.AddsController.Workstation)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsWsBrowse.Add_Click(
+    {
+        $Item                             = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory            = $Env:SystemDrive
+        $Item.Filter                      = 'Text File (*.txt)| *.txt'
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename                = ""
+        }
+
+        $Xaml.IO.AddsWsFile.Text          = $Item.FileName
+    })
+
+    $Xaml.IO.AddsWsAddList.Add_Click(
+    {
+        ForEach ($Item in Get-Content $Xaml.IO.AddsWsFile.Text )
+        {
+            $Name                         = $Main.CheckHostName($Item)  
+
+            Switch ([UInt32]($Name -ne $Null))
+            {
+                0 { Break }
+                1 { $Xaml.IO.AddsWsName.Text = $Name }
+            }
+
+            ElseIf (!$Object)
+            {
+                Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+            }
+
+            ElseIf ($Name -in $Xaml.IO.AddsWsAggregate.Items.Name)
+            {
+                Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+            }
+
+            Else
+            {
+                $Main.AddsController.AddNode($Object.Name,"Workstation",$Name)
+                $Xaml.IO.AddsWsName.Text  = $Null
+            }
+        }
+        $Main.AddsController.GetWorkstationList()
+        $Main.Reset($Xaml.IO.AddsWsAggregate.Items,$Main.AddsController.Workstation)
+    })
+
+    $Xaml.IO.AddsWsAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsWsAggregate.SelectedIndex -ne -1)
+        {
+            $Object                                = $Main.AddsController.GetNode($Xaml.IO.AddsWsAggregate.SelectedItem.DistinguishedName)
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsWsViewer.Items,$Content)
+            }
+        }
+    })
+
+    # $Xaml.IO.AddsGwGet.Add_Click(
+    # {
+    #     $Xaml.IO.AddsGwTopology.ItemsSource    = @( )
+    #     $Main.AddsController.GetGatewayList()
+    #     ForEach ($Object in $Main.AddsController.Gateway)
+    #     {
+    #         If (Get-ADObject -LDAPFilter "(objectClass=Computer)" -SearchBase $Object.Parent)
+    #         {
+    #             $Object.Exists = 1
+    #         }
+    #         Else
+    #         {
+    #             New-ADComputer -Name $Item.Name -DNSHostName $DNSName -Path $Path -TrustedForDelegation:$True -Verbose
+    #         }
+    #     }
+    # })
 
     # AddsGwAdd                 Button
     # AddsGwName                TextBox
@@ -6516,6 +6888,7 @@ $Xaml.IO.DcOrganization.Text = $Main.Organization
 $Xaml.IO.DcCommonName.Text   = $Main.CommonName
 $Main.Sitelist.AddSite(12019)
 $Main.Sitelist.AddSite(12020)
+
 $Main.Sitelist.GetSitelist()
 $Main.Sitelist.NewSitelist()
 $Xaml.IO.DcAggregate.ItemsSource = @($Main.Sitelist.Aggregate)
