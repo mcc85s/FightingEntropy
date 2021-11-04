@@ -4653,7 +4653,7 @@ Function New-FEInfrastructure2
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
-        '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>',
+        '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="125"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
         '                                                                <DataTemplate>',
@@ -4664,8 +4664,8 @@ Function New-FEInfrastructure2
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="350"/>',
-        '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
+        '                                                        <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="400"/>',
+        '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="400"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                            </GroupBox>',
@@ -4691,28 +4691,28 @@ Function New-FEInfrastructure2
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="200"/>',
-        '                                                        <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="200"/>',
-        '                                                        <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>',
+        '                                                        <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>',
+        '                                                        <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>',
+        '                                                        <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="120"/>',
+        '                                                        <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="250"/>',
+        '                                                        <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="125"/>',
+        '                                                        <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="125"/>',
+        '                                                        <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="100"/>',
+        '                                                        <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="250"/>',
+        '                                                        <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="400"/>',
+        '                                                        <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="400"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
         '                                                                <DataTemplate>',
@@ -4723,8 +4723,8 @@ Function New-FEInfrastructure2
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                            </GroupBox>',
@@ -4800,7 +4800,7 @@ Function New-FEInfrastructure2
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
-        '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>',
+        '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="125"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
         '                                                                <DataTemplate>',
@@ -4811,8 +4811,8 @@ Function New-FEInfrastructure2
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="350"/>',
-        '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
+        '                                                        <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="400"/>',
+        '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="400"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                            </GroupBox>',
@@ -4838,28 +4838,28 @@ Function New-FEInfrastructure2
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="200"/>',
-        '                                                        <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="200"/>',
-        '                                                        <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>',
+        '                                                        <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>',
+        '                                                        <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>',
+        '                                                        <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="120"/>',
+        '                                                        <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="250"/>',
+        '                                                        <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="125"/>',
+        '                                                        <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="125"/>',
+        '                                                        <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="100"/>',
+        '                                                        <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="250"/>',
+        '                                                        <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="400"/>',
+        '                                                        <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="400"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
         '                                                                <DataTemplate>',
@@ -4870,8 +4870,8 @@ Function New-FEInfrastructure2
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                            </GroupBox>',
@@ -4947,7 +4947,7 @@ Function New-FEInfrastructure2
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
-        '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>',
+        '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="125"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
         '                                                                <DataTemplate>',
@@ -4958,8 +4958,8 @@ Function New-FEInfrastructure2
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="350"/>',
-        '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
+        '                                                        <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="400"/>',
+        '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="400"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                            </GroupBox>',
@@ -4985,28 +4985,28 @@ Function New-FEInfrastructure2
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="200"/>',
-        '                                                        <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="200"/>',
-        '                                                        <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>',
+        '                                                        <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>',
+        '                                                        <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>',
+        '                                                        <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="120"/>',
+        '                                                        <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="250"/>',
+        '                                                        <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="125"/>',
+        '                                                        <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="125"/>',
+        '                                                        <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="100"/>',
+        '                                                        <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="250"/>',
+        '                                                        <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="400"/>',
+        '                                                        <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="400"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
         '                                                                <DataTemplate>',
@@ -5017,8 +5017,8 @@ Function New-FEInfrastructure2
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                            </GroupBox>',
@@ -5132,27 +5132,27 @@ Function New-FEInfrastructure2
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Organization"           Binding="{Binding Organization}"        Width="200"/>',
-        '                                                        <DataGridTextColumn Header="CommonName"             Binding="{Binding CommonName}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Site"                   Binding="{Binding Site}"                Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Location"               Binding="{Binding Location}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Region"                 Binding="{Binding Region}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Country"                Binding="{Binding Country}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Postal"                 Binding="{Binding Postal}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Sitelink"               Binding="{Binding Sitelink}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Sitename"               Binding="{Binding Sitename}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Network"                Binding="{Binding Network}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Prefix"                 Binding="{Binding Prefix}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Netmask"                Binding="{Binding Netmask}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Start"                  Binding="{Binding Start}"               Width="200"/>',
-        '                                                        <DataGridTextColumn Header="End"                    Binding="{Binding End}"                 Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Range"                  Binding="{Binding Range}"               Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Broadcast"              Binding="{Binding Broadcast}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="ReverseDNS"             Binding="{Binding ReverseDNS}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Name"                   Binding="{Binding Name}"                Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Type"                   Binding="{Binding Type}"                Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Parent"                 Binding="{Binding Parent}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="DistinguishedName"      Binding="{Binding DistinguishedName}"   Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Organization"      Binding="{Binding Organization}"      Width="150"/>',
+        '                                                        <DataGridTextColumn Header="CommonName"        Binding="{Binding CommonName}"        Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Site"              Binding="{Binding Site}"              Width="120"/>',
+        '                                                        <DataGridTextColumn Header="Location"          Binding="{Binding Location}"          Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Region"            Binding="{Binding Region}"            Width="80"/>',
+        '                                                        <DataGridTextColumn Header="Country"           Binding="{Binding Country}"           Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Postal"            Binding="{Binding Postal}"            Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Sitelink"          Binding="{Binding Sitelink}"          Width="120"/>',
+        '                                                        <DataGridTextColumn Header="Sitename"          Binding="{Binding Sitename}"          Width="250"/>',
+        '                                                        <DataGridTextColumn Header="Network"           Binding="{Binding Network}"           Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Prefix"            Binding="{Binding Prefix}"            Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Netmask"           Binding="{Binding Netmask}"           Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Start"             Binding="{Binding Start}"             Width="125"/>',
+        '                                                        <DataGridTextColumn Header="End"               Binding="{Binding End}"               Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Range"             Binding="{Binding Range}"             Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Broadcast"         Binding="{Binding Broadcast}"         Width="125"/>',
+        '                                                        <DataGridTextColumn Header="ReverseDNS"        Binding="{Binding ReverseDNS}"        Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="200"/>',
+        '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="200"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
         '                                                                <DataTemplate>',
@@ -5163,10 +5163,10 @@ Function New-FEInfrastructure2
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Account"                Binding="{Binding Account}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="SamName"                Binding="{Binding SamName}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="UserPrincipalName"      Binding="{Binding UserPrincipalName}"   Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Guid"                   Binding="{Binding Guid}"                Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Account"           Binding="{Binding Account}"           Width="200"/>',
+        '                                                        <DataGridTextColumn Header="SamName"           Binding="{Binding SamName}"           Width="200"/>',
+        '                                                        <DataGridTextColumn Header="UserPrincipalName" Binding="{Binding UserPrincipalName}" Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Guid"              Binding="{Binding Guid}"              Width="200"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                            </GroupBox>',
@@ -5280,27 +5280,27 @@ Function New-FEInfrastructure2
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Organization"           Binding="{Binding Organization}"        Width="200"/>',
-        '                                                        <DataGridTextColumn Header="CommonName"             Binding="{Binding CommonName}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Site"                   Binding="{Binding Site}"                Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Location"               Binding="{Binding Location}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Region"                 Binding="{Binding Region}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Country"                Binding="{Binding Country}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Postal"                 Binding="{Binding Postal}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Sitelink"               Binding="{Binding Sitelink}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Sitename"               Binding="{Binding Sitename}"            Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Network"                Binding="{Binding Network}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Prefix"                 Binding="{Binding Prefix}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Netmask"                Binding="{Binding Netmask}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Start"                  Binding="{Binding Start}"               Width="200"/>',
-        '                                                        <DataGridTextColumn Header="End"                    Binding="{Binding End}"                 Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Range"                  Binding="{Binding Range}"               Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Broadcast"              Binding="{Binding Broadcast}"           Width="200"/>',
-        '                                                        <DataGridTextColumn Header="ReverseDNS"             Binding="{Binding ReverseDNS}"          Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Name"                   Binding="{Binding Name}"                Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Type"                   Binding="{Binding Type}"                Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Parent"                 Binding="{Binding Parent}"              Width="200"/>',
-        '                                                        <DataGridTextColumn Header="DistinguishedName"      Binding="{Binding DistinguishedName}"   Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Organization"      Binding="{Binding Organization}"      Width="150"/>',
+        '                                                        <DataGridTextColumn Header="CommonName"        Binding="{Binding CommonName}"        Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Site"              Binding="{Binding Site}"              Width="120"/>',
+        '                                                        <DataGridTextColumn Header="Location"          Binding="{Binding Location}"          Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Region"            Binding="{Binding Region}"            Width="80"/>',
+        '                                                        <DataGridTextColumn Header="Country"           Binding="{Binding Country}"           Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Postal"            Binding="{Binding Postal}"            Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Sitelink"          Binding="{Binding Sitelink}"          Width="120"/>',
+        '                                                        <DataGridTextColumn Header="Sitename"          Binding="{Binding Sitename}"          Width="250"/>',
+        '                                                        <DataGridTextColumn Header="Network"           Binding="{Binding Network}"           Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Prefix"            Binding="{Binding Prefix}"            Width="60"/>',
+        '                                                        <DataGridTextColumn Header="Netmask"           Binding="{Binding Netmask}"           Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Start"             Binding="{Binding Start}"             Width="125"/>',
+        '                                                        <DataGridTextColumn Header="End"               Binding="{Binding End}"               Width="125"/>',
+        '                                                        <DataGridTextColumn Header="Range"             Binding="{Binding Range}"             Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Broadcast"         Binding="{Binding Broadcast}"         Width="125"/>',
+        '                                                        <DataGridTextColumn Header="ReverseDNS"        Binding="{Binding ReverseDNS}"        Width="150"/>',
+        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Parent"            Binding="{Binding Parent}"            Width="200"/>',
+        '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="200"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
         '                                                                <DataTemplate>',
@@ -5311,10 +5311,10 @@ Function New-FEInfrastructure2
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Account"                Binding="{Binding Account}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="SamName"                Binding="{Binding SamName}"             Width="200"/>',
-        '                                                        <DataGridTextColumn Header="UserPrincipalName"      Binding="{Binding UserPrincipalName}"   Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Guid"                   Binding="{Binding Guid}"                Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Account"           Binding="{Binding Account}"           Width="200"/>',
+        '                                                        <DataGridTextColumn Header="SamName"           Binding="{Binding SamName}"           Width="200"/>',
+        '                                                        <DataGridTextColumn Header="UserPrincipalName" Binding="{Binding UserPrincipalName}" Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Guid"              Binding="{Binding Guid}"              Width="200"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                            </GroupBox>',
@@ -6602,10 +6602,6 @@ Function New-FEInfrastructure2
     # <![Domain/SiteList Tab]!> #
     # ------------------------- #
 
-    $Xaml.IO.DcAggregate.ItemsSource    = @( )
-    $Xaml.IO.DcViewer.ItemsSource       = @( )
-    $Xaml.IO.DcTopology.ItemsSource     = @( )
-
     $Xaml.IO.DcGetSitename.Add_Click(
     {
         If (!$Xaml.IO.DcOrganization.Text)
@@ -6622,8 +6618,7 @@ Function New-FEInfrastructure2
         {
             $Main.SetDomain($Xaml.IO.DcOrganization.Text,$Xaml.IO.DcCommonName.Text)
             $Main.Sitelist.AddSite($Main.Sitelist.GetLocation().Postal)
-            $Xaml.IO.DcAggregate.ItemsSource   = @( )
-            $Xaml.IO.DcAggregate.ItemsSource   = @($Main.Sitelist.Aggregate)
+            $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
             $Xaml.IO.DcGetSitename.IsEnabled   = 0
             $Xaml.IO.NwScopeLoad.IsEnabled     = 1
         }
@@ -6655,8 +6650,7 @@ Function New-FEInfrastructure2
         Else
         {
             $Main.Sitelist.AddSite($Object.Zip)
-            $Xaml.IO.DcAggregate.ItemsSource  = @( )
-            $Xaml.IO.DcAggregate.ItemsSource  = @($Main.Sitelist.Aggregate)
+            $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
             $Xaml.IO.DcAddSitenameZip.Text    = ""
         }
     })
@@ -6667,11 +6661,10 @@ Function New-FEInfrastructure2
         {
             $Object                           = $Xaml.IO.DcAggregate.SelectedItem
             $Main.Sitelist.Aggregate          = $Main.Sitelist.Aggregate | ? Postal -ne $Object.Postal 
-            $Xaml.IO.DcAggregate.ItemsSource  = @( )
-            $Xaml.IO.DcAggregate.ItemsSource  = @($Main.Sitelist.Aggregate)
+            $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
             If ($Xaml.IO.DcViewer.ItemsSource | ? Name -eq Postal | ? Value -eq $Object.Postal)
             {
-                $Xaml.IO.DcViewer.ItemsSource = @( )
+                $Xaml.IO.DcViewer.Items.Clear()
             }
         }
     })
@@ -6679,26 +6672,20 @@ Function New-FEInfrastructure2
     $Xaml.IO.DcGetTopology.Add_Click(
     {
         $Main.Sitelist.GetSiteList()
-        $Xaml.IO.DcTopology.ItemsSource   = @( )
-        $Xaml.IO.DcTopology.ItemsSource   = @($Main.Sitelist.Topology)
+        $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
     })
     
     $Xaml.IO.DcNewTopology.Add_Click(
     {
         $Main.Sitelist.NewSiteList()
-        $Xaml.IO.DcTopology.ItemsSource   = @( )
-        $Xaml.IO.DcTopology.ItemsSource   = @($Main.Sitelist.Topology)
+        $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
     })
 
     # ----------------------------- #
     # <![Network/NetworkList Tab]!> #
     # ----------------------------- #
-
-    $Xaml.IO.NwAggregate.ItemsSource    = @( )
-    $Xaml.IO.NwViewer.ItemsSource       = @( )
-    $Xaml.IO.NwTopology.ItemsSource     = @( )
 
     $Xaml.IO.NwScopeLoad.Add_Click(
     {
@@ -6711,19 +6698,18 @@ Function New-FEInfrastructure2
         {
             $Main.NetworkList.AddNetwork($Xaml.IO.NwScope.Text)
             $Xaml.IO.NwScope.Text              = ""
-            $Xaml.IO.NwAggregate.ItemsSource   = @( )
-            $Xaml.IO.NwViewer.ItemsSource      = @( )
-            $Xaml.IO.NwAggregate.ItemsSource   = @($Main.NetworkList.Aggregate)
+            $Main.Reset($Xaml.IO.NwAggregate.Items,$Main.NetworkList.Aggregate)
         }
     })
 
     $Xaml.IO.NwAggregate.Add_SelectionChanged(
     {
         $Object                                = $Xaml.IO.NwAggregate.SelectedItem
-        $Xaml.IO.NwViewer.ItemsSource          = @( )
+        $Xaml.IO.NwViewer.Items.Clear()
         If ($Object)
         {
-            $Xaml.IO.NwViewer.ItemsSource      = @($Object.PSObject.Properties | % { [DGList]::New($_.Name,$_.Value) })
+            $Content = @($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) })
+            $Main.Reset($Xaml.IO.NwViewer.Items,$Content)
         }
     })
 
@@ -6742,8 +6728,7 @@ Function New-FEInfrastructure2
         {
             $Main.NetworkList.AddSubnet($Object)
             $Xaml.IO.NwSubnetName.Text       = ""
-            $Xaml.IO.NwAggregate.ItemsSource = @( )
-            $Xaml.IO.NwAggregate.ItemsSource = @($Main.NetworkList.Aggregate)
+            $Main.Reset($Xaml.IO.NwAggregate.Items,$Main.NetworkList.Aggregate)
         }
     })
 
@@ -6753,11 +6738,10 @@ Function New-FEInfrastructure2
         {
             $Object                           = $Xaml.IO.NwAggregate.SelectedItem
             $Main.NetworkList.Aggregate       = $Main.NetworkList.Aggregate | ? Name -ne $Object.Name
-            $Xaml.IO.NwAggregate.ItemsSource  = @( )
-            $Xaml.IO.NwAggregate.ItemsSource  = @($Main.NetworkList.Aggregate)
+            $Main.Reset($Xaml.IO.NwAggregate.Items,$Main.NetworkList.Aggregate)
             If ($Xaml.IO.NwViewer.ItemsSource | ? Name -eq Name | ? Value -eq $Object.Name)
             {
-                $Xaml.IO.DcViewer.ItemsSource = @( )
+                $Xaml.IO.NwViewer.Items.Clear()
             }
         }
 
@@ -6770,16 +6754,14 @@ Function New-FEInfrastructure2
     $Xaml.IO.NwGetSubnetName.Add_Click(
     {
         $Main.NetworkList.GetNetworkList()       
-        $Xaml.IO.NwTopology.ItemsSource   = @( )
-        $Xaml.IO.NwTopology.ItemsSource   = @($Main.NetworkList.Topology)
+        $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
         $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
     })
 
     $Xaml.IO.NwNewSubnetName.Add_Click(
     {
         $Main.NetworkList.NewNetworkList()
-        $Xaml.IO.NwTopology.ItemsSource   = @( )
-        $Xaml.IO.NwTopology.ItemsSource   = @($Main.NetworkList.Topology)
+        $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
         $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
     })
 
@@ -6843,12 +6825,6 @@ Function New-FEInfrastructure2
     # -------------- #
     # <![Adds Tab]!> #
     # -------------- #
-
-    # AddsSite                  ComboBox
-    # AddsSiteName              TextBox
-    # AddsSubnetName            TextBox
-    # AddsViewer                DataGrid
-    # AddsChildren              DataGrid
 
     # [Adds.Site]
     $Xaml.IO.AddsSite.Add_SelectionChanged(
