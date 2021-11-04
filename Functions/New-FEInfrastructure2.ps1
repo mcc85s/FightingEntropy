@@ -7043,6 +7043,25 @@ Function New-FEInfrastructure2
         }
     })
 
+    $Xaml.IO.AddsGwNew.Add_Click(
+    {
+        If ($Main.AddsController.Output.Gateway.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Gateway)
+            {
+                If ($Item.Exists)
+                {
+                    Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If (!$Item.Exists)
+                {
+                    $Item.New()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
+        }
+    })
+
     # [Adds.Server]
     $Xaml.IO.AddsSrAdd.Add_Click(
     {
@@ -7151,7 +7170,7 @@ Function New-FEInfrastructure2
             If ($Object)
             {
                 $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
-                $Main.Reset($Xaml.IO.AddsSrViewer.Items,$Content)
+                $Main.Reset($Xaml.IO.AddsSrAggregateViewer.Items,$Content)
             }
         }
     })
@@ -7179,6 +7198,25 @@ Function New-FEInfrastructure2
                 If ($Item.Exists)
                 {
                     $Item.Update()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
+        }
+    })
+
+    $Xaml.IO.AddsSrNew.Add_Click(
+    {
+        If ($Main.AddsController.Output.Server.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Server)
+            {
+                If ($Item.Exists)
+                {
+                    Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If (!$Item.Exists)
+                {
+                    $Item.New()
                 }
             }
             $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
@@ -7327,6 +7365,25 @@ Function New-FEInfrastructure2
         }
     })
 
+    $Xaml.IO.AddsWsNew.Add_Click(
+    {
+        If ($Main.AddsController.Output.Workstation.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Workstation)
+            {
+                If ($Item.Exists)
+                {
+                    Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If (!$Item.Exists)
+                {
+                    $Item.New()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
+        }
+    })
+
     # [Adds.User]
     $Xaml.IO.AddsUserAdd.Add_Click(
     {
@@ -7469,6 +7526,25 @@ Function New-FEInfrastructure2
         }
     })
 
+    $Xaml.IO.AddsUserNew.Add_Click(
+    {
+        If ($Main.AddsController.Output.User.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.User)
+            {
+                If ($Item.Exists)
+                {
+                    Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If (!$Item.Exists)
+                {
+                    $Item.New()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
+        }
+    })
+
     # [Adds.Service]
     $Xaml.IO.AddsSvcAdd.Add_Click(
     {
@@ -7605,6 +7681,25 @@ Function New-FEInfrastructure2
                 If ($Item.Exists)
                 {
                     $Item.Update()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
+        }
+    })
+
+    $Xaml.IO.AddsSvcNew.Add_Click(
+    {
+        If ($Main.AddsController.Output.Service.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Service)
+            {
+                If ($Item.Exists)
+                {
+                    Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If (!$Item.Exists)
+                {
+                    $Item.New()
                 }
             }
             $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
