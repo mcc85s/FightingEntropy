@@ -1,3 +1,26 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: New-FEInfrastructure2.ps1
+          Solution: FightingEntropy Module
+          Purpose: For managing the configuration AND distribution of ADDS nodes, virtual hive clusters, MDT/WDS shares, and sewing it all together like a friggen badass... 
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2021-10-09
+          Modified: 2021-11-04
+          
+          Version - 2021.10.0 - () - Still revising from version 1.
+
+          TODO: VM tab, MDT, WDS
+
+.Example
+#>
 Function New-FEInfrastructure2
 {
     # Testing an overhaul of New-FEInfrastructure
@@ -1369,6 +1392,20 @@ Function New-FEInfrastructure2
                 $This.User        = @( )
                 $This.Service     = @( )
             }
+            Remove([String]$Type,[String]$Name)
+            {
+                Switch -Regex ($Type)
+                {
+                    "(Gateway|Server|Workstation)"
+                    {
+                        $This.$Type = $This.$Type | ? Hostname -ne $Name
+                    }
+                    "(User|Service)"
+                    {
+                        $This.$Type = $This.$Type | ? Name -ne $Name
+                    }
+                }
+            }
         }
 
         Class AddsHost
@@ -1436,27 +1473,29 @@ Function New-FEInfrastructure2
             {
                 If (!$This.Get())
                 {
-                    New-ADComputer -Name $This.Name -Location $This.LocationString() -DNSHostName $This.DNSName -Path $This.Parent -TrustedForDelegation:$True -Verbose
+                    New-ADComputer -Name $This.HostName -Location $This.LocationString() -DNSHostName $This.DNSName -Path $This.Parent -TrustedForDelegation:$True -Verbose
                 }
 
+                $This.Exists            = 1
                 $This.Update()
             }
             Remove()
             {
                 If ($This.Get())
                 {
-                    Remove-ADComputer -Identity $This.DistinguishedName -Verbose -Force -Confirm:$False
+                    Remove-ADComputer -Identity $This.DistinguishedName -Verbose -Confirm:$False
                 }
 
-                $This.Computer = $Null
-                $This.Guid     = $Null
+                $This.Exists            = 0
+                $This.Computer          = $Null
+                $This.Guid              = $Null
             }
             Update()
             {
                 If ($This.Get())
                 {
-                    $This.Computer = $This.Get()
-                    $This.Guid     = $This.Computer.ObjectGuid
+                    $This.Computer      = $This.Get()
+                    $This.Guid          = $This.Computer.ObjectGuid
                 }
             }
         }
@@ -1545,6 +1584,7 @@ Function New-FEInfrastructure2
                     } | % { New-ADUser @_ -Verbose }
                 }
 
+                $This.Exists                 = 1
                 $This.Update()
             }
             Remove()
@@ -1554,6 +1594,7 @@ Function New-FEInfrastructure2
                     Remove-ADUser -Identity $This.DistinguishedName -Verbose -Confirm:$False
                 }
 
+                $This.Exists                = 0
                 $This.Account               = $Null
                 $This.SamName               = $Null
                 $This.UserPrincipalName     = $Null
@@ -3530,7 +3571,7 @@ Function New-FEInfrastructure2
     # Get-Content $Home\Desktop\FEInfrastructure.xaml | % { "        '$_',"} | Set-Clipboard
     Class FEInfrastructureGUI
     {
-        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
+        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -4570,7 +4611,7 @@ Function New-FEInfrastructure2
         '                        <TabItem Header="Control">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="2*"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
         '                                <GroupBox Grid.Row="0" Header="[Viewer]">',
@@ -4623,7 +4664,7 @@ Function New-FEInfrastructure2
         '                                            </Grid.ColumnDefinitions>',
         '                                            <TextBox Grid.Column="0" Name="AddsGwName"/>',
         '                                            <Button  Grid.Column="1" Name="AddsGwAdd"     Content="+"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsGwRemove"  Content="-"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsGwDelete"  Content="-"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
         '                                    <GroupBox Grid.Column="1" Header="[Gateway List] - (Input a file/list)">',
@@ -4743,9 +4784,11 @@ Function New-FEInfrastructure2
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
         '                                    <Button Grid.Column="0" Name="AddsGwGet" Content="Get"/>',
         '                                    <Button Grid.Column="1" Name="AddsGwNew" Content="New"/>',
+        '                                    <Button Grid.Column="2" Name="AddsGwRemove" Content="Remove"/>',
         '                                </Grid>',
         '                            </Grid>',
         '                        </TabItem>',
@@ -4770,7 +4813,7 @@ Function New-FEInfrastructure2
         '                                            </Grid.ColumnDefinitions>',
         '                                            <TextBox Grid.Column="0" Name="AddsSrName"/>',
         '                                            <Button  Grid.Column="1" Name="AddsSrAdd"     Content="+"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsSrRemove"  Content="-"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsSrDelete"  Content="-"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
         '                                    <GroupBox Grid.Column="1" Header="[Server List] - (Input a file/list)">',
@@ -4890,9 +4933,11 @@ Function New-FEInfrastructure2
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="0" Name="AddsSrGet" Content="Get"/>',
-        '                                    <Button Grid.Column="1" Name="AddsSrNew" Content="New"/>',
+        '                                    <Button Grid.Column="0" Name="AddsSrGet"    Content="Get"/>',
+        '                                    <Button Grid.Column="1" Name="AddsSrNew"    Content="New"/>',
+        '                                    <Button Grid.Column="2" Name="AddsSrRemove" Content="Remove"/>',
         '                                </Grid>',
         '                            </Grid>',
         '                        </TabItem>',
@@ -4917,10 +4962,10 @@ Function New-FEInfrastructure2
         '                                            </Grid.ColumnDefinitions>',
         '                                            <TextBox Grid.Column="0" Name="AddsWsName"/>',
         '                                            <Button  Grid.Column="1" Name="AddsWsAdd"     Content="+"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsWsRemove"  Content="-"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsWsDelete"  Content="-"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Column="1" Header="[Workstation List] - (Input a file/list)">',
+        '                                    <GroupBox Grid.Column="1" Header="[Workstation List] - (Input a file/list of names)">',
         '                                        <Grid>',
         '                                            <Grid.ColumnDefinitions>',
         '                                                <ColumnDefinition Width="*"/>',
@@ -5037,9 +5082,11 @@ Function New-FEInfrastructure2
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
         '                                    <Button Grid.Column="0" Name="AddsWsGet" Content="Get"/>',
         '                                    <Button Grid.Column="1" Name="AddsWsNew" Content="New"/>',
+        '                                    <Button Grid.Column="2" Name="AddsWsRemove" Content="Remove"/>',
         '                                </Grid>',
         '                            </Grid>',
         '                        </TabItem>',
@@ -5064,7 +5111,7 @@ Function New-FEInfrastructure2
         '                                            </Grid.ColumnDefinitions>',
         '                                            <TextBox Grid.Column="0" Name="AddsUserName"/>',
         '                                            <Button  Grid.Column="1" Name="AddsUserAdd"     Content="+"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsUserRemove"  Content="-"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsUserDelete"  Content="-"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
         '                                    <GroupBox Grid.Column="1" Header="[User List] - (Input a file/list)">',
@@ -5185,9 +5232,11 @@ Function New-FEInfrastructure2
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="0" Name="AddsUserGet" Content="Get"/>',
-        '                                    <Button Grid.Column="1" Name="AddsUserNew" Content="New"/>',
+        '                                    <Button Grid.Column="0" Name="AddsUserGet"    Content="Get"/>',
+        '                                    <Button Grid.Column="1" Name="AddsUserNew"    Content="New"/>',
+        '                                    <Button Grid.Column="2" Name="AddsUserRemove" Content="Remove"/>',
         '                                </Grid>',
         '                            </Grid>    ',
         '                        </TabItem>',
@@ -5212,7 +5261,7 @@ Function New-FEInfrastructure2
         '                                            </Grid.ColumnDefinitions>',
         '                                            <TextBox Grid.Column="0" Name="AddsSvcName"/>',
         '                                            <Button  Grid.Column="1" Name="AddsSvcAdd"     Content="+"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsSvcRemove"  Content="-"/>',
+        '                                            <Button  Grid.Column="2" Name="AddsSvcDelete"  Content="-"/>',
         '                                        </Grid>',
         '                                    </GroupBox>',
         '                                    <GroupBox Grid.Column="1" Header="[Service List] - (Input a file/list)">',
@@ -5333,9 +5382,11 @@ Function New-FEInfrastructure2
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Button Grid.Column="0" Name="AddsSvcGet" Content="Get"/>',
-        '                                    <Button Grid.Column="1" Name="AddsSvcNew" Content="New"/>',
+        '                                    <Button Grid.Column="0" Name="AddsSvcGet"    Content="Get"/>',
+        '                                    <Button Grid.Column="1" Name="AddsSvcNew"    Content="New"/>',
+        '                                    <Button Grid.Column="2" Name="AddsSvcRemove" Content="Remove"/>',
         '                                </Grid>',
         '                            </Grid> ',
         '                        </TabItem>',
@@ -6931,17 +6982,18 @@ Function New-FEInfrastructure2
         }
     })
 
-    $Xaml.IO.AddsGwRemove.Add_Click(
+    $Xaml.IO.AddsGwDelete.Add_Click(
     {
         If ($Xaml.IO.AddsGwAggregate.SelectedIndex -ne -1)
         {
-            $Object                       = $Xaml.IO.AddsGwAggregate.SelectedItem
-            If ($Object)
+            ForEach ($Object in $Xaml.IO.AddsGwAggregate.SelectedItems)
             {
                 $Main.AddsController.RemoveNode($Object.Site,"Gateway",$Object.Name)
-                $Main.AddsController.GetGatewayList()
-                $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
+                $Main.AddsController.Output.Remove("Gateway",$Object.Name)
             }
+            $Main.AddsController.GetGatewayList()
+            $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
+            $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
         }
     })
 
@@ -7062,6 +7114,25 @@ Function New-FEInfrastructure2
         }
     })
 
+    $Xaml.IO.AddsGwRemove.Add_Click(
+    {
+        If ($Main.AddsController.Output.Gateway.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Gateway)
+            {
+                If (!$Item.Exists)
+                {
+                    Write-Host ("Item [!] Does not exist [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If ($Item.Exists)
+                {
+                    $Item.Remove()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
+        }
+    })
+
     # [Adds.Server]
     $Xaml.IO.AddsSrAdd.Add_Click(
     {
@@ -7092,17 +7163,18 @@ Function New-FEInfrastructure2
         }
     })
 
-    $Xaml.IO.AddsSrRemove.Add_Click(
+    $Xaml.IO.AddsSrDelete.Add_Click(
     {
         If ($Xaml.IO.AddsSrAggregate.SelectedIndex -ne -1)
         {
-            $Object                       = $Xaml.IO.AddsSrAggregate.SelectedItem
-            If ($Object)
+            ForEach ($Object in $Xaml.IO.AddsSrAggregate.SelectedItems)
             {
                 $Main.AddsController.RemoveNode($Object.Site,"Server",$Object.Name)
-                $Main.AddsController.GetServerList()
-                $Main.Reset($Xaml.IO.AddsSrAggregate.Items,$Main.AddsController.Server)
+                $Main.AddsController.Output.Remove("Server",$Object.Name)
             }
+            $Main.AddsController.GetServerList()
+            $Main.Reset($Xaml.IO.AddsSrAggregate.Items,$Main.AddsController.Server)
+            $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
         }
     })
 
@@ -7223,6 +7295,25 @@ Function New-FEInfrastructure2
         }
     })
 
+    $Xaml.IO.AddsSrRemove.Add_Click(
+    {
+        If ($Main.AddsController.Output.Server.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Server)
+            {
+                If (!$Item.Exists)
+                {
+                    Write-Host ("Item [!] Does not exist [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If ($Item.Exists)
+                {
+                    $Item.Remove()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
+        }
+    })
+
     # [Adds.Workstation]
     $Xaml.IO.AddsWsAdd.Add_Click(
     {
@@ -7253,17 +7344,18 @@ Function New-FEInfrastructure2
         }
     })
 
-    $Xaml.IO.AddsWsRemove.Add_Click(
+    $Xaml.IO.AddsWsDelete.Add_Click(
     {
         If ($Xaml.IO.AddsWsAggregate.SelectedIndex -ne -1)
         {
-            $Object                       = $Xaml.IO.AddsWsAggregate.SelectedItem
-            If ($Object)
+            ForEach ($Object in $Xaml.IO.AddsWsAggregate.SelectedItems)
             {
                 $Main.AddsController.RemoveNode($Object.Site,"Workstation",$Object.Name)
-                $Main.AddsController.GetWorkstationList()
-                $Main.Reset($Xaml.IO.AddsWsAggregate.Items,$Main.AddsController.Workstation)
+                $Main.AddsController.Output.Remove("Workstation",$Object.Name)
             }
+            $Main.AddsController.GetWorkstationList()
+            $Main.Reset($Xaml.IO.AddsWsAggregate.Items,$Main.AddsController.Workstation)
+            $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
         }
     })
 
@@ -7384,6 +7476,25 @@ Function New-FEInfrastructure2
         }
     })
 
+    $Xaml.IO.AddsWsRemove.Add_Click(
+    {
+        If ($Main.AddsController.Output.Workstation.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Workstation)
+            {
+                If (!$Item.Exists)
+                {
+                    Write-Host ("Item [!] Does not exist [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If ($Item.Exists)
+                {
+                    $Item.Remove()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
+        }
+    })
+
     # [Adds.User]
     $Xaml.IO.AddsUserAdd.Add_Click(
     {
@@ -7414,17 +7525,18 @@ Function New-FEInfrastructure2
         }
     })
 
-    $Xaml.IO.AddsUserRemove.Add_Click(
+    $Xaml.IO.AddsUserDelete.Add_Click(
     {
         If ($Xaml.IO.AddsUserAggregate.SelectedIndex -ne -1)
         {
-            $Object                       = $Xaml.IO.AddsUserAggregate.SelectedItem
-            If ($Object)
+            ForEach ($Object in $Xaml.IO.AddsUserAggregate.SelectedItems)
             {
                 $Main.AddsController.RemoveNode($Object.Site,"User",$Object.Name)
-                $Main.AddsController.GetUserList()
-                $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.User)
+                $Main.AddsController.Output.Remove("User",$Object.Name)
             }
+            $Main.AddsController.GetUserList()
+            $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.User)
+            $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
         }
     })
 
@@ -7545,6 +7657,25 @@ Function New-FEInfrastructure2
         }
     })
 
+    $Xaml.IO.AddsUserRemove.Add_Click(
+    {
+        If ($Main.AddsController.Output.User.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.User)
+            {
+                If (!$Item.Exists)
+                {
+                    Write-Host ("Item [!] Does not exist [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If ($Item.Exists)
+                {
+                    $Item.Remove()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
+        }
+    })
+
     # [Adds.Service]
     $Xaml.IO.AddsSvcAdd.Add_Click(
     {
@@ -7575,17 +7706,18 @@ Function New-FEInfrastructure2
         }
     })
 
-    $Xaml.IO.AddsSvcRemove.Add_Click(
+    $Xaml.IO.AddsSvcDelete.Add_Click(
     {
         If ($Xaml.IO.AddsSvcAggregate.SelectedIndex -ne -1)
         {
-            $Object                       = $Xaml.IO.AddsSvcAggregate.SelectedItem
-            If ($Object)
+            ForEach ($Object in $Xaml.IO.AddsSvcAggregate.SelectedItems)
             {
                 $Main.AddsController.RemoveNode($Object.Site,"Service",$Object.Name)
-                $Main.AddsController.GetUserList()
-                $Main.Reset($Xaml.IO.AddsSvcAggregate.Items,$Main.AddsController.Service)
+                $Main.AddsController.Output.Remove("Service",$Object.Name)
             }
+            $Main.AddsController.GetServiceList()
+            $Main.Reset($Xaml.IO.AddsSvcAggregate.Items,$Main.AddsController.Service)
+            $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
         }
     })
 
@@ -7706,6 +7838,29 @@ Function New-FEInfrastructure2
         }
     })
 
+    $Xaml.IO.AddsSvcRemove.Add_Click(
+    {
+        If ($Main.AddsController.Output.Service.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Service)
+            {
+                If (!$Item.Exists)
+                {
+                    Write-Host ("Item [!] Does not exist [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If ($Item.Exists)
+                {
+                    $Item.Remove()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
+        }
+    })
+
+    # ----------------- #
+    # <![Virtual Tab]!> #
+    # ----------------- #
+
     Return @{ Xaml = $Xaml; Main = $Main }
 }
 
@@ -7718,13 +7873,7 @@ $Cap = New-FEInfrastructure2
 $Xaml = $Cap.Xaml
 $Main = $Cap.Main
 
-#>
-
-   <# -------------- #
-    # <![Adds Tab]!> #
-    # -------------- #
-    
-    $Xaml.IO.AddsSitename.
+####
 
     $Main.Gateway                     = $Main.Sitelist | ? Name -eq Gateway
     $Main.Server                      = $Main.Sitelist | ? Name -eq Server
