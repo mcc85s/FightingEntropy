@@ -1921,8 +1921,7 @@ Function New-FEInfrastructure2
             }
             GetOutput([String]$Type)
             {
-                $Object   = $This.$Type
-                ForEach ($Node in $Object)
+                ForEach ($Node in $This.$Type)
                 {
                     $Site = $This.Sitemap | ? Name -eq $Node.Site | % Control
                     Switch -Regex ($Type)
@@ -7057,6 +7056,13 @@ Function New-FEInfrastructure2
         If ($Main.AddsController.Gateway.Count -gt 1)
         {
             $Main.AddsController.GetOutput("Gateway")
+            ForEach ($Item in $Main.AddsController.Output.Gateway)
+            {
+                If ($Item.Exists)
+                {
+                    $Item.Update()
+                }
+            }
             $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
         }
     })
@@ -7192,6 +7198,13 @@ Function New-FEInfrastructure2
         If ($Main.AddsController.Server.Count -gt 1)
         {
             $Main.AddsController.GetOutput("Server")
+            ForEach ($Item in $Main.AddsController.Output.Server)
+            {
+                If ($Item.Exists)
+                {
+                    $Item.Update()
+                }
+            }
             $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
         }
     })
@@ -7304,17 +7317,321 @@ Function New-FEInfrastructure2
             If ($Object)
             {
                 $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
-                $Main.Reset($Xaml.IO.AddsWsViewer.Items,$Content)
+                $Main.Reset($Xaml.IO.AddsWsAggregateViewer.Items,$Content)
             }
         }
     })
 
-    $Xaml.IO.AddsSrGet.Add_Click(
+    $Xaml.IO.AddsWsOutput.Add_SelectionChanged(
     {
-        If ($Main.AddsController.Server.Count -gt 1)
+        If ($Xaml.IO.AddsWsOutput.SelectedIndex -ne -1)
         {
-            $Main.AddsController.GetOutput("Server")
-            $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
+            $Object                                = $Xaml.IO.AddsWsOutput.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsWsOutputViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsWsGet.Add_Click(
+    {
+        If ($Main.AddsController.Workstation.Count -gt 1)
+        {
+            $Main.AddsController.GetOutput("Workstation")
+            ForEach ($Item in $Main.AddsController.Output.Workstation)
+            {
+                If ($Item.Exists)
+                {
+                    $Item.Update()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
+        }
+    })
+
+    # [Adds.User]
+    $Xaml.IO.AddsUserAdd.Add_Click(
+    {
+        $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+        $Name                             = $Main.CheckHostname($Xaml.IO.AddsUserName.Text)
+
+        If ($Name -ne $Xaml.IO.AddsUserName.Text)
+        {
+            Return [System.Windows.MessageBox]::Show($Name,"Error")
+        }
+
+        If (!$Object)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+        }
+
+        ElseIf ($Name -in $Xaml.IO.AddsUserAggregate.Items.Name)
+        {
+            Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+        }
+
+        Else
+        {
+            $Main.AddsController.AddNode($Object.Name,"User",$Name)
+            $Main.AddsController.GetUserList()
+            $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.User)
+            $Xaml.IO.AddsUserName.Text      = $Null
+        }
+    })
+
+    $Xaml.IO.AddsUserRemove.Add_Click(
+    {
+        If ($Xaml.IO.AddsUserAggregate.SelectedIndex -ne -1)
+        {
+            $Object                       = $Xaml.IO.AddsUserAggregate.SelectedItem
+            If ($Object)
+            {
+                $Main.AddsController.RemoveNode($Object.Site,"User",$Object.Name)
+                $Main.AddsController.GetUserList()
+                $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.User)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsUserBrowse.Add_Click(
+    {
+        $Item                             = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory            = $Env:SystemDrive
+        $Item.Filter                      = 'Text File (*.txt)| *.txt'
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename                = ""
+        }
+
+        $Xaml.IO.AddsUserFile.Text          = $Item.FileName
+    })
+
+    $Xaml.IO.AddsUserAddList.Add_Click(
+    {
+        If (!(Test-Path $Xaml.IO.AddsUserFile.Text) -or $Xaml.IO.AddsUserFile.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid path","Error")
+        }
+
+        Else
+        {
+            ForEach ($Item in Get-Content $Xaml.IO.AddsUserFile.Text)
+            {
+                $Object                       = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+                $Xaml.IO.AddsUserName.Text    = $Item
+                $Name                         = $Main.CheckHostName($Item)  
+
+                If ($Name -ne $Item)
+                {
+                    Return [System.Windows.MessageBox]::Show($Name,"Error")
+                }
+
+                ElseIf (!$Object)
+                {
+                    Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+                }
+
+                ElseIf ($Name -in $Xaml.IO.AddsUserAggregate.Items.Name)
+                {
+                    Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+                }
+
+                Else
+                {
+                    $Main.AddsController.AddNode($Object.Name,"User",$Name)
+                    $Xaml.IO.AddsUserName.Text  = $Null
+                }
+            }
+            $Main.AddsController.GetUserList()
+            $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.User)
+        }
+    })
+
+    $Xaml.IO.AddsUserAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsUserAggregate.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsUserAggregate.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsUserAggregateViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsUserOutput.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsUserOutput.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsUserOutput.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsUserOutputViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsUserGet.Add_Click(
+    {
+        If ($Main.AddsController.User.Count -gt 1)
+        {
+            $Main.AddsController.GetOutput("User")
+            ForEach ($Item in $Main.AddsController.Output.User)
+            {
+                If ($Item.Exists)
+                {
+                    $Item.Update()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
+        }
+    })
+
+    # [Adds.Service]
+    $Xaml.IO.AddsSvcAdd.Add_Click(
+    {
+        $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+        $Name                             = $Main.CheckHostname($Xaml.IO.AddsSvcName.Text)
+
+        If ($Name -ne $Xaml.IO.AddsSvcName.Text)
+        {
+            Return [System.Windows.MessageBox]::Show($Name,"Error")
+        }
+
+        If (!$Object)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+        }
+
+        ElseIf ($Name -in $Xaml.IO.AddsSvcAggregate.Items.Name)
+        {
+            Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+        }
+
+        Else
+        {
+            $Main.AddsController.AddNode($Object.Name,"Service",$Name)
+            $Main.AddsController.GetUserList()
+            $Main.Reset($Xaml.IO.AddsSvcAggregate.Items,$Main.AddsController.Service)
+            $Xaml.IO.AddsSvcName.Text      = $Null
+        }
+    })
+
+    $Xaml.IO.AddsSvcRemove.Add_Click(
+    {
+        If ($Xaml.IO.AddsSvcAggregate.SelectedIndex -ne -1)
+        {
+            $Object                       = $Xaml.IO.AddsSvcAggregate.SelectedItem
+            If ($Object)
+            {
+                $Main.AddsController.RemoveNode($Object.Site,"Service",$Object.Name)
+                $Main.AddsController.GetUserList()
+                $Main.Reset($Xaml.IO.AddsSvcAggregate.Items,$Main.AddsController.Service)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsSvcBrowse.Add_Click(
+    {
+        $Item                             = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory            = $Env:SystemDrive
+        $Item.Filter                      = 'Text File (*.txt)| *.txt'
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename                = ""
+        }
+
+        $Xaml.IO.AddsUserFile.Text          = $Item.FileName
+    })
+
+    $Xaml.IO.AddsSvcAddList.Add_Click(
+    {
+        If (!(Test-Path $Xaml.IO.AddsSvcFile.Text) -or $Xaml.IO.AddsSvcFile.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid path","Error")
+        }
+
+        Else
+        {
+            ForEach ($Item in Get-Content $Xaml.IO.AddsSvcFile.Text)
+            {
+                $Object                       = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+                $Xaml.IO.AddsSvcName.Text    = $Item
+                $Name                         = $Main.CheckHostName($Item)  
+
+                If ($Name -ne $Item)
+                {
+                    Return [System.Windows.MessageBox]::Show($Name,"Error")
+                }
+
+                ElseIf (!$Object)
+                {
+                    Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+                }
+
+                ElseIf ($Name -in $Xaml.IO.AddsSvcAggregate.Items.Name)
+                {
+                    Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+                }
+
+                Else
+                {
+                    $Main.AddsController.AddNode($Object.Name,"Service",$Name)
+                    $Xaml.IO.AddsSvcName.Text  = $Null
+                }
+            }
+            $Main.AddsController.GetSvcList()
+            $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.Service)
+        }
+    })
+
+    $Xaml.IO.AddsSvcAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsSvcAggregate.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsSvcAggregate.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsSvcAggregateViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsSvcOutput.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsSvcOutput.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsSvcOutput.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsSvcOutputViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsSvcGet.Add_Click(
+    {
+        If ($Main.AddsController.Service.Count -gt 1)
+        {
+            $Main.AddsController.GetOutput("Service")
+            ForEach ($Item in $Main.AddsController.Output.Service)
+            {
+                If ($Item.Exists)
+                {
+                    $Item.Update()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
         }
     })
 
