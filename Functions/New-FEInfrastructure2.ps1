@@ -17,7 +17,7 @@
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
-          TODO: VM tab, MDT, WDS
+          TODO: Finish VM tab, Imaging (basically done...), Updates (finish), MDT, WDS...
 
 .Example
 #>
@@ -2006,13 +2006,10 @@ Function New-FEInfrastructure2
             [Parameter()][PSCredential]$Credential
         )
 
-        Class Topology
+        Class VmTopology
         {
             [String] $Organization
             [String] $CommonName
-            [String] $Type
-            [String] $Name
-            [String] $DNSHostname
             [String] $Location
             [String] $Region
             [String] $Country
@@ -2027,43 +2024,127 @@ Function New-FEInfrastructure2
             [String] $Range
             [String] $Broadcast
             [String] $ReverseDNS
-            [String] $Parent
-            [String] $DistinguishedName
-            [UInt32] $Exists
-            [Object] $VMInstance
-            Topology([Object]$Node,[Object]$VM)
+            [String] $Type
+            [String] $Hostname
+            [String] $DnsName
+            [String] $AddsParent
+            [String] $AddsDistinguishedName
+            [UInt32] $AddsExists
+            [Object] $AddsComputer
+            [String] $AddsGuid
+            [String] $VmName
+            [Double] $VmMemory
+            [String] $VmPath
+            [String] $VmVhd
+            [Double] $VmVhdSize
+            [UInt32] $VmGeneration
+            [UInt32] $VmCore
+            [Object[]] $VmSwitchName
+            [UInt32] $VmExists
+            [String] $VmGuid
+            VmTopology([Object]$Node)
             {
-                $This.Organization      = $Node.Organization
-                $This.CommonName        = $Node.CommonName
-                $This.Type              = $Node.Type
-                $This.Name              = $Node.Name
-                $This.DNSHostname       = $Node.DNSHostName
-                $This.Location          = $Node.Location
-                $This.Region            = $Node.Region
-                $This.Country           = $Node.Country
-                $This.Postal            = $Node.Postal
-                $This.Sitelink          = $Node.Sitelink
-                $This.Sitename          = $Node.Sitename
-                $This.Network           = $Node.Network
-                $This.Prefix            = $Node.Prefix
-                $This.Netmask           = $Node.Netmask
-                $This.Start             = $Node.Start
-                $This.End               = $Node.End
-                $This.Range             = $Node.Range
-                $This.Broadcast         = $Node.Broadcast
-                $This.ReverseDNS        = $Node.ReverseDNS
-                $This.DistinguishedName = $Node.DistinguishedName
-                $This.Parent            = $Node.Parent
-                $This.VMInstance        = $VM
+                $This.Organization          = $Node.Organization
+                $This.CommonName            = $Node.CommonName
+                $This.Location              = $Node.Location
+                $This.Region                = $Node.Region
+                $This.Country               = $Node.Country
+                $This.Postal                = $Node.Postal
+                $This.Sitelink              = $Node.Sitelink
+                $This.Sitename              = $Node.Sitename
+                $This.Network               = $Node.Network
+                $This.Prefix                = $Node.Prefix
+                $This.Netmask               = $Node.Netmask
+                $This.Start                 = $Node.Start
+                $This.End                   = $Node.End
+                $This.Range                 = $Node.Range
+                $This.Broadcast             = $Node.Broadcast
+                $This.ReverseDNS            = $Node.ReverseDNS
+                $This.Type                  = $Node.Type
+                $This.Hostname              = $Node.Hostname
+                $This.DnsName               = $Node.DnsName
+                $This.AddsParent            = $Node.Parent
+                $This.AddsDistinguishedName = $Node.DistinguishedName
+                $This.AddsExists            = $Node.Exists
+                $This.AddsComputer          = $Node.Computer
+                $This.AddsGuid              = $Node.Guid
+            }
+            LoadVmObject([Object]$Vm)
+            {
+                $This.VmName                = $Vm.Name
+                $This.VmMemory              = $Vm.Memory
+                $This.VmPath                = $Vm.Path
+                $This.VmVhd                 = $Vm.Vhd
+                $This.VmVhdSize             = $Vm.VhdSize
+                $This.VmGeneration          = $Vm.Generation
+                $This.VmCore                = $Vm.Core
+                $This.VmSwitchName          = $Vm.SwitchName
+                $This.VmExists              = $Vm.Exists
+                $This.VmGuid                = $Vm.Guid
+            }
+            [String] ToString()
+            {
+                Return $This.DnsName
             }
         }
 
-        Class Select
+        Class VmQuery
+        {
+            [String] $Hostname
+            [String] $Type
+            [String] $DnsName
+            VmQuery([String]$Type,[Object]$Object)
+            {
+                $This.Hostname = $Object.Hostname
+                $This.Type     = $Type
+                $This.DnsName  = $Object.DnsName
+            }
+        }
+
+        Class VmAddsContainer
+        {
+            [Object] $Gateway
+            [Object] $Server
+            [Object] $Workstation
+            [Object] $Query
+            VmAddsContainer()
+            {
+                $This.Gateway     = @( )
+                $This.Server      = @( )
+                $This.Workstation = @( )
+                $This.Query       = @( )
+            }
+            LoadAddsTree([Object]$AddsInput)
+            {
+                ForEach ($Object in $AddsInput.Gateway)
+                {
+                    $Item              = [VmTopology]::New($Object)
+                    $This.Query       += [VmQuery]::New("Gateway",$Item)
+                    $This.Gateway     += $Item
+                }
+
+                ForEach ($Object in $AddsInput.Server)
+                {
+                    $Item              = [VmTopology]::New($Object)
+                    $This.Query       += [VmQuery]::New("Server",$Item)
+                    $This.Server      += $Item
+                }
+
+                ForEach ($Object in $AddsInput.Workstation) 
+                {
+                    $Item              = [VmTopology]::New($Object)
+                    $This.Query       += [VmQuery]::New("Workstation",$Item)
+                    $This.Workstation += $Item
+                }
+            }
+        }
+
+        Class VmSelect
         {
             [String] $Type
             [String] $Name
             [Bool]   $Create
-            Select([Object]$Type,[Object]$Item)
+            VmSelect([Object]$Type,[Object]$Item)
             {
                 $This.Type   = $Item.Type
                 $This.Name   = $Item.Name
@@ -2118,7 +2199,6 @@ Function New-FEInfrastructure2
 
         Class VmObjectNode
         {
-            [Object]         $Item
             [Object]         $Name
             [Double]       $Memory
             [Object]         $Path
@@ -2128,18 +2208,19 @@ Function New-FEInfrastructure2
             [UInt32]         $Core
             [Object[]] $SwitchName
             [UInt32]       $Exists
-            VmObjectNode([Object]$Item,[UInt32]$Memory,[UInt32]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$Switch,[String]$Path)
+            [String]         $Guid
+            VmObjectNode([String]$Name,[UInt32]$Memory,[UInt32]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$Switch,[String]$Path)
             {
-                $This.Item               = $Item
-                $This.Name               = $Item.Name
+                $This.Name               = $Name
                 $This.Memory             = ([UInt32]$Memory)*1MB
-                $This.Path               = "$Path\$($Item.Name)"
-                $This.Vhd                = "$Path\$($Item.Name)\$($Item.Name).vhdx"
+                $This.Path               = "$Path\$Name"
+                $This.Vhd                = "$Path\$Name\$Name.vhdx"
                 $This.VhdSize            = ([UInt32]$HDD)*1GB
                 $This.Generation         = $Generation
                 $This.Core               = $Core
                 $This.SwitchName         = @($Switch)
                 $This.Exists             = 0
+                $This.Guid               = $Null
             }
             VmObjectNode([Object]$VM)
             {
@@ -2152,10 +2233,19 @@ Function New-FEInfrastructure2
                 $This.Core               = $Vm.ProcessorCount
                 $This.SwitchName         = $Vm.NetworkAdapters.SwitchName
                 $This.Exists             = 1
+                $This.Guid               = $Vm.Id
+            }
+            [Object] Get()
+            {
+                Return ( Try { Get-VM -Name $This.Name } Catch { } )
+            }
+            Update()
+            {
+
             }
             New()
             {
-                If (Get-VM -Name $This.Name)
+                If ($This.Get())
                 {
                     Throw "This VM already exists"
                 }
@@ -2248,7 +2338,7 @@ Function New-FEInfrastructure2
                     $This.Switch   = $Null
                     $This.External = $Null
                     $This.Internal = $Null
-                    $This.AddsNode = @( )
+                    $This.AddsNode = [VmAddsContainer]::New()
                     $This.VmNode   = @( )
                     $This.VmStack  = @( )
                 }
@@ -2266,7 +2356,7 @@ Function New-FEInfrastructure2
 
                     $This.External = $This.Switch | ? Type -eq External
                     $This.Internal = $This.Switch | ? Type -eq Internal
-                    $This.AddsNode = @( )
+                    $This.AddsNode = [VmAddsContainer]::New()
                     $This.VmNode   = @( )
                     ForEach ($Item in Get-Vm -ComputerName $This.Hostname)
                     {
@@ -2276,9 +2366,21 @@ Function New-FEInfrastructure2
                     $This.VmStack  = @( )
                 }
             }
-            LoadAddsNode([Object]$AddsNode)
+            LoadAddsTree([Object]$AddsTree)
             {
-                $This.AddsNode += $AddsNode   
+                $This.AddsNode.LoadAddsTree($AddsTree)
+            }
+            PrimeAddsTree()
+            {
+                ForEach ($Node in $This.VmNode)
+                {
+                    $Slot = $This.AddsNode.Query | ? Hostname -eq $Node.Name
+                    If ($Slot)
+                    {
+                        $Item = $This.AddsNode.$($Slot.Type) | ? Hostname -eq $Node.Name
+                        $Item.LoadVmObject($Node)
+                    }
+                }
             }
             [Object] GetVmObjectNode([String]$Name)
             {
@@ -2293,7 +2395,7 @@ Function New-FEInfrastructure2
                 }
                 If (!$Item)
                 {
-                    $This.VmNode += [VMObjectNode]::New($AddsNode,$Memory,$HDD,$Generation,$Core,$SwitchName,$Path)
+                    $This.VmNode += [VmObjectNode]::New($AddsNode,$Memory,$HDD,$Generation,$Core,$SwitchName,$Path)
                 }
             }
             GetVmNodeList()
@@ -7860,6 +7962,104 @@ Function New-FEInfrastructure2
     # ----------------- #
     # <![Virtual Tab]!> #
     # ----------------- #
+
+    # VmHost               TextBox
+    # VmHostSelect         Button
+    # VmController         DataGrid
+    # VmControllerSwitch   ComboBox
+    # VmControllerNetwork  TextBox
+    # VmControllerConfigVM ComboBox
+    # VmControllerGateway  TextBox
+    # VmSelect             DataGrid
+    # VmSwitch             DataGrid
+
+    $Xaml.IO.VmHost.Text                 = $Main.VmController.Hostname
+    $Xaml.IO.VmSelect.ItemsSource        = @( )
+
+    $Xaml.IO.VmHostSelect.Add_Click(
+    {
+        If ($Xaml.IO.VmHost.Text -eq "")
+        {
+            Return [System.Windows.Messagebox]::Show("Must enter a server hostname or IP address","Error")
+        }
+
+        ElseIf (!(Test-Connection -ComputerName $Xaml.IO.VmHost.Text -Count 1 -EA 0))
+        {
+            Return [System.Windows.Messagebox]::Show("Not a valid server hostname or IP Address","Error")
+        }
+
+        Write-Host "Retrieving [~] VMHost"
+
+        If ( $Xaml.IO.VmHost.Text -match "localhost" -or $Xaml.IO.VmHost.Text -in $Main.IP -or $Xaml.IO.VmHost.Text -match $Main.Module.Role.Name)
+        {
+            $Main.Vm    = [VmStack]::New($Main.Config.HyperV,$Main.Config.HyperV.Switch)
+            If (Get-Service -Name vmms -EA 0 | ? Status -ne Running)
+            {
+                Return [System.Windows.MessageBox]::Show("The Hyper-V Virtual Machine Management service is not (installed/running)","Error")
+            }
+
+            $Xaml.IO.VmController.ItemsSource         = @([VmController]::New($Xaml.IO.VmHost.Text,$Credential))
+        }
+        Else
+        {
+            Return [System.Windows.MessageBox]::Show("Remote Hyper-V Server not implemented","Error")
+        }
+        
+        $Xaml.IO.VmControllerSwitch.ItemsSource   = @( $Main.Vm.Switch | ? Type -eq External | % Name )
+        $Xaml.IO.VmSelect.ItemsSource             = @( )
+        $Collect                                  = @( )
+
+        If ($Main.ADDS.Gateway.Count -gt 0)
+        {
+            $Main.ADDS.Gateway                    | % { $Collect += $_ }
+        }
+
+        If ($Main.ADDS.Server.Count -gt 0 )
+        {
+            $Main.ADDS.Server                     | % { $Collect += $_ }
+        }
+
+        $Xaml.IO.VmSelect.ItemsSource             = @([VmSelect[]]$Collect)
+        
+        Write-Host "Retrieved [+] VMHost"
+    })
+
+    #     $VmController = [VmController]::New($Main.Module.Role.Hostname,$Main.Credential)
+    #     $VmController.LoadAddsTree($Main.AddsController.Output)
+
+    # VmGateway DataGrid
+    # VmGatewayPathSelect Button
+    # VmGatewayPath TextBox
+    # VmGatewayScriptSelect Button
+    # VmGatewayScript TextBox
+    # VmGatewayMemory TextBox
+    # VmGatewayImageSelect Button
+    # VmGatewayImage TextBox
+    # VmGatewayDrive TextBox
+
+
+    # VmServer DataGrid
+    # VmServerPathSelect Button
+    # VmServerPath TextBox
+    # VmServerScriptSelect Button
+    # VmServerScript TextBox
+    # VmServerMemory TextBox
+    # VmServerImageSelect Button
+    # VmServerImage TextBox
+    # VmServerDrive TextBox
+
+
+    # VmWorkstation DataGrid
+    # VmWorkstationPathSelect Button
+    # VmWorkstationPath TextBox
+    # VmWorkstationScriptSelect Button
+    # VmWorkstationScript TextBox
+    # VmWorkstationMemory TextBox
+    # VmWorkstationImageSelect Button
+    # VmWorkstationImage TextBox
+    # VmWorkstationDrive TextBox
+    # VmGetArchitecture Button
+    # VmNewArchitecture Button
 
     Return @{ Xaml = $Xaml; Main = $Main }
 }
