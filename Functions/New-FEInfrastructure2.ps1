@@ -13,11 +13,11 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-11-04
+          Modified: 2021-11-06
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
-          TODO: Finish VM tab, Imaging (basically done...), Updates (finish), MDT, WDS...
+          TODO: MDT, WDS
 
 .Example
 #>
@@ -2032,6 +2032,7 @@ Function New-FEInfrastructure2
             [UInt32] $AddsExists
             [Object] $AddsComputer
             [String] $AddsGuid
+            Hidden [Object] $Vm
             [String] $VmName
             [Double] $VmMemory
             [String] $VmPath
@@ -2071,6 +2072,7 @@ Function New-FEInfrastructure2
             }
             LoadVmObject([Object]$Vm)
             {
+                $This.Vm                    = $Vm
                 $This.VmName                = $Vm.Name
                 $This.VmMemory              = $Vm.Memory
                 $This.VmPath                = $Vm.Path
@@ -2081,6 +2083,41 @@ Function New-FEInfrastructure2
                 $This.VmSwitchName          = $Vm.SwitchName
                 $This.VmExists              = $Vm.Exists
                 $This.VmGuid                = $Vm.Guid
+            }
+            New()
+            {
+                If (!$This.Vm.Get())
+                {
+                    $This.VM.New()
+                    $This.LoadVmObject($This.Vm.Get())
+                }
+            }
+            Remove()
+            {
+                If ($This.Vm.Get())
+                {
+                    $This.Vm.Remove()
+                    $This.Update()
+                }
+            }
+            Update()
+            {
+                If (!$This.Vm.Get())
+                {
+                    $This.VmMemory          = 0
+                    $This.VmPath            = $Null
+                    $This.VmVhd             = $Null
+                    $This.VmVhdSize         = 0
+                    $This.VmGeneration      = $Null
+                    $This.VmCore            = 0
+                    $This.SwitchName        = @( )
+                    $This.Exists            = 0
+                    $This.Guid              = $Null
+                }
+                If ($This.Vm.Get())
+                {
+                    $This.LoadVmObject($This.Vm.Get())
+                }
             }
             [String] ToString()
             {
@@ -2116,6 +2153,11 @@ Function New-FEInfrastructure2
             }
             LoadAddsTree([Object]$AddsInput)
             {
+                $This.Gateway     = @( )
+                $This.Server      = @( )
+                $This.Workstation = @( )
+                $This.Query       = @( )
+
                 ForEach ($Object in $AddsInput.Gateway)
                 {
                     $Item              = [VmTopology]::New($Object)
@@ -2143,17 +2185,39 @@ Function New-FEInfrastructure2
         {
             [String] $Type
             [String] $Name
+            [Bool]   $Exists
             [Bool]   $Create
-            VmSelect([Object]$Type,[Object]$Item)
+            VmSelect([Object]$Object)
             {
-                $This.Type   = $Item.Type
-                $This.Name   = $Item.Name
-                $This.Create = 1
+                $This.Type   = $Object.Type
+                $This.Name   = $Object.HostName
+                $This.Exists = $Object.VmExists
+                $This.Create = @(1,0)[$Object.VmExists]
+            }
+        }
+
+        Class VmControl
+        {
+            [String] $Name
+            [String] $Status
+            [String] $Username
+            [Object] $Credential
+            VmControl([String]$Name,[String]$Status,[String]$Username,[Object]$Credential)
+            {
+                $This.Name       = $Name
+                $This.Status     = $Status
+                $This.Username   = $Username
+                $This.Credential = $Credential
+            }
+            [String] ToString()
+            {
+                Return ("{0}/{1}/{2}" -f $This.Name, $This.Status, $This.Username)
             }
         }
 
         Class VmSwitchNode
         {
+            Hidden [Object] $Switch
             [String] $Name
             [String] $ID
             [String] $Type
@@ -2161,66 +2225,164 @@ Function New-FEInfrastructure2
             [UInt32] $Exists
             VmSwitchNode([String]$Name,[String]$Type)
             {
+                $This.Switch      = $Null
                 $This.Name        = $Name
                 $This.Type        = $Type
                 $This.Exists      = 0
             }
-            VmSwitchNode([Object]$Switch)
+            VmSwitchNode([Object]$VMSwitch)
             {
-                $This.Name        = $Switch.Name
-                $This.ID          = $Switch.ID
-                $This.Type        = $Switch.SwitchType
-                $This.Description = @($Switch.NetAdapterInterfaceDescription,"-")[$Switch.NetAdapterInterfaceDescription -ne ""]
+                $This.Switch      = $VMSwitch
+                $This.Name        = $VMSwitch.Name
+                $This.ID          = $VMSwitch.ID.Guid
+                $This.Type        = $VMSwitch.SwitchType
+                $This.Description = @($VMSwitch.NetAdapterInterfaceDescription,"-")[$VMSwitch.NetAdapterInterfaceDescription -ne ""]
                 $This.Exists      = 1
+            }
+            [Object] Get()
+            {
+                Return @( Try { Get-VmSwitch -Name $This.Name } Catch { } )
             }
             New()
             {
-                If (Get-VMSwitch -Name $This.Name)
+                If ($This.Get())
                 {
                     Throw "Switch already exists"
                 }
 
-                $Switch           = New-VMSwitch -Name $This.Name -Type $This.Type -Verbose
-                
-                $This.ID          = $Switch.GUID
-                $This.Description = @($Switch.NetAdapterInterfaceDescription,"-")[$Switch.NetAdapterInterfaceDescription -ne ""]
+                $This.Switch      = New-VMSwitch -Name $This.Name -Type $This.Type -Verbose
+                $This.ID          = $This.Switch.GUID
+                $This.Description = @($This.Switch.NetAdapterInterfaceDescription,"-")[$This.Switch.NetAdapterInterfaceDescription -ne ""]
                 $This.Exists      = 1
             }
             Remove()
             {
-                If (!$This.Exists)
+                If (!$This.Get())
                 {
                     Throw "Switch does not exist"
                 }
 
                 Get-Switch -Name $This.Name | Remove-VMSwitch -Force -Verbose -Confirm:$False
             }
+            [String] ToString()
+            {
+                Return $This.Name
+            }
+        }
+
+        Class VmSwitchReservation
+        {
+            Hidden [Object]       $Site
+            Hidden [Object]     $Switch
+            [String]        $SwitchName
+            [String]          $Sitename
+            [String]           $ScopeID
+            [String]         $IPAddress
+            [String]        $MacAddress
+            [String]              $Name
+            [String]       $Description
+            [UInt32]      $SwitchExists
+            [UInt32]            $Exists
+            VmSwitchReservation([Object]$Site,[Object]$Switch)
+            {
+                $This.Site         = $Site
+                $This.Switch       = $Switch
+                $This.SwitchName   = $This.Switch.Name
+                $This.Sitename     = $This.Site.Sitename
+                $This.ScopeID      = ""
+                $This.IPAddress    = ""
+                $This.MacAddress   = ""
+                $This.Name         = $This.Site.Sitelink
+                $This.Description  = "[{0}/{1}]@[{2}]" -f $This.Site.Network, $This.Site.Prefix, $This.Site.Sitename
+                $This.SwitchExists = $This.Switch.Exists
+                $This.Exists       = 0
+            }
+            VmSwitchReservation([Object]$Site,[Object]$VMSwitch,[Object]$Reservation)
+            {
+                $This.Site         = $Site
+                $This.Switch       = $VMSwitch
+                $This.SwitchName   = $This.Switch.Name
+                $This.Sitename     = $This.Site.Sitename
+                $This.ScopeID      = $Reservation.ScopeID
+                $This.IPAddress    = $Reservation.IPAddress
+                $This.MacAddress   = $Reservation.ClientID
+                $This.Name         = $Reservation.Name
+                $This.Description  = $Reservation.Description
+                $This.SwitchExists = $This.Switch.Exists
+                $This.Exists       = 1
+            }
+            [Object] Get()
+            {
+                Return @( Try { Get-DhcpServerV4Reservation -ScopeID $This.ScopeID | ? Description -eq $This.Description  } Catch { } )
+            }
+            UpdateReservation([String]$ScopeID)
+            {
+                $Last         = $This.ScopeID
+                $This.ScopeID = $ScopeID
+                $Reserve      = $This.Get()
+                If ($Reserve)
+                {
+                    $This.IPAddress  = $Reserve.IPAddress
+                    $This.MacAddress = $Reserve.MacAddress
+                    $This.Name       = $Reserve.Name
+                    $This.Exists     = 1
+                }
+                If (!$Reserve)
+                {
+                    $This.IPAddress  = ""
+                    $This.MacAddress = ""
+                    $This.Name       = ""
+                    $This.Exists     = 0
+                }
+            }
+        }
+
+        Class VmDhcpReservation
+        {
+            [UInt32] $Index
+            [String] $IPAddress
+            [String] $ScopeID
+            [String] $ClientID
+            [String] $Name
+            [String] $Description
+            [UInt32]   $Exists
+            VmDhcpReservation([UInt32]$Index,[String]$ScopeID,[String]$IPAddress)
+            {
+                $This.Index       = $Index
+                $This.IPAddress   = $IPAddress
+                $This.ScopeID     = $ScopeID
+                $This.ClientID    = "-"
+                $This.Name        = "-"
+                $This.Description = "-"
+                $This.Exists      = 0
+            }
+            InsertReservation([Object]$Reservation)
+            {
+                $This.IPAddress   = $Reservation.IPAddress
+                $This.ClientID    = $Reservation.ClientID
+                $This.Name        = $Reservation.Name
+                $This.Description = $Reservation.Description
+                $This.Exists      = 1
+            }
         }
 
         Class VmObjectNode
         {
-            [Object]         $Name
-            [Double]       $Memory
-            [Object]         $Path
-            [Object]          $Vhd
-            [Double]      $VhdSize
-            [Object]   $Generation
-            [UInt32]         $Core
-            [Object[]] $SwitchName
-            [UInt32]       $Exists
-            [String]         $Guid
-            VmObjectNode([String]$Name,[UInt32]$Memory,[UInt32]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$Switch,[String]$Path)
+            [Object]            $Name
+            [Double]          $Memory
+            [Object]            $Path
+            [Object]             $Vhd
+            [Double]         $VhdSize
+            [Object]      $Generation
+            [UInt32]            $Core
+            [Object[]]    $SwitchName
+            Hidden [String]      $Iso
+            Hidden [Object] $Firmware
+            [UInt32]          $Exists
+            [String]            $Guid
+            VmObjectNode([String]$Name)
             {
                 $This.Name               = $Name
-                $This.Memory             = ([UInt32]$Memory)*1MB
-                $This.Path               = "$Path\$Name"
-                $This.Vhd                = "$Path\$Name\$Name.vhdx"
-                $This.VhdSize            = ([UInt32]$HDD)*1GB
-                $This.Generation         = $Generation
-                $This.Core               = $Core
-                $This.SwitchName         = @($Switch)
-                $This.Exists             = 0
-                $This.Guid               = $Null
             }
             VmObjectNode([Object]$VM)
             {
@@ -2232,16 +2394,25 @@ Function New-FEInfrastructure2
                 $This.Generation         = $Vm.Generation
                 $This.Core               = $Vm.ProcessorCount
                 $This.SwitchName         = $Vm.NetworkAdapters.SwitchName
+                $This.Firmware           = Switch ($Vm.Generation) { 1 { $Vm | Get-VMBios } 2 { $Vm | Get-VmFirmware } }
                 $This.Exists             = 1
                 $This.Guid               = $Vm.Id
             }
+            Stage([UInt32]$Memory,[UInt32]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$Switch,[String]$Path)
+            {
+                $This.Memory             = ([UInt32]$Memory)*1MB
+                $This.Path               = "$Path\$($This.Name)"
+                $This.Vhd                = "$Path\$($This.Name)\$($This.Name).vhdx"
+                $This.VhdSize            = ([UInt32]$HDD)*1GB
+                $This.Generation         = $Generation
+                $This.Core               = $Core
+                $This.SwitchName         = @($Switch)
+                $This.Exists             = 0
+                $This.Guid               = $Null
+            }
             [Object] Get()
             {
-                Return ( Try { Get-VM -Name $This.Name } Catch { } )
-            }
-            Update()
-            {
-
+                Return @( Try { Get-VM -Name $This.Name } Catch { } )
             }
             New()
             {
@@ -2267,6 +2438,7 @@ Function New-FEInfrastructure2
                 }
 
                 New-VM @Object -Verbose
+                $This.Firmware         = Get-VM -Name $This.Name | Get-VMFirmware
                 $This.Exists           = 1
                 Set-VMProcessor -VMName $This.Name -Count $This.Core -Verbose
             }
@@ -2277,6 +2449,7 @@ Function New-FEInfrastructure2
             Remove()
             {
                 Get-VM -Name $This.Name | Remove-VM -Force -Confirm:$False -Verbose
+                $This.Firmware         = $Null
                 $This.Exists           = 0
                 Remove-Item $This.Vhd -Force -Verbose -Confirm:$False
                 Remove-Item $This.Path -Force -Recurse -Verbose -Confirm:$False
@@ -2284,6 +2457,17 @@ Function New-FEInfrastructure2
             Stop()
             {
                 Get-VM -Name $This.Name | ? State -ne Off | Stop-VM -Verbose -Force
+            }
+            SetIsoBoot()
+            {
+                If ($This.Iso)
+                {
+                    $This.VM | Get-VMFirmware | % { $_.BootOrder[2,0,1] }
+                }
+                If (!$This.Iso)
+                {
+                    Throw "No Iso loaded"
+                }
             }
             LoadISO([String]$Path)
             {
@@ -2294,24 +2478,35 @@ Function New-FEInfrastructure2
 
                 Else
                 {
+                    $This.Iso = $Path
                     Get-VM -Name $This.Name | % { Set-VMDVDDrive -VMName $_.Name -Path $Path -Verbose }
                 }
+            }
+            UnloadIso()
+            {
+                Get-VM -Name $This.Name | % { Set-VMDVDDrive -VMName $_.Name -Path $Null -Verbose }
+            }
+            [String] ToString()
+            {
+                Return $This.Name
             }
         }
 
         Class VmController
         {
-            [String]   $HostName
-            [String]     $Status
-            [String]   $Username
-            [String] $Credential
-            [Object]       $Host
-            [Object]     $Switch
-            [Object]   $Internal
-            [Object]   $External
-            [Object]   $AddsNode
-            [Object]     $VmNode
-            [Object]    $VmStack
+            [String]    $HostName
+            [String]      $Status
+            [String]    $Username
+            [String]  $Credential
+            [Object]        $Host
+            [Object]      $Switch
+            [Object]    $Internal
+            [Object]    $External
+            [Object]    $AddsNode
+            [Object]      $VmNode
+            [Object]    $VmSelect
+            [Object]     $VmStack
+            [Object] $Reservation
             VmController([String]$ID)
             {
                 $This.Username   = $Env:Username
@@ -2340,6 +2535,7 @@ Function New-FEInfrastructure2
                     $This.Internal = $Null
                     $This.AddsNode = [VmAddsContainer]::New()
                     $This.VmNode   = @( )
+                    $This.VmSelect = @( )
                     $This.VmStack  = @( )
                 }
                 If ($This.Status -eq "Running")
@@ -2363,52 +2559,130 @@ Function New-FEInfrastructure2
                         Write-Host "Loading [~] [Virtual Machine: $($Item.Name)]"
                         $This.VmNode += [VmObjectNode]::New($Item)
                     }
+                    $This.VmSelect = @( )
                     $This.VmStack  = @( )
                 }
+            }
+            [Object] Populate() 
+            {
+                Return [VmControl]::New($This.HostName,$This.Status,$This.Username,$This.Credential)
+            }
+            [Object] Selection([Object]$Item)
+            {
+                Return [VmSelect]::New($Item)
             }
             LoadAddsTree([Object]$AddsTree)
             {
                 $This.AddsNode.LoadAddsTree($AddsTree)
-            }
-            PrimeAddsTree()
-            {
-                ForEach ($Node in $This.VmNode)
+                $This.VmSelect          = @( )
+                $This.VmStack           = @( )
+                ForEach ($Node in $This.AddsNode.Query)
                 {
-                    $Slot = $This.AddsNode.Query | ? Hostname -eq $Node.Name
-                    If ($Slot)
+                    $Vm                 = $This.VmNode | ? Name -eq $Node.HostName
+                    $Item               = $This.AddsNode.$($Node.Type) | ? Hostname -eq $Node.Hostname
+                    If (!$VM)
                     {
-                        $Item = $This.AddsNode.$($Slot.Type) | ? Hostname -eq $Node.Name
-                        $Item.LoadVmObject($Node)
+                        $Vm             = $This.NewVmObject($Node.Hostname)
                     }
+                    $Item.LoadVmObject($Vm)
+                    $This.VmSelect     += $This.Selection($Item)
+                    $This.VmStack      += $Item
                 }
             }
             [Object] GetVmObjectNode([String]$Name)
             {
                 Return @( $This.VmNode | ? Name -eq $Name )
             }
-            AddVmObjectNode([Object]$AddsNode,[UInt32]$Memory,[UInt32]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$SwitchName,[String]$Path)
+            [Object] NewVmObject([Object]$Name)
             {
-                $Item = $This.GetVMNode($AddsNode.Name)
-                If ($Item)
-                {
-                    Write-Host "Item [!] Exists [$($Item.Name)]" -F 12
-                }
-                If (!$Item)
-                {
-                    $This.VmNode += [VmObjectNode]::New($AddsNode,$Memory,$HDD,$Generation,$Core,$SwitchName,$Path)
-                }
+                Return [VmObjectNode]::New($Name)
             }
-            GetVmNodeList()
+            Refresh()
             {
                 $This.VmStack = @( )
-                ForEach ($Item in $This.VmNode)
+                ForEach ($Item in $This.VmSelect)
                 {
-                    If ($Item.Name -in $This.AddsNode.Name)
+                    $This.VmStack += $This.Selection($Item)
+                }
+            }
+            [Object[]] GetRange([String]$ScopeID)
+            {
+                # Build Reservation Template List
+                $Start = $Null
+                $End   = $Null
+                Get-DhcpServerV4ExclusionRange -ScopeID $ScopeID | % { 
+
+                    $Start = ([String]$_.StartRange).Split(".")
+                    $End   = ([String]$_.EndRange).Split(".")
+                }
+
+                $H      = @{ }
+                ForEach ($X in 0..3)
+                {
+                    If ($Start[$X] -eq $End[$X])
                     {
-                        $ADDS          = $This.AddsNode | ? Name -eq $Item.Name 
-                        $Item.Item     = $ADDS.Type
-                        $This.VmStack += [Topology]::New($ADDS,$Item)
+                        $H.Add($X,$Start[$X])
                     }
+                    If ($Start[$X] -ne $End[$X])
+                    {
+                        $H.Add($X,($Start[$X])..($End[$X]))
+                    }
+                }
+
+                $ReservationList = @( )
+                ForEach ($0 in $H[0])
+                {
+                    ForEach ($1 in $H[1])
+                    {
+                        ForEach ($2 in $H[2])
+                        {
+                            ForEach ($3 in $H[3])
+                            {
+                                $ReservationList += [VmDhcpReservation]::New($ReservationList.Count,$ScopeID,"$0.$1.$2.$3")
+                            }
+                        }
+                    }
+                }
+
+                # Get actual reservations and insert
+                $List             = Get-DhcpServerV4Reservation -ScopeID $ScopeID
+
+                ForEach ($X in 0..($ReservationList.Count-1))
+                {
+                    $Item = $List | ? IPAddress -eq $ReservationList[$X].IPAddress 
+                    If ($Item)
+                    {
+                        $ReservationList[$X].InsertReservation($Item)
+                    }
+                }
+
+                Return $ReservationList
+            }
+            GetReservations([String]$ScopeID)
+            {
+                # Aggregate switches based on gateway items
+                $Sites            = $This.VmStack  | ? Type -eq Gateway
+                $VMSwitch         = ForEach ($Site in $Sites)
+                {
+                    If ($Site.Sitelink -notin $This.Switch.Name)
+                    {
+                        [VmSwitchNode]::New($Site.Hostname,"Internal")
+                    }
+                    Else
+                    {
+                        $This.Switch | ? Name -eq $Site.Hostname
+                    }
+                }
+
+                $List             = $This.GetRange($ScopeID)
+                $This.Reservation = ForEach ($X in 0..($VMSwitch.Count-1))
+                {
+                    $Item         = $List | ? Description -match $Sites[$X].Sitename
+                    If (!$Item)
+                    {
+                        $Item     = ($List | ? Description -eq "-")[0+$X]
+                    }
+                    [VmSwitchReservation]::New($Sites[$X],$VMSwitch[$X],$Item)
                 }
             }
             [String] ToString()
@@ -2425,7 +2699,7 @@ Function New-FEInfrastructure2
             [VmController]::New($Hostname)
         }
     }
-
+    
     Function ImageController
     {
         Class ImageLabel
@@ -3673,7 +3947,7 @@ Function New-FEInfrastructure2
     # Get-Content $Home\Desktop\FEInfrastructure.xaml | % { "        '$_',"} | Set-Clipboard
     Class FEInfrastructureGUI
     {
-        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
+        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -3846,34 +4120,39 @@ Function New-FEInfrastructure2
         '            <TabItem Header="Module">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="40"/>',
-        '                        <RowDefinition Height="400"/>',
+        '                        <RowDefinition Height="720"/>',
         '                        <RowDefinition Height="*"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <Label Grid.Row="0" Content="[FightingEntropy]://Module Information and Components"/>',
-        '                    <GroupBox Grid.Row="1" Header="[Information]">',
-        '                        <DataGrid Name="Module_Info">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
-        '                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </GroupBox>',
-        '                    <GroupBox Grid.Row="2" Header="[Components]">',
+        '                    <GroupBox Grid.Row="0" Header="[Module]">',
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="400"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="*"/>',
         '                            </Grid.RowDefinitions>',
-        '                            <Grid.ColumnDefinitions>',
-        '                                <ColumnDefinition Width="200"/>',
-        '                                <ColumnDefinition Width="200"/>',
-        '                                <ColumnDefinition Width="*"/>',
-        '                            </Grid.ColumnDefinitions>',
-        '                            <ComboBox Grid.Row="0" Grid.Column="0" Name="Module_Type"/>',
-        '                            <ComboBox Grid.Row="0" Grid.Column="1" Name="Module_Property"/>',
-        '                            <TextBox  Grid.Row="0" Grid.Column="2" Name="Module_Filter"/>',
-        '                            <DataGrid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"  Name="Module_List">',
+        '                            <Label    Grid.Row="0" Content="[FightingEntropy]://Module Information"/>',
+        '                            <DataGrid Grid.Row="1 " Name="Module_Info">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
+        '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Label    Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Content="[FightingEntropy]://Components"/>',
+        '                            <Grid     Grid.Row="4">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="200"/>',
+        '                                    <ColumnDefinition Width="200"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <ComboBox Grid.Column="0" Name="Module_Type"/>',
+        '                                <ComboBox Grid.Column="1" Name="Module_Property"/>',
+        '                                <TextBox  Grid.Column="2" Name="Module_Filter"/>',
+        '                            </Grid>',
+        '                            <DataGrid  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3"  Name="Module_List">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Mode"          Binding="{Binding Mode}"   Width="40"/>',
         '                                    <DataGridTextColumn Header="LastWriteTime" Binding="{Binding LastWriteTime}"  Width="150"/>',
@@ -3889,114 +4168,123 @@ Function New-FEInfrastructure2
         '            <TabItem Header="Config">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="160"/>',
+        '                        <RowDefinition Height="180"/>',
         '                        <RowDefinition Height="*"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <GroupBox Grid.Row="0" Header="[CfgServices (Dependency Snapshot)]">',
-        '                        <DataGrid Name="CfgServices">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"      Binding="{Binding Name}"  Width="150"/>',
-        '                                <DataGridTextColumn Header="Installed/Meets minimum requirements" Binding="{Binding Value}" Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
+        '                    <GroupBox Grid.Row="0" Header="[Services]">',
+        '                        <Grid>',
+        '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="*"/>',
+        '                            </Grid.RowDefinitions>',
+        '                            <Label Grid.Row="0" Content="[FightingEntropy]://Infrastructure Dependency Snapshot"/>',
+        '                            <DataGrid Grid.Row="1" Name="CfgServices">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name"      Binding="{Binding Name}"  Width="150"/>',
+        '                                    <DataGridTextColumn Header="Installed/Meets minimum requirements" Binding="{Binding Value}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                        </Grid>',
         '                    </GroupBox>',
         '                    <TabControl Grid.Row="1">',
         '                        <TabItem Header="Role">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[FightingEntropy]://Role and System Information"/>',
-        '                                <GroupBox Grid.Row="1" Header="[Information]">',
-        '                                    <DataGrid Name="Role_Info">',
+        '                            <GroupBox Grid.Row="1" Header="[Information]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[FightingEntropy]://Role and System Information"/>',
+        '                                    <DataGrid Grid.Row="1"  Name="Role_Info">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
         '                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                            </Grid>',
+        '                                </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="System">',
-        '                            <Grid Grid.Row="1" Name="System_Panel">',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="290"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[FightingEntropy]://Server System Information"/>',
-        '                                <GroupBox Header="[System]" Grid.Row="1">',
-        '                                    <Grid Margin="5">',
-        '                                        <Grid.ColumnDefinitions>',
-        '                                            <ColumnDefinition Width="150"/>',
-        '                                            <ColumnDefinition Width="240"/>',
-        '                                            <ColumnDefinition Width="125"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                        </Grid.ColumnDefinitions>',
+        '                                <GroupBox Header="[System]">',
+        '                                    <Grid>',
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="240"/>',
+        '                                            <RowDefinition Height="10"/>',
         '                                            <RowDefinition Height="40"/>',
-        '                                            <RowDefinition Height="40"/>',
-        '                                            <RowDefinition Height="40"/>',
-        '                                            <RowDefinition Height="40"/>',
-        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
         '                                        </Grid.RowDefinitions>',
-        '                                        <!-- Column 0 -->',
-        '                                        <Label       Grid.Row="0" Grid.Column="0" Content="[Manufacturer]:"/>',
-        '                                        <Label       Grid.Row="1" Grid.Column="0" Content="[Model]:"/>',
-        '                                        <Label       Grid.Row="2" Grid.Column="0" Content="[Processor]:"/>',
-        '                                        <Label       Grid.Row="3" Grid.Column="0" Content="[Architecture]:"/>',
-        '                                        <Label       Grid.Row="4" Grid.Column="0" Content="[UUID]:"/>',
-        '                                        <Label       Grid.Row="5" Grid.Column="0" Content="[System Name]:"     ToolTip="Enter a new system name"/>',
-        '                                        <!-- Column 1 -->',
-        '                                        <TextBox     Grid.Row="0" Grid.Column="1" Name="System_Manufacturer"/>',
-        '                                        <TextBox     Grid.Row="1" Grid.Column="1" Name="System_Model"/>',
-        '                                        <ComboBox    Grid.Row="2" Grid.Column="1" Name="System_Processor"/>',
-        '                                        <ComboBox    Grid.Row="3" Grid.Column="1" Name="System_Architecture"/>',
-        '                                        <TextBox     Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"  Name="System_UUID"/>',
-        '                                        <TextBox     Grid.Row="5" Grid.Column="1" Name="System_Name"/>',
-        '                                        <!-- Column 2 -->',
-        '                                        <Label       Grid.Row="0" Grid.Column="2" Content="[Product]:"/>',
-        '                                        <Label       Grid.Row="1" Grid.Column="2" Content="[Serial]:"/>',
-        '                                        <Label       Grid.Row="2" Grid.Column="2" Content="[Memory]:"/>',
-        '                                        <StackPanel  Grid.Row="3" Grid.Column="2" Orientation="Horizontal">',
-        '                                            <Label   Content="[Chassis]:"/>',
-        '                                            <CheckBox Name="System_IsVM" Content="VM" IsEnabled="False"/>',
-        '                                        </StackPanel>',
-        '                                        <Label       Grid.Row="5" Grid.Column="2" Content="[BIOS/UEFI]:"/>',
-        '                                        <!-- Column 3 -->',
-        '                                        <TextBox     Grid.Row="0" Grid.Column="3" Name="System_Product"/>',
-        '                                        <TextBox     Grid.Row="1" Grid.Column="3" Name="System_Serial"/>',
-        '                                        <TextBox     Grid.Row="2" Grid.Column="3" Name="System_Memory"/>',
-        '                                        <ComboBox    Grid.Row="3" Grid.Column="3" Name="System_Chassis"/>',
-        '                                        <ComboBox    Grid.Row="5" Grid.Column="3" Name="System_BiosUefi"/>',
+        '                                        <Label Grid.Row="0" Content="[FightingEntropy]://Server System Information"/>',
+        '                                        <Grid  Grid.Row="1">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="150"/>',
+        '                                                <ColumnDefinition Width="240"/>',
+        '                                                <ColumnDefinition Width="125"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                            </Grid.RowDefinitions>',
+        '                                            <!-- Column 1 -->',
+        '                                            <Label       Grid.Row="0" Grid.Column="0" Content="[Manufacturer]:"/>',
+        '                                            <Label       Grid.Row="1" Grid.Column="0" Content="[Model]:"/>',
+        '                                            <Label       Grid.Row="2" Grid.Column="0" Content="[Processor]:"/>',
+        '                                            <Label       Grid.Row="3" Grid.Column="0" Content="[Architecture]:"/>',
+        '                                            <Label       Grid.Row="4" Grid.Column="0" Content="[UUID]:"/>',
+        '                                            <Label       Grid.Row="5" Grid.Column="0" Content="[System Name]:"     ToolTip="Enter a new system name"/>',
+        '                                            <!-- Column 1 -->',
+        '                                            <TextBox     Grid.Row="0" Grid.Column="1" Name="System_Manufacturer"/>',
+        '                                            <TextBox     Grid.Row="1" Grid.Column="1" Name="System_Model"/>',
+        '                                            <ComboBox    Grid.Row="2" Grid.Column="1" Name="System_Processor"/>',
+        '                                            <ComboBox    Grid.Row="3" Grid.Column="1" Name="System_Architecture"/>',
+        '                                            <TextBox     Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3"  Name="System_UUID"/>',
+        '                                            <TextBox     Grid.Row="5" Grid.Column="1" Name="System_Name"/>',
+        '                                            <!-- Column 2 -->',
+        '                                            <Label       Grid.Row="0" Grid.Column="2" Content="[Product]:"/>',
+        '                                            <Label       Grid.Row="1" Grid.Column="2" Content="[Serial]:"/>',
+        '                                            <Label       Grid.Row="2" Grid.Column="2" Content="[Memory]:"/>',
+        '                                            <StackPanel  Grid.Row="3" Grid.Column="2" Orientation="Horizontal">',
+        '                                                <Label   Content="[Chassis]:"/>',
+        '                                                <CheckBox Name="System_IsVM" Content="VM" IsEnabled="False"/>',
+        '                                            </StackPanel>',
+        '                                            <Label       Grid.Row="5" Grid.Column="2" Content="[BIOS/UEFI]:"/>',
+        '                                            <!-- Column 3 -->',
+        '                                            <TextBox     Grid.Row="0" Grid.Column="3" Name="System_Product"/>',
+        '                                            <TextBox     Grid.Row="1" Grid.Column="3" Name="System_Serial"/>',
+        '                                            <TextBox     Grid.Row="2" Grid.Column="3" Name="System_Memory"/>',
+        '                                            <ComboBox    Grid.Row="3" Grid.Column="3" Name="System_Chassis"/>',
+        '                                            <ComboBox    Grid.Row="5" Grid.Column="3" Name="System_BiosUefi"/>',
+        '                                        </Grid>',
+        '                                        <Border Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                        <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"  Content="[FightingEntropy]://Disk Information"/>',
+        '                                        <DataGrid Grid.Row="4" Grid.ColumnSpan="4 " Name="System_Disk">',
+        '                                            <DataGrid.Columns>',
+        '                                                <DataGridTextColumn Header="Name"       Binding="{Binding Name}"       Width="50"/>',
+        '                                                <DataGridTextColumn Header="Label"      Binding="{Binding Label}"      Width="200"/>',
+        '                                                <DataGridTextColumn Header="FileSystem" Binding="{Binding FileSystem}" Width="80"/>',
+        '                                                <DataGridTextColumn Header="Size"       Binding="{Binding Size}"       Width="100"/>',
+        '                                                <DataGridTextColumn Header="Free"       Binding="{Binding Free}"       Width="100"/>',
+        '                                                <DataGridTextColumn Header="Used"       Binding="{Binding Used}"       Width="100"/>',
+        '                                            </DataGrid.Columns>',
+        '                                        </DataGrid>',
         '                                    </Grid>',
         '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="2" Header="[Disks]">',
-        '                                    <DataGrid Name="System_Disk" Margin="5">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="Name"       Binding="{Binding Name}"       Width="50"/>',
-        '                                            <DataGridTextColumn Header="Label"      Binding="{Binding Label}"      Width="200"/>',
-        '                                            <DataGridTextColumn Header="FileSystem" Binding="{Binding FileSystem}" Width="80"/>',
-        '                                            <DataGridTextColumn Header="Size"       Binding="{Binding Size}"       Width="100"/>',
-        '                                            <DataGridTextColumn Header="Free"       Binding="{Binding Free}"       Width="100"/>',
-        '                                            <DataGridTextColumn Header="Used"       Binding="{Binding Used}"       Width="100"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                            </Grid>',
         '                        </TabItem>',
         '                        <TabItem Header="Network">',
-        '                            <Grid Grid.Row="1" Name="Network_Panel" Visibility="Visible">',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="180"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[FightingEntropy]://Network Adapter Information"/>',
-        '                                <GroupBox Header="[Adapter]" Grid.Row="1">',
-        '                                    <DataGrid Name="Network_Adapter" Margin="5" ScrollViewer.HorizontalScrollBarVisibility="Visible">',
+        '                            <GroupBox Header="[Adapter]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="180"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[FightingEntropy]://Network Adapter Information"/>',
+        '                                    <DataGrid Grid.Row="1"  Name="Network_Adapter" Margin="5" ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"       Binding="{Binding Name}"       Width="250"/>',
         '                                            <DataGridTextColumn Header="Index"      Binding="{Binding Index}"      Width="50"/>',
@@ -4014,9 +4302,7 @@ Function New-FEInfrastructure2
         '                                            <DataGridTextColumn Header="MacAddress" Binding="{Binding MacAddress}" Width="125"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Header="[Network]" Grid.Row="2">',
-        '                                    <Grid Margin="5">',
+        '                                    <Grid Grid.Row="2">',
         '                                        <Grid.ColumnDefinitions>',
         '                                            <ColumnDefinition Width="125"/>',
         '                                            <ColumnDefinition Width="250"/>',
@@ -4053,71 +4339,72 @@ Function New-FEInfrastructure2
         '                                        <TextBox  Grid.Row="3" Grid.Column="3" Name="Network_DHCP"/>',
         '                                        <TextBox  Grid.Row="4" Grid.Column="3" Name="Network_MacAddress"/>',
         '                                    </Grid>',
-        '                                </GroupBox>',
-        '                            </Grid>',
+        '                                </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="Dhcp">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="120"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[FightingEntropy]://Dynamic Host Control Protocol"/>',
-        '                                <GroupBox Grid.Row="1"  Header="[Dhcp ScopeID] - (DHCP Server Scope ID Information)">',
-        '                                    <DataGrid Name="CfgDhcpScopeID">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="ScopeID"    Binding="{Binding ScopeID}"    Width="100"/>',
-        '                                            <DataGridTextColumn Header="SubnetMask" Binding="{Binding SubnetMask}" Width="100"/>',
-        '                                            <DataGridTextColumn Header="Name"       Binding="{Binding Name}"       Width="150"/>',
-        '                                            <DataGridTemplateColumn Header="State" Width="50">',
-        '                                                <DataGridTemplateColumn.CellTemplate>',
-        '                                                    <DataTemplate>',
-        '                                                        <ComboBox SelectedIndex="{Binding State}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
-        '                                                            <ComboBoxItem Content="Inactive"/>',
-        '                                                            <ComboBoxItem Content="Active"/>',
-        '                                                        </ComboBox>',
-        '                                                    </DataTemplate>',
-        '                                                </DataGridTemplateColumn.CellTemplate>',
-        '                                            </DataGridTemplateColumn>',
-        '                                            <DataGridTextColumn Header="StartRange" Binding="{Binding StartRange}" Width="*"/>',
-        '                                            <DataGridTextColumn Header="EndRange"   Binding="{Binding EndRange}"   Width="*"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="2" Header="[Dhcp Reservations] - (Selected DHCP Scope Reservations)">',
-        '                                    <DataGrid Name="CfgDhcpScopeReservations">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="IPAddress"   Binding="{Binding IPAddress}"   Width="120"/>',
-        '                                            <DataGridTextColumn Header="ClientID"    Binding="{Binding ClientID}"    Width="150"/>',
-        '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="250"/>',
-        '                                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="350"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="3" Header="[Dhcp Scope Options] - (Selected DHCP Scope Option Values)">',
-        '                                    <DataGrid Name="CfgDhcpScopeOptions">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="OptionID"    Binding="{Binding OptionID}" Width="60"/>',
-        '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}"     Width="150"/>',
-        '                                            <DataGridTextColumn Header="Type"        Binding="{Binding Type}"     Width="200"/>',
-        '                                            <DataGridTextColumn Header="Value"       Binding="{Binding Value}"    Width="*"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                            </Grid>',
+        '                            <GroupBox Header="[Dhcp]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="120"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                        <Label    Grid.Row="0" Content="[Dhcp ScopeID List]"/>',
+        '                                        <DataGrid Grid.Row="1" Name="CfgDhcpScopeID">',
+        '                                            <DataGrid.Columns>',
+        '                                                <DataGridTextColumn Header="ScopeID"    Binding="{Binding ScopeID}"    Width="100"/>',
+        '                                                <DataGridTextColumn Header="SubnetMask" Binding="{Binding SubnetMask}" Width="100"/>',
+        '                                                <DataGridTextColumn Header="Name"       Binding="{Binding Name}"       Width="150"/>',
+        '                                                <DataGridTemplateColumn Header="State" Width="50">',
+        '                                                    <DataGridTemplateColumn.CellTemplate>',
+        '                                                        <DataTemplate>',
+        '                                                            <ComboBox SelectedIndex="{Binding State}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                                <ComboBoxItem Content="Inactive"/>',
+        '                                                                <ComboBoxItem Content="Active"/>',
+        '                                                            </ComboBox>',
+        '                                                        </DataTemplate>',
+        '                                                    </DataGridTemplateColumn.CellTemplate>',
+        '                                                </DataGridTemplateColumn>',
+        '                                                <DataGridTextColumn Header="StartRange" Binding="{Binding StartRange}" Width="*"/>',
+        '                                                <DataGridTextColumn Header="EndRange"   Binding="{Binding EndRange}"   Width="*"/>',
+        '                                            </DataGrid.Columns>',
+        '                                        </DataGrid>',
+        '                                        <Label    Grid.Row="2" Content="[Dhcp Reservations]"/>',
+        '                                        <DataGrid Grid.Row="3" Name="CfgDhcpScopeReservations">',
+        '                                            <DataGrid.Columns>',
+        '                                                <DataGridTextColumn Header="IPAddress"   Binding="{Binding IPAddress}"   Width="120"/>',
+        '                                                <DataGridTextColumn Header="ClientID"    Binding="{Binding ClientID}"    Width="150"/>',
+        '                                                <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="250"/>',
+        '                                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="350"/>',
+        '                                            </DataGrid.Columns>',
+        '                                        </DataGrid>',
+        '                                        <Label    Grid.Row="4" Content="[Dhcp Scope Options]"/>',
+        '                                        <DataGrid Grid.Row="5" Name="CfgDhcpScopeOptions">',
+        '                                            <DataGrid.Columns>',
+        '                                                <DataGridTextColumn Header="OptionID"    Binding="{Binding OptionID}" Width="60"/>',
+        '                                                <DataGridTextColumn Header="Name"        Binding="{Binding Name}"     Width="150"/>',
+        '                                                <DataGridTextColumn Header="Type"        Binding="{Binding Type}"     Width="200"/>',
+        '                                                <DataGridTextColumn Header="Value"       Binding="{Binding Value}"    Width="*"/>',
+        '                                            </DataGrid.Columns>',
+        '                                        </DataGrid>',
+        '                                </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="Dns">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="2*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[FightingEntropy]://Domain Name Service"/>',
-        '                                <GroupBox Grid.Row="1" Header="[CfgDnsZone (DNS Server Zone List)]">',
-        '                                    <DataGrid Name="CfgDnsZone">',
+        '                            <GroupBox Header="[Dns]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="2*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[DNS Server Zone List]"/>',
+        '                                    <DataGrid Grid.Row="1"  Name="CfgDnsZone">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Index" Binding="{Binding Index}"       Width="50"/>',
         '                                            <DataGridTextColumn Header="Name"  Binding="{Binding ZoneName}"    Width="*"/>',
@@ -4125,9 +4412,8 @@ Function New-FEInfrastructure2
         '                                            <DataGridTextColumn Header="Hosts" Binding="{Binding Hosts.Count}" Width="*"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="2" Header="[CfgDnsZone (Selected DNS Server Zone Hosts)]">',
-        '                                    <DataGrid Name="CfgDnsZoneHosts">',
+        '                                    <Label Grid.Row="2" Content="[DNS Server Zone Hosts]"/>',
+        '                                    <DataGrid Grid.Row="3" Name="CfgDnsZoneHosts">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="HostName"   Binding="{Binding HostName}"   Width="250"/>',
         '                                            <DataGridTextColumn Header="Record"     Binding="{Binding RecordType}" Width="65"/>',
@@ -4135,19 +4421,20 @@ Function New-FEInfrastructure2
         '                                            <DataGridTextColumn Header="Data"       Binding="{Binding RecordData}" Width="Auto"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                            </Grid>',
+        '                                </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="Adds">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="200"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[FightingEntropy]://Active Directory Domain Service"/>',
-        '                                <GroupBox Grid.Row="1" Header="[CfgAddsDomain] - (Active Directory Domain Information)">',
-        '                                    <Grid>',
+        '                            <GroupBox Header="[Adds]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="160"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[Active Directory Domain Information]"/>',
+        '                                    <Grid  Grid.Row="1">',
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="40"/>',
         '                                            <RowDefinition Height="40"/>',
@@ -4179,9 +4466,8 @@ Function New-FEInfrastructure2
         '                                        <TextBox Grid.Row="2" Grid.Column="3" Name="Adds_Config"/>',
         '                                        <TextBox Grid.Row="3" Grid.Column="3" Name="Adds_Schema"/>',
         '                                    </Grid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="2" Header="[CfgAddsObjects] - (Active Directory Objects)">',
-        '                                    <Grid>',
+        '                                    <Label Grid.Row="2" Content="[Active Directory Objects]"/>',
+        '                                    <Grid  Grid.Row="3">',
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="40"/>',
         '                                            <RowDefinition Height="*"/>',
@@ -4202,21 +4488,23 @@ Function New-FEInfrastructure2
         '                                                <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="500"/>',
         '                                            </DataGrid.Columns>',
         '                                        </DataGrid>',
-        '                                    </Grid>',
-        '                                </GroupBox>',
-        '                            </Grid>',
+        '                                    </Grid> ',
+        '                                </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="Hyper-V">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="120"/>',
-        '                                    <RowDefinition Height="180"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[FightingEntropy]://Veridian"/>',
-        '                                <GroupBox Grid.Row="1" Header="[Hyper-V Host] - (Main Hyper-V Host Settings)">',
-        '                                    <DataGrid Name="CfgHyperV">',
+        '                            <GroupBox Header="[Veridian]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="80"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="120"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[(Veridian/Hyper-V) Host Settings]"/>',
+        '                                    <DataGrid Grid.Row="1" Name="CfgHyperV">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"      Binding="{Binding Name}"      Width="150"/>',
         '                                            <DataGridTextColumn Header="Processor" Binding="{Binding Processor}" Width="80"/>',
@@ -4225,9 +4513,8 @@ Function New-FEInfrastructure2
         '                                            <DataGridTextColumn Header="VHDPath"   Binding="{Binding VHDPath}"   Width="500"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="2" Header="[Hyper-V Switch] - (Virtual Switches)">',
-        '                                    <DataGrid Name="CfgHyperV_Switch">',
+        '                                    <Label Grid.Row="2" Content="[Virtual Switches] (Disabled)"/>',
+        '                                    <DataGrid Grid.Row="3" Name="CfgHyperV_Switch">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Index"       Binding="{Binding Index}"       Width="40"/>',
         '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="150"/>',
@@ -4243,9 +4530,8 @@ Function New-FEInfrastructure2
         '                                            </DataGridTemplateColumn>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="3" Header="[Hyper-V VM] - (Virtual Machines)">',
-        '                                    <DataGrid Name="CfgHyperV_VM">',
+        '                                    <Label Grid.Row="4" Content="[Virtual Machines] (Disabled)"/>',
+        '                                    <DataGrid Grid.Row="5" Name="CfgHyperV_VM">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Index"       Binding="{Binding Index}"       Width="40"/>',
         '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="150"/>',
@@ -4262,31 +4548,33 @@ Function New-FEInfrastructure2
         '                                            <DataGridTextColumn Header="Path"        Binding="{Binding Path}"        Width="500"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                            </Grid>',
+        '                                </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="Wds">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[FightingEntropy]://Windows Deployment Services"/>',
-        '                                <Grid Grid.Row="1">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="150"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="150"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Column="0" Content="[Server]:"/>',
-        '                                    <TextBox  Grid.Column="1" Name="WDS_Server"/>',
-        '                                    <Label    Grid.Column="2" Content="[IPAddress]:"/>',
-        '                                    <ComboBox Grid.Column="3" Name="WDS_IPAddress"/>',
-        '                                </Grid>',
-        '                                <GroupBox Grid.Row="2" Header="[Wds] - (Images)">',
-        '                                    <DataGrid Name="Wds_Images">',
+        '                            <GroupBox Header="[Wds]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[Windows Deployment Services]"/>',
+        '                                    <Grid  Grid.Row="1">',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="150"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="150"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Label    Grid.Column="0" Content="[Server]:"/>',
+        '                                        <TextBox  Grid.Column="1" Name="WDS_Server"/>',
+        '                                        <Label    Grid.Column="2" Content="[IPAddress]:"/>',
+        '                                        <ComboBox Grid.Column="3" Name="WDS_IPAddress"/>',
+        '                                    </Grid>',
+        '                                    <Label Grid.Row="2" Content="[Wds Images (Disabled)"/>',
+        '                                    <DataGrid Grid.Row="3" Name="Wds_Images">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Type"        Binding="{Binding Type}"        Width="60"/>',
         '                                            <DataGridTextColumn Header="Arch"        Binding="{Binding Arch}"        Width="40"/>',
@@ -4307,66 +4595,70 @@ Function New-FEInfrastructure2
         '                                            <DataGridTextColumn Header="ID"          Binding="{Binding ID}"          Width="250"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                            </Grid>',
+        '                                </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="Mdt/WinADK/WinPE">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[FightingEntropy]://Windows Deployment Services"/>',
-        '                                <Grid Grid.Row="1">',
+        '                            <GroupBox Header="[Mdt]">',
+        '                                <Grid>',
         '                                    <Grid.RowDefinitions>',
         '                                        <RowDefinition Height="40"/>',
-        '                                        <RowDefinition Height="40"/>',
-        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="160"/>',
         '                                        <RowDefinition Height="40"/>',
         '                                        <RowDefinition Height="*"/>',
         '                                    </Grid.RowDefinitions>',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="150"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="150"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Row="0" Grid.Column="0" Content="[Server]:"/>',
-        '                                    <TextBox  Grid.Row="0" Grid.Column="1" Name="MDT_Server"/>',
-        '                                    <Label    Grid.Row="0" Grid.Column="2" Content="[IPAddress]:"/>',
-        '                                    <ComboBox Grid.Row="0" Grid.Column="3" Name="MDT_IPAddress"/>',
-        '                                    <Label    Grid.Row="1" Grid.Column="0" Content="[WinADK Version]:"/>',
-        '                                    <TextBox  Grid.Row="1" Grid.Column="1" Name="MDT_ADK_Version"/>',
-        '                                    <Label    Grid.Row="1" Grid.Column="2" Content="[WinPE Version]:"/>',
-        '                                    <TextBox  Grid.Row="1" Grid.Column="3" Name="MDT_PE_Version"/>',
-        '                                    <Label    Grid.Row="2" Grid.Column="0" Content="[MDT Version]:"/>',
-        '                                    <TextBox  Grid.Row="2" Grid.Column="1" Name="MDT_Version"/>',
-        '                                    <Label    Grid.Row="3" Grid.Column="0" Content="[Installation Path]:"/>',
-        '                                    <TextBox  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Name="MDT_Path"/>',
-        '                                    <GroupBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Header="[Mdt] - (Shares)">',
-        '                                        <DataGrid Name="Mdt_Shares">',
-        '                                            <DataGrid.Columns>',
-        '                                                <DataGridTextColumn Header="Name"        Binding="{Binding Name}" Width="60"/>',
-        '                                                <DataGridTextColumn Header="Type"        Binding="{Binding Type}" Width="60"/>',
-        '                                                <DataGridTextColumn Header="Root"        Binding="{Binding Root}" Width="250"/>',
-        '                                                <DataGridTextColumn Header="Share"       Binding="{Binding Share}" Width="150"/>',
-        '                                                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="350"/>',
-        '                                            </DataGrid.Columns>',
-        '                                        </DataGrid>',
-        '                                    </GroupBox>',
+        '                                    <Label Grid.Row="0" Content="[Microsoft Deployment Toolkit (Top-Shelf)]"/>',
+        '                                    <Grid Grid.Row="1">',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="150"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="150"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Label    Grid.Row="0" Grid.Column="0" Content="[Server]:"/>',
+        '                                        <TextBox  Grid.Row="0" Grid.Column="1" Name="MDT_Server"/>',
+        '                                        <Label    Grid.Row="0" Grid.Column="2" Content="[IPAddress]:"/>',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="3" Name="MDT_IPAddress"/>',
+        '                                        <Label    Grid.Row="1" Grid.Column="0" Content="[WinADK Version]:"/>',
+        '                                        <TextBox  Grid.Row="1" Grid.Column="1" Name="MDT_ADK_Version"/>',
+        '                                        <Label    Grid.Row="1" Grid.Column="2" Content="[WinPE Version]:"/>',
+        '                                        <TextBox  Grid.Row="1" Grid.Column="3" Name="MDT_PE_Version"/>',
+        '                                        <Label    Grid.Row="2" Grid.Column="0" Content="[MDT Version]:"/>',
+        '                                        <TextBox  Grid.Row="2" Grid.Column="1" Name="MDT_Version"/>',
+        '                                        <Label    Grid.Row="3" Grid.Column="0" Content="[Installation Path]:"/>',
+        '                                        <TextBox  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Name="MDT_Path"/>',
+        '                                    </Grid>',
+        '                                    <Label Grid.Row="2" Content="[Mdt Shares] (Disabled)"/>',
+        '                                    <DataGrid Grid.Row="3" Name="Mdt_Shares">',
+        '                                        <DataGrid.Columns>',
+        '                                            <DataGridTextColumn Header="Name"        Binding="{Binding Name}" Width="60"/>',
+        '                                            <DataGridTextColumn Header="Type"        Binding="{Binding Type}" Width="60"/>',
+        '                                            <DataGridTextColumn Header="Root"        Binding="{Binding Root}" Width="250"/>',
+        '                                            <DataGridTextColumn Header="Share"       Binding="{Binding Share}" Width="150"/>',
+        '                                            <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="350"/>',
+        '                                        </DataGrid.Columns>',
+        '                                    </DataGrid>        ',
         '                                </Grid>',
-        '                            </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="IIS">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[FightingEntropy]://Internet Information Services"/>',
-        '                                <GroupBox Grid.Row="1" Header="[IIS App Pools]">',
-        '                                    <DataGrid Name="IIS_AppPools">',
+        '                            <GroupBox Header="[IIS]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label    Grid.Row="0" Content="[IIS Application Pools]"/>',
+        '                                    <DataGrid Grid.Row="1" Name="IIS_AppPools">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"         Binding="{Binding Name}"         Width="150"/>',
         '                                            <DataGridTextColumn Header="Status"       Binding="{Binding Status}"       Width="80"/>',
@@ -4376,9 +4668,8 @@ Function New-FEInfrastructure2
         '                                            <DataGridTextColumn Header="StartMode"    Binding="{Binding StartMode}"    Width="*"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="2" Header="[IIS Sites]">',
-        '                                    <DataGrid Name="IIS_Sites">',
+        '                                    <Label    Grid.Row="2" Content="[IIS Sites]"/>',
+        '                                    <DataGrid Grid.Row="3" Name="IIS_Sites">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="150"/>',
         '                                            <DataGridTextColumn Header="ID"    Binding="{Binding ID}"    Width="40"/>',
@@ -4394,8 +4685,8 @@ Function New-FEInfrastructure2
         '                                            <DataGridTextColumn Header="BindCount" Binding="{Binding BindCount}" Width="60"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                            </Grid>',
+        '                                </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                    </TabControl>',
         '                </Grid>',
@@ -4403,68 +4694,75 @@ Function New-FEInfrastructure2
         '            <TabItem Header="Domain">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="80"/>',
-        '                        <RowDefinition Height="160"/>',
-        '                        <RowDefinition Height="80"/>',
-        '                        <RowDefinition Height="160"/>',
-        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="680"/>',
         '                        <RowDefinition Height="40"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <Grid Grid.Row="0">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="120"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <GroupBox Grid.Column="0" Header="[DcOrganization] - (Company Name)">',
-        '                            <TextBox Name="DcOrganization"/>',
-        '                        </GroupBox>',
-        '                        <GroupBox Grid.Column="1" Header="[DcCommonName] - (Domain Name)">',
-        '                            <TextBox Name="DcCommonName"/>',
-        '                        </GroupBox>',
-        '                        <Button Grid.Column="2" Name="DcGetSitename" Content="Get Sitename"/>',
-        '                    </Grid>',
-        '                    <GroupBox Grid.Row="1" Header="[DcAggregate] - (Provision subdomain/site list)">',
-        '                        <DataGrid Name="DcAggregate"',
-        '                                  ScrollViewer.CanContentScroll="True"',
-        '                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
-        '                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"     Binding="{Binding SiteLink}" Width="120"/>',
-        '                                <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="100"/>',
-        '                                <DataGridTextColumn Header="Region"   Binding="{Binding Region}"   Width="60"/>',
-        '                                <DataGridTextColumn Header="Country"  Binding="{Binding Country}"  Width="60"/>',
-        '                                <DataGridTextColumn Header="Postal"   Binding="{Binding Postal}"   Width="60"/>',
-        '                                <DataGridTextColumn Header="SiteName" Binding="{Binding SiteName}" Width="Auto"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </GroupBox>',
-        '                    <Grid Grid.Row="2">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="40"/>',
-        '                            <ColumnDefinition Width="40"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <GroupBox Grid.Column="0" Header="[DcAddSitenameTown]" IsEnabled="False">',
-        '                            <TextBox Name="DcAddSitenameTown"/>',
-        '                        </GroupBox>',
-        '                        <GroupBox Grid.Column="1" Header="[DcAddSitenameZip]">',
-        '                            <TextBox Name="DcAddSitenameZip"/>',
-        '                        </GroupBox>',
-        '                        <Button Grid.Column="2" Name="DcAddSitename" Content="+"/>',
-        '                        <Button Grid.Column="3" Name="DcRemoveSitename" Content="-"/>',
-        '                    </Grid>',
-        '                    <GroupBox Grid.Row="3" Header="[DcViewer] - (View each sites&apos; properties/attributes)">',
-        '                        <DataGrid Name="DcViewer">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="150"/>',
-        '                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </GroupBox>',
-        '                    <GroupBox Grid.Row="4" Header="[DcTopology] - (Output/Existence validation)">',
-        '                        <DataGrid Grid.Row="0" Name="DcTopology"',
+        '                    <GroupBox Grid.Row="0" Header="[Domain]">',
+        '                        <Grid>',
+        '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="140"/>',
+        '                                <RowDefinition Height="80"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="140"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="140"/>',
+        '                            </Grid.RowDefinitions>',
+        '                            <Label Grid.Row="0" Content="[Aggregate]: Provision (subdomain/site) list"/>',
+        '                            <DataGrid Grid.Row="1" Name="DcAggregate"',
+        '                                      ScrollViewer.CanContentScroll="True"',
+        '                                      ScrollViewer.IsDeferredScrollingEnabled="True"',
+        '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name"     Binding="{Binding SiteLink}" Width="120"/>',
+        '                                    <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="100"/>',
+        '                                    <DataGridTextColumn Header="Region"   Binding="{Binding Region}"   Width="60"/>',
+        '                                    <DataGridTextColumn Header="Country"  Binding="{Binding Country}"  Width="60"/>',
+        '                                    <DataGridTextColumn Header="Postal"   Binding="{Binding Postal}"   Width="60"/>',
+        '                                    <DataGridTextColumn Header="SiteName" Binding="{Binding SiteName}" Width="Auto"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Grid Grid.Row="2">',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="125"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="125"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label   Grid.Row="0" Grid.Column="0" Content="[Organization]:"/>',
+        '                                <TextBox Grid.Row="0" Grid.Column="1" Name="DcOrganization"/>',
+        '                                <Label   Grid.Row="0" Grid.Column="2" Content="[CommonName]:"/>',
+        '                                <TextBox Grid.Row="0" Grid.Column="3" Name="DcCommonName"/>',
+        '                                <Button  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Name="DcGetSitename" Content="Get Sitename"/>',
+        '                                <Label   Grid.Row="1" Grid.Column="2" Content="[Zip Code]:"/>',
+        '                                <Grid Grid.Row="1" Grid.Column="3">',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <TextBox Grid.Column="0" Name="DcAddSitenameZip"/>',
+        '                                    <Button  Grid.Column="1" Name="DcAddSitename"    Content="+"/>',
+        '                                    <Button  Grid.Column="2" Name="DcRemoveSitename" Content="-"/>',
+        '                                </Grid>',
+        '                            </Grid>',
+        '                            <Border Grid.Row="3" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Label Grid.Row="4" Content="[Viewer]: View each sites&apos; (properties/attributes)"/>',
+        '                            <DataGrid Grid.Row="5" Name="DcViewer">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="150"/>',
+        '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Border Grid.Row="6" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Label Grid.Row="7" Content="[Topology]: Output/Existence validation"/>',
+        '                            <DataGrid Grid.Row="8" Name="DcTopology"',
         '                                               ScrollViewer.CanContentScroll="True"',
         '                                               ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                               ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -4484,8 +4782,9 @@ Function New-FEInfrastructure2
         '                                <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
+        '                        </Grid>',
         '                    </GroupBox>',
-        '                    <Grid Grid.Row="5">',
+        '                    <Grid Grid.Row="1">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="*"/>',
@@ -4498,61 +4797,66 @@ Function New-FEInfrastructure2
         '            <TabItem Header="Network">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="80"/>',
-        '                        <RowDefinition Height="160"/>',
-        '                        <RowDefinition Height="80"/>',
-        '                        <RowDefinition Height="160"/>',
-        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="680"/>',
         '                        <RowDefinition Height="40"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <Grid Grid.Row="0">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="100"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <GroupBox Grid.Row="0" Header="[NwScope] - (Enter master address/prefix length)">',
-        '                            <TextBox Grid.Column="0" Name="NwScope"/>',
-        '                        </GroupBox>',
-        '                        <Button Grid.Column="1" Name="NwScopeLoad" Content="Load" IsEnabled="False"/>',
-        '                    </Grid>',
-        '                    <GroupBox Grid.Row="1" Header="[NwAggregate] - (Provision independent subnets)">',
-        '                        <DataGrid Name="NwAggregate"',
+        '                    <GroupBox Grid.Row="0" Header="[Network]">',
+        '                        <Grid>',
+        '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="160"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="150"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="150"/>',
+        '                            </Grid.RowDefinitions>',
+        '                            <Label    Grid.Row="0" Content ="[Aggregate]: Provision (master address/prefix) &amp; independent subnets"/>',
+        '                            <DataGrid Grid.Row="1" Name="NwAggregate"',
         '                                  ScrollViewer.CanContentScroll="True" ',
         '                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"      Binding="{Binding Network}"   Width="100"/>',
-        '                                <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="100"/>',
-        '                                <DataGridTextColumn Header="HostCount" Binding="{Binding HostCount}" Width="60"/>',
-        '                                <DataGridTextColumn Header="HostRange" Binding="{Binding HostRange}" Width="100"/>',
-        '                                <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="100"/>',
-        '                                <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="100"/>',
-        '                                <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </GroupBox>',
-        '                    <Grid Grid.Row="2">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="40"/>',
-        '                            <ColumnDefinition Width="40"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <GroupBox Grid.Column="0" Header="[NwSubnetName] - (Add an independent address/prefix length)">',
-        '                            <TextBox Name="NwSubnetName"/>',
-        '                        </GroupBox>',
-        '                        <Button Grid.Column="1" Name="NwAddSubnetName" Content="+"/>',
-        '                        <Button Grid.Column="2" Name="NwRemoveSubnetName" Content="-"/>',
-        '                    </Grid>',
-        '                    <GroupBox Grid.Row="3" Header="[NwViewer] - (View each subnets&apos; properties/attributes)">',
-        '                        <DataGrid Name="NwViewer">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"   Binding="{Binding Name}"  Width="150"/>',
-        '                                <DataGridTextColumn Header="Value"  Binding="{Binding Value}" Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </GroupBox>',
-        '                    <GroupBox Grid.Row="4" Header="[NwTopology] - (Output/Existence validation)">',
-        '                        <DataGrid Name="NwTopology"',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name"      Binding="{Binding Network}"   Width="100"/>',
+        '                                    <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="100"/>',
+        '                                    <DataGridTextColumn Header="HostCount" Binding="{Binding HostCount}" Width="60"/>',
+        '                                    <DataGridTextColumn Header="HostRange" Binding="{Binding HostRange}" Width="100"/>',
+        '                                    <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="100"/>',
+        '                                    <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="100"/>',
+        '                                    <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Grid Grid.Row="2">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="80"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="80"/>                                    ',
+        '                                    <ColumnDefinition Width="80"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="40"/>',
+        '                                    <ColumnDefinition Width="40"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label   Grid.Column="0" Content="[Scope]:"/>',
+        '                                <TextBox Grid.Column="1" Name="NwScope"/>',
+        '                                <Button  Grid.Column="2" Name="NwScopeLoad" Content="Load" IsEnabled="False"/>',
+        '                                <Label   Grid.Column="3" Content="[Subnet]:"/>',
+        '                                <TextBox Grid.Column="4" Name="NwSubnetName"/>',
+        '                                <Button  Grid.Column="5" Name="NwAddSubnetName" Content="+"/>',
+        '                                <Button  Grid.Column="6" Name="NwRemoveSubnetName" Content="-"/>',
+        '                            </Grid>',
+        '                            <Border   Grid.Row="3" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Label    Grid.Row="4" Content="[Viewer]: View each subnets&apos; (properties/attributes)"/>',
+        '                            <DataGrid Grid.Row="5" Name="NwViewer">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name"   Binding="{Binding Name}"  Width="150"/>',
+        '                                    <DataGridTextColumn Header="Value"  Binding="{Binding Value}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Border   Grid.Row="6" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Label    Grid.Row="7" Content="[Topology]: (Output/Existence) validation"/>',
+        '                            <DataGrid Grid.Row="8" Name="NwTopology"',
         '                                  ScrollViewer.CanContentScroll="True"',
         '                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -4572,8 +4876,9 @@ Function New-FEInfrastructure2
         '                                <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
+        '                        </Grid>',
         '                    </GroupBox>',
-        '                    <Grid Grid.Row="5">',
+        '                    <Grid Grid.Row="1">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="*"/>',
@@ -4586,94 +4891,119 @@ Function New-FEInfrastructure2
         '            <TabItem Header="Sitemap">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="80"/>',
-        '                        <RowDefinition Height="140"/>',
-        '                        <RowDefinition Height="140"/>',
-        '                        <RowDefinition Height="140"/>',
-        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="680"/>',
         '                        <RowDefinition Height="40"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <Grid Grid.Row="0">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="1.1*"/>',
-        '                            <ColumnDefinition Width="120"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <GroupBox Grid.Column="0" Header="[SmSiteCount] - (Selected sites)">',
-        '                            <TextBox Name="SmSiteCount"/>',
-        '                        </GroupBox>',
-        '                        <GroupBox Grid.Column="1" Header="[SmNetworkCount] - (Selected Subnets)">',
-        '                            <TextBox Name="SmNetworkCount"/>',
-        '                        </GroupBox>',
-        '                        <Button Grid.Column="2" Name="SmLoadSitemap" Content="Load"/>',
-        '                    </Grid>',
-        '                    <GroupBox Grid.Row="1" Header="[SmAggregate] - (Sites to be generated)">',
-        '                        <DataGrid Name="SmAggregate">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"      Binding="{Binding Name}"     Width="125"/>',
-        '                                <DataGridTextColumn Header="Location"  Binding="{Binding Location}" Width="150"/>',
-        '                                <DataGridTextColumn Header="Sitename"  Binding="{Binding SiteName}" Width="300"/>',
-        '                                <DataGridTextColumn Header="Network"   Binding="{Binding Network}"  Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </GroupBox>',
-        '                    <Grid Grid.Row="2">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <GroupBox Grid.Column="0" Header="[SmSiteLink] - (Select main ISTG trunk)">',
-        '                            <DataGrid Name="SmSiteLink">',
+        '                    <GroupBox Grid.Row="0" Header="[Sitemap]">',
+        '                        <Grid>',
+        '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="100"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="140"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="100"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="110"/>',
+        '                            </Grid.RowDefinitions>',
+        '                            <Label Grid.Row="0" Content="[Aggregate]: Sites to be generated"/>',
+        '                            <DataGrid Grid.Row="1" Name="SmAggregate">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name"               Binding="{Binding Name}"              Width="150"/>',
-        '                                    <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="*"/>',
+        '                                    <DataGridTextColumn Header="Name"      Binding="{Binding Name}"     Width="125"/>',
+        '                                    <DataGridTextColumn Header="Location"  Binding="{Binding Location}" Width="150"/>',
+        '                                    <DataGridTextColumn Header="Sitename"  Binding="{Binding SiteName}" Width="300"/>',
+        '                                    <DataGridTextColumn Header="Network"   Binding="{Binding Network}"  Width="*"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                        </GroupBox>',
-        '                        <GroupBox Grid.Column="1" Header="[SmTemplate] - (Create these objects for each site)">',
-        '                            <DataGrid Name="SmTemplate">',
+        '                            <Grid Grid.Row="2">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="125"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="125"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label   Grid.Column="0" Content="[Site Count]:"/>',
+        '                                <TextBox Grid.Column="1" Name="SmSiteCount"/>',
+        '                                <Label   Grid.Column="2" Content="[Network Count]:"/>',
+        '                                <TextBox Grid.Column="3" Name="SmNetworkCount"/>',
+        '                                <Button  Grid.Column="4" Name="SmLoadSitemap" Content="Load"/>',
+        '                            </Grid>',
+        '                            <Border   Grid.Row="3" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Grid     Grid.Row="4">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="10"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Grid Grid.Column="0">',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label    Grid.Row="0" Content="[SiteLink]: Select main ISTG trunk"/>',
+        '                                    <DataGrid Grid.Row="1" Name="SmSiteLink">',
+        '                                        <DataGrid.Columns>',
+        '                                            <DataGridTextColumn Header="Name"               Binding="{Binding Name}"              Width="150"/>',
+        '                                            <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="*"/>',
+        '                                        </DataGrid.Columns>',
+        '                                    </DataGrid>',
+        '                                </Grid>',
+        '                                <Border   Grid.Column="1" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                <Grid Grid.Column="2">',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label    Grid.Row="0" Content="[Template]: Create these objects for each site"/>',
+        '                                    <DataGrid Grid.Row="1" Name="SmTemplate">',
+        '                                        <DataGrid.Columns>',
+        '                                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="150"/>',
+        '                                            <DataGridTemplateColumn Header="Create" Width="*">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox SelectedIndex="{Binding Create}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                            <ComboBoxItem Content="False"/>',
+        '                                                            <ComboBoxItem Content="True"/>',
+        '                                                        </ComboBox>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                        </DataGrid.Columns>',
+        '                                    </DataGrid>',
+        '                                </Grid>',
+        '                            </Grid>',
+        '                            <Border   Grid.Row="5" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Label    Grid.Row="6" Content="[Viewer]: View each sites&apos; (properties/attributes)"/>',
+        '                            <DataGrid Grid.Row="7" Name="SmViewer">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="150"/>',
-        '                                    <DataGridTemplateColumn Header="Create" Width="*">',
+        '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="150"/>',
+        '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Border   Grid.Row="8" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Label    Grid.Row="9" Content="[Topology]: (Output/Existence) Validation"/>',
+        '                            <DataGrid Grid.Row="10"  Name="SmTopology">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="125"/>',
+        '                                    <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>',
+        '                                    <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Create}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
         '                                                    <ComboBoxItem Content="False"/>',
         '                                                    <ComboBoxItem Content="True"/>',
         '                                                </ComboBox>',
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
+        '                                    <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                        </GroupBox>',
-        '                    </Grid>',
-        '                    <GroupBox Grid.Row="3" Header="[SmViewer] - (View each sites&apos; properties/attributes)">',
-        '                        <DataGrid Name="SmViewer">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="150"/>',
-        '                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
-        '                    </GroupBox>',
-        '                    <GroupBox Grid.Row="4" Header="[SmTopology] - (Output/Existence Validation)">',
-        '                        <DataGrid Name="SmTopology">',
-        '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="125"/>',
-        '                                <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>',
-        '                                <DataGridTemplateColumn Header="Exists" Width="60">',
-        '                                    <DataGridTemplateColumn.CellTemplate>',
-        '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
-        '                                                <ComboBoxItem Content="False"/>',
-        '                                                <ComboBoxItem Content="True"/>',
-        '                                            </ComboBox>',
-        '                                        </DataTemplate>',
-        '                                    </DataGridTemplateColumn.CellTemplate>',
-        '                                </DataGridTemplateColumn>',
-        '                                <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>',
-        '                            </DataGrid.Columns>',
-        '                        </DataGrid>',
+        '                        </Grid>',
         '                    </GroupBox>',
         '                    <Grid Grid.Row="5">',
         '                        <Grid.ColumnDefinitions>',
@@ -4686,46 +5016,52 @@ Function New-FEInfrastructure2
         '                </Grid>',
         '            </TabItem>',
         '            <TabItem Header="Adds">',
+        '                <GroupBox Header="[Adds]">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="80"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                        <RowDefinition Height="10"/>',
         '                        <RowDefinition Height="*"/>',
         '                    </Grid.RowDefinitions>',
         '                    <Grid Grid.Row="0">',
         '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="80"/>',
         '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="60"/>',
         '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="80"/>',
         '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="120"/>',
+        '                                <ColumnDefinition Width="100"/>',
         '                            </Grid.ColumnDefinitions>',
-        '                            <GroupBox Grid.Column="0" Header="[Name]">',
-        '                                <ComboBox Name="AddsSite" ItemsSource="{Binding Name}"/>',
-        '                            </GroupBox>',
-        '                            <GroupBox Grid.Column="1" Header="[Site]">',
-        '                                <TextBox Name="AddsSiteName" IsReadOnly="True"/>',
-        '                            </GroupBox>',
-        '                            <GroupBox Grid.Column="2" Header="[Subnet]">',
-        '                                <TextBox Name="AddsSubnetName" IsReadOnly="True"/>',
-        '                            </GroupBox>',
-        '                            <Button Name="AddsSiteDefaults" Grid.Column="3" Content="Add All Defaults"/>',
+        '                            <Label    Grid.Column="0" Content="[Name]:"/>',
+        '                            <ComboBox Grid.Column="1" Name="AddsSite" ItemsSource="{Binding Name}"/>',
+        '                            <Label    Grid.Column="2" Content="[Site]:"/>',
+        '                            <TextBox  Grid.Column="3" Name="AddsSiteName" IsReadOnly="True"/>',
+        '                            <Label    Grid.Column="4" Content="[Subnet]:"/>',
+        '                            <TextBox  Grid.Column="5" Name="AddsSubnetName" IsReadOnly="True"/>',
+        '                            <Button   Grid.Column="6" Name="AddsSiteDefaults" Content="[All] Defaults"/>',
         '                        </Grid>',
-        '                    <TabControl Grid.Row="1">',
+        '                    <Border   Grid.Row="1" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                    <TabControl Grid.Row="2">',
         '                        <TabItem Header="Control">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="2*"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="1.5*"/>',
+        '                                    <RowDefinition Height="10"/>',
+        '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
-        '                                <GroupBox Grid.Row="0" Header="[Viewer]">',
-        '                                    <DataGrid Name="AddsViewer">',
-        '                                        <DataGrid.Columns>',
+        '                                <Label    Grid.Row="0" Content="[Viewer]"/>',
+        '                                <DataGrid Grid.Row="1" Name="AddsViewer">',
+        '                                    <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
         '                                            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <GroupBox Grid.Row="1" Header="[Children]">',
-        '                                    <DataGrid Name="AddsChildren">',
+        '                                <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                <Label Grid.Row="3" Content="[Children]"/>',
+        '                                    <DataGrid Grid.Row="4" Name="AddsChildren">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>',
         '                                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>',
@@ -4742,55 +5078,49 @@ Function New-FEInfrastructure2
         '                                            <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="*"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
         '                            </Grid>',
         '                        </TabItem>',
         '                        <TabItem Header="Gateway">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="90"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="10"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
         '                                <Grid Grid.Row="0">',
         '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="70"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="60"/>',
         '                                        <ColumnDefinition Width="2*"/>',
+        '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="40"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Column="0" Header="[Gateway Name]">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0" Name="AddsGwName"/>',
-        '                                            <Button  Grid.Column="1" Name="AddsGwAdd"     Content="+"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsGwDelete"  Content="-"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Column="1" Header="[Gateway List] - (Input a file/list)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="80"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0" Name="AddsGwFile"/>',
-        '                                            <Button  Grid.Column="1" Name="AddsGwBrowse"  Content="Browse"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsGwAddList" Content="+"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
+        '                                    <Label   Grid.Column="0" Content="[Name]:"/>',
+        '                                    <TextBox Grid.Column="1" Name="AddsGwName"/>',
+        '                                    <Button  Grid.Column="2" Name="AddsGwAdd"     Content="+"/>',
+        '                                    <Button  Grid.Column="3" Name="AddsGwDelete"  Content="-"/>',
+        '                                    <Label   Grid.Column="4" Content="[List]:"/>',
+        '                                    <TextBox Grid.Column="5" Name="AddsGwFile"/>',
+        '                                    <Button  Grid.Column="6" Name="AddsGwBrowse"  Content="Browse"/>',
+        '                                    <Button  Grid.Column="7" Name="AddsGwAddList" Content="+"/>',
         '                                </Grid>',
-        '                                <TabControl Grid.Row="1">',
+        '                                <Border   Grid.Row="1" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                <TabControl Grid.Row="2">',
         '                                    <TabItem Header="Aggregate">',
         '                                        <Grid>',
         '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[Aggregate] - (Provision gateway/router items)">',
-        '                                                <DataGrid Name="AddsGwAggregate"',
+        '                                            <Label Grid.Row="0" Content="[Aggregate]: Provision (gateway/router) items"/>',
+        '                                                <DataGrid Grid.Row="1" Name="AddsGwAggregate"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -4811,25 +5141,27 @@ Function New-FEInfrastructure2
         '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="400"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[Aggregate Viewer] - (View a gateways&apos; properties/attributes)">',
-        '                                                <DataGrid Name="AddsGwAggregateViewer">',
+        '                                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                            <Label Grid.Row="3" Content="[Viewer]: View a gateways&apos; properties/attributes)"/>',
+        '                                                <DataGrid Grid.Row="4" Name="AddsGwAggregateViewer">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
         '                                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                    <TabItem Header="Output">',
         '                                        <Grid>',
         '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[Output] - (Provisioned gateway/router items)">',
-        '                                                <DataGrid Name="AddsGwOutput"',
+        '                                            <Label Grid.Row="0" Content="[Output]: Provisioned (gateway/router) items"/>',
+        '                                                <DataGrid Grid.Row="1" Name="AddsGwOutput"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -4870,19 +5202,18 @@ Function New-FEInfrastructure2
         '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[Output Viewer] - (View a gateways&apos; properties/attributes)">',
-        '                                                <DataGrid Name="AddsGwOutputViewer">',
+        '                                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                            <Label Grid.Row="3" Content="[Viewer]: View a gateways&apos; properties/attributes"/>',
+        '                                                <DataGrid Grid.Row="4" Name="AddsGwOutputViewer">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
         '                                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                </TabControl>',
-        '                                <Grid Grid.Row="2">',
+        '                                <Grid Grid.Row="3">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
@@ -4897,49 +5228,44 @@ Function New-FEInfrastructure2
         '                        <TabItem Header="Server">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="90"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="10"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
         '                                <Grid Grid.Row="0">',
         '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="70"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="60"/>',
         '                                        <ColumnDefinition Width="2*"/>',
+        '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="40"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Column="0" Header="[Server Name]">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0" Name="AddsSrName"/>',
-        '                                            <Button  Grid.Column="1" Name="AddsSrAdd"     Content="+"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsSrDelete"  Content="-"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Column="1" Header="[Server List] - (Input a file/list)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="80"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0" Name="AddsSrFile"/>',
-        '                                            <Button  Grid.Column="1" Name="AddsSrBrowse" Content="Browse"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsSrAddList" Content="+"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
+        '                                    <Label   Grid.Column="0" Content="[Name]:"/>',
+        '                                    <TextBox Grid.Column="1" Name="AddsSrName"/>',
+        '                                    <Button  Grid.Column="2" Name="AddsSrAdd"     Content="+"/>',
+        '                                    <Button  Grid.Column="3" Name="AddsSrDelete"  Content="-"/>',
+        '                                    <Label   Grid.Column="4" Content="[List]:"/>',
+        '                                    <TextBox Grid.Column="5" Name="AddsSrFile"/>',
+        '                                    <Button  Grid.Column="6" Name="AddsSrBrowse"  Content="Browse"/>',
+        '                                    <Button  Grid.Column="7" Name="AddsSrAddList" Content="+"/>',
         '                                </Grid>',
-        '                                <TabControl Grid.Row="1">',
+        '                                <Border   Grid.Row="1" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                <TabControl Grid.Row="2">',
         '                                    <TabItem Header="Aggregate">',
         '                                        <Grid>',
         '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[Aggregate] - (Provision gateway/router items)">',
-        '                                                <DataGrid Name="AddsSrAggregate"',
+        '                                            <Label Grid.Row="0" Content="[Aggregate]: Provision (server/domain controller) items"/>',
+        '                                                <DataGrid Grid.Row="1 " Name="AddsSrAggregate"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -4960,25 +5286,27 @@ Function New-FEInfrastructure2
         '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="400"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[Aggregate Viewer] - (View a servers&apos; properties/attributes)">',
-        '                                                <DataGrid Name="AddsSrAggregateViewer">',
+        '                                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                            <Label Grid.Row="3" Content="[Viewer]: View a servers&apos; properties/attributes)"/>',
+        '                                                <DataGrid Grid.Row="4" Name="AddsSrAggregateViewer">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
         '                                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                    <TabItem Header="Output">',
         '                                        <Grid>',
         '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[Output] - (Provisioned gateway/router items)">',
-        '                                                <DataGrid Name="AddsSrOutput"',
+        '                                            <Label Grid.Row="0" Content="[Output]: Provisioned (server/domain controller) items"/>',
+        '                                                <DataGrid Grid.Row="1" Name="AddsSrOutput"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -5019,19 +5347,18 @@ Function New-FEInfrastructure2
         '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[Output Viewer] - (View a gateways&apos; properties/attributes)">',
-        '                                                <DataGrid Name="AddsSrOutputViewer">',
+        '                                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                            <Label Grid.Row="3" Content="[Viewer]: View a gateways&apos; (properties/attributes)"/>',
+        '                                                <DataGrid Grid.Row="4" Name="AddsSrOutputViewer">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
         '                                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                </TabControl>',
-        '                                <Grid Grid.Row="2">',
+        '                                <Grid Grid.Row="3">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
@@ -5046,49 +5373,44 @@ Function New-FEInfrastructure2
         '                        <TabItem Header="Workstation">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="90"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="10"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
         '                                <Grid Grid.Row="0">',
         '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="70"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="60"/>',
         '                                        <ColumnDefinition Width="2*"/>',
+        '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="40"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Column="0" Header="[Workstation Name]">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0" Name="AddsWsName"/>',
-        '                                            <Button  Grid.Column="1" Name="AddsWsAdd"     Content="+"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsWsDelete"  Content="-"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Column="1" Header="[Workstation List] - (Input a file/list of names)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="80"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0" Name="AddsWsFile"/>',
-        '                                            <Button  Grid.Column="1" Name="AddsWsBrowse" Content="Browse"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsWsAddList" Content="+"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
+        '                                    <Label   Grid.Column="0" Content="[Name]:"/>',
+        '                                    <TextBox Grid.Column="1" Name="AddsWsName"/>',
+        '                                    <Button  Grid.Column="2" Name="AddsWsAdd"     Content="+"/>',
+        '                                    <Button  Grid.Column="3" Name="AddsWsDelete"  Content="-"/>',
+        '                                    <Label   Grid.Column="4" Content="[List]:"/>',
+        '                                    <TextBox Grid.Column="5" Name="AddsWsFile"/>',
+        '                                    <Button  Grid.Column="6" Name="AddsWsBrowse"  Content="Browse"/>',
+        '                                    <Button  Grid.Column="7" Name="AddsWsAddList" Content="+"/>',
         '                                </Grid>',
-        '                                <TabControl Grid.Row="1">',
+        '                                <Border   Grid.Row="1" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                <TabControl Grid.Row="2">',
         '                                    <TabItem Header="Aggregate">',
         '                                        <Grid>',
         '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[Aggregate] - (Provision workstation items)">',
-        '                                                <DataGrid Name="AddsWsAggregate"',
+        '                                            <Label Grid.Row="0" Content="[Aggregate]: Provision workstation items"/>',
+        '                                                <DataGrid Grid.Row="1" Name="AddsWsAggregate"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -5109,25 +5431,27 @@ Function New-FEInfrastructure2
         '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="400"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[Aggregate Viewer] - (View a workstation&apos; properties/attributes)">',
-        '                                                <DataGrid Name="AddsWsAggregateViewer">',
+        '                                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                            <Label Grid.Row="3" Content="[Viewer]: View a workstation&apos; (properties/attributes)"/>',
+        '                                                <DataGrid Grid.Row="4"  Name="AddsWsAggregateViewer">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
         '                                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                    <TabItem Header="Output">',
         '                                        <Grid>',
         '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[Output] - (Provisioned gateway/router items)">',
-        '                                                <DataGrid Name="AddsWsOutput"',
+        '                                            <Label Grid.Row="0" Content="[Output]: Provisioned workstation items"/>',
+        '                                                <DataGrid Grid.Row="1" Name="AddsWsOutput"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -5168,19 +5492,18 @@ Function New-FEInfrastructure2
         '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[Output Viewer] - (View a workstations&apos; properties/attributes)">',
-        '                                                <DataGrid Name="AddsWsOutputViewer">',
+        '                                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                            <Label Grid.Row="3" Content="[Viewer]: View a workstations&apos; (properties/attributes)"/>',
+        '                                                <DataGrid Grid.Row="4" Name="AddsWsOutputViewer">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
         '                                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                </TabControl>',
-        '                                <Grid Grid.Row="2">',
+        '                                <Grid Grid.Row="3">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
@@ -5195,49 +5518,44 @@ Function New-FEInfrastructure2
         '                        <TabItem Header="User">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="90"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="10"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
         '                                <Grid Grid.Row="0">',
         '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="70"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="60"/>',
         '                                        <ColumnDefinition Width="2*"/>',
+        '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="40"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Column="0" Header="[User Name] - (Enter a user name)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0" Name="AddsUserName"/>',
-        '                                            <Button  Grid.Column="1" Name="AddsUserAdd"     Content="+"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsUserDelete"  Content="-"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Column="1" Header="[User List] - (Input a file/list)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="80"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0" Name="AddsUserFile"/>',
-        '                                            <Button  Grid.Column="1" Name="AddsUserBrowse" Content="Browse"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsUserAddList" Content="+"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
+        '                                    <Label   Grid.Column="0" Content="[Name]:"/>',
+        '                                    <TextBox Grid.Column="1" Name="AddsUserName"/>',
+        '                                    <Button  Grid.Column="2" Name="AddsUserAdd"     Content="+"/>',
+        '                                    <Button  Grid.Column="3" Name="AddsUserDelete"  Content="-"/>',
+        '                                    <Label   Grid.Column="4" Content="[List]:"/>',
+        '                                    <TextBox Grid.Column="5" Name="AddsUserFile"/>',
+        '                                    <Button  Grid.Column="6" Name="AddsUserBrowse"  Content="Browse"/>',
+        '                                    <Button  Grid.Column="7" Name="AddsUserAddList" Content="+"/>',
         '                                </Grid>',
-        '                                <TabControl Grid.Row="1">',
+        '                                <Border   Grid.Row="1" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                <TabControl Grid.Row="2">',
         '                                    <TabItem Header="Aggregate">',
         '                                        <Grid>',
         '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[Aggregate] - (Provision user items)">',
-        '                                                <DataGrid Name="AddsUserAggregate"',
+        '                                            <Label Grid.Row="0" Content="[Aggregate]: Provision user items"/>',
+        '                                                <DataGrid Grid.Row="1" Name="AddsUserAggregate"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -5258,25 +5576,27 @@ Function New-FEInfrastructure2
         '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[Aggregate Viewer] - (View a users&apos; properties/attributes)">',
-        '                                                <DataGrid Name="AddsUserAggregateViewer">',
+        '                                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                            <Label Grid.Row="3" Content="[Viewer]: View a users&apos; (properties/attributes)"/>',
+        '                                                <DataGrid Grid.Row="4 " Name="AddsUserAggregateViewer">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
         '                                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                    <TabItem Header="Output">',
         '                                        <Grid>',
         '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[Output] - (Provisioned user items)">',
-        '                                                <DataGrid Name="AddsUserOutput"',
+        '                                            <Label Grid.Row="0" Content="[Output]: Provisioned user items"/>',
+        '                                                <DataGrid Grid.Row="1" Name="AddsUserOutput"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -5318,19 +5638,18 @@ Function New-FEInfrastructure2
         '                                                        <DataGridTextColumn Header="Guid"              Binding="{Binding Guid}"              Width="200"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[Output Viewer] - (View a users&apos; properties/attributes)">',
-        '                                                <DataGrid Name="AddsUserOutputViewer">',
+        '                                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                            <Label Grid.Row="3" Content="[Output]: View a users&apos; (properties/attributes)"/>',
+        '                                                <DataGrid Grid.Row="4 " Name="AddsUserOutputViewer">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
         '                                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                </TabControl>',
-        '                                <Grid Grid.Row="2">',
+        '                                <Grid Grid.Row="3">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
@@ -5345,49 +5664,44 @@ Function New-FEInfrastructure2
         '                        <TabItem Header="Service">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="90"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="10"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
         '                                <Grid Grid.Row="0">',
         '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="70"/>',
         '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="60"/>',
         '                                        <ColumnDefinition Width="2*"/>',
+        '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="40"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Column="0" Header="[Service Name] - (Enter a user name)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0" Name="AddsSvcName"/>',
-        '                                            <Button  Grid.Column="1" Name="AddsSvcAdd"     Content="+"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsSvcDelete"  Content="-"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Column="1" Header="[Service List] - (Input a file/list)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                                <ColumnDefinition Width="80"/>',
-        '                                                <ColumnDefinition Width="40"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <TextBox Grid.Column="0" Name="AddsSvcFile"/>',
-        '                                            <Button  Grid.Column="1" Name="AddsSvcBrowse" Content="Browse"/>',
-        '                                            <Button  Grid.Column="2" Name="AddsSvcAddList" Content="+"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
+        '                                    <Label   Grid.Column="0" Content="[Name]:"/>',
+        '                                    <TextBox Grid.Column="1" Name="AddsSvcName"/>',
+        '                                    <Button  Grid.Column="2" Name="AddsSvcAdd"     Content="+"/>',
+        '                                    <Button  Grid.Column="3" Name="AddsSvcDelete"  Content="-"/>',
+        '                                    <Label   Grid.Column="4" Content="[List]:"/>',
+        '                                    <TextBox Grid.Column="5" Name="AddsSvcFile"/>',
+        '                                    <Button  Grid.Column="6" Name="AddsSvcBrowse"  Content="Browse"/>',
+        '                                    <Button  Grid.Column="7" Name="AddsSvcAddList" Content="+"/>',
         '                                </Grid>',
-        '                                <TabControl Grid.Row="1">',
+        '                                <Border   Grid.Row="1" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                <TabControl Grid.Row="2">',
         '                                    <TabItem Header="Aggregate">',
         '                                        <Grid>',
         '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[Aggregate] - (Provision service items)">',
-        '                                                <DataGrid Name="AddsSvcAggregate"',
+        '                                            <Label Grid.Row="0" Content="[Aggregate]: Provision service items"/>',
+        '                                                <DataGrid Grid.Row="1" Name="AddsSvcAggregate"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -5408,25 +5722,28 @@ Function New-FEInfrastructure2
         '                                                        <DataGridTextColumn Header="DistinguishedName" Binding="{Binding DistinguishedName}" Width="350"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[Aggregate Viewer] - (View a service&apos; properties/attributes)">',
-        '                                                <DataGrid Name="AddsSvcAggregateViewer">',
+        '                                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                            <Label Grid.Row="3" Content="[Viewer]: View a service&apos; (properties/attributes)"/>',
+        '                                                <DataGrid Grid.Row="4"  Name="AddsSvcAggregateViewer">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
         '                                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
+        '                                            ',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                    <TabItem Header="Output">',
         '                                        <Grid>',
         '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
         '                                                <RowDefinition Height="*"/>',
         '                                            </Grid.RowDefinitions>',
-        '                                            <GroupBox Grid.Row="0" Header="[Output] - (Provisioned service items)">',
-        '                                                <DataGrid Name="AddsSvcOutput"',
+        '                                            <Label Grid.Row="0" Content="[Output]: Provisioned service items"/>',
+        '                                                <DataGrid Grid.Row="1" Name="AddsSvcOutput"',
         '                                                  ScrollViewer.CanContentScroll="True" ',
         '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -5468,15 +5785,14 @@ Function New-FEInfrastructure2
         '                                                        <DataGridTextColumn Header="Guid"              Binding="{Binding Guid}"              Width="200"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
-        '                                            <GroupBox Grid.Row="1" Header="[Output Viewer] - (View a users&apos; properties/attributes)">',
-        '                                                <DataGrid Name="AddsSvcOutputViewer">',
+        '                                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                            <Label Grid.Row="3" Content="[Viewer]: View a users&apos; (properties/attributes)"/>',
+        '                                                <DataGrid Grid.Row="4" Name="AddsSvcOutputViewer">',
         '                                                    <DataGrid.Columns>',
         '                                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"   Width="150"/>',
         '                                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}"   Width="*"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
-        '                                            </GroupBox>',
         '                                        </Grid>',
         '                                    </TabItem>',
         '                                </TabControl>',
@@ -5494,72 +5810,90 @@ Function New-FEInfrastructure2
         '                        </TabItem>',
         '                    </TabControl>',
         '                </Grid>',
+        '                </GroupBox>',
         '            </TabItem>',
         '            <TabItem Header="Virtual">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="80"/>',
+        '                        <RowDefinition Height="260"/>',
         '                        <RowDefinition Height="*"/>',
         '                        <RowDefinition Height="40"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <Grid>',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="100"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <GroupBox Grid.Row="0" Header="[VmHost] - (Enter the control virtual machine server)">',
-        '                            <TextBox Grid.Column="0" Name="VmHost"/>',
-        '                        </GroupBox>',
-        '                        <Button Grid.Column="1" Name="VmHostSelect" Content="Select"/>',
-        '                    </Grid>',
+        '                    <GroupBox Grid.Row="0" Header="[Controller]">',
+        '                        <Grid>',
+        '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="100"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                            </Grid.RowDefinitions>',
+        '                            <Label Grid.Row="0" Content="[Controller VmHost Server/Service State/Credential]"/>',
+        '                            <DataGrid Grid.Row="1" Name="VmControl">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>',
+        '                                    <DataGridTextColumn Header="Status (Hyper-V Service)" Binding="{Binding Status}" Width="150"/>',
+        '                                    <DataGridTextColumn Header="Credential" Binding="{Binding Username}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                             </DataGrid>',
+        '                            <Grid Grid.Row="2">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label   Grid.Column="0" Content="[Hostname]:"/>',
+        '                                <TextBox Grid.Column="1" Name="VmHostName"/>',
+        '                                <Button  Grid.Column="2" Name="VmHostConnect" Content="Connect"/>',
+        '                                <Button  Grid.Column="3" Name="VmHostChange"  Content="Change" VerticalAlignment="Center"/>',
+        '                            </Grid>',
+        '                            <Grid Grid.Row="3">',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label    Grid.Column="0" Content="[Switch]:"/>',
+        '                                <ComboBox Grid.Column="1" Name="VmControllerSwitch"/>',
+        '                                <Label    Grid.Column="2" Content="[Network]:"/>',
+        '                                <TextBox  Grid.Column="3" Name="VmControllerNetwork"/>',
+        '                                <Label    Grid.Column="4" Content="[Gateway]:"/>',
+        '                                <TextBox  Grid.Column="5" Name="VmControllerGateway"/>',
+        '                            </Grid>',
+        '                        </Grid>',
+        '                    </GroupBox>',
         '                    <TabControl Grid.Row="1">',
         '                        <TabItem Header="Control">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="120"/>',
-        '                                    <RowDefinition Height="80"/>',
-        '                                    <RowDefinition Height="80"/>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <GroupBox Header="[VmController] - (View virtual machine server/service/credential properties)">',
-        '                                    <DataGrid Name="VmController">',
-        '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>',
-        '                                            <DataGridTextColumn Header="Status (Hyper-V Service)" Binding="{Binding Status}" Width="150"/>',
-        '                                            <DataGridTextColumn Header="Credential" Binding="{Binding Username}" Width="*"/>',
-        '                                        </DataGrid.Columns>',
-        '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <Grid Grid.Row="1">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Column="0" Header="[VmControllerSwitch] - (External VM switch)">',
-        '                                        <ComboBox Name="VmControllerSwitch"/>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Column="1" Header="[VmControllerNetwork] - (External network)">',
-        '                                        <TextBox Name="VmControllerNetwork"/>',
-        '                                    </GroupBox>',
-        '                                </Grid>',
-        '                                <Grid Grid.Row="2">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Column="0" Header="[VmControllerConfigVM]" IsEnabled="False">',
-        '                                        <ComboBox Name="VmControllerConfigVM"/>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Column="1" Header="[VmControllerGateway] - (External gateway)">',
-        '                                        <TextBox Name="VmControllerGateway"/>',
-        '                                    </GroupBox>',
-        '                                </Grid>',
-        '                                <GroupBox Grid.Row="3" Header="[VmSelect] - (Output/Existence validation)">',
-        '                                    <DataGrid Name="VmSelect">',
+        '                            <GroupBox  Header="[Selection]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[Adds Node (Output/Existence) Validation]"/>',
+        '                                    <DataGrid Grid.Row="1" Name="VmSelect">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>',
         '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
-        '                                            <DataGridTemplateColumn Header="Create VM?" Width="100">',
+        '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                            <ComboBoxItem Content="False"/>',
+        '                                                            <ComboBoxItem Content="True"/>',
+        '                                                        </ComboBox>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTemplateColumn Header="Create VM" Width="60">',
         '                                                <DataGridTemplateColumn.CellTemplate>',
         '                                                    <DataTemplate>',
         '                                                        <ComboBox SelectedIndex="{Binding Create}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
@@ -5571,36 +5905,99 @@ Function New-FEInfrastructure2
         '                                            </DataGridTemplateColumn>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                            </Grid>',
+        '                                    <Grid Grid.Row="2">',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Button   Grid.Column="0" Content="[Import] Adds Host Nodes"    Name="VmLoadAddsNode"/>',
+        '                                        <Button   Grid.Column="1" Content="[Delete] Existent Nodes"     Name="VmDeleteNodes"/>',
+        '                                        <Button   Grid.Column="2" Content="[Create] Non-existent Nodes" Name="VmCreateNodes"/>',
+        '                                    </Grid>',
+        '                                </Grid>',
+        '                            </GroupBox> ',
         '                        </TabItem>',
         '                        <TabItem Header="Switch">',
-        '                            <GroupBox Grid.Row="0" Header="[VmSwitch] - (Provision virtual switches)">',
-        '                                <DataGrid Grid.Row="0" Name="VmSwitch">',
-        '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
-        '                                        <DataGridTemplateColumn Header="Exists" Width="100">',
-        '                                            <DataGridTemplateColumn.CellTemplate>',
-        '                                                <DataTemplate>',
-        '                                                    <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
-        '                                                        <ComboBoxItem Content="False"/>',
-        '                                                        <ComboBoxItem Content="True"/>',
-        '                                                    </ComboBox>',
-        '                                                </DataTemplate>',
-        '                                            </DataGridTemplateColumn.CellTemplate>',
-        '                                        </DataGridTemplateColumn>',
-        '                                    </DataGrid.Columns>',
-        '                                </DataGrid>',
+        '                            <GroupBox Header="[Switch]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[Provision Virtual Switches]"/>',
+        '                                    <DataGrid Grid.Row="1" Name="VmDhcpReservations">',
+        '                                        <DataGrid.Columns>',
+        '                                            <DataGridTextColumn Header="Switch"       Binding="{Binding SwitchName}" Width="100"/>',
+        '                                            <DataGridTemplateColumn Header="Sw. Exists" Width="80">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox SelectedIndex="{Binding SwitchExists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                            <ComboBoxItem Content="False"/>',
+        '                                                            <ComboBoxItem Content="True"/>',
+        '                                                        </ComboBox>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTemplateColumn Header="Res. Exists" Width="60">',
+        '                                                <DataGridTemplateColumn.CellTemplate>',
+        '                                                    <DataTemplate>',
+        '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                            <ComboBoxItem Content="False"/>',
+        '                                                            <ComboBoxItem Content="True"/>',
+        '                                                        </ComboBox>',
+        '                                                    </DataTemplate>',
+        '                                                </DataGridTemplateColumn.CellTemplate>',
+        '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="Sitename"     Binding="{Binding IPAddress}"   Width="125"/>',
+        '                                            <DataGridTextColumn Header="ScopeID"      Binding="{Binding ScopeID}"     Width="125"/>',
+        '                                            <DataGridTextColumn Header="MacAddress"   Binding="{Binding MacAddress}"  Width="*"/>',
+        '                                            <DataGridTextColumn Header="Name"         Binding="{Binding Name}"        Width="*"/>',
+        '                                            <DataGridTextColumn Header="Description"  Binding="{Binding Description}" Width="*"/>',
+        '                                        </DataGrid.Columns>',
+        '                                    </DataGrid>',
+        '                                    <Grid Grid.Row="2">',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="90"/>',
+        '                                            <ColumnDefinition Width="160"/>',
+        '                                            <ColumnDefinition Width="90"/>',
+        '                                            <ColumnDefinition Width="160"/>',
+        '                                            <ColumnDefinition Width="90"/>',
+        '                                            <ColumnDefinition Width="160"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Label    Grid.Column="0" Content="[Scope ID]:"/>',
+        '                                        <ComboBox Grid.Column="1" Name="VmDhcpScopeID"/>',
+        '                                        <Label    Grid.Column="2" Content="[Start]:"/>',
+        '                                        <TextBox  Grid.Column="3" Name="VmDhcpStart"/>',
+        '                                        <Label    Grid.Column="4" Content="[End]:"/>',
+        '                                        <TextBox  Grid.Column="5" Name="VmDhcpEnd"/>',
+        '                                    </Grid>',
+        '                                    <Grid Grid.Row="3">',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Button Grid.Column="0" Name="VmGetSwitch"    Content="[Get] Switch + Reservations"/>',
+        '                                        <Button Grid.Column="1" Name="VmDeleteSwitch" Content="[Delete] Existent"/>',
+        '                                        <Button Grid.Column="2" Name="VmNewSwitch"    Content="[Create] Non-existent"/>',
+        '                                    </Grid>',
+        '                                </Grid>',
         '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="Gateway">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="270"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <GroupBox Grid.Row="0" Header="[VmGateway] - (Provision physical/virtual machine gateways)">',
-        '                                    <DataGrid Grid.Row="0" Name="VmGateway">',
+        '                            <GroupBox Header="[Gateway]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="120"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[Provision (physical/virtual) gateways]"/>',
+        '                                    <DataGrid Grid.Row="1" Name="VmGateway">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
         '                                            <DataGridTemplateColumn Header="Exists" Width="100">',
@@ -5615,64 +6012,56 @@ Function New-FEInfrastructure2
         '                                            </DataGridTemplateColumn>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <Grid Grid.Row="1">',
-        '                                    <Grid.RowDefinitions>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                    </Grid.RowDefinitions>',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="120"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Header="[VmGatewayPath] - (Path to the VMX/VHD files)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="100"/>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <Button Grid.Column="0" Name="VmGatewayPathSelect" Content="Select"/>',
-        '                                            <TextBox Grid.Column="1" Name="VmGatewayPath"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Grid.Column="0" Header="[VmGatewayScript] - (Script to install gateway item)" IsEnabled="False">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="100"/>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <Button Grid.Column="0" Name="VmGatewayScriptSelect" Content="Select"/>',
-        '                                            <TextBox Grid.Column="1" Name="VmGatewayScript"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Grid.Column="1" Header="[(RAM/MB)]">',
-        '                                        <TextBox Name="VmGatewayMemory"/>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="2" Grid.Column="0" Header="[VmGatewayImage] - (Image to install gateway item)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="100"/>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <Button Grid.Column="0" Name="VmGatewayImageSelect" Content="Select"/>',
-        '                                            <TextBox Grid.Column="1" Name="VmGatewayImage"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="2" Grid.Column="1" Header="[(HDD/GB)]">',
-        '                                        <TextBox Name="VmGatewayDrive"/>',
-        '                                    </GroupBox>',
+        '                                    <Grid Grid.Row="2">',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Label    Grid.Column="0" Content="[Install Type]:"/>',
+        '                                        <ComboBox Grid.Column="1" Name="VmGatewayInstallType" SelectedIndex="0">',
+        '                                            <ComboBoxItem Content="ISO"/>',
+        '                                            <ComboBoxItem Content="Network"/>',
+        '                                        </ComboBox>',
+        '                                        <Label    Grid.Column="2" Content="[RAM/MB]:"/>',
+        '                                        <TextBox  Grid.Column="3" Name="VmGatewayMemory"/>',
+        '                                        <Label    Grid.Column="4" Content="[HDD/GB]:"/>',
+        '                                        <TextBox  Grid.Column="5" Name="VmGatewayDrive"/>',
+        '                                    </Grid>',
+        '                                    <Grid Grid.Row="3">',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="120"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Button  Grid.Row="0" Grid.Column="0" Name="VmGatewayPathSelect" Content="Path"/>',
+        '                                        <TextBox Grid.Row="0" Grid.Column="1" Name="VmGatewayPath"/>',
+        '                                        <Button  Grid.Row="1" Grid.Column="0" Name="VmGatewayImageSelect" Content="Image"/>',
+        '                                        <TextBox Grid.Row="1" Grid.Column="1" Name="VmGatewayImage"/>',
+        '                                        <Button  Grid.Row="2" Grid.Column="0" Name="VmGatewayScriptSelect" Content="Script"/>',
+        '                                        <TextBox Grid.Row="2" Grid.Column="1" Name="VmGatewayScript"/>',
+        '                                   </Grid>',
         '                                </Grid>',
-        '                            </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="Server">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="270"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <GroupBox Grid.Row="0" Header="[VmServer] - (Provision physical/virtual machine servers)">',
-        '                                    <DataGrid  Name="VmServer">',
+        '                            <GroupBox Header="[Server]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="120"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[Provision (physical/virtual) servers]"/>',
+        '                                    <DataGrid Grid.Row="1" Name="VmServer">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
         '                                            <DataGridTemplateColumn Header="Exists" Width="100">',
@@ -5687,64 +6076,56 @@ Function New-FEInfrastructure2
         '                                            </DataGridTemplateColumn>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <Grid Grid.Row="1">',
-        '                                    <Grid.RowDefinitions>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                    </Grid.RowDefinitions>',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="120"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Header="[VmServerPath] - (Path to the VMX/VHD files)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="100"/>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <Button Grid.Column="0" Name="VmServerPathSelect" Content="Select"/>',
-        '                                            <TextBox Grid.Column="1" Name="VmServerPath"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Grid.Column="0" Header="[VmServerScript] - (Script to install virtual servers)" IsEnabled="False">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="100"/>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <Button Grid.Column="0" Name="VmServerScriptSelect" Content="Select"/>',
-        '                                            <TextBox Grid.Column="1" Name="VmServerScript"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Grid.Column="1" Header="[(RAM/MB)]">',
-        '                                        <TextBox Name="VmServerMemory"/>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="2" Grid.Column="0" Header="[VmServerImage] - (Image to install virtual servers)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="100"/>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <Button Grid.Column="0" Name="VmServerImageSelect" Content="Select"/>',
-        '                                            <TextBox Grid.Column="1" Name="VmServerImage"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="2" Grid.Column="1" Header="[(HDD/GB)]">',
-        '                                        <TextBox Name="VmServerDrive"/>',
-        '                                    </GroupBox>',
+        '                                    <Grid Grid.Row="2">',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Label    Grid.Column="0" Content="[Install Type]:"/>',
+        '                                        <ComboBox Grid.Column="1" Name="VmServerInstallType" SelectedIndex="0">',
+        '                                            <ComboBoxItem Content="ISO"/>',
+        '                                            <ComboBoxItem Content="Network"/>',
+        '                                        </ComboBox>',
+        '                                        <Label    Grid.Column="2" Content="[RAM/MB]:"/>',
+        '                                        <TextBox  Grid.Column="3" Name="VmServerMemory"/>',
+        '                                        <Label    Grid.Column="4" Content="[HDD/GB]:"/>',
+        '                                        <TextBox  Grid.Column="5" Name="VmServerDrive"/>',
+        '                                    </Grid>',
+        '                                    <Grid Grid.Row="3">',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="120"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Button  Grid.Row="0" Grid.Column="0" Name="VmServerPathSelect" Content="Path"/>',
+        '                                        <TextBox Grid.Row="0" Grid.Column="1" Name="VmServerPath"/>',
+        '                                        <Button  Grid.Row="1" Grid.Column="0" Name="VmServerImageSelect" Content="Image"/>',
+        '                                        <TextBox Grid.Row="1" Grid.Column="1" Name="VmServerImage"/>',
+        '                                        <Button  Grid.Row="2" Grid.Column="0" Name="VmServerScriptSelect" Content="Script"/>',
+        '                                        <TextBox Grid.Row="2" Grid.Column="1" Name="VmServerScript"/>',
+        '                                   </Grid>',
         '                                </Grid>',
-        '                            </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                        <TabItem Header="Workstation">',
-        '                            <Grid>',
-        '                                <Grid.RowDefinitions>',
-        '                                    <RowDefinition Height="*"/>',
-        '                                    <RowDefinition Height="270"/>',
-        '                                </Grid.RowDefinitions>',
-        '                                <GroupBox Grid.Row="0" Header="[VmWorkstation] - (Provision physical/virtual machine workstations)">',
-        '                                    <DataGrid  Name="VmWorkstation">',
+        '                            <GroupBox Header="[Workstation]">',
+        '                                <Grid>',
+        '                                    <Grid.RowDefinitions>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="*"/>',
+        '                                        <RowDefinition Height="40"/>',
+        '                                        <RowDefinition Height="120"/>',
+        '                                    </Grid.RowDefinitions>',
+        '                                    <Label Grid.Row="0" Content="[Provision (physical/virtual) workstations]"/>',
+        '                                    <DataGrid Grid.Row="1" Name="VmWorkstation">',
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
         '                                            <DataGridTemplateColumn Header="Exists" Width="100">',
@@ -5759,55 +6140,44 @@ Function New-FEInfrastructure2
         '                                            </DataGridTemplateColumn>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
-        '                                </GroupBox>',
-        '                                <Grid Grid.Row="1">',
-        '                                    <Grid.RowDefinitions>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                        <RowDefinition Height="*"/>',
-        '                                    </Grid.RowDefinitions>',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                        <ColumnDefinition Width="120"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Header="[VmWorkstationPath] - (Path to the VMX/VHD files)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="100"/>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <Button Grid.Column="0" Name="VmWorkstationPathSelect" Content="Select"/>',
-        '                                            <TextBox Grid.Column="1" Name="VmWorkstationPath"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Grid.Column="0" Header="[VmWorkstationScript] - (Script to install virtual servers)" IsEnabled="False">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="100"/>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <Button Grid.Column="0" Name="VmWorkstationScriptSelect" Content="Select"/>',
-        '                                            <TextBox Grid.Column="1" Name="VmWorkstationScript"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="1" Grid.Column="1" Header="[(RAM/MB)]">',
-        '                                        <TextBox Name="VmWorkstationMemory"/>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="2" Grid.Column="0" Header="[VmWorkstationImage] - (Image to install virtual servers)">',
-        '                                        <Grid>',
-        '                                            <Grid.ColumnDefinitions>',
-        '                                                <ColumnDefinition Width="100"/>',
-        '                                                <ColumnDefinition Width="*"/>',
-        '                                            </Grid.ColumnDefinitions>',
-        '                                            <Button Grid.Column="0" Name="VmWorkstationImageSelect" Content="Select"/>',
-        '                                            <TextBox Grid.Column="1" Name="VmWorkstationImage"/>',
-        '                                        </Grid>',
-        '                                    </GroupBox>',
-        '                                    <GroupBox Grid.Row="2" Grid.Column="1" Header="[(HDD/GB)]">',
-        '                                        <TextBox Name="VmWorkstationDrive"/>',
-        '                                    </GroupBox>',
+        '                                    <Grid Grid.Row="2">',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Label    Grid.Column="0" Content="[Install Type]:"/>',
+        '                                        <ComboBox Grid.Column="1" Name="VmWorkstationInstallType" SelectedIndex="1">',
+        '                                            <ComboBoxItem Content="ISO"/>',
+        '                                            <ComboBoxItem Content="Network"/>',
+        '                                        </ComboBox>',
+        '                                        <Label    Grid.Column="2" Content="[RAM/MB]:"/>',
+        '                                        <TextBox  Grid.Column="3" Name="VmWorkstationMemory"/>',
+        '                                        <Label    Grid.Column="4" Content="[HDD/GB]:"/>',
+        '                                        <TextBox  Grid.Column="5" Name="VmWorkstationDrive"/>',
+        '                                    </Grid>',
+        '                                    <Grid Grid.Row="3">',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="120"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Button  Grid.Row="0" Grid.Column="0" Name="VmWorkstationPathSelect" Content="Path"/>',
+        '                                        <TextBox Grid.Row="0" Grid.Column="1" Name="VmWorkstationPath"/>',
+        '                                        <Button  Grid.Row="1" Grid.Column="0" Name="VmWorkstationImageSelect" Content="Image"/>',
+        '                                        <TextBox Grid.Row="1" Grid.Column="1" Name="VmWorkstationImage"/>',
+        '                                        <Button  Grid.Row="2" Grid.Column="0" Name="VmWorkstationScriptSelect" Content="Script"/>',
+        '                                        <TextBox Grid.Row="2" Grid.Column="1" Name="VmWorkstationScript"/>',
+        '                                   </Grid>',
         '                                </Grid>',
-        '                            </Grid>',
+        '                            </GroupBox>',
         '                        </TabItem>',
         '                    </TabControl>',
         '                    <Grid Grid.Row="4">',
@@ -5823,34 +6193,36 @@ Function New-FEInfrastructure2
         '            <TabItem Header="Imaging">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="80"/>',
-        '                        <RowDefinition Height="200"/>',
-        '                        <RowDefinition Height="200"/>',
-        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="260"/>',
+        '                        <RowDefinition Height="220"/>',
+        '                        <RowDefinition Height="240"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <Grid>',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="100"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <GroupBox Grid.Row="0" Header="[IsoPath (Source Directory)]">',
-        '                            <TextBox Name="IsoPath"  Grid.Column="1"/>',
-        '                        </GroupBox>',
-        '                        <Button Name="IsoSelect" Grid.Column="1" Content="Select"/>',
-        '                    </Grid>',
-        '                    <GroupBox Grid.Row="1" Header="[IsoList (*.iso)] - (ISO files found in source directory)">',
+        '                    <GroupBox Grid.Row="0" Header="[List]">',
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="100"/>',
+        '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="40"/>',
         '                            </Grid.RowDefinitions>',
-        '                            <DataGrid Grid.Row="0" Name="IsoList">',
+        '                            <Label Grid.Row="0" Content="[Images (*.iso) files found in source directory]"/>',
+        '                            <Grid Grid.Row="2">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="110"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label Grid.Column="0" Content="[Image Path]:"/>',
+        '                                    <TextBox Grid.Column="1" Name="IsoPath"/>',
+        '                                <Button Name="IsoSelect" Grid.Column="2" Content="Select"/>',
+        '                            </Grid>',
+        '                            <DataGrid Grid.Row="1" Name="IsoList">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
         '                                    <DataGridTextColumn Header="Path" Binding="{Binding Path}" Width="2*"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                            <Grid Grid.Row="1">',
+        '                            <Grid Grid.Row="3">',
         '                                <Grid.ColumnDefinitions>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="*"/>',
@@ -5860,14 +6232,16 @@ Function New-FEInfrastructure2
         '                            </Grid>',
         '                        </Grid>',
         '                    </GroupBox>',
-        '                    <Grid Grid.Row="2">',
-        '                        <GroupBox Grid.Row="2" Header="[IsoView (Image Viewer/Wim file selector)]">',
+        '                    <Grid Grid.Row="1">',
+        '                        <GroupBox Grid.Row="2" Header="[View]">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
-        '                                <DataGrid Grid.Row="0" Name="IsoView">',
+        '                                <Label Grid.Row="0" Content="[Image Viewer/Wim file selector]"/>',
+        '                                <DataGrid Grid.Row="1" Name="IsoView">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Index" Binding="{Binding Index}" Width="40"/>',
         '                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="*"/>',
@@ -5875,7 +6249,7 @@ Function New-FEInfrastructure2
         '                                        <DataGridTextColumn Header="Architecture" Binding="{Binding Architecture}" Width="100"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
-        '                                <Grid Grid.Row="1">',
+        '                                <Grid Grid.Row="2">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
@@ -5886,13 +6260,15 @@ Function New-FEInfrastructure2
         '                            </Grid>',
         '                        </GroupBox>',
         '                    </Grid>',
-        '                    <GroupBox Grid.Row="3" Header="[WimIso (Queued WIM file extraction)]">',
+        '                    <GroupBox Grid.Row="3" Header="[Extraction]">',
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="*"/>',
         '                                <RowDefinition Height="40"/>',
         '                            </Grid.RowDefinitions>',
-        '                            <Grid Grid.Row="0">',
+        '                            <Label Grid.Row="0" Content="[Queued (*.wim) file extraction]"/>',
+        '                            <Grid Grid.Row="1">',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="*"/>',
         '                                    <RowDefinition Height="*"/>',
@@ -5910,7 +6286,7 @@ Function New-FEInfrastructure2
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                            </Grid>',
-        '                            <Grid Grid.Row="1">',
+        '                            <Grid Grid.Row="2">',
         '                                <Grid.ColumnDefinitions>',
         '                                    <ColumnDefinition Width="100"/>',
         '                                    <ColumnDefinition Width="*"/>',
@@ -6723,7 +7099,7 @@ Function New-FEInfrastructure2
 
     If ($Main.Config.HyperV)
     {
-        $Xaml.IO.VmHost.Text                  = $Main.HyperV.Name
+        $Xaml.IO.VmHostName.Text                  = $Main.HyperV.Name
         $Xaml.IO.CfgHyperV.ItemsSource        = @($Main.Config.HyperV)
     }
 
@@ -7963,103 +8339,292 @@ Function New-FEInfrastructure2
     # <![Virtual Tab]!> #
     # ----------------- #
 
-    # VmHost               TextBox
-    # VmHostSelect         Button
-    # VmController         DataGrid
-    # VmControllerSwitch   ComboBox
-    # VmControllerNetwork  TextBox
-    # VmControllerConfigVM ComboBox
-    # VmControllerGateway  TextBox
-    # VmSelect             DataGrid
-    # VmSwitch             DataGrid
+    # [Vm.Control]
+    $Xaml.IO.VmHostName.Text                  = $Main.VmController.Hostname
+    $Xaml.IO.VmHostName.IsEnabled             = 0
+    $Xaml.IO.VmHostConnect.IsEnabled          = 0
+    $Xaml.IO.VmHostChange.IsEnabled           = 1
 
-    $Xaml.IO.VmHost.Text                 = $Main.VmController.Hostname
-    $Xaml.IO.VmSelect.ItemsSource        = @( )
+    $Main.Reset($Xaml.IO.VmControl.Items,$Main.VmController.Populate())
+    $Main.Reset($Xaml.IO.VmControllerSwitch.Items,$Main.VmController.External)
 
-    $Xaml.IO.VmHostSelect.Add_Click(
+    $Xaml.IO.VmControllerSwitch.SelectedIndex = 0
+    $NetRoute                                 = Get-NetAdapter | ? Name -match $Xaml.IO.VmControllerSwitch.SelectedItem | Get-NetRoute -AddressFamily IPV4
+    $Xaml.IO.VmControllerNetwork.Text         = $NetRoute | ? NextHop -eq 0.0.0.0 | Select-Object -Last 1 | % DestinationPrefix
+    $Xaml.IO.VmControllerGateway.Text         = $NetRoute | ? NextHop -ne 0.0.0.0 | % NextHop
+
+    $Xaml.IO.VmLoadAddsNode.Add_Click(
     {
-        If ($Xaml.IO.VmHost.Text -eq "")
+        $Main.VmController.LoadAddsTree($Main.AddsController.Output)
+        $Main.Reset($Xaml.IO.VmSelect.Items,$Main.VmController.VmSelect)
+    })
+    
+    $Xaml.IO.VmHostChange.Add_Click(
+    {
+        $Xaml.IO.VmHostName.Text          = $Null
+        $Xaml.IO.VmHostName.IsEnabled     = 1
+        $Xaml.IO.VmHostConnect.IsEnabled  = 1
+        $Xaml.IO.VmHostChange.IsEnabled   = 0
+    })
+
+    $Xaml.IO.VmHostConnect.Add_Click(
+    {
+        If ($Xaml.IO.VmHostName.Text -eq "")
         {
             Return [System.Windows.Messagebox]::Show("Must enter a server hostname or IP address","Error")
         }
 
-        ElseIf (!(Test-Connection -ComputerName $Xaml.IO.VmHost.Text -Count 1 -EA 0))
+        ElseIf (!(Test-Connection -ComputerName $Xaml.IO.VmHostName.Text -Count 1 -EA 0))
         {
             Return [System.Windows.Messagebox]::Show("Not a valid server hostname or IP Address","Error")
         }
 
         Write-Host "Retrieving [~] VMHost"
 
-        If ( $Xaml.IO.VmHost.Text -match "localhost" -or $Xaml.IO.VmHost.Text -in $Main.IP -or $Xaml.IO.VmHost.Text -match $Main.Module.Role.Name)
+        If ($Xaml.IO.VmHostName.Text -match "localhost" -or $Xaml.IO.VmHostName.Text -in $Main.Config.IP -or $Xaml.IO.VmHostName.Text -match $Main.Module.Role.Name)
         {
-            $Main.Vm    = [VmStack]::New($Main.Config.HyperV,$Main.Config.HyperV.Switch)
-            If (Get-Service -Name vmms -EA 0 | ? Status -ne Running)
+            $Main.VmController = VmController -Hostname $Xaml.IO.VmHostname -Credential $Main.Credential
+            If ($Main.VmController.Status -ne "Running")
             {
                 Return [System.Windows.MessageBox]::Show("The Hyper-V Virtual Machine Management service is not (installed/running)","Error")
             }
 
-            $Xaml.IO.VmController.ItemsSource         = @([VmController]::New($Xaml.IO.VmHost.Text,$Credential))
+            $Xaml.IO.VmControl.ItemsSource          = $Main.VmController.Populate()
+            $Main.Reset($Xaml.IO.VmControllerSwitch.Items,$Main.VmController.External)
         }
         Else
         {
             Return [System.Windows.MessageBox]::Show("Remote Hyper-V Server not implemented","Error")
         }
-        
-        $Xaml.IO.VmControllerSwitch.ItemsSource   = @( $Main.Vm.Switch | ? Type -eq External | % Name )
-        $Xaml.IO.VmSelect.ItemsSource             = @( )
-        $Collect                                  = @( )
+    })
 
-        If ($Main.ADDS.Gateway.Count -gt 0)
+    $Xaml.IO.VmControllerSwitch.Add_SelectionChanged(
+    {
+        $NetRoute = Get-NetAdapter | ? Name -match $Xaml.IO.VmControllerSwitch.SelectedItem | Get-NetRoute -AddressFamily IPV4
+        $Xaml.IO.VmControllerNetwork.Text = $NetRoute | ? NextHop -eq 0.0.0.0 | Select-Object -Last 1 | % DestinationPrefix
+        $Xaml.IO.VmControllerGateway.Text = $NetRoute | ? NextHop -ne 0.0.0.0 | % NextHop
+    })
+
+    # [Vm.Switch]
+
+
+    # [Vm.Gateway]
+    $Xaml.IO.VmGatewayInstallType.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.VmGatewayInstallType.SelectedIndex -eq 0)
         {
-            $Main.ADDS.Gateway                    | % { $Collect += $_ }
+            $Xaml.IO.VmGatewayScriptSelect.IsEnabled = 0
+            $Xaml.IO.VmGatewayScript.IsEnabled       = 0
+            $Xaml.IO.VmGatewayImageSelect.IsEnabled  = 1
+            $Xaml.IO.VmGatewayImage.IsEnabled        = 1
+        }
+        If ($Xaml.IO.VmGatewayInstallType.SelectedIndex -eq 1)
+        {
+            $Xaml.IO.VmGatewayScriptSelect.IsEnabled = 0
+            $Xaml.IO.VmGatewayScript.IsEnabled       = 0
+            $Xaml.IO.VmGatewayImageSelect.IsEnabled  = 0
+            $Xaml.IO.VmGatewayImage.IsEnabled        = 0
+        }
+    })
+
+    $Xaml.IO.VmGatewayPathSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath           = ""
         }
 
-        If ($Main.ADDS.Server.Count -gt 0 )
+        $Xaml.IO.VmGatewayPath.Text      = $Item.SelectedPath
+    })
+
+    $Xaml.IO.VmGatewayScriptSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory           = $Env:SystemDrive
+        $Item.Filter                     = "(*.ps1)|*.ps1"
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
         {
-            $Main.ADDS.Server                     | % { $Collect += $_ }
+            $Item.Filename               = ""
         }
 
-        $Xaml.IO.VmSelect.ItemsSource             = @([VmSelect[]]$Collect)
+        $Xaml.IO.VmGatewayScript.Text    = $Item.FileName
+    })
+
+    $Xaml.IO.VmGatewayImageSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory           = $Env:SystemDrive
+        $Item.Filter                     = "(*.iso)|*.iso"
+        $Item.ShowDialog()
+            
+        If (!$Item.Filename)
+        {
+            $Item.Filename               = ""
+        }
+    
+        $Xaml.IO.VmGatewayImage.Text     = $Item.FileName
+    })
+
+    $Xaml.IO.VmGatewayMemory.Text        = 2048
+    $Xaml.IO.VmGatewayDrive.Text         = 20
+
+    # [Vm.Server]
+    $Xaml.IO.VmServerInstallType.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.VmServerInstallType.SelectedIndex -eq 0)
+        {
+            $Xaml.IO.VmServerPathSelect.IsEnabled   = 1
+            $Xaml.IO.VmServerPath.IsEnabled         = 1
+            $Xaml.IO.VmServerScriptSelect.IsEnabled = 0
+            $Xaml.IO.VmServerScript.IsEnabled       = 0
+            $Xaml.IO.VmServerImageSelect.IsEnabled  = 1
+            $Xaml.IO.VmServerImage.IsEnabled        = 1
+        }
+        If ($Xaml.IO.VmServerInstallType.SelectedIndex -eq 1)
+        {
+            $Xaml.IO.VmServerPathSelect.IsEnabled   = 0
+            $Xaml.IO.VmServerPath.IsEnabled         = 0
+            $Xaml.IO.VmServerScriptSelect.IsEnabled = 0
+            $Xaml.IO.VmServerScript.IsEnabled       = 0
+            $Xaml.IO.VmServerImageSelect.IsEnabled  = 0
+            $Xaml.IO.VmServerImage.IsEnabled        = 0
+        }
+    })
+
+    $Xaml.IO.VmServerPathSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
         
-        Write-Host "Retrieved [+] VMHost"
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath           = ""
+        }
+
+        $Xaml.IO.VmServerPath.Text       = $Item.SelectedPath
+    })
+
+    $Xaml.IO.VmServerScriptSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory           = $Env:SystemDrive
+        $Item.Filter                     = "(*.ps1)|*.ps1"
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename               = ""
+        }
+
+        $Xaml.IO.VmServerScript.Text     = $Item.FileName
+    })
+
+    $Xaml.IO.VmServerImageSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory           = $Env:SystemDrive
+        $Item.Filter                     = "(*.iso)|*.iso"
+        $Item.ShowDialog()
+            
+        If (!$Item.Filename)
+        {
+            $Item.Filename               = ""
+        }
+    
+        $Xaml.IO.VmServerImage.Text      = $Item.FileName
+    })
+
+    $Xaml.IO.VmServerMemory.Text         = 4096
+    $Xaml.IO.VmServerDrive.Text          = 100
+
+    # [Vm.Workstation]
+    $Xaml.IO.VmWorkstationInstallType.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.VmWorkstationInstallType.SelectedIndex -eq 0)
+        {
+            $Xaml.IO.VmWorkstationPathSelect.IsEnabled   = 1
+            $Xaml.IO.VmWorkstationPath.IsEnabled         = 1
+            $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 0
+            $Xaml.IO.VmWorkstationScript.IsEnabled       = 0
+            $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 1
+            $Xaml.IO.VmWorkstationImage.IsEnabled        = 1
+        }
+        If ($Xaml.IO.VmWorkstationInstallType.SelectedIndex -eq 1)
+        {
+            $Xaml.IO.VmWorkstationPathSelect.IsEnabled   = 0
+            $Xaml.IO.VmWorkstationPath.IsEnabled         = 0
+            $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 0
+            $Xaml.IO.VmWorkstationScript.IsEnabled       = 0
+            $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 0
+            $Xaml.IO.VmWorkstationImage.IsEnabled        = 0
+        }
+    })
+
+    $Xaml.IO.VmWorkstationPathSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath           = ""
+        }
+
+        $Xaml.IO.VmWorkstationPath.Text       = $Item.SelectedPath
+    })
+
+    $Xaml.IO.VmWorkstationScriptSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory           = $Env:SystemDrive
+        $Item.Filter                     = "(*.ps1)|*.ps1"
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename               = ""
+        }
+
+        $Xaml.IO.VmWorkstationScript.Text     = $Item.FileName
+    })
+
+    $Xaml.IO.VmWorkstationImageSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory           = $Env:SystemDrive
+        $Item.Filter                     = "(*.iso)|*.iso"
+        $Item.ShowDialog()
+            
+        If (!$Item.Filename)
+        {
+            $Item.Filename               = ""
+        }
+    
+        $Xaml.IO.VmWorkstationImage.Text      = $Item.FileName
+    })
+
+    $Xaml.IO.VmGatewayMemory.Text        = 2048
+    $Xaml.IO.VmGatewayDrive.Text         = 20
+
+    # $Main.VmController = VmController -Hostname dsc0.securedigitsplus.com -Credential $Main.Credential
+    # $Main.VmController.LoadAddsTree($Main.AddsController.Output)
+    # $Main.VmController.GetReservations("172.16.0.0")
+
+    $Xaml.IO.VMGetArchitecture.Add_Click(
+    {
+        #$Content = $Main.VmController.VmStack | ? Type -eq Gateway
+        #$Main.Reset($Xaml.IO.VmSwitch.Items, 
+        #$Main.Reset($Xaml.IO.VmGateway.Items,
+        #$Main.Reset($Xaml.IO.VmServer.Items,
     })
 
     #     $VmController = [VmController]::New($Main.Module.Role.Hostname,$Main.Credential)
     #     $VmController.LoadAddsTree($Main.AddsController.Output)
-
-    # VmGateway DataGrid
-    # VmGatewayPathSelect Button
-    # VmGatewayPath TextBox
-    # VmGatewayScriptSelect Button
-    # VmGatewayScript TextBox
-    # VmGatewayMemory TextBox
-    # VmGatewayImageSelect Button
-    # VmGatewayImage TextBox
-    # VmGatewayDrive TextBox
-
-
-    # VmServer DataGrid
-    # VmServerPathSelect Button
-    # VmServerPath TextBox
-    # VmServerScriptSelect Button
-    # VmServerScript TextBox
-    # VmServerMemory TextBox
-    # VmServerImageSelect Button
-    # VmServerImage TextBox
-    # VmServerDrive TextBox
-
-
-    # VmWorkstation DataGrid
-    # VmWorkstationPathSelect Button
-    # VmWorkstationPath TextBox
-    # VmWorkstationScriptSelect Button
-    # VmWorkstationScript TextBox
-    # VmWorkstationMemory TextBox
-    # VmWorkstationImageSelect Button
-    # VmWorkstationImage TextBox
-    # VmWorkstationDrive TextBox
-    # VmGetArchitecture Button
-    # VmNewArchitecture Button
 
     Return @{ Xaml = $Xaml; Main = $Main }
 }
@@ -8074,33 +8639,6 @@ $Xaml = $Cap.Xaml
 $Main = $Cap.Main
 
 ####
-
-    $Main.Gateway                     = $Main.Sitelist | ? Name -eq Gateway
-    $Main.Server                      = $Main.Sitelist | ? Name -eq Server
-
-    $Xaml.IO.GwAggregate.ItemsSource  = $Main.Gateway
-    $Xaml.IO.SrAggregate.ItemsSource  = $Main.Server
-
-# [Gateway]
-ForEach ($Site in $Main.Sitemap.Aggregate)
-{
-    $Main.AddsController.AddAddsNode("Gateway",$Site.Name,$Site)
-}
-
-# [Server]
-ForEach ($Site in $Main.Sitemap.Aggregate)
-{
-    $Main.AddsController.AddAddsNode("Server","dc1-$($Site.Postal)",$Site)
-}
-
-# [Send AddsController nodes to VmController]
-ForEach ($Item in $Main.AddsController.Object)
-{
-    $Main.VmController.LoadAddsNode($Item)
-}
-
-# Populate VMController VMStack
-$Main.VmController.GetVMNodeList()
 
 $Main.UpdateController.SetBase("C:\Updates")
 $Main.UpdateController.ProcessFileList()
