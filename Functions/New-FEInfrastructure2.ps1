@@ -2686,7 +2686,7 @@ Function New-FEInfrastructure2
                 $This.Exists           = 0
                 Remove-Item $This.Vhd -Force -Verbose -Confirm:$False
                 Remove-Item $This.Path -Force -Recurse -Verbose -Confirm:$False
-                Remove-Item $This.Path -Force -Verbose -Confirm:$False
+                Remove-Item ($This.Path | Split-Path -Parent) -Force -Verbose -Confirm:$False
             }
             Stop()
             {
@@ -2718,7 +2718,7 @@ Function New-FEInfrastructure2
                     $This.Generation = $Vm.Generation
                     $This.Core       = $Vm.ProcessorCount
                     $This.SwitchName = $Vm.NetworkAdapters.SwitchName
-                    $This.Firmware   = 
+                    $This.Firmware   = $This.GetFirmware()
                     $This.Exists     = 1
                     $This.Guid       = $Vm.Id
                 }
@@ -2727,7 +2727,7 @@ Function New-FEInfrastructure2
             {
                 If ($This.Iso)
                 {
-                    $This.VM | Get-VMFirmware | % { $_.BootOrder[2,0,1] }
+                    $This.GetFirmware() | % { $_.BootOrder[2,0,1] }
                 }
                 If (!$This.Iso)
                 {
@@ -9162,6 +9162,7 @@ Function New-FEInfrastructure2
         # Gateway
         If ($Main.Container.Gateway.Count -gt 0)
         {
+            Write-Theme "Validating [~] Virtual Gateway(s)" 11,3,15
             $Main.Validate.ValidateBase(
                 "Gateway",
                 $Xaml.IO.VmGatewayPath.Text,
@@ -9172,6 +9173,7 @@ Function New-FEInfrastructure2
 
             If ($Main.Validate.Gateway.Result -eq "Fail")
             {
+                Write-Theme "Error [!] Failure to validate ALL of the requested [Gateway] items" 12,4,15
                 Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Gateway Error")
             }
 
@@ -9190,12 +9192,14 @@ Function New-FEInfrastructure2
 
                     $Main.Validate.Gateway.Output += $Item
                 }
+                Write-Theme "Validated [~] Virtual Gateway(s)" 10,2,15
             }
         }
 
         # Server
         If ($Main.Container.Server.Count -gt 0)
         {
+            Write-Theme "Validating [~] Virtual Server(s)" 11,3,15
             $Main.Validate.ValidateBase("Server",
                 $Xaml.IO.VmServerPath.Text,
                 $Xaml.IO.VmServerInstallType.SelectedItem.Content,
@@ -9205,6 +9209,7 @@ Function New-FEInfrastructure2
 
             If ($Main.Validate.Server.Result -eq "Fail")
             {
+                Write-Theme "Error [!] Failure to validate ALL of the requested [Server] items" 12,4,15
                 Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Server Error")
             }
 
@@ -9222,12 +9227,14 @@ Function New-FEInfrastructure2
 
                     $Main.Validate.Server.Output += $Item
                 }
+                Write-Theme "Validated [~] Virtual Servers(s)" 10,2,15
             }
         }
 
         # Workstation
         If ($Main.Container.Workstation.Count -gt 0)
         {
+            Write-Theme "Validating [~] Virtual Workstations(s)" 11,3,15
             $Main.Validate.ValidateBase(
                 "Workstation",
                 $Xaml.IO.VmWorkstationPath.Text,
@@ -9238,6 +9245,7 @@ Function New-FEInfrastructure2
 
             If ($Main.Validate.Workstation.Result -eq "Fail")
             {
+                Write-Theme "Error [!] Failure to validate ALL of the requested [Workstation] items" 12,4,15
                 Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Workstation Error")
             }
 
@@ -9256,14 +9264,17 @@ Function New-FEInfrastructure2
 
                     $Main.Validate.Workstation.Output += $Item
                 }
+                Write-Theme "Validated [~] Virtual Workstations(s)" 10,2,15
             }
         }
     })
 
     $Xaml.IO.VmNewArchitecture.Add_Click(
     {
-        ForEach ($Object in $Main.Validate.Gateway.Output)
+        $Master = $Main.Validate.Gateway
+        ForEach ($Object in $Master.Output)
         {   
+            Write-Theme ("Initializing [~] Virtual Gateway ({0})" -f $Object.Name) 14,6,15
             $Object.New()
             $Object.Start()
             Do
@@ -9276,17 +9287,30 @@ Function New-FEInfrastructure2
             $Reserve = $Main.VmController.Reservation | ? SwitchName -match $Object.Name 
             $Reserve.SetMacAddress($MacAddress)
             $Reserve.Add()
+            $Object.LoadIso($Master.Iso)
+            $Object.SetIsoBoot()
+            Write-Theme ("Initialized [+] Virtual Gateway ({0})" -f $Object.Name) 10,2,15
         }
 
-        ForEach ($Object in $Main.Validate.Server.Output)
+        $Master = $Main.Validate.Server
+        ForEach ($Object in $Master.Output)
         {
+            Write-Theme ("Initializing [~] Virtual Server ({0})" -f $Object.Name) 14,6,15
             $Object.New()
+            $Object.LoadIso($Master.Iso)
+            $Object.SetIsoBoot()
+            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.Name) 10,2,15
         }
 
+        $Master = $Main.Validate.Workstation
         ForEach ($Object in $Main.Validate.Workstation.Output)
         {
+            Write-Theme ("Initializing [~] Virtual Workstation ({0})" -f $Object.Name) 14,6,15
             $Object.New()
+            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.Name) 10,2,15
         }
+
+        Write-Theme "Deployed [+] Virtual Machines (Next Phase -> Installation)"
     })
 
     Return @{ Xaml = $Xaml; Main = $Main }
@@ -9309,4 +9333,2462 @@ $Main.UpdateController.SetBase("C:\Updates")
 $Main.UpdateController.ProcessFileList()
 $Main.UpdateController.UpdateList 
 
-#>
+#>          </Grid>',
+        '                                </Grid>',
+        '                            </GroupBox>',
+        '                        </TabItem>',
+        '                    </TabControl>',
+        '                    <Grid Grid.Row="4">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Button Grid.Column="0" Name="VmGetArchitecture" Content="Get"/>',
+        '                        <Button Grid.Column="1" Name="VmNewArchitecture" Content="New"/>',
+        '                    </Grid>',
+        '                </Grid>',
+        '            </TabItem>',
+        '            <TabItem Header="Imaging">',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="*"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <GroupBox Grid.Row="0" Header="[Imaging]">',
+        '                        <Grid>',
+        '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="120"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="120"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="120"/>',
+        '                                <RowDefinition Height="40"/>',
+        '                            </Grid.RowDefinitions>',
+        '                            <Label Grid.Row="0" Content="[Images (*.iso) files found in source directory]"/>',
+        '                            <Grid Grid.Row="2">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="110"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label Grid.Column="0" Content="[Image Path]:"/>',
+        '                                <TextBox Grid.Column="1" Name="IsoPath"/>',
+        '                                <Button Name="IsoSelect" Grid.Column="2" Content="Select"/>',
+        '                            </Grid>',
+        '                            <DataGrid Grid.Row="1" Name="IsoList">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
+        '                                    <DataGridTextColumn Header="Path" Binding="{Binding Path}" Width="2*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Grid Grid.Row="3">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Button Grid.Column="0" Name="IsoMount" Content="Mount" IsEnabled="False"/>',
+        '                                <Button Grid.Column="1" Name="IsoDismount" Content="Dismount" IsEnabled="False"/>',
+        '                            </Grid>',
+        '                            <Border   Grid.Row="4" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Label    Grid.Row="5" Content="[Image Viewer/Wim file selector]"/>',
+        '                            <DataGrid Grid.Row="6" Name="IsoView">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Index" Binding="{Binding Index}" Width="40"/>',
+        '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="*"/>',
+        '                                    <DataGridTextColumn Header="Size"  Binding="{Binding Size}" Width="100"/>',
+        '                                    <DataGridTextColumn Header="Architecture" Binding="{Binding Architecture}" Width="100"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Grid Grid.Row="7">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Button Grid.Column="0" Name="WimQueue" Content="Queue" IsEnabled="False"/>',
+        '                                <Button Grid.Column="1" Name="WimDequeue" Content="Dequeue" IsEnabled="False"/>',
+        '                            </Grid>',
+        '                            <Border Grid.Row="8" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Label Grid.Row="9" Content="[Queued (*.wim) file extraction]"/>',
+        '                            <Grid Grid.Row="10">',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                    <RowDefinition Height="*"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="60"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Button Grid.Row="0" Name="WimIsoUp" Content="Up"/>',
+        '                                <Button Grid.Row="1" Name="WimIsoDown" Content="Down"/>',
+        '                                <DataGrid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Name="WimIso">',
+        '                                    <DataGrid.Columns>',
+        '                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="*"/>',
+        '                                        <DataGridTextColumn Header="SelectedIndex" Binding="{Binding SelectedIndex}" Width="100"/>',
+        '                                    </DataGrid.Columns>',
+        '                                </DataGrid>',
+        '                            </Grid>',
+        '                            <Grid Grid.Row="11">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Button Name="WimSelect" Grid.Column="0" Content="Select"/>',
+        '                                <TextBox Grid.Column="1" Name="WimPath"/>',
+        '                                <Button Grid.Column="2" Name="WimExtract" Content="Extract"/>',
+        '                            </Grid>',
+        '                        </Grid>',
+        '                    </GroupBox>',
+        '                </Grid>',
+        '            </TabItem>',
+        '            <TabItem Header="Updates">',
+        '                <GroupBox Header="[Updates]">',
+        '                    <Grid>',
+        '                        <Grid.RowDefinitions>',
+        '                            <RowDefinition Height="40"/>',
+        '                            <RowDefinition Height="*"/>',
+        '                            <RowDefinition Height="40"/>',
+        '                            <RowDefinition Height="10"/>',
+        '                            <RowDefinition Height="40"/>',
+        '                            <RowDefinition Height="*"/>',
+        '                            <RowDefinition Height="10"/>',
+        '                            <RowDefinition Height="40"/>',
+        '                            <RowDefinition Height="*"/>',
+        '                            <RowDefinition Height="40"/>',
+        '                        </Grid.RowDefinitions>',
+        '                        <Label    Grid.Row="0" Content="[Aggregate]: Update file source directory"/>',
+        '                        <DataGrid Grid.Row="1"  Name="UpdAggregate">',
+        '                            <DataGrid.Columns>',
+        '                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>',
+        '                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                            </DataGrid.Columns>',
+        '                        </DataGrid>',
+        '                        <Grid     Grid.Row="2">',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="60"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="40"/>',
+        '                                <ColumnDefinition Width="40"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Button  Grid.Column="0" Name="UpdSelect" Content="Path"/>',
+        '                            <TextBox Grid.Column="1" Name="UpdPath"/>',
+        '                            <Button  Grid.Column="2" Name="UpdAddUpdate" Content="+"/>',
+        '                            <Button  Grid.Column="3" Name="UpdRemoveUpdate" Content="-"/>',
+        '                        </Grid>',
+        '                        <Border   Grid.Row="3" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                        <Label    Grid.Row="4" Content="[Viewer]: View (properties/attributes) of update files"/>',
+        '                        <DataGrid Grid.Row="5" Name="UpdViewer">',
+        '                            <DataGrid.Columns>',
+        '                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
+        '                                <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>',
+        '                                <DataGridCheckBoxColumn Header="Install" Binding="{Binding Install}" Width="50"/>',
+        '                            </DataGrid.Columns>',
+        '                        </DataGrid>',
+        '                        <Border   Grid.Row="6" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                        <Label    Grid.Row="7" Content="[Update]: Selected (*.wim) file(s) to inject the update(s)"/>',
+        '                        <DataGrid Grid.Row="8" Name="UpdWim">',
+        '                            <DataGrid.Columns>',
+        '                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
+        '                                <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>',
+        '                                <DataGridCheckBoxColumn Header="Install" Binding="{Binding Install}" Width="50"/>',
+        '                            </DataGrid.Columns>',
+        '                        </DataGrid>',
+        '                        <Grid Grid.Row="9">',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Button Grid.Column="0" Name="UpdInstallUpdate" Content="Install"/>',
+        '                            <Button Grid.Column="1" Name="UpdUninstallUpdate" Content="Uninstall"/>',
+        '                        </Grid>',
+        '                    </Grid>',
+        '                </GroupBox>',
+        '            </TabItem>',
+        '            <TabItem Header="Share">',
+        '                <Grid>',
+        '                    <Grid.RowDefinitions>',
+        '                        <RowDefinition Height="*"/>',
+        '                        <RowDefinition Height="40"/>',
+        '                    </Grid.RowDefinitions>',
+        '                    <GroupBox Grid.Row="0" Header="[Share]">',
+        '                        <Grid Grid.Row="0">',
+        '                            <Grid.RowDefinitions>',
+        '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="120"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="120"/>',
+        '                                <RowDefinition Height="10"/>',
+        '                                <RowDefinition Height="*"/>',
+        '                            </Grid.RowDefinitions>',
+        '                            <Label    Grid.Row="0" Content="[Aggregate]: (Existent/Provisioned) Deployment Shares &amp; FileSystem, PSDrive, (MDT/PSD), SMB Share, Description"/>',
+        '                            <DataGrid Grid.Row="1" Name="DsAggregate"',
+        '                                  ScrollViewer.CanContentScroll="True" ',
+        '                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
+        '                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name"        Binding="{Binding Name}" Width="60"/>',
+        '                                    <DataGridTextColumn Header="Type"        Binding="{Binding Type}" Width="60"/>',
+        '                                    <DataGridTextColumn Header="Root"        Binding="{Binding Root}" Width="250"/>',
+        '                                    <DataGridTextColumn Header="Share"       Binding="{Binding Share}" Width="150"/>',
+        '                                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="350"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Grid     Grid.Row="3">',
+        '                                <Grid.RowDefinitions>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                </Grid.RowDefinitions>',
+        '                                <Grid Grid.Row="0">',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="110"/>',
+        '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <Label   Grid.Column="0" Content="[Root]:"/>',
+        '                                    <Button  Grid.Column="1" Name="DsRootSelect" Content="Browse"/>',
+        '                                    <TextBox Grid.Column="2" Name="DsRootPath"/>',
+        '                                </Grid>',
+        '                                <Grid Grid.Row="1">',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="110"/>',
+        '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="120"/>',
+        '                                        <ColumnDefinition Width="120"/>',
+        '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <Label    Grid.Column="0" Content="[Drive]:"/>',
+        '                                    <TextBox  Grid.Column="1"  Name="DsDriveName"/>',
+        '                                    <Label    Grid.Column="2" Content="[Share]:"/>',
+        '                                    <TextBox  Grid.Column="3" Name="DsShareName"/>',
+        '                                    <Label    Grid.Column="4" Content="[Type]:"/>',
+        '                                    <ComboBox Grid.Column="5" Name="DsType">',
+        '                                        <ComboBoxItem Content="MDT"/>',
+        '                                        <ComboBoxItem Content="PSD"/>',
+        '                                        <ComboBoxItem Content="-"/>',
+        '                                    </ComboBox>',
+        '                                </Grid>',
+        '                                <Grid Grid.Row="2">',
+        '                                    <Grid.ColumnDefinitions>',
+        '                                        <ColumnDefinition Width="110"/>',
+        '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                        <ColumnDefinition Width="40"/>',
+        '                                    </Grid.ColumnDefinitions>',
+        '                                    <Label    Grid.Column="0" Content="[Description]:"/>',
+        '                                    <TextBox  Grid.Column="1" Name="DsDescription"/>',
+        '                                    <Button   Grid.Column="2" Name="DsAddShare" Content="+"/>',
+        '                                    <Button   Grid.Column="3" Name="DsRemoveShare" Content="-"/>',
+        '                                </Grid>',
+        '                            </Grid>',
+        '                            <Border   Grid.Row="4" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <TabControl Grid.Row="5">',
+        '                                <TabItem Header="Import">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Label Grid.Row="0" Content="[Import]: Operating Systems &amp; Task Sequences"/>',
+        '                                        <Grid  Grid.Row="1">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Button   Grid.Row="0" Grid.Column="0" Name="DsImportSelectWimFilePath" Content="Select"/>',
+        '                                            <TextBox  Grid.Row="0" Grid.Column="1" Name="DsImportWimFilePath"/>',
+        '                                            <ComboBox Grid.Row="0" Grid.Column="2" Name="DsImportWimFileMode"/>',
+        '                                        </Grid>',
+        '                                        <DataGrid Grid.Row="2" Name="DsImportWimFiles"',
+        '                                                  ScrollViewer.CanContentScroll="True" ',
+        '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
+        '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
+        '                                            <DataGrid.Columns>',
+        '                                                <DataGridTextColumn Header="Rank"        Binding="{Binding Rank}"             Width="30"/>',
+        '                                                <DataGridTextColumn Header="Label"       Binding="{Binding Label}"            Width="100"/>',
+        '                                                <DataGridTextColumn Header="Name"        Binding="{Binding ImageName}"        Width="250"/>',
+        '                                                <DataGridTextColumn Header="Description" Binding="{Binding ImageDescription}" Width="200"/>',
+        '                                                <DataGridTextColumn Header="Version"     Binding="{Binding Version}"          Width="100"/>',
+        '                                                <DataGridTextColumn Header="Arch"        Binding="{Binding Architecture}"     Width="30"/>',
+        '                                                <DataGridTextColumn Header="Type"        Binding="{Binding InstallationType}" Width="50"/>',
+        '                                                <DataGridTextColumn Header="Path"        Binding="{Binding SourceImagePath}"  Width="Auto"/>',
+        '                                            </DataGrid.Columns>',
+        '                                        </DataGrid>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="Current">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Label Grid.Row="0" Content="[Current]: Operating Systems &amp; Task Sequences"/>',
+        '                                        <Grid  Grid.Row="1">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Button   Grid.Row="0" Grid.Column="0" Name="DsCurrentSelectWimFilePath" Content="Select"/>',
+        '                                            <TextBox  Grid.Row="0" Grid.Column="1" Name="DsCurrentWimFilePath"/>',
+        '                                            <ComboBox Grid.Row="0" Grid.Column="2" Name="DsCurrentWimFileMode"/>',
+        '                                        </Grid>',
+        '                                        <DataGrid Grid.Row="2" Name="DsCurrentWimFiles"',
+        '                                                  ScrollViewer.CanContentScroll="True" ',
+        '                                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
+        '                                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
+        '                                            <DataGrid.Columns>',
+        '                                                <DataGridTextColumn Header="Rank"        Binding="{Binding Rank}"             Width="30"/>',
+        '                                                <DataGridTextColumn Header="Label"       Binding="{Binding Label}"            Width="100"/>',
+        '                                                <DataGridTextColumn Header="Name"        Binding="{Binding ImageName}"        Width="250"/>',
+        '                                                <DataGridTextColumn Header="Description" Binding="{Binding ImageDescription}" Width="200"/>',
+        '                                                <DataGridTextColumn Header="Version"     Binding="{Binding Version}"          Width="100"/>',
+        '                                                <DataGridTextColumn Header="Arch"        Binding="{Binding Architecture}"     Width="30"/>',
+        '                                                <DataGridTextColumn Header="Type"        Binding="{Binding InstallationType}" Width="50"/>',
+        '                                                <DataGridTextColumn Header="Path"        Binding="{Binding SourceImagePath}"  Width="Auto"/>',
+        '                                            </DataGrid.Columns>',
+        '                                        </DataGrid>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="Domain/Network">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="80"/>',
+        '                                            <RowDefinition Height="10"/>',
+        '                                            <RowDefinition Height="120"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Label Grid.Row="0" Content="[Domain/Network]: Credential &amp; (Server/Share) Information"/>',
+        '                                        <Grid  Grid.Row="1">',
+        '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                            </Grid.RowDefinitions>',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Button      Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Name="DsLogin" Content="Domain Admin Login [Populates all fields except Machine OU]"/>',
+        '                                            <Label       Grid.Row="0" Grid.Column="2" Content="[Username]:"/>',
+        '                                            <TextBox     Grid.Row="0" Grid.Column="3" Name="DsDcUsername"/>',
+        '                                            <Label       Grid.Row="1" Grid.Column="0" Content="[Password]:"/>',
+        '                                            <PasswordBox Grid.Row="1" Grid.Column="1" Name="DsDcPassword" HorizontalContentAlignment="Left"/>',
+        '                                            <Label       Grid.Row="1" Grid.Column="2" Content="[Confirm]:"/>',
+        '                                            <PasswordBox Grid.Row="1" Grid.Column="3" Name="DsDcConfirm"  HorizontalContentAlignment="Left"/>',
+        '                                        </Grid>',
+        '                                        <Border          Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                        <Grid Grid.Row="3">',
+        '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                            </Grid.RowDefinitions>',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="225"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Label       Grid.Row="0" Grid.Column="0" Content="[NetBios]:"/>',
+        '                                            <TextBox     Grid.Row="0" Grid.Column="1" Name="DsNetBiosName" ToolTip="NetBIOS name of the deployment share (server/domain)"/>',
+        '                                            <Label       Grid.Row="0" Grid.Column="2" Content="[Dns]:"/>',
+        '                                            <TextBox     Grid.Row="0" Grid.Column="3" Name="DsDnsName" ToolTip="Dns name of the deployment share (server/domain)"/>',
+        '                                            <Label       Grid.Row="1" Grid.Column="0" Content="[Org. Name]:"/>',
+        '                                            <TextBox     Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="DsOrganization" ToolTip="Name of the organization"/>',
+        '                                            <Button      Grid.Row="2" Grid.Column="0" Name="DsMachineOUSelect" Content="Machine OU"/>',
+        '                                            <TextBox     Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Name="DsMachineOu" ToolTip="Adds Organizational Unit where the nodes are installed"/>',
+        '                                        </Grid>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="Local/Branding">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="10"/>',
+        '                                            <RowDefinition Height="80"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="100"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="100"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Label       Grid.Row="0" Grid.ColumnSpan="4" Content="[Local/Branding]: Local Administrator &amp; Branding Information"/>',
+        '                                        <Label       Grid.Row="1" Grid.Column="0" Content="[Username]:"/>',
+        '                                        <TextBox     Grid.Row="1" Grid.Column="1" Name="DsLmUsername"/>',
+        '                                        <Label       Grid.Row="2" Grid.Column="0" Content="[Password]:"/>',
+        '                                        <PasswordBox Grid.Row="2" Grid.Column="1" Name="DsLmPassword" HorizontalContentAlignment="Left"/>',
+        '                                        <Label       Grid.Row="2" Grid.Column="2" Content="[Confirm]:"/>',
+        '                                        <PasswordBox Grid.Row="2" Grid.Column="3" Name="DsLmConfirm"/>',
+        '                                        <Border      Grid.Row="3" Grid.ColumnSpan="4"  Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                        <Button      Grid.Row="4" Grid.Column="0" Name="DsBrCollect" Content="Collect" Height="70"/>',
+        '                                        <Grid        Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="180"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                            </Grid.RowDefinitions>',
+        '                                            <Label   Grid.Row="0" Grid.Column="0" Content="[Phone]:"/>',
+        '                                            <TextBox Grid.Row="0" Grid.Column="1" Name="DsBrPhone"/>',
+        '                                            <Label   Grid.Row="0" Grid.Column="2" Content="[Hours]:"/>',
+        '                                            <TextBox Grid.Row="0" Grid.Column="3" Name="DsBrHours"/>',
+        '                                            <Label   Grid.Row="1" Grid.Column="0" Content="[Website]:"/>',
+        '                                            <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"  Name="DsBrWebsite"/>',
+        '                                        </Grid>',
+        '                                        <Button   Grid.Row="5" Grid.Column="0" Name="DsBrLogoSelect" Content="Logo"/>',
+        '                                        <TextBox  Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Name="DsBrLogo"/>',
+        '                                        <Button   Grid.Row="6" Grid.Column="0" Name="DsBrBackgroundSelect" Content="Background"/>',
+        '                                        <TextBox  Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Name="DsBrBackground"/>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="Bootstrap">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Label   Grid.Row="0" Content="[Bootstrap]: Directly edit (Bootstrap.ini)"/>',
+        '                                        <Grid    Grid.Row="1">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Button Grid.Column="0" Name="DsGenerateBootstrap" Content="Generate"/>',
+        '                                            <TextBox Grid.Column="1" Name="DsBootstrapPath"/>',
+        '                                            <Button Grid.Column="2" Name="DsSelectBootstrap" Content="Select"/>',
+        '                                        </Grid>',
+        '                                        <TextBox Grid.Row="2" Height="200" Background="White" Name="DsBootstrap" Style="{StaticResource Block}"/>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="Custom Settings">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Label   Grid.Row="0" Content="[Custom Settings]: Directly edit (CustomSettings.ini)"/>',
+        '                                        <Grid Grid.Row="1">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Button  Grid.Column="0" Name="DsGenerateCustomSettings" Content="Generate"/>',
+        '                                            <TextBox Grid.Column="1" Name="DsCustomSettingsPath"/>',
+        '                                            <Button  Grid.Column="2" Name="DsSelectCustomSettings" Content="Select"/>',
+        '                                        </Grid>',
+        '                                        <TextBox Grid.Row="2" Height="200" Background="White" Name="DsCustomSettings" Style="{StaticResource Block}"/>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="Post Configuration">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Label   Grid.Row="0" Content="[Post Configuration]: Directly edit (Install-FightingEntropy.ps1)"/>',
+        '                                        <Grid Grid.Row="1">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Button  Grid.Column="0" Name="DsGeneratePostConfig" Content="Generate"/>',
+        '                                            <TextBox Grid.Column="1" Name="DsPostConfigPath"/>',
+        '                                            <Button  Grid.Column="2" Name="DsSelectPostConfig" Content="Select"/>',
+        '                                        </Grid>',
+        '                                        <TextBox Grid.Row="2" Height="200" Background="White" Name="DsPostConfig" Style="{StaticResource Block}"/>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="DS Key">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Label   Grid.Row="0" Content="[Deployment Share Key]: Directly edit (DSKey.csv)"/>',
+        '                                        <Grid Grid.Row="1">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Button  Grid.Column="0" Name="DsGenerateDSKey" Content="Generate"/>',
+        '                                            <TextBox Grid.Column="1" Name="DsDSKeyPath"/>',
+        '                                            <Button  Grid.Column="2" Name="DsSelectDSKey" Content="Select"/>',
+        '                                        </Grid>',
+        '                                        <TextBox Grid.Row="2" Height="200" Background="White" Name="DsDSKey" Style="{StaticResource Block}"/>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                            </TabControl>',
+        '                        </Grid>',
+        '                    </GroupBox>',
+        '                    <Grid Grid.Row="1">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Button Grid.Column="0" Name="DsCreate" Content="Create"/>',
+        '                        <Button Grid.Column="1" Name="DsUpdate" Content="Update" IsEnabled="False"/>',
+        '                    </Grid>',
+        '                </Grid>',
+        '            </TabItem>',
+        '        </TabControl>',
+        '    </Grid>',
+        '</Window>' -join "`n")
+    }
+
+    Class ModuleFile
+    {
+        [String] $Mode
+        [String] $LastWriteTime
+        [String] $Length
+        [String] $Name
+        [String] $Path
+        ModuleFile([Object]$File)
+        {
+            $This.Mode          = $File.Mode.ToString()
+            $This.LastWriteTime = $File.LastWriteTime.ToString()
+            $This.Length        = Switch ($File.Length)
+            {
+                {$_ -lt 1KB}                 { "{0} B"     -f  $File.Length      }
+                {$_ -ge 1KB -and $_ -lt 1MB} { "{0:n2} KB" -f ($File.Length/1KB) }
+                {$_ -ge 1MB}                 { "{0:n2} MB" -f ($File.Length/1MB) }
+            }
+            $This.Name          = $File.Name
+            $This.Path          = $File.FullName
+        }
+    }
+
+    Class Main
+    {
+        [Object]            $Module
+        [Object]        $Connection
+        [String]      $Organization
+        [String]        $CommonName
+        [Object]        $Credential
+        Static [String]       $Base = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy"
+        Static [String]        $GFX = ("{0}\Graphics"    -f [Main]::Base)
+        Static [String]       $Icon = ("{0}\icon.ico"    -f [Main]::GFX)
+        Static [String]       $Logo = ("{0}\OEMLogo.bmp" -f [Main]::GFX)
+        Static [String] $Background = ("{0}\OEMbg.jpg"   -f [Main]::GFX)
+        [Object]            $System
+        [Object]            $Config
+        [Object]          $SiteList
+        [Object]       $NetworkList
+        [Object]           $Sitemap
+        [Object]    $AddsController
+        [Object]      $VmController
+        [Object]   $ImageController
+        [Object]  $UpdateController
+        [Object]     $MdtController
+        [Object]     $WdsController
+        Hidden [Object]       $Time
+        Hidden [Object]  $Container
+        Hidden [Object]   $Validate
+        Main()
+        {
+            $This.Module          = Get-FEModule
+            $This.Connection      = Get-FEADLogin
+            If (!$This.Connection)
+            {
+                Write-Error "Could not log into server"
+                Break
+            }
+            Else
+            {
+                $This.Time = [System.Diagnostics.Stopwatch]::StartNew()
+                $This.Log("[~] Initializing")
+            }
+            $This.Credential      = $This.Connection.Credential
+
+            # Pulls system information
+            $This.Module.Role.GetSystem()
+
+            # Assigns system information to system variable
+            $This.System            = $This.Module.Role.System
+            $This.Log("[+] System")
+
+            # Pulls configuration information (Network/DHCP/DNS/ADDS/Hyper-V/WDS/MDT/WinADK/WinPE/IIS)
+            $This.Config            = Config -Module $This.Module
+            $This.Log("[+] Config")
+
+            # Pulls sitelist base and classes
+            $This.SiteList          = Sitelist -Module $This.Module
+            $This.Log("[+] SiteList")
+
+            # Pulls networklist base and classes
+            $This.NetworkList       = NetworkList
+            $This.Log("[+] NetworkList")
+
+            # Load and sort/rename module files
+            ForEach ($Item in $This.Module.Tree.Name)
+            {
+                $This.Module.$Item  = @( $This.Module.$Item | % { [ModuleFile]$_ })
+            }
+
+            # Domain Controller
+            $This.Sitemap           = Sitemap
+            $This.Log("[+] Sitemap")
+
+            # AD Controller
+            $This.AddsController    = AddsController
+            $This.Log("[+] AddsController")
+
+            # VM Controller
+            If ($This.Config.HyperV)
+            {
+                $This.VmController  = VmController -Hostname localhost -Credential $This.Credential
+                $This.Log("[+] VmController")
+            }
+
+            # Imaging Controller
+            $This.ImageController   = ImageController
+            $This.Log("[+] ImageController")
+
+            # Update Controller
+            $This.UpdateController  = UpdateController
+            $This.Log("[+] UpdateController")
+
+            # Mdt Controller
+            $This.MdtController     = MdtController -Module $This.Module
+            $This.Log("[+] MdtController")
+
+            # Wds Controller
+            $This.WdsController     = WdsController
+            $This.Log("[+] WdsController")
+
+            $This.Time.Stop()
+            $This.Log("[+] Initialized")
+        }
+        Log([String]$Message)
+        {
+            Write-Host "[$($This.Time.Elapsed)] $Message"
+        }
+        SetNetwork([Object]$Xaml,[UInt32]$Index)
+        {
+            If ($Xaml.System.Network.Count -eq 1)
+            {
+                $IPInfo                                       = $This.Module.Role.System.Network
+            }
+            Else
+            {
+                $IPInfo                                       = $This.Module.Role.System.Network[$Index]
+            }
+
+            $X                                                = $IPInfo.DhcpServer -eq ""
+
+            $Xaml.IO.Network_Name.Text                        = $IPInfo.Name
+            $Xaml.IO.Network_Name.IsReadOnly                  = 1
+
+            # [Network Type]
+            $Xaml.IO.Network_Type.SelectedIndex               = $X
+
+            # [Index]
+            $Xaml.IO.Network_Index.Text                       = $IPInfo.Index
+            $Xaml.IO.Network_Index.IsReadOnly                 = 1
+
+            # [IPAddress]
+            $Xaml.IO.Network_IPAddress.Text                   = $IPInfo.IPAddress
+            $Xaml.IO.Network_IPAddress.IsReadOnly             = 1
+
+            # [Subnetmask]
+            $Xaml.IO.Network_SubnetMask.Text                  = $IPInfo.SubnetMask
+            $Xaml.IO.Network_SubnetMask.IsReadOnly            = 1
+
+            # [Gateway]
+            $Xaml.IO.Network_Gateway.Text                     = $IPInfo.Gateway
+            $Xaml.IO.Network_Gateway.IsReadOnly               = 1
+            
+            # [Dns]
+            $Xaml.IO.Network_Dns.ItemsSource                  = @( )
+            If ( $IPInfo.DNSServer.Count -ne 0)
+            {
+                $Xaml.IO.Network_DNS.ItemsSource                  = @($IPInfo.DNSServer)
+                $Xaml.IO.Network_DNS.SelectedIndex                = 0
+            }
+
+            # [Dhcp]
+            $Xaml.IO.Network_Dhcp.Text                        = @($IPInfo.DhcpServer,"-")[$IPInfo.DhcpServer -eq ""]
+            $Xaml.IO.Network_Dhcp.IsReadOnly                  = 1
+
+            # [MacAddress]
+            $Xaml.IO.Network_MacAddress.Text                  = $IPInfo.MacAddress
+            $Xaml.IO.Network_MacAddress.IsReadOnly            = 1
+        }
+        [String] GetHostname()
+        {
+            Return @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
+        }
+        SetDomain([String]$Organization,[String]$CommonName)
+        {
+            $This.Organization   = $Organization
+            $This.CommonName     = $CommonName
+            $This.Sitelist       | % SetDomain $Organization $CommonName
+            $This.NetworkList    | % SetDomain $Organization $CommonName
+            $This.Sitemap        | % SetDomain $Organization $CommonName
+            $This.AddsController | % SetDomain $Organization $CommonName
+        }
+        [Object] List([String]$Name,[Object]$Value)
+        {
+            Return [DGList]::New($Name,$Value)
+        }
+        [String[]] Reserved()
+        {
+            Return @(("ANONYMOUS;AUTHENTICATED USER;BATCH;BUILTIN;CREATOR GROUP;CREATOR GROUP SERVER;CREATOR OWNER;CREATOR OWNER SERVER;" + 
+            "DIALUP;DIGEST AUTH;INTERACTIVE;INTERNET;LOCAL;LOCAL SYSTEM;NETWORK;NETWORK SERVICE;NT AUTHORITY;NT DOMAIN;NTLM AUTH;NULL;PROXY;REMO" +
+            "TE INTERACTIVE;RESTRICTED;SCHANNEL AUTH;SELF;SERVER;SERVICE;SYSTEM;TERMINAL SERVER;THIS ORGANIZATION;USERS;WORLD") -Split ";" )
+        }
+        [String[]] Legacy()
+        {
+            Return @("-GATEWAY","-GW","-TAC")
+        }
+        [String[]] SecurityDescriptors()
+        {
+            Return @(("AN,AO,AU,BA,BG,BO,BU,CA,CD,CG,CO,DA,DC,DD,DG,DU,EA,ED,HI,IU,LA,LG,LS,LW,ME,MU,NO,NS,NU,PA,PO,PS,PU,RC,RD,RE,RO,RS,RU,SA," +
+            "SI,SO,SU,SY,WD") -Split ',')
+        }
+        Reset([Object]$Sender,[Object[]]$Content)
+        {
+            $Sender.Clear()
+            ForEach ($Item in $Content)
+            {
+                $Sender.Add($Item)
+            }
+        }
+        [String] CheckHostname([String]$String)
+        {                
+            If ($String.Length -lt 1 -or $String.Length -gt 15)
+            {
+                Return "[!] Length not between 1 and 15 characters"
+            }
+            ElseIf ($String -in $This.Reserved())
+            {
+                Return "[!] Entry is in reserved words list"
+            }
+            ElseIf ($String -in $This.Legacy())
+            {
+                Return "[!] Entry is in the legacy words list"
+            }
+            ElseIf ($String -notmatch "([\-0-9a-zA-Z])")
+            { 
+                Return "[!] Invalid characters"
+            }
+            ElseIf ($String[0] -match "(\W)" -or $String[-1] -match "(\W)")
+            {
+                Return "[!] First/Last Character cannot be a '.' or '-'"
+            }                        
+            ElseIf ($String -match "\.")
+            {
+                Return "[!] Hostname cannot contain a '.'"
+            }
+            ElseIf ($String -in $This.SecurityDescriptors())
+            {
+                Return "[!] Matches a security descriptor"
+            }
+            Else
+            {
+                Return $String
+            }
+        }
+    }
+
+    $Main = [Main]::New()
+    $Xaml = [XamlWindow][FEInfrastructureGUI]::Tab
+
+    # ---------------- #
+    # <![Module Tab]!> #
+    # ---------------- #
+
+    # [Module.Information]
+    $Content = ForEach ( $Item in "Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status" -Split " ")
+    {
+        $Name = Switch ($Item)
+        {
+            Default { $Item               }
+            Date    { "Installation Date" }
+            RegPath { "Registry Path"     }
+            ModPath { "Module File"       }
+            ManPath { "Manifest File"     }
+            Path    { "Module Path"       }
+            Status  { "Module Status"     }
+        }
+        [DGList]::New($Name,$Main.Module.$Item)
+    }
+    $Main.Reset($Xaml.IO.Module_Info.Items,$Content)
+
+    # [Module.Components]
+    $Main.Reset($Xaml.IO.Module_Type.Items,$Main.Module.Tree)
+    $Xaml.IO.Module_Type.SelectedIndex   = 0
+    
+    $Main.Reset($Xaml.IO.Module_Property.Items,"Name")
+    $Xaml.IO.Module_Property.SelectedIndex = 0
+    
+    $Xaml.IO.Module_Filter.Text            = $Null
+    $Xaml.IO.Module_Type.Add_SelectionChanged(
+    {
+        $Xaml.IO.Module_Filter.Text        = $Null
+        $Main.Reset($Xaml.IO.Module_List.Items,$Main.Module."$($Xaml.IO.Module_Type.SelectedItem)")
+        Start-Sleep -Milliseconds 50
+    })
+
+    $Xaml.IO.Module_Filter.Add_TextChanged(
+    {
+        $Main.Reset($Xaml.IO.Module_List.Items,@($Main.Module."$($Xaml.IO.Module_Type.SelectedItem)" | ? $Xaml.IO.Module_Property.SelectedItem -match $Xaml.IO.Module_Filter.Text))
+        Start-Sleep -Milliseconds 50
+    })
+
+    $Main.Reset($Xaml.IO.Module_List.Items,$Main.Module.Classes)
+
+    # ---------------- #
+    # <![Config Tab]!> #
+    # ---------------- #
+
+    # [Config.Output]
+    $Main.Reset($Xaml.IO.CfgServices.Items,$Main.Config.Output)
+
+    # [Config.Role]
+    $Content = ForEach ( $Item in "Name DNS NetBIOS Hostname Username IsAdmin Caption Version Build ReleaseID Code SKU Chassis" -Split " ")
+    {
+        [DGList]::New($Item,$Main.Module.Role.$Item)
+    }
+    $Main.Reset($Xaml.IO.Role_Info.Items,$Content)
+
+    # [Config.System]
+    $Xaml.IO.System_Manufacturer.Text                 = $Main.System.Manufacturer
+    $Xaml.IO.System_Manufacturer.IsReadOnly           = 1
+    $Xaml.IO.System_Model.Text                        = $Main.System.Model
+    $Xaml.IO.System_Model.IsReadOnly                  = 1
+    $Xaml.IO.System_Product.Text                      = $Main.System.Product
+    $Xaml.IO.System_Product.IsReadOnly                = 1
+    $Xaml.IO.System_Serial.Text                       = $Main.System.Serial
+    $Xaml.IO.System_Serial.IsReadOnly                 = 1
+    $Xaml.IO.System_Memory.Text                       = $Main.System.Memory
+    $Xaml.IO.System_Memory.IsReadOnly                 = 1
+    $Xaml.IO.System_UUID.Text                         = $Main.System.UUID
+    $Xaml.IO.System_UUID.IsReadOnly                   = 1
+        
+    # [Config.System.Processor]
+    $Main.Reset($Xaml.IO.System_Processor.Items,$Main.System.Processor.Name)
+    $Xaml.IO.System_Processor.SelectedIndex           = 0
+    
+    $Main.Reset($Xaml.IO.System_Architecture.Items,@("x86","x64"))
+    $Xaml.IO.System_Architecture.SelectedIndex        = $Main.System.Architecture -eq "x64"
+    $Xaml.IO.System_Architecture.IsEnabled            = 0
+    
+    # [Config.System.Chassis]
+    $Xaml.IO.System_IsVM.IsChecked                    = 0
+
+    $Main.Reset($Xaml.IO.System_Chassis.Items,@("Desktop;Laptop;Small Form Factor;Server;Tablet" -Split ";"))
+    $Xaml.IO.System_Chassis.SelectedIndex             = @{Desktop=0;Laptop=1;"Small Form Factor"=2;Server=3;Tablet=4}[$Main.System.Chassis]
+    $Xaml.IO.System_Chassis.IsEnabled                 = 0
+    
+    $Main.Reset($Xaml.IO.System_BiosUefi.Items,@("BIOS","UEFI"))
+    $Xaml.IO.System_BiosUefi.SelectedIndex            = $Main.System.BiosUEFI -eq "UEFI"
+    $Xaml.IO.System_BiosUefi.IsEnabled                = 0
+    
+    $Xaml.IO.System_Name.Text                         = $Main.GetHostname()
+    
+    # [Config.System.Disks]
+    $Main.Reset($Xaml.IO.System_Disk.Items,$Main.System.Disk)
+
+    # [Config.Network]
+    $Main.Reset($Xaml.IO.Network_Adapter.Items,$Main.System.Network)
+    $Xaml.IO.Network_Adapter.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.Network_Adapter.SelectedIndex -ne -1)
+        {
+            $Main.SetNetwork($Xaml,$Xaml.IO.Network_Adapter.SelectedIndex)
+        }
+    })
+
+    $Main.Reset($Xaml.IO.Network_Type.Items,@("DHCP","Static"))
+    $Xaml.IO.Network_Type.SelectedIndex               = 0
+    
+    $Main.SetNetwork($Xaml,0)
+
+    $Xaml.IO.Network_Type.Add_SelectionChanged(
+    {
+        $Main.SetNetwork($Xaml,$Xaml.IO.Network_Type.SelectedIndex)
+    })
+
+    # [Config.Dhcp]
+    $Main.Reset($Xaml.IO.CfgDhcpScopeID.Items,$Main.Config.Dhcp)
+    $Xaml.IO.CfgDhcpScopeID.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.CfgDhcpScopeID.SelectedIndex -ne -1)
+        {
+            $Scope = $Xaml.IO.CfgDhcpScopeID.SelectedItem
+            $Main.Reset($Xaml.IO.CfgDhcpScopeReservations.Items,$Scope.Reservations)
+            $Main.Reset($Xaml.IO.CfgDhcpScopeOptions.Items,$Scope.Options )
+        }
+    })
+
+    # [Config.Dns]
+    $Main.Reset($Xaml.IO.CfgDnsZone.Items,$Main.Config.Dns)
+    $Xaml.IO.CfgDnsZone.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.CfgDnsZone.SelectedIndex -ne -1)
+        {
+            $Zone = $Xaml.IO.CfgDnsZone.SelectedItem
+
+            $Main.Reset($Xaml.IO.CfgDnsZoneHosts.Items,$Zone.Hosts)
+        }
+    })
+
+    # [Config.Adds]
+    $Xaml.IO.Adds_Hostname.Text         = $Main.Config.Adds.Hostname
+    $Xaml.IO.Adds_Hostname.IsReadOnly   = 1
+
+    $Xaml.IO.Adds_DCMode.Text           = $Main.Config.Adds.DCMode
+    $Xaml.IO.Adds_DCMode.IsreadOnly     = 1
+    
+    $Xaml.IO.Adds_DomainMode.Text       = $Main.Config.Adds.DomainMode
+    $Xaml.IO.Adds_DomainMode.IsReadOnly = 1
+
+    $Xaml.IO.Adds_ForestMode.Text       = $Main.Config.Adds.ForestMode
+    $Xaml.IO.Adds_ForestMode.IsReadOnly = 1
+
+    $Xaml.IO.Adds_Root.Text             = $Main.Config.Adds.Root
+    $Xaml.IO.Adds_Root.IsReadOnly       = 1
+
+    $Xaml.IO.Adds_Config.Text           = $Main.Config.Adds.Config
+    $Xaml.IO.Adds_Config.IsReadOnly     = 1
+
+    $Xaml.IO.Adds_Schema.Text           = $Main.Config.Adds.Schema
+    $Xaml.IO.Adds_Schema.IsReadOnly     = 1
+
+    $Main.Reset($Xaml.IO.CfgAddsType.Items,@("Site","Sitelink","Subnet","Dhcp","OU","Computer"))
+    $Xaml.IO.CfgAddsType.SelectedIndex     = 0
+
+    $Main.Reset($Xaml.IO.CfgAddsProperty.Items,@("Name","GUID","DistinguishedName"))
+    $Xaml.IO.CfgAddsProperty.SelectedIndex = 0
+
+    $Xaml.IO.CfgAddsType.Add_SelectionChanged(
+    {
+        Start-Sleep -Milliseconds 50
+        $Xaml.IO.CfgAddsFilter.Text        = $Null
+        $Main.Reset($Xaml.IO.CfgAddsObject.Items,$Main.Config.Adds."$($Xaml.IO.CfgAddsType.SelectedItem)")
+    })
+
+    $Xaml.IO.CfgAddsFilter.Add_TextChanged(
+    {
+        Start-Sleep -Milliseconds 50
+        $Main.Reset($Xaml.IO.CfgAddsObject.Items,@($Main.Config.Adds."$($Xaml.IO.CfgAddsType.SelectedItem)" | ? $Xaml.IO.CfgAddsProperty.SelectedItem -match $Xaml.IO.CfgAddsFilter.Text))
+    })
+
+    # [Config.HyperV]
+    If ($Main.Config.HyperV)
+    {
+        $Xaml.IO.VmHostName.Text           = $Main.HyperV.Name
+        $Main.Reset($Xaml.IO.CfgHyperV.Items,$Main.Config.HyperV)
+    }
+
+    # [Config.Wds]
+    $Xaml.IO.WDS_Server.Text              = $Main.Config.WDS.Server
+    $Main.Reset($Xaml.IO.WDS_IPAddress.Items,$Main.Config.WDS.IPAddress)
+    $Xaml.IO.WDS_IPAddress.SelectedIndex  = 0
+
+    # [Config.Mdt]
+    $Xaml.IO.MDT_Server.Text              = $Main.Config.MDT.Server
+    $Main.Reset($Xaml.IO.MDT_IPAddress.Items,$Main.Config.MDT.IPAddress)
+    $Xaml.IO.MDT_IPAddress.SelectedIndex  = 0
+    
+    $Xaml.IO.MDT_Path.Text                = $Main.Config.MDT.Path
+    $Xaml.IO.MDT_Version.Text             = $Main.Config.MDT.Version
+    $Xaml.IO.MDT_ADK_Version.Text         = $Main.Config.MDT.AdkVersion
+    $Xaml.IO.MDT_PE_Version.Text          = $Main.Config.MDT.PeVersion
+
+    # [Config.IIS]
+    $Main.Reset($Xaml.IO.IIS_AppPools.Items,$Main.Config.IIS.AppPools)
+    $Main.Reset($Xaml.IO.IIS_Sites.Items,$Main.Config.IIS.Sites)
+
+    # ------------------------- #
+    # <![Domain/SiteList Tab]!> #
+    # ------------------------- #
+
+    $Xaml.IO.DcGetSitename.Add_Click(
+    {
+        If (!$Xaml.IO.DcOrganization.Text)
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid/null organization entry","Error")
+        }
+
+        ElseIf (!$Xaml.IO.DcCommonName.Text)
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid/null common name entry","Error")
+        }
+
+        Else
+        {
+            $Main.SetDomain($Xaml.IO.DcOrganization.Text,$Xaml.IO.DcCommonName.Text)
+            $Main.Sitelist.AddSite($Main.Sitelist.GetLocation().Postal)
+            $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
+            $Xaml.IO.DcGetSitename.IsEnabled   = 0
+            $Xaml.IO.NwScopeLoad.IsEnabled     = 1
+        }
+    })
+
+    $Xaml.IO.DcAggregate.Add_SelectionChanged(
+    {
+        $Object                                = $Xaml.IO.DcAggregate.SelectedItem
+        If ($Object)
+        {
+            $Main.Reset($Xaml.IO.DcViewer.Items,@($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) }))
+        }
+    })    
+
+    $Xaml.IO.DcAddSitename.Add_Click(
+    {
+        $Object = $Main.Sitelist.Zipstack.Zip($Xaml.IO.DcAddSitenameZip.Text)
+
+        If ($Object.Type -match "Invalid")
+        {
+            Return [System.Windows.MessageBox]::Show("Not a valid zip code","Error")
+        }
+        ElseIf ($Object.Zip -in $Main.Sitelist.Aggregate.Postal)
+        {
+            Return [System.Windows.MessageBox]::Show("That entry already exists","Error")
+        }
+
+        Else
+        {
+            $Main.Sitelist.AddSite($Object.Zip)
+            $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
+            $Xaml.IO.DcAddSitenameZip.Text    = ""
+        }
+    })
+
+    $Xaml.IO.DcRemoveSitename.Add_Click(
+    {
+        If ($Xaml.IO.DcAggregate.SelectedIndex -gt -1)
+        {
+            $Object                           = $Xaml.IO.DcAggregate.SelectedItem
+            If ($Xaml.IO.DcViewer.Items | ? Name -eq Postal | ? Value -eq $Object.Postal)
+            {
+                $Xaml.IO.DcViewer.Items.Clear()
+            }
+            $Main.Sitelist.Aggregate          = $Main.Sitelist.Aggregate | ? Postal -ne $Object.Postal 
+            $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
+
+        }
+    })
+
+    $Xaml.IO.DcGetTopology.Add_Click(
+    {
+        $Main.Sitelist.GetSiteList()
+        $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
+        $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
+    })
+    
+    $Xaml.IO.DcNewTopology.Add_Click(
+    {
+        $Main.Sitelist.NewSiteList()
+        $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
+        $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
+    })
+
+    # ----------------------------- #
+    # <![Network/NetworkList Tab]!> #
+    # ----------------------------- #
+
+    $Xaml.IO.NwScopeLoad.Add_Click(
+    {
+        If ($Xaml.IO.NwScope.Text -notmatch "((\d+\.+){3}\d+\/\d+)")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid/null network string (Use 'IP/Prefix' notation)","Error")
+        }
+
+        Else
+        {
+            $Main.NetworkList.AddNetwork($Xaml.IO.NwScope.Text)
+            $Xaml.IO.NwScope.Text              = ""
+            $Main.Reset($Xaml.IO.NwAggregate.Items,$Main.NetworkList.Aggregate)
+        }
+    })
+
+    $Xaml.IO.NwAggregate.Add_SelectionChanged(
+    {
+        $Object                                = $Xaml.IO.NwAggregate.SelectedItem
+        $Xaml.IO.NwViewer.Items.Clear()
+        If ($Object)
+        {
+            $Content = @($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) })
+            $Main.Reset($Xaml.IO.NwViewer.Items,$Content)
+        }
+    })
+
+    $Xaml.IO.NwAddSubnetName.Add_Click(
+    {
+        $Object = $Xaml.IO.NwSubnetName.Text
+        If ($Object -notmatch "((\d+\.+){3}\d+\/\d+)")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid subnet provided","Error")
+        }
+        ElseIf ($Object -in $Main.NetworkList.Aggregate.Name)
+        {
+            Return [System.Windows.MessageBox]::Show("Prefix already exists","Error")
+        }
+        Else
+        {
+            $Main.NetworkList.AddSubnet($Object)
+            $Xaml.IO.NwSubnetName.Text       = ""
+            $Main.Reset($Xaml.IO.NwAggregate.Items,$Main.NetworkList.Aggregate)
+        }
+    })
+
+    $Xaml.IO.NwRemoveSubnetName.Add_Click(
+    {
+        If ($Xaml.IO.NwAggregate.SelectedIndex -gt -1)
+        {
+            $Object                           = $Xaml.IO.NwAggregate.SelectedItem
+            $Main.NetworkList.Aggregate       = $Main.NetworkList.Aggregate | ? Name -ne $Object.Name
+            $Main.Reset($Xaml.IO.NwAggregate.Items,$Main.NetworkList.Aggregate)
+            If ($Xaml.IO.NwViewer.ItemsSource | ? Name -eq Name | ? Value -eq $Object.Name)
+            {
+                $Xaml.IO.NwViewer.Items.Clear()
+            }
+        }
+
+        Else
+        {
+            Return [System.Windows.MessageBox]::Show("Select a subnet within the dialog box","Error")
+        }
+    })
+
+    $Xaml.IO.NwGetSubnetName.Add_Click(
+    {
+        $Main.NetworkList.GetNetworkList()       
+        $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
+        $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
+    })
+
+    $Xaml.IO.NwNewSubnetName.Add_Click(
+    {
+        $Main.NetworkList.NewNetworkList()
+        $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
+        $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
+    })
+
+    # ----------------- #
+    # <![Sitemap Tab]!> #
+    # ----------------- #
+
+    $Xaml.IO.SmLoadSitemap.Add_Click(
+    {
+        If ($Main.NetworkList.Topology.Count -lt $Main.SiteList.Topology.Count)
+        {
+            Return [System.Windows.MessageBox]::Show("Insufficient networks","Error: Network count")
+        }
+    
+        Else
+        {
+            $Main.Sitemap                    | % LoadSiteList    $Main.Sitelist.Aggregate
+            $Main.Sitemap                    | % LoadNetworkList $Main.NetworkList.Aggregate
+            $Main.Sitemap                    | % LoadSitemap
+            $Main.Sitemap                    | % GetSitelinkList
+
+            $Main.Reset($Xaml.IO.SmAggregate.Items, $Main.Sitemap.Aggregate)
+            $Main.Reset($Xaml.IO.SmSiteLink.Items,  $Main.Sitemap.Sitelink)
+            $Main.Reset($Xaml.IO.SmTemplate.Items,  $Main.Sitemap.Template.Output)
+        }
+    })
+
+    $Xaml.IO.SmAggregate.Add_SelectionChanged(
+    {
+        $Object                                = $Xaml.IO.SmAggregate.SelectedItem
+        If ($Object)
+        {
+            $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+            $Main.Reset($Xaml.IO.SmViewer.Items,$Content)
+        }
+    })
+
+    $Xaml.IO.SmGetSitemap.Add_Click(
+    {
+        $Main.Sitemap.GetSitemap()
+        $Main.Reset($Xaml.IO.SmTopology.Items,$Main.Sitemap.Topology)
+    })
+
+    $Xaml.IO.SmNewSitemap.Add_Click(
+    {
+        If ($Xaml.IO.SmSiteLink.SelectedIndex -eq -1)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a master site link","Error")
+        }
+
+        Else
+        {
+            $Main.Sitemap.SetSitelinkBridge($Xaml.IO.SmSiteLink.SelectedItem.DistinguishedName)
+            $Main.Sitemap.NewSitemap()
+            $Main.AddsController.LoadSitemap($Main.Sitemap.Aggregate)
+            $Main.Reset($Xaml.IO.AddsSite.Items,$Main.AddsController.Sitemap.Name)
+            $Xaml.IO.AddsSite.SelectedIndex = 0
+        }
+    })
+
+    # -------------- #
+    # <![Adds Tab]!> #
+    # -------------- #
+
+    # [Adds.Site]
+    $Xaml.IO.AddsSite.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsSite.SelectedIndex -ne -1)
+        {
+            $Object                                = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+
+            # Site TextBox
+            $Xaml.IO.AddsSiteName.Text             = $Object.Template.Site.Name
+            
+            # Subnet TextBox
+            $Xaml.IO.AddsSubnetName.Text           = $Object.Template.Subnet.Name
+
+            # Viewer
+            $Content = @($Object.Control.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+            $Main.Reset($Xaml.IO.AddsViewer.Items,$Content)
+
+            # Children
+            $Main.Reset($Xaml.IO.AddsChildren.Items,$Object.Main.Children)
+
+            $Main.AddsController.GetNodeList()
+
+            # Gateway
+            $Main.Reset($Xaml.IO.AddsGwAggregate.Items,   $Main.AddsController.Gateway)
+
+            # Server
+            $Main.Reset($Xaml.IO.AddsSrAggregate.Items,   $Main.AddsController.Server)
+
+            # Workstation
+            $Main.Reset($Xaml.IO.AddsWsAggregate.Items,   $Main.AddsController.Workstation)
+
+            # User
+            $Main.Reset($Xaml.IO.AddsUserAggregate.Items, $Main.AddsController.User)
+
+            # Service
+            $Main.Reset($Xaml.IO.AddsSvcAggregate.Items,  $Main.AddsController.Service)
+        }
+    })
+
+    $Xaml.IO.AddsSiteDefaults.Add_Click(
+    {
+        ForEach ($Site in $Main.AddsController.Sitemap)
+        {
+            ForEach ($Container in $Site.Gateway, $Site.Server, $Site.Workstation, $Site.User, $Site.Service)
+            {
+                $Item = Switch ($Container.Type)
+                {
+                    Gateway     { $Container.NewNode($Site.Name)                       }
+                    Server      { $Container.NewNode("dc1-$($Site.Control.Postal)")    }
+                    Workstation { $Container.NewNode("ws1-$($Site.Control.Postal)")    }
+                    User        { $Container.NewNode("adm1-$($Site.Control.Postal)")   }
+                    Service     { $Container.NewNode("svc1-$($Site.Control.Postal)")   }
+                }
+                $Main.AddsController.Validate($Item)
+                $Container.AddNode($Item)
+            }
+        }
+        
+        $Main.AddsController.GetNodeList()
+
+        $Main.Reset($Xaml.IO.AddsGwAggregate.Items,   $Main.AddsController.Gateway)
+        $Main.Reset($Xaml.IO.AddsSrAggregate.Items,   $Main.AddsController.Server)
+        $Main.Reset($Xaml.IO.AddsWsAggregate.Items,   $Main.AddsController.Workstation)
+        $Main.Reset($Xaml.IO.AddsUserAggregate.Items, $Main.AddsController.User)
+        $Main.Reset($Xaml.IO.AddsSvcAggregate.Items,  $Main.AddsController.Service)
+
+        # Viewer
+        $Object  = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+        $Content = @($Object.Control.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+        $Main.Reset($Xaml.IO.AddsViewer.Items,$Content)
+        
+        # Children
+        $Main.Reset($Xaml.IO.AddsChildren.Items,$Object.Main.Children)
+    })
+
+    # [Adds.Gateway]
+    $Xaml.IO.AddsGwAdd.Add_Click(
+    {
+        $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+        $Name                             = $Main.CheckHostname($Xaml.IO.AddsGwName.Text)
+
+        If ($Name -ne $Xaml.IO.AddsGwName.Text)
+        {
+            Return [System.Windows.MessageBox]::Show($Name,"Error")
+        }
+
+        ElseIf (!$Object)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+        }
+
+        ElseIf ($Name -in $Xaml.IO.AddsGwAggregate.Items.Name)
+        {
+            Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+        }
+
+        Else
+        {
+            $Main.AddsController.AddNode($Object.Name,"Gateway",$Name)
+            $Main.AddsController.GetGatewayList()
+            $Main.Reset($Xaml.IO.AddsGwAggregate.Items, $Main.AddsController.Gateway)
+            $Xaml.IO.AddsGwName.Text      = $Null
+        }
+    })
+
+    $Xaml.IO.AddsGwDelete.Add_Click(
+    {
+        If ($Xaml.IO.AddsGwAggregate.SelectedIndex -ne -1)
+        {
+            ForEach ($Object in $Xaml.IO.AddsGwAggregate.SelectedItems)
+            {
+                $Main.AddsController.RemoveNode($Object.Site,"Gateway",$Object.Name)
+                $Main.AddsController.Output.Remove("Gateway",$Object.Name)
+            }
+            $Main.AddsController.GetGatewayList()
+            $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
+            $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
+        }
+    })
+
+    $Xaml.IO.AddsGwBrowse.Add_Click(
+    {
+        $Item                             = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory            = $Env:SystemDrive
+        $Item.Filter                      = 'Text File (*.txt)| *.txt'
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename                = ""
+        }
+
+        $Xaml.IO.AddsGwFile.Text          = $Item.FileName
+    })
+
+    $Xaml.IO.AddsGwAddList.Add_Click(
+    {
+        If (!(Test-Path $Xaml.IO.AddsGwFile.Text) -or $Xaml.IO.AddsGwFile.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("No valid file selected","Error")
+        }
+
+        Else
+        {
+            ForEach ($Item in Get-Content $Xaml.IO.AddsGwFile.Text)
+            {
+                $Object                       = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+                $Xaml.IO.AddsGwName.Text      = $Item
+                $Name                         = $Main.CheckHostName($Item)  
+
+                If ($Name -ne $Item)
+                {
+                    Return [System.Windows.MessageBox]::Show($Name,"Error")
+                }
+
+                ElseIf (!$Object)
+                {
+                    Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+                }
+
+                ElseIf ($Name -in $Xaml.IO.AddsGwAggregate.Items.Name)
+                {
+                    Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+                }
+
+                Else
+                {
+                    $Main.AddsController.AddNode($Object.Name,"Gateway",$Name)
+                    $Xaml.IO.AddsGwName.Text  = $Null
+                }
+            }
+            $Main.AddsController.GetGatewayList()
+            $Main.Reset($Xaml.IO.AddsGwAggregate.Items, $Main.AddsController.Gateway)
+        }
+    })
+
+    $Xaml.IO.AddsGwAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsGwAggregate.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsGwAggregate.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsGwAggregateViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsGwOutput.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsGwOutput.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsGwOutput.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsGwOutputViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsGwGet.Add_Click(
+    {
+        If ($Main.AddsController.Gateway.Count -gt 1)
+        {
+            $Main.AddsController.GetOutput("Gateway")
+            ForEach ($Item in $Main.AddsController.Output.Gateway)
+            {
+                If ($Item.Exists)
+                {
+                    $Item.Update()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
+        }
+    })
+
+    $Xaml.IO.AddsGwNew.Add_Click(
+    {
+        If ($Main.AddsController.Output.Gateway.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Gateway)
+            {
+                If ($Item.Exists)
+                {
+                    Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If (!$Item.Exists)
+                {
+                    $Item.New()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
+        }
+    })
+
+    $Xaml.IO.AddsGwRemove.Add_Click(
+    {
+        If ($Main.AddsController.Output.Gateway.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Gateway)
+            {
+                If (!$Item.Exists)
+                {
+                    Write-Host ("Item [!] Does not exist [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If ($Item.Exists)
+                {
+                    $Item.Remove()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
+        }
+    })
+
+    # [Adds.Server]
+    $Xaml.IO.AddsSrAdd.Add_Click(
+    {
+        $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+        $Name                             = $Main.CheckHostname($Xaml.IO.AddsSrName.Text)
+
+        If ($Name -ne $Xaml.IO.AddsSrName.Text)
+        {
+            Return [System.Windows.MessageBox]::Show($Name,"Error")
+        }
+
+        If (!$Object)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+        }
+
+        ElseIf ($Name -in $Xaml.IO.AddsSrAggregate.Items.Name)
+        {
+            Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+        }
+
+        Else
+        {
+            $Main.AddsController.AddNode($Object.Name,"Server",$Name)
+            $Main.AddsController.GetServerList()
+            $Main.Reset($Xaml.IO.AddsSrAggregate.Items,$Main.AddsController.Server)
+            $Xaml.IO.AddsSrName.Text      = $Null
+        }
+    })
+
+    $Xaml.IO.AddsSrDelete.Add_Click(
+    {
+        If ($Xaml.IO.AddsSrAggregate.SelectedIndex -ne -1)
+        {
+            ForEach ($Object in $Xaml.IO.AddsSrAggregate.SelectedItems)
+            {
+                $Main.AddsController.RemoveNode($Object.Site,"Server",$Object.Name)
+                $Main.AddsController.Output.Remove("Server",$Object.Name)
+            }
+            $Main.AddsController.GetServerList()
+            $Main.Reset($Xaml.IO.AddsSrAggregate.Items,$Main.AddsController.Server)
+            $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
+        }
+    })
+
+    $Xaml.IO.AddsSrBrowse.Add_Click(
+    {
+        $Item                             = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory            = $Env:SystemDrive
+        $Item.Filter                      = 'Text File (*.txt)| *.txt'
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename                = ""
+        }
+
+        $Xaml.IO.AddsSrFile.Text          = $Item.FileName
+    })
+
+    $Xaml.IO.AddsSrAddList.Add_Click(
+    {
+        If (!(Test-Path $Xaml.IO.AddsSrFile.Text) -or $Xaml.IO.AddsSrFile.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("No valid file selected","Error")
+        }
+
+        Else
+        {
+            ForEach ($Item in Get-Content $Xaml.IO.AddsSrFile.Text)
+            {
+                $Object                       = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+                $Xaml.IO.AddsSrName.Text      = $Item
+                $Name                         = $Main.CheckHostName($Item)  
+
+                If ($Name -ne $Item)
+                {
+                    Return [System.Windows.MessageBox]::Show($Name,"Error")
+                }
+
+                ElseIf (!$Object)
+                {
+                    Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+                }
+
+                ElseIf ($Name -in $Xaml.IO.AddsSrAggregate.Items.Name)
+                {
+                    Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+                }
+
+                Else
+                {
+                    $Main.AddsController.AddNode($Object.Name,"Server",$Name)
+                    $Xaml.IO.AddsSrName.Text  = $Null
+                }
+            }
+            $Main.AddsController.GetServerList()
+            $Main.Reset($Xaml.IO.AddsSrAggregate.Items,$Main.AddsController.Server)
+        }
+    })
+
+    $Xaml.IO.AddsSrAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsSrAggregate.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsSrAggregate.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsSrAggregateViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsSrOutput.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsSrOutput.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsSrOutput.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsSrOutputViewer.Items,$Content)
+            }
+        }
+    })
+    
+    $Xaml.IO.AddsSrGet.Add_Click(
+    {
+        If ($Main.AddsController.Server.Count -gt 1)
+        {
+            $Main.AddsController.GetOutput("Server")
+            ForEach ($Item in $Main.AddsController.Output.Server)
+            {
+                If ($Item.Exists)
+                {
+                    $Item.Update()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
+        }
+    })
+
+    $Xaml.IO.AddsSrNew.Add_Click(
+    {
+        If ($Main.AddsController.Output.Server.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Server)
+            {
+                If ($Item.Exists)
+                {
+                    Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If (!$Item.Exists)
+                {
+                    $Item.New()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
+        }
+    })
+
+    $Xaml.IO.AddsSrRemove.Add_Click(
+    {
+        If ($Main.AddsController.Output.Server.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Server)
+            {
+                If (!$Item.Exists)
+                {
+                    Write-Host ("Item [!] Does not exist [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If ($Item.Exists)
+                {
+                    $Item.Remove()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
+        }
+    })
+
+    # [Adds.Workstation]
+    $Xaml.IO.AddsWsAdd.Add_Click(
+    {
+        $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+        $Name                             = $Main.CheckHostname($Xaml.IO.AddsWsName.Text)
+
+        If ($Name -ne $Xaml.IO.AddsWsName.Text)
+        {
+            Return [System.Windows.MessageBox]::Show($Name,"Error")
+        }
+
+        If (!$Object)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+        }
+
+        ElseIf ($Name -in $Xaml.IO.AddsWsAggregate.Items.Name)
+        {
+            Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+        }
+
+        Else
+        {
+            $Main.AddsController.AddNode($Object.Name,"Workstation",$Name)
+            $Main.AddsController.GetWorkstationList()
+            $Main.Reset($Xaml.IO.AddsWsAggregate.Items,$Main.AddsController.Workstation)
+            $Xaml.IO.AddsWsName.Text      = $Null
+        }
+    })
+
+    $Xaml.IO.AddsWsDelete.Add_Click(
+    {
+        If ($Xaml.IO.AddsWsAggregate.SelectedIndex -ne -1)
+        {
+            ForEach ($Object in $Xaml.IO.AddsWsAggregate.SelectedItems)
+            {
+                $Main.AddsController.RemoveNode($Object.Site,"Workstation",$Object.Name)
+                $Main.AddsController.Output.Remove("Workstation",$Object.Name)
+            }
+            $Main.AddsController.GetWorkstationList()
+            $Main.Reset($Xaml.IO.AddsWsAggregate.Items,$Main.AddsController.Workstation)
+            $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
+        }
+    })
+
+    $Xaml.IO.AddsWsBrowse.Add_Click(
+    {
+        $Item                             = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory            = $Env:SystemDrive
+        $Item.Filter                      = 'Text File (*.txt)| *.txt'
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename                = ""
+        }
+
+        $Xaml.IO.AddsWsFile.Text          = $Item.FileName
+    })
+
+    $Xaml.IO.AddsWsAddList.Add_Click(
+    {
+        If (!(Test-Path $Xaml.IO.AddsWsFile.Text) -or $Xaml.IO.AddsWsFile.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid path","Error")
+        }
+
+        Else
+        {
+            ForEach ($Item in Get-Content $Xaml.IO.AddsWsFile.Text)
+            {
+                $Object                       = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+                $Xaml.IO.AddsWsName.Text      = $Item
+                $Name                         = $Main.CheckHostName($Item)  
+
+                If ($Name -ne $Item)
+                {
+                    Return [System.Windows.MessageBox]::Show($Name,"Error")
+                }
+
+                ElseIf (!$Object)
+                {
+                    Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+                }
+
+                ElseIf ($Name -in $Xaml.IO.AddsWsAggregate.Items.Name)
+                {
+                    Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+                }
+
+                Else
+                {
+                    $Main.AddsController.AddNode($Object.Name,"Workstation",$Name)
+                    $Xaml.IO.AddsWsName.Text  = $Null
+                }
+            }
+            $Main.AddsController.GetWorkstationList()
+            $Main.Reset($Xaml.IO.AddsWsAggregate.Items,$Main.AddsController.Workstation)
+        }
+    })
+
+    $Xaml.IO.AddsWsAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsWsAggregate.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsWsAggregate.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsWsAggregateViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsWsOutput.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsWsOutput.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsWsOutput.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsWsOutputViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsWsGet.Add_Click(
+    {
+        If ($Main.AddsController.Workstation.Count -gt 1)
+        {
+            $Main.AddsController.GetOutput("Workstation")
+            ForEach ($Item in $Main.AddsController.Output.Workstation)
+            {
+                If ($Item.Exists)
+                {
+                    $Item.Update()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
+        }
+    })
+
+    $Xaml.IO.AddsWsNew.Add_Click(
+    {
+        If ($Main.AddsController.Output.Workstation.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Workstation)
+            {
+                If ($Item.Exists)
+                {
+                    Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If (!$Item.Exists)
+                {
+                    $Item.New()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
+        }
+    })
+
+    $Xaml.IO.AddsWsRemove.Add_Click(
+    {
+        If ($Main.AddsController.Output.Workstation.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Workstation)
+            {
+                If (!$Item.Exists)
+                {
+                    Write-Host ("Item [!] Does not exist [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If ($Item.Exists)
+                {
+                    $Item.Remove()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
+        }
+    })
+
+    # [Adds.User]
+    $Xaml.IO.AddsUserAdd.Add_Click(
+    {
+        $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+        $Name                             = $Main.CheckHostname($Xaml.IO.AddsUserName.Text)
+
+        If ($Name -ne $Xaml.IO.AddsUserName.Text)
+        {
+            Return [System.Windows.MessageBox]::Show($Name,"Error")
+        }
+
+        If (!$Object)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+        }
+
+        ElseIf ($Name -in $Xaml.IO.AddsUserAggregate.Items.Name)
+        {
+            Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+        }
+
+        Else
+        {
+            $Main.AddsController.AddNode($Object.Name,"User",$Name)
+            $Main.AddsController.GetUserList()
+            $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.User)
+            $Xaml.IO.AddsUserName.Text      = $Null
+        }
+    })
+
+    $Xaml.IO.AddsUserDelete.Add_Click(
+    {
+        If ($Xaml.IO.AddsUserAggregate.SelectedIndex -ne -1)
+        {
+            ForEach ($Object in $Xaml.IO.AddsUserAggregate.SelectedItems)
+            {
+                $Main.AddsController.RemoveNode($Object.Site,"User",$Object.Name)
+                $Main.AddsController.Output.Remove("User",$Object.Name)
+            }
+            $Main.AddsController.GetUserList()
+            $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.User)
+            $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
+        }
+    })
+
+    $Xaml.IO.AddsUserBrowse.Add_Click(
+    {
+        $Item                             = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory            = $Env:SystemDrive
+        $Item.Filter                      = 'Text File (*.txt)| *.txt'
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename                = ""
+        }
+
+        $Xaml.IO.AddsUserFile.Text          = $Item.FileName
+    })
+
+    $Xaml.IO.AddsUserAddList.Add_Click(
+    {
+        If (!(Test-Path $Xaml.IO.AddsUserFile.Text) -or $Xaml.IO.AddsUserFile.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid path","Error")
+        }
+
+        Else
+        {
+            ForEach ($Item in Get-Content $Xaml.IO.AddsUserFile.Text)
+            {
+                $Object                       = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+                $Xaml.IO.AddsUserName.Text    = $Item
+                $Name                         = $Main.CheckHostName($Item)  
+
+                If ($Name -ne $Item)
+                {
+                    Return [System.Windows.MessageBox]::Show($Name,"Error")
+                }
+
+                ElseIf (!$Object)
+                {
+                    Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+                }
+
+                ElseIf ($Name -in $Xaml.IO.AddsUserAggregate.Items.Name)
+                {
+                    Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+                }
+
+                Else
+                {
+                    $Main.AddsController.AddNode($Object.Name,"User",$Name)
+                    $Xaml.IO.AddsUserName.Text  = $Null
+                }
+            }
+            $Main.AddsController.GetUserList()
+            $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.User)
+        }
+    })
+
+    $Xaml.IO.AddsUserAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsUserAggregate.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsUserAggregate.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsUserAggregateViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsUserOutput.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsUserOutput.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsUserOutput.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsUserOutputViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsUserGet.Add_Click(
+    {
+        If ($Main.AddsController.User.Count -gt 1)
+        {
+            $Main.AddsController.GetOutput("User")
+            ForEach ($Item in $Main.AddsController.Output.User)
+            {
+                If ($Item.Exists)
+                {
+                    $Item.Update()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
+        }
+    })
+
+    $Xaml.IO.AddsUserNew.Add_Click(
+    {
+        If ($Main.AddsController.Output.User.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.User)
+            {
+                If ($Item.Exists)
+                {
+                    Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If (!$Item.Exists)
+                {
+                    $Item.New()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
+        }
+    })
+
+    $Xaml.IO.AddsUserRemove.Add_Click(
+    {
+        If ($Main.AddsController.Output.User.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.User)
+            {
+                If (!$Item.Exists)
+                {
+                    Write-Host ("Item [!] Does not exist [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If ($Item.Exists)
+                {
+                    $Item.Remove()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
+        }
+    })
+
+    # [Adds.Service]
+    $Xaml.IO.AddsSvcAdd.Add_Click(
+    {
+        $Object                           = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+        $Name                             = $Main.CheckHostname($Xaml.IO.AddsSvcName.Text)
+
+        If ($Name -ne $Xaml.IO.AddsSvcName.Text)
+        {
+            Return [System.Windows.MessageBox]::Show($Name,"Error")
+        }
+
+        If (!$Object)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+        }
+
+        ElseIf ($Name -in $Xaml.IO.AddsSvcAggregate.Items.Name)
+        {
+            Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+        }
+
+        Else
+        {
+            $Main.AddsController.AddNode($Object.Name,"Service",$Name)
+            $Main.AddsController.GetUserList()
+            $Main.Reset($Xaml.IO.AddsSvcAggregate.Items,$Main.AddsController.Service)
+            $Xaml.IO.AddsSvcName.Text      = $Null
+        }
+    })
+
+    $Xaml.IO.AddsSvcDelete.Add_Click(
+    {
+        If ($Xaml.IO.AddsSvcAggregate.SelectedIndex -ne -1)
+        {
+            ForEach ($Object in $Xaml.IO.AddsSvcAggregate.SelectedItems)
+            {
+                $Main.AddsController.RemoveNode($Object.Site,"Service",$Object.Name)
+                $Main.AddsController.Output.Remove("Service",$Object.Name)
+            }
+            $Main.AddsController.GetServiceList()
+            $Main.Reset($Xaml.IO.AddsSvcAggregate.Items,$Main.AddsController.Service)
+            $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
+        }
+    })
+
+    $Xaml.IO.AddsSvcBrowse.Add_Click(
+    {
+        $Item                             = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory            = $Env:SystemDrive
+        $Item.Filter                      = 'Text File (*.txt)| *.txt'
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename                = ""
+        }
+
+        $Xaml.IO.AddsUserFile.Text          = $Item.FileName
+    })
+
+    $Xaml.IO.AddsSvcAddList.Add_Click(
+    {
+        If (!(Test-Path $Xaml.IO.AddsSvcFile.Text) -or $Xaml.IO.AddsSvcFile.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid path","Error")
+        }
+
+        Else
+        {
+            ForEach ($Item in Get-Content $Xaml.IO.AddsSvcFile.Text)
+            {
+                $Object                       = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
+                $Xaml.IO.AddsSvcName.Text    = $Item
+                $Name                         = $Main.CheckHostName($Item)  
+
+                If ($Name -ne $Item)
+                {
+                    Return [System.Windows.MessageBox]::Show($Name,"Error")
+                }
+
+                ElseIf (!$Object)
+                {
+                    Return [System.Windows.MessageBox]::Show("Must select a site first","Error")
+                }
+
+                ElseIf ($Name -in $Xaml.IO.AddsSvcAggregate.Items.Name)
+                {
+                    Return [System.Windows.MessageBox]::Show("That item already exists","Error")
+                }
+
+                Else
+                {
+                    $Main.AddsController.AddNode($Object.Name,"Service",$Name)
+                    $Xaml.IO.AddsSvcName.Text  = $Null
+                }
+            }
+            $Main.AddsController.GetSvcList()
+            $Main.Reset($Xaml.IO.AddsUserAggregate.Items,$Main.AddsController.Service)
+        }
+    })
+
+    $Xaml.IO.AddsSvcAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsSvcAggregate.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsSvcAggregate.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | ? Name -ne Template | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsSvcAggregateViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsSvcOutput.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.AddsSvcOutput.SelectedIndex -ne -1)
+        {
+            $Object                                = $Xaml.IO.AddsSvcOutput.SelectedItem
+            If ($Object)
+            {
+                $Content = @($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) })
+                $Main.Reset($Xaml.IO.AddsSvcOutputViewer.Items,$Content)
+            }
+        }
+    })
+
+    $Xaml.IO.AddsSvcGet.Add_Click(
+    {
+        If ($Main.AddsController.Service.Count -gt 1)
+        {
+            $Main.AddsController.GetOutput("Service")
+            ForEach ($Item in $Main.AddsController.Output.Service)
+            {
+                If ($Item.Exists)
+                {
+                    $Item.Update()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
+        }
+    })
+
+    $Xaml.IO.AddsSvcNew.Add_Click(
+    {
+        If ($Main.AddsController.Output.Service.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Service)
+            {
+                If ($Item.Exists)
+                {
+                    Write-Host ("Item [+] Exists [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If (!$Item.Exists)
+                {
+                    $Item.New()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
+        }
+    })
+
+    $Xaml.IO.AddsSvcRemove.Add_Click(
+    {
+        If ($Main.AddsController.Output.Service.Count -gt 1)
+        {
+            ForEach ($Item in $Main.AddsController.Output.Service)
+            {
+                If (!$Item.Exists)
+                {
+                    Write-Host ("Item [!] Does not exist [{0}]" -f $Item.DistinguishedName) -F 12
+                }
+                If ($Item.Exists)
+                {
+                    $Item.Remove()
+                }
+            }
+            $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
+        }
+    })
+
+    # ----------------- #
+    # <![Virtual Tab]!> #
+    # ----------------- #
+
+    # [Vm.Control]
+    $Xaml.IO.VmHostName.Text                  = $Main.VmController.Hostname
+    $Xaml.IO.VmHostName.IsEnabled             = 0
+    $Xaml.IO.VmHostConnect.IsEnabled          = 0
+    $Xaml.IO.VmHostChange.IsEnabled           = 1
+
+    $Main.Reset($Xaml.IO.VmControl.Items,$Main.VmController.Populate())
+    $Main.Reset($Xaml.IO.VmControllerSwitch.Items,$Main.VmController.External)
+
+    $Xaml.IO.VmControllerSwitch.SelectedIndex = 0
+    $NetRoute                                 = Get-NetAdapter | ? Name -match $Xaml.IO.VmControllerSwitch.SelectedItem | Get-NetRoute -AddressFamily IPV4
+    $Xaml.IO.VmControllerNetwork.Text         = $NetRoute | ? NextHop -eq 0.0.0.0 | Select-Object -Last 1 | % DestinationPrefix
+    $Xaml.IO.VmControllerGateway.Text         = $NetRoute | ? NextHop -ne 0.0.0.0 | % NextHop
+
+    $Xaml.IO.VmHostChange.Add_Click(
+    {
+        $Xaml.IO.VmHostName.Text          = $Null
+        $Xaml.IO.VmHostName.IsEnabled     = 1
+        $Xaml.IO.VmHostConnect.IsEnabled  = 1
+        $Xaml.IO.VmHostChange.IsEnabled   = 0
+    })
+
+    $Xaml.IO.VmHostConnect.Add_Click(
+    {
+        If ($Xaml.IO.VmHostName.Text -eq "")
+        {
+            Return [System.Windows.Messagebox]::Show("Must enter a server hostname or IP address","Error")
+        }
+
+        ElseIf (!(Test-Connection -ComputerName $Xaml.IO.VmHostName.Text -Count 1 -EA 0))
+        {
+            Return [System.Windows.Messagebox]::Show("Not a valid server hostname or IP Address","Error")
+        }
+
+        Write-Host "Retrieving [~] VMHost"
+
+        If ($Xaml.IO.VmHostName.Text -match "localhost" -or $Xaml.IO.VmHostName.Text -in $Main.Config.IP -or $Xaml.IO.VmHostName.Text -match $Main.Module.Role.Name)
+        {
+            $Main.VmController = VmController -Hostname $Xaml.IO.VmHostname -Credential $Main.Credential
+            If ($Main.VmController.Status -ne "Running")
+            {
+                Return [System.Windows.MessageBox]::Show("The Hyper-V Virtual Machine Management service is not (installed/running)","Error")
+            }
+
+            $Xaml.IO.VmControl.ItemsSource          = $Main.VmController.Populate()
+            $Main.Reset($Xaml.IO.VmControllerSwitch.Items,$Main.VmController.External)
+        }
+        Else
+        {
+            Return [System.Windows.MessageBox]::Show("Remote Hyper-V Server not implemented","Error")
+        }
+    })
+
+    $Xaml.IO.VmControllerSwitch.Add_SelectionChanged(
+    {
+        $NetRoute = Get-NetAdapter | ? Name -match $Xaml.IO.VmControllerSwitch.SelectedItem | Get-NetRoute -AddressFamily IPV4
+        $Xaml.IO.VmControllerNetwork.Text = $NetRoute | ? NextHop -eq 0.0.0.0 | Select-Object -Last 1 | % DestinationPrefix
+        $Xaml.IO.VmControllerGateway.Text = $NetRoute | ? NextHop -ne 0.0.0.0 | % NextHop
+    })
+
+    $Xaml.IO.VmLoadAddsNode.Add_Click(
+    {
+        # $Main.VmController = VmController -Hostname dsc0.securedigitsplus.com -Credential $Main.Credential
+        $Main.VmController.LoadAddsTree($Main.AddsController.Output)
+        $Main.Reset($Xaml.IO.VmSelect.Items,$Main.VmController.VmSelect)
+    })
+
+    $Xaml.IO.VmDeleteNodes.Add_Click(
+    {
+        Switch([System.Windows.MessageBox]::Show("This will delete any existing VMs in the list`n`nPress 'Yes' to confirm","Warning [!] Are you sure?","YesNo"))
+        {
+            Yes 
+            { 
+                Write-Theme "Deleting [!] VMs"
+                ForEach ($Object in $Main.VmController.VmSelect | ? Exists -eq $True)
+                {
+                    $Main.VmController.DeleteNode($Object)
+                    $Main.Reset($Xaml.IO.VmSelect.Items,$Main.VmController.VmSelect)
+                }
+            }
+            No  { Break }
+        }
+    })
+
+    $Xaml.IO.VmCreateNodes.Add_Click(
+    {
+        $Main.Container = $Main.VmController.NodeContainer()
+        ForEach ($Object in $Main.VmController.VmSelect | ? Exists -eq $False | ? Create)
+        {
+            $Item = $Main.VmController.GetVMObjectNode($Object)
+            Switch -Regex ($Object.Type)
+            {
+                Gateway
+                {
+                    $Main.Container.Gateway     += $Item
+                }
+                "(Server|Domain Controller)"
+                {
+                    $Main.Container.Server      += $Item
+                }
+                Workstation
+                {
+                    $Main.Container.Workstation += $Item
+                }
+            }
+        }
+        $Main.Reset($Xaml.IO.VmGateway.Items,$Main.Container.Gateway)
+        $Main.Reset($Xaml.IO.VmServer.Items,$Main.Container.Server)
+        $Main.Reset($Xaml.IO.VmWorkstation.Items,$Main.Container.Workstation)
+    })
+
+    # [Vm.Switch]
+    $Xaml.IO.VmDhcpScopeID.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.VmDhcpScopeID.SelectedIndex -ne -1)
+        {
+            $Object                   = $Main.VmController.GetRange($Xaml.IO.VmDhcpScopeID.SelectedItem)
+            $Xaml.IO.VmDhcpStart.Text = $Object[0].IpAddress
+            $Xaml.IO.VmDhcpEnd.Text   = $Object[-1].IpAddress
+        }
+    })
+
+    $Main.Reset($Xaml.IO.VmDhcpScopeID.Items,$Main.Config.Dhcp.ScopeID)
+    $Xaml.IO.VmDhcpScopeID.SelectedIndex = 0
+
+    $Xaml.IO.VmGetSwitch.Add_Click(
+    {
+        If ($Main.Container.Gateway.Count -gt 0)
+        {
+            $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
+            $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
+        }
+    })
+
+    $Xaml.IO.VmDeleteSwitch.Add_Click(
+    {
+        If ($Main.VmController.Reservation.Count -gt 0)
+        {
+            ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists)
+            {
+                $Object.Remove()
+            }
+            $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
+            $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
+        }
+    })
+
+    $Xaml.IO.VmCreateSwitch.Add_Click(
+    {
+        If ($Main.VmController.Reservation.Count -gt 0)
+        {
+            ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists -eq 0)
+            {
+                $Object.New()
+                $Object.SwitchExists = 1
+            }
+            $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
+            $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
+        }
+    })
+
+    # [Vm.Gateway]
+    $Xaml.IO.VmGatewayInstallType.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.VmGatewayInstallType.SelectedIndex -eq 0)
+        {
+            $Xaml.IO.VmGatewayImageSelect.IsEnabled  = 1
+            $Xaml.IO.VmGatewayImage.IsEnabled        = 1
+            $Xaml.IO.VmGatewayScriptSelect.IsEnabled = 1
+            $Xaml.IO.VmGatewayScript.IsEnabled       = 1
+        }
+        If ($Xaml.IO.VmGatewayInstallType.SelectedIndex -eq 1)
+        {
+            $Xaml.IO.VmGatewayScriptSelect.IsEnabled = 0
+            $Xaml.IO.VmGatewayScript.IsEnabled       = 0
+            $Xaml.IO.VmGatewayImageSelect.IsEnabled  = 0
+            $Xaml.IO.VmGatewayImage.IsEnabled        = 0
+        }
+    })
+
+    $Xaml.IO.VmGatewayPathSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath           = ""
+        }
+
+        $Xaml.IO.VmGatewayPath.Text      = $Item.SelectedPath
+    })
+
+    $Xaml.IO.VmGatewayScriptSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory           = $Env:SystemDrive
+        $Item.Filter                     = "(*.ps1)|*.ps1"
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename               = ""
+        }
+
+        $Xaml.IO.VmGatewayScript.Text    = $Item.FileName
+    })
+
+    $Xaml.IO.VmGatewayImageSelect.Add_Click(
+    {
+        $Item                            = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory           = $Env:SystemDrive
+        $Item.Filter                     = "(*.iso)|*.iso"
+        $Item.ShowDialog()
+            
+        If (!$Item.Filename)
+        {
+            $Item.Filename               = ""
+        }
+    
+        $Xaml.IO.VmGatewayImage.Text     = $Item.FileName
+    })
+
+    $Xaml.IO.VmGatewayMemory.Text          = 2048
+    $Xaml.IO.VmGatewayDrive.Text           = 20
+    $Xaml.IO.VmGatewayCore.Text            = 1
+
+    # [Vm.Server]
+    $Xaml.IO.VmServerInstallType.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.VmServerInstallType.SelectedIndex -eq 0)
+        {
+            $Xaml.IO.VmServerImageSelect.IsEnabled  = 1
+            $Xaml.IO.VmServerImage.IsEnabled        = 1
+            $Xaml.IO.VmServerScriptSelect.IsEnabled = 1
+            $Xaml.IO.VmServerScript.IsEnabled       = 1
+        }
+        If ($Xaml.IO.VmServerInstallType.SelectedIndex -eq 1)
+        {
+            $Xaml.IO.VmServerImageSelect.IsEnabled  = 0
+            $Xaml.IO.VmServerImage.IsEnabled        = 0
+            $Xaml.IO.VmServerScriptSelect.IsEnabled = 0
+            $Xaml.IO.VmServerScript.IsEnabled       = 0
+        }
+    })
+
+ 
