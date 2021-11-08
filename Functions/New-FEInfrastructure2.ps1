@@ -7166,6 +7166,7 @@ Function New-FEInfrastructure2
         [Object]     $WdsController
         Hidden [Object]       $Time
         Hidden [Object]  $Container
+        Hidden [Object]   $Validate
         Main()
         {
             $This.Module          = Get-FEModule
@@ -9155,12 +9156,12 @@ Function New-FEInfrastructure2
 
     $Xaml.IO.VMGetArchitecture.Add_Click(
     {
-        $Validate = $Main.VmController.ValidationStack()
+        $Main.Validate = $Main.VmController.ValidationStack()
 
         # Gateway
         If ($Main.Container.Gateway.Count -gt 0)
         {
-            $Validate.ValidateBase(
+            $Main.Validate.ValidateBase(
                 "Gateway",
                 $Xaml.IO.VmGatewayPath.Text,
                 $Xaml.IO.VmGatewayInstallType.SelectedItem.Content,
@@ -9168,14 +9169,14 @@ Function New-FEInfrastructure2
                 $Xaml.IO.VmGatewayScript.Text,
                 $Main.Container.Gateway)
 
-            If ($Validate.Gateway.Result -eq "Fail")
+            If ($Main.Validate.Gateway.Result -eq "Fail")
             {
                 Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Gateway Error")
             }
 
-            If ($Validate.Gateway.Result -eq "Success")
+            If ($Main.Validate.Gateway.Result -eq "Success")
             {
-                ForEach ($Object in $Validate.Gateway.Container)
+                ForEach ($Object in $Main.Validate.Gateway.Container)
                 {
                     $Item = $Main.VmController.NewVMObjectNode($Object.VmName)
                     $Item.Stage(
@@ -9186,7 +9187,7 @@ Function New-FEInfrastructure2
                         $Xaml.IO.VmGatewayCore.Text,
                         $Object.Sitelink)
 
-                    $Validate.Gateway.Output += $Item
+                    $Main.Validate.Gateway.Output += $Item
                 }
             }
         }
@@ -9194,21 +9195,21 @@ Function New-FEInfrastructure2
         # Server
         If ($Main.Container.Server.Count -gt 0)
         {
-            $Validate.ValidateBase("Server",
+            $Main.Validate.ValidateBase("Server",
                 $Xaml.IO.VmServerPath.Text,
                 $Xaml.IO.VmServerInstallType.SelectedItem.Content,
                 $Xaml.IO.VmServerImage.Text,
                 $Xaml.IO.VmServerScript.Text,
                 $Main.Container.Server)
 
-            If ($Validate.Server.Result -eq "Fail")
+            If ($Main.Validate.Server.Result -eq "Fail")
             {
                 Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Server Error")
             }
 
-            If ($Validate.Server.Result -eq "Success")
+            If ($Main.Validate.Server.Result -eq "Success")
             {
-                ForEach ($Object in $Validate.Server.Container)
+                ForEach ($Object in $Main.Validate.Server.Container)
                 {
                     $Item = $Main.VmController.NewVMObjectNode($Object.VmName)
                     $Item.Stage($Xaml.IO.VmServerPath.Text,
@@ -9218,15 +9219,15 @@ Function New-FEInfrastructure2
                                 $Xaml.IO.VmServerCore.Text,
                                 $Object.Sitelink)
 
-                    $Validate.Server.Output += $Item
+                    $Main.Validate.Server.Output += $Item
                 }
             }
         }
 
         # Workstation
-        If ($Main.Container.Workstation.Count -gt 0)
+        If ($Main.Main.Container.Workstation.Count -gt 0)
         {
-            $Validate.ValidateBase(
+            $Main.Validate.ValidateBase(
                 "Workstation",
                 $Xaml.IO.VmWorkstationPath.Text,
                 $Xaml.IO.VmWorkstationInstallType.SelectedItem.Content,
@@ -9234,14 +9235,14 @@ Function New-FEInfrastructure2
                 $Xaml.IO.VmWorkstationScript.Text,
                 $Main.Container.Workstation)
 
-            If ($Validate.Workstation.Result -eq "Fail")
+            If ($Main.Validate.Workstation.Result -eq "Fail")
             {
                 Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Workstation Error")
             }
 
-            If ($Validate.Workstation.Result -eq "Success")
+            If ($Main.Validate.Workstation.Result -eq "Success")
             {
-                ForEach ($Object in $Validate.Workstation.Container)
+                ForEach ($Object in $Main.Validate.Workstation.Container)
                 {
                     $Item = $Main.VmController.NewVMObjectNode($Object.VmName)
                     $Item.Stage(
@@ -9252,7 +9253,7 @@ Function New-FEInfrastructure2
                         $Xaml.IO.VmWorkstationCore.Text,
                         $Object.Sitelink)
 
-                    $Validate.Workstation.Output += $Item
+                    $Main.Validate.Workstation.Output += $Item
                 }
             }
         }
@@ -9260,7 +9261,7 @@ Function New-FEInfrastructure2
 
     $Xaml.IO.VmNewArchitecture.Add_Click(
     {
-        ForEach ($Object in $Validate.Gateway.Output)
+        ForEach ($Object in $Main.Validate.Gateway.Output)
         {   
             $Object.New()
             $Object.Start()
@@ -9276,12 +9277,12 @@ Function New-FEInfrastructure2
             $Reserve.Add()
         }
 
-        ForEach ($Object in $Validate.Server.Output)
+        ForEach ($Object in $Main.Validate.Server.Output)
         {
             $Object.New()
         }
 
-        ForEach ($Object in $Validate.Workstation.Output)
+        ForEach ($Object in $Main.Validate.Workstation.Output)
         {
             $Object.New()
         }
