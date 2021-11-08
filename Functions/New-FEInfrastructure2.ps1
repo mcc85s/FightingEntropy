@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-11-07
+          Modified: 2021-11-08
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
@@ -2102,7 +2102,13 @@ Function New-FEInfrastructure2
             }
             Update()
             {
-                If (!$This.Vm.Get())
+                $VmObj = $This.Vm.Get()
+                If ($VmObj)
+                {
+                    $VmObj.Update()
+                    $This.LoadVmObject($VmObj)
+                }
+                If (!$VmObj)
                 {
                     $This.VmMemory          = 0
                     $This.VmPath            = $Null
@@ -2110,13 +2116,9 @@ Function New-FEInfrastructure2
                     $This.VmVhdSize         = 0
                     $This.VmGeneration      = $Null
                     $This.VmCore            = 0
-                    $This.SwitchName        = @( )
-                    $This.Exists            = 0
-                    $This.Guid              = $Null
-                }
-                If ($This.Vm.Get())
-                {
-                    $This.LoadVmObject($This.Vm.Get())
+                    $This.VmSwitchName      = @( )
+                    $This.VmExists          = 0
+                    $This.VmGuid            = $Null
                 }
             }
             [String] ToString()
@@ -2178,6 +2180,21 @@ Function New-FEInfrastructure2
                     $This.Query       += [VmQuery]::New("Workstation",$Item)
                     $This.Workstation += $Item
                 }
+            }
+        }
+
+        Class VmCreate
+        {
+            [Object] $Switch
+            [Object] $Gateway
+            [Object] $Server
+            [Object] $Workstation
+            VmCreate()
+            {
+                $This.Gateway     = @( )
+                $This.Switch      = @( )
+                $This.Server      = @( )
+                $This.Workstation = @( )
             }
         }
 
@@ -2250,19 +2267,35 @@ Function New-FEInfrastructure2
                     Throw "Switch already exists"
                 }
 
-                $This.Switch      = New-VMSwitch -Name $This.Name -Type $This.Type -Verbose
+                $This.Switch      = New-VMSwitch -Name $This.Name -SwitchType $This.Type -Verbose
                 $This.ID          = $This.Switch.GUID
                 $This.Description = @($This.Switch.NetAdapterInterfaceDescription,"-")[$This.Switch.NetAdapterInterfaceDescription -ne ""]
                 $This.Exists      = 1
             }
             Remove()
             {
-                If (!$This.Get())
+                $Sw = $This.Get()
+                If (!$Sw)
                 {
                     Throw "Switch does not exist"
                 }
 
-                Get-Switch -Name $This.Name | Remove-VMSwitch -Force -Verbose -Confirm:$False
+                If ($Sw)
+                {
+                    $Sw | Remove-VMSwitch -Force -Verbose -Confirm:$False
+                }
+            }
+            Update()
+            {
+                $Sw = $This.Get()
+                If (!$Sw)
+                {
+                    $This.VmSwitchNode([String]$This.Name,[String]$This.Type)
+                }
+                If ($Sw)
+                {
+                    $This.VmSwitchNode([Object]$Sw)
+                }
             }
             [String] ToString()
             {
@@ -2293,7 +2326,7 @@ Function New-FEInfrastructure2
                 $This.IPAddress    = ""
                 $This.MacAddress   = ""
                 $This.Name         = $This.Site.Sitelink
-                $This.Description  = "[{0}/{1}]@[{2}]" -f $This.Site.Network, $This.Site.Prefix, $This.Site.Sitename
+                $This.Description  = $This.GetDescription()
                 $This.SwitchExists = $This.Switch.Exists
                 $This.Exists       = 0
             }
@@ -2307,33 +2340,65 @@ Function New-FEInfrastructure2
                 $This.IPAddress    = $Reservation.IPAddress
                 $This.MacAddress   = $Reservation.ClientID
                 $This.Name         = $Reservation.Name
-                $This.Description  = $Reservation.Description
+                $This.Description  = $This.GetDescription()
                 $This.SwitchExists = $This.Switch.Exists
-                $This.Exists       = 1
+                $This.Exists       = If (!$This.Get()) { 0 } Else { 1 }
+            }
+            [String] GetDescription()
+            {
+                Return ("[{0}/{1}]@[{2}]" -f $This.Site.Network, $This.Site.Prefix, $This.Site.Sitename)
             }
             [Object] Get()
             {
                 Return @( Try { Get-DhcpServerV4Reservation -ScopeID $This.ScopeID | ? Description -eq $This.Description  } Catch { } )
             }
-            UpdateReservation([String]$ScopeID)
+            Remove()
             {
-                $Last         = $This.ScopeID
-                $This.ScopeID = $ScopeID
-                $Reserve      = $This.Get()
-                If ($Reserve)
+                $Sw = $This.Switch.Get()
+                If ($Sw)
                 {
-                    $This.IPAddress  = $Reserve.IPAddress
-                    $This.MacAddress = $Reserve.MacAddress
-                    $This.Name       = $Reserve.Name
-                    $This.Exists     = 1
+                    $This.Switch.Remove()
+                    $This.Switch.ID          = $Null
+                    $This.Switch.Exists      = 0
+                    $This.SwitchExists       = 0
+                    $This.Switch.Description = $Null
+                    $This.Get() | Remove-DhcpServerV4Reservation -Verbose 
+                    $This.Exists             = 0
                 }
-                If (!$Reserve)
+            }
+            New()
+            {
+                $Sw = $This.Switch.Get()
+                If (!$Sw)
                 {
-                    $This.IPAddress  = ""
-                    $This.MacAddress = ""
-                    $This.Name       = ""
-                    $This.Exists     = 0
+                    $This.Switch.New()
+                    $Sw                      = $This.Switch.Get()
+                    $This.Switch.ID          = $Sw.ID.GUID
+                    $This.Switch.Exists      = 1
+                    $This.SwitchExists       = 1
+                    $This.Description        = $This.GetDescription()
+                    If (!$This.Get())
+                    {
+                        $This.Exists         = 0
+                    }
                 }
+            }
+            Add()
+            {
+                If (!$This.Get())
+                {
+                    @{
+                        ScopeID              = $This.ScopeID
+                        IPAddress            = $This.IPAddress
+                        ClientID             = $This.MacAddress
+                        Name                 = $This.Site.SiteLink
+                        Description          = $This.GetDescription()
+                    }                        | % { Add-DhcpServerV4Reservation @_ -Verbose }
+                }
+            }
+            SetMacAddress([String]$MacAddress)
+            {
+                $This.MacAddress             = $MacAddress
             }
         }
 
@@ -2366,6 +2431,143 @@ Function New-FEInfrastructure2
             }
         }
 
+        Class VmValidateNode
+        {
+            [String] $Name
+            [String] $Path
+            [String] $VhdPath
+            [String] $Result
+            VmValidateNode([String]$Path,[String]$Name)
+            {
+                $This.Name    = $Name
+                $This.Path    = "$Path\$Name"
+                $This.VhdPath = "$Path\$Name\$Name.vhdx"
+                
+                If (Test-Path $This.Path)
+                {
+                    $This.Result = "Fail"
+                }
+
+                ElseIf (Test-Path $This.VhdPath)
+                {
+                    $This.Result = "Fail"
+                }
+
+                Else
+                {
+                    $This.Result = "Success"
+                }
+            }
+        }
+
+        Class VmValidateBase
+        {
+            [String] $Type
+            [String] $Path
+            [String] $InstallType
+            [String] $Iso
+            [String] $Script
+            [Object] $Container
+            [Object] $Process
+            [Object] $Output
+            [String] $Result
+            VmValidateBase([String]$Type,[String]$Path,[String]$InstallType,[String]$Iso,[String]$Script,[Object]$Container)
+            {
+                $This.Type        = $Type
+                $This.Path        = $Path
+                $This.InstallType = $InstallType
+                $This.Iso         = $Iso
+                $This.Script      = $Script
+                $This.Container   = @($Container)
+                $This.Process     = @( )
+                $This.Output      = @( )
+
+                $This.TestBase()
+                If (!$This.Result -and $This.InstallType -eq "ISO")
+                {
+                    $This.TestIso()
+                }
+                If (!$This.Result)
+                {
+                    $This.Populate()
+                }
+                If (!$This.Result)
+                {
+                    $This.Result = "Success"
+                }
+            }
+            TestBase()
+            {
+                If (!(Test-Path $This.Path))
+                {
+                    $This.Result  = "Fail"
+                }
+            }
+            TestISO()
+            {
+                If (!(Test-Path $This.Iso))
+                {
+                    $This.Result = "Fail"
+                }
+    
+                ElseIf ($This.Script -ne "" -and !(Test-Path $This.Script))
+                {
+                    $This.Result = "Fail"    
+                }
+            }
+            Populate()
+            {
+                ForEach ($Item in $This.Container)
+                {
+                    If ($Item.VmName -notin $This.Process.Name)
+                    {
+                        $This.Process += [VmValidateNode]::New($This.Path,$Item.VmName)
+                    }
+                }
+
+                If ("Fail" -in $This.Process.Result)
+                {
+                    $This.Result = "Fail"
+                }
+            }
+        }
+
+        Class VmValidationStack
+        {
+            [Object] $Gateway
+            [Object] $Server
+            [Object] $Workstation
+            VmValidationStack()
+            {
+                $This.Gateway     = @( )
+                $This.Server      = @( )
+                $This.Workstation = @( ) 
+            }
+            ValidateBase([String]$Type,[String]$Path,[String]$InstallType,[String]$Iso,[String]$Script,[Object]$Container)
+            {
+                $Item = [VmValidateBase]::New($Type,$Path,$InstallType,$Iso,$Script,$Container) 
+                Switch ($Type)
+                {
+                    Gateway 
+                    { 
+                        $This.Gateway     = $Item
+                    }
+                    Server 
+                    { 
+                        $This.Server      = $Item
+                    }
+                    Workstation 
+                    { 
+                        $This.Workstation = $Item
+                    }
+                }
+            }
+            [String] ToString()
+            {
+                Return "<VmValidationStack>"
+            }
+        }
+
         Class VmObjectNode
         {
             [Object]            $Name
@@ -2377,6 +2579,7 @@ Function New-FEInfrastructure2
             [UInt32]            $Core
             [Object[]]    $SwitchName
             Hidden [String]      $Iso
+            Hidden [String]   $Script
             Hidden [Object] $Firmware
             [UInt32]          $Exists
             [String]            $Guid
@@ -2398,7 +2601,7 @@ Function New-FEInfrastructure2
                 $This.Exists             = 1
                 $This.Guid               = $Vm.Id
             }
-            Stage([UInt32]$Memory,[UInt32]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$Switch,[String]$Path)
+            Stage([String]$Path,[UInt32]$Memory,[UInt32]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$Switch)
             {
                 $This.Memory             = ([UInt32]$Memory)*1MB
                 $This.Path               = "$Path\$($This.Name)"
@@ -2414,16 +2617,15 @@ Function New-FEInfrastructure2
             {
                 Return @( Try { Get-VM -Name $This.Name } Catch { } )
             }
+            [Object] GetFirmware()
+            {
+                Return @( Switch ($This.Generation) { 1 { Get-VMBios -VmName $This.Name } 2 { Get-VmFirmware -VmName $This.Name } } )
+            }
             New()
             {
                 If ($This.Get())
                 {
                     Throw "This VM already exists"
-                }
-
-                If (!(Test-Path $This.Path))
-                {
-                    Throw "Invalid path"
                 }
 
                 $Object                = @{
@@ -2434,29 +2636,92 @@ Function New-FEInfrastructure2
                     NewVhdPath         = $This.Vhd
                     NewVhdSizeBytes    = $This.VhdSize
                     Generation         = $This.Generation
-                    SwitchName         = $This.SwitchName
+                    SwitchName         = @($This.SwitchName,$This.SwitchName[0])[$This.SwitchName.GetType().Name -match "\[\]"]
                 }
 
                 New-VM @Object -Verbose
-                $This.Firmware         = Get-VM -Name $This.Name | Get-VMFirmware
+                $This.Firmware         = $This.GetFirmware()
                 $This.Exists           = 1
                 Set-VMProcessor -VMName $This.Name -Count $This.Core -Verbose
             }
             Start()
             {
-                Get-VM -Name $This.Name | ? State -eq Off | Start-VM -Verbose
+                Get-VM -Name $This.Name | ? State -ne Running | Start-VM -Verbose
             }
             Remove()
             {
-                Get-VM -Name $This.Name | Remove-VM -Force -Confirm:$False -Verbose
+                $Vm = $This.Get()
+                If ($Vm.State -ne "Off")
+                {
+                    Switch ($Vm.State)
+                    {
+                        Paused 
+                        { 
+                            $This.Start()
+                            Do
+                            {
+                                Start-Sleep 1
+                            }
+                            Until ($This.Get().State -eq "Running")
+                        }
+                        Saved
+                        {
+                            $This.Start()
+                            Do
+                            {
+                                Start-Sleep 1
+                            }
+                            Until ($This.Get().State -eq "Running")
+                        }
+                    }
+                    $This.Stop()
+                    Do
+                    {
+                        Start-Sleep 1
+                    }
+                    Until ($This.Get().State -eq "Off")
+                }
+                $This.Get()            | Remove-VM -Force -Confirm:$False -Verbose
                 $This.Firmware         = $Null
                 $This.Exists           = 0
                 Remove-Item $This.Vhd -Force -Verbose -Confirm:$False
                 Remove-Item $This.Path -Force -Recurse -Verbose -Confirm:$False
+                Remove-Item $This.Path -Force -Verbose -Confirm:$False
             }
             Stop()
             {
                 Get-VM -Name $This.Name | ? State -ne Off | Stop-VM -Verbose -Force
+            }
+            Update()
+            {
+                $Vm = $This.Get()
+                If (!$Vm)
+                {
+                    $This.Memory     = 0
+                    $This.Path       = $Null
+                    $This.Vhd        = $Null
+                    $This.VhdSize    = 0
+                    $This.Generation = $Null
+                    $This.Core       = 0
+                    $This.SwitchName = @( )
+                    $This.Iso        = $Null
+                    $This.Firmware   = $Null
+                    $This.Exists     = 0
+                    $This.Guid       = $Null
+                }
+                If ($Vm)
+                {
+                    $This.Memory     = $Vm.MemoryStartup
+                    $This.Path       = $Vm.Path
+                    $This.Vhd        = $Vm.HardDrives[0].Path
+                    $This.VhdSize    = $This.Vhd | Get-VHD | % Size
+                    $This.Generation = $Vm.Generation
+                    $This.Core       = $Vm.ProcessorCount
+                    $This.SwitchName = $Vm.NetworkAdapters.SwitchName
+                    $This.Firmware   = 
+                    $This.Exists     = 1
+                    $This.Guid       = $Vm.Id
+                }
             }
             SetIsoBoot()
             {
@@ -2582,20 +2847,53 @@ Function New-FEInfrastructure2
                     $Item               = $This.AddsNode.$($Node.Type) | ? Hostname -eq $Node.Hostname
                     If (!$VM)
                     {
-                        $Vm             = $This.NewVmObject($Node.Hostname)
+                        $Vm             = $This.NewVmObjectNode($Node.Hostname)
                     }
                     $Item.LoadVmObject($Vm)
                     $This.VmSelect     += $This.Selection($Item)
                     $This.VmStack      += $Item
                 }
             }
-            [Object] GetVmObjectNode([String]$Name)
+            [Object] GetVmObjectNode([Object]$Object)
             {
-                Return @( $This.VmNode | ? Name -eq $Name )
+                Return @($This.VmStack | ? Type -eq $Object.Type | ? HostName -eq $Object.Name)
             }
-            [Object] NewVmObject([Object]$Name)
+            [Object] NewVmObjectNode([String]$Name)
             {
                 Return [VmObjectNode]::New($Name)
+            }
+            DeleteNode([Object]$Object)
+            {
+                If ($Object.Exists)
+                {
+                    $Type        = $Object.Type
+                    $Name        = $Object.Name
+
+                    # Adds Node
+                    # $Item      = $Main.VmController.AddsNode.$Type | ? Hostname -eq $Name
+                    $Item        = $This.AddsNode.$Type | ? Hostname -eq $Name
+                    $Item.Remove()
+
+                    # Vm Stack
+                    # $Item      = $Main.VmController.VmStack | ? Hostname -eq $Name
+                    $Item        = $This.VmStack | ? Hostname -eq $Name
+
+                    # Vm Node
+                    # $Item      = $Main.VmController.VmNode | ? Name -eq $Name
+                    $Item        = $This.VmNode | ? Name -eq $Name
+                    $Item.Update()
+
+                    # Vm Select
+                    # $Item      = $Main.VmController.VmSelect | ? Name -eq $Name
+                    $Item        = $This.VmSelect | ? Name -eq $Name
+                    $Item.Exists = $False
+                    $Item.Create = $True
+                }
+                #>
+            }
+            [Object] NodeContainer()
+            {
+                Return [VmCreate]::New()
             }
             Refresh()
             {
@@ -2604,6 +2902,10 @@ Function New-FEInfrastructure2
                 {
                     $This.VmStack += $This.Selection($Item)
                 }
+            }
+            [Object] ValidationStack()
+            {
+                Return [VmValidationStack]::New()
             }
             [Object[]] GetRange([String]$ScopeID)
             {
@@ -2690,6 +2992,7 @@ Function New-FEInfrastructure2
                 Return "<VmController>"
             }
         }
+
         If ($Credential)
         {
             [VmController]::New($Hostname,$Credential)
@@ -3146,12 +3449,12 @@ Function New-FEInfrastructure2
 
         Class Share
         {
-            [String]$Name
-            [String]$Root
-            [Object]$Share
-            [String]$Description
-            [String]$Type
-            [Object]$WimFiles
+            [String] $Name
+            [String] $Root
+            [Object] $Share
+            [String] $Description
+            [String] $Type
+            [Object] $WimFiles
             Share([Object]$Drive)
             {
                 $This.Name        = $Drive.Name
@@ -3187,18 +3490,20 @@ Function New-FEInfrastructure2
             ImportWimFiles([String]$Path)
             {
                 $This.WimFiles      = @( )
-                Write-Host "[Drive]://$($This.Name)" -F 10
-                ForEach ($Item in Get-ChildItem $Path *.wim -Recurse)
+                Write-Host ("Loading [~] (Mdt Drive) [{0}:\]" -f $This.Name)
+                $Files = Get-ChildItem $Path *.wim -Recurse
+                Write-Host ("Found [+] ({0}) Wim File(s)" -f $Files.Count)
+                ForEach ($Item in $Files)
                 {
                     $WimFile        = [WimFile]::New($This.WimFiles.Count,$Item.FullName)
                     If ($WimFile.Label -notin $This.WimFiles.Label)
                     {
-                        Write-Host "[Importing]://$($Item.Name)" -F 10
+                        Write-Host ("Importing [~] ({0})" -f $Item.Name)
                         $This.WimFiles += [WimFile]::New($This.WimFiles.Count,$Item.FullName)
                     }
                     ElseIf ($WimFile.Label -in $This.WimFiles.Label)
                     {
-                        Write-Host "[Skipping]://$($Item.Name) - duplicate label present" -F 12
+                        Write-Host ("Skipping [!] ({0}) - duplicate label present" -f $Item.Name)
                     }
                 }
             }
@@ -3269,6 +3574,17 @@ Function New-FEInfrastructure2
                 $This.Hours           = $Root[6]
                 $This.Website         = $Root[7]
             }
+            Key([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
+            {
+                $This.Networkpath     = $NetworkPath
+                $This.Organization    = $Organization
+                $This.CommonName      = $CommonName
+                $This.Background      = $Background
+                $This.Logo            = $Logo
+                $this.Phone           = $Phone
+                $This.Hours           = $Hours
+                $This.Website         = $Website
+            }
         }
 
         Class MdtController
@@ -3293,9 +3609,17 @@ Function New-FEInfrastructure2
             {
                 Return [Key]::New($Root)
             }
-            GetBrand()
+            [Object] NewKey([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
             {
-                $This.Brand = [Brand]::New()
+                Return [Key]::New($NetworkPath,$Organization,$CommonName,$Background,$Logo,$Phone,$Hours,$Website)
+            }
+            SetBrand([Object]$Brand)
+            {
+                $This.Brand = $Brand
+            }
+            [Object] GetBrand()
+            {
+                Return [Brand]::New()
             }
             [Object] UpdateMdtDriveList()
             {
@@ -3345,7 +3669,7 @@ Function New-FEInfrastructure2
 
                             If (!(Test-Path "$Slot\$Type\$Version"))
                             {
-                                New-Item -Path "$Slot\$Type" -Enable True -Name $Version -Comments $comment -ItemType Folder -Verbose
+                                New-Item -Path "$Slot\$Type" -Enable True -Name $Version -Comments $Comment -ItemType Folder -Verbose
                             }
                         }
                     }
@@ -3513,7 +3837,6 @@ Function New-FEInfrastructure2
                         }
                     }
                 }
-
                 Return $This.Enumerate($Output)
             }
             [Object] PostConfig([String]$Key)
@@ -3947,7 +4270,7 @@ Function New-FEInfrastructure2
     # Get-Content $Home\Desktop\FEInfrastructure.xaml | % { "        '$_',"} | Set-Clipboard
     Class FEInfrastructureGUI
     {
-        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
+        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -4129,7 +4452,7 @@ Function New-FEInfrastructure2
         '                            <RowDefinition Height="10"/>',
         '                            <RowDefinition Height="40"/>',
         '                            <RowDefinition Height="40"/>',
-        '                            <RowDefinition Height="170"/>',
+        '                            <RowDefinition Height="165"/>',
         '                        </Grid.RowDefinitions>',
         '                        <Label    Grid.Row="0" Content="[FightingEntropy]://Module Information"/>',
         '                        <DataGrid Grid.Row="1 " Name="Module_Info">',
@@ -4686,14 +5009,14 @@ Function New-FEInfrastructure2
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="140"/>',
+        '                                <RowDefinition Height="*"/>',
         '                                <RowDefinition Height="80"/>',
         '                                <RowDefinition Height="10"/>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="140"/>',
+        '                                <RowDefinition Height="*"/>',
         '                                <RowDefinition Height="10"/>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="140"/>',
+        '                                <RowDefinition Height="*"/>',
         '                            </Grid.RowDefinitions>',
         '                            <Label Grid.Row="0" Content="[Aggregate]: Provision (subdomain/site) list"/>',
         '                            <DataGrid Grid.Row="1" Name="DcAggregate"',
@@ -4702,8 +5025,8 @@ Function New-FEInfrastructure2
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"     Binding="{Binding SiteLink}" Width="120"/>',
-        '                                    <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="100"/>',
-        '                                    <DataGridTextColumn Header="Region"   Binding="{Binding Region}"   Width="60"/>',
+        '                                    <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="200"/>',
+        '                                    <DataGridTextColumn Header="Region"   Binding="{Binding Region}"   Width="150"/>',
         '                                    <DataGridTextColumn Header="Country"  Binding="{Binding Country}"  Width="60"/>',
         '                                    <DataGridTextColumn Header="Postal"   Binding="{Binding Postal}"   Width="60"/>',
         '                                    <DataGridTextColumn Header="SiteName" Binding="{Binding SiteName}" Width="Auto"/>',
@@ -4789,14 +5112,14 @@ Function New-FEInfrastructure2
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="160"/>',
+        '                                <RowDefinition Height="*"/>',
         '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="10"/>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="150"/>',
+        '                                <RowDefinition Height="*"/>',
         '                                <RowDefinition Height="10"/>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="150"/>',
+        '                                <RowDefinition Height="*"/>',
         '                            </Grid.RowDefinitions>',
         '                            <Label    Grid.Row="0" Content ="[Aggregate]: Provision (master address/prefix) &amp; independent subnets"/>',
         '                            <DataGrid Grid.Row="1" Name="NwAggregate"',
@@ -4806,11 +5129,11 @@ Function New-FEInfrastructure2
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"      Binding="{Binding Network}"   Width="100"/>',
         '                                    <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="100"/>',
-        '                                    <DataGridTextColumn Header="HostCount" Binding="{Binding HostCount}" Width="60"/>',
-        '                                    <DataGridTextColumn Header="HostRange" Binding="{Binding HostRange}" Width="100"/>',
-        '                                    <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="100"/>',
-        '                                    <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="100"/>',
-        '                                    <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="*"/>',
+        '                                    <DataGridTextColumn Header="Host Ct."  Binding="{Binding HostCount}" Width="60"/>',
+        '                                    <DataGridTextColumn Header="Range"     Binding="{Binding HostRange}" Width="150"/>',
+        '                                    <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="125"/>',
+        '                                    <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="125"/>',
+        '                                    <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="125"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                            <Grid Grid.Row="2">',
@@ -4892,7 +5215,7 @@ Function New-FEInfrastructure2
         '                                <RowDefinition Height="100"/>',
         '                                <RowDefinition Height="10"/>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="110"/>',
+        '                                <RowDefinition Height="105"/>',
         '                            </Grid.RowDefinitions>',
         '                            <Label Grid.Row="0" Content="[Aggregate]: Sites to be generated"/>',
         '                            <DataGrid Grid.Row="1" Name="SmAggregate">',
@@ -5799,7 +6122,7 @@ Function New-FEInfrastructure2
         '            <TabItem Header="Virtual">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="260"/>',
+        '                        <RowDefinition Height="220"/>',
         '                        <RowDefinition Height="*"/>',
         '                        <RowDefinition Height="40"/>',
         '                    </Grid.RowDefinitions>',
@@ -5807,7 +6130,7 @@ Function New-FEInfrastructure2
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="100"/>',
+        '                                <RowDefinition Height="60"/>',
         '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="40"/>',
         '                            </Grid.RowDefinitions>',
@@ -5865,7 +6188,7 @@ Function New-FEInfrastructure2
         '                                    <Label Grid.Row="0" Content="[Adds Node]: (Output/Existence) Validation"/>',
         '                                    <DataGrid Grid.Row="1" Name="VmSelect">',
         '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>',
+        '                                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="125"/>',
         '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
         '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                <DataGridTemplateColumn.CellTemplate>',
@@ -5945,11 +6268,11 @@ Function New-FEInfrastructure2
         '                                    <Grid Grid.Row="2">',
         '                                        <Grid.ColumnDefinitions>',
         '                                            <ColumnDefinition Width="90"/>',
-        '                                            <ColumnDefinition Width="160"/>',
+        '                                            <ColumnDefinition Width="*"/>',
         '                                            <ColumnDefinition Width="90"/>',
-        '                                            <ColumnDefinition Width="160"/>',
+        '                                            <ColumnDefinition Width="*"/>',
         '                                            <ColumnDefinition Width="90"/>',
-        '                                            <ColumnDefinition Width="160"/>',
+        '                                            <ColumnDefinition Width="*"/>',
         '                                        </Grid.ColumnDefinitions>',
         '                                        <Label    Grid.Column="0" Content="[Scope ID]:"/>',
         '                                        <ComboBox Grid.Column="1" Name="VmDhcpScopeID"/>',
@@ -5966,7 +6289,7 @@ Function New-FEInfrastructure2
         '                                        </Grid.ColumnDefinitions>',
         '                                        <Button Grid.Column="0" Name="VmGetSwitch"    Content="[Get] Switch + Reservations"/>',
         '                                        <Button Grid.Column="1" Name="VmDeleteSwitch" Content="[Delete] Existent"/>',
-        '                                        <Button Grid.Column="2" Name="VmNewSwitch"    Content="[Create] Non-existent"/>',
+        '                                        <Button Grid.Column="2" Name="VmCreateSwitch" Content="[Create] Non-existent"/>',
         '                                    </Grid>',
         '                                </Grid>',
         '                            </GroupBox>',
@@ -5983,8 +6306,29 @@ Function New-FEInfrastructure2
         '                                    <Label Grid.Row="0" Content="[Provision]: (Physical/Virtual) Gateways]"/>',
         '                                    <DataGrid Grid.Row="1" Name="VmGateway">',
         '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
-        '                                            <DataGridTemplateColumn Header="Exists" Width="100">',
+        '                                            <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>',
+        '                                            <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>',
+        '                                            <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>',
+        '                                            <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>',
+        '                                            <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>',
+        '                                            <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>',
+        '                                            <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="60"/>',
+        '                                            <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="120"/>',
+        '                                            <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="250"/>',
+        '                                            <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="125"/>',
+        '                                            <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="60"/>',
+        '                                            <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="125"/>',
+        '                                            <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="125"/>',
+        '                                            <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="125"/>',
+        '                                            <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="150"/>',
+        '                                            <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="125"/>',
+        '                                            <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="150"/>',
+        '                                            <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="125"/>',
+        '                                            <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="100"/>',
+        '                                            <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="250"/>',
+        '                                            <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="400"/>',
+        '                                            <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="400"/>',
+        '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                <DataGridTemplateColumn.CellTemplate>',
         '                                                    <DataTemplate>',
         '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
@@ -5994,26 +6338,39 @@ Function New-FEInfrastructure2
         '                                                    </DataTemplate>',
         '                                                </DataGridTemplateColumn.CellTemplate>',
         '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>',
+        '                                            <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                    <Grid Grid.Row="2">',
         '                                        <Grid.ColumnDefinitions>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="90"/>',
+        '                                            <ColumnDefinition Width="60"/>',
+        '                                            <ColumnDefinition Width="90"/>',
+        '                                            <ColumnDefinition Width="60"/>',
+        '                                            <ColumnDefinition Width="100"/>',
+        '                                            <ColumnDefinition Width="65"/>',
+        '                                            <ColumnDefinition Width="65"/>',
+        '                                            <ColumnDefinition Width="60"/>',
+        '                                            <ColumnDefinition Width="65"/>',
+        '                                            <ColumnDefinition Width="90"/>',
         '                                        </Grid.ColumnDefinitions>',
-        '                                        <Label    Grid.Column="0" Content="[Install Type]:"/>',
-        '                                        <ComboBox Grid.Column="1" Name="VmGatewayInstallType" SelectedIndex="0">',
+        '                                        <Label    Grid.Row="0" Grid.Column="0" Content="[RAM/MB]:"/>',
+        '                                        <TextBox  Grid.Row="0" Grid.Column="1" Name="VmGatewayMemory"/>',
+        '                                        <Label    Grid.Row="0" Grid.Column="2" Content="[HDD/GB]:"/>',
+        '                                        <TextBox  Grid.Row="0" Grid.Column="3" Name="VmGatewayDrive"/>',
+        '                                        <Label    Grid.Row="0" Grid.Column="4" Content="[Generation]:"/>',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="5" Name="VmGatewayGeneration" SelectedIndex="0">',
+        '                                            <ComboBoxItem Content="1"/>',
+        '                                            <ComboBoxItem Content="2"/>',
+        '                                        </ComboBox>',
+        '                                        <Label    Grid.Row="0" Grid.Column="6" Content="[Core]:"/>',
+        '                                        <TextBox  Grid.Row="0" Grid.Column="7" Name="VmGatewayCore"/>',
+        '                                        <Label    Grid.Row="0" Grid.Column="8" Content="[Type]:"/>',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmGatewayInstallType" SelectedIndex="0">',
         '                                            <ComboBoxItem Content="ISO"/>',
         '                                            <ComboBoxItem Content="Network"/>',
         '                                        </ComboBox>',
-        '                                        <Label    Grid.Column="2" Content="[RAM/MB]:"/>',
-        '                                        <TextBox  Grid.Column="3" Name="VmGatewayMemory"/>',
-        '                                        <Label    Grid.Column="4" Content="[HDD/GB]:"/>',
-        '                                        <TextBox  Grid.Column="5" Name="VmGatewayDrive"/>',
         '                                    </Grid>',
         '                                    <Grid Grid.Row="3">',
         '                                        <Grid.RowDefinitions>',
@@ -6047,8 +6404,29 @@ Function New-FEInfrastructure2
         '                                    <Label Grid.Row="0" Content="[Provision]: (Physical/Virtual) Servers"/>',
         '                                    <DataGrid Grid.Row="1" Name="VmServer">',
         '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
-        '                                            <DataGridTemplateColumn Header="Exists" Width="100">',
+        '                                            <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>',
+        '                                            <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>',
+        '                                            <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>',
+        '                                            <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>',
+        '                                            <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>',
+        '                                            <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>',
+        '                                            <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="60"/>',
+        '                                            <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="120"/>',
+        '                                            <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="250"/>',
+        '                                            <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="125"/>',
+        '                                            <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="60"/>',
+        '                                            <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="125"/>',
+        '                                            <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="125"/>',
+        '                                            <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="125"/>',
+        '                                            <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="150"/>',
+        '                                            <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="125"/>',
+        '                                            <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="150"/>',
+        '                                            <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="125"/>',
+        '                                            <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="100"/>',
+        '                                            <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="250"/>',
+        '                                            <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="400"/>',
+        '                                            <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="400"/>',
+        '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                <DataGridTemplateColumn.CellTemplate>',
         '                                                    <DataTemplate>',
         '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
@@ -6058,26 +6436,39 @@ Function New-FEInfrastructure2
         '                                                    </DataTemplate>',
         '                                                </DataGridTemplateColumn.CellTemplate>',
         '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>',
+        '                                            <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                    <Grid Grid.Row="2">',
         '                                        <Grid.ColumnDefinitions>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="90"/>',
+        '                                            <ColumnDefinition Width="60"/>',
+        '                                            <ColumnDefinition Width="90"/>',
+        '                                            <ColumnDefinition Width="60"/>',
+        '                                            <ColumnDefinition Width="100"/>',
+        '                                            <ColumnDefinition Width="65"/>',
+        '                                            <ColumnDefinition Width="65"/>',
+        '                                            <ColumnDefinition Width="60"/>',
+        '                                            <ColumnDefinition Width="65"/>',
+        '                                            <ColumnDefinition Width="90"/>',
         '                                        </Grid.ColumnDefinitions>',
-        '                                        <Label    Grid.Column="0" Content="[Install Type]:"/>',
-        '                                        <ComboBox Grid.Column="1" Name="VmServerInstallType" SelectedIndex="0">',
+        '                                        <Label    Grid.Row="0" Grid.Column="0" Content="[RAM/MB]:"/>',
+        '                                        <TextBox  Grid.Row="0" Grid.Column="1" Name="VmServerMemory"/>',
+        '                                        <Label    Grid.Row="0" Grid.Column="2" Content="[HDD/GB]:"/>',
+        '                                        <TextBox  Grid.Row="0" Grid.Column="3" Name="VmServerDrive"/>',
+        '                                        <Label    Grid.Row="0" Grid.Column="4" Content="[Generation]:"/>',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="5" Name="VmServerGeneration" SelectedIndex="1">',
+        '                                            <ComboBoxItem Content="1"/>',
+        '                                            <ComboBoxItem Content="2"/>',
+        '                                        </ComboBox>',
+        '                                        <Label    Grid.Row="0" Grid.Column="6" Content="[Core]:"/>',
+        '                                        <TextBox  Grid.Row="0" Grid.Column="7" Name="VmServerCore"/>',
+        '                                        <Label    Grid.Row="0" Grid.Column="8" Content="[Type]:"/>',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmServerInstallType" SelectedIndex="0">',
         '                                            <ComboBoxItem Content="ISO"/>',
         '                                            <ComboBoxItem Content="Network"/>',
         '                                        </ComboBox>',
-        '                                        <Label    Grid.Column="2" Content="[RAM/MB]:"/>',
-        '                                        <TextBox  Grid.Column="3" Name="VmServerMemory"/>',
-        '                                        <Label    Grid.Column="4" Content="[HDD/GB]:"/>',
-        '                                        <TextBox  Grid.Column="5" Name="VmServerDrive"/>',
         '                                    </Grid>',
         '                                    <Grid Grid.Row="3">',
         '                                        <Grid.RowDefinitions>',
@@ -6111,8 +6502,29 @@ Function New-FEInfrastructure2
         '                                    <Label Grid.Row="0" Content="[Provision]: (Physical/Virtual) Workstations"/>',
         '                                    <DataGrid Grid.Row="1" Name="VmWorkstation">',
         '                                        <DataGrid.Columns>',
-        '                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
-        '                                            <DataGridTemplateColumn Header="Exists" Width="100">',
+        '                                            <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>',
+        '                                            <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>',
+        '                                            <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>',
+        '                                            <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>',
+        '                                            <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>',
+        '                                            <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>',
+        '                                            <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="60"/>',
+        '                                            <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="120"/>',
+        '                                            <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="250"/>',
+        '                                            <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="125"/>',
+        '                                            <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="60"/>',
+        '                                            <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="125"/>',
+        '                                            <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="125"/>',
+        '                                            <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="125"/>',
+        '                                            <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="150"/>',
+        '                                            <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="125"/>',
+        '                                            <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="150"/>',
+        '                                            <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="125"/>',
+        '                                            <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="100"/>',
+        '                                            <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="250"/>',
+        '                                            <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="400"/>',
+        '                                            <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="400"/>',
+        '                                            <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                <DataGridTemplateColumn.CellTemplate>',
         '                                                    <DataTemplate>',
         '                                                        <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
@@ -6122,28 +6534,41 @@ Function New-FEInfrastructure2
         '                                                    </DataTemplate>',
         '                                                </DataGridTemplateColumn.CellTemplate>',
         '                                            </DataGridTemplateColumn>',
+        '                                            <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>',
+        '                                            <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                        </DataGrid.Columns>',
         '                                    </DataGrid>',
         '                                    <Grid Grid.Row="2">',
         '                                        <Grid.ColumnDefinitions>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
-        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="90"/>',
+        '                                            <ColumnDefinition Width="60"/>',
+        '                                            <ColumnDefinition Width="90"/>',
+        '                                            <ColumnDefinition Width="60"/>',
+        '                                            <ColumnDefinition Width="100"/>',
+        '                                            <ColumnDefinition Width="65"/>',
+        '                                            <ColumnDefinition Width="65"/>',
+        '                                            <ColumnDefinition Width="60"/>',
+        '                                            <ColumnDefinition Width="65"/>',
+        '                                            <ColumnDefinition Width="90"/>',
         '                                        </Grid.ColumnDefinitions>',
-        '                                        <Label    Grid.Column="0" Content="[Install Type]:"/>',
-        '                                        <ComboBox Grid.Column="1" Name="VmWorkstationInstallType" SelectedIndex="1">',
+        '                                        <Label    Grid.Row="0" Grid.Column="0" Content="[RAM/MB]:"/>',
+        '                                        <TextBox  Grid.Row="0" Grid.Column="1" Name="VmWorkstationMemory"/>',
+        '                                        <Label    Grid.Row="0" Grid.Column="2" Content="[HDD/GB]:"/>',
+        '                                        <TextBox  Grid.Row="0" Grid.Column="3" Name="VmWorkstationDrive"/>',
+        '                                        <Label    Grid.Row="0" Grid.Column="4" Content="[Generation]:"/>',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="5" Name="VmWorkstationGeneration" SelectedIndex="1">',
+        '                                            <ComboBoxItem Content="1"/>',
+        '                                            <ComboBoxItem Content="2"/>',
+        '                                        </ComboBox>',
+        '                                        <Label    Grid.Row="0" Grid.Column="6" Content="[Core]:"/>',
+        '                                        <TextBox  Grid.Row="0" Grid.Column="7" Name="VmWorkstationCore"/>',
+        '                                        <Label    Grid.Row="0" Grid.Column="8" Content="[Type]:"/>',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmWorkstationInstallType" SelectedIndex="1">',
         '                                            <ComboBoxItem Content="ISO"/>',
         '                                            <ComboBoxItem Content="Network"/>',
         '                                        </ComboBox>',
-        '                                        <Label    Grid.Column="2" Content="[RAM/MB]:"/>',
-        '                                        <TextBox  Grid.Column="3" Name="VmWorkstationMemory"/>',
-        '                                        <Label    Grid.Column="4" Content="[HDD/GB]:"/>',
-        '                                        <TextBox  Grid.Column="5" Name="VmWorkstationDrive"/>',
         '                                    </Grid>',
-        '                                    <Grid Grid.Row="3">',
+        '                                    <Grid Grid.Row="4">',
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="40"/>',
         '                                            <RowDefinition Height="40"/>',
@@ -6177,22 +6602,22 @@ Function New-FEInfrastructure2
         '            <TabItem Header="Imaging">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="720"/>',
+        '                        <RowDefinition Height="*"/>',
         '                    </Grid.RowDefinitions>',
         '                    <GroupBox Grid.Row="0" Header="[Imaging]">',
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="120"/>',
         '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="10"/>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="120"/>',
         '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="10"/>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="120"/>',
         '                                <RowDefinition Height="40"/>',
         '                            </Grid.RowDefinitions>',
         '                            <Label Grid.Row="0" Content="[Images (*.iso) files found in source directory]"/>',
@@ -6316,7 +6741,7 @@ Function New-FEInfrastructure2
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                        <Border   Grid.Row="6" Background="Black" BorderThickness="0" Margin="4"/>',
-        '                        <Label    Grid.Row="7" Content="[Update]: Selected (*.wim) file(s) to inject the update(s) into)"/>',
+        '                        <Label    Grid.Row="7" Content="[Update]: Selected (*.wim) file(s) to inject the update(s)"/>',
         '                        <DataGrid Grid.Row="8" Name="UpdWim">',
         '                            <DataGrid.Columns>',
         '                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
@@ -6338,7 +6763,7 @@ Function New-FEInfrastructure2
         '            <TabItem Header="Share">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
-        '                        <RowDefinition Height="680"/>',
+        '                        <RowDefinition Height="*"/>',
         '                        <RowDefinition Height="40"/>',
         '                    </Grid.RowDefinitions>',
         '                    <GroupBox Grid.Row="0" Header="[Share]">',
@@ -6416,7 +6841,7 @@ Function New-FEInfrastructure2
         '                            </Grid>',
         '                            <Border   Grid.Row="4" Background="Black" BorderThickness="0" Margin="4"/>',
         '                            <TabControl Grid.Row="5">',
-        '                                <TabItem Header="Import OS/TS">',
+        '                                <TabItem Header="Import">',
         '                                    <Grid>',
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="40"/>',
@@ -6451,7 +6876,7 @@ Function New-FEInfrastructure2
         '                                        </DataGrid>',
         '                                    </Grid>',
         '                                </TabItem>',
-        '                                <TabItem Header="Current OS/TS">',
+        '                                <TabItem Header="Current">',
         '                                    <Grid>',
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="40"/>',
@@ -6590,7 +7015,6 @@ Function New-FEInfrastructure2
         '                                        <TextBox  Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Name="DsBrLogo"/>',
         '                                        <Button   Grid.Row="6" Grid.Column="0" Name="DsBrBackgroundSelect" Content="Background"/>',
         '                                        <TextBox  Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Name="DsBrBackground"/>',
-        '',
         '                                    </Grid>',
         '                                </TabItem>',
         '                                <TabItem Header="Bootstrap">',
@@ -6614,7 +7038,7 @@ Function New-FEInfrastructure2
         '                                        <TextBox Grid.Row="2" Height="200" Background="White" Name="DsBootstrap" Style="{StaticResource Block}"/>',
         '                                    </Grid>',
         '                                </TabItem>',
-        '                                <TabItem Header="CustomSettings">',
+        '                                <TabItem Header="Custom Settings">',
         '                                    <Grid>',
         '                                        <Grid.RowDefinitions>',
         '                                            <RowDefinition Height="40"/>',
@@ -6740,7 +7164,8 @@ Function New-FEInfrastructure2
         [Object]  $UpdateController
         [Object]     $MdtController
         [Object]     $WdsController
-        [UInt32]              $Slot
+        Hidden [Object]       $Time
+        Hidden [Object]  $Container
         Main()
         {
             $This.Module          = Get-FEModule
@@ -6750,6 +7175,11 @@ Function New-FEInfrastructure2
                 Write-Error "Could not log into server"
                 Break
             }
+            Else
+            {
+                $This.Time = [System.Diagnostics.Stopwatch]::StartNew()
+                $This.Log("[~] Initializing")
+            }
             $This.Credential      = $This.Connection.Credential
 
             # Pulls system information
@@ -6757,15 +7187,19 @@ Function New-FEInfrastructure2
 
             # Assigns system information to system variable
             $This.System            = $This.Module.Role.System
+            $This.Log("[+] System")
 
             # Pulls configuration information (Network/DHCP/DNS/ADDS/Hyper-V/WDS/MDT/WinADK/WinPE/IIS)
             $This.Config            = Config -Module $This.Module
+            $This.Log("[+] Config")
 
             # Pulls sitelist base and classes
             $This.SiteList          = Sitelist -Module $This.Module
+            $This.Log("[+] SiteList")
 
             # Pulls networklist base and classes
             $This.NetworkList       = NetworkList
+            $This.Log("[+] NetworkList")
 
             # Load and sort/rename module files
             ForEach ($Item in $This.Module.Tree.Name)
@@ -6775,27 +7209,41 @@ Function New-FEInfrastructure2
 
             # Domain Controller
             $This.Sitemap           = Sitemap
+            $This.Log("[+] Sitemap")
 
             # AD Controller
             $This.AddsController    = AddsController
+            $This.Log("[+] AddsController")
 
             # VM Controller
             If ($This.Config.HyperV)
             {
                 $This.VmController  = VmController -Hostname localhost -Credential $This.Credential
+                $This.Log("[+] VmController")
             }
 
             # Imaging Controller
             $This.ImageController   = ImageController
+            $This.Log("[+] ImageController")
 
             # Update Controller
             $This.UpdateController  = UpdateController
+            $This.Log("[+] UpdateController")
 
             # Mdt Controller
             $This.MdtController     = MdtController -Module $This.Module
+            $This.Log("[+] MdtController")
 
             # Wds Controller
             $This.WdsController     = WdsController
+            $This.Log("[+] WdsController")
+
+            $This.Time.Stop()
+            $This.Log("[+] Initialized")
+        }
+        Log([String]$Message)
+        {
+            Write-Host "[$($This.Time.Elapsed)] $Message"
         }
         SetNetwork([Object]$Xaml,[UInt32]$Index)
         {
@@ -6933,8 +7381,7 @@ Function New-FEInfrastructure2
     # ---------------- #
 
     # [Module.Information]
-    $Xaml.IO.Module_Info.ItemsSource    = @( )
-    $Xaml.IO.Module_Info.ItemsSource    = @( ForEach ( $Item in "Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status" -Split " ")
+    $Content = ForEach ( $Item in "Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status" -Split " ")
     {
         $Name = Switch ($Item)
         {
@@ -6947,51 +7394,45 @@ Function New-FEInfrastructure2
             Status  { "Module Status"     }
         }
         [DGList]::New($Name,$Main.Module.$Item)
-    })
+    }
+    $Main.Reset($Xaml.IO.Module_Info.Items,$Content)
 
     # [Module.Components]
-    $Xaml.IO.Module_Type.ItemsSource     = @( )
-    $Xaml.IO.Module_Type.ItemsSource     = @($Main.Module.Tree)
+    $Main.Reset($Xaml.IO.Module_Type.Items,$Main.Module.Tree)
     $Xaml.IO.Module_Type.SelectedIndex   = 0
     
-    $Xaml.IO.Module_Property.ItemsSource   = @( )
-    $Xaml.IO.Module_Property.ItemsSource   = @("Name")
+    $Main.Reset($Xaml.IO.Module_Property.Items,"Name")
     $Xaml.IO.Module_Property.SelectedIndex = 0
     
     $Xaml.IO.Module_Filter.Text            = $Null
-    $Xaml.IO.Module_List.ItemsSource       = @( )
-
     $Xaml.IO.Module_Type.Add_SelectionChanged(
     {
         $Xaml.IO.Module_Filter.Text        = $Null
-        $Xaml.IO.Module_List.ItemsSource   = @( )
-        $Xaml.IO.Module_List.ItemsSource   = @( $Main.Module."$($Xaml.IO.Module_Type.SelectedItem)" )
+        $Main.Reset($Xaml.IO.Module_List.Items,$Main.Module."$($Xaml.IO.Module_Type.SelectedItem)")
         Start-Sleep -Milliseconds 50
     })
 
     $Xaml.IO.Module_Filter.Add_TextChanged(
     {
-        $Xaml.IO.Module_List.ItemsSource   = @( )
-        $Xaml.IO.Module_List.ItemsSource   = @( $Main.Module."$($Xaml.IO.Module_Type.SelectedItem)" | ? $Xaml.IO.Module_Property.SelectedItem -match $Xaml.IO.Module_Filter.Text )
+        $Main.Reset($Xaml.IO.Module_List.Items,@($Main.Module."$($Xaml.IO.Module_Type.SelectedItem)" | ? $Xaml.IO.Module_Property.SelectedItem -match $Xaml.IO.Module_Filter.Text))
         Start-Sleep -Milliseconds 50
     })
 
-    $Xaml.IO.Module_List.ItemsSource       = @( $Main.Module.Classes )
+    $Main.Reset($Xaml.IO.Module_List.Items,$Main.Module.Classes)
 
     # ---------------- #
     # <![Config Tab]!> #
     # ---------------- #
 
     # [Config.Output]
-    $Xaml.IO.CfgServices.ItemsSource                  = @( )
-    $Xaml.IO.CfgServices.ItemsSource                  = @($Main.Config.Output)
+    $Main.Reset($Xaml.IO.CfgServices.Items,$Main.Config.Output)
 
     # [Config.Role]
-    $Xaml.IO.Role_Info.ItemsSource = @( )
-    $Xaml.IO.Role_Info.ItemsSource = @( ForEach ( $Item in "Name DNS NetBIOS Hostname Username IsAdmin Caption Version Build ReleaseID Code SKU Chassis" -Split " ")
+    $Content = ForEach ( $Item in "Name DNS NetBIOS Hostname Username IsAdmin Caption Version Build ReleaseID Code SKU Chassis" -Split " ")
     {
         [DGList]::New($Item,$Main.Module.Role.$Item)
-    })
+    }
+    $Main.Reset($Xaml.IO.Role_Info.Items,$Content)
 
     # [Config.System]
     $Xaml.IO.System_Manufacturer.Text                 = $Main.System.Manufacturer
@@ -7008,36 +7449,31 @@ Function New-FEInfrastructure2
     $Xaml.IO.System_UUID.IsReadOnly                   = 1
         
     # [Config.System.Processor]
-    $Xaml.IO.System_Processor.ItemsSource             = @( )
-    $Xaml.IO.System_Processor.ItemsSource             = @($Main.System.Processor.Name)
+    $Main.Reset($Xaml.IO.System_Processor.Items,$Main.System.Processor.Name)
     $Xaml.IO.System_Processor.SelectedIndex           = 0
     
-    $Xaml.IO.System_Architecture.ItemsSource          = @( )
-    $Xaml.IO.System_Architecture.ItemsSource          = @("x86","x64")
+    $Main.Reset($Xaml.IO.System_Architecture.Items,@("x86","x64"))
     $Xaml.IO.System_Architecture.SelectedIndex        = $Main.System.Architecture -eq "x64"
     $Xaml.IO.System_Architecture.IsEnabled            = 0
     
     # [Config.System.Chassis]
     $Xaml.IO.System_IsVM.IsChecked                    = 0
-    $Xaml.IO.System_Chassis.ItemsSource               = @( )
-    $Xaml.IO.System_Chassis.ItemsSource               = @("Desktop;Laptop;Small Form Factor;Server;Tablet" -Split ";")
+
+    $Main.Reset($Xaml.IO.System_Chassis.Items,@("Desktop;Laptop;Small Form Factor;Server;Tablet" -Split ";"))
     $Xaml.IO.System_Chassis.SelectedIndex             = @{Desktop=0;Laptop=1;"Small Form Factor"=2;Server=3;Tablet=4}[$Main.System.Chassis]
     $Xaml.IO.System_Chassis.IsEnabled                 = 0
     
-    $Xaml.IO.System_BiosUefi.ItemsSource              = @( )
-    $Xaml.IO.System_BiosUefi.ItemsSource              = @("BIOS","UEFI")
+    $Main.Reset($Xaml.IO.System_BiosUefi.Items,@("BIOS","UEFI"))
     $Xaml.IO.System_BiosUefi.SelectedIndex            = $Main.System.BiosUEFI -eq "UEFI"
     $Xaml.IO.System_BiosUefi.IsEnabled                = 0
     
     $Xaml.IO.System_Name.Text                         = $Main.GetHostname()
     
     # [Config.System.Disks]
-    $Xaml.IO.System_Disk.ItemsSource                  = @( )
-    $Xaml.IO.System_Disk.ItemsSource                  = @($Main.System.Disk)
+    $Main.Reset($Xaml.IO.System_Disk.Items,$Main.System.Disk)
 
     # [Config.Network]
-    $Xaml.IO.Network_Adapter.ItemsSource              = @( )
-    $Xaml.IO.Network_Adapter.ItemsSource              = @($Main.System.Network)
+    $Main.Reset($Xaml.IO.Network_Adapter.Items,$Main.System.Network)
     $Xaml.IO.Network_Adapter.Add_SelectionChanged(
     {
         If ($Xaml.IO.Network_Adapter.SelectedIndex -ne -1)
@@ -7046,8 +7482,7 @@ Function New-FEInfrastructure2
         }
     })
 
-    $Xaml.IO.Network_Type.ItemsSource                 = @( )
-    $Xaml.IO.Network_Type.ItemsSource                 = @("DHCP","Static")
+    $Main.Reset($Xaml.IO.Network_Type.Items,@("DHCP","Static"))
     $Xaml.IO.Network_Type.SelectedIndex               = 0
     
     $Main.SetNetwork($Xaml,0)
@@ -7058,36 +7493,26 @@ Function New-FEInfrastructure2
     })
 
     # [Config.Dhcp]
-    $Xaml.IO.CfgDhcpScopeID.ItemsSource                = @( )
-    $Xaml.IO.CfgDhcpScopeReservations.ItemsSource      = @( )
-    $Xaml.IO.CfgDhcpScopeOptions.ItemsSource           = @( )
-    $Xaml.IO.CfgDhcpScopeID.ItemsSource                = @($Main.Config.Dhcp)
+    $Main.Reset($Xaml.IO.CfgDhcpScopeID.Items,$Main.Config.Dhcp)
     $Xaml.IO.CfgDhcpScopeID.Add_SelectionChanged(
     {
         If ($Xaml.IO.CfgDhcpScopeID.SelectedIndex -ne -1)
         {
             $Scope = $Xaml.IO.CfgDhcpScopeID.SelectedItem
-            
-            $Xaml.IO.CfgDhcpScopeReservations.ItemsSource = @( )
-            $Xaml.IO.CfgDhcpScopeReservations.ItemsSource = @( $Scope.Reservations )
-
-            $Xaml.IO.CfgDhcpScopeOptions.ItemsSource      = @( )
-            $Xaml.IO.CfgDhcpScopeOptions.ItemsSource      = @( $Scope.Options )
+            $Main.Reset($Xaml.IO.CfgDhcpScopeReservations.Items,$Scope.Reservations)
+            $Main.Reset($Xaml.IO.CfgDhcpScopeOptions.Items,$Scope.Options )
         }
     })
 
     # [Config.Dns]
-    $Xaml.IO.CfgDnsZone.ItemsSource              = @( )
-    $Xaml.IO.CfgDnsZoneHosts.ItemsSource         = @( )
-    $Xaml.IO.CfgDnsZone.ItemsSource              = @( $Main.Config.Dns )
+    $Main.Reset($Xaml.IO.CfgDnsZone.Items,$Main.Config.Dns)
     $Xaml.IO.CfgDnsZone.Add_SelectionChanged(
     {
         If ($Xaml.IO.CfgDnsZone.SelectedIndex -ne -1)
         {
             $Zone = $Xaml.IO.CfgDnsZone.SelectedItem
 
-            $Xaml.IO.CfgDnsZoneHosts.ItemsSource = @( )
-            $Xaml.IO.CfgDnsZoneHosts.ItemsSource = @( $Zone.Hosts )
+            $Main.Reset($Xaml.IO.CfgDnsZoneHosts.Items,$Zone.Hosts)
         }
     })
 
@@ -7113,49 +7538,40 @@ Function New-FEInfrastructure2
     $Xaml.IO.Adds_Schema.Text           = $Main.Config.Adds.Schema
     $Xaml.IO.Adds_Schema.IsReadOnly     = 1
 
-    $Xaml.IO.CfgAddsObject.ItemsSource     = @( )
-    $Xaml.IO.CfgAddsType.ItemsSource       = @( )
-    $Xaml.IO.CfgAddsType.ItemsSource       = @("Site","Sitelink","Subnet","Dhcp","OU","Computer")
+    $Main.Reset($Xaml.IO.CfgAddsType.Items,@("Site","Sitelink","Subnet","Dhcp","OU","Computer"))
     $Xaml.IO.CfgAddsType.SelectedIndex     = 0
 
-    $Xaml.IO.CfgAddsProperty.ItemsSource   = @( )
-    $Xaml.IO.CfgAddsProperty.ItemsSource   = @("Name","GUID","DistinguishedName")
+    $Main.Reset($Xaml.IO.CfgAddsProperty.Items,@("Name","GUID","DistinguishedName"))
     $Xaml.IO.CfgAddsProperty.SelectedIndex = 0
 
     $Xaml.IO.CfgAddsType.Add_SelectionChanged(
     {
         Start-Sleep -Milliseconds 50
         $Xaml.IO.CfgAddsFilter.Text        = $Null
-        $Xaml.IO.CfgAddsObject.ItemsSource = @( )
-        $Xaml.IO.CfgAddsObject.ItemsSource = @( $Main.Config.Adds."$($Xaml.IO.CfgAddsType.SelectedItem)" )
+        $Main.Reset($Xaml.IO.CfgAddsObject.Items,$Main.Config.Adds."$($Xaml.IO.CfgAddsType.SelectedItem)")
     })
 
     $Xaml.IO.CfgAddsFilter.Add_TextChanged(
     {
         Start-Sleep -Milliseconds 50
-        $Xaml.IO.CfgAddsObject.ItemsSource = @( )
-        $Xaml.IO.CfgAddsObject.ItemsSource = @( $Main.Config.Adds."$($Xaml.IO.CfgAddsType.SelectedItem)" | ? $Xaml.IO.CfgAddsProperty.SelectedItem -match $Xaml.IO.CfgAddsFilter.Text )
+        $Main.Reset($Xaml.IO.CfgAddsObject.Items,@($Main.Config.Adds."$($Xaml.IO.CfgAddsType.SelectedItem)" | ? $Xaml.IO.CfgAddsProperty.SelectedItem -match $Xaml.IO.CfgAddsFilter.Text))
     })
 
     # [Config.HyperV]
-    $Xaml.IO.CfgHyperV.ItemsSource        = @( )
-
     If ($Main.Config.HyperV)
     {
-        $Xaml.IO.VmHostName.Text                  = $Main.HyperV.Name
-        $Xaml.IO.CfgHyperV.ItemsSource        = @($Main.Config.HyperV)
+        $Xaml.IO.VmHostName.Text           = $Main.HyperV.Name
+        $Main.Reset($Xaml.IO.CfgHyperV.Items,$Main.Config.HyperV)
     }
 
     # [Config.Wds]
     $Xaml.IO.WDS_Server.Text              = $Main.Config.WDS.Server
-    $Xaml.IO.WDS_IPAddress.ItemsSource    = @( )
-    $Xaml.IO.WDS_IPAddress.ItemsSource    = @($Main.Config.WDS.IPAddress)
+    $Main.Reset($Xaml.IO.WDS_IPAddress.Items,$Main.Config.WDS.IPAddress)
     $Xaml.IO.WDS_IPAddress.SelectedIndex  = 0
 
     # [Config.Mdt]
     $Xaml.IO.MDT_Server.Text              = $Main.Config.MDT.Server
-    $Xaml.IO.MDT_IPAddress.ItemsSource    = @( )
-    $Xaml.IO.MDT_IPAddress.ItemsSource    = @($Main.Config.MDT.IPAddress)
+    $Main.Reset($Xaml.IO.MDT_IPAddress.Items,$Main.Config.MDT.IPAddress)
     $Xaml.IO.MDT_IPAddress.SelectedIndex  = 0
     
     $Xaml.IO.MDT_Path.Text                = $Main.Config.MDT.Path
@@ -7164,11 +7580,8 @@ Function New-FEInfrastructure2
     $Xaml.IO.MDT_PE_Version.Text          = $Main.Config.MDT.PeVersion
 
     # [Config.IIS]
-    $Xaml.IO.IIS_AppPools.ItemsSource     = @( )
-    $Xaml.IO.IIS_AppPools.ItemsSource     = @($Main.Config.IIS.AppPools)
-
-    $Xaml.IO.IIS_Sites.ItemsSource        = @( )
-    $Xaml.IO.IIS_Sites.ItemsSource        = @($Main.Config.IIS.Sites)
+    $Main.Reset($Xaml.IO.IIS_AppPools.Items,$Main.Config.IIS.AppPools)
+    $Main.Reset($Xaml.IO.IIS_Sites.Items,$Main.Config.IIS.Sites)
 
     # ------------------------- #
     # <![Domain/SiteList Tab]!> #
@@ -7199,10 +7612,9 @@ Function New-FEInfrastructure2
     $Xaml.IO.DcAggregate.Add_SelectionChanged(
     {
         $Object                                = $Xaml.IO.DcAggregate.SelectedItem
-        $Xaml.IO.DcViewer.ItemsSource          = @( )
         If ($Object)
         {
-            $Xaml.IO.DcViewer.ItemsSource      = @($Object.PSObject.Properties | % { [DGList]::New($_.Name,$_.Value) })
+            $Main.Reset($Xaml.IO.DcViewer.Items,@($Object.PSObject.Properties | % { $Main.List($_.Name,$_.Value) }))
         }
     })    
 
@@ -7232,12 +7644,13 @@ Function New-FEInfrastructure2
         If ($Xaml.IO.DcAggregate.SelectedIndex -gt -1)
         {
             $Object                           = $Xaml.IO.DcAggregate.SelectedItem
-            $Main.Sitelist.Aggregate          = $Main.Sitelist.Aggregate | ? Postal -ne $Object.Postal 
-            $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
-            If ($Xaml.IO.DcViewer.ItemsSource | ? Name -eq Postal | ? Value -eq $Object.Postal)
+            If ($Xaml.IO.DcViewer.Items | ? Name -eq Postal | ? Value -eq $Object.Postal)
             {
                 $Xaml.IO.DcViewer.Items.Clear()
             }
+            $Main.Sitelist.Aggregate          = $Main.Sitelist.Aggregate | ? Postal -ne $Object.Postal 
+            $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
+
         }
     })
 
@@ -8396,12 +8809,6 @@ Function New-FEInfrastructure2
     $Xaml.IO.VmControllerNetwork.Text         = $NetRoute | ? NextHop -eq 0.0.0.0 | Select-Object -Last 1 | % DestinationPrefix
     $Xaml.IO.VmControllerGateway.Text         = $NetRoute | ? NextHop -ne 0.0.0.0 | % NextHop
 
-    $Xaml.IO.VmLoadAddsNode.Add_Click(
-    {
-        $Main.VmController.LoadAddsTree($Main.AddsController.Output)
-        $Main.Reset($Xaml.IO.VmSelect.Items,$Main.VmController.VmSelect)
-    })
-    
     $Xaml.IO.VmHostChange.Add_Click(
     {
         $Xaml.IO.VmHostName.Text          = $Null
@@ -8448,18 +8855,115 @@ Function New-FEInfrastructure2
         $Xaml.IO.VmControllerGateway.Text = $NetRoute | ? NextHop -ne 0.0.0.0 | % NextHop
     })
 
-    # [Vm.Switch]
+    $Xaml.IO.VmLoadAddsNode.Add_Click(
+    {
+        # $Main.VmController = VmController -Hostname dsc0.securedigitsplus.com -Credential $Main.Credential
+        $Main.VmController.LoadAddsTree($Main.AddsController.Output)
+        $Main.Reset($Xaml.IO.VmSelect.Items,$Main.VmController.VmSelect)
+    })
 
+    $Xaml.IO.VmDeleteNodes.Add_Click(
+    {
+        Switch([System.Windows.MessageBox]::Show("This will delete any existing VMs in the list`n`nPress 'Yes' to confirm","Warning [!] Are you sure?","YesNo"))
+        {
+            Yes 
+            { 
+                Write-Theme "Deleting [!] VMs"
+                ForEach ($Object in $Main.VmController.VmSelect | ? Exists -eq $True)
+                {
+                    $Main.VmController.DeleteNode($Object)
+                    $Main.Reset($Xaml.IO.VmSelect.Items,$Main.VmController.VmSelect)
+                }
+            }
+            No  { Break }
+        }
+    })
+
+    $Xaml.IO.VmCreateNodes.Add_Click(
+    {
+        $Main.Container = $Main.VmController.NodeContainer()
+        ForEach ($Object in $Main.VmController.VmSelect | ? Exists -eq $False | ? Create)
+        {
+            $Item = $Main.VmController.GetVMObjectNode($Object)
+            Switch -Regex ($Object.Type)
+            {
+                Gateway
+                {
+                    $Main.Container.Gateway     += $Item
+                }
+                "(Server|Domain Controller)"
+                {
+                    $Main.Container.Server      += $Item
+                }
+                Workstation
+                {
+                    $Main.Container.Workstation += $Item
+                }
+            }
+        }
+        $Main.Reset($Xaml.IO.VmGateway.Items,$Main.Container.Gateway)
+        $Main.Reset($Xaml.IO.VmServer.Items,$Main.Container.Server)
+        $Main.Reset($Xaml.IO.VmWorkstation.Items,$Main.Container.Workstation)
+    })
+
+    # [Vm.Switch]
+    $Xaml.IO.VmDhcpScopeID.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.VmDhcpScopeID.SelectedIndex -ne -1)
+        {
+            $Object                   = $Main.VmController.GetRange($Xaml.IO.VmDhcpScopeID.SelectedItem)
+            $Xaml.IO.VmDhcpStart.Text = $Object[0].IpAddress
+            $Xaml.IO.VmDhcpEnd.Text   = $Object[-1].IpAddress
+        }
+    })
+
+    $Main.Reset($Xaml.IO.VmDhcpScopeID.Items,$Main.Config.Dhcp.ScopeID)
+    $Xaml.IO.VmDhcpScopeID.SelectedIndex = 0
+
+    $Xaml.IO.VmGetSwitch.Add_Click(
+    {
+        If ($Main.Container.Gateway.Count -gt 0)
+        {
+            $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
+            $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
+        }
+    })
+
+    $Xaml.IO.VmDeleteSwitch.Add_Click(
+    {
+        If ($Main.VmController.Reservation.Count -gt 0)
+        {
+            ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists)
+            {
+                $Object.Remove()
+            }
+            $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
+            $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
+        }
+    })
+
+    $Xaml.IO.VmCreateSwitch.Add_Click(
+    {
+        If ($Main.VmController.Reservation.Count -gt 0)
+        {
+            ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists -eq 0)
+            {
+                $Object.New()
+            }
+            $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
+            $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
+        }
+    })
 
     # [Vm.Gateway]
     $Xaml.IO.VmGatewayInstallType.Add_SelectionChanged(
     {
         If ($Xaml.IO.VmGatewayInstallType.SelectedIndex -eq 0)
         {
-            $Xaml.IO.VmGatewayScriptSelect.IsEnabled = 0
-            $Xaml.IO.VmGatewayScript.IsEnabled       = 0
             $Xaml.IO.VmGatewayImageSelect.IsEnabled  = 1
             $Xaml.IO.VmGatewayImage.IsEnabled        = 1
+            $Xaml.IO.VmGatewayScriptSelect.IsEnabled = 1
+            $Xaml.IO.VmGatewayScript.IsEnabled       = 1
         }
         If ($Xaml.IO.VmGatewayInstallType.SelectedIndex -eq 1)
         {
@@ -8513,29 +9017,26 @@ Function New-FEInfrastructure2
         $Xaml.IO.VmGatewayImage.Text     = $Item.FileName
     })
 
-    $Xaml.IO.VmGatewayMemory.Text        = 2048
-    $Xaml.IO.VmGatewayDrive.Text         = 20
+    $Xaml.IO.VmGatewayMemory.Text          = 2048
+    $Xaml.IO.VmGatewayDrive.Text           = 20
+    $Xaml.IO.VmGatewayCore.Text            = 1
 
     # [Vm.Server]
     $Xaml.IO.VmServerInstallType.Add_SelectionChanged(
     {
         If ($Xaml.IO.VmServerInstallType.SelectedIndex -eq 0)
         {
-            $Xaml.IO.VmServerPathSelect.IsEnabled   = 1
-            $Xaml.IO.VmServerPath.IsEnabled         = 1
-            $Xaml.IO.VmServerScriptSelect.IsEnabled = 0
-            $Xaml.IO.VmServerScript.IsEnabled       = 0
             $Xaml.IO.VmServerImageSelect.IsEnabled  = 1
             $Xaml.IO.VmServerImage.IsEnabled        = 1
+            $Xaml.IO.VmServerScriptSelect.IsEnabled = 1
+            $Xaml.IO.VmServerScript.IsEnabled       = 1
         }
         If ($Xaml.IO.VmServerInstallType.SelectedIndex -eq 1)
         {
-            $Xaml.IO.VmServerPathSelect.IsEnabled   = 0
-            $Xaml.IO.VmServerPath.IsEnabled         = 0
-            $Xaml.IO.VmServerScriptSelect.IsEnabled = 0
-            $Xaml.IO.VmServerScript.IsEnabled       = 0
             $Xaml.IO.VmServerImageSelect.IsEnabled  = 0
             $Xaml.IO.VmServerImage.IsEnabled        = 0
+            $Xaml.IO.VmServerScriptSelect.IsEnabled = 0
+            $Xaml.IO.VmServerScript.IsEnabled       = 0
         }
     })
 
@@ -8582,29 +9083,26 @@ Function New-FEInfrastructure2
         $Xaml.IO.VmServerImage.Text      = $Item.FileName
     })
 
-    $Xaml.IO.VmServerMemory.Text         = 4096
-    $Xaml.IO.VmServerDrive.Text          = 100
+    $Xaml.IO.VmServerMemory.Text           = 4096
+    $Xaml.IO.VmServerDrive.Text            = 100
+    $Xaml.IO.VmServerCore.Text             = 2
 
     # [Vm.Workstation]
     $Xaml.IO.VmWorkstationInstallType.Add_SelectionChanged(
     {
         If ($Xaml.IO.VmWorkstationInstallType.SelectedIndex -eq 0)
         {
-            $Xaml.IO.VmWorkstationPathSelect.IsEnabled   = 1
-            $Xaml.IO.VmWorkstationPath.IsEnabled         = 1
-            $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 0
-            $Xaml.IO.VmWorkstationScript.IsEnabled       = 0
             $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 1
             $Xaml.IO.VmWorkstationImage.IsEnabled        = 1
+            $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 1
+            $Xaml.IO.VmWorkstationScript.IsEnabled       = 1
         }
         If ($Xaml.IO.VmWorkstationInstallType.SelectedIndex -eq 1)
         {
-            $Xaml.IO.VmWorkstationPathSelect.IsEnabled   = 0
-            $Xaml.IO.VmWorkstationPath.IsEnabled         = 0
-            $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 0
-            $Xaml.IO.VmWorkstationScript.IsEnabled       = 0
             $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 0
             $Xaml.IO.VmWorkstationImage.IsEnabled        = 0
+            $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 0
+            $Xaml.IO.VmWorkstationScript.IsEnabled       = 0
         }
     })
 
@@ -8651,23 +9149,143 @@ Function New-FEInfrastructure2
         $Xaml.IO.VmWorkstationImage.Text      = $Item.FileName
     })
 
-    $Xaml.IO.VmGatewayMemory.Text        = 2048
-    $Xaml.IO.VmGatewayDrive.Text         = 20
-
-    # $Main.VmController = VmController -Hostname dsc0.securedigitsplus.com -Credential $Main.Credential
-    # $Main.VmController.LoadAddsTree($Main.AddsController.Output)
-    # $Main.VmController.GetReservations("172.16.0.0")
+    $Xaml.IO.VmWorkstationMemory.Text      = 2048
+    $Xaml.IO.VmWorkstationDrive.Text       = 20
+    $Xaml.IO.VmWorkstationCore.Text        = 2
 
     $Xaml.IO.VMGetArchitecture.Add_Click(
     {
-        #$Content = $Main.VmController.VmStack | ? Type -eq Gateway
-        #$Main.Reset($Xaml.IO.VmSwitch.Items, 
-        #$Main.Reset($Xaml.IO.VmGateway.Items,
-        #$Main.Reset($Xaml.IO.VmServer.Items,
+        $Validate = $Main.VmController.ValidationStack()
+
+        # Gateway
+        If ($Main.Container.Gateway.Count -gt 0)
+        {
+            $Validate.ValidateBase(
+                "Gateway",
+                $Xaml.IO.VmGatewayPath.Text,
+                $Xaml.IO.VmGatewayInstallType.SelectedItem.Content,
+                $Xaml.IO.VmGatewayImage.Text,
+                $Xaml.IO.VmGatewayScript.Text,
+                $Main.Container.Gateway)
+
+            If ($Validate.Gateway.Result -eq "Fail")
+            {
+                Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Gateway Error")
+            }
+
+            If ($Validate.Gateway.Result -eq "Success")
+            {
+                ForEach ($Object in $Validate.Gateway.Container)
+                {
+                    $Item = $Main.VmController.NewVMObjectNode($Object.VmName)
+                    $Item.Stage(
+                        $Xaml.IO.VmGatewayPath.Text,
+                        $Xaml.IO.VmGatewayMemory.Text,
+                        $Xaml.IO.VmGatewayDrive.Text,
+                        $Xaml.IO.VmGatewayGeneration.Text,
+                        $Xaml.IO.VmGatewayCore.Text,
+                        $Object.Sitelink)
+
+                    $Validate.Gateway.Output += $Item
+                }
+            }
+        }
+
+        # Server
+        If ($Main.Container.Server.Count -gt 0)
+        {
+            $Validate.ValidateBase("Server",
+                $Xaml.IO.VmServerPath.Text,
+                $Xaml.IO.VmServerInstallType.SelectedItem.Content,
+                $Xaml.IO.VmServerImage.Text,
+                $Xaml.IO.VmServerScript.Text,
+                $Main.Container.Server)
+
+            If ($Validate.Server.Result -eq "Fail")
+            {
+                Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Server Error")
+            }
+
+            If ($Validate.Server.Result -eq "Success")
+            {
+                ForEach ($Object in $Validate.Server.Container)
+                {
+                    $Item = $Main.VmController.NewVMObjectNode($Object.VmName)
+                    $Item.Stage($Xaml.IO.VmServerPath.Text,
+                                $Xaml.IO.VmServerMemory.Text,
+                                $Xaml.IO.VmServerDrive.Text,
+                                $Xaml.IO.VmServerGeneration.Text,
+                                $Xaml.IO.VmServerCore.Text,
+                                $Object.Sitelink)
+
+                    $Validate.Server.Output += $Item
+                }
+            }
+        }
+
+        # Workstation
+        If ($Main.Container.Workstation.Count -gt 0)
+        {
+            $Validate.ValidateBase(
+                "Workstation",
+                $Xaml.IO.VmWorkstationPath.Text,
+                $Xaml.IO.VmWorkstationInstallType.SelectedItem.Content,
+                $Xaml.IO.VmWorkstationImage.Text,
+                $Xaml.IO.VmWorkstationScript.Text,
+                $Main.Container.Workstation)
+
+            If ($Validate.Workstation.Result -eq "Fail")
+            {
+                Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Workstation Error")
+            }
+
+            If ($Validate.Workstation.Result -eq "Success")
+            {
+                ForEach ($Object in $Validate.Workstation.Container)
+                {
+                    $Item = $Main.VmController.NewVMObjectNode($Object.VmName)
+                    $Item.Stage(
+                        $Xaml.IO.VmWorkstationPath.Text,
+                        $Xaml.IO.VmWorkstationMemory.Text,
+                        $Xaml.IO.VmWorkstationDrive.Text,
+                        $Xaml.IO.VmWorkstationGeneration.Text,
+                        $Xaml.IO.VmWorkstationCore.Text,
+                        $Object.Sitelink)
+
+                    $Validate.Workstation.Output += $Item
+                }
+            }
+        }
     })
 
-    #     $VmController = [VmController]::New($Main.Module.Role.Hostname,$Main.Credential)
-    #     $VmController.LoadAddsTree($Main.AddsController.Output)
+    $Xaml.IO.VmNewArchitecture.Add_Click(
+    {
+        ForEach ($Object in $Validate.Gateway.Output)
+        {   
+            $Object.New()
+            $Object.Start()
+            Do
+            {
+                Start-Sleep 1
+                $MacAddress = $Object.Get().NetworkAdapters[0].MacAddress
+            }
+            Until ($MacAddress -notmatch "0{12}")
+            $Object.Stop()
+            $Reserve = $Main.VmController.Reservation | ? SwitchName -match $Object.Name 
+            $Reserve.SetMacAddress($MacAddress)
+            $Reserve.Add()
+        }
+
+        ForEach ($Object in $Validate.Server.Output)
+        {
+            $Object.New()
+        }
+
+        ForEach ($Object in $Validate.Workstation.Output)
+        {
+            $Object.New()
+        }
+    })
 
     Return @{ Xaml = $Xaml; Main = $Main }
 }
@@ -8681,8 +9299,10 @@ $Cap = New-FEInfrastructure2
 $Xaml = $Cap.Xaml
 $Main = $Cap.Main
 
-####
+# ---- #
 
 $Main.UpdateController.SetBase("C:\Updates")
 $Main.UpdateController.ProcessFileList()
-$Main.UpdateController.UpdateList #>
+$Main.UpdateController.UpdateList 
+
+#>
