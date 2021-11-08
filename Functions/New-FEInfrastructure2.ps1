@@ -8950,6 +8950,7 @@ Function New-FEInfrastructure2
             ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists -eq 0)
             {
                 $Object.New()
+                $Object.SwitchExists = 1
             }
             $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
             $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
@@ -9225,7 +9226,7 @@ Function New-FEInfrastructure2
         }
 
         # Workstation
-        If ($Main.Main.Container.Workstation.Count -gt 0)
+        If ($Main.Container.Workstation.Count -gt 0)
         {
             $Main.Validate.ValidateBase(
                 "Workstation",
@@ -9299,6 +9300,8 @@ $Cap = New-FEInfrastructure2
 
 $Xaml = $Cap.Xaml
 $Main = $Cap.Main
+
+$Xaml.Invoke()
 
 # ---- #
 
