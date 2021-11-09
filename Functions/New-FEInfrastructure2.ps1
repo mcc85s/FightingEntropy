@@ -6800,7 +6800,7 @@ Function New-FEInfrastructure2
         '                                        </DataTemplate>',
         '                                    </DataGridTemplateColumn.CellTemplate>',
         '                                </DataGridTemplateColumn>',
-        '                                <DataGridTextColumn Header="Directory" Binding="{Binding Value}" Width="*"/>',
+        '                                <DataGridTextColumn Header="Directory" Binding="{Binding Directory}" Width="*"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                        <Grid     Grid.Row="2">',
@@ -7465,7 +7465,7 @@ Function New-FEInfrastructure2
             {
                 Gateway
                 {
-                    Switch ($Xaml.IO.VmGatewayInstallType.SelectedIndex -eq 0)
+                    Switch ($Xaml.IO.VmGatewayInstallType.SelectedIndex)
                     {
                         0
                         {
@@ -7506,19 +7506,21 @@ Function New-FEInfrastructure2
                 Workstation
                 {
                     Switch ($Xaml.IO.VmWorkstationInstallType.SelectedIndex)
-                    0
                     {
-                        $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 1
-                        $Xaml.IO.VmWorkstationImage.IsEnabled        = 1
-                        $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 1
-                        $Xaml.IO.VmWorkstationScript.IsEnabled       = 1
-                    }
-                    1
-                    {
-                        $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 0
-                        $Xaml.IO.VmWorkstationImage.IsEnabled        = 0
-                        $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 0
-                        $Xaml.IO.VmWorkstationScript.IsEnabled       = 0
+                        0
+                        {
+                            $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 1
+                            $Xaml.IO.VmWorkstationImage.IsEnabled        = 1
+                            $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 1
+                            $Xaml.IO.VmWorkstationScript.IsEnabled       = 1
+                        }
+                        1
+                        {
+                            $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 0
+                            $Xaml.IO.VmWorkstationImage.IsEnabled        = 0
+                            $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 0
+                            $Xaml.IO.VmWorkstationScript.IsEnabled       = 0
+                        }
                     }
                 }
             }
@@ -9631,7 +9633,7 @@ Function New-FEInfrastructure2
         {
             $Main.ImageController.Extract()
         }
-    }
+    })
 
     $Xaml.IO.WimSelect.Add_Click(
     {
@@ -9687,7 +9689,7 @@ Function New-FEInfrastructure2
     {
         If ($Xaml.IO.UpdAggregate.SelectedIndex -ne -1)
         {
-            $Object = $Main.UpdateController.UpdateList | ? KB -eq $Xaml.IO.UpdAggregate.SelectedItem.KB | % { $Main.List($_.Name,$_.Value)}
+            $Object = $Main.UpdateController.UpdateList | ? KB -eq $Xaml.IO.UpdAggregate.SelectedItem.KB | % Output | ? Name -ne ApplicabilityInfo | % { $Main.List($_.Name,$_.Value)}
             $Main.Reset($Xaml.IO.UpdViewer.Items,$Object)
         }
     })
