@@ -2725,7 +2725,7 @@ Function New-FEInfrastructure2
             }
             SetIsoBoot()
             {
-                If ($This.Iso)
+                If ($This.Iso -and $This.Generation -eq 2)
                 {
                     $This.GetFirmware() | % { $_.BootOrder[2,0,1] }
                 }
@@ -3129,7 +3129,7 @@ Function New-FEInfrastructure2
 
                 $This.Selected = $This.Store[$Index]
 
-                If ( $This.Selected.GetDiskImage() | ? Attached -eq $False )
+                If ($This.Selected.GetDiskImage() | ? Attached -eq $False)
                 {
                     $This.Selected.MountDiskImage()
                 }
@@ -3207,15 +3207,19 @@ Function New-FEInfrastructure2
 
                 $This.Target = $Target
             }
+            [Object] Refresh([String]$Path)
+            {
+                Return Get-DiskImage -ImagePath $Path 
+            }
             Extract()
             {
                 $X               = 0
                 $DestinationName = $Null
                 $Label           = $Null
 
-                ForEach ($File in $This.Image.Queue)
+                ForEach ($File in $This.Queue)
                 {
-                    $Disk        = Get-DiskImage -ImagePath $File.Name
+                    $Disk        = $This.Refresh($File.Name)
                     $Name        = $File.Name | Split-Path -Leaf
                     If ($Name.Length -gt 65)
                     {
@@ -3225,10 +3229,16 @@ Function New-FEInfrastructure2
                     {
                         Write-Theme "Mounting [~] $Name"
                         Mount-DiskImage -ImagePath $Disk.ImagePath -Verbose
-                        $Disk    = Get-DiskImage -ImagePath $File.Name
+                        Do
+                        {
+                            Start-Sleep -Milliseconds 250
+                            $Disk = $This.Refresh($File.Name)
+                        }
+                        Until ($This.Refresh($File.Name).Attached)
                     }
 
-                    $Path        = "{0}:\sources\install.wim" -f ($Disk | Get-Volume | % DriveLetter)
+                    $Disk         = $This.Refresh($File.Name)
+                    $Path         = "{0}:\sources\install.wim" -f ($Disk | Get-Volume | % DriveLetter)
 
                     ForEach ($Item in $File.Content)
                     {
@@ -3270,7 +3280,7 @@ Function New-FEInfrastructure2
 
                             SourceIndex             = $Item.Index
                             SourceImagePath         = $Path
-                            DestinationImagePath    = ("{0}\({1}){2}\{2}.wim" -f $This.Image.Target,$X,$Label)
+                            DestinationImagePath    = ("{0}\({1}){2}\{2}.wim" -f $This.Target,$X,$Label)
                             DestinationName         = $DestinationName
                         }
 
@@ -3288,9 +3298,9 @@ Function New-FEInfrastructure2
                     Write-Theme "Dismounting [~] $Name" 12,4,15
                     Start-Sleep 1
 
-                    Get-DiskImage -ImagePath $File.Name | Dismount-DiskImage
+                    $This.Refresh($File.Name) | Dismount-DiskImage -Verbose
                 }
-                Write-Theme "Complete [+] ($($This.Image.Queue.Content.Count)) *.wim files Extracted" 10,2,15
+                Write-Theme "Complete [+] ($($This.Queue.Content.Count)) *.wim files Extracted" 10,2,15
             }
             [String] ToString()
             {
@@ -3320,20 +3330,22 @@ Function New-FEInfrastructure2
             [String] $KB
             [Object] $Directory
             [String] $Type
+            [Object[]] $Applicability
             [Object] $Name 
             Hidden [Object] $ExitCode
             [String] $Expand
             [Object] $Output
             UpdateExtract([String]$File,[String]$Executable,[String]$Parameters)
             {
-                $This.File         = Get-Item $File
-                $This.KB           = [Regex]::Matches($File,"(kb\d{7})").Value.ToUpper()
-                $This.Type         = $This.File.Extension
-                $This.Directory    = $This.File.Directory
-                $This.Name         = $This.File.Name
-                $This.ExitCode     = Start-Process -FilePath $Executable -ArgumentList $Parameters -WindowStyle Hidden -Wait -Passthru | % ExitCode
-                $This.Expand       = Get-ChildItem $This.Directory | ? Name -match $This.KB | ? Name -notmatch $This.Name | % FullName
-                $This.Output       = Get-Content $This.Expand | % { [StringList]::New($_) }
+                $This.File          = Get-Item $File
+                $This.KB            = [Regex]::Matches($File,"(kb\d{7})").Value.ToUpper()
+                $This.Type          = $This.File.Extension
+                $This.Directory     = $This.File.Directory
+                $This.Name          = $This.File.Name
+                $This.ExitCode      = Start-Process -FilePath $Executable -ArgumentList $Parameters -WindowStyle Hidden -Wait -Passthru | % ExitCode
+                $This.Expand        = Get-ChildItem $This.Directory | ? Name -match $This.KB | ? Name -notmatch $This.Name | % FullName
+                $This.Output        = Get-Content $This.Expand | % { [StringList]::New($_) }
+                $This.Applicability = $This.Output | ? Name -eq "ApplicabilityInfo" | % Value
                 Remove-Item $This.Expand -Verbose -EA 0
             }
         }
@@ -3351,16 +3363,61 @@ Function New-FEInfrastructure2
             }
         }
 
+        Class WimFile
+        {
+            [UInt32] $Rank
+            [Object] $Label
+            [Object] $Date
+            [UInt32] $ImageIndex            = 1
+            [String] $ImageName
+            [String] $ImageDescription
+            [String] $Version
+            [String] $Architecture
+            [String] $InstallationType
+            [String] $SourceImagePath
+            WimFile([UInt32]$Rank,[String]$Image)
+            {
+                If (!(Test-Path $Image))
+                {
+                    Throw "Invalid Path"
+                }
+
+                $Item                       = Get-Item $Image
+                $This.Date                  = $Item.LastWriteTime.GetDateTimeFormats()[5]
+                $SDate                      = $This.Date.Split("-")
+                $This.SourceImagePath       = $Image
+                $This.Rank                  = $Rank
+
+                Get-WindowsImage -ImagePath $Image -Index 1 | % {
+                    
+                    $This.Version           = $_.Version
+                    $This.Architecture      = @(86,64)[$_.Architecture -eq 9]
+                    $This.InstallationType  = $_.InstallationType
+                    $This.ImageName         = $_.ImageName
+                    $This.Label             = $Item.BaseName
+                    $This.ImageDescription  = "[{0}-{1}{2} (MCC/SDP)][{3}]" -f $SDate[0],$SDate[1],$SDate[2],$This.Label
+
+                    If ($This.ImageName -match "Evaluation")
+                    {
+                        $This.ImageName     = $This.ImageName -Replace "Evaluation","" -Replace "\(Desktop Experience\)","" -Replace "(\s{2,})"," "
+                    }
+                }
+            }
+        }
+
         Class UpdateController
         {
             [String]     $Expand
             [String]       $Base
             [Object]   $FileList
             [Object] $UpdateList
+            [Object]    $WimList
             UpdateController()
             {
                 $This.Expand      = "$Env:Windir\System32\expand.exe"
+                $This.FileList    = @( )
                 $This.UpdateList  = @( )
+                $This.WimList     = @( )
             }
             SetUpdateBase([String]$Base)
             {
@@ -3391,6 +3448,25 @@ Function New-FEInfrastructure2
                     Write-Host "Processing [~] ($($File.Name))"
                     $This.GetFileInfo($File.Fullname)
                 }
+            }
+            GetWimFiles([String]$Path)
+            {
+                If (!(Test-Path $Path))
+                {
+                    Throw "Invalid path"
+                }
+
+                $List = Get-ChildItem $Path *.wim -Recurse
+                If ($List.Count -eq 0)
+                {
+                    Throw "No (*.wim) files detected" 
+                }
+
+                ForEach ($File in $List)
+                {
+                    $This.WimList += [WimFile]::New($This.WimFiles.Count,$File.FullName)
+                }
+
             }
             [String] ToString()
             {
@@ -6715,8 +6791,16 @@ Function New-FEInfrastructure2
         '                        <Label    Grid.Row="0" Content="[Aggregate]: Update file source directory"/>',
         '                        <DataGrid Grid.Row="1"  Name="UpdAggregate">',
         '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>',
-        '                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                <DataGridTextColumn Header="KB"        Binding="{Binding KB}" Width="100"/>',
+        '                                <DataGridTextColumn Header="Type"      Binding="{Binding Type}" Width="100"/>',
+        '                                <DataGridTemplateColumn Header="Applicability" Width="350">',
+        '                                    <DataGridTemplateColumn.CellTemplate>',
+        '                                        <DataTemplate>',
+        '                                            <ComboBox ItemsSource="{Binding Applicability}" SelectedIndex="0" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center"/>',
+        '                                        </DataTemplate>',
+        '                                    </DataGridTemplateColumn.CellTemplate>',
+        '                                </DataGridTemplateColumn>',
+        '                                <DataGridTextColumn Header="Directory" Binding="{Binding Value}" Width="*"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                        <Grid     Grid.Row="2">',
@@ -6735,27 +6819,30 @@ Function New-FEInfrastructure2
         '                        <Label    Grid.Row="4" Content="[Viewer]: View (properties/attributes) of update files"/>',
         '                        <DataGrid Grid.Row="5" Name="UpdViewer">',
         '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
-        '                                <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>',
-        '                                <DataGridCheckBoxColumn Header="Install" Binding="{Binding Install}" Width="50"/>',
+        '                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="175"/>',
+        '                                <DataGridTextColumn Header="Value" Binding="{Binding Date}" Width="*"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                        <Border   Grid.Row="6" Background="Black" BorderThickness="0" Margin="4"/>',
         '                        <Label    Grid.Row="7" Content="[Update]: Selected (*.wim) file(s) to inject the update(s)"/>',
         '                        <DataGrid Grid.Row="8" Name="UpdWim">',
         '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>',
-        '                                <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>',
-        '                                <DataGridCheckBoxColumn Header="Install" Binding="{Binding Install}" Width="50"/>',
+        '                                <DataGridTextColumn Header="Name" Binding="{Binding ImageName}" Width="250"/>',
+        '                                <DataGridTextColumn Header="Type" Binding="{Binding InstallationType}" Width="50"/>',
+        '                                <DataGridTextColumn Header="Path" Binding="{Binding SourceImagePath}" Width="*"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                        <Grid Grid.Row="9">',
         '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="60"/>',
         '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="80"/>',
+        '                                <ColumnDefinition Width="80"/>',
         '                            </Grid.ColumnDefinitions>',
-        '                            <Button Grid.Column="0" Name="UpdInstallUpdate" Content="Install"/>',
-        '                            <Button Grid.Column="1" Name="UpdUninstallUpdate" Content="Uninstall"/>',
+        '                            <Button  Grid.Column="0" Name="UpdWimSelect" Content="Path"/>',
+        '                            <TextBox Grid.Column="1" Name="UpdWimPath"/>',
+        '                            <Button  Grid.Column="2" Name="UpdInstallUpdate" Content="Install"/>',
+        '                            <Button  Grid.Column="3" Name="UpdUninstallUpdate" Content="Uninstall"/>',
         '                        </Grid>',
         '                    </Grid>',
         '                </GroupBox>',
@@ -7370,6 +7457,70 @@ Function New-FEInfrastructure2
             Else
             {
                 Return $String
+            }
+        }
+        InstallType([Object]$Xaml,[String]$Type)
+        {
+            Switch ($Type)
+            {
+                Gateway
+                {
+                    Switch ($Xaml.IO.VmGatewayInstallType.SelectedIndex -eq 0)
+                    {
+                        0
+                        {
+                            $Xaml.IO.VmGatewayImageSelect.IsEnabled  = 1
+                            $Xaml.IO.VmGatewayImage.IsEnabled        = 1
+                            $Xaml.IO.VmGatewayScriptSelect.IsEnabled = 1
+                            $Xaml.IO.VmGatewayScript.IsEnabled       = 1
+                        }
+                        1
+                        {
+                            $Xaml.IO.VmGatewayScriptSelect.IsEnabled = 0
+                            $Xaml.IO.VmGatewayScript.IsEnabled       = 0
+                            $Xaml.IO.VmGatewayImageSelect.IsEnabled  = 0
+                            $Xaml.IO.VmGatewayImage.IsEnabled        = 0
+                        }
+                    }
+                }
+                Server
+                {
+                    Switch ($Xaml.IO.VmServerInstallType.SelectedIndex)
+                    {
+                        0
+                        {
+                            $Xaml.IO.VmServerImageSelect.IsEnabled  = 1
+                            $Xaml.IO.VmServerImage.IsEnabled        = 1
+                            $Xaml.IO.VmServerScriptSelect.IsEnabled = 1
+                            $Xaml.IO.VmServerScript.IsEnabled       = 1
+                        }
+                        1
+                        {
+                            $Xaml.IO.VmServerImageSelect.IsEnabled  = 0
+                            $Xaml.IO.VmServerImage.IsEnabled        = 0
+                            $Xaml.IO.VmServerScriptSelect.IsEnabled = 0
+                            $Xaml.IO.VmServerScript.IsEnabled       = 0
+                        }
+                    }
+                }
+                Workstation
+                {
+                    Switch ($Xaml.IO.VmWorkstationInstallType.SelectedIndex)
+                    0
+                    {
+                        $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 1
+                        $Xaml.IO.VmWorkstationImage.IsEnabled        = 1
+                        $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 1
+                        $Xaml.IO.VmWorkstationScript.IsEnabled       = 1
+                    }
+                    1
+                    {
+                        $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 0
+                        $Xaml.IO.VmWorkstationImage.IsEnabled        = 0
+                        $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 0
+                        $Xaml.IO.VmWorkstationScript.IsEnabled       = 0
+                    }
+                }
             }
         }
     }
@@ -8960,20 +9111,7 @@ Function New-FEInfrastructure2
     # [Vm.Gateway]
     $Xaml.IO.VmGatewayInstallType.Add_SelectionChanged(
     {
-        If ($Xaml.IO.VmGatewayInstallType.SelectedIndex -eq 0)
-        {
-            $Xaml.IO.VmGatewayImageSelect.IsEnabled  = 1
-            $Xaml.IO.VmGatewayImage.IsEnabled        = 1
-            $Xaml.IO.VmGatewayScriptSelect.IsEnabled = 1
-            $Xaml.IO.VmGatewayScript.IsEnabled       = 1
-        }
-        If ($Xaml.IO.VmGatewayInstallType.SelectedIndex -eq 1)
-        {
-            $Xaml.IO.VmGatewayScriptSelect.IsEnabled = 0
-            $Xaml.IO.VmGatewayScript.IsEnabled       = 0
-            $Xaml.IO.VmGatewayImageSelect.IsEnabled  = 0
-            $Xaml.IO.VmGatewayImage.IsEnabled        = 0
-        }
+        $Main.InstallType($Xaml,"Gateway")
     })
 
     $Xaml.IO.VmGatewayPathSelect.Add_Click(
@@ -9019,27 +9157,15 @@ Function New-FEInfrastructure2
         $Xaml.IO.VmGatewayImage.Text     = $Item.FileName
     })
 
-    $Xaml.IO.VmGatewayMemory.Text          = 2048
-    $Xaml.IO.VmGatewayDrive.Text           = 20
-    $Xaml.IO.VmGatewayCore.Text            = 1
+    $Xaml.IO.VmGatewayMemory.Text                   = 2048
+    $Xaml.IO.VmGatewayDrive.Text                    = 20
+    $Xaml.IO.VmGatewayCore.Text                     = 1
+    $Xaml.IO.VmGatewayInstallType.SelectedIndex     = 1
 
     # [Vm.Server]
     $Xaml.IO.VmServerInstallType.Add_SelectionChanged(
     {
-        If ($Xaml.IO.VmServerInstallType.SelectedIndex -eq 0)
-        {
-            $Xaml.IO.VmServerImageSelect.IsEnabled  = 1
-            $Xaml.IO.VmServerImage.IsEnabled        = 1
-            $Xaml.IO.VmServerScriptSelect.IsEnabled = 1
-            $Xaml.IO.VmServerScript.IsEnabled       = 1
-        }
-        If ($Xaml.IO.VmServerInstallType.SelectedIndex -eq 1)
-        {
-            $Xaml.IO.VmServerImageSelect.IsEnabled  = 0
-            $Xaml.IO.VmServerImage.IsEnabled        = 0
-            $Xaml.IO.VmServerScriptSelect.IsEnabled = 0
-            $Xaml.IO.VmServerScript.IsEnabled       = 0
-        }
+        $Main.InstallType($Xaml,"Server")
     })
 
     $Xaml.IO.VmServerPathSelect.Add_Click(
@@ -9085,27 +9211,15 @@ Function New-FEInfrastructure2
         $Xaml.IO.VmServerImage.Text      = $Item.FileName
     })
 
-    $Xaml.IO.VmServerMemory.Text           = 4096
-    $Xaml.IO.VmServerDrive.Text            = 100
-    $Xaml.IO.VmServerCore.Text             = 2
+    $Xaml.IO.VmServerMemory.Text                    = 4096
+    $Xaml.IO.VmServerDrive.Text                     = 100
+    $Xaml.IO.VmServerCore.Text                      = 2
+    $Xaml.IO.VmServerInstallType.SelectedIndex      = 1
 
     # [Vm.Workstation]
     $Xaml.IO.VmWorkstationInstallType.Add_SelectionChanged(
     {
-        If ($Xaml.IO.VmWorkstationInstallType.SelectedIndex -eq 0)
-        {
-            $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 1
-            $Xaml.IO.VmWorkstationImage.IsEnabled        = 1
-            $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 1
-            $Xaml.IO.VmWorkstationScript.IsEnabled       = 1
-        }
-        If ($Xaml.IO.VmWorkstationInstallType.SelectedIndex -eq 1)
-        {
-            $Xaml.IO.VmWorkstationImageSelect.IsEnabled  = 0
-            $Xaml.IO.VmWorkstationImage.IsEnabled        = 0
-            $Xaml.IO.VmWorkstationScriptSelect.IsEnabled = 0
-            $Xaml.IO.VmWorkstationScript.IsEnabled       = 0
-        }
+        $Main.InstallType($Xaml,"Workstation")
     })
 
     $Xaml.IO.VmWorkstationPathSelect.Add_Click(
@@ -9151,9 +9265,10 @@ Function New-FEInfrastructure2
         $Xaml.IO.VmWorkstationImage.Text      = $Item.FileName
     })
 
-    $Xaml.IO.VmWorkstationMemory.Text      = 2048
-    $Xaml.IO.VmWorkstationDrive.Text       = 20
-    $Xaml.IO.VmWorkstationCore.Text        = 2
+    $Xaml.IO.VmWorkstationMemory.Text               = 2048
+    $Xaml.IO.VmWorkstationDrive.Text                = 20
+    $Xaml.IO.VmWorkstationCore.Text                 = 2
+    $Xaml.IO.VmWorkstationInstallType.SelectedIndex = 1
 
     $Xaml.IO.VMGetArchitecture.Add_Click(
     {
@@ -9272,7 +9387,7 @@ Function New-FEInfrastructure2
     $Xaml.IO.VmNewArchitecture.Add_Click(
     {
         $Master = $Main.Validate.Gateway
-        ForEach ($Object in $Master.Output)
+        ForEach ($Object in $Master.Output[1..($Master.Output.Count-1)])
         {   
             Write-Theme ("Initializing [~] Virtual Gateway ({0})" -f $Object.Name) 14,6,15
             $Object.New()
@@ -9310,8 +9425,301 @@ Function New-FEInfrastructure2
             Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.Name) 10,2,15
         }
 
+        <#
+        Write-Theme "Writing [~] Gateway Objects"
+        $Path       = "$Home\Desktop\VM($(Get-Date -UFormat %Y%m%d))"
+        If (!(Test-Path $Path))
+        {
+            New-Item $Path -ItemType Directory -Verbose -Force
+        }
+
+        $VMX        = $Main.Gw
+        $Filter     = $Main | Select-Object CN, SearchBase, VM | ConvertTo-Json
+        If (!(Test-Path "$Path\GW"))
+        {
+            New-Item "$Path\GW" -ItemType Directory -Verbose -Force
+        }
+
+        ForEach ( $X in 0..($Main.Sr.Count-1))
+        {
+            If (!(Test-Path "$Path\GW\$X"))
+            {
+                New-Item "$Path\GW\$X" -ItemType Directory -Verbose -Force
+            }
+            Set-Content -Path "$Path\GW\$X\vmx.txt" -Value ( $VMX[$X] | ConvertTo-Json ) -Verbose -Force
+            Set-Content -Path "$Path\GW\$X\host.txt" -Value $Filter -Verbose -Force
+            Export-CliXml -Path "$Path\GW\$X\cred.txt" -InputObject $Main.Credential -Verbose -Force
+        }
+
+        Write-Theme "Writing [~] Server Objects"
+
+        $VMX        = $Main.Sr
+        $Filter     = $Main | Select-Object CN, SearchBase, VM | ConvertTo-Json
+        If (!(Test-Path "$Path\SR"))
+        {
+            New-Item "$Path\SR" -ItemType Directory -Verbose -Force
+        }
+
+        ForEach ( $X in 0..($Main.Sr.Count-1))
+        {
+            If (!(Test-Path "$Path\SR\$X"))
+            {
+                New-Item "$Path\SR\$X" -ItemType Directory -Verbose -Force
+            }
+            Set-Content -Path "$Path\SR\$X\vmx.txt" -Value ( $VMX[$X] | ConvertTo-Json ) -Verbose -Force
+            Set-Content -Path "$Path\SR\$X\host.txt" -Value $Filter -Verbose -Force
+            Export-CliXml -Path "$Path\SR\$X\cred.txt" -InputObject $Main.Credential -Verbose -Force
+        }
+        #>
+
         Write-Theme "Deployed [+] Virtual Machines (Next Phase -> Installation)"
     })
+
+    # --------------- #
+    # <![Image Tab]!> #
+    # --------------- #
+
+    $Xaml.IO.IsoSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+                
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+            Return [System.Windows.MessageBox]::Show("Invalid image root path","Error")
+        }
+
+        ElseIf ((Get-ChildItem $Item.SelectedPath *.iso).Count -eq 0)
+        {
+            Return [System.Windows.MessageBox]::Show("No images detected","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.IsoPath.Text        = $Item.SelectedPath
+            $Main.ImageController.LoadSilo($Xaml.IO.IsoPath.Text) 
+            $Main.Reset($Xaml.IO.IsoList.Items,$Main.ImageController.Store)
+        }
+    })
+
+    $Xaml.IO.IsoList.Add_SelectionChanged(
+    {
+        $Xaml.IO.IsoMount.IsEnabled = Switch ($Xaml.IO.IsoList.SelectedIndex) { Default { 1 } -1 { 0 } }
+    })
+
+    $Xaml.IO.IsoMount.Add_Click(
+    {
+        If ($Xaml.IO.IsoList.SelectedIndex -eq -1)
+        {
+            Return [System.Windows.MessageBox]::Show("No image selected","Error")
+        }
+
+        $Index = $Xaml.IO.IsoList.SelectedIndex
+        $Name  = $Xaml.IO.IsoList.SelectedItem.Name
+        If ($Name.Length -gt 65)
+        {
+            $Name = "$($Name.Substring(0,64))..."
+        }
+
+        Write-Theme "Mounting [~] $Name" 14,6,15
+        $Xaml.IO.IsoMount.IsEnabled          = 0
+
+        $Main.ImageController.LoadIso($Index)
+        Start-Sleep 1
+        If ($Main.ImageController.Selected.Content.Count -eq 0)
+        {
+            Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
+            $Main.ImageController.UnloadIso()
+            $Xaml.IO.IsoMount.IsEnabled      = 1
+        }
+        Else
+        {
+            $Main.Reset($Xaml.IO.IsoView.Items,$Main.ImageController.Store[$Index].Content)
+            $Xaml.IO.IsoList.IsEnabled       = 0
+            $Xaml.IO.IsoDismount.IsEnabled   = 1
+        }
+    })
+
+    $Xaml.IO.IsoDismount.Add_Click(
+    {
+        $Name  = $Xaml.IO.IsoList.SelectedItem.Name
+        If ($Name.Length -gt 65)
+        {
+            $Name = "$($Name.Substring(0,64))..."
+        }
+        Write-Theme "Dismounting [~] $Name" 12,4,15
+        $Main.ImageController.UnloadIso()
+        $Main.Reset($Xaml.IO.IsoView.Items,$Null)
+        $Xaml.IO.IsoList.IsEnabled           = 1
+        $Xaml.IO.IsoMount.IsEnabled          = 1
+        $Xaml.IO.IsoDismount.IsEnabled       = 0
+    })
+
+    $Xaml.IO.IsoView.Add_SelectionChanged(
+    {
+        $Xaml.IO.WimQueue.IsEnabled          = $Xaml.IO.IsoView.Items.Count -gt 0
+    })
+
+    $Xaml.IO.WimIso.Add_SelectionChanged(
+    {
+        $Items = $Xaml.IO.WimIso.Items
+        $Index = $Xaml.IO.WimIso.SelectedIndex
+        Switch ([UInt32]($Items.Count -gt 0))
+        {
+            0
+            {
+                $Xaml.IO.WimDequeue.IsEnabled     = 0
+                $Xaml.IO.WimIsoUp.IsEnabled       = 0
+                $Xaml.IO.WimIsoDown.IsEnabled     = 0
+            }
+            1
+            {
+                $Xaml.IO.WimDequeue.IsEnabled     = 1
+                $Xaml.IO.WimIsoUp.IsEnabled       = $Index -ne 0
+                $Xaml.IO.WimIsoDown.IsEnabled     = $Index -ne ($Items.Count-1)
+            }
+        }
+    })
+
+    $Xaml.IO.WimQueue.Add_Click(
+    {
+        $Index = @($Xaml.IO.IsoView.SelectedItems.Index)
+        $Main.ImageController.AddQueue($Index)
+        $Main.Reset($Xaml.IO.WimIso.Items,$Main.ImageController.Queue)
+    })
+
+    $Xaml.IO.WimDequeue.Add_Click(
+    {
+        $Main.ImageController.DeleteQueue($Xaml.IO.WimIso.SelectedItem.Name)
+        $Main.Reset($Xaml.IO.WimIso.Items,$Main.ImageController.Queue)
+    
+        If ($Xaml.IO.WimIso.Items.Count -eq 0)
+        {
+            $Xaml.IO.WimDequeue.IsEnabled = 0
+        }
+    })
+    
+    $Xaml.IO.WimIsoUp.Add_Click(
+    {
+        If ($Main.ImageController.Queue.Count -gt 1)
+        {
+            $Index                                  = $Xaml.IO.WimIso.SelectedIndex
+            $Swap                                   = $Main.ImageController.Queue[$Index-1]
+            $Main.ImageController.Queue[$Index-1]   = $Main.ImageController.Queue[$Index]
+            $Main.ImageController.Queue[$Index]     = $Swap
+            $Main.Reset($Xaml.IO.WimIso.Items,$Main.ImageController.Queue)
+        }
+    })
+    
+    $Xaml.IO.WimIsoDown.Add_Click(
+    {
+        If ($Main.ImageController.Queue.Count -gt 1)
+        {
+            $Index                                  = $Xaml.IO.WimIso.SelectedIndex
+            $Swap                                   = $Main.ImageController.Queue[$Index+1]
+            $Main.ImageController.Queue[$Index+1]   = $Main.ImageController.Queue[$Index]
+            $Main.ImageController.Queue[$Index]     = $Swap
+            $Main.Reset($Xaml.IO.WimIso.Items,$Main.ImageController.Queue)
+        }
+    })
+
+    $Xaml.IO.WimExtract.Add_Click(
+    {
+        $Main.ImageController.SetTarget($Xaml.IO.WimPath.Text)
+        If ($Main.ImageController.Target)
+        {
+            $Main.ImageController.Extract()
+        }
+    }
+
+    $Xaml.IO.WimSelect.Add_Click(
+    {
+        $Item                   = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        $Xaml.IO.WimPath.Text   = $Item.SelectedPath
+    })
+
+    $Xaml.IO.WimPath.Add_TextChanged(
+    {
+        $Xaml.IO.WimExtract.IsEnabled = $Xaml.IO.WimPath.Text -ne ""
+    })
+
+    # ---------------- #
+    # <![Update Tab]!> #
+    # ---------------- #
+    
+    # UpdAggregate       DataGrid 
+    # UpdSelect          Button
+    # UpdPath            TextBox
+
+    $Xaml.IO.UpdSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        ElseIf ((Get-ChildItem $Item.SelectedPath -Recurse *.msu).Count -eq 0)
+        {
+            Return [System.Windows.MessageBox]::Show("No .msu files were detected in the provided path","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.UpdPath.Text = $Item.SelectedPath
+            $Main.UpdateController.SetUpdateBase($Xaml.IO.UpdPath.Text)
+            $Main.UpdateController.ProcessFileList()
+            $Main.Reset($Xaml.IO.UpdAggregate.Items,$Main.UpdateController.UpdateList)
+        }
+    })
+
+    $Xaml.IO.UpdAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.UpdAggregate.SelectedIndex -ne -1)
+        {
+            $Object = $Main.UpdateController.UpdateList | ? KB -eq $Xaml.IO.UpdAggregate.SelectedItem.KB | % { $Main.List($_.Name,$_.Value)}
+            $Main.Reset($Xaml.IO.UpdViewer.Items,$Object)
+        }
+    })
+
+    $Xaml.IO.UpdWimSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        ElseIf ((Get-ChildItem $Item.SelectedPath -Recurse *.wim).Count -eq 0)
+        {
+            Return [System.Windows.MessageBox]::Show("No (*.wim) files were detected in the provided path","Error")
+        }
+
+        $Xaml.IO.UpdWimPath.Text = $Item.SelectedPath
+        $Main.UpdateController.GetWimFiles($Xaml.IO.UpdWimPath.Text)
+        $Main.Reset($Xaml.IO.UpdWim.Items,$Main.UpdateController.WimList)
+    })
+
+    # UpdAddUpdate       Button
+    # UpdRemoveUpdate    Button
+    # UpdViewer          DataGrid
+    # UpdWim             DataGrid
+    # UpdWimSelect       Button
+    # UpdWimPath         TextBox
+    # UpdInstallUpdate   Button
+    # UpdUninstallUpdate Button
 
     Return @{ Xaml = $Xaml; Main = $Main }
 }
