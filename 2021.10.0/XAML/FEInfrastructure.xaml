@@ -180,7 +180,7 @@
                             <RowDefinition Height="10"/>
                             <RowDefinition Height="40"/>
                             <RowDefinition Height="40"/>
-                            <RowDefinition Height="170"/>
+                            <RowDefinition Height="165"/>
                         </Grid.RowDefinitions>
                         <Label    Grid.Row="0" Content="[FightingEntropy]://Module Information"/>
                         <DataGrid Grid.Row="1 " Name="Module_Info">
@@ -737,14 +737,14 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="140"/>
+                                <RowDefinition Height="*"/>
                                 <RowDefinition Height="80"/>
                                 <RowDefinition Height="10"/>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="140"/>
+                                <RowDefinition Height="*"/>
                                 <RowDefinition Height="10"/>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="140"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Label Grid.Row="0" Content="[Aggregate]: Provision (subdomain/site) list"/>
                             <DataGrid Grid.Row="1" Name="DcAggregate"
@@ -753,8 +753,8 @@
                                       ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Name"     Binding="{Binding SiteLink}" Width="120"/>
-                                    <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="100"/>
-                                    <DataGridTextColumn Header="Region"   Binding="{Binding Region}"   Width="60"/>
+                                    <DataGridTextColumn Header="Location" Binding="{Binding Location}" Width="200"/>
+                                    <DataGridTextColumn Header="Region"   Binding="{Binding Region}"   Width="150"/>
                                     <DataGridTextColumn Header="Country"  Binding="{Binding Country}"  Width="60"/>
                                     <DataGridTextColumn Header="Postal"   Binding="{Binding Postal}"   Width="60"/>
                                     <DataGridTextColumn Header="SiteName" Binding="{Binding SiteName}" Width="Auto"/>
@@ -840,14 +840,14 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="160"/>
+                                <RowDefinition Height="*"/>
                                 <RowDefinition Height="40"/>
                                 <RowDefinition Height="10"/>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="150"/>
+                                <RowDefinition Height="*"/>
                                 <RowDefinition Height="10"/>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="150"/>
+                                <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Label    Grid.Row="0" Content ="[Aggregate]: Provision (master address/prefix) &amp; independent subnets"/>
                             <DataGrid Grid.Row="1" Name="NwAggregate"
@@ -857,11 +857,11 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Name"      Binding="{Binding Network}"   Width="100"/>
                                     <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="100"/>
-                                    <DataGridTextColumn Header="HostCount" Binding="{Binding HostCount}" Width="60"/>
-                                    <DataGridTextColumn Header="HostRange" Binding="{Binding HostRange}" Width="100"/>
-                                    <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="100"/>
-                                    <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="100"/>
-                                    <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="*"/>
+                                    <DataGridTextColumn Header="Host Ct."  Binding="{Binding HostCount}" Width="60"/>
+                                    <DataGridTextColumn Header="Range"     Binding="{Binding HostRange}" Width="150"/>
+                                    <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="125"/>
+                                    <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="125"/>
+                                    <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="125"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                             <Grid Grid.Row="2">
@@ -943,7 +943,7 @@
                                 <RowDefinition Height="100"/>
                                 <RowDefinition Height="10"/>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="110"/>
+                                <RowDefinition Height="105"/>
                             </Grid.RowDefinitions>
                             <Label Grid.Row="0" Content="[Aggregate]: Sites to be generated"/>
                             <DataGrid Grid.Row="1" Name="SmAggregate">
@@ -1083,7 +1083,7 @@
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="40"/>
-                                        <RowDefinition Height="1.5*"/>
+                                        <RowDefinition Height="2*"/>
                                         <RowDefinition Height="10"/>
                                         <RowDefinition Height="40"/>
                                         <RowDefinition Height="*"/>
@@ -1161,7 +1161,7 @@
                                                           ScrollViewer.IsDeferredScrollingEnabled="True"
                                                           ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>
+                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="150"/>
                                                         <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="125"/>
                                                         <DataGridTemplateColumn Header="Exists" Width="60">
                                                             <DataGridTemplateColumn.CellTemplate>
@@ -1306,7 +1306,7 @@
                                                           ScrollViewer.IsDeferredScrollingEnabled="True"
                                                           ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>
+                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="150"/>
                                                         <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="125"/>
                                                         <DataGridTemplateColumn Header="Exists" Width="60">
                                                             <DataGridTemplateColumn.CellTemplate>
@@ -1451,7 +1451,7 @@
                                                           ScrollViewer.IsDeferredScrollingEnabled="True"
                                                           ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>
+                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="150"/>
                                                         <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="125"/>
                                                         <DataGridTemplateColumn Header="Exists" Width="60">
                                                             <DataGridTemplateColumn.CellTemplate>
@@ -1596,7 +1596,7 @@
                                                       ScrollViewer.IsDeferredScrollingEnabled="True"
                                                       ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>
+                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="150"/>
                                                         <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>
                                                         <DataGridTemplateColumn Header="Exists" Width="60">
                                                             <DataGridTemplateColumn.CellTemplate>
@@ -1742,7 +1742,7 @@
                                               ScrollViewer.IsDeferredScrollingEnabled="True"
                                               ScrollViewer.HorizontalScrollBarVisibility="Visible">
                                                     <DataGrid.Columns>
-                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>
+                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="150"/>
                                                         <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>
                                                         <DataGridTemplateColumn Header="Exists" Width="60">
                                                             <DataGridTemplateColumn.CellTemplate>
@@ -1850,7 +1850,7 @@
             <TabItem Header="Virtual">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="260"/>
+                        <RowDefinition Height="220"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
@@ -1858,7 +1858,7 @@
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="100"/>
+                                <RowDefinition Height="60"/>
                                 <RowDefinition Height="40"/>
                                 <RowDefinition Height="40"/>
                             </Grid.RowDefinitions>
@@ -1916,7 +1916,7 @@
                                     <Label Grid.Row="0" Content="[Adds Node]: (Output/Existence) Validation"/>
                                     <DataGrid Grid.Row="1" Name="VmSelect">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="100"/>
+                                            <DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="125"/>
                                             <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
                                             <DataGridTemplateColumn Header="Exists" Width="60">
                                                 <DataGridTemplateColumn.CellTemplate>
@@ -1996,11 +1996,11 @@
                                     <Grid Grid.Row="2">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="90"/>
-                                            <ColumnDefinition Width="160"/>
+                                            <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="90"/>
-                                            <ColumnDefinition Width="160"/>
+                                            <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="90"/>
-                                            <ColumnDefinition Width="160"/>
+                                            <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <Label    Grid.Column="0" Content="[Scope ID]:"/>
                                         <ComboBox Grid.Column="1" Name="VmDhcpScopeID"/>
@@ -2017,7 +2017,7 @@
                                         </Grid.ColumnDefinitions>
                                         <Button Grid.Column="0" Name="VmGetSwitch"    Content="[Get] Switch + Reservations"/>
                                         <Button Grid.Column="1" Name="VmDeleteSwitch" Content="[Delete] Existent"/>
-                                        <Button Grid.Column="2" Name="VmNewSwitch"    Content="[Create] Non-existent"/>
+                                        <Button Grid.Column="2" Name="VmCreateSwitch" Content="[Create] Non-existent"/>
                                     </Grid>
                                 </Grid>
                             </GroupBox>
@@ -2034,8 +2034,29 @@
                                     <Label Grid.Row="0" Content="[Provision]: (Physical/Virtual) Gateways]"/>
                                     <DataGrid Grid.Row="1" Name="VmGateway">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                                            <DataGridTemplateColumn Header="Exists" Width="100">
+                                            <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>
+                                            <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>
+                                            <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>
+                                            <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>
+                                            <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>
+                                            <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>
+                                            <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="60"/>
+                                            <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="120"/>
+                                            <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="250"/>
+                                            <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="125"/>
+                                            <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="60"/>
+                                            <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="125"/>
+                                            <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="125"/>
+                                            <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="125"/>
+                                            <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="150"/>
+                                            <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="125"/>
+                                            <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="150"/>
+                                            <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="125"/>
+                                            <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="100"/>
+                                            <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="250"/>
+                                            <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="400"/>
+                                            <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="400"/>
+                                            <DataGridTemplateColumn Header="Exists" Width="60">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
@@ -2045,26 +2066,39 @@
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
+                                            <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>
+                                            <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                     <Grid Grid.Row="2">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="90"/>
                                         </Grid.ColumnDefinitions>
-                                        <Label    Grid.Column="0" Content="[Install Type]:"/>
-                                        <ComboBox Grid.Column="1" Name="VmGatewayInstallType" SelectedIndex="0">
+                                        <Label    Grid.Row="0" Grid.Column="0" Content="[RAM/MB]:"/>
+                                        <TextBox  Grid.Row="0" Grid.Column="1" Name="VmGatewayMemory"/>
+                                        <Label    Grid.Row="0" Grid.Column="2" Content="[HDD/GB]:"/>
+                                        <TextBox  Grid.Row="0" Grid.Column="3" Name="VmGatewayDrive"/>
+                                        <Label    Grid.Row="0" Grid.Column="4" Content="[Generation]:"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="5" Name="VmGatewayGeneration" SelectedIndex="0">
+                                            <ComboBoxItem Content="1"/>
+                                            <ComboBoxItem Content="2"/>
+                                        </ComboBox>
+                                        <Label    Grid.Row="0" Grid.Column="6" Content="[Core]:"/>
+                                        <TextBox  Grid.Row="0" Grid.Column="7" Name="VmGatewayCore"/>
+                                        <Label    Grid.Row="0" Grid.Column="8" Content="[Type]:"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmGatewayInstallType" SelectedIndex="0">
                                             <ComboBoxItem Content="ISO"/>
                                             <ComboBoxItem Content="Network"/>
                                         </ComboBox>
-                                        <Label    Grid.Column="2" Content="[RAM/MB]:"/>
-                                        <TextBox  Grid.Column="3" Name="VmGatewayMemory"/>
-                                        <Label    Grid.Column="4" Content="[HDD/GB]:"/>
-                                        <TextBox  Grid.Column="5" Name="VmGatewayDrive"/>
                                     </Grid>
                                     <Grid Grid.Row="3">
                                         <Grid.RowDefinitions>
@@ -2098,8 +2132,29 @@
                                     <Label Grid.Row="0" Content="[Provision]: (Physical/Virtual) Servers"/>
                                     <DataGrid Grid.Row="1" Name="VmServer">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                                            <DataGridTemplateColumn Header="Exists" Width="100">
+                                            <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>
+                                            <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>
+                                            <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>
+                                            <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>
+                                            <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>
+                                            <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>
+                                            <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="60"/>
+                                            <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="120"/>
+                                            <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="250"/>
+                                            <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="125"/>
+                                            <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="60"/>
+                                            <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="125"/>
+                                            <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="125"/>
+                                            <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="125"/>
+                                            <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="150"/>
+                                            <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="125"/>
+                                            <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="150"/>
+                                            <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="125"/>
+                                            <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="100"/>
+                                            <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="250"/>
+                                            <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="400"/>
+                                            <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="400"/>
+                                            <DataGridTemplateColumn Header="Exists" Width="60">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
@@ -2109,26 +2164,39 @@
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
+                                            <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>
+                                            <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                     <Grid Grid.Row="2">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="90"/>
                                         </Grid.ColumnDefinitions>
-                                        <Label    Grid.Column="0" Content="[Install Type]:"/>
-                                        <ComboBox Grid.Column="1" Name="VmServerInstallType" SelectedIndex="0">
+                                        <Label    Grid.Row="0" Grid.Column="0" Content="[RAM/MB]:"/>
+                                        <TextBox  Grid.Row="0" Grid.Column="1" Name="VmServerMemory"/>
+                                        <Label    Grid.Row="0" Grid.Column="2" Content="[HDD/GB]:"/>
+                                        <TextBox  Grid.Row="0" Grid.Column="3" Name="VmServerDrive"/>
+                                        <Label    Grid.Row="0" Grid.Column="4" Content="[Generation]:"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="5" Name="VmServerGeneration" SelectedIndex="1">
+                                            <ComboBoxItem Content="1"/>
+                                            <ComboBoxItem Content="2"/>
+                                        </ComboBox>
+                                        <Label    Grid.Row="0" Grid.Column="6" Content="[Core]:"/>
+                                        <TextBox  Grid.Row="0" Grid.Column="7" Name="VmServerCore"/>
+                                        <Label    Grid.Row="0" Grid.Column="8" Content="[Type]:"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmServerInstallType" SelectedIndex="0">
                                             <ComboBoxItem Content="ISO"/>
                                             <ComboBoxItem Content="Network"/>
                                         </ComboBox>
-                                        <Label    Grid.Column="2" Content="[RAM/MB]:"/>
-                                        <TextBox  Grid.Column="3" Name="VmServerMemory"/>
-                                        <Label    Grid.Column="4" Content="[HDD/GB]:"/>
-                                        <TextBox  Grid.Column="5" Name="VmServerDrive"/>
                                     </Grid>
                                     <Grid Grid.Row="3">
                                         <Grid.RowDefinitions>
@@ -2162,8 +2230,29 @@
                                     <Label Grid.Row="0" Content="[Provision]: (Physical/Virtual) Workstations"/>
                                     <DataGrid Grid.Row="1" Name="VmWorkstation">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                                            <DataGridTemplateColumn Header="Exists" Width="100">
+                                            <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>
+                                            <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>
+                                            <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>
+                                            <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>
+                                            <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>
+                                            <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>
+                                            <DataGridTextColumn Header="Postal"              Binding="{Binding Postal}"            Width="60"/>
+                                            <DataGridTextColumn Header="Sitelink"            Binding="{Binding Sitelink}"          Width="120"/>
+                                            <DataGridTextColumn Header="Sitename"            Binding="{Binding Sitename}"          Width="250"/>
+                                            <DataGridTextColumn Header="Network"             Binding="{Binding Network}"           Width="125"/>
+                                            <DataGridTextColumn Header="Prefix"              Binding="{Binding Prefix}"            Width="60"/>
+                                            <DataGridTextColumn Header="Netmask"             Binding="{Binding Netmask}"           Width="125"/>
+                                            <DataGridTextColumn Header="Start"               Binding="{Binding Start}"             Width="125"/>
+                                            <DataGridTextColumn Header="End"                 Binding="{Binding End}"               Width="125"/>
+                                            <DataGridTextColumn Header="Range"               Binding="{Binding Range}"             Width="150"/>
+                                            <DataGridTextColumn Header="Broadcast"           Binding="{Binding Broadcast}"         Width="125"/>
+                                            <DataGridTextColumn Header="ReverseDNS"          Binding="{Binding ReverseDNS}"        Width="150"/>
+                                            <DataGridTextColumn Header="Type"                Binding="{Binding Type}"              Width="125"/>
+                                            <DataGridTextColumn Header="Hostname"            Binding="{Binding Hostname}"          Width="100"/>
+                                            <DataGridTextColumn Header="DnsName"             Binding="{Binding DnsName}"           Width="250"/>
+                                            <DataGridTextColumn Header="Parent"              Binding="{Binding Parent}"            Width="400"/>
+                                            <DataGridTextColumn Header="DistinguishedName"   Binding="{Binding DistinguishedName}" Width="400"/>
+                                            <DataGridTemplateColumn Header="Exists" Width="60">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <ComboBox SelectedIndex="{Binding Exists}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">
@@ -2173,28 +2262,41 @@
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
+                                            <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>
+                                            <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                     <Grid Grid.Row="2">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="65"/>
+                                            <ColumnDefinition Width="90"/>
                                         </Grid.ColumnDefinitions>
-                                        <Label    Grid.Column="0" Content="[Install Type]:"/>
-                                        <ComboBox Grid.Column="1" Name="VmWorkstationInstallType" SelectedIndex="1">
+                                        <Label    Grid.Row="0" Grid.Column="0" Content="[RAM/MB]:"/>
+                                        <TextBox  Grid.Row="0" Grid.Column="1" Name="VmWorkstationMemory"/>
+                                        <Label    Grid.Row="0" Grid.Column="2" Content="[HDD/GB]:"/>
+                                        <TextBox  Grid.Row="0" Grid.Column="3" Name="VmWorkstationDrive"/>
+                                        <Label    Grid.Row="0" Grid.Column="4" Content="[Generation]:"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="5" Name="VmWorkstationGeneration" SelectedIndex="1">
+                                            <ComboBoxItem Content="1"/>
+                                            <ComboBoxItem Content="2"/>
+                                        </ComboBox>
+                                        <Label    Grid.Row="0" Grid.Column="6" Content="[Core]:"/>
+                                        <TextBox  Grid.Row="0" Grid.Column="7" Name="VmWorkstationCore"/>
+                                        <Label    Grid.Row="0" Grid.Column="8" Content="[Type]:"/>
+                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmWorkstationInstallType" SelectedIndex="1">
                                             <ComboBoxItem Content="ISO"/>
                                             <ComboBoxItem Content="Network"/>
                                         </ComboBox>
-                                        <Label    Grid.Column="2" Content="[RAM/MB]:"/>
-                                        <TextBox  Grid.Column="3" Name="VmWorkstationMemory"/>
-                                        <Label    Grid.Column="4" Content="[HDD/GB]:"/>
-                                        <TextBox  Grid.Column="5" Name="VmWorkstationDrive"/>
                                     </Grid>
-                                    <Grid Grid.Row="3">
+                                    <Grid Grid.Row="4">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="40"/>
                                             <RowDefinition Height="40"/>
@@ -2228,22 +2330,22 @@
             <TabItem Header="Imaging">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="720"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <GroupBox Grid.Row="0" Header="[Imaging]">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="120"/>
                                 <RowDefinition Height="40"/>
                                 <RowDefinition Height="40"/>
                                 <RowDefinition Height="10"/>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="120"/>
                                 <RowDefinition Height="40"/>
                                 <RowDefinition Height="10"/>
                                 <RowDefinition Height="40"/>
-                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="120"/>
                                 <RowDefinition Height="40"/>
                             </Grid.RowDefinitions>
                             <Label Grid.Row="0" Content="[Images (*.iso) files found in source directory]"/>
@@ -2341,8 +2443,16 @@
                         <Label    Grid.Row="0" Content="[Aggregate]: Update file source directory"/>
                         <DataGrid Grid.Row="1"  Name="UpdAggregate">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="200"/>
-                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
+                                <DataGridTextColumn Header="KB"        Binding="{Binding KB}" Width="100"/>
+                                <DataGridTextColumn Header="Type"      Binding="{Binding Type}" Width="100"/>
+                                <DataGridTemplateColumn Header="Applicability" Width="350">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding Applicability}" SelectedIndex="0" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Directory" Binding="{Binding Directory}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
                         <Grid     Grid.Row="2">
@@ -2361,27 +2471,30 @@
                         <Label    Grid.Row="4" Content="[Viewer]: View (properties/attributes) of update files"/>
                         <DataGrid Grid.Row="5" Name="UpdViewer">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                                <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>
-                                <DataGridCheckBoxColumn Header="Install" Binding="{Binding Install}" Width="50"/>
+                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="175"/>
+                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
                         <Border   Grid.Row="6" Background="Black" BorderThickness="0" Margin="4"/>
-                        <Label    Grid.Row="7" Content="[Update]: Selected (*.wim) file(s) to inject the update(s) into)"/>
+                        <Label    Grid.Row="7" Content="[Update]: Selected (*.wim) file(s) to inject the update(s)"/>
                         <DataGrid Grid.Row="8" Name="UpdWim">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*"/>
-                                <DataGridTextColumn Header="Date" Binding="{Binding Date}" Width="*"/>
-                                <DataGridCheckBoxColumn Header="Install" Binding="{Binding Install}" Width="50"/>
+                                <DataGridTextColumn Header="Name" Binding="{Binding ImageName}" Width="250"/>
+                                <DataGridTextColumn Header="Type" Binding="{Binding InstallationType}" Width="50"/>
+                                <DataGridTextColumn Header="Path" Binding="{Binding SourceImagePath}" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
                         <Grid Grid.Row="9">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="60"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="80"/>
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Name="UpdInstallUpdate" Content="Install"/>
-                            <Button Grid.Column="1" Name="UpdUninstallUpdate" Content="Uninstall"/>
+                            <Button  Grid.Column="0" Name="UpdWimSelect" Content="Path"/>
+                            <TextBox Grid.Column="1" Name="UpdWimPath"/>
+                            <Button  Grid.Column="2" Name="UpdInstallUpdate" Content="Install"/>
+                            <Button  Grid.Column="3" Name="UpdUninstallUpdate" Content="Uninstall"/>
                         </Grid>
                     </Grid>
                 </GroupBox>
@@ -2389,7 +2502,7 @@
             <TabItem Header="Share">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="680"/>
+                        <RowDefinition Height="*"/>
                         <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
                     <GroupBox Grid.Row="0" Header="[Share]">
@@ -2467,7 +2580,7 @@
                             </Grid>
                             <Border   Grid.Row="4" Background="Black" BorderThickness="0" Margin="4"/>
                             <TabControl Grid.Row="5">
-                                <TabItem Header="Import OS/TS">
+                                <TabItem Header="Import">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="40"/>
@@ -2502,7 +2615,7 @@
                                         </DataGrid>
                                     </Grid>
                                 </TabItem>
-                                <TabItem Header="Current OS/TS">
+                                <TabItem Header="Current">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="40"/>
@@ -2641,7 +2754,6 @@
                                         <TextBox  Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Name="DsBrLogo"/>
                                         <Button   Grid.Row="6" Grid.Column="0" Name="DsBrBackgroundSelect" Content="Background"/>
                                         <TextBox  Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3" Name="DsBrBackground"/>
-
                                     </Grid>
                                 </TabItem>
                                 <TabItem Header="Bootstrap">
@@ -2665,7 +2777,7 @@
                                         <TextBox Grid.Row="2" Height="200" Background="White" Name="DsBootstrap" Style="{StaticResource Block}"/>
                                     </Grid>
                                 </TabItem>
-                                <TabItem Header="CustomSettings">
+                                <TabItem Header="Custom Settings">
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="40"/>
