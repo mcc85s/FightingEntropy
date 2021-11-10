@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2021-11-08
+          Modified: 2021-11-10
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
@@ -712,7 +712,7 @@ Function New-FEInfrastructure2
             {
                 If ($Postal -in $This.Aggregate.Postal)
                 {
-                    $This.Aggregate    = $This.Aggregate | ? Postal -ne $Postal
+                    $This.Aggregate    = @($This.Aggregate | ? Postal -ne $Postal)
                 }
             }
             [String] SearchBase()
@@ -2040,6 +2040,8 @@ Function New-FEInfrastructure2
             [Double] $VmVhdSize
             [UInt32] $VmGeneration
             [UInt32] $VmCore
+            [String] $VmIso
+            [String] $VmScript
             [Object[]] $VmSwitchName
             [UInt32] $VmExists
             [String] $VmGuid
@@ -2083,6 +2085,8 @@ Function New-FEInfrastructure2
                 $This.VmSwitchName          = $Vm.SwitchName
                 $This.VmExists              = $Vm.Exists
                 $This.VmGuid                = $Vm.Guid
+                $This.VmIso                 = $Vm.Iso
+                $This.VmScript              = $Vm.Script
             }
             New()
             {
@@ -2105,7 +2109,6 @@ Function New-FEInfrastructure2
                 $VmObj = $This.Vm.Get()
                 If ($VmObj)
                 {
-                    $VmObj.Update()
                     $This.LoadVmObject($VmObj)
                 }
                 If (!$VmObj)
@@ -2120,6 +2123,11 @@ Function New-FEInfrastructure2
                     $This.VmExists          = 0
                     $This.VmGuid            = $Null
                 }
+            }
+            [Object] GetOutput()
+            {
+                $Filter = $This.PSObject.Properties | ? Name -notin "Vm","AddsComputer" | % Name
+                Return @($This | Select-Object $Filter)
             }
             [String] ToString()
             {
@@ -2867,6 +2875,12 @@ Function New-FEInfrastructure2
                 If ($Object.Exists)
                 {
                     $Type        = $Object.Type
+                    
+                    If ($Object.Type -eq "Domain Controller")
+                    {
+                        $Type = "Server"
+                    }
+
                     $Name        = $Object.Name
 
                     # Adds Node
@@ -2985,6 +2999,35 @@ Function New-FEInfrastructure2
                         $Item     = ($List | ? Description -eq "-")[0+$X]
                     }
                     [VmSwitchReservation]::New($Sites[$X],$VMSwitch[$X],$Item)
+                }
+            }
+            WriteOutput([String]$Base)
+            {
+                $Path       = "$Base\VM($(Get-Date -UFormat %Y%m%d))"
+                If (!(Test-Path $Path))
+                {
+                    New-Item $Path -ItemType Directory -Verbose -Force
+                }
+
+                ForEach ($Type in "Gateway","Server","Workstation")
+                {
+                    If (!(Test-Path "$Path\$Type"))
+                    {
+                        New-Item $Path\$Type -ItemType Directory -Verbose -Force
+                    }
+
+                    ForEach ($X in 0..($This.AddsNode.$Type.Count-1))
+                    {
+                        $Object   = $This.AddsNode.$Type[$X]
+                        $FullPath = "$Path\$Type\$X"
+            
+                        If (!(Test-Path $FullPath))
+                        {
+                            New-Item $FullPath -ItemType Directory -Verbose -Force
+                        }
+            
+                        Set-Content "$FullPath\node.txt" -Value ($Object.GetOutput() | ConvertTo-Json) -Verbose
+                    }
                 }
             }
             [String] ToString()
@@ -3485,6 +3528,7 @@ Function New-FEInfrastructure2
         {
             [UInt32] $Rank
             [Object] $Label
+            [String] $Size
             [Object] $Date
             [UInt32] $ImageIndex            = 1
             [String] $ImageName
@@ -3501,6 +3545,7 @@ Function New-FEInfrastructure2
                 }
 
                 $Item                       = Get-Item $Image
+                $This.Size                  = "{0:n2} GB" -f ($Item.Length/1GB)
                 $This.Date                  = $Item.LastWriteTime.GetDateTimeFormats()[5]
                 $SDate                      = $This.Date.Split("-")
                 $This.SourceImagePath       = $Image
@@ -3523,34 +3568,133 @@ Function New-FEInfrastructure2
             }
         }
 
-        Class Share
+        Class DGList
+        {
+            [String] $Name
+            [Object] $Value
+            DGList([String]$Name,[Object[]]$Value)
+            {
+                $This.Name  = $Name
+                $This.Value = Switch([UInt32]($Value.Count -gt 1)) { 0 { $Value } 1 { $Value -join ", " } }
+            }
+        }
+
+        Class PersistentDriveImages
+        {
+            [Object] $Current
+            [Object] $Import
+            PersistentDriveImages()
+            {
+                $This.Current = @( )
+                $This.Import  = @( )
+            }
+            Load([String]$Type,[String]$Path)
+            {
+                $Files        = Get-ChildItem $Path *.wim -Recurse
+                If ($Files.Count -gt 0)
+                {
+                    ForEach ($File in $Files)
+                    {
+                        Write-Host "Importing [~] ($($File.Name))"
+                        Switch ($Type)
+                        {
+                            Current
+                            {
+                                $This.Current += [WimFile]::New($This.Current.Count,$File.FullName)
+                            }
+        
+                            Import
+                            {
+                                $This.Import  += [WimFile]::New($This.Import.Count,$File.FullName)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Class PersistentDriveConfig
+        {
+            [String]      $Name
+            [String]      $Path
+            [String[]] $Content
+            PersistentDriveConfig([String]$Name,[String]$Path)
+            {
+                $This.Name    = $Name
+                $This.Path    = $Path
+                If (Test-Path $Path)
+                {
+                    $This.Content = Get-Content $Path
+                }
+            }
+            SetContent([String[]]$Content)
+            {
+                $This.Content = $Content
+                [System.IO.File]::WriteAllLines($This.Path,$This.Content,[System.Text.UTF8Encoding]::New($False))
+            }
+        }
+
+        Class PersistentDriveConfigList
+        {
+            [Object] $Config
+            PersistentDriveConfigList([String]$Root)
+            {
+                $This.Config  = @( )
+                $This.Config += $This.GetConfig("Bootstrap","$Root\Control\Bootstrap.ini")
+                $This.Config += $This.GetConfig("CustomSettings","$Root\Control\Customsettings.ini")
+                $This.Config += $This.GetConfig("Postconfig","$Root\Scripts\Install-FightingEntropy.ps1")
+                $This.Config += $This.GetConfig("DSKey","$Root\DSKey.csv")
+            }
+            [Object] GetConfig([String]$Type,[String]$Path)
+            {
+                Return [PersistentDriveConfig]::New($Type,$Path)
+            }
+        }
+
+        Class PersistentDriveContent
+        {
+            [String] $Type
+            [String] $Path
+            [Object] $Content
+            PersistentDriveContent([String]$Path)
+            {
+                $This.Type     = $Path.Split("\")[1]
+                $This.Path     = $Path
+                $This.Content  = Get-ChildItem $Path -Recurse
+            }
+            [String] ToString()
+            {
+                Return $This.Type
+            }
+        }
+
+        Class PersistentDrive
         {
             [String] $Name
             [String] $Root
             [Object] $Share
             [String] $Description
             [String] $Type
-            [Object] $WimFiles
-            Share([Object]$Drive)
+            [Object] $Property
+            [Object] $Content
+            [Object] $Config
+            [Object] $Images
+            PersistentDrive([Object]$Drive)
             {
                 $This.Name        = $Drive.Name
                 $This.Root        = $Drive.Path
                 $This.Share       = Get-SMBShare | ? Path -eq $Drive.Path | % Name
                 $This.Description = $Drive.Description
-                If (Test-Path "$($This.Root)\PSDResources")
-                {
-                    $This.Type    = "PSD"
-                }
-                Else
-                {
-                    $This.Type    = "MDT"
-                }
-                If (Test-Path "$($This.Root)\Operating Systems")
-                {
-                    $This.ImportWimFiles("$($This.Root)\Operating Systems")
-                }
+                $This.Type        = @("MDT","PSD")[(Test-Path "$($This.Root)\PSDResources")]
+                $This.Property    = $This.GetDriveProperties()
+                $This.Content     = $This.GetDriveContent()
+                $This.Config      = [PersistentDriveConfigList]::New($This.Root).Config
+                $This.Images      = [PersistentDriveImages]::New()
+
+                $Path             = "$($This.Root)\Operating Systems"
+                $This.Images.Load("Current",$Path)
             }
-            Share([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
+            PersistentDrive([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
             {
                 If (Get-SMBShare -Name $Share -EA 0)
                 {
@@ -3562,26 +3706,86 @@ Function New-FEInfrastructure2
                 $This.Share         = $Share
                 $This.Description   = $Description
                 $This.Type          = @("MDT","PSD","-")[$Type]
-            }
-            ImportWimFiles([String]$Path)
-            {
-                $This.WimFiles      = @( )
-                Write-Host ("Loading [~] (Mdt Drive) [{0}:\]" -f $This.Name)
-                $Files = Get-ChildItem $Path *.wim -Recurse
-                Write-Host ("Found [+] ({0}) Wim File(s)" -f $Files.Count)
-                ForEach ($Item in $Files)
+
+                If (!(Test-Path $This.Root))
                 {
-                    $WimFile        = [WimFile]::New($This.WimFiles.Count,$Item.FullName)
-                    If ($WimFile.Label -notin $This.WimFiles.Label)
-                    {
-                        Write-Host ("Importing [~] ({0})" -f $Item.Name)
-                        $This.WimFiles += [WimFile]::New($This.WimFiles.Count,$Item.FullName)
-                    }
-                    ElseIf ($WimFile.Label -in $This.WimFiles.Label)
-                    {
-                        Write-Host ("Skipping [!] ({0}) - duplicate label present" -f $Item.Name)
-                    }
+                    New-Item $This.Root -ItemType Directory -Verbose
                 }
+
+                $SMB            = @{
+
+                    Name        = $This.Share
+                    Path        = $This.Root
+                    Description = $This.Description
+                    FullAccess  = "Administrators"
+                }
+
+                $PSD            = @{ 
+
+                    Name        = $This.Name
+                    PSProvider  = "MDTProvider"
+                    Root        = $This.Root
+                    Description = $This.Description
+                    NetworkPath = ("\\{0}\{1}" -f $This.GetHostname(), $This.Share)
+                }
+
+                New-SMBShare @SMB
+                New-PSDrive  @PSD -Verbose | Add-MDTPersistentDrive -Verbose
+
+                $This.Config      = [PersistentDriveConfigList]::New($This.Root)
+                $This.Images      = [PersistentDriveImages]::New()
+            }
+            SetDefaults([Object]$Module)
+            {
+                # Copies the background and logo if they were selected and are found
+                ForEach ($File in $Module.Graphics | ? Name -in "background.jpg","OEMlogo.bmp")
+                {
+                    Copy-Item -Path $File -Destination "$($This.Root)\Script" -Verbose
+                }
+
+                # For the PXE environment images
+                ForEach ($File in $Module.Control | ? Extension -eq .png)
+                {
+                    Copy-Item -Path $File.FullName -Destination "$($This.Root)\Script" -Force -Verbose
+                }
+
+                # Copies custom template for FightingEntropy to post install/configure
+                ForEach ($File in $Module.Control | ? Name -match Mod.xml)
+                {
+                    Copy-Item -Path $File.FullName -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates" -Force -Verbose
+                }
+            }
+            [Object] GetDriveProperties()
+            {
+                Return (Get-ItemProperty -Path "$($This.Name):").PSObject.Properties | % { [DGList]::New($_.Name,$_.Value) }
+            }
+            SetDriveProperty([String]$Name,[Object]$Value)
+            {
+                $Item = $This.Property | ? Name -eq $Name
+                If ($Name -in $This.Property.Name)
+                {
+                    Set-ItemProperty -Path $This.Drive -Name $Name -Value $Value
+                }
+            }
+            [Object] GetDriveProperty([String]$Name)
+            {
+                Return (Get-ItemProperty -Path $This.Drive -Name $Name)
+            }
+            [String[]] Directives()
+            {
+                Return @("Applications","Operating Systems","Out-of-Box Drivers","Packages","Task Sequences","Selection Profiles","Linked Deployment Shares","Media" | % { "$($This.Name):\$_" })
+            }
+            [Object] GetDriveContent()
+            {
+                Return ($This.Directives() | % { [PersistentDriveContent]::New($_) })
+            }
+            ImportWim([String]$Path)
+            {
+                $This.Images.Load("Import",$Path)
+            }
+            [String] GetHostname()
+            {
+                Return @{0=$Env:ComputerName;1="$Env:ComputerName.$Env:UserDNSDomain"}[[Int32](Get-CimInstance Win32_ComputerSystem | % PartOfDomain)].ToLower()
             }
         }
 
@@ -3679,7 +3883,7 @@ Function New-FEInfrastructure2
                 $This.Path      = $This.MDTModule.Split("\")[0..2] -join '\'
                 $This.MDTModule | Import-Module
                 Restore-MDTPersistentDrive
-                $This.Drive     = Get-MDTPersistentDrive | % { [Share]$_ }
+                $This.Drive     = Get-MDTPersistentDrive | % { [PersistentDrive]::New($_) }
             }
             [Object] NewKey([Object]$Root)
             {
@@ -3688,6 +3892,133 @@ Function New-FEInfrastructure2
             [Object] NewKey([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
             {
                 Return [Key]::New($NetworkPath,$Organization,$CommonName,$Background,$Logo,$Phone,$Hours,$Website)
+            }
+            PSDShare([Object]$Drive)
+            {
+                $PSD                = Get-PSDModule
+                $Name               = "$($Drive.Name):"
+                $Root               = $Drive.Root
+                $Share              = $Drive.Share
+                $Backup             = "$Root\Backup\Scripts"
+
+                # Create backup folder      
+                Write-Host "Creating [~] backup folder"
+                
+                New-Item $Backup -ItemType Directory -Force -Verbose
+
+                # Remove specific files
+                Write-Host "Moving [~] unneeded files to backup location"
+                ForEach ($ItemX in "UDIWizard_Config.xml.app Wizard.hta Wizard.ico Wizard.css Autorun.inf BDD_Welcome_ENU.xml Credentials_ENU.xml Summary_Definition_ENU.xml DeployWiz_Roles.xsl" -Split " ")
+                {   
+                    $Path           = "$Root\Scripts\$ItemX"
+
+                    If (Test-Path $Path)
+                    {
+                        Write-Host "Moving [~] $Path"
+                        Move-Item -Path $Path -Destination "$Backup\$ItemX" -Verbose
+                    }
+                }
+
+                # Cleanup old stuff from DeploymentShare
+                ForEach ($ItemX in Get-ChildItem "$Root\Scripts" | ? Name -match "(vbs|wsf|DeployWiz|UDI|WelcomeWiz_)")
+                {
+                    Write-Host "Moving [~] $($ItemX.FullName)"
+                    Move-Item -Path $ItemX.FullName -Destination "$Backup\$($ItemX.Name)" -Verbose
+                }
+
+                # Copy/Unblock PS1 Files
+                Get-ChildItem "$PSD\Scripts" | ? Extension -match "(ps1|xaml)" | Copy-Item -Destination "$Root\Scripts" -Verbose
+
+                # Copy/Unblock templates
+                Get-ChildItem "$PSD\Templates" | Copy-Item -Destination "$Root\Templates" -Verbose
+
+                # Copy/Unblock the modules
+                Write-Host "Copying [~] PSD Modules to $Root ..."
+                ForEach ($File in "PSDGather PSDDeploymentShare PSDUtility PSDWizard" -Split " ")
+                {
+                    If (!(Test-Path "$Root\Tools\Modules\$File"))
+                    {
+                        New-Item "$Root\Tools\Modules\$File" -ItemType Directory -Verbose
+                    }
+
+                    Write-Host "Copying [~] Module:[$File] to $Root\Tools\Modules"
+                    Copy-Item "$PSD\Scripts\$File.psm1" -Destination "$Root\Tools\Modules\$File" -Verbose
+                }
+
+                # Copy the PSProvider module files
+                Write-Host "Copying [~] MDT provider files to $Root\Tools\Modules"
+                If (!(Test-Path "$Root\Tools\Modules\Microsoft.BDD.PSSnapIn"))
+                {
+                    New-Item "$Root\Tools\Modules\Microsoft.BDD.PSSnapIn" -ItemType Directory -Verbose
+                }
+
+                ForEach ($ItemX in "PSSnapIn" | % { "$_.dll $_.dll.config $_.dll-help.xml $_.Format.ps1xml $_.Types.ps1xml Core.dll Core.dll.config ConfigManager.dll" -Split " " } ) 
+                {
+                    Copy-Item "$Mdt\Bin\Microsoft.BDD.$ItemX" -Destination "$Root\Tools\Modules\Microsoft.BDD.PSSnapIn" -Verbose
+                }
+
+                # Copy the provider template files
+                Write-Host "Copying [~] PSD templates to $Root\Templates"
+                If (!(Test-Path "$Root\Templates"))
+                {
+                    New-Item "$Root\Templates" -ItemType Directory -Verbose
+                }
+
+                ForEach ($ItemX in "Groups Medias OperatingSystems Packages SelectionProfiles TaskSequences Applications Drivers Groups LinkedDeploymentShares" -Split " ")
+                {
+                    Copy-Item "$MDT\Templates\$ItemX.xsd" "$Root\Templates" -Verbose
+                }
+
+                # Restore ZTIGather.XML
+                Write-Host "Adding [~] ZTIGather.XML to correct folder"
+                Copy-Item "$($This.Path)\Templates\Distribution\Scripts\ZTIGather.xml" -Destination "$Root\Tools\Modules\PSDGather" -Verbose
+
+                # Create folders
+                Foreach ($ItemX in "Autopilot BootImageFiles\X86 BootImageFiles\X64 Branding Certificates CustomScripts DriverPackages DriverSources UserExitScripts BGInfo Prestart" -Split " ")
+                {
+                    Write-Host "Creating [~] [$ItemX] folder in $Share\PSDResources"
+                    New-Item "$Root\PSDResources\$ItemX" -ItemType Directory -Force -Verbose
+                }
+
+                # Copy PSDBackground to Branding folder
+                Copy-Item -Path $PSD\Branding\PSDBackground.bmp -Destination $Root\PSDResources\Branding\PSDBackground.bmp -Force -Verbose
+
+                # Copy PSDBGI to BGInfo folder
+                Copy-Item -Path $PSD\Branding\PSD.bgi -Destination $Root\PSDResources\BGInfo\PSD.bgi -Force -Verbose
+
+                # Copy BGInfo64.exe to BGInfo.exe
+                Copy-Item -Path $Root\Tools\x64\BGInfo64.exe -Destination $Root\Tools\x64\BGInfo.exe -Verbose
+
+                # Copy Prestart items
+                Get-ChildItem $PSD\PSDResources\Prestart | Copy-Item -Destination $Root\PSDResources\Prestart -Verbose
+
+                # Update the DeploymentShare properties
+                If (!$Upgrade)
+                {
+                    Write-Host "Update [~] PSD Deployment Share properties"
+                    86,64 | % { 
+
+                        Set-ItemProperty $Name -Name "Boot.x$_.LiteTouchISOName" -Value "PSDLiteTouch_x$_.iso"
+                        Set-ItemProperty $Name -Name "Boot.x$_.LiteTouchWIMDescription" -Value "PowerShell Deployment Boot Image (x$_)"
+                        Set-ItemProperty $Name -Name "Boot.x$_.BackgroundFile" -Value "%DEPLOYROOT%\PSDResources\Branding\PSDBackground.bmp"
+                    }
+
+                    # Disable support for x86
+                    Write-Host "Disable [~] Support for x86"
+                    Set-ItemProperty $Name -Name "SupportX86" -Value "False"
+                }
+
+                # Relax Permissions on Deploymentfolder and DeploymentShare
+                Write-Host "Relaxing [~] Permissons on $Share"
+                ForEach ($ItemX in "Users Administrators SYSTEM" -Split " ")
+                {
+                    icacls $Root /grant "`"$ItemX`":(OI)(CI)(RX)"
+                }
+                    
+                Grant-SmbShareAccess -Name $Share -AccountName "EVERYONE" -AccessRight Change -Force
+                Revoke-SmbShareAccess -Name $Share -AccountName "CREATOR OWNER" -Force
+
+                Get-ChildItem $Root -Recurse | Unblock-File -Verbose
             }
             SetBrand([Object]$Brand)
             {
@@ -3703,7 +4034,12 @@ Function New-FEInfrastructure2
             }
             AddMdtDrive([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
             {
-                $This.Drive = [Share]::New($Name,$Root,$Share,$Description,$Type)
+                $This.Drive += [Share]::New($Name,$Root,$Share,$Description,$Type)
+            }
+            RemoveMdtDrive([String]$Name)
+            {
+                $Drive = $This.Drive | ? Name -eq $Name
+
             }
             ImportWimFiles([String]$Name,[String]$Path,[UInt32]$Mode)
             {
@@ -5431,7 +5767,7 @@ Function New-FEInfrastructure2
         '                                <Grid>',
         '                                    <Grid.RowDefinitions>',
         '                                        <RowDefinition Height="40"/>',
-        '                                        <RowDefinition Height="1.5*"/>',
+        '                                        <RowDefinition Height="2*"/>',
         '                                        <RowDefinition Height="10"/>',
         '                                        <RowDefinition Height="40"/>',
         '                                        <RowDefinition Height="*"/>',
@@ -5509,7 +5845,7 @@ Function New-FEInfrastructure2
         '                                                          ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                          ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
+        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="150"/>',
         '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="125"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
@@ -5654,7 +5990,7 @@ Function New-FEInfrastructure2
         '                                                          ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                          ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
+        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="150"/>',
         '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="125"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
@@ -5799,7 +6135,7 @@ Function New-FEInfrastructure2
         '                                                          ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                          ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
+        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="150"/>',
         '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="125"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
@@ -5944,7 +6280,7 @@ Function New-FEInfrastructure2
         '                                                      ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
+        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="150"/>',
         '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
@@ -6090,7 +6426,7 @@ Function New-FEInfrastructure2
         '                                              ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                              ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="100"/>',
+        '                                                        <DataGridTextColumn Header="Name"              Binding="{Binding Name}"              Width="150"/>',
         '                                                        <DataGridTextColumn Header="Type"              Binding="{Binding Type}"              Width="100"/>',
         '                                                        <DataGridTemplateColumn Header="Exists" Width="60">',
         '                                                            <DataGridTemplateColumn.CellTemplate>',
@@ -6820,7 +7156,7 @@ Function New-FEInfrastructure2
         '                        <DataGrid Grid.Row="5" Name="UpdViewer">',
         '                            <DataGrid.Columns>',
         '                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="175"/>',
-        '                                <DataGridTextColumn Header="Value" Binding="{Binding Date}" Width="*"/>',
+        '                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                        <Border   Grid.Row="6" Background="Black" BorderThickness="0" Margin="4"/>',
@@ -7228,6 +7564,38 @@ Function New-FEInfrastructure2
         }
     }
 
+    Class LogObject
+    {
+        [String] $Date
+        [String] $Time
+        [String] $Timer
+        [String] $Message
+        LogObject([Object]$Timer,[String]$Message)
+        {
+            $This.Date    = Get-Date -UFormat "%m/%d/%Y" 
+            $This.Time    = Get-Date -UFormat "%H:%M:%S"
+            $This.Timer   = $Timer
+            $This.Message = $Message
+        }
+        [String] ToString()
+        {
+            Return ("[{0} {1}][{2}] {3}" -f $This.Date, $This.Time, $This.Timer, $This.Message)
+        }
+    }
+
+    Class Log
+    {
+        [Object] $Output
+        Log()
+        {
+            $This.Output  = @{ }
+        }
+        TX([Object]$Timer,[String]$Message)
+        {
+            $This.Output.Add($This.Output.Count,[LogObject]::New($Timer,$Message))
+        }
+    }
+
     Class Main
     {
         [Object]            $Module
@@ -7252,6 +7620,7 @@ Function New-FEInfrastructure2
         [Object]     $MdtController
         [Object]     $WdsController
         Hidden [Object]       $Time
+        Hidden [Object]        $Log
         Hidden [Object]  $Container
         Hidden [Object]   $Validate
         Main()
@@ -7266,7 +7635,8 @@ Function New-FEInfrastructure2
             Else
             {
                 $This.Time = [System.Diagnostics.Stopwatch]::StartNew()
-                $This.Log("[~] Initializing")
+                $This.Log  = [Log]::New()
+                $This.TX("[~] Initializing")
             }
             $This.Credential      = $This.Connection.Credential
 
@@ -7275,19 +7645,19 @@ Function New-FEInfrastructure2
 
             # Assigns system information to system variable
             $This.System            = $This.Module.Role.System
-            $This.Log("[+] System")
+            $This.TX("[+] System")
 
             # Pulls configuration information (Network/DHCP/DNS/ADDS/Hyper-V/WDS/MDT/WinADK/WinPE/IIS)
             $This.Config            = Config -Module $This.Module
-            $This.Log("[+] Config")
+            $This.TX("[+] Config")
 
             # Pulls sitelist base and classes
             $This.SiteList          = Sitelist -Module $This.Module
-            $This.Log("[+] SiteList")
+            $This.TX("[+] SiteList")
 
             # Pulls networklist base and classes
             $This.NetworkList       = NetworkList
-            $This.Log("[+] NetworkList")
+            $This.TX("[+] NetworkList")
 
             # Load and sort/rename module files
             ForEach ($Item in $This.Module.Tree.Name)
@@ -7297,41 +7667,42 @@ Function New-FEInfrastructure2
 
             # Domain Controller
             $This.Sitemap           = Sitemap
-            $This.Log("[+] Sitemap")
+            $This.TX("[+] Sitemap")
 
             # AD Controller
             $This.AddsController    = AddsController
-            $This.Log("[+] AddsController")
+            $This.TX("[+] AddsController")
 
             # VM Controller
             If ($This.Config.HyperV)
             {
                 $This.VmController  = VmController -Hostname localhost -Credential $This.Credential
-                $This.Log("[+] VmController")
+                $This.TX("[+] VmController")
             }
 
             # Imaging Controller
             $This.ImageController   = ImageController
-            $This.Log("[+] ImageController")
+            $This.TX("[+] ImageController")
 
             # Update Controller
             $This.UpdateController  = UpdateController
-            $This.Log("[+] UpdateController")
+            $This.TX("[+] UpdateController")
 
             # Mdt Controller
             $This.MdtController     = MdtController -Module $This.Module
-            $This.Log("[+] MdtController")
+            $This.TX("[+] MdtController")
 
             # Wds Controller
             $This.WdsController     = WdsController
-            $This.Log("[+] WdsController")
+            $This.TX("[+] WdsController")
 
             $This.Time.Stop()
-            $This.Log("[+] Initialized")
+            $This.TX("[+] Initialized")
         }
-        Log([String]$Message)
+        TX([String]$Message)
         {
-            Write-Host "[$($This.Time.Elapsed)] $Message"
+            $This.Log.TX($This.Time.Elapsed,$Message)
+            Write-Host $This.Log.Output[$This.Log.Output.Count-1]
         }
         SetNetwork([Object]$Xaml,[UInt32]$Index)
         {
@@ -7527,7 +7898,14 @@ Function New-FEInfrastructure2
         }
     }
 
+    Start-Sleep 1
+
+    Write-Theme "Initializing [~] Infrastructure Deployment System"
+    
     $Main = [Main]::New()
+    
+    Write-Theme "Initialized [+] Infrastructure Deployment System" 9,11,15
+
     $Xaml = [XamlWindow][FEInfrastructureGUI]::Tab
 
     # ---------------- #
@@ -7760,6 +8138,7 @@ Function New-FEInfrastructure2
             $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
             $Xaml.IO.DcGetSitename.IsEnabled   = 0
             $Xaml.IO.NwScopeLoad.IsEnabled     = 1
+            Write-Theme "Loaded [+] Site List" 10,2,15
         }
     })
 
@@ -7804,12 +8183,12 @@ Function New-FEInfrastructure2
             }
             $Main.Sitelist.Aggregate          = $Main.Sitelist.Aggregate | ? Postal -ne $Object.Postal 
             $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
-
         }
     })
 
     $Xaml.IO.DcGetTopology.Add_Click(
     {
+        Write-Theme "Getting [~] Site List (Aggregate -> Topology)"
         $Main.Sitelist.GetSiteList()
         $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
@@ -7817,6 +8196,7 @@ Function New-FEInfrastructure2
     
     $Xaml.IO.DcNewTopology.Add_Click(
     {
+        Write-Theme "Creating [~] Site List (Topology)"
         $Main.Sitelist.NewSiteList()
         $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
@@ -7838,6 +8218,7 @@ Function New-FEInfrastructure2
             $Main.NetworkList.AddNetwork($Xaml.IO.NwScope.Text)
             $Xaml.IO.NwScope.Text              = ""
             $Main.Reset($Xaml.IO.NwAggregate.Items,$Main.NetworkList.Aggregate)
+            Write-Theme "Loaded [+] Network List" 10,2,15
         }
     })
 
@@ -7892,6 +8273,7 @@ Function New-FEInfrastructure2
 
     $Xaml.IO.NwGetSubnetName.Add_Click(
     {
+        Write-Theme "Getting [~] Network List (Aggregate -> Topology)"
         $Main.NetworkList.GetNetworkList()       
         $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
         $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
@@ -7899,6 +8281,7 @@ Function New-FEInfrastructure2
 
     $Xaml.IO.NwNewSubnetName.Add_Click(
     {
+        Write-Theme "Creating [~] Site List (Topology)"
         $Main.NetworkList.NewNetworkList()
         $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
         $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
@@ -7917,6 +8300,7 @@ Function New-FEInfrastructure2
     
         Else
         {
+            Write-Theme "Setting [~] Domain Sitemap (Aggregate)"
             $Main.Sitemap                    | % LoadSiteList    $Main.Sitelist.Aggregate
             $Main.Sitemap                    | % LoadNetworkList $Main.NetworkList.Aggregate
             $Main.Sitemap                    | % LoadSitemap
@@ -7940,6 +8324,7 @@ Function New-FEInfrastructure2
 
     $Xaml.IO.SmGetSitemap.Add_Click(
     {
+        Write-Theme "Getting [~] Sitemap (Aggregate -> Topology)"
         $Main.Sitemap.GetSitemap()
         $Main.Reset($Xaml.IO.SmTopology.Items,$Main.Sitemap.Topology)
     })
@@ -7953,6 +8338,7 @@ Function New-FEInfrastructure2
 
         Else
         {
+            Write-Theme "Creating [~] Sitemap (Topology)"
             $Main.Sitemap.SetSitelinkBridge($Xaml.IO.SmSiteLink.SelectedItem.DistinguishedName)
             $Main.Sitemap.NewSitemap()
             $Main.AddsController.LoadSitemap($Main.Sitemap.Aggregate)
@@ -8006,6 +8392,7 @@ Function New-FEInfrastructure2
 
     $Xaml.IO.AddsSiteDefaults.Add_Click(
     {
+        Write-Theme "Loading [~] Adds Defaults (Aggregate Panel(s))"
         ForEach ($Site in $Main.AddsController.Sitemap)
         {
             ForEach ($Container in $Site.Gateway, $Site.Server, $Site.Workstation, $Site.User, $Site.Service)
@@ -8171,6 +8558,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Gateway.Count -gt 1)
         {
+            Write-Theme "Getting [~] Adds Site ([Gateway] Aggregate -> Output)"
             $Main.AddsController.GetOutput("Gateway")
             ForEach ($Item in $Main.AddsController.Output.Gateway)
             {
@@ -8187,6 +8575,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Output.Gateway.Count -gt 1)
         {
+            Write-Theme "Creating [~] Adds Site ([Gateway] Output)"
             ForEach ($Item in $Main.AddsController.Output.Gateway)
             {
                 If ($Item.Exists)
@@ -8206,6 +8595,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Output.Gateway.Count -gt 1)
         {
+            Write-Theme "Removing [~] Adds Site ([Gateway] Output)" 12,4,15
             ForEach ($Item in $Main.AddsController.Output.Gateway)
             {
                 If (!$Item.Exists)
@@ -8352,6 +8742,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Server.Count -gt 1)
         {
+            Write-Theme "Getting [~] Adds Site ([Server] Aggregate -> Output)"
             $Main.AddsController.GetOutput("Server")
             ForEach ($Item in $Main.AddsController.Output.Server)
             {
@@ -8368,6 +8759,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Output.Server.Count -gt 1)
         {
+            Write-Theme "Creating [~] Adds Site ([Server] Output)"
             ForEach ($Item in $Main.AddsController.Output.Server)
             {
                 If ($Item.Exists)
@@ -8387,6 +8779,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Output.Server.Count -gt 1)
         {
+            Write-Theme "Removing [!] Adds Site ([Server] Output)" 12,4,15
             ForEach ($Item in $Main.AddsController.Output.Server)
             {
                 If (!$Item.Exists)
@@ -8533,6 +8926,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Workstation.Count -gt 1)
         {
+            Write-Theme "Getting [~] Adds Site ([Workstation] Aggregate -> Output)"
             $Main.AddsController.GetOutput("Workstation")
             ForEach ($Item in $Main.AddsController.Output.Workstation)
             {
@@ -8549,6 +8943,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Output.Workstation.Count -gt 1)
         {
+            Write-Theme "Creating [~] Adds Site ([Workstation] Output)"
             ForEach ($Item in $Main.AddsController.Output.Workstation)
             {
                 If ($Item.Exists)
@@ -8568,6 +8963,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Output.Workstation.Count -gt 1)
         {
+            Write-Theme "Removing [!] Adds Site ([Workstation] Output)" 12,4,15
             ForEach ($Item in $Main.AddsController.Output.Workstation)
             {
                 If (!$Item.Exists)
@@ -8714,6 +9110,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.User.Count -gt 1)
         {
+            Write-Theme "Getting [~] Adds Site ([User] Aggregate -> Output)"
             $Main.AddsController.GetOutput("User")
             ForEach ($Item in $Main.AddsController.Output.User)
             {
@@ -8730,6 +9127,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Output.User.Count -gt 1)
         {
+            Write-Theme "Creating [~] Adds Site ([User] Output)"
             ForEach ($Item in $Main.AddsController.Output.User)
             {
                 If ($Item.Exists)
@@ -8749,6 +9147,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Output.User.Count -gt 1)
         {
+            Write-Theme "Removing [!] Adds Site ([User] Output)" 12,4,15
             ForEach ($Item in $Main.AddsController.Output.User)
             {
                 If (!$Item.Exists)
@@ -8836,7 +9235,7 @@ Function New-FEInfrastructure2
             ForEach ($Item in Get-Content $Xaml.IO.AddsSvcFile.Text)
             {
                 $Object                       = $Main.AddsController.Sitemap[$Xaml.IO.AddsSite.SelectedIndex]
-                $Xaml.IO.AddsSvcName.Text    = $Item
+                $Xaml.IO.AddsSvcName.Text     = $Item
                 $Name                         = $Main.CheckHostName($Item)  
 
                 If ($Name -ne $Item)
@@ -8895,6 +9294,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Service.Count -gt 1)
         {
+            Write-Theme "Getting [~] Adds Site ([Service] Aggregate -> Output)"
             $Main.AddsController.GetOutput("Service")
             ForEach ($Item in $Main.AddsController.Output.Service)
             {
@@ -8911,6 +9311,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Output.Service.Count -gt 1)
         {
+            Write-Theme "Creating [~] Adds Site ([Service] Output)"
             ForEach ($Item in $Main.AddsController.Output.Service)
             {
                 If ($Item.Exists)
@@ -8930,6 +9331,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.AddsController.Output.Service.Count -gt 1)
         {
+            Write-Theme "Removing [!] Adds Site ([Service] Output)" 12,4,15
             ForEach ($Item in $Main.AddsController.Output.Service)
             {
                 If (!$Item.Exists)
@@ -8965,10 +9367,10 @@ Function New-FEInfrastructure2
 
     $Xaml.IO.VmHostChange.Add_Click(
     {
-        $Xaml.IO.VmHostName.Text          = $Null
-        $Xaml.IO.VmHostName.IsEnabled     = 1
-        $Xaml.IO.VmHostConnect.IsEnabled  = 1
-        $Xaml.IO.VmHostChange.IsEnabled   = 0
+        $Xaml.IO.VmHostName.Text              = $Null
+        $Xaml.IO.VmHostName.IsEnabled         = 1
+        $Xaml.IO.VmHostConnect.IsEnabled      = 1
+        $Xaml.IO.VmHostChange.IsEnabled       = 0
     })
 
     $Xaml.IO.VmHostConnect.Add_Click(
@@ -8984,7 +9386,6 @@ Function New-FEInfrastructure2
         }
 
         Write-Host "Retrieving [~] VMHost"
-
         If ($Xaml.IO.VmHostName.Text -match "localhost" -or $Xaml.IO.VmHostName.Text -in $Main.Config.IP -or $Xaml.IO.VmHostName.Text -match $Main.Module.Role.Name)
         {
             $Main.VmController = VmController -Hostname $Xaml.IO.VmHostname -Credential $Main.Credential
@@ -9011,6 +9412,7 @@ Function New-FEInfrastructure2
 
     $Xaml.IO.VmLoadAddsNode.Add_Click(
     {
+        Write-Theme "Importing [~] Adds Node Tree"
         # $Main.VmController = VmController -Hostname dsc0.securedigitsplus.com -Credential $Main.Credential
         $Main.VmController.LoadAddsTree($Main.AddsController.Output)
         $Main.Reset($Xaml.IO.VmSelect.Items,$Main.VmController.VmSelect)
@@ -9022,19 +9424,25 @@ Function New-FEInfrastructure2
         {
             Yes 
             { 
-                Write-Theme "Deleting [!] VMs"
+                Write-Theme "Removing [~] Existing (Adds -> VmHost) Node(s)"
                 ForEach ($Object in $Main.VmController.VmSelect | ? Exists -eq $True)
                 {
                     $Main.VmController.DeleteNode($Object)
                     $Main.Reset($Xaml.IO.VmSelect.Items,$Main.VmController.VmSelect)
                 }
+                Write-Theme "Removed [!] Existing (Adds -> VmHost) Node(s)"
             }
-            No  { Break }
+            No  
+            { 
+                Write-Theme "Exception [!] The user cancelled the (Adds -> VmHost) Node(s) removal operation" 12,4,15
+                Break 
+            }
         }
     })
 
     $Xaml.IO.VmCreateNodes.Add_Click(
     {
+        Write-Theme "Creating [~] Non-Existent (Adds -> VmHost) Node(s)"
         $Main.Container = $Main.VmController.NodeContainer()
         ForEach ($Object in $Main.VmController.VmSelect | ? Exists -eq $False | ? Create)
         {
@@ -9058,6 +9466,7 @@ Function New-FEInfrastructure2
         $Main.Reset($Xaml.IO.VmGateway.Items,$Main.Container.Gateway)
         $Main.Reset($Xaml.IO.VmServer.Items,$Main.Container.Server)
         $Main.Reset($Xaml.IO.VmWorkstation.Items,$Main.Container.Workstation)
+        Write-Theme "Created [+] Non-Existent (Adds -> VmHost Template) Node(s)"
     })
 
     # [Vm.Switch]
@@ -9078,6 +9487,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.Container.Gateway.Count -gt 0)
         {
+            Write-Theme "Getting [~] (Virtual Switches + DHCP Reservation) Templates"
             $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
             $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
         }
@@ -9087,12 +9497,14 @@ Function New-FEInfrastructure2
     {
         If ($Main.VmController.Reservation.Count -gt 0)
         {
+            Write-Theme "Removing [~] Virtual Switches + DHCP Reservations"
             ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists)
             {
                 $Object.Remove()
             }
             $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
             $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
+            Write-Theme "Removed [!] Virtual Switches + DHCP Reservations" 12,4,15
         }
     })
 
@@ -9100,6 +9512,7 @@ Function New-FEInfrastructure2
     {
         If ($Main.VmController.Reservation.Count -gt 0)
         {
+            Write-Theme "Creating [~] Virtual Switches + DHCP Reservation Template(s)"
             ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists -eq 0)
             {
                 $Object.New()
@@ -9162,7 +9575,7 @@ Function New-FEInfrastructure2
     $Xaml.IO.VmGatewayMemory.Text                   = 2048
     $Xaml.IO.VmGatewayDrive.Text                    = 20
     $Xaml.IO.VmGatewayCore.Text                     = 1
-    $Xaml.IO.VmGatewayInstallType.SelectedIndex     = 1
+    $Xaml.IO.VmGatewayInstallType.SelectedIndex     = 0
 
     # [Vm.Server]
     $Xaml.IO.VmServerInstallType.Add_SelectionChanged(
@@ -9216,7 +9629,7 @@ Function New-FEInfrastructure2
     $Xaml.IO.VmServerMemory.Text                    = 4096
     $Xaml.IO.VmServerDrive.Text                     = 100
     $Xaml.IO.VmServerCore.Text                      = 2
-    $Xaml.IO.VmServerInstallType.SelectedIndex      = 1
+    $Xaml.IO.VmServerInstallType.SelectedIndex      = 0
 
     # [Vm.Workstation]
     $Xaml.IO.VmWorkstationInstallType.Add_SelectionChanged(
@@ -9389,10 +9802,11 @@ Function New-FEInfrastructure2
     $Xaml.IO.VmNewArchitecture.Add_Click(
     {
         $Master = $Main.Validate.Gateway
-        ForEach ($Object in $Master.Output[1..($Master.Output.Count-1)])
+        ForEach ($Object in $Master.Output)
         {   
             Write-Theme ("Initializing [~] Virtual Gateway ({0})" -f $Object.Name) 14,6,15
             $Object.New()
+            $Object.Update()
             $Object.Start()
             Do
             {
@@ -9406,75 +9820,45 @@ Function New-FEInfrastructure2
             $Reserve.Add()
             $Object.LoadIso($Master.Iso)
             $Object.SetIsoBoot()
+
+            $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
+            $AddsNode.LoadVmObject($Object)
+
             Write-Theme ("Initialized [+] Virtual Gateway ({0})" -f $Object.Name) 10,2,15
         }
+        $Main.VmController.AddsNode.Gateway = $Master.Container | ? Type -eq Gateway
 
         $Master = $Main.Validate.Server
         ForEach ($Object in $Master.Output)
         {
             Write-Theme ("Initializing [~] Virtual Server ({0})" -f $Object.Name) 14,6,15
             $Object.New()
+            $Object.Update()
             $Object.LoadIso($Master.Iso)
             $Object.SetIsoBoot()
+
+            $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
+            $AddsNode.LoadVmObject($Object)
+
             Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.Name) 10,2,15
         }
+        $Main.VmController.AddsNode.Server = $Master.Container | ? Type -match "(Server|Domain Controller)"
 
         $Master = $Main.Validate.Workstation
-        ForEach ($Object in $Main.Validate.Workstation.Output)
+        ForEach ($Object in $Master.Output)
         {
             Write-Theme ("Initializing [~] Virtual Workstation ({0})" -f $Object.Name) 14,6,15
             $Object.New()
+            $Object.Update()
+            $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
+            $AddsNode.LoadVmObject($Object)
+
             Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.Name) 10,2,15
         }
+        $Main.VmController.AddsNode.Workstation = $Master.Container | ? Type -eq Workstation
 
-        <#
-        Write-Theme "Writing [~] Gateway Objects"
-        $Path       = "$Home\Desktop\VM($(Get-Date -UFormat %Y%m%d))"
-        If (!(Test-Path $Path))
-        {
-            New-Item $Path -ItemType Directory -Verbose -Force
-        }
-
-        $VMX        = $Main.Gw
-        $Filter     = $Main | Select-Object CN, SearchBase, VM | ConvertTo-Json
-        If (!(Test-Path "$Path\GW"))
-        {
-            New-Item "$Path\GW" -ItemType Directory -Verbose -Force
-        }
-
-        ForEach ( $X in 0..($Main.Sr.Count-1))
-        {
-            If (!(Test-Path "$Path\GW\$X"))
-            {
-                New-Item "$Path\GW\$X" -ItemType Directory -Verbose -Force
-            }
-            Set-Content -Path "$Path\GW\$X\vmx.txt" -Value ( $VMX[$X] | ConvertTo-Json ) -Verbose -Force
-            Set-Content -Path "$Path\GW\$X\host.txt" -Value $Filter -Verbose -Force
-            Export-CliXml -Path "$Path\GW\$X\cred.txt" -InputObject $Main.Credential -Verbose -Force
-        }
-
-        Write-Theme "Writing [~] Server Objects"
-
-        $VMX        = $Main.Sr
-        $Filter     = $Main | Select-Object CN, SearchBase, VM | ConvertTo-Json
-        If (!(Test-Path "$Path\SR"))
-        {
-            New-Item "$Path\SR" -ItemType Directory -Verbose -Force
-        }
-
-        ForEach ( $X in 0..($Main.Sr.Count-1))
-        {
-            If (!(Test-Path "$Path\SR\$X"))
-            {
-                New-Item "$Path\SR\$X" -ItemType Directory -Verbose -Force
-            }
-            Set-Content -Path "$Path\SR\$X\vmx.txt" -Value ( $VMX[$X] | ConvertTo-Json ) -Verbose -Force
-            Set-Content -Path "$Path\SR\$X\host.txt" -Value $Filter -Verbose -Force
-            Export-CliXml -Path "$Path\SR\$X\cred.txt" -InputObject $Main.Credential -Verbose -Force
-        }
-        #>
-
-        Write-Theme "Deployed [+] Virtual Machines (Next Phase -> Installation)"
+        # [Writing Output to files for installation]
+        $Main.VmController.WriteOutput("$Home\Desktop")
     })
 
     # --------------- #
@@ -9499,6 +9883,7 @@ Function New-FEInfrastructure2
 
         Else
         {
+            Write-Theme "Getting [~] (*.iso) file(s)"
             $Xaml.IO.IsoPath.Text        = $Item.SelectedPath
             $Main.ImageController.LoadSilo($Xaml.IO.IsoPath.Text) 
             $Main.Reset($Xaml.IO.IsoList.Items,$Main.ImageController.Store)
@@ -9656,10 +10041,6 @@ Function New-FEInfrastructure2
     # ---------------- #
     # <![Update Tab]!> #
     # ---------------- #
-    
-    # UpdAggregate       DataGrid 
-    # UpdSelect          Button
-    # UpdPath            TextBox
 
     $Xaml.IO.UpdSelect.Add_Click(
     {
@@ -9678,6 +10059,7 @@ Function New-FEInfrastructure2
 
         Else
         {
+            Write-Theme "Getting [~] Windows Update Package(s)"
             $Xaml.IO.UpdPath.Text = $Item.SelectedPath
             $Main.UpdateController.SetUpdateBase($Xaml.IO.UpdPath.Text)
             $Main.UpdateController.ProcessFileList()
@@ -9709,19 +10091,178 @@ Function New-FEInfrastructure2
             Return [System.Windows.MessageBox]::Show("No (*.wim) files were detected in the provided path","Error")
         }
 
-        $Xaml.IO.UpdWimPath.Text = $Item.SelectedPath
-        $Main.UpdateController.GetWimFiles($Xaml.IO.UpdWimPath.Text)
-        $Main.Reset($Xaml.IO.UpdWim.Items,$Main.UpdateController.WimList)
+        Else
+        {
+            Write-Theme "Getting [~] (*.wim) file(s)"
+            $Xaml.IO.UpdWimPath.Text = $Item.SelectedPath
+            $Main.UpdateController.GetWimFiles($Xaml.IO.UpdWimPath.Text)
+            $Main.Reset($Xaml.IO.UpdWim.Items,$Main.UpdateController.WimList)
+        }
     })
 
-    # UpdAddUpdate       Button
-    # UpdRemoveUpdate    Button
-    # UpdViewer          DataGrid
-    # UpdWim             DataGrid
-    # UpdWimSelect       Button
-    # UpdWimPath         TextBox
-    # UpdInstallUpdate   Button
-    # UpdUninstallUpdate Button
+    # --------------- #
+    # <![Share Tab]!> #
+    # --------------- #
+
+    $Main.Reset($Xaml.IO.DSAggregate,$Main.MdtController.Drive)
+    $Xaml.IO.DsAggregate.Add_SelectionChanged(
+    {
+        $Object = $Xaml.IO.DsAggregate.SelectedItem
+        If ( $Object.Name -match "(\<New\>)" )
+        {
+            $Xaml.IO.DsDriveName.Text          = ("FE{0:d3}" -f $Xaml.IO.DsAggregate.Items.Count)
+            $Xaml.IO.DsRootPath.Text           = ""
+            $Xaml.IO.DsShareName.Text          = ""
+            $Xaml.IO.DsDescription.Text        = ("[FightingEntropy({0})][({1})]" -f [char]960, $Main.Module.Version)
+            $Xaml.IO.DsType.SelectedIndex      = 0
+            $Xaml.IO.DsType.IsEnabled          = 1
+            $Xaml.IO.DsBootstrapPath.Text      = ""
+            $Xaml.IO.DsCustomSettingsPath.Text = ""
+            $Xaml.IO.DsPostConfigPath.Text     = ""
+            $Xaml.IO.DsShareConfig.IsEnabled   = 0
+            $Xaml.IO.DsWimFilePath.Text        = ""
+            $Xaml.IO.DsWimFiles.ItemsSource    = @( )
+        }
+
+        Else
+        {
+            $Xaml.IO.DsDriveName.Text          = $Ds.Name
+            $Xaml.IO.DsRootPath.Text           = $Ds.Root
+            $Xaml.IO.DsShareName.Text          = $Ds.Share
+            $Xaml.IO.DsDescription.Text        = $Ds.Description
+            $Xaml.IO.DsType.SelectedIndex      = @{MDT=0;PSD=1;"-"=2}[$Ds.Type]
+            $Xaml.IO.DsType.IsEnabled          = 0
+            $Xaml.IO.DsBootstrapPath.Text      = "$($Ds.Root)\Control\Bootstrap.ini"
+            $Xaml.IO.DsCustomSettingsPath.Text = "$($Ds.Root)\Control\CustomSettings.ini"
+            $Xaml.IO.DsPostConfigPath.Text     = "$($Ds.Root)\Script\Install-FightingEntropy.ps1"
+            $Xaml.IO.DsShareConfig.IsEnabled   = 1
+            
+            If (Test-Path $Xaml.IO.DsBootstrapPath.Text)
+            {
+                $Xaml.IO.DsGenerateBootstrap.IsEnabled      = 0
+                $Xaml.IO.DsSelectBootstrap.IsEnabled        = 1
+            }
+            If (!(Test-Path $Xaml.IO.DsBootstrapPath.Text))
+            {
+                $Xaml.IO.DsGenerateBootstrap.IsEnabled      = 1
+                $Xaml.IO.DsSelectBootstrap.IsEnabled        = 0
+            }
+            If (Test-Path $Xaml.IO.DsCustomSettingsPath.Text)
+            {
+                $Xaml.IO.DsGenerateCustomSettings.IsEnabled = 0
+                $Xaml.IO.DsSelectCustomSettings.IsEnabled   = 1
+            }
+            If (!(Test-Path $Xaml.IO.DsCustomSettingsPath.Text))
+            {
+                $Xaml.IO.DsGenerateCustomSettings.IsEnabled = 1
+                $Xaml.IO.DsSelectCustomSettings.IsEnabled   = 0
+            }
+            If (Test-Path $Xaml.IO.DsPostConfigPath.Text)
+            {
+                $Xaml.IO.DsGeneratePostConfig.IsEnabled     = 0
+                $Xaml.IO.DsSelectPostConfig.IsEnabled       = 1
+            }
+            If (!(Test-Path $Xaml.IO.DsPostConfigPath.Text))
+            {
+                $Xaml.IO.DsGeneratePostConfig.IsEnabled     = 1
+                $Xaml.IO.DsSelectPostConfig.IsEnabled       = 0
+            }
+
+            If (Test-Path "$($Ds.Root)\Operating Systems")
+            {
+                $Xaml.IO.DsWimFilePath.Text                 = "$($Ds.Root)\Operating Systems"
+                $Xaml.IO.DsWimFiles.ItemsSource             = @( )
+            }
+
+            If (!(Test-Path "$($Ds.Root)\Operating Systems"))
+            {
+                $Xaml.IO.DsWimFilePath.Text                 = ""
+            }
+
+            If ($Ds.WimFiles.Count -gt 0)
+            {
+                $Xaml.IO.DsWimFiles.ItemsSource             = @($Ds.WimFiles)
+                $Xaml.IO.DsSelectWimFilePath.IsEnabled      = 0
+                $Xaml.IO.DsWimFilePath.IsEnabled            = 0
+                $Xaml.IO.DsWimFileMode.IsEnabled            = 0
+            }
+
+            If ($Ds.WimFiles.Count -eq 0)
+            {
+                $Xaml.IO.DsWimFiles.ItemsSource             = @( )
+                $Xaml.IO.DsSelectWimFilePath.IsEnabled      = 1
+                $Xaml.IO.DsWimFilePath.IsEnabled            = 1
+                $Xaml.IO.DsWimFileMode.IsEnabled            = 1
+            }
+        }
+
+        If ($Ds.Root -in $Main.MDT.Shares.Root)
+        {
+            $Xaml.IO.DsCreate.IsEnabled      = 0
+            $Xaml.IO.DsUpdate.IsEnabled      = 1
+        }
+        If ($Ds.Root -notin $Main.MDT.Shares.Root)
+        {
+            $Xaml.IO.DsCreate.IsEnabled      = 1
+            $Xaml.IO.DsUpdate.IsEnabled      = 0
+        }
+    })
+
+    # DsAggregate                DataGrid
+    # DsRootSelect               Button
+    # DsRootPath                 TextBox
+    # DsDriveName                TextBox
+    # DsShareName                TextBox
+    # DsType                     ComboBox
+    # DsDescription              TextBox
+    # DsAddShare                 Button
+    # DsRemoveShare              Button
+    # DsImportSelectWimFilePath  Button
+    # DsImportWimFilePath        TextBox
+    # DsImportWimFileMode        ComboBox
+    # DsImportWimFiles           DataGrid
+    # DsCurrentSelectWimFilePath Button
+    # DsCurrentWimFilePath       TextBox
+    # DsCurrentWimFileMode       ComboBox
+    # DsCurrentWimFiles          DataGrid
+    # DsLogin                    Button
+    # DsDcUsername               TextBox
+    # DsDcPassword               PasswordBox
+    # DsDcConfirm                PasswordBox
+    # DsNetBiosName              TextBox
+    # DsDnsName                  TextBox
+    # DsOrganization             TextBox
+    # DsMachineOUSelect          Button
+    # DsMachineOu                TextBox
+    # DsLmUsername               TextBox
+    # DsLmPassword               PasswordBox
+    # DsLmConfirm                PasswordBox
+    # DsBrCollect                Button
+    # DsBrPhone                  TextBox
+    # DsBrHours                  TextBox
+    # DsBrWebsite                TextBox
+    # DsBrLogoSelect             Button
+    # DsBrLogo                   TextBox
+    # DsBrBackgroundSelect       Button
+    # DsBrBackground             TextBox
+    # DsGenerateBootstrap        Button
+    # DsBootstrapPath            TextBox
+    # DsSelectBootstrap          Button
+    # DsBootstrap                TextBox
+    # DsGenerateCustomSettings   Button
+    # DsCustomSettingsPath       TextBox
+    # DsSelectCustomSettings     Button
+    # DsCustomSettings           TextBox
+    # DsGeneratePostConfig       Button
+    # DsPostConfigPath           TextBox
+    # DsSelectPostConfig         Button
+    # DsPostConfig               TextBox
+    # DsGenerateDSKey            Button
+    # DsDSKeyPath                TextBox
+    # DsSelectDSKey              Button
+    # DsDSKey                    TextBox
+    # DsCreate                   Button
+    # DsUpdate                   Button
 
     Return @{ Xaml = $Xaml; Main = $Main }
 }
