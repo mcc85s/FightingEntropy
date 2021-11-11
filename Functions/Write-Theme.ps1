@@ -8,12 +8,12 @@
 .NOTES
           FileName: Write-Theme.ps1
           Solution: FightingEntropy Write Theme
-          Purpose: The lifeblood of [FightingEntropy(π)]... With it? You can stylize the hell out a PowerShell command prompt console.
+          Purpose: The lifeblood of [FightingEntropy([char]960)]... With it? You can stylize the hell out a PowerShell command prompt console.
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-02
-          Modified: 2021-10-02
+          Modified: 2021-11-11
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -137,14 +137,14 @@ Function Write-Theme
                 "[Guide]{0}" -f ("_" * 147 -join ''); 
                 @("  00";0..($This.Mask.Count-1) | % { "  {0:d2}" -f $_ } ) -join "|";
                 @("  01";0..($This.Mask.Count-1) | % { $This.Mask[$_].Object }) -join "|";
-                "¯" * 154 -join '';
+                [Char]175 * 154 -join '';
             )
         }
         Display()
         {
             Write-Host ("[Track]{0}" -f ("_" * 113 -join ''))
             $This.Draw(@(10,12,15,0))
-            Write-Host ("¯" * 120 -join '')
+            Write-Host ([Char]175 * 120 -join '')
         }
         Draw([UInt32[]]$Palette)
         {
@@ -211,13 +211,13 @@ Function Write-Theme
             ForEach ($X in 0..($This.Track.Count-1)){ "|  {0:d2}|{1}| {2}" -f $X,($This.Track[$X].Mask.Object -join "|"),$This.String[$X]};
 
             # End
-            "¯" * 156 -join '')
+            [Char]175 * 156 -join '')
         }
         Display()
         {
             Write-Host ("[Theme]{0}" -f ("_" * 113 -join ''))
             $This.Draw(@(10,12,15,0))
-            Write-Host ("¯" * 120 -join '')
+            Write-Host ([Char]175 * 120 -join '')
         }
         Draw([UInt32[]]$Palette)
         {
@@ -493,13 +493,13 @@ Function Write-Theme
             {
                 $This.Header = $This.Object.Output
 
-                If ($This.Object.Output -notmatch "^\w+\s\[(\+|\~|\-)\]")
+                If ($This.Object.Output -notmatch "^\w+\s\[(\+|\~|\-|\!)\]")
                 {
-                    $This.Type   = 0
+                    $This.Type   = 1
                 }
                 Else
                 {
-                    $This.Type = 1
+                    $This.Type = 0
                 }
             }
             Else
