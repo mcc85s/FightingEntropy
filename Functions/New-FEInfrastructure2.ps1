@@ -3935,11 +3935,11 @@ Function New-FEInfrastructure2
                 $This.Path      = $This.MDTModule.Split("\")[0..2] -join '\'
                 $This.MDTModule | Import-Module
                 Restore-MDTPersistentDrive
-                $This.Drive     = Get-MDTPersistentDrive | % { [PersistentDrive]::New($_) }
+                $This.Drive     = $This.RefreshDrives()
             }
-            RefreshDrives()
+            [Object] RefreshDrives()
             {
-                $This.Drive     = @( $This.AddNew(); Get-MdtPersistentDrive | % { [PersistentDrive]::New($_) })
+                @( $This.AddNew(); Get-MdtPersistentDrive | % { $This.AddNew($_) })
             }
             PSDShare([Object]$Drive)
             {
@@ -4068,13 +4068,26 @@ Function New-FEInfrastructure2
             {
                 Return $This.Drive | ? Name -eq $Name
             }
-            AddDrive()
+            [Object] AddDrive()
             {
-                $This.Drive += [PersistentDrive]::New()
+                If ($Object.Name -notin $This.Drive.Name)
+                {
+                    [PersistentDrive]::New()
+                }
             }
-            AddDrive([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
+            [Object] AddDrive([Object]$Object)
             {
-                $This.Drive += [PersistentDrive]::New($Name,$Root,$Share,$Description,$Type)
+                If ($Object.Name -notin $This.Drive.Name)
+                {
+                    [PersistentDrive]::New($Object)
+                }
+            }
+            [Object] AddDrive([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
+            {
+                If ($Name -notin $This.Drive.Name)
+                {
+                    [PersistentDrive]::New($Name,$Root,$Share,$Description,$Type)
+                }
             }
             RemoveDrive([String]$Name)
             {
