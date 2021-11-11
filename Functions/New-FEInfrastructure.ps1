@@ -9969,7 +9969,7 @@ Function New-FEInfrastructure
             }
             Until ($MacAddress -notmatch "0{12}")
             $Object.Stop()
-            $Reserve = $Main.VmController.Reservation | ? SwitchName -match $Object.DnsName 
+            $Reserve = $Main.VmController.Reservation | ? SwitchName -match $Object.Name 
             $Reserve.SetMacAddress($MacAddress)
             $Reserve.Add()
             $Object.LoadIso($Master.Iso)
