@@ -3940,7 +3940,7 @@ Function New-FEInfrastructure
             }
             [Object] RefreshDrives()
             {
-                @( $This.AddNew(); Get-MdtPersistentDrive | % { $This.AddNew($_) })
+                Return @( $This.AddNew(); Get-MdtPersistentDrive | % { $This.AddNew($_) })
             }
             PSDShare([Object]$Drive)
             {
@@ -4071,23 +4071,36 @@ Function New-FEInfrastructure
             }
             [Object] AddDrive()
             {
-                If ($Object.Name -notin $This.Drive.Name)
+                If ($Object.Name -in $This.Drive.Name)
                 {
-                    [PersistentDrive]::New()
+                    Throw "Drive already exists"
+                }
+                
+                Else
+                {
+                    Return [PersistentDrive]::New()
                 }
             }
             [Object] AddDrive([Object]$Object)
             {
-                If ($Object.Name -notin $This.Drive.Name)
+                If ($Object.Name -in $This.Drive.Name)
                 {
-                    [PersistentDrive]::New($Object)
+                    Throw "Drive already exists"
+                }
+                Else
+                {
+                    Return [PersistentDrive]::New($Object)
                 }
             }
             [Object] AddDrive([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
             {
-                If ($Name -notin $This.Drive.Name)
+                If ($Name -in $This.Drive.Name)
                 {
-                    [PersistentDrive]::New($Name,$Root,$Share,$Description,$Type)
+                    Throw "Drive already exists"
+                }
+                Else
+                {
+                    Return [PersistentDrive]::New($Name,$Root,$Share,$Description,$Type)
                 }
             }
             RemoveDrive([String]$Name)
