@@ -3940,7 +3940,7 @@ Function New-FEInfrastructure
             }
             [Object] RefreshDrives()
             {
-                Return @( $This.AddNew(); Get-MdtPersistentDrive | % { $This.AddNew($_) })
+                Return @( $This.AddDrive(); Get-MdtPersistentDrive | % { $This.AddDrive($_) })
             }
             PSDShare([Object]$Drive)
             {
@@ -4544,7 +4544,7 @@ Function New-FEInfrastructure
                 [WdsRegItem]::New("Auto Add Policy","HKLM:\System\CurrentControlSet\Services\WDSServer\Providers\WdsPxe\Providers\BINLSVC\AutoApprove","PendingMessage","REG_SZ",$Null)
 
                 # Time-Out Value
-                # The client state is not maintained on the server. Rather, the Wdsnbp.com program polls the server for the settings in the following keys after it has paused the client’s boot. The values for these settings are sent to the client by the server in the DHCP options field of the DHCP acknowledge control packet (ACK). The default setting for these values is to poll the server every 10 seconds for 2,160 tries, bringing the total default time-out to six hours.
+                # The client state is not maintained on the server. Rather, the Wdsnbp.com program polls the server for the settings in the following keys after it has paused the client�s boot. The values for these settings are sent to the client by the server in the DHCP options field of the DHCP acknowledge control packet (ACK). The default setting for these values is to poll the server every 10 seconds for 2,160 tries, bringing the total default time-out to six hours.
                 [WdsRegItem]::New("Time Out Value","HKLM:\System\CurrentControlSet\Services\WDSServer\Providers\WdsPxe\Providers\BINLSVC\AutoApprove","PollInterval","REG_DWORD",$Null) 
                 # The amount of time (in seconds) between polls of the server
 
