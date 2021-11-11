@@ -4071,15 +4071,7 @@ Function New-FEInfrastructure
             }
             [Object] AddDrive()
             {
-                If ($Object.Name -in $This.Drive.Name)
-                {
-                    Throw "Drive already exists"
-                }
-                
-                Else
-                {
-                    Return [PersistentDrive]::New()
-                }
+                Return [PersistentDrive]::New()
             }
             [Object] AddDrive([Object]$Object)
             {
