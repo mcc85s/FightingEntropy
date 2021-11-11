@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-11-10
-          Modified: 2021-11-10
+          Modified: 2021-11-11
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
@@ -4544,7 +4544,7 @@ Function New-FEInfrastructure
                 [WdsRegItem]::New("Auto Add Policy","HKLM:\System\CurrentControlSet\Services\WDSServer\Providers\WdsPxe\Providers\BINLSVC\AutoApprove","PendingMessage","REG_SZ",$Null)
 
                 # Time-Out Value
-                # The client state is not maintained on the server. Rather, the Wdsnbp.com program polls the server for the settings in the following keys after it has paused the client�s boot. The values for these settings are sent to the client by the server in the DHCP options field of the DHCP acknowledge control packet (ACK). The default setting for these values is to poll the server every 10 seconds for 2,160 tries, bringing the total default time-out to six hours.
+                # The client state is not maintained on the server. Rather, the Wdsnbp.com program polls the server for the settings in the following keys after it has paused the client?s boot. The values for these settings are sent to the client by the server in the DHCP options field of the DHCP acknowledge control packet (ACK). The default setting for these values is to poll the server every 10 seconds for 2,160 tries, bringing the total default time-out to six hours.
                 [WdsRegItem]::New("Time Out Value","HKLM:\System\CurrentControlSet\Services\WDSServer\Providers\WdsPxe\Providers\BINLSVC\AutoApprove","PollInterval","REG_DWORD",$Null) 
                 # The amount of time (in seconds) between polls of the server
 
@@ -4721,7 +4721,7 @@ Function New-FEInfrastructure
         DGList([String]$Name,[Object]$Value)
         {
             $This.Name  = $Name
-            $This.Value = $Value
+            $This.Value = @($Value;$Value -join ", ")[$Value.Count -gt 1]
         }
     }
 
@@ -8344,7 +8344,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.DcGetTopology.Add_Click(
     {
-        Write-Theme "Getting [~] Site List (Aggregate -> Topology)"
+        Write-Theme "Getting [!] Site List (Aggregate -> Topology)"
         $Main.Sitelist.GetSiteList()
         $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
@@ -8352,10 +8352,10 @@ Function New-FEInfrastructure
     
     $Xaml.IO.DcNewTopology.Add_Click(
     {
-        Write-Theme "Creating [~] Site List (Topology)"
         $Main.Sitelist.NewSiteList()
         $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
+        Write-Theme "Created [~] Site List (Topology)" 9,11,15
     })
 
     # ----------------------------- #
@@ -8437,10 +8437,10 @@ Function New-FEInfrastructure
 
     $Xaml.IO.NwNewSubnetName.Add_Click(
     {
-        Write-Theme "Creating [~] Site List (Topology)"
         $Main.NetworkList.NewNetworkList()
         $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
         $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
+        Write-Theme "Created [+] Network List (Topology)"
     })
 
     # ----------------- #
@@ -8456,7 +8456,7 @@ Function New-FEInfrastructure
     
         Else
         {
-            Write-Theme "Setting [~] Domain Sitemap (Aggregate)"
+            Write-Theme "Getting [~] Domain Sitemap (Aggregate)"
             $Main.Sitemap                    | % LoadSiteList    $Main.Sitelist.Aggregate
             $Main.Sitemap                    | % LoadNetworkList $Main.NetworkList.Aggregate
             $Main.Sitemap                    | % LoadSitemap
@@ -8480,7 +8480,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.SmGetSitemap.Add_Click(
     {
-        Write-Theme "Getting [~] Sitemap (Aggregate -> Topology)"
+        Write-Theme "Getting [~] Sitemap (Aggregate -> Topology)" 14,6,15
         $Main.Sitemap.GetSitemap()
         $Main.Reset($Xaml.IO.SmTopology.Items,$Main.Sitemap.Topology)
     })
@@ -8494,12 +8494,12 @@ Function New-FEInfrastructure
 
         Else
         {
-            Write-Theme "Creating [~] Sitemap (Topology)"
             $Main.Sitemap.SetSitelinkBridge($Xaml.IO.SmSiteLink.SelectedItem.DistinguishedName)
             $Main.Sitemap.NewSitemap()
             $Main.AddsController.LoadSitemap($Main.Sitemap.Aggregate)
             $Main.Reset($Xaml.IO.AddsSite.Items,$Main.AddsController.Sitemap.Name)
             $Xaml.IO.AddsSite.SelectedIndex = 0
+            Write-Theme "Created [+] Sitemap (Topology)" 10,2,15
         }
     })
 
@@ -8714,7 +8714,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Gateway.Count -gt 1)
         {
-            Write-Theme "Getting [~] Adds Site ([Gateway] Aggregate -> Output)"
+            Write-Theme "Getting [~] Adds Site ([Gateway] Aggregate -> Output)" 14,6,15
             $Main.AddsController.GetOutput("Gateway")
             ForEach ($Item in $Main.AddsController.Output.Gateway)
             {
@@ -8731,7 +8731,6 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Gateway.Count -gt 1)
         {
-            Write-Theme "Creating [~] Adds Site ([Gateway] Output)"
             ForEach ($Item in $Main.AddsController.Output.Gateway)
             {
                 If ($Item.Exists)
@@ -8744,6 +8743,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
+            Write-Theme "Created [+] Adds Site ([Gateway] Output)" 10,2,15
         }
     })
 
@@ -8751,7 +8751,6 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Gateway.Count -gt 1)
         {
-            Write-Theme "Removing [~] Adds Site ([Gateway] Output)" 12,4,15
             ForEach ($Item in $Main.AddsController.Output.Gateway)
             {
                 If (!$Item.Exists)
@@ -8764,6 +8763,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
+            Write-Theme "Removed [!] Adds Site ([Gateway] Output)" 12,4,15
         }
     })
 
@@ -8898,7 +8898,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Server.Count -gt 1)
         {
-            Write-Theme "Getting [~] Adds Site ([Server] Aggregate -> Output)"
+            Write-Theme "Getting [~] Adds Site ([Server] Aggregate -> Output)" 14,6,15
             $Main.AddsController.GetOutput("Server")
             ForEach ($Item in $Main.AddsController.Output.Server)
             {
@@ -8915,7 +8915,6 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Server.Count -gt 1)
         {
-            Write-Theme "Creating [~] Adds Site ([Server] Output)"
             ForEach ($Item in $Main.AddsController.Output.Server)
             {
                 If ($Item.Exists)
@@ -8928,6 +8927,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
+            Write-Theme "Created [+] Adds Site ([Server] Output)" 10,2,15
         }
     })
 
@@ -8935,7 +8935,6 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Server.Count -gt 1)
         {
-            Write-Theme "Removing [!] Adds Site ([Server] Output)" 12,4,15
             ForEach ($Item in $Main.AddsController.Output.Server)
             {
                 If (!$Item.Exists)
@@ -8948,6 +8947,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
+            Write-Theme "Removed [!] Adds Site ([Server] Output)" 12,4,15
         }
     })
 
@@ -9082,7 +9082,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Workstation.Count -gt 1)
         {
-            Write-Theme "Getting [~] Adds Site ([Workstation] Aggregate -> Output)"
+            Write-Theme "Getting [~] Adds Site ([Workstation] Aggregate -> Output)" 14,6,15
             $Main.AddsController.GetOutput("Workstation")
             ForEach ($Item in $Main.AddsController.Output.Workstation)
             {
@@ -9099,7 +9099,6 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Workstation.Count -gt 1)
         {
-            Write-Theme "Creating [~] Adds Site ([Workstation] Output)"
             ForEach ($Item in $Main.AddsController.Output.Workstation)
             {
                 If ($Item.Exists)
@@ -9112,6 +9111,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
+            Write-Theme "Created [+] Adds Site ([Workstation] Output)" 10,2,15
         }
     })
 
@@ -9119,7 +9119,6 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Workstation.Count -gt 1)
         {
-            Write-Theme "Removing [!] Adds Site ([Workstation] Output)" 12,4,15
             ForEach ($Item in $Main.AddsController.Output.Workstation)
             {
                 If (!$Item.Exists)
@@ -9132,6 +9131,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
+            Write-Theme "Removed [!] Adds Site ([Workstation] Output)" 12,4,15
         }
     })
 
@@ -9266,7 +9266,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.User.Count -gt 1)
         {
-            Write-Theme "Getting [~] Adds Site ([User] Aggregate -> Output)"
+            Write-Theme "Getting [~] Adds Site ([User] Aggregate -> Output)" 14,6,15
             $Main.AddsController.GetOutput("User")
             ForEach ($Item in $Main.AddsController.Output.User)
             {
@@ -9283,7 +9283,6 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.User.Count -gt 1)
         {
-            Write-Theme "Creating [~] Adds Site ([User] Output)"
             ForEach ($Item in $Main.AddsController.Output.User)
             {
                 If ($Item.Exists)
@@ -9296,6 +9295,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
+            Write-Theme "Created [+] Adds Site ([User] Output)" 14,6,15
         }
     })
 
@@ -9303,7 +9303,6 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.User.Count -gt 1)
         {
-            Write-Theme "Removing [!] Adds Site ([User] Output)" 12,4,15
             ForEach ($Item in $Main.AddsController.Output.User)
             {
                 If (!$Item.Exists)
@@ -9316,6 +9315,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
+            Write-Theme "Removed [!] Adds Site ([User] Output)" 12,4,15
         }
     })
 
@@ -9450,7 +9450,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Service.Count -gt 1)
         {
-            Write-Theme "Getting [~] Adds Site ([Service] Aggregate -> Output)"
+            Write-Theme "Getting [~] Adds Site ([Service] Aggregate -> Output)" 14,6,15
             $Main.AddsController.GetOutput("Service")
             ForEach ($Item in $Main.AddsController.Output.Service)
             {
@@ -9467,7 +9467,6 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Service.Count -gt 1)
         {
-            Write-Theme "Creating [~] Adds Site ([Service] Output)"
             ForEach ($Item in $Main.AddsController.Output.Service)
             {
                 If ($Item.Exists)
@@ -9480,6 +9479,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
+            Write-Theme "Created [+] Adds Site ([Service] Output)" 10,2,15
         }
     })
 
@@ -9487,7 +9487,6 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Service.Count -gt 1)
         {
-            Write-Theme "Removing [!] Adds Site ([Service] Output)" 12,4,15
             ForEach ($Item in $Main.AddsController.Output.Service)
             {
                 If (!$Item.Exists)
@@ -9500,6 +9499,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
+            Write-Theme "Removed [!] Adds Site ([Service] Output)" 12,4,15
         }
     })
 
@@ -9580,13 +9580,13 @@ Function New-FEInfrastructure
         {
             Yes 
             { 
-                Write-Theme "Removing [~] Existing (Adds -> VmHost) Node(s)"
+                Write-Theme "Removing [~] Existing (Adds -> VmHost) Node(s)" 14,6,15
                 ForEach ($Object in $Main.VmController.VmSelect | ? Exists -eq $True)
                 {
                     $Main.VmController.DeleteNode($Object)
                     $Main.Reset($Xaml.IO.VmSelect.Items,$Main.VmController.VmSelect)
                 }
-                Write-Theme "Removed [!] Existing (Adds -> VmHost) Node(s)"
+                Write-Theme "Removed [!] Existing (Adds -> VmHost) Node(s)" 12,4,15
             }
             No  
             { 
@@ -9598,7 +9598,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.VmCreateNodes.Add_Click(
     {
-        Write-Theme "Creating [~] Non-Existent (Adds -> VmHost) Node(s)"
+        Write-Theme "Creating [~] Non-Existent (Adds -> VmHost) Node(s)" 14,6,15
         $Main.Container = $Main.VmController.NodeContainer()
         ForEach ($Object in $Main.VmController.VmSelect | ? Exists -eq $False | ? Create)
         {
@@ -9622,7 +9622,7 @@ Function New-FEInfrastructure
         $Main.Reset($Xaml.IO.VmGateway.Items,$Main.Container.Gateway)
         $Main.Reset($Xaml.IO.VmServer.Items,$Main.Container.Server)
         $Main.Reset($Xaml.IO.VmWorkstation.Items,$Main.Container.Workstation)
-        Write-Theme "Created [+] Non-Existent (Adds -> VmHost Template) Node(s)"
+        Write-Theme "Created [+] Non-Existent (Adds -> VmHost Template) Node(s)" 10,2,15
     })
 
     # [Vm.Switch]
@@ -9643,7 +9643,7 @@ Function New-FEInfrastructure
     {
         If ($Main.Container.Gateway.Count -gt 0)
         {
-            Write-Theme "Getting [~] (Virtual Switches + DHCP Reservation) Templates"
+            Write-Theme "Getting [~] (Virtual Switch(es) + DHCP Reservation(s)) Templates" 14,6,15
             $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
             $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
         }
@@ -9653,14 +9653,14 @@ Function New-FEInfrastructure
     {
         If ($Main.VmController.Reservation.Count -gt 0)
         {
-            Write-Theme "Removing [~] Virtual Switches + DHCP Reservations"
+            Write-Theme "Removing [~] Virtual Switch(es) + DHCP Reservation(s)" 14,6,15
             ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists)
             {
                 $Object.Remove()
             }
             $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
             $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
-            Write-Theme "Removed [!] Virtual Switches + DHCP Reservations" 12,4,15
+            Write-Theme "Removed [!] Virtual Switch(es) + DHCP Reservation(s)" 12,4,15
         }
     })
 
@@ -9668,7 +9668,7 @@ Function New-FEInfrastructure
     {
         If ($Main.VmController.Reservation.Count -gt 0)
         {
-            Write-Theme "Creating [~] Virtual Switches + DHCP Reservation Template(s)"
+            Write-Theme "Creating [~] Virtual Switch(es) + DHCP Reservation Template(s)" 14,6,15
             ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists -eq 0)
             {
                 $Object.New()
@@ -9676,6 +9676,7 @@ Function New-FEInfrastructure
             }
             $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
             $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
+            Write-Theme "Created [+] Virtual Switch(es) + DHCP Reservation Template(s)" 10,2,15
         }
     })
 
@@ -9848,7 +9849,6 @@ Function New-FEInfrastructure
         # Gateway
         If ($Main.Container.Gateway.Count -gt 0)
         {
-            Write-Theme "Validating [~] Virtual Gateway(s)" 11,3,15
             $Main.Validate.ValidateBase(
                 "Gateway",
                 $Xaml.IO.VmGatewayPath.Text,
@@ -9885,7 +9885,6 @@ Function New-FEInfrastructure
         # Server
         If ($Main.Container.Server.Count -gt 0)
         {
-            Write-Theme "Validating [~] Virtual Server(s)" 11,3,15
             $Main.Validate.ValidateBase("Server",
                 $Xaml.IO.VmServerPath.Text,
                 $Xaml.IO.VmServerInstallType.SelectedItem.Content,
@@ -9920,7 +9919,6 @@ Function New-FEInfrastructure
         # Workstation
         If ($Main.Container.Workstation.Count -gt 0)
         {
-            Write-Theme "Validating [~] Virtual Workstations(s)" 11,3,15
             $Main.Validate.ValidateBase(
                 "Workstation",
                 $Xaml.IO.VmWorkstationPath.Text,
@@ -9960,7 +9958,7 @@ Function New-FEInfrastructure
         $Master = $Main.Validate.Gateway
         ForEach ($Object in $Master.Output)
         {   
-            Write-Theme ("Initializing [~] Virtual Gateway ({0})" -f $Object.Name) 14,6,15
+            Write-Theme ("Initializing [~] Virtual Gateway ({0})" -f $Object.DnsName) 14,6,15
             $Object.New()
             $Object.Update()
             $Object.Start()
@@ -9971,7 +9969,7 @@ Function New-FEInfrastructure
             }
             Until ($MacAddress -notmatch "0{12}")
             $Object.Stop()
-            $Reserve = $Main.VmController.Reservation | ? SwitchName -match $Object.Name 
+            $Reserve = $Main.VmController.Reservation | ? SwitchName -match $Object.DnsName 
             $Reserve.SetMacAddress($MacAddress)
             $Reserve.Add()
             $Object.LoadIso($Master.Iso)
@@ -9980,14 +9978,14 @@ Function New-FEInfrastructure
             $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
             $AddsNode.LoadVmObject($Object)
 
-            Write-Theme ("Initialized [+] Virtual Gateway ({0})" -f $Object.Name) 10,2,15
+            Write-Theme ("Initialized [+] Virtual Gateway ({0})" -f $Object.Dnsname) 10,2,15
         }
         $Main.VmController.AddsNode.Gateway = $Master.Container | ? Type -eq Gateway
 
         $Master = $Main.Validate.Server
         ForEach ($Object in $Master.Output)
         {
-            Write-Theme ("Initializing [~] Virtual Server ({0})" -f $Object.Name) 14,6,15
+            Write-Theme ("Initializing [~] Virtual Server ({0})" -f $Object.DnsName) 14,6,15
             $Object.New()
             $Object.Update()
             $Object.LoadIso($Master.Iso)
@@ -9996,25 +9994,26 @@ Function New-FEInfrastructure
             $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
             $AddsNode.LoadVmObject($Object)
 
-            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.Name) 10,2,15
+            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.DnsName) 10,2,15
         }
         $Main.VmController.AddsNode.Server = $Master.Container | ? Type -match "(Server|Domain Controller)"
 
         $Master = $Main.Validate.Workstation
         ForEach ($Object in $Master.Output)
         {
-            Write-Theme ("Initializing [~] Virtual Workstation ({0})" -f $Object.Name) 14,6,15
+            Write-Theme ("Initializing [~] Virtual Workstation ({0})" -f $Object.DnsName) 14,6,15
             $Object.New()
             $Object.Update()
             $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
             $AddsNode.LoadVmObject($Object)
 
-            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.Name) 10,2,15
+            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.DnsName) 10,2,15
         }
         $Main.VmController.AddsNode.Workstation = $Master.Container | ? Type -eq Workstation
 
         # [Writing Output to files for installation]
         $Main.VmController.WriteOutput("$Home\Desktop")
+        Write-Theme "Complete [+] Virtual Infrastructure Deployed (Installation can begin)"
     })
 
     # --------------- #
@@ -10039,7 +10038,7 @@ Function New-FEInfrastructure
 
         Else
         {
-            Write-Theme "Getting [~] (*.iso) file(s)"
+            Write-Theme "Getting [~] (*.iso) file(s)" 14,6,15
             $Xaml.IO.IsoPath.Text        = $Item.SelectedPath
             $Main.ImageController.LoadSilo($Xaml.IO.IsoPath.Text) 
             $Main.Reset($Xaml.IO.IsoList.Items,$Main.ImageController.Store)
@@ -10215,7 +10214,7 @@ Function New-FEInfrastructure
 
         Else
         {
-            Write-Theme "Getting [~] Windows Update Package(s)"
+            Write-Theme "Getting [~] Windows Update Package(s)" 14,6,15
             $Xaml.IO.UpdPath.Text = $Item.SelectedPath
             $Main.UpdateController.SetUpdateBase($Xaml.IO.UpdPath.Text)
             $Main.UpdateController.ProcessFileList()
@@ -10249,7 +10248,7 @@ Function New-FEInfrastructure
 
         Else
         {
-            Write-Theme "Getting [~] (*.wim) file(s)"
+            Write-Theme "Getting [~] (*.wim) file(s)" 14,6,15
             $Xaml.IO.UpdWimPath.Text = $Item.SelectedPath
             $Main.UpdateController.GetWimFiles($Xaml.IO.UpdWimPath.Text)
             $Main.Reset($Xaml.IO.UpdWim.Items,$Main.UpdateController.WimList)
@@ -10262,6 +10261,7 @@ Function New-FEInfrastructure
 
     If ($Main.Config.Output | ? Name -eq MDT | ? Value -eq 1)
     {
+        Write-Theme "Loading [+] Microsoft Deployment Toolkit (AKA Top-Shelf Toolkit)"
         Get-MDTModule | Import-Module
         Restore-MDTPersistentDrive
     }
@@ -10285,10 +10285,10 @@ Function New-FEInfrastructure
             
             # Drive Properties
             $Xaml.IO.DsShareConfig.IsEnabled   = 0
-            $Main.Reset($Xaml.IO.DsProperty.Items,$Null)
+            $Xaml.IO.DsProperty.Items.Clear()
 
             # Current TS/OS
-            $Main.Reset($Xaml.IO.DsCurrentWimFiles.Items,$Null)
+            $Xaml.IO.DsCurrentWimFiles.Items.Clear()
         }
 
         Else
@@ -10310,16 +10310,16 @@ Function New-FEInfrastructure
 
             # Config
             $Xaml.IO.DsBootstrapPath.Text      = $Object.Config[0].Path
-            $Xaml.IO.DsBootstrap.Text          = $Object.Config[0].Content -Split "`n"
+            $Xaml.IO.DsBootstrap.Text          = $Object.Config[0].Content -join "`n"
             
             $Xaml.IO.DsCustomSettingsPath.Text = $Object.Config[1].Path
-            $Xaml.IO.DsCustomSettings.Text     = $Object.Config[1].Content -Split "`n"
+            $Xaml.IO.DsCustomSettings.Text     = $Object.Config[1].Content -join "`n"
             
             $Xaml.IO.DsPostConfigPath.Text     = $Object.Config[2].Path
-            $Xaml.IO.DsPostConfig.Text         = $Object.Config[2].Content -Split "`n"
+            $Xaml.IO.DsPostConfig.Text         = $Object.Config[2].Content -join "`n"
 
             $Xaml.IO.DsDsKeyPath.Text          = $Object.Config[3].Path
-            $Xaml.IO.DsDsKey.Text              = $Object.Config[3].Content -Split "`n"
+            $Xaml.IO.DsDsKey.Text              = $Object.Config[3].Content -join "`n"
         }
     })
 
@@ -10377,7 +10377,6 @@ Function New-FEInfrastructure
             $Main.Reset($Xaml.IO.DsAggregate.Items,$Main.MdtController.Drive)
         }
     })
-
 
     # DsAggregate                DataGrid
     # DsRootSelect               Button
@@ -10454,11 +10453,11 @@ Function New-FEInfrastructure
 
 <#
 
-Add-Type -AssemblyName PresentationFramework
-. $Home\Desktop\New-FEInfrastructure2.ps1
-$Cap = New-FEInfrastructure2
+$Cap = New-FEInfrastructure -Test
 
 $Xaml = $Cap.Xaml
 $Main = $Cap.Main
 
 $Xaml.Invoke()
+
+#>
