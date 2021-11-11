@@ -6,23 +6,24 @@
 .LINK
 
 .NOTES
-          FileName: New-FEInfrastructure2.ps1
+          FileName: New-FEInfrastructure.ps1
           Solution: FightingEntropy Module
           Purpose: For managing the configuration AND distribution of ADDS nodes, virtual hive clusters, MDT/WDS shares, and sewing it all together like a friggen badass... 
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
-          Created: 2021-10-09
+          Created: 2021-11-10
           Modified: 2021-11-10
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
-          TODO: VM tab, MDT, WDS
+          TODO: MDT, WDS
 
 .Example
 #>
-Function New-FEInfrastructure2
+Function New-FEInfrastructure
 {
+    [CmdLetBinding(DefaultParameterSetName=0)]Param([Parameter(ParameterSetName=1)][Switch]$Test)
     # Testing an overhaul of New-FEInfrastructure
     Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
     Import-Module FightingEntropy
@@ -4123,7 +4124,7 @@ Function New-FEInfrastructure2
             }
             [String] NewLabel()
             {
-                Return ( 0..99 | % { "FE{0:d3}" -f $_ } | ? { $_ -notin $This.Drive.Name } | Select-Object -First 1 )
+                Return ( 1..99 | % { "FE{0:d3}" -f $_ } | ? { $_ -notin $This.Drive.Name } | Select-Object -First 1 )
             }
             [String] NewDescription()
             {
@@ -10429,7 +10430,21 @@ Function New-FEInfrastructure2
     # DsCreate                   Button
     # DsUpdate                   Button
 
-    Return @{ Xaml = $Xaml; Main = $Main }
+    Switch($PSCmdLet.ParameterSetName)
+    {
+        0
+        {
+            $Xaml.Invoke()
+        }
+        1
+        {
+            Return @{ 
+                
+                Xaml = $Xaml; 
+                Main = $Main 
+            }
+        }
+    }
 }
 
 <#
@@ -10442,11 +10457,3 @@ $Xaml = $Cap.Xaml
 $Main = $Cap.Main
 
 $Xaml.Invoke()
-
-# ---- #
-
-$Main.UpdateController.SetBase("C:\Updates")
-$Main.UpdateController.ProcessFileList()
-$Main.UpdateController.UpdateList 
-
-#>
