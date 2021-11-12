@@ -3619,13 +3619,21 @@ Function New-FEInfrastructure
             [String]      $Name
             [String]      $Path
             [String[]] $Content
+            [Object]    $Object
             PersistentDriveConfig([String]$Name,[String]$Path)
             {
                 $This.Name    = $Name
                 $This.Path    = $Path
                 If (Test-Path $Path)
                 {
-                    $This.Content = If ($Name -match "DSKey") { Import-CSV $Path } Else { Get-Content $Path }
+                    If ($Name -match "DSKey") 
+                    { 
+                        $This.Content = (Import-CSV $Path).PSObject.Properties | % { "$($_.Name)=`"$($_.Value)`"" } 
+                    } 
+                    Else 
+                    { 
+                        $This.Content = Get-Content $Path
+                    }
                 }
                 If (!(Test-Path $Path))
                 {
@@ -3637,6 +3645,7 @@ Function New-FEInfrastructure
                 $This.Content  = $Content
                 If ($This.Name -eq "DSKey")
                 {
+                    $Object = 
                     Export-CSV -Path $This.Path -InputObject $Content -Verbose
                 }
                 Else
@@ -3831,7 +3840,7 @@ Function New-FEInfrastructure
             }
             [Object] SelectConfig([String]$Type)
             {
-                Return ($This.Config | ? Type -eq $Type)
+                Return ($This.Config | ? Name -eq $Type)
             }
             [String] GetHostname()
             {
@@ -3904,6 +3913,17 @@ Function New-FEInfrastructure
                 $This.Hours           = $Root.Hours
                 $This.Website         = $Root.Website
             }
+            Key([Object]$Object)
+            {
+                $This.NetworkPath     = $Object[0].Split('"')[1]
+                $This.Organization    = $Object[1].Split('"')[1]
+                $This.CommonName      = $Object[2].Split('"')[1]
+                $This.Background      = $Object[3].Split('"')[1]
+                $This.Logo            = $Object[4].Split('"')[1]
+                $This.Phone           = $Object[5].Split('"')[1]
+                $This.Hours           = $Object[6].Split('"')[1]
+                $This.Website         = $Object[7].Split('"')[1]
+            }
             Key([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
             {
                 $This.Networkpath     = $NetworkPath
@@ -3911,7 +3931,7 @@ Function New-FEInfrastructure
                 $This.CommonName      = $CommonName
                 $This.Background      = $Background
                 $This.Logo            = $Logo
-                $this.Phone           = $Phone
+                $This.Phone           = $Phone
                 $This.Hours           = $Hours
                 $This.Website         = $Website
             }
@@ -4124,6 +4144,7 @@ Function New-FEInfrastructure
                 Else
                 {
                     $This.Drive.Add([PersistentDrive]::New($Name,$Root,$Share,$Description,$Type))
+                    Write-Theme "Added [+] Persistent Drive ($Name)" 9,11,15
                 }
             }
             RemoveDrive([String]$Name)
@@ -4134,7 +4155,7 @@ Function New-FEInfrastructure
                     Remove-Item -Path $Select.Root -Force -Recurse -Confirm:$False  -Verbose
                     Remove-SMBShare -Name $Select.Share -Force -Confirm:$False -Verbose
                     Remove-MDTPersistentDrive -Name $Select.Name -Verbose
-                    Write-Host "Drive removed"
+                    Write-Theme "Removed [!] Persistent Drive ($($Select.Name))" 12,4,15
                     $This.Drive.Remove($Select)
                 }
             }
@@ -4158,130 +4179,101 @@ Function New-FEInfrastructure
             {
                 Return ("\\{0}\{1}" -f $This.GetHostname(), $This.GetDrive($Name).Share)
             }
-            [Object] GetBrand()
+            ImportImages([UInt32]$Mode)
             {
-                Return [Brand]::New()
-            }
-            [Object] NewBrand([String]$Wallpaper,[String]$Logo,[String]$Manufacturer,[String]$Phone,[String]$Hours,[String]$URL)
-            {
-                Return [Brand]::New($Wallpaper,$Logo,$Manufacturer,$Phone,$Hours,$URL)
-            }
-            SetBrand([Object]$Brand)
-            {
-                $This.Brand = $Brand
-            }
-            [Object] GetKey([Object]$Path)
-            {
-                Return [Key]::New($Path)
-            }
-            SetKey([String]$Name,[Object]$Key)
-            {
-                $Select       = $This.GetDrive($Name)
-                $Item         = $Select.Config | ? Name -eq DSKey
-                $Item.SetContent($Key)
-            }
-            [Object] NewDomainJoin([String]$Username,[SecureString]$Password,[String]$NetBIOS,[String]$DnsName,[String]$OUName)
-            {
-                Return [Domain]::New($Username,$Password,$NetBIOS,$DnsName,$OUName)
-            }
-            ImportImages([String]$Name,[String]$Path,[UInt32]$Mode)
-            {
-                If (!$This.Brand)
+                If (!$This.Selected.Brand)
                 {
                     Throw "Create a brand first"
                 }
-                If (!$This.Admin)
+
+                If (!$This.Selected.Administrator)
                 {
                     Throw "Enter local administrator username first"
                 }
-                If (!$This.Password)
+
+                If (!$This.Selected.Password)
                 {
                     Throw "Enter local administrator password"
                 }
 
-                $Select = $This.GetDrive($Name)
-                If ($Select)
+                If ($This.Selected.Images.Import.Count -eq 0)
                 {
-                    $Select.Images.Load("Import",$Path)
-
-                    ForEach ($Image in $Select.Images.Import)
-                    {
-                        $Item = $Select.Images.Current | ? Label -eq $Image.Label
-                        If ($Item)
-                        {
-                            Write-Theme "Removing [~] ($($Image.Label))"
-                            $TS     = $Select.Select("Task Sequences")    | ? Name -eq $Item.ImageName
-                            $OS     = $Select.Select("Operating Systems") | ? GUID -eq "{$($This.ExtractGUID($TS.Node.GetPhysicalSourcePath()))}"
-
-                            Remove-Item -Path $TS.Path -Verbose
-                            Remove-Item -Path $OS.Path -Verbose
-
-                            $Image.Rank = $Item.Rank
-                            $Select.Images.Current[$Item.Rank] = $Image
-                            $Item = $Null
-                        }
-                        If (!$Item)
-                        {
-                            $Image.Rank              = $Select.Images.Current.Count
-                            $Select.Images.Current += $Item
-                        }
-
-                        $Root       = "$($Select.Name):"
-                        $OS         = "$Root\Operating Systems"
-                        $TS         = "$Root\Task Sequences"
-
-                        # [Create folders in the new MDT share]
-                        ForEach ($Slot in $OS,$TS)
-                        {
-                            If (!(Test-Path "$Slot\$($Image.InstallationType)"))
-                            {
-                                New-Item -Path $Slot -Enable True -Name $Image.InstallationType -Comments $Image.Description -ItemType Folder -Verbose
-                            }
-                            If (!(Test-Path "$Slot\$($Image.InstallationType)\$($Image.Version)"))
-                            {
-                                New-Item -Path "$Slot\$($Image.InstallationType)" -Enable True -Name $Image.Version -Comments $Image.Description -ItemType Folder -Verbose
-                            }
-                        }
-              
-                        # [Inject the Wim files into the MDT share]
-                        $OSPath                 = "$OS\$($Image.InstallationType)\$($Image.Version)"
-                        $OperatingSystem        = @{
-
-                            Path                = $OSPath
-                            SourceFile          = $Image.SourceImagePath
-                            DestinationFolder   = $Image.Label
-                        }
-                    
-                        Switch ($Mode)
-                        {
-                            0
-                            {
-                                Import-MDTOperatingSystem @OperatingSystem -Verbose
-                            }
-                            1
-                            {
-                                Import-MDTOperatingSystem @OperatingSystem -Move -Verbose
-                            }
-                        }
-
-                        $TaskSequence           = @{ 
-                            
-                            Path                = "$TS\$($Image.InstallationType)\$($Image.Version)"
-                            Name                = $Image.ImageName
-                            Template            = "{0}{1}Mod.xml" -f $Select.Type, $Image.InstallationType
-                            Comments            = $Image.ImageDescription
-                            ID                  = $Image.Label
-                            Version             = "1.0"
-                            OperatingSystemPath = Get-ChildItem -Path "$OS\$($Image.InstallationType)\$($Image.Version)" | ? Name -match $Image.Label | % { "{0}\{1}" -f $OSPath, $_.Name }
-                            FullName            = $This.Admin
-                            OrgName             = $This.Brand.Manufacturer
-                            HomePage            = $This.Brand.SupportURL
-                            AdminPassword       = $This.Password
-                        }
-
-                        Import-MDTTaskSequence @TaskSequence -Verbose
-                    }
+                    Throw "Images not yet selected"
                 }
+
+                ForEach ($Image in $This.Selected.Images.Import)
+                {
+                    $Item = $This.Selected.Images.Current | ? Label -eq $Image.Label
+                    If ($Item)
+                    {
+                        Write-Theme "Removing [~] ($($Image.Label))"
+                        $TS     = $This.Selected.Select("Task Sequences")    | ? Name -eq $Item.ImageName
+                        $OS     = $This.Selected.Select("Operating Systems") | ? GUID -eq "{$($This.ExtractGUID($TS.Node.GetPhysicalSourcePath()))}"
+
+                        Remove-Item -Path $TS.Path -Verbose
+                        Remove-Item -Path $OS.Path -Verbose
+
+                        $Image.Rank = $Item.Rank
+                        $This.Selected.Images.Current[$Item.Rank] = $Image
+                        $Item = $Null
+                    }
+                    If (!$Item)
+                    {
+                        $Image.Rank                    = $This.Selected.Images.Current.Count
+                        $This.Selected.Images.Current += $Item
+                    }
+
+                    $Root       = "$($This.Selected.Name):"
+                    $OS         = "$Root\Operating Systems"
+                    $TS         = "$Root\Task Sequences"
+
+                    # [Create folders in the new MDT share]
+                    ForEach ($Slot in $OS,$TS)
+                    {
+                        If (!(Test-Path "$Slot\$($Image.InstallationType)"))
+                        {
+                            New-Item -Path $Slot -Enable True -Name $Image.InstallationType -Comments $Image.Description -ItemType Folder -Verbose
+                        }
+                        If (!(Test-Path "$Slot\$($Image.InstallationType)\$($Image.Version)"))
+                        {
+                            New-Item -Path "$Slot\$($Image.InstallationType)" -Enable True -Name $Image.Version -Comments $Image.Description -ItemType Folder -Verbose
+                        }
+                    }
+              
+                    # [Inject the Wim files into the MDT share]
+                    $OSPath                 = "$OS\$($Image.InstallationType)\$($Image.Version)"
+                    $OperatingSystem        = @{
+
+                        Path                = $OSPath
+                        SourceFile          = $Image.SourceImagePath
+                        DestinationFolder   = $Image.Label
+                    }
+                    
+                    Switch ($Mode)
+                    {
+                        0 { Import-MDTOperatingSystem @OperatingSystem       -Verbose }
+                        1 { Import-MDTOperatingSystem @OperatingSystem -Move -Verbose }
+                    }
+
+                    $TaskSequence           = @{ 
+                            
+                        Path                = "$TS\$($Image.InstallationType)\$($Image.Version)"
+                        Name                = $Image.ImageName
+                        Template            = "{0}{1}Mod.xml" -f $This.Selected.Type, $Image.InstallationType
+                        Comments            = $Image.ImageDescription
+                        ID                  = $Image.Label
+                        Version             = "1.0"
+                        OperatingSystemPath = $This.Selected.Select("Operating Systems") | ? Name -match $Image.Label | % Path
+                        FullName            = $This.Selected.Administrator
+                        OrgName             = $This.Selected.Brand.Manufacturer
+                        HomePage            = $This.Selected.Brand.SupportURL
+                        AdminPassword       = $This.Selected.Password
+                    }
+
+                    Import-MDTTaskSequence @TaskSequence -Verbose
+                }
+
+                $This.Selected.Images.Import = @( )
             }
             [String] GetNextEventPort()
             {
@@ -4404,11 +4396,35 @@ Function New-FEInfrastructure
                 }
                 Return $This.Enumerate($Output)
             }
-            [Object] PostConfig([String]$Key)
+            [Object] PostConfig([String]$KeyPath)
             {
                 Return @("[Net.ServicePointManager]::SecurityProtocol = 3072",
                 "Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | Invoke-Expression",
                 "`$Module = Get-FEModule","`$Module.Role.LoadEnvironmentKey(`"$Key`")","`$Module.Role.Choco()" -join "`n")
+            }
+            [Object] DSKey([Object]$Object)
+            {
+                Return [Key]::New($Object)
+            }
+            [Object] GetBrand()
+            {
+                Return [Brand]::New()
+            }
+            [Object] NewBrand([String]$Wallpaper,[String]$Logo,[String]$Manufacturer,[String]$Phone,[String]$Hours,[String]$URL)
+            {
+                Return [Brand]::New($Wallpaper,$Logo,$Manufacturer,$Phone,$Hours,$URL)
+            }
+            [Object] GetKey([Object]$Path)
+            {
+                Return [Key]::New($Path)
+            }
+            [Object] NewKey([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
+            {
+                Return [Key]::New($NetworkPath,$Organization,$CommonName,$Background,$Logo,$Phone,$Hours,$Website).PsObject.Properties | % { "$($_.Name)=`"$($_.Value)`"" }
+            }
+            [Object] NewDomainJoin([String]$Username,[SecureString]$Password,[String]$NetBIOS,[String]$DnsName,[String]$OUName)
+            {
+                Return [Domain]::New($Username,$Password,$NetBIOS,$DnsName,$OUName)
             }
             [String] GetHostname()
             {
@@ -10598,6 +10614,7 @@ Function New-FEInfrastructure
             $Object.SetDefaults($Main.Module)
             $Xaml.IO.DsAggregate.Items.Clear()
             $Main.Reset($Xaml.IO.DsAggregate.Items,$Main.MdtController.Drive)
+            Write-Theme "Successs [+] Added Persistent Drive: ($($Object.Name))" 9,11,15
         }
     })
 
@@ -10626,7 +10643,7 @@ Function New-FEInfrastructure
                 }
                 No
                 {
-                    Write-Host "User cancelled drive removal"
+                    Write-Theme "Exception [!] User cancelled drive removal" 12,4,15
                     Break
                 }
             }
@@ -10853,6 +10870,163 @@ Function New-FEInfrastructure
             $Main.MDTController.Selected.Domain = $Main.MdtController.NewDomainJoin($Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.SecurePassword,$Xaml.IO.DsNetBiosName.Text,$Xaml.IO.DsDnsName.Text,$Xaml.IO.DsMachineOu.Text)
         }
     })
+
+    $Xaml.IO.DsImportSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        ElseIf ((Get-ChildItem $Item.SelectedPath *.wim -Recurse).Count -eq 0)
+        {
+            Return [System.Windows.MessageBox]::Show("No (*.wim) files found","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.DsImportPath.Text = $Item.SelectedPath
+            $Main.MdtController.Selected.Images.Load("Import",$Item.SelectedPath)
+        }
+    })
+
+    $Xaml.IO.DsImport.Add_Click(
+    {
+        $Main.MdtController.ImportImages($Xaml.IO.DsImportMode.SelectedIndex)
+    })
+
+
+    # Select Images
+    # Import Images
+
+    # Generate Bootstrap
+    $Xaml.IO.DsGenerateBootstrap.Add_Click(
+    {
+        If (!$Main.MdtController.Selected.Brand)
+        {
+            Return [System.Windows.MessageBox]::Show("Create a brand item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Domain)
+        {
+            Return [System.Windows.MessageBox]::Show("Create a domain/network item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Administrator)
+        {
+            Return [System.Windows.MessageBox]::Show("Enter a local administrator username first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Password)
+        {
+            Return [System.Windows.MessageBox]::Show("Enter a local administrator password first","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.DsBootstrap.Text  = $Main.MdtController.Bootstrap(
+                $Main.MdtController.Selected.Type,
+                $Main.MdtController.Selected.Domain.NetBIOS,
+                $Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name),
+                $Main.MdtController.Selected.Domain.Credential.Username,
+                $Main.MdtController.Selected.Domain.Credential.GetNetworkCredential().Password
+            )
+        }
+    })
+
+    # Apply Bootstrap
+    $Xaml.IO.DsApplyBootstrap.Add_Click(
+    {
+        $Main.MdtController.Selected.Config | ? Name -eq Bootstrap | % SetContent $Xaml.IO.DsBootstrap.Text.Split("`n")
+    })
+
+    # Generate Custom
+    $Xaml.IO.DsGenerateCustomSettings.Add_Click(
+    {
+        If (!$Main.MdtController.Selected.Brand)
+        {
+            Return [System.Windows.MessageBox]::Show("Create a brand item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Domain)
+        {
+            Return [System.Windows.MessageBox]::Show("Create a domain/network item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Administrator)
+        {
+            Return [System.Windows.MessageBox]::Show("Enter a local administrator username first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Password)
+        {
+            Return [System.Windows.MessageBox]::Show("Enter a local administrator password first","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.DsCustomSettings.Text  = $Main.MdtController.CustomSettings(
+                $Main.MdtController.Selected.Type,
+                $Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name),
+                $Main.MdtController.Selected.Brand.Manufacturer,
+                $Main.MdtController.Selected.Domain.NetBIOS,
+                $Main.MdtController.Selected.Domain.DnsName,
+                $Main.MdtController.GetHostname(),
+                $Main.MdtController.Selected.Domain.MachineOU,
+                $Main.MdtController.Selected.Domain.Credential.Username,
+                $Main.MdtController.Selected.Domain.Credential.GetNetworkCredential().Password
+            )
+        }
+    })
+
+    # Apply Custom
+    $Xaml.IO.DsApplyCustomSettings.Add_Click(
+    {
+        $Main.MdtController.Selected.Config | ? Name -eq CustomSettings | % SetContent $Xaml.IO.DsCustomSettings.Text.Split("`n")
+    })
+
+    # Generate Post
+    $Xaml.IO.GeneratePostconfig.Add_Click(
+    {
+        $Xaml.IO.PostConfig.Text = $Main.MdtController.Postconfig("$($Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name))\DSKey.csv")
+    })
+
+    # Apply Post
+    $Xaml.IO.ApplyPostConfig.Add_Click(
+    {
+        $Main.MdtController.Selected.Config | ? Name -eq Postconfig | % SetContent $Xaml.Io.PostConfig.Text
+    })
+
+    # Generate Key
+    $Xaml.IO.GenerateKey.Add_Click(
+    {
+        $Xaml.IO.DsDSKey.Text = $Main.MdtController.NewKey(
+            $Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name),
+            $Main.MdtController.Organization,
+            $Main.MdtController.CommonName,
+            $Main.MdtController.Selected.Brand.Wallpaper,
+            $Main.MdtController.Selected.Brand.Logo,
+            $Main.MdtController.Selected.Brand.SupportPhone,
+            $Main.MdtController.Selected.Brand.SupportHours,
+            $Main.MdtController.Selected.Brand.SupportURL)
+    })
+
+    # Apply Key
+    $Xaml.IO.ApplyDsKey.Add_Click(
+    {
+        $Main.MdtController.Selected.Config | ? Name -eq DSKey | % SetContent $Xaml.IO.DsDSKey.Text
+    })
+
+    # Update mode
+    $Xaml.IO.DsUpdate.Add_Click(
+    {
+        Update-MDTDeploymentShare -Name $Main.MdtController.Selected.Name
+    })
+    
+    # Send to WDS
 
     Switch($PSCmdLet.ParameterSetName)
     {
