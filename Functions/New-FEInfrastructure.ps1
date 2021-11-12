@@ -13,11 +13,11 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-11-10
-          Modified: 2021-11-11
+          Modified: 2021-11-12
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
-          TODO: MDT, WDS
+          TODO: MDT - about done, WDS
 
 .Example
 #>
@@ -3625,13 +3625,24 @@ Function New-FEInfrastructure
                 $This.Path    = $Path
                 If (Test-Path $Path)
                 {
-                    $This.Content = Get-Content $Path
+                    $This.Content = If ($Name -match "DSKey") { Import-CSV $Path } Else { Get-Content $Path }
+                }
+                If (!(Test-Path $Path))
+                {
+                    New-Item -Path $Path -Verbose
                 }
             }
-            SetContent([String[]]$Content)
+            SetContent([Object]$Content)
             {
-                $This.Content = $Content
-                [System.IO.File]::WriteAllLines($This.Path,$This.Content,[System.Text.UTF8Encoding]::New($False))
+                $This.Content  = $Content
+                If ($This.Name -eq "DSKey")
+                {
+                    Export-CSV -Path $This.Path -InputObject $Content -Verbose
+                }
+                Else
+                {
+                    [System.IO.File]::WriteAllLines($This.Path,$This.Content,[System.Text.UTF8Encoding]::New($False))
+                }
             }
         }
 
@@ -3695,6 +3706,10 @@ Function New-FEInfrastructure
             [Object] $Content
             [Object] $Config
             [Object] $Images
+            [Object] $Brand
+            [Object] $Connection
+            [String] $Administrator
+            [String] $Password
             PersistentDrive([Object]$Drive)
             {
                 $This.Name        = $Drive.Name
@@ -3758,13 +3773,15 @@ Function New-FEInfrastructure
                 New-SMBShare @SMB
                 New-PSDrive  @PSD -Verbose | Add-MDTPersistentDrive -Verbose
 
-                $This.Config      = [PersistentDriveConfigList]::New($This.Root).Output
+                $This.Property    = $This.GetDriveProperties()
+                $This.Content     = $This.GetDriveContent()
+                $This.Config      = [PersistentDriveConfigList]::New($This.Root).Config
                 $This.Images      = [PersistentDriveImages]::New()
             }
             SetDefaults([Object]$Module)
             {
                 # Copies the background and logo if they were selected and are found
-                ForEach ($File in $Module.Graphics | ? Name -in "background.jpg","OEMlogo.bmp")
+                ForEach ($File in $Module.Graphics | ? Name -in "background.jpg","OEMlogo.bmp" | % Path)
                 {
                     Copy-Item -Path $File -Destination "$($This.Root)\Script" -Verbose
                 }
@@ -3778,7 +3795,7 @@ Function New-FEInfrastructure
                 # Copies custom template for FightingEntropy to post install/configure
                 ForEach ($File in $Module.Control | ? Name -match Mod.xml)
                 {
-                    Copy-Item -Path $File.FullName -Destination "$env:ProgramFiles\Microsoft Deployment Toolkit\Templates" -Force -Verbose
+                    Copy-Item -Path $File.FullName -Destination "$($This.Path)\Templates" -Force -Verbose
                 }
             }
             [Object] GetDriveProperties()
@@ -3788,6 +3805,7 @@ Function New-FEInfrastructure
             SetDriveProperty([String]$Name,[Object]$Value)
             {
                 $Item = $This.Property | ? Name -eq $Name
+                Restore-MDTPersistentDrive
                 If ($Name -in $This.Property.Name)
                 {
                     Set-ItemProperty -Path $This.Drive -Name $Name -Value $Value
@@ -3807,27 +3825,11 @@ Function New-FEInfrastructure
             }
             [Object[]] Select([String]$Type)
             {
-                Return @( $This.Content | ? Type -eq $Type | % Content )
+                Return @($This.Content | ? Type -eq $Type | % Content)
             }
-            [Object] GetKey([Object]$Path)
+            [Object] SelectConfig([String]$Type)
             {
-                Return [Key]::New($Path)
-            }
-            [Object] NewKey([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
-            {
-                Return [Key]::New($NetworkPath,$Organization,$CommonName,$Background,$Logo,$Phone,$Hours,$Website)
-            }
-            [Object] GetBrand()
-            {
-                Return [Brand]::New()
-            }
-            [Object] NewBrand([String]$Wallpaper,[String]$Logo,[String]$Manufacturer,[String]$Phone,[String]$Hours,[String]$URL)
-            {
-                Return [Brand]::New($Wallpaper,$Logo,$Manufacturer,$Phone,$Hours,$URL)
-            }
-            SetBrand([Object]$Brand)
-            {
-                $This.Brand = $Brand
+                Return ($This.Config | ? Type -eq $Type)
             }
             [String] GetHostname()
             {
@@ -3849,7 +3851,7 @@ Function New-FEInfrastructure
             [String] $SupportURL
             Brand()
             {
-                Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System -Ea 0 | % {
+                Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System -EA 0 | % {
 
                     $This.Wallpaper    = $_.Wallpaper
                 }
@@ -3888,16 +3890,17 @@ Function New-FEInfrastructure
             [String]           $Phone
             [String]           $Hours
             [String]         $Website
-            Key([Object]$Root)
+            Key([String]$Path)
             {
-                $This.NetworkPath     = $Root[0]
-                $This.Organization    = $Root[1]
-                $This.CommonName      = $Root[2]
-                $This.Background      = $Root[3]
-                $This.Logo            = $Root[4]
-                $This.Phone           = $Root[5]
-                $This.Hours           = $Root[6]
-                $This.Website         = $Root[7]
+                $Root                 = Import-CSV $Path     
+                $This.NetworkPath     = $Root.NetworkPath
+                $This.Organization    = $Root.Organization
+                $This.CommonName      = $Root.CommonName
+                $This.Background      = $Root.Background 
+                $This.Logo            = $Root.Logo
+                $This.Phone           = $Root.Phone
+                $This.Hours           = $Root.Hours
+                $This.Website         = $Root.Website
             }
             Key([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
             {
@@ -3912,15 +3915,30 @@ Function New-FEInfrastructure
             }
         }
 
+        Class Domain
+        {
+            [Object] $Credential
+            [String] $NetBIOS
+            [String] $DnsName
+            [String] $MachineOU
+            Domain([String]$Username,[SecureString]$Password,[String]$NetBIOS,[String]$DnsName,[String]$OUName)
+            {
+                $This.Credential = [PSCredential]::New($Username,$Password)
+                $This.NetBIOS    = $NetBIOS
+                $This.DnsName    = $DnsName
+                $This.MachineOU  = $OUName
+            }
+        }
+
         Class MdtController
         {
             [Object]       $Module
             [String]    $MDTModule
             [Object]         $Path
+            [String] $Organization
+            [String]   $CommonName
             [Object]        $Drive
-            [Object]        $Brand
-            [String]        $Admin
-            [String]     $Password
+            [Object]     $Selected
             MdtController([Object]$Module)
             {
                 If (!$Module)
@@ -3932,22 +3950,33 @@ Function New-FEInfrastructure
                     $This.Module = $Module
                 }
 
-                $This.MDTModule = Get-MDTModule
-                $This.Path      = $This.MDTModule.Split("\")[0..2] -join '\'
-                $This.MDTModule | Import-Module
+                $This.MDTModule  = Get-MDTModule
+                $This.Path       = $This.MDTModule.Split("\")[0..2] -join '\'
+                $This.MDTModule  | Import-Module
                 Restore-MDTPersistentDrive
-                $This.Drive     = $This.RefreshDrives()
+                $This.Drive      = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+                $This.Drive.Add([PersistentDrive]::New())
+                ForEach ($Object in Get-MdtPersistentDrive) 
+                { 
+                    $This.Drive.Add([PersistentDrive]::New($Object))
+                }
             }
-            [Object] RefreshDrives()
+            SetDomain([String]$Organization,[String]$CommonName)
             {
-                Return @( $This.AddDrive(); Get-MdtPersistentDrive | % { $This.AddDrive($_) })
+                $This.Organization = $Organization
+                $This.CommonName   = $CommonName
             }
-            PSDShare([Object]$Drive)
+            PSDShare([String]$Name)
             {
+                $Select             = $This.GetDrive($Name)
+                $This.MDTModule     | Import-Module
+
+                Restore-MDTPersistentDrive -Verbose
+
                 $PSD                = Get-PSDModule
-                $Name               = "$($Drive.Name):"
-                $Root               = $Drive.Root
-                $Share              = $Drive.Share
+                $Name               = "$($Select.Name):"
+                $Root               = $Select.Root
+                $Share              = $Select.Share
                 $Backup             = "$Root\Backup\Scripts"
 
                 # Create backup folder      
@@ -4065,15 +4094,15 @@ Function New-FEInfrastructure
 
                 Write-Host "PSD modification complete"
             }
+            SelectDrive([String]$Drive)
+            {
+                $This.Selected = $This.Drive | ? Name -eq $Drive
+            }
             [Object] GetDrive([String]$Name)
             {
                 Return $This.Drive | ? Name -eq $Name
             }
-            [Object] AddDrive()
-            {
-                Return [PersistentDrive]::New()
-            }
-            [Object] AddDrive([Object]$Object)
+            AddDrive([Object]$Object)
             {
                 If ($Object.Name -in $This.Drive.Name)
                 {
@@ -4081,10 +4110,10 @@ Function New-FEInfrastructure
                 }
                 Else
                 {
-                    Return [PersistentDrive]::New($Object)
+                    $This.Drive.Add([PersistentDrive]::New($Object))
                 }
             }
-            [Object] AddDrive([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
+            AddDrive([String]$Name,[String]$Root,[String]$Share,[String]$Description,[UInt32]$Type)
             {
                 If ($Name -in $This.Drive.Name)
                 {
@@ -4092,7 +4121,7 @@ Function New-FEInfrastructure
                 }
                 Else
                 {
-                    Return [PersistentDrive]::New($Name,$Root,$Share,$Description,$Type)
+                    $This.Drive.Add([PersistentDrive]::New($Name,$Root,$Share,$Description,$Type))
                 }
             }
             RemoveDrive([String]$Name)
@@ -4100,23 +4129,11 @@ Function New-FEInfrastructure
                 $Select = $This.GetDrive($Name)
                 If ($Select)
                 {
-                    Switch ([System.Windows.MessageBox]::Show("This will remove the share [$($Select.Name)]","Warning [!] Proceed?"))
-                    {
-                        Yes 
-                        { 
-                            Remove-Item -Path $Select.Root -Verbose -Force -Recurse -Confirm:$False
-                            Remove-SMBShare -Name $Select.Share -Verbose -Force -Confirm:$False
-                            Remove-PSDrive -Name $Select.Name -Verbose -Force -Confirm:$False
-                            Remove-MDTPersistentDrive -Name $Select.Name -Verbose
-                            $This.Drive = $This.Drive | ? Name -ne $Select.Name
-                            Write-Host "Drive removed"
-                        }
-                        No
-                        {
-                            Write-Host "User cancelled drive removal"
-                            Break
-                        }
-                    } 
+                    Remove-Item -Path $Select.Root -Force -Recurse -Confirm:$False  -Verbose
+                    Remove-SMBShare -Name $Select.Share -Force -Confirm:$False -Verbose
+                    Remove-MDTPersistentDrive -Name $Select.Name -Verbose
+                    Write-Host "Drive removed"
+                    $This.Drive.Remove($Select)
                 }
             }
             [String] GuidPattern()
@@ -4134,6 +4151,36 @@ Function New-FEInfrastructure
             [String] NewDescription()
             {
                 Return ("[FightingEntropy({0})][({1})]" -f [char]960, $This.Module.Version)
+            }
+            [String] GetNetworkPath([String]$Name)
+            {
+                Return ("\\{0}\{1}" -f $This.GetHostname(), $This.GetDrive($Name).Share)
+            }
+            [Object] GetBrand()
+            {
+                Return [Brand]::New()
+            }
+            [Object] NewBrand([String]$Wallpaper,[String]$Logo,[String]$Manufacturer,[String]$Phone,[String]$Hours,[String]$URL)
+            {
+                Return [Brand]::New($Wallpaper,$Logo,$Manufacturer,$Phone,$Hours,$URL)
+            }
+            SetBrand([Object]$Brand)
+            {
+                $This.Brand = $Brand
+            }
+            [Object] GetKey([Object]$Path)
+            {
+                Return [Key]::New($Path)
+            }
+            SetKey([String]$Name,[Object]$Key)
+            {
+                $Select       = $This.GetDrive($Name)
+                $Item         = $Select.Config | ? Name -eq DSKey
+                $Item.SetContent($Key)
+            }
+            [Object] NewDomainJoin([String]$Username,[SecureString]$Password,[String]$NetBIOS,[String]$DnsName,[String]$OUName)
+            {
+                Return [Domain]::New($Username,$Password,$NetBIOS,$DnsName,$OUName)
             }
             ImportImages([String]$Name,[String]$Path,[UInt32]$Mode)
             {
@@ -4888,8 +4935,8 @@ Function New-FEInfrastructure
         '        <Style TargetType="TextBox" x:Key="Block">',
         '            <Setter Property="Margin" Value="5"/>',
         '            <Setter Property="Padding" Value="5"/>',
-        '            <Setter Property="Height" Value="170"/>',
-        '            <Setter Property="FontFamily" Value="System"/>',
+        '            <Setter Property="FontFamily" Value="Consolas"/>',
+        '            <Setter Property="Height" Value="180"/>',
         '            <Setter Property="FontSize" Value="12"/>',
         '            <Setter Property="FontWeight" Value="Normal"/>',
         '            <Setter Property="AcceptsReturn" Value="True"/>',
@@ -7297,14 +7344,14 @@ Function New-FEInfrastructure
         '                        <Grid Grid.Row="0">',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="100"/>',
+        '                                <RowDefinition Height="140"/>',
         '                                <RowDefinition Height="10"/>',
-        '                                <RowDefinition Height="120"/>',
+        '                                <RowDefinition Height="80"/>',
         '                                <RowDefinition Height="10"/>',
         '                                <RowDefinition Height="*"/>',
         '                            </Grid.RowDefinitions>',
         '                            <Label    Grid.Row="0" Content="[Aggregate]: (Existent/Provisioned) Deployment Shares &amp; FileSystem, PSDrive, (MDT/PSD), SMB Share, Description"/>',
-        '                            <DataGrid Grid.Row="1" Name="DsAggregate"',
+        '                            <DataGrid Grid.Row="1" Name="DsAggregate" SelectionMode="Single"',
         '                                  ScrollViewer.CanContentScroll="True" ',
         '                                  ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                  ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -7325,213 +7372,227 @@ Function New-FEInfrastructure
         '                                </Grid.RowDefinitions>',
         '                                <Grid Grid.Row="0">',
         '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="110"/>',
         '                                        <ColumnDefinition Width="80"/>',
-        '                                        <ColumnDefinition Width="*"/>',
-        '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label   Grid.Column="0" Content="[Root]:"/>',
-        '                                    <Button  Grid.Column="1" Name="DsRootSelect" Content="Browse"/>',
-        '                                    <TextBox Grid.Column="2" Name="DsRootPath"/>',
-        '                                </Grid>',
-        '                                <Grid Grid.Row="1">',
-        '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="110"/>',
+        '                                        <ColumnDefinition Width="60"/>',
         '                                        <ColumnDefinition Width="80"/>',
         '                                        <ColumnDefinition Width="120"/>',
-        '                                        <ColumnDefinition Width="120"/>',
         '                                        <ColumnDefinition Width="80"/>',
-        '                                        <ColumnDefinition Width="*"/>',
+        '                                        <ColumnDefinition Width="*"/>                                        ',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Column="0" Content="[Drive]:"/>',
+        '                                    <Label    Grid.Column="0" Content="[Name]:"/>',
         '                                    <TextBox  Grid.Column="1"  Name="DsDriveName"/>',
-        '                                    <Label    Grid.Column="2" Content="[Share]:"/>',
-        '                                    <TextBox  Grid.Column="3" Name="DsShareName"/>',
-        '                                    <Label    Grid.Column="4" Content="[Type]:"/>',
-        '                                    <ComboBox Grid.Column="5" Name="DsType">',
+        '                                    <Label    Grid.Column="2" Content="[Type]:"/>',
+        '                                    <ComboBox Grid.Column="3" Name="DsType">',
         '                                        <ComboBoxItem Content="MDT"/>',
         '                                        <ComboBoxItem Content="PSD"/>',
         '                                        <ComboBoxItem Content="-"/>',
         '                                    </ComboBox>',
+        '                                    <Button  Grid.Column="4" Name="DsRootSelect" Content="Root"/>',
+        '                                    <TextBox Grid.Column="5" Name="DsRootPath"/>',
         '                                </Grid>',
-        '                                <Grid Grid.Row="2">',
+        '                                <Grid Grid.Row="1">',
         '                                    <Grid.ColumnDefinitions>',
-        '                                        <ColumnDefinition Width="110"/>',
+        '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="140"/>',
+        '                                        <ColumnDefinition Width="120"/>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="40"/>',
         '                                        <ColumnDefinition Width="40"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <Label    Grid.Column="0" Content="[Description]:"/>',
-        '                                    <TextBox  Grid.Column="1" Name="DsDescription"/>',
-        '                                    <Button   Grid.Column="2" Name="DsAddShare" Content="+"/>',
-        '                                    <Button   Grid.Column="3" Name="DsRemoveShare" Content="-"/>',
+        '                                    <Label    Grid.Column="0" Content="[Share]:"/>',
+        '                                    <TextBox  Grid.Column="1" Name="DsShareName"/>',
+        '                                    <Label    Grid.Column="2" Content="[Description]:"/>',
+        '                                    <TextBox  Grid.Column="3" Name="DsDescription"/>',
+        '                                    <Button   Grid.Column="4" Name="DsAddShare" Content="+"/>',
+        '                                    <Button   Grid.Column="5" Name="DsRemoveShare" Content="-"/>',
         '                                </Grid>',
         '                            </Grid>',
         '                            <Border   Grid.Row="4" Background="Black" BorderThickness="0" Margin="4"/>',
         '                            <TabControl Grid.Row="5" Name="DsShareConfig">',
-        '                                <TabItem Header="Drive">',
+        '                                <TabItem Header="Properties">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Label Grid.Row="0" Content="[Properties]: To make changes, select an item from the list, enter the desired value, and click apply"/>',
+        '                                        <Grid  Grid.Row="1">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Label    Grid.Row="0" Grid.Column="0" Content="[Value]:"/>',
+        '                                            <TextBox  Grid.Row="0" Grid.Column="1" Name="DsPropertyValue"/>',
+        '                                            <Button   Grid.Row="0" Grid.Column="2" Name="DsPropertyApply" Content="Apply"/>',
+        '                                        </Grid>',
+        '                                        <DataGrid Grid.Row="2" Name="DsProperty" SelectionMode="Single"',
+        '                                                          ScrollViewer.CanContentScroll="True" ',
+        '                                                          ScrollViewer.IsDeferredScrollingEnabled="True"',
+        '                                                          ScrollViewer.HorizontalScrollBarVisibility="Visible">',
+        '                                            <DataGrid.Columns>',
+        '                                                <DataGridTextColumn Header="Name"        Binding="{Binding Name}"             Width="200"/>',
+        '                                                <DataGridTextColumn Header="Value"       Binding="{Binding Value}"            Width="*"/>',
+        '                                            </DataGrid.Columns>',
+        '                                        </DataGrid>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="Branding">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="*"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="100"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="100"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Label    Grid.Row="0" Grid.ColumnSpan="4" Content="[Branding]: Company/Support Information"/>',
+        '                                        <Button   Grid.Row="1" Grid.Column="0" Name="DsBrCollect" Content="Collect"/>',
+        '                                        <Grid     Grid.Row="1" Grid.Column="1">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Label    Grid.Column="0" Content="[Phone]:"/>',
+        '                                            <TextBox  Grid.Column="1" Name="DsBrPhone"/>',
+        '                                        </Grid>',
+        '                                        <Button   Grid.Row="1" Grid.Column="2" Content="Apply" Name="DsBrandApply"/>',
+        '                                        <Grid     Grid.Row="2" Grid.Column="1">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Label    Grid.Column="0" Content="[Hours]:"/>',
+        '                                            <TextBox  Grid.Column="1" Name="DsBrHours"/>',
+        '                                        </Grid>',
+        '                                        <Label       Grid.Row="2" Grid.Column="2" Content="[Org. Name]:"/>',
+        '                                        <TextBox     Grid.Row="2" Grid.Column="3" Name="DsBrOrganization" ToolTip="Name of the organization"/>',
+        '                                        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Label    Grid.Column="0" Content="[Website]:"/>',
+        '                                            <TextBox  Grid.Column="1" Grid.ColumnSpan="3"  Name="DsBrWebsite"/>',
+        '                                        </Grid>',
+        '                                        <Button   Grid.Row="4" Grid.Column="0" Name="DsBrLogoSelect" Content="Logo"/>',
+        '                                        <TextBox  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="DsBrLogo"/>',
+        '                                        <Button   Grid.Row="5" Grid.Column="0" Name="DsBrBackgroundSelect" Content="Background"/>',
+        '                                        <TextBox  Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Name="DsBrBackground"/>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="Local">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Grid.ColumnDefinitions>',
+        '                                            <ColumnDefinition Width="100"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                            <ColumnDefinition Width="100"/>',
+        '                                            <ColumnDefinition Width="*"/>',
+        '                                        </Grid.ColumnDefinitions>',
+        '                                        <Label       Grid.Row="0" Grid.ColumnSpan="4" Content="[Local]: Local Administrator"/>',
+        '                                        <Label       Grid.Row="1" Grid.Column="0" Content="[Username]:"/>',
+        '                                        <TextBox     Grid.Row="1" Grid.Column="1" Name="DsLmUsername"/>',
+        '                                        <Button      Grid.Row="1" Grid.Column="2" Content="Apply" Name="DsLocalApply"/>',
+        '                                        <Label       Grid.Row="2" Grid.Column="0" Content="[Password]:"/>',
+        '                                        <PasswordBox Grid.Row="2" Grid.Column="1" Name="DsLmPassword" HorizontalContentAlignment="Left"/>',
+        '                                        <Label       Grid.Row="2" Grid.Column="2" Content="[Confirm]:"/>',
+        '                                        <PasswordBox Grid.Row="2" Grid.Column="3" Name="DsLmConfirm"/>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="Domain">',
+        '                                    <Grid>',
+        '                                        <Grid.RowDefinitions>',
+        '                                            <RowDefinition Height="40"/>',
+        '                                            <RowDefinition Height="80"/>',
+        '                                            <RowDefinition Height="10"/>',
+        '                                            <RowDefinition Height="120"/>',
+        '                                        </Grid.RowDefinitions>',
+        '                                        <Label Grid.Row="0" Content="[Domain/Network]: Credential &amp; (Server/Share) Information"/>',
+        '                                        <Grid  Grid.Row="1">',
+        '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                            </Grid.RowDefinitions>',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Button      Grid.Row="0" Grid.Column="2" Content="Apply" Name="DsDomainApply"/>',
+        '                                            <Button      Grid.Row="0" Grid.Column="3" Name="DsLogin" Content="Login [Enters all fields except Machine OU]"/>',
+        '                                            <Label       Grid.Row="0" Grid.Column="0" Content="[Username]:"/>',
+        '                                            <TextBox     Grid.Row="0" Grid.Column="1" Name="DsDcUsername"/>',
+        '                                            <Label       Grid.Row="1" Grid.Column="0" Content="[Password]:"/>',
+        '                                            <PasswordBox Grid.Row="1" Grid.Column="1" Name="DsDcPassword" HorizontalContentAlignment="Left"/>',
+        '                                            <Label       Grid.Row="1" Grid.Column="2" Content="[Confirm]:"/>',
+        '                                            <PasswordBox Grid.Row="1" Grid.Column="3" Name="DsDcConfirm"  HorizontalContentAlignment="Left"/>',
+        '                                        </Grid>',
+        '                                        <Border      Grid.Row="2" Grid.ColumnSpan="4"  Background="Black" BorderThickness="0" Margin="4"/>',
+        '                                        <Grid Grid.Row="3">',
+        '                                            <Grid.RowDefinitions>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="10"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                                <RowDefinition Height="40"/>',
+        '                                            </Grid.RowDefinitions>',
+        '                                            <Grid.ColumnDefinitions>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="225"/>',
+        '                                                <ColumnDefinition Width="100"/>',
+        '                                                <ColumnDefinition Width="*"/>',
+        '                                            </Grid.ColumnDefinitions>',
+        '                                            <Label       Grid.Row="0" Grid.Column="0" Content="[NetBios]:"/>',
+        '                                            <TextBox     Grid.Row="0" Grid.Column="1" Name="DsNetBiosName" ToolTip="NetBIOS name of the deployment share (server/domain)"/>',
+        '                                            <Label       Grid.Row="0" Grid.Column="2" Content="[Dns]:"/>',
+        '                                            <TextBox     Grid.Row="0" Grid.Column="3" Name="DsDnsName" ToolTip="Dns name of the deployment share (server/domain)"/>',
+        '                                            <Button      Grid.Row="2" Grid.Column="0" Name="DsMachineOUSelect" Content="Machine OU"/>',
+        '                                            <TextBox     Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Name="DsMachineOu" ToolTip="Adds Organizational Unit where the nodes are installed"/>',
+        '                                        </Grid>',
+        '                                    </Grid>',
+        '                                </TabItem>',
+        '                                <TabItem Header="OS/TS">',
         '                                    <TabControl>',
-        '                                        <TabItem Header="Properties">',
+        '                                        <TabItem Header="Current">',
         '                                            <Grid>',
         '                                                <Grid.RowDefinitions>',
         '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="40"/>',
         '                                                    <RowDefinition Height="*"/>',
         '                                                </Grid.RowDefinitions>',
-        '                                                <Label Grid.Row="0" Content="[Properties]: To make changes, select an item from the list, enter the desired value, and click apply"/>',
-        '                                                <Grid  Grid.Row="1">',
-        '                                                    <Grid.ColumnDefinitions>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                        <ColumnDefinition Width="*"/>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                    </Grid.ColumnDefinitions>',
-        '                                                    <Label    Grid.Row="0" Grid.Column="0" Content="[Value]:"/>',
-        '                                                    <TextBox  Grid.Row="0" Grid.Column="1" Name="DsPropertyValue"/>',
-        '                                                    <Button   Grid.Row="0" Grid.Column="2" Name="DsPropertyApply" Content="Apply"/>',
-        '                                                </Grid>',
-        '                                                <DataGrid Grid.Row="2" Name="DsProperty"',
+        '                                                <Label Grid.Row="0" Content="[Current]: Operating Systems &amp; Task Sequences"/>',
+        '                                                <DataGrid Grid.Row="1" Name="DsCurrentWimFiles"',
         '                                                          ScrollViewer.CanContentScroll="True" ',
         '                                                          ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                          ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Name"        Binding="{Binding Name}"             Width="150"/>',
-        '                                                        <DataGridTextColumn Header="Value"       Binding="{Binding Value}"            Width="*"/>',
+        '                                                        <DataGridTextColumn Header="Rank"        Binding="{Binding Rank}"             Width="30"/>',
+        '                                                        <DataGridTextColumn Header="Label"       Binding="{Binding Label}"            Width="100"/>',
+        '                                                        <DataGridTextColumn Header="Name"        Binding="{Binding ImageName}"        Width="250"/>',
+        '                                                        <DataGridTextColumn Header="Description" Binding="{Binding ImageDescription}" Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Version"     Binding="{Binding Version}"          Width="100"/>',
+        '                                                        <DataGridTextColumn Header="Arch"        Binding="{Binding Architecture}"     Width="30"/>',
+        '                                                        <DataGridTextColumn Header="Type"        Binding="{Binding InstallationType}" Width="50"/>',
+        '                                                        <DataGridTextColumn Header="Path"        Binding="{Binding SourceImagePath}"  Width="Auto"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                            </Grid>',
         '                                        </TabItem>',
-        '                                        <TabItem Header="Branding">',
-        '                                            <Grid>',
-        '                                                <Grid.RowDefinitions>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="*"/>',
-        '                                                </Grid.RowDefinitions>',
-        '                                                <Grid.ColumnDefinitions>',
-        '                                                    <ColumnDefinition Width="100"/>',
-        '                                                    <ColumnDefinition Width="*"/>',
-        '                                                    <ColumnDefinition Width="100"/>',
-        '                                                    <ColumnDefinition Width="*"/>',
-        '                                                </Grid.ColumnDefinitions>',
-        '                                                <Label    Grid.Row="0" Grid.ColumnSpan="4" Content="[Branding]: Company/Support Information"/>',
-        '                                                <Button   Grid.Row="1" Grid.Column="0" Name="DsBrCollect" Content="Collect"/>',
-        '                                                <Grid     Grid.Row="1" Grid.Column="1">',
-        '                                                    <Grid.ColumnDefinitions>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                        <ColumnDefinition Width="*"/>',
-        '                                                    </Grid.ColumnDefinitions>',
-        '                                                    <Label    Grid.Column="0" Content="[Phone]:"/>',
-        '                                                    <TextBox  Grid.Column="1" Name="DsBrPhone"/>',
-        '                                                </Grid>',
-        '                                                <Button   Grid.Row="1" Grid.Column="2" Content="Apply" Name="DsBrandApply"/>',
-        '                                                <Grid     Grid.Row="2" Grid.Column="1">',
-        '                                                    <Grid.ColumnDefinitions>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                        <ColumnDefinition Width="*"/>',
-        '                                                    </Grid.ColumnDefinitions>',
-        '                                                    <Label    Grid.Column="0" Content="[Hours]:"/>',
-        '                                                    <TextBox  Grid.Column="1" Name="DsBrHours"/>',
-        '                                                </Grid>',
-        '                                                <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">',
-        '                                                    <Grid.ColumnDefinitions>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                        <ColumnDefinition Width="*"/>',
-        '                                                    </Grid.ColumnDefinitions>',
-        '                                                    <Label    Grid.Column="0" Content="[Website]:"/>',
-        '                                                    <TextBox  Grid.Column="1" Grid.ColumnSpan="3"  Name="DsBrWebsite"/>',
-        '                                                </Grid>',
-        '                                                <Button   Grid.Row="4" Grid.Column="0" Name="DsBrLogoSelect" Content="Logo"/>',
-        '                                                <TextBox  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Name="DsBrLogo"/>',
-        '                                                <Button   Grid.Row="5" Grid.Column="0" Name="DsBrBackgroundSelect" Content="Background"/>',
-        '                                                <TextBox  Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Name="DsBrBackground"/>',
-        '                                            </Grid>',
-        '                                        </TabItem>',
-        '                                        <TabItem Header="Local">',
-        '                                            <Grid>',
-        '                                                <Grid.RowDefinitions>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                </Grid.RowDefinitions>',
-        '                                                <Grid.ColumnDefinitions>',
-        '                                                    <ColumnDefinition Width="100"/>',
-        '                                                    <ColumnDefinition Width="*"/>',
-        '                                                    <ColumnDefinition Width="100"/>',
-        '                                                    <ColumnDefinition Width="*"/>',
-        '                                                </Grid.ColumnDefinitions>',
-        '                                                <Label       Grid.Row="0" Grid.ColumnSpan="4" Content="[Local]: Local Administrator"/>',
-        '                                                <Label       Grid.Row="1" Grid.Column="0" Content="[Username]:"/>',
-        '                                                <TextBox     Grid.Row="1" Grid.Column="1" Name="DsLmUsername"/>',
-        '                                                <Button      Grid.Row="1" Grid.Column="2" Content="Apply" Name="DsLocalApply"/>',
-        '                                                <Label       Grid.Row="2" Grid.Column="0" Content="[Password]:"/>',
-        '                                                <PasswordBox Grid.Row="2" Grid.Column="1" Name="DsLmPassword" HorizontalContentAlignment="Left"/>',
-        '                                                <Label       Grid.Row="2" Grid.Column="2" Content="[Confirm]:"/>',
-        '                                                <PasswordBox Grid.Row="2" Grid.Column="3" Name="DsLmConfirm"/>',
-        '                                            </Grid>',
-        '                                        </TabItem>',
-        '                                        <TabItem Header="Domain/Network">',
-        '                                            <Grid>',
-        '                                                <Grid.RowDefinitions>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="80"/>',
-        '                                                    <RowDefinition Height="10"/>',
-        '                                                    <RowDefinition Height="120"/>',
-        '                                                </Grid.RowDefinitions>',
-        '                                                <Label Grid.Row="0" Content="[Domain/Network]: Credential &amp; (Server/Share) Information"/>',
-        '                                                <Grid  Grid.Row="1">',
-        '                                                    <Grid.RowDefinitions>',
-        '                                                        <RowDefinition Height="40"/>',
-        '                                                        <RowDefinition Height="40"/>',
-        '                                                    </Grid.RowDefinitions>',
-        '                                                    <Grid.ColumnDefinitions>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                        <ColumnDefinition Width="*"/>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                        <ColumnDefinition Width="*"/>',
-        '                                                    </Grid.ColumnDefinitions>',
-        '                                                    <Button      Grid.Row="0" Grid.Column="2" Content="Apply" Name="DsDomainApply"/>',
-        '                                                    <Button      Grid.Row="0" Grid.Column="3" Name="DsLogin" Content="Login [Enters all fields except Machine OU]"/>',
-        '                                                    <Label       Grid.Row="0" Grid.Column="0" Content="[Username]:"/>',
-        '                                                    <TextBox     Grid.Row="0" Grid.Column="1" Name="DsDcUsername"/>',
-        '                                                    <Label       Grid.Row="1" Grid.Column="0" Content="[Password]:"/>',
-        '                                                    <PasswordBox Grid.Row="1" Grid.Column="1" Name="DsDcPassword" HorizontalContentAlignment="Left"/>',
-        '                                                    <Label       Grid.Row="1" Grid.Column="2" Content="[Confirm]:"/>',
-        '                                                    <PasswordBox Grid.Row="1" Grid.Column="3" Name="DsDcConfirm"  HorizontalContentAlignment="Left"/>',
-        '                                                </Grid>',
-        '                                                <Border      Grid.Row="2" Grid.ColumnSpan="4"  Background="Black" BorderThickness="0" Margin="4"/>',
-        '                                                <Grid Grid.Row="3">',
-        '                                                    <Grid.RowDefinitions>',
-        '                                                        <RowDefinition Height="40"/>',
-        '                                                        <RowDefinition Height="40"/>',
-        '                                                        <RowDefinition Height="40"/>',
-        '                                                        <RowDefinition Height="10"/>',
-        '                                                        <RowDefinition Height="40"/>',
-        '                                                        <RowDefinition Height="40"/>',
-        '                                                    </Grid.RowDefinitions>',
-        '                                                    <Grid.ColumnDefinitions>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                        <ColumnDefinition Width="225"/>',
-        '                                                        <ColumnDefinition Width="100"/>',
-        '                                                        <ColumnDefinition Width="*"/>',
-        '                                                    </Grid.ColumnDefinitions>',
-        '                                                    <Label       Grid.Row="0" Grid.Column="0" Content="[NetBios]:"/>',
-        '                                                    <TextBox     Grid.Row="0" Grid.Column="1" Name="DsNetBiosName" ToolTip="NetBIOS name of the deployment share (server/domain)"/>',
-        '                                                    <Label       Grid.Row="0" Grid.Column="2" Content="[Dns]:"/>',
-        '                                                    <TextBox     Grid.Row="0" Grid.Column="3" Name="DsDnsName" ToolTip="Dns name of the deployment share (server/domain)"/>',
-        '                                                    <Label       Grid.Row="1" Grid.Column="0" Content="[Org. Name]:"/>',
-        '                                                    <TextBox     Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="DsOrganization" ToolTip="Name of the organization"/>',
-        '                                                    <Button      Grid.Row="2" Grid.Column="0" Name="DsMachineOUSelect" Content="Machine OU"/>',
-        '                                                    <TextBox     Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Name="DsMachineOu" ToolTip="Adds Organizational Unit where the nodes are installed"/>',
-        '                                                </Grid>',
-        '                                            </Grid>',
-        '                                        </TabItem>',
-        '                                    </TabControl>',
-        '                                </TabItem>',
-        '                                <TabItem Header="OS/TS">',
-        '                                    <TabControl>',
         '                                        <TabItem Header="Import">',
         '                                            <Grid>',
         '                                                <Grid.RowDefinitions>',
@@ -7553,30 +7614,6 @@ Function New-FEInfrastructure
         '                                                    <Button   Grid.Row="0" Grid.Column="3" Name="DsImport" Content="Import"/>',
         '                                                </Grid>',
         '                                                <DataGrid Grid.Row="2" Name="DsImportWimFiles"',
-        '                                                          ScrollViewer.CanContentScroll="True" ',
-        '                                                          ScrollViewer.IsDeferredScrollingEnabled="True"',
-        '                                                          ScrollViewer.HorizontalScrollBarVisibility="Visible">',
-        '                                                    <DataGrid.Columns>',
-        '                                                        <DataGridTextColumn Header="Rank"        Binding="{Binding Rank}"             Width="30"/>',
-        '                                                        <DataGridTextColumn Header="Label"       Binding="{Binding Label}"            Width="100"/>',
-        '                                                        <DataGridTextColumn Header="Name"        Binding="{Binding ImageName}"        Width="250"/>',
-        '                                                        <DataGridTextColumn Header="Description" Binding="{Binding ImageDescription}" Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Version"     Binding="{Binding Version}"          Width="100"/>',
-        '                                                        <DataGridTextColumn Header="Arch"        Binding="{Binding Architecture}"     Width="30"/>',
-        '                                                        <DataGridTextColumn Header="Type"        Binding="{Binding InstallationType}" Width="50"/>',
-        '                                                        <DataGridTextColumn Header="Path"        Binding="{Binding SourceImagePath}"  Width="Auto"/>',
-        '                                                    </DataGrid.Columns>',
-        '                                                </DataGrid>',
-        '                                            </Grid>',
-        '                                        </TabItem>',
-        '                                        <TabItem Header="Current">',
-        '                                            <Grid>',
-        '                                                <Grid.RowDefinitions>',
-        '                                                    <RowDefinition Height="40"/>',
-        '                                                    <RowDefinition Height="*"/>',
-        '                                                </Grid.RowDefinitions>',
-        '                                                <Label Grid.Row="0" Content="[Current]: Operating Systems &amp; Task Sequences"/>',
-        '                                                <DataGrid Grid.Row="1" Name="DsCurrentWimFiles"',
         '                                                          ScrollViewer.CanContentScroll="True" ',
         '                                                          ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                          ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -7615,10 +7652,10 @@ Function New-FEInfrastructure
         '                                                    <TextBox Grid.Column="1" Name="DsBootstrapPath" />',
         '                                                    <Button Grid.Column="2" Name="DsApplyBootstrap" Content="Apply"/>',
         '                                                </Grid>',
-        '                                                <TextBox Grid.Row="2" Height="200" Background="White" Name="DsBootstrap" Style="{StaticResource Block}"/>',
+        '                                                <TextBox Grid.Row="2" Background="White" Name="DsBootstrap" Style="{StaticResource Block}"/>',
         '                                            </Grid>',
         '                                        </TabItem>',
-        '                                        <TabItem Header="Custom Settings">',
+        '                                        <TabItem Header="Custom">',
         '                                            <Grid>',
         '                                                <Grid.RowDefinitions>',
         '                                                    <RowDefinition Height="40"/>',
@@ -7639,7 +7676,7 @@ Function New-FEInfrastructure
         '                                                <TextBox Grid.Row="2" Height="200" Background="White" Name="DsCustomSettings" Style="{StaticResource Block}"/>',
         '                                            </Grid>',
         '                                        </TabItem>',
-        '                                        <TabItem Header="Post Configuration">',
+        '                                        <TabItem Header="Post">',
         '                                            <Grid>',
         '                                                <Grid.RowDefinitions>',
         '                                                    <RowDefinition Height="40"/>',
@@ -7660,7 +7697,7 @@ Function New-FEInfrastructure
         '                                                <TextBox Grid.Row="2" Height="200" Background="White" Name="DsPostConfig" Style="{StaticResource Block}"/>',
         '                                            </Grid>',
         '                                        </TabItem>',
-        '                                        <TabItem Header="DS Key">',
+        '                                        <TabItem Header="Key">',
         '                                            <Grid>',
         '                                                <Grid.RowDefinitions>',
         '                                                    <RowDefinition Height="40"/>',
@@ -7696,6 +7733,150 @@ Function New-FEInfrastructure
         '                </Grid>',
         '            </TabItem>',
         '        </TabControl>',
+        '    </Grid>',
+        '</Window>' -join "`n")
+    }
+
+    # Get-Content $Home\Desktop\OUList.xaml | % { "        '$_',"} | Set-Clipboard
+    Class OUListGUI
+    {
+        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Select an Organizational Unit" Width="650" Height="300" HorizontalAlignment="Center" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+        '    <Window.Resources>',
+        '        <Style TargetType="GroupBox">',
+        '            <Setter Property="Margin" Value="10"/>',
+        '            <Setter Property="Padding" Value="10"/>',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
+        '            <Setter Property="Template">',
+        '                <Setter.Value>',
+        '                    <ControlTemplate TargetType="GroupBox">',
+        '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
+        '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
+        '                        </Border>',
+        '                    </ControlTemplate>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="Button">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="Height" Value="30"/>',
+        '            <Setter Property="FontWeight" Value="Semibold"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="Foreground" Value="Black"/>',
+        '            <Setter Property="Background" Value="#DFFFBA"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style TargetType="DataGridCell">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
+        '        </Style>',
+        '        <Style TargetType="DataGrid">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="AutoGenerateColumns" Value="False"/>',
+        '            <Setter Property="AlternationCount" Value="3"/>',
+        '            <Setter Property="HeadersVisibility" Value="Column"/>',
+        '            <Setter Property="CanUserResizeRows" Value="False"/>',
+        '            <Setter Property="CanUserAddRows" Value="False"/>',
+        '            <Setter Property="IsReadOnly" Value="True"/>',
+        '            <Setter Property="IsTabStop" Value="True"/>',
+        '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
+        '            <Setter Property="SelectionMode" Value="Extended"/>',
+        '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
+        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
+        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
+        '        </Style>',
+        '        <Style TargetType="DataGridRow">',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Style.Triggers>',
+        '                <Trigger Property="AlternationIndex" Value="0">',
+        '                    <Setter Property="Background" Value="White"/>',
+        '                </Trigger>',
+        '                <Trigger Property="AlternationIndex" Value="1">',
+        '                    <Setter Property="Background" Value="#FFC5E5EC"/>',
+        '                </Trigger>',
+        '                <Trigger Property="AlternationIndex" Value="2">',
+        '                    <Setter Property="Background" Value="#FFF0CBC5"/>',
+        '                </Trigger>',
+        '            </Style.Triggers>',
+        '        </Style>',
+        '        <Style TargetType="DataGridColumnHeader">',
+        '            <Setter Property="FontSize"   Value="10"/>',
+        '            <Setter Property="FontWeight" Value="Medium"/>',
+        '            <Setter Property="Margin" Value="2"/>',
+        '            <Setter Property="Padding" Value="2"/>',
+        '        </Style>',
+        '        <Style TargetType="ComboBox">',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '        </Style>',
+        '        <Style x:Key="DropShadow">',
+        '            <Setter Property="TextBlock.Effect">',
+        '                <Setter.Value>',
+        '                    <DropShadowEffect ShadowDepth="1"/>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="4"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="Foreground" Value="#000000"/>',
+        '            <Setter Property="TextWrapping" Value="Wrap"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="2"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '    </Window.Resources>',
+        '    <Grid>',
+        '        <Grid.Background>',
+        '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
+        '        </Grid.Background>',
+        '        <GroupBox>',
+        '            <Grid Margin="5">',
+        '                <Grid.RowDefinitions>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="*"/>',
+        '                    <RowDefinition Height="50"/>',
+        '                </Grid.RowDefinitions>',
+        '                <Grid Grid.Row="0">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="120"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <ComboBox Grid.Column="0" Name="Type" SelectedIndex="0">',
+        '                        <ComboBoxItem Content="Name"/>',
+        '                        <ComboBoxItem Content="DistinguishedName"/>',
+        '                    </ComboBox>',
+        '                    <TextBox  Grid.Column="1" Name="Filter"/>',
+        '                </Grid>',
+        '                <DataGrid Grid.Row="1" Grid.Column="0" Name="OrganizationalUnits">',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="Name"  Width="140" Binding="{Binding Name}"/>',
+        '                        <DataGridTextColumn Header="DistinguishedName" Width="*" Binding="{Binding DistinguishedName}"/>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
+        '                <Grid Grid.Row="2">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Button Grid.Row="1" Grid.Column="0" Name="Ok"        Content="Ok" />',
+        '                    <Button Grid.Row="1" Grid.Column="1" Content="Cancel" Name="Cancel"/>',
+        '                </Grid>',
+        '            </Grid>',
+        '        </GroupBox>',
         '    </Grid>',
         '</Window>' -join "`n")
     }
@@ -7925,6 +8106,7 @@ Function New-FEInfrastructure
             $This.NetworkList    | % SetDomain $Organization $CommonName
             $This.Sitemap        | % SetDomain $Organization $CommonName
             $This.AddsController | % SetDomain $Organization $CommonName
+            $This.MdtController  | % SetDomain $Organization $CommonName
         }
         [Object] List([String]$Name,[Object]$Value)
         {
@@ -8052,6 +8234,74 @@ Function New-FEInfrastructure
                         }
                     }
                 }
+            }
+        }
+        SelectDrive([Object]$Xaml,[String]$Name)
+        {
+            $This.MdtController.SelectDrive($Name)
+            $Object                                = $This.MdtController.Selected
+            $Object.Brand                          = $Null
+            $Object.Connection                     = $Null
+            $Object.Administrator                  = $Null
+            $Object.Password                       = $Null
+            If ($Object.Name -match "(\<New\>)")
+            {
+                # Drive Info
+                $Xaml.Types | ? Name -match ^Ds | ? Value -eq TextBox | % { $Xaml.IO.$($_.Name).Text = "" }
+
+                $Xaml.IO.DsDriveName.Text          = $This.MdtController.NewLabel()
+                $Xaml.IO.DsDescription.Text        = $This.MdtController.NewDescription()
+                $Xaml.IO.DsRootPath.IsEnabled      = 1
+                $Xaml.IO.DsDriveName.IsEnabled     = 1
+                $Xaml.IO.DsShareName.IsEnabled     = 1
+                $Xaml.IO.DsType.IsEnabled          = 1
+                $Xaml.IO.DsDescription.IsEnabled   = 1
+                
+                $Xaml.IO.DsType.SelectedIndex      = 0
+
+                # Drive Properties
+                $Xaml.IO.DsShareConfig.IsEnabled   = 0
+                $Xaml.IO.DsProperty.Items.Clear()
+
+                # Current TS/OS
+                $Xaml.IO.DsCurrentWimFiles.Items.Clear()
+            }
+
+            If ($Object.Name -notmatch "(\<New\>)")
+            {
+                # Drive Info
+                $Xaml.IO.DsDriveName.Text          = $Object.Name
+                $Xaml.IO.DsRootPath.Text           = $Object.Root
+                $Xaml.IO.DsShareName.Text          = $Object.Share
+                $Xaml.IO.DsDescription.Text        = $Object.Description
+
+                $Xaml.IO.DsRootPath.IsEnabled      = 0
+                $Xaml.IO.DsDriveName.IsEnabled     = 0
+                $Xaml.IO.DsShareName.IsEnabled     = 0
+                $Xaml.IO.DsType.IsEnabled          = 0
+                $Xaml.IO.DsDescription.IsEnabled   = 0
+
+                $Xaml.IO.DsType.SelectedIndex      = @{MDT=0;PSD=1;"-"=2}[$Object.Type]
+
+                # Drive Properties
+                $Xaml.IO.DsShareConfig.IsEnabled   = 1
+                $This.Reset($Xaml.IO.DsProperty.Items,$Object.Property)
+
+                # Current TS/OS
+                $This.Reset($Xaml.IO.DsCurrentWimFiles.Items,$Object.Images.Current)
+
+                # Config
+                $Xaml.IO.DsBootstrapPath.Text      = $Object.Config[0].Path
+                $Xaml.IO.DsBootstrap.Text          = $Object.Config[0].Content -join "`n"
+                
+                $Xaml.IO.DsCustomSettingsPath.Text = $Object.Config[1].Path
+                $Xaml.IO.DsCustomSettings.Text     = $Object.Config[1].Content -join "`n"
+                
+                $Xaml.IO.DsPostConfigPath.Text     = $Object.Config[2].Path
+                $Xaml.IO.DsPostConfig.Text         = $Object.Config[2].Content -join "`n"
+
+                $Xaml.IO.DsDsKeyPath.Text          = $Object.Config[3].Path
+                $Xaml.IO.DsDsKey.Text              = $Object.Config[3].Content -join "`n"
             }
         }
     }
@@ -10261,65 +10511,49 @@ Function New-FEInfrastructure
 
     If ($Main.Config.Output | ? Name -eq MDT | ? Value -eq 1)
     {
-        Write-Theme "Loading [+] Microsoft Deployment Toolkit (AKA Top-Shelf Toolkit)"
         Get-MDTModule | Import-Module
         Restore-MDTPersistentDrive
     }
 
     $Main.Reset($Xaml.IO.DSAggregate.Items,$Main.MdtController.Drive)
+
+    # DsAggregate      DataGrid
+    # DsRootSelect     Button
+    # DsRootPath       TextBox
+    # DsDriveName      TextBox
+    # DsShareName      TextBox
+    # DsType           ComboBox
+    # DsDescription    TextBox
+    # DsAddShare       Button
+    # DsRemoveShare    Button
+    # DsShareConfig    TabControl
+
     $Xaml.IO.DsAggregate.Add_SelectionChanged(
     {
-        $Object = $Main.MdtController.Drive | ? Name -eq $Xaml.IO.DsAggregate.SelectedItem.Name
-        If ($Object.Name -match "(\<New\>)")
+        If ($Xaml.IO.DsAggregate.SelectedIndex -ne -1)
         {
-            # Drive Info
-            $Xaml.Types | ? Name -match ^Ds | ? Value -eq TextBox | % {
+            $Main.SelectDrive($Xaml,$Xaml.IO.DsAggregate.SelectedItem.Name)
+        }
+    })
 
-                $Xaml.IO.$_.Text = $Null
-            }
-
-            $Xaml.IO.DsDriveName.Text          = $Main.MdtController.NewLabel()
-            $Xaml.IO.DsDescription.Text        = $Main.MdtController.NewDescription()
-            $Xaml.IO.DsType.SelectedIndex      = 0
-            $Xaml.IO.DsType.IsEnabled          = 1
-            
-            # Drive Properties
-            $Xaml.IO.DsShareConfig.IsEnabled   = 0
-            $Xaml.IO.DsProperty.Items.Clear()
-
-            # Current TS/OS
-            $Xaml.IO.DsCurrentWimFiles.Items.Clear()
+    $Xaml.IO.DsRootSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
         }
 
-        Else
+        $Xaml.IO.DSRootPath.Text = $Item.SelectedPath
+    })
+
+    $Xaml.IO.DsRootPath.Add_TextChanged(
+    {
+        If ( $Xaml.IO.DSRootPath.Text -ne "" )
         {
-            # Drive Info
-            $Xaml.IO.DsDriveName.Text          = $Object.Name
-            $Xaml.IO.DsRootPath.Text           = $Object.Root
-            $Xaml.IO.DsShareName.Text          = $Object.Share
-            $Xaml.IO.DsDescription.Text        = $Object.Description
-            $Xaml.IO.DsType.SelectedIndex      = @{MDT=0;PSD=1;"-"=2}[$Object.Type]
-            $Xaml.IO.DsType.IsEnabled          = 0
-
-            # Drive Properties
-            $Xaml.IO.DsShareConfig.IsEnabled   = 1
-            $Main.Reset($Xaml.IO.DsProperty.Items,$Object.Property)
-
-            # Current TS/OS
-            $Main.Reset($Xaml.IO.DsCurrentWimFiles.Items,$Object.Images.Current)
-
-            # Config
-            $Xaml.IO.DsBootstrapPath.Text      = $Object.Config[0].Path
-            $Xaml.IO.DsBootstrap.Text          = $Object.Config[0].Content -join "`n"
-            
-            $Xaml.IO.DsCustomSettingsPath.Text = $Object.Config[1].Path
-            $Xaml.IO.DsCustomSettings.Text     = $Object.Config[1].Content -join "`n"
-            
-            $Xaml.IO.DsPostConfigPath.Text     = $Object.Config[2].Path
-            $Xaml.IO.DsPostConfig.Text         = $Object.Config[2].Content -join "`n"
-
-            $Xaml.IO.DsDsKeyPath.Text          = $Object.Config[3].Path
-            $Xaml.IO.DsDsKey.Text              = $Object.Config[3].Content -join "`n"
+            $Xaml.IO.DSShareName.Text = ("{0}$" -f $Xaml.IO.DSRootPath.Text.Split("(\/|\.)")[-1] )
         }
     })
 
@@ -10330,12 +10564,12 @@ Function New-FEInfrastructure
             Return [System.Windows.MessageBox]::Show("Drive label can only contain alphanumeric characters","Error")
         }
 
-        ElseIf ($Xaml.IO.DsRootPath.Text -in $Xaml.IO.DsAggregate.Items.Root )
+        ElseIf ($Xaml.IO.DsRootPath.Text -in $Xaml.IO.DsAggregate.Items.Root)
         {
             Return [System.Windows.MessageBox]::Show("Selected path is already assigned to another deployment share","Error")
         }
 
-        ElseIf ($Xaml.IO.DsRootPath | ? Text -in @("",$Null) )
+        ElseIf ($Xaml.IO.DsRootPath.Text -eq "")
         {
             Return [System.Windows.MessageBox]::Show("Selected path is invalid","Error")
         }
@@ -10353,7 +10587,13 @@ Function New-FEInfrastructure
         Else
         {
             $Main.MdtController.AddDrive($Xaml.IO.DsDriveName.Text,$Xaml.IO.DsRootPath.Text,$Xaml.IO.DsShareName.Text,$Xaml.IO.DsDescription.Text,$Xaml.IO.DsType.SelectedIndex)
-            $Xaml.IO.DsAggregate.SelectedIndex = ($Xaml.IO.DsAggregate.Items.Count - 1)
+            If ($Xaml.IO.DsType.SelectedIndex -eq 1)
+            {
+                $Main.MdtController.PSDShare($Xaml.IO.DsDriveName.Text)
+            }
+            $Object = $Main.MdtController.Drive | ? Name -eq $Xaml.IO.DsDriveName.Text 
+            $Object.SetDefaults($Main.Module)
+            $Xaml.IO.DsAggregate.Items.Clear()
             $Main.Reset($Xaml.IO.DsAggregate.Items,$Main.MdtController.Drive)
         }
     })
@@ -10367,72 +10607,248 @@ Function New-FEInfrastructure
 
         ElseIf ($Xaml.IO.DsAggregate.SelectedItem.Name -eq "<New>")
         {
-            Return [System.Windows.MessageBox]::Show("No deployment share selected","Error")
+            Return [System.Windows.MessageBox]::Show("Invalid drive selected","Error")
         }
         
         Else
         {
-            $Object = $Main.MdtController.Drive | ? Name -eq $Xaml.IO.DsAggregate.SelectedItem.Name
-            $Main.RemoveDrive($Object.Name)
-            $Main.Reset($Xaml.IO.DsAggregate.Items,$Main.MdtController.Drive)
+            $Object = $Xaml.IO.DsAggregate.SelectedItem
+            Switch ([System.Windows.MessageBox]::Show("This will remove the share [$($Object.Name)]","Warning [!] Proceed?","YesNo"))
+            {
+                Yes 
+                {
+                    $Main.MdtController.RemoveDrive($Object.Name)
+                    $Main.Reset($Xaml.IO.DsAggregate.Items,$Main.MdtController.Drive)
+                    $Xaml.IO.DsAggregate.SelectedIndex = 0
+                }
+                No
+                {
+                    Write-Host "User cancelled drive removal"
+                    Break
+                }
+            }
         }
     })
 
-    # DsAggregate                DataGrid
-    # DsRootSelect               Button
-    # DsRootPath                 TextBox
-    # DsDriveName                TextBox
-    # DsShareName                TextBox
-    # DsType                     ComboBox
-    # DsDescription              TextBox
-    # DsAddShare                 Button
-    # DsRemoveShare              Button
-    # DsImportSelectWimFilePath  Button
-    # DsImportWimFilePath        TextBox
-    # DsImportWimFileMode        ComboBox
-    # DsImportWimFiles           DataGrid
-    # DsCurrentSelectWimFilePath Button
-    # DsCurrentWimFilePath       TextBox
-    # DsCurrentWimFileMode       ComboBox
-    # DsCurrentWimFiles          DataGrid
-    # DsLogin                    Button
-    # DsDcUsername               TextBox
-    # DsDcPassword               PasswordBox
-    # DsDcConfirm                PasswordBox
-    # DsNetBiosName              TextBox
-    # DsDnsName                  TextBox
-    # DsOrganization             TextBox
-    # DsMachineOUSelect          Button
-    # DsMachineOu                TextBox
-    # DsLmUsername               TextBox
-    # DsLmPassword               PasswordBox
-    # DsLmConfirm                PasswordBox
-    # DsBrCollect                Button
-    # DsBrPhone                  TextBox
-    # DsBrHours                  TextBox
-    # DsBrWebsite                TextBox
-    # DsBrLogoSelect             Button
-    # DsBrLogo                   TextBox
-    # DsBrBackgroundSelect       Button
-    # DsBrBackground             TextBox
-    # DsGenerateBootstrap        Button
-    # DsBootstrapPath            TextBox
-    # DsSelectBootstrap          Button
-    # DsBootstrap                TextBox
-    # DsGenerateCustomSettings   Button
-    # DsCustomSettingsPath       TextBox
-    # DsSelectCustomSettings     Button
-    # DsCustomSettings           TextBox
-    # DsGeneratePostConfig       Button
-    # DsPostConfigPath           TextBox
-    # DsSelectPostConfig         Button
-    # DsPostConfig               TextBox
-    # DsGenerateDSKey            Button
-    # DsDSKeyPath                TextBox
-    # DsSelectDSKey              Button
-    # DsDSKey                    TextBox
-    # DsCreate                   Button
-    # DsUpdate                   Button
+    # [Mdt.Drive.Property]
+    # DsPropertyValue  TextBox
+    # DsPropertyApply  Button
+    # DsProperty       DataGrid
+    $Xaml.IO.DsPropertyApply.Add_Click(
+    {
+        If ($Xaml.IO.DsProperty.SelectedIndex -ne -1)
+        {
+            $Main.MdtController.Selected.SetProperty($Xaml.IO.DsProperty.SelectedItem.Name,$Xaml.IO.DsPropertyValue.Text)
+        }
+    })
+
+    # [Mdt.Drive.Brand]
+    # DsBrCollect           Button
+    # DsBrPhone             TextBox
+    # DsBrandApply          Button
+    # DsBrHours             TextBox
+    # DsBrWebsite           TextBox
+    # DsBrLogoSelect        Button
+    # DsBrLogo              TextBox
+    # DsBrBackgroundSelect  Button
+    # DsBrBackground        TextBox
+    $Xaml.IO.DsBrCollect.Add_Click(
+    {
+        $Brand = $Main.MdtController.GetBrand()
+        If ($Brand)
+        {
+            $Xaml.IO.DsBrOrganization.Text = $Brand.Manufacturer
+            $Xaml.IO.DsBrPhone.Text        = $Brand.SupportPhone
+            $Xaml.IO.DsBrHours.Text        = $Brand.SupportHours
+            $Xaml.IO.DsBrWebsite.Text      = $Brand.SupportURL
+            $Xaml.IO.DsBrLogo.Text         = $Brand.Logo
+            $Xaml.IO.DsBrBackground.Text   = $Brand.Wallpaper
+        }
+    })
+
+    $Xaml.IO.DsBrLogoSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory = $Env:SystemDrive
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename     = $Main.Module.Graphics | ? Name -eq OEMLogo.bmp | % Path
+        }
+
+        $Xaml.IO.DsBrLogo.Text = $Item.FileName
+    })
+    
+    $Xaml.IO.DsBrBackgroundSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory = $Env:SystemDrive
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename     =  $Main.Module.Graphics | ? Name -eq OEMbg.jpg | % Path
+        }
+
+        $Xaml.IO.DsBrBackground.Text = $Item.FileName
+    })
+
+    $Xaml.IO.DsBrandApply.Add_Click(
+    {
+        If ($Xaml.IO.DsBrPhone.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Support phone number cannot be blank, use '-' if this field is not needed","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsBrHours.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Support hours cannot be blank, use '-' if this field is not needed","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsBrOrganization.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Organization cannot be blank, use an address if this field is not needed","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsBrWebsite.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Support website cannot be blank, use '-' if this field is not needed","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsBrLogo.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("OEM logo cannot be blank, use the default if this field is not needed","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsBrBackground.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("OEM background cannot be blank, use the default if this field is not needed","Error")
+        }
+
+        Else
+        {
+            $Main.MdtController.Selected.Brand = $Main.MdtController.NewBrand($Xaml.IO.DsBrBackground.Text,$Xaml.IO.DsBrLogo.Text,$Xaml.IO.DsBrOrganization.Text,$Xaml.IO.DsBrPhone.Text,$Xaml.IO.DsBrHours.Text,$Xaml.IO.DsBrWebsite.Text)
+            Write-Theme "Set [+] Brand" 9,11,15
+        }
+    })
+
+    # [Mdt.Drive.Local]
+    # DsLmUsername             TextBox
+    # DsLocalApply             Button
+    # DsLmPassword             PasswordBox
+    # DsLmConfirm              PasswordBox
+    $Xaml.IO.DsLocalApply.Add_Click(
+    {
+        If ($Xaml.IO.DsLmUsername.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Local administrator username cannot be blank","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsLmPassword.Password -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Local administrator password cannot be blank","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsLmPassword.Password -ne $Xaml.IO.DsLmConfirm.Password)
+        {
+            Return [System.Windows.MessageBox]::Show("Local administrator password confirmation failure","Error")
+        }
+
+        Else
+        {
+            $Main.MDTController.Selected.Administrator = $Xaml.IO.DsLmUsername.Text
+            $Main.MDTController.Selected.Password      = $Xaml.IO.DsLmPassword.Password
+            Write-Theme "Set [+] Local Credential" 9,11,15
+        }
+    })
+
+    # [Mdt.Drive.Domain/Network]
+    # DsDcUsername             TextBox
+    # DsDcPassword             PasswordBox
+    # DsDcConfirm              PasswordBox
+    # DsNetBiosName            TextBox
+    # DsDnsName                TextBox
+    # DsMachineOUSelect        Button
+    # DsMachineOu              TextBox
+
+    $Xaml.IO.DsLogin.Add_Click(
+    {
+        $Main.MdtController.Selected.Connection = Get-FEADLogin
+        If ($Main.MdtController.Selected.Connection)
+        {
+            $Xaml.IO.DsDcUsername.Text     = $Main.MdtController.Selected.Connection.Credential.Username
+            $Xaml.IO.DsDcPassword.Password = $Main.MdtController.Selected.Connection.Credential.GetNetworkCredential().Password
+            $Xaml.IO.DsDcConfirm.Password  = $Main.MdtController.Selected.Connection.Credential.GetNetworkCredential().Password
+            $Xaml.IO.DsNetBiosName.Text    = $Main.MdtController.Selected.Connection.NetBios
+            $Xaml.IO.DsDnsName.Text        = $Main.MdtController.GetHostname()
+        }
+    })
+
+    $Xaml.IO.DsMachineOUSelect.Add_Click(
+    {
+        $OU = [XamlWindow][OUListGUI]::Tab
+        $Main.Reset($OU.IO.OrganizationalUnits.Items,$Main.Config.Adds.Ou)
+        
+        $OU.IO.Filter.Add_TextChanged(
+        {
+            $Main.Reset($OU.IO.OrganizationalUnits.Items,($Main.Config.Adds.Ou | ? $OU.IO.Type.SelectedItem.Content -match $OU.IO.Filter.Text))
+        })
+
+        $OU.IO.Cancel.Add_Click(
+        {
+            $OU.IO.DialogResult = $False
+        })
+
+        $OU.IO.OK.Add_Click(
+        {
+            If ($OU.IO.OrganizationalUnits.SelectedIndex -ne -1)
+            {
+                $Xaml.IO.DsMachineOU.Text = $OU.IO.OrganizationalUnits.SelectedItem.DistinguishedName
+                $OU.Io.DialogResult   = $True
+            }
+        })
+
+        $OU.Invoke()
+    })
+
+    $Xaml.IO.DomainApply.Add_Click(
+    {
+        If ($Xaml.IO.DsDcUsername.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Domain administrator username cannot be blank","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsDcPassword.Password -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Domain administrator password cannot be blank","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsDcPassword.Password -ne $Xaml.IO.DsDcConfirm.Password)
+        {
+            Return [System.Windows.MessageBox]::Show("Domain administrator password confirmation failure","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsNetBiosName.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid deployment (share/domain) NetBIOS name","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsDnsName.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid deployment (share/domain) DnsName","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsMachineOu.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid organizational unit name","Error")
+        }
+
+        Else
+        {
+            $Main.MDTController.Selected.Domain = $Main.MdtController.NewDomainJoin($Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.SecurePassword,$Xaml.IO.DsNetBiosName.Text,$Xaml.IO.DsDnsName.Text,$Xaml.IO.DsMachineOu.Text)
+        }
+    })
 
     Switch($PSCmdLet.ParameterSetName)
     {
@@ -10453,7 +10869,10 @@ Function New-FEInfrastructure
 
 <#
 
-$Cap = New-FEInfrastructure -Test
+Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
+# New-FEInfrastructure2
+
+$Cap = New-FEInfrastructure2 -Test
 
 $Xaml = $Cap.Xaml
 $Main = $Cap.Main
