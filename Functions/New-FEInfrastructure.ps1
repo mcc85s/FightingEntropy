@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-11-10
-          Modified: 2021-11-11
+          Modified: 2021-11-12
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
@@ -3645,7 +3645,6 @@ Function New-FEInfrastructure
                 $This.Content  = $Content
                 If ($This.Name -eq "DSKey")
                 {
-                    $Object = 
                     Export-CSV -Path $This.Path -InputObject $Content -Verbose
                 }
                 Else
@@ -4400,7 +4399,7 @@ Function New-FEInfrastructure
             {
                 Return @("[Net.ServicePointManager]::SecurityProtocol = 3072",
                 "Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | Invoke-Expression",
-                "`$Module = Get-FEModule","`$Module.Role.LoadEnvironmentKey(`"$Key`")","`$Module.Role.Choco()" -join "`n")
+                "`$Module = Get-FEModule","`$Module.Role.LoadEnvironmentKey(`"$KeyPath`")","`$Module.Role.Choco()" -join "`n")
             }
             [Object] DSKey([Object]$Object)
             {
