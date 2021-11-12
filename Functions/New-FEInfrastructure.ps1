@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-11-10
-          Modified: 2021-11-12
+          Modified: 2021-11-11
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
@@ -10263,4 +10263,800 @@ Function New-FEInfrastructure
             $Object.LoadIso($Master.Iso)
             $Object.SetIsoBoot()
 
-            $AddsNode = $Master.Container | ? Hostname -eq $
+            $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
+            $AddsNode.LoadVmObject($Object)
+
+            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.DnsName) 10,2,15
+        }
+        $Main.VmController.AddsNode.Server = $Master.Container | ? Type -match "(Server|Domain Controller)"
+
+        $Master = $Main.Validate.Workstation
+        ForEach ($Object in $Master.Output)
+        {
+            Write-Theme ("Initializing [~] Virtual Workstation ({0})" -f $Object.DnsName) 14,6,15
+            $Object.New()
+            $Object.Update()
+            $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
+            $AddsNode.LoadVmObject($Object)
+
+            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.DnsName) 10,2,15
+        }
+        $Main.VmController.AddsNode.Workstation = $Master.Container | ? Type -eq Workstation
+
+        # [Writing Output to files for installation]
+        $Main.VmController.WriteOutput("$Home\Desktop")
+        Write-Theme "Complete [+] Virtual Infrastructure Deployed (Installation can begin)"
+    })
+
+    # --------------- #
+    # <![Image Tab]!> #
+    # --------------- #
+
+    $Xaml.IO.IsoSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+                
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+            Return [System.Windows.MessageBox]::Show("Invalid image root path","Error")
+        }
+
+        ElseIf ((Get-ChildItem $Item.SelectedPath *.iso).Count -eq 0)
+        {
+            Return [System.Windows.MessageBox]::Show("No images detected","Error")
+        }
+
+        Else
+        {
+            Write-Theme "Getting [~] (*.iso) file(s)" 14,6,15
+            $Xaml.IO.IsoPath.Text        = $Item.SelectedPath
+            $Main.ImageController.LoadSilo($Xaml.IO.IsoPath.Text) 
+            $Main.Reset($Xaml.IO.IsoList.Items,$Main.ImageController.Store)
+        }
+    })
+
+    $Xaml.IO.IsoList.Add_SelectionChanged(
+    {
+        $Xaml.IO.IsoMount.IsEnabled = Switch ($Xaml.IO.IsoList.SelectedIndex) { Default { 1 } -1 { 0 } }
+    })
+
+    $Xaml.IO.IsoMount.Add_Click(
+    {
+        If ($Xaml.IO.IsoList.SelectedIndex -eq -1)
+        {
+            Return [System.Windows.MessageBox]::Show("No image selected","Error")
+        }
+
+        $Index = $Xaml.IO.IsoList.SelectedIndex
+        $Name  = $Xaml.IO.IsoList.SelectedItem.Name
+        If ($Name.Length -gt 65)
+        {
+            $Name = "$($Name.Substring(0,64))..."
+        }
+
+        Write-Theme "Mounting [~] $Name" 14,6,15
+        $Xaml.IO.IsoMount.IsEnabled          = 0
+
+        $Main.ImageController.LoadIso($Index)
+        Start-Sleep 1
+        If ($Main.ImageController.Selected.Content.Count -eq 0)
+        {
+            Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
+            $Main.ImageController.UnloadIso()
+            $Xaml.IO.IsoMount.IsEnabled      = 1
+        }
+        Else
+        {
+            $Main.Reset($Xaml.IO.IsoView.Items,$Main.ImageController.Store[$Index].Content)
+            $Xaml.IO.IsoList.IsEnabled       = 0
+            $Xaml.IO.IsoDismount.IsEnabled   = 1
+        }
+    })
+
+    $Xaml.IO.IsoDismount.Add_Click(
+    {
+        $Name  = $Xaml.IO.IsoList.SelectedItem.Name
+        If ($Name.Length -gt 65)
+        {
+            $Name = "$($Name.Substring(0,64))..."
+        }
+        Write-Theme "Dismounting [~] $Name" 12,4,15
+        $Main.ImageController.UnloadIso()
+        $Main.Reset($Xaml.IO.IsoView.Items,$Null)
+        $Xaml.IO.IsoList.IsEnabled           = 1
+        $Xaml.IO.IsoMount.IsEnabled          = 1
+        $Xaml.IO.IsoDismount.IsEnabled       = 0
+    })
+
+    $Xaml.IO.IsoView.Add_SelectionChanged(
+    {
+        $Xaml.IO.WimQueue.IsEnabled          = $Xaml.IO.IsoView.Items.Count -gt 0
+    })
+
+    $Xaml.IO.WimIso.Add_SelectionChanged(
+    {
+        $Items = $Xaml.IO.WimIso.Items
+        $Index = $Xaml.IO.WimIso.SelectedIndex
+        Switch ([UInt32]($Items.Count -gt 0))
+        {
+            0
+            {
+                $Xaml.IO.WimDequeue.IsEnabled     = 0
+                $Xaml.IO.WimIsoUp.IsEnabled       = 0
+                $Xaml.IO.WimIsoDown.IsEnabled     = 0
+            }
+            1
+            {
+                $Xaml.IO.WimDequeue.IsEnabled     = 1
+                $Xaml.IO.WimIsoUp.IsEnabled       = $Index -ne 0
+                $Xaml.IO.WimIsoDown.IsEnabled     = $Index -ne ($Items.Count-1)
+            }
+        }
+    })
+
+    $Xaml.IO.WimQueue.Add_Click(
+    {
+        $Index = @($Xaml.IO.IsoView.SelectedItems.Index)
+        $Main.ImageController.AddQueue($Index)
+        $Main.Reset($Xaml.IO.WimIso.Items,$Main.ImageController.Queue)
+    })
+
+    $Xaml.IO.WimDequeue.Add_Click(
+    {
+        $Main.ImageController.DeleteQueue($Xaml.IO.WimIso.SelectedItem.Name)
+        $Main.Reset($Xaml.IO.WimIso.Items,$Main.ImageController.Queue)
+    
+        If ($Xaml.IO.WimIso.Items.Count -eq 0)
+        {
+            $Xaml.IO.WimDequeue.IsEnabled = 0
+        }
+    })
+    
+    $Xaml.IO.WimIsoUp.Add_Click(
+    {
+        If ($Main.ImageController.Queue.Count -gt 1)
+        {
+            $Index                                  = $Xaml.IO.WimIso.SelectedIndex
+            $Swap                                   = $Main.ImageController.Queue[$Index-1]
+            $Main.ImageController.Queue[$Index-1]   = $Main.ImageController.Queue[$Index]
+            $Main.ImageController.Queue[$Index]     = $Swap
+            $Main.Reset($Xaml.IO.WimIso.Items,$Main.ImageController.Queue)
+        }
+    })
+    
+    $Xaml.IO.WimIsoDown.Add_Click(
+    {
+        If ($Main.ImageController.Queue.Count -gt 1)
+        {
+            $Index                                  = $Xaml.IO.WimIso.SelectedIndex
+            $Swap                                   = $Main.ImageController.Queue[$Index+1]
+            $Main.ImageController.Queue[$Index+1]   = $Main.ImageController.Queue[$Index]
+            $Main.ImageController.Queue[$Index]     = $Swap
+            $Main.Reset($Xaml.IO.WimIso.Items,$Main.ImageController.Queue)
+        }
+    })
+
+    $Xaml.IO.WimExtract.Add_Click(
+    {
+        $Main.ImageController.SetTarget($Xaml.IO.WimPath.Text)
+        If ($Main.ImageController.Target)
+        {
+            $Main.ImageController.Extract()
+        }
+    })
+
+    $Xaml.IO.WimSelect.Add_Click(
+    {
+        $Item                   = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        $Xaml.IO.WimPath.Text   = $Item.SelectedPath
+    })
+
+    $Xaml.IO.WimPath.Add_TextChanged(
+    {
+        $Xaml.IO.WimExtract.IsEnabled = $Xaml.IO.WimPath.Text -ne ""
+    })
+
+    # ---------------- #
+    # <![Update Tab]!> #
+    # ---------------- #
+
+    $Xaml.IO.UpdSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        ElseIf ((Get-ChildItem $Item.SelectedPath -Recurse *.msu).Count -eq 0)
+        {
+            Return [System.Windows.MessageBox]::Show("No .msu files were detected in the provided path","Error")
+        }
+
+        Else
+        {
+            Write-Theme "Getting [~] Windows Update Package(s)" 14,6,15
+            $Xaml.IO.UpdPath.Text = $Item.SelectedPath
+            $Main.UpdateController.SetUpdateBase($Xaml.IO.UpdPath.Text)
+            $Main.UpdateController.ProcessFileList()
+            $Main.Reset($Xaml.IO.UpdAggregate.Items,$Main.UpdateController.UpdateList)
+        }
+    })
+
+    $Xaml.IO.UpdAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.UpdAggregate.SelectedIndex -ne -1)
+        {
+            $Object = $Main.UpdateController.UpdateList | ? KB -eq $Xaml.IO.UpdAggregate.SelectedItem.KB | % Output | ? Name -ne ApplicabilityInfo | % { $Main.List($_.Name,$_.Value)}
+            $Main.Reset($Xaml.IO.UpdViewer.Items,$Object)
+        }
+    })
+
+    $Xaml.IO.UpdWimSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        ElseIf ((Get-ChildItem $Item.SelectedPath -Recurse *.wim).Count -eq 0)
+        {
+            Return [System.Windows.MessageBox]::Show("No (*.wim) files were detected in the provided path","Error")
+        }
+
+        Else
+        {
+            Write-Theme "Getting [~] (*.wim) file(s)" 14,6,15
+            $Xaml.IO.UpdWimPath.Text = $Item.SelectedPath
+            $Main.UpdateController.GetWimFiles($Xaml.IO.UpdWimPath.Text)
+            $Main.Reset($Xaml.IO.UpdWim.Items,$Main.UpdateController.WimList)
+        }
+    })
+
+    # --------------- #
+    # <![Share Tab]!> #
+    # --------------- #
+
+    If ($Main.Config.Output | ? Name -eq MDT | ? Value -eq 1)
+    {
+        Get-MDTModule | Import-Module
+        Restore-MDTPersistentDrive
+    }
+
+    $Main.Reset($Xaml.IO.DSAggregate.Items,$Main.MdtController.Drive)
+
+    # DsAggregate      DataGrid
+    # DsRootSelect     Button
+    # DsRootPath       TextBox
+    # DsDriveName      TextBox
+    # DsShareName      TextBox
+    # DsType           ComboBox
+    # DsDescription    TextBox
+    # DsAddShare       Button
+    # DsRemoveShare    Button
+    # DsShareConfig    TabControl
+
+    $Xaml.IO.DsAggregate.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.DsAggregate.SelectedIndex -ne -1)
+        {
+            $Main.SelectDrive($Xaml,$Xaml.IO.DsAggregate.SelectedItem.Name)
+        }
+    })
+
+    $Xaml.IO.DsRootSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        $Xaml.IO.DSRootPath.Text = $Item.SelectedPath
+    })
+
+    $Xaml.IO.DsRootPath.Add_TextChanged(
+    {
+        If ( $Xaml.IO.DSRootPath.Text -ne "" )
+        {
+            $Xaml.IO.DSShareName.Text = ("{0}$" -f $Xaml.IO.DSRootPath.Text.Split("(\/|\.)")[-1] )
+        }
+    })
+
+    $Xaml.IO.DsAddShare.Add_Click(
+    {
+        If ($Xaml.IO.DsDriveName.Text -notmatch "(\w|\d)+")
+        {
+            Return [System.Windows.MessageBox]::Show("Drive label can only contain alphanumeric characters","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsRootPath.Text -in $Xaml.IO.DsAggregate.Items.Root)
+        {
+            Return [System.Windows.MessageBox]::Show("Selected path is already assigned to another deployment share","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsRootPath.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Selected path is invalid","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsShareName.Text -in $Xaml.IO.DsAggregate.Items.Share)
+        {
+            Return [System.Windows.MessageBox]::Show("Selected share name is already assigned to another deployment share","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsType.SelectedIndex -eq 2)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select MDT or PSD for deployment share type","Error")
+        }
+
+        Else
+        {
+            $Main.MdtController.AddDrive($Xaml.IO.DsDriveName.Text,$Xaml.IO.DsRootPath.Text,$Xaml.IO.DsShareName.Text,$Xaml.IO.DsDescription.Text,$Xaml.IO.DsType.SelectedIndex)
+            If ($Xaml.IO.DsType.SelectedIndex -eq 1)
+            {
+                $Main.MdtController.PSDShare($Xaml.IO.DsDriveName.Text)
+            }
+            $Object = $Main.MdtController.Drive | ? Name -eq $Xaml.IO.DsDriveName.Text 
+            $Object.SetDefaults($Main.Module)
+            $Xaml.IO.DsAggregate.Items.Clear()
+            $Main.Reset($Xaml.IO.DsAggregate.Items,$Main.MdtController.Drive)
+            Write-Theme "Successs [+] Added Persistent Drive: ($($Object.Name))" 9,11,15
+        }
+    })
+
+    $Xaml.IO.DsRemoveShare.Add_Click(
+    {
+        If ($Xaml.IO.DsAggregate.SelectedIndex -eq -1)
+        {
+            Return [System.Windows.MessageBox]::Show("No share to remove...","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsAggregate.SelectedItem.Name -eq "<New>")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid drive selected","Error")
+        }
+        
+        Else
+        {
+            $Object = $Xaml.IO.DsAggregate.SelectedItem
+            Switch ([System.Windows.MessageBox]::Show("This will remove the share [$($Object.Name)]","Warning [!] Proceed?","YesNo"))
+            {
+                Yes 
+                {
+                    $Main.MdtController.RemoveDrive($Object.Name)
+                    $Main.Reset($Xaml.IO.DsAggregate.Items,$Main.MdtController.Drive)
+                    $Xaml.IO.DsAggregate.SelectedIndex = 0
+                }
+                No
+                {
+                    Write-Theme "Exception [!] User cancelled drive removal" 12,4,15
+                    Break
+                }
+            }
+        }
+    })
+
+    # [Mdt.Drive.Property]
+    # DsPropertyValue  TextBox
+    # DsPropertyApply  Button
+    # DsProperty       DataGrid
+    $Xaml.IO.DsPropertyApply.Add_Click(
+    {
+        If ($Xaml.IO.DsProperty.SelectedIndex -ne -1)
+        {
+            $Main.MdtController.Selected.SetProperty($Xaml.IO.DsProperty.SelectedItem.Name,$Xaml.IO.DsPropertyValue.Text)
+            $Main.Reset($Xaml.IO.DsProperty.Items,$Main.MdtController.Selected.Property)
+        }
+    })
+
+    # [Mdt.Drive.Brand]
+    # DsBrCollect           Button
+    # DsBrPhone             TextBox
+    # DsBrandApply          Button
+    # DsBrHours             TextBox
+    # DsBrWebsite           TextBox
+    # DsBrLogoSelect        Button
+    # DsBrLogo              TextBox
+    # DsBrBackgroundSelect  Button
+    # DsBrBackground        TextBox
+    $Xaml.IO.DsBrCollect.Add_Click(
+    {
+        $Brand = $Main.MdtController.GetBrand()
+        If ($Brand)
+        {
+            $Xaml.IO.DsBrOrganization.Text = $Brand.Manufacturer
+            $Xaml.IO.DsBrPhone.Text        = $Brand.SupportPhone
+            $Xaml.IO.DsBrHours.Text        = $Brand.SupportHours
+            $Xaml.IO.DsBrWebsite.Text      = $Brand.SupportURL
+            $Xaml.IO.DsBrLogo.Text         = $Brand.Logo
+            $Xaml.IO.DsBrBackground.Text   = $Brand.Wallpaper
+        }
+    })
+
+    $Xaml.IO.DsBrLogoSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory = $Env:SystemDrive
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename     = $Main.Module.Graphics | ? Name -eq OEMLogo.bmp | % Path
+        }
+
+        $Xaml.IO.DsBrLogo.Text = $Item.FileName
+    })
+    
+    $Xaml.IO.DsBrBackgroundSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.OpenFileDialog
+        $Item.InitialDirectory = $Env:SystemDrive
+        $Item.ShowDialog()
+        
+        If (!$Item.Filename)
+        {
+            $Item.Filename     =  $Main.Module.Graphics | ? Name -eq OEMbg.jpg | % Path
+        }
+
+        $Xaml.IO.DsBrBackground.Text = $Item.FileName
+    })
+
+    $Xaml.IO.DsBrandApply.Add_Click(
+    {
+        If ($Xaml.IO.DsBrPhone.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Support phone number cannot be blank, use '-' if this field is not needed","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsBrHours.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Support hours cannot be blank, use '-' if this field is not needed","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsBrOrganization.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Organization cannot be blank, use an address if this field is not needed","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsBrWebsite.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Support website cannot be blank, use '-' if this field is not needed","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsBrLogo.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("OEM logo cannot be blank, use the default if this field is not needed","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsBrBackground.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("OEM background cannot be blank, use the default if this field is not needed","Error")
+        }
+
+        Else
+        {
+            $Main.MdtController.Selected.Brand = $Main.MdtController.NewBrand($Xaml.IO.DsBrBackground.Text,$Xaml.IO.DsBrLogo.Text,$Xaml.IO.DsBrOrganization.Text,$Xaml.IO.DsBrPhone.Text,$Xaml.IO.DsBrHours.Text,$Xaml.IO.DsBrWebsite.Text)
+            Write-Theme "Set [+] Brand" 9,11,15
+        }
+    })
+
+    # [Mdt.Drive.Local]
+    # DsLmUsername             TextBox
+    # DsLocalApply             Button
+    # DsLmPassword             PasswordBox
+    # DsLmConfirm              PasswordBox
+    $Xaml.IO.DsLocalApply.Add_Click(
+    {
+        If ($Xaml.IO.DsLmUsername.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Local administrator username cannot be blank","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsLmPassword.Password -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Local administrator password cannot be blank","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsLmPassword.Password -ne $Xaml.IO.DsLmConfirm.Password)
+        {
+            Return [System.Windows.MessageBox]::Show("Local administrator password confirmation failure","Error")
+        }
+
+        Else
+        {
+            $Main.MDTController.Selected.Administrator = $Xaml.IO.DsLmUsername.Text
+            $Main.MDTController.Selected.Password      = $Xaml.IO.DsLmPassword.Password
+            Write-Theme "Set [+] Local Credential" 9,11,15
+        }
+    })
+
+    # [Mdt.Drive.Domain/Network]
+    # DsDcUsername             TextBox
+    # DsDcPassword             PasswordBox
+    # DsDcConfirm              PasswordBox
+    # DsNetBiosName            TextBox
+    # DsDnsName                TextBox
+    # DsMachineOUSelect        Button
+    # DsMachineOu              TextBox
+
+    $Xaml.IO.DsLogin.Add_Click(
+    {
+        $Main.MdtController.Selected.Connection = Get-FEADLogin
+        If ($Main.MdtController.Selected.Connection)
+        {
+            $Xaml.IO.DsDcUsername.Text     = $Main.MdtController.Selected.Connection.Credential.Username
+            $Xaml.IO.DsDcPassword.Password = $Main.MdtController.Selected.Connection.Credential.GetNetworkCredential().Password
+            $Xaml.IO.DsDcConfirm.Password  = $Main.MdtController.Selected.Connection.Credential.GetNetworkCredential().Password
+            $Xaml.IO.DsNetBiosName.Text    = $Main.MdtController.Selected.Connection.NetBios
+            $Xaml.IO.DsDnsName.Text        = $Main.MdtController.GetHostname()
+        }
+    })
+
+    $Xaml.IO.DsMachineOUSelect.Add_Click(
+    {
+        $OU = [XamlWindow][OUListGUI]::Tab
+        $Main.Reset($OU.IO.OrganizationalUnits.Items,$Main.Config.Adds.Ou)
+        
+        $OU.IO.Filter.Add_TextChanged(
+        {
+            $Main.Reset($OU.IO.OrganizationalUnits.Items,($Main.Config.Adds.Ou | ? $OU.IO.Type.SelectedItem.Content -match $OU.IO.Filter.Text))
+        })
+
+        $OU.IO.Cancel.Add_Click(
+        {
+            $OU.IO.DialogResult = $False
+        })
+
+        $OU.IO.OK.Add_Click(
+        {
+            If ($OU.IO.OrganizationalUnits.SelectedIndex -ne -1)
+            {
+                $Xaml.IO.DsMachineOU.Text = $OU.IO.OrganizationalUnits.SelectedItem.DistinguishedName
+                $OU.Io.DialogResult   = $True
+            }
+        })
+
+        $OU.Invoke()
+    })
+
+    $Xaml.IO.DsDomainApply.Add_Click(
+    {
+        If ($Xaml.IO.DsDcUsername.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Domain administrator username cannot be blank","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsDcPassword.Password -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Domain administrator password cannot be blank","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsDcPassword.Password -ne $Xaml.IO.DsDcConfirm.Password)
+        {
+            Return [System.Windows.MessageBox]::Show("Domain administrator password confirmation failure","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsNetBiosName.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid deployment (share/domain) NetBIOS name","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsDnsName.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid deployment (share/domain) DnsName","Error")
+        }
+
+        ElseIf ($Xaml.IO.DsMachineOu.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid organizational unit name","Error")
+        }
+
+        Else
+        {
+            $Main.MDTController.Selected.Domain = $Main.MdtController.NewDomainJoin($Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.SecurePassword,$Xaml.IO.DsNetBiosName.Text,$Xaml.IO.DsDnsName.Text,$Xaml.IO.DsMachineOu.Text)
+        }
+    })
+
+    $Xaml.IO.DsImportSelect.Add_Click(
+    {
+        $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
+        $Item.ShowDialog()
+        
+        If (!$Item.SelectedPath)
+        {
+            $Item.SelectedPath  = ""
+        }
+
+        ElseIf ((Get-ChildItem $Item.SelectedPath *.wim -Recurse).Count -eq 0)
+        {
+            Return [System.Windows.MessageBox]::Show("No (*.wim) files found","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.DsImportPath.Text = $Item.SelectedPath
+            $Main.MdtController.Selected.Images.Load("Import",$Item.SelectedPath)
+        }
+    })
+
+    $Xaml.IO.DsImport.Add_Click(
+    {
+        $Main.MdtController.ImportImages($Xaml.IO.DsImportMode.SelectedIndex)
+    })
+
+
+    # Select Images
+    # Import Images
+
+    # Generate Bootstrap
+    $Xaml.IO.DsGenerateBootstrap.Add_Click(
+    {
+        If (!$Main.MdtController.Selected.Brand)
+        {
+            Return [System.Windows.MessageBox]::Show("Create a brand item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Domain)
+        {
+            Return [System.Windows.MessageBox]::Show("Create a domain/network item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Administrator)
+        {
+            Return [System.Windows.MessageBox]::Show("Enter a local administrator username first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Password)
+        {
+            Return [System.Windows.MessageBox]::Show("Enter a local administrator password first","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.DsBootstrap.Text  = $Main.MdtController.Bootstrap(
+                $Main.MdtController.Selected.Type,
+                $Main.MdtController.Selected.Domain.NetBIOS,
+                $Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name),
+                $Main.MdtController.Selected.Domain.Credential.Username,
+                $Main.MdtController.Selected.Domain.Credential.GetNetworkCredential().Password
+            )
+        }
+    })
+
+    # Apply Bootstrap
+    $Xaml.IO.DsApplyBootstrap.Add_Click(
+    {
+        $Main.MdtController.Selected.Config | ? Name -eq Bootstrap | % SetContent $Xaml.IO.DsBootstrap.Text.Split("`n")
+    })
+
+    # Generate Custom
+    $Xaml.IO.DsGenerateCustomSettings.Add_Click(
+    {
+        If (!$Main.MdtController.Selected.Brand)
+        {
+            Return [System.Windows.MessageBox]::Show("Create a brand item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Domain)
+        {
+            Return [System.Windows.MessageBox]::Show("Create a domain/network item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Administrator)
+        {
+            Return [System.Windows.MessageBox]::Show("Enter a local administrator username first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Password)
+        {
+            Return [System.Windows.MessageBox]::Show("Enter a local administrator password first","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.DsCustomSettings.Text  = $Main.MdtController.CustomSettings(
+                $Main.MdtController.Selected.Type,
+                $Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name),
+                $Main.MdtController.Selected.Brand.Manufacturer,
+                $Main.MdtController.Selected.Domain.NetBIOS,
+                $Main.MdtController.Selected.Domain.DnsName,
+                $Main.MdtController.GetHostname(),
+                $Main.MdtController.Selected.Domain.MachineOU,
+                $Main.MdtController.Selected.Domain.Credential.Username,
+                $Main.MdtController.Selected.Domain.Credential.GetNetworkCredential().Password
+            )
+        }
+    })
+
+    # Apply Custom
+    $Xaml.IO.DsApplyCustomSettings.Add_Click(
+    {
+        $Main.MdtController.Selected.Config | ? Name -eq CustomSettings | % SetContent $Xaml.IO.DsCustomSettings.Text.Split("`n")
+    })
+
+    # Generate Post
+    $Xaml.IO.GeneratePostconfig.Add_Click(
+    {
+        $Xaml.IO.PostConfig.Text = $Main.MdtController.Postconfig("$($Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name))\DSKey.csv")
+    })
+
+    # Apply Post
+    $Xaml.IO.ApplyPostConfig.Add_Click(
+    {
+        $Main.MdtController.Selected.Config | ? Name -eq Postconfig | % SetContent $Xaml.Io.PostConfig.Text
+    })
+
+    # Generate Key
+    $Xaml.IO.GenerateKey.Add_Click(
+    {
+        $Xaml.IO.DsDSKey.Text = $Main.MdtController.NewKey(
+            $Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name),
+            $Main.MdtController.Organization,
+            $Main.MdtController.CommonName,
+            $Main.MdtController.Selected.Brand.Wallpaper,
+            $Main.MdtController.Selected.Brand.Logo,
+            $Main.MdtController.Selected.Brand.SupportPhone,
+            $Main.MdtController.Selected.Brand.SupportHours,
+            $Main.MdtController.Selected.Brand.SupportURL)
+    })
+
+    # Apply Key
+    $Xaml.IO.ApplyDsKey.Add_Click(
+    {
+        $Main.MdtController.Selected.Config | ? Name -eq DSKey | % SetContent $Xaml.IO.DsDSKey.Text
+    })
+
+    # Update mode
+    $Xaml.IO.DsUpdate.Add_Click(
+    {
+        Update-MDTDeploymentShare -Name $Main.MdtController.Selected.Name
+    })
+
+    # Send to WDS
+    Switch($PSCmdLet.ParameterSetName)
+    {
+        0
+        {
+            $Xaml.Invoke()
+        }
+        1
+        {
+            Return @{ 
+                
+                Xaml = $Xaml; 
+                Main = $Main 
+            }
+        }
+    }
+}
+
+<#
+
+Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
+# New-FEInfrastructure2
+
+$Cap = New-FEInfrastructure -Test
+
+$Xaml = $Cap.Xaml
+$Main = $Cap.Main
+
+$Xaml.Invoke()
+
+#>
