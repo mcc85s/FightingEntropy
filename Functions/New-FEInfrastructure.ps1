@@ -10812,7 +10812,7 @@ Function New-FEInfrastructure
         $OU.Invoke()
     })
 
-    $Xaml.IO.DomainApply.Add_Click(
+    $Xaml.IO.DsDomainApply.Add_Click(
     {
         If ($Xaml.IO.DsDcUsername.Text -eq "")
         {
