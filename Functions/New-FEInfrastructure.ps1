@@ -4851,7 +4851,7 @@ Function New-FEInfrastructure
     # Get-Content $Home\Desktop\FEInfrastructure.xaml | % { "        '$_',"} | Set-Clipboard
     Class FEInfrastructureGUI
     {
-        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
+        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -4955,7 +4955,7 @@ Function New-FEInfrastructure
         '            <Setter Property="Padding" Value="5"/>',
         '            <Setter Property="FontFamily" Value="Consolas"/>',
         '            <Setter Property="Height" Value="180"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="FontSize" Value="10"/>',
         '            <Setter Property="FontWeight" Value="Normal"/>',
         '            <Setter Property="AcceptsReturn" Value="True"/>',
         '            <Setter Property="VerticalAlignment" Value="Top"/>',
@@ -4971,7 +4971,7 @@ Function New-FEInfrastructure
         '        <Style TargetType="DataGrid">',
         '            <Setter Property="Margin" Value="5"/>',
         '            <Setter Property="AutoGenerateColumns" Value="False"/>',
-        '            <Setter Property="AlternationCount" Value="2"/>',
+        '            <Setter Property="AlternationCount" Value="3"/>',
         '            <Setter Property="HeadersVisibility" Value="Column"/>',
         '            <Setter Property="CanUserResizeRows" Value="False"/>',
         '            <Setter Property="CanUserAddRows" Value="False"/>',
@@ -7627,8 +7627,11 @@ Function New-FEInfrastructure
         '                                                        <ColumnDefinition Width="100"/>',
         '                                                    </Grid.ColumnDefinitions>',
         '                                                    <Button   Grid.Row="0" Grid.Column="0" Name="DsImportSelect" Content="Select"/>',
-        '                                                    <TextBox  Grid.Row="0" Grid.Column="1" Name="DsImportPath"/>',
-        '                                                    <ComboBox Grid.Row="0" Grid.Column="2" Name="DsImportMode"/>',
+        '                                                    <TextBox  Grid.Row="0" Grid.Column="1" Name="DsImportPath" IsEnabled="False"/>',
+        '                                                    <ComboBox Grid.Row="0" Grid.Column="2" Name="DsImportMode">',
+        '                                                        <ComboBoxItem Content="Copy"/>',
+        '                                                        <ComboBoxItem Content="Move"/>',
+        '                                                    </ComboBox>',
         '                                                    <Button   Grid.Row="0" Grid.Column="3" Name="DsImport" Content="Import"/>',
         '                                                </Grid>',
         '                                                <DataGrid Grid.Row="2" Name="DsImportWimFiles"',
@@ -11025,7 +11028,7 @@ Function New-FEInfrastructure
     {
         Update-MDTDeploymentShare -Name $Main.MdtController.Selected.Name
     })
-    
+
     # Send to WDS
 
     Switch($PSCmdLet.ParameterSetName)
