@@ -3782,21 +3782,21 @@ Function New-FEInfrastructure
             SetDefaults([Object]$Module)
             {
                 # Copies the background and logo if they were selected and are found
-                ForEach ($File in $Module.Graphics | ? Name -in "background.jpg","OEMlogo.bmp" | % Path)
+                ForEach ($File in $Module.Graphics | ? Name -in "background.jpg","OEMlogo.bmp")
                 {
-                    Copy-Item -Path $File -Destination "$($This.Root)\Script" -Verbose
+                    Copy-Item -Path $File.Path -Destination "$($This.Root)\Script" -Verbose
                 }
 
                 # For the PXE environment images
                 ForEach ($File in $Module.Control | ? Extension -eq .png)
                 {
-                    Copy-Item -Path $File.FullName -Destination "$($This.Root)\Script" -Force -Verbose
+                    Copy-Item -Path $File.Path -Destination "$($This.Root)\Script" -Force -Verbose
                 }
 
                 # Copies custom template for FightingEntropy to post install/configure
                 ForEach ($File in $Module.Control | ? Name -match Mod.xml)
                 {
-                    Copy-Item -Path $File.FullName -Destination "$Env:ProgramFiles\Microsoft Deployment Toolkit\Templates" -Force -Verbose
+                    Copy-Item -Path $File.Path -Destination "$Env:ProgramFiles\Microsoft Deployment Toolkit\Templates" -Force -Verbose
                 }
             }
             [Object] GetDriveProperties()
