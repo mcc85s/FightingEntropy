@@ -13,11 +13,11 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-11-10
-          Modified: 2021-11-12
+          Modified: 2021-11-11
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
-          TODO: MDT - about done, WDS
+          TODO: MDT, WDS
 
 .Example
 #>
@@ -3707,6 +3707,7 @@ Function New-FEInfrastructure
             [Object] $Config
             [Object] $Images
             [Object] $Brand
+            [Object] $Domain
             [Object] $Connection
             [String] $Administrator
             [String] $Password
@@ -3795,7 +3796,7 @@ Function New-FEInfrastructure
                 # Copies custom template for FightingEntropy to post install/configure
                 ForEach ($File in $Module.Control | ? Name -match Mod.xml)
                 {
-                    Copy-Item -Path $File.FullName -Destination "$($This.Path)\Templates" -Force -Verbose
+                    Copy-Item -Path $File.FullName -Destination "$Env:ProgramFiles\Microsoft Deployment Toolkit\Templates" -Force -Verbose
                 }
             }
             [Object] GetDriveProperties()
@@ -3804,12 +3805,13 @@ Function New-FEInfrastructure
             }
             SetDriveProperty([String]$Name,[Object]$Value)
             {
-                $Item = $This.Property | ? Name -eq $Name
+                $Item          = $This.Property | ? Name -eq $Name
                 Restore-MDTPersistentDrive
                 If ($Name -in $This.Property.Name)
                 {
                     Set-ItemProperty -Path $This.Drive -Name $Name -Value $Value
                 }
+                $This.Property = $This.GetDriveProperties()
             }
             [Object] GetDriveProperty([String]$Name)
             {
@@ -8241,6 +8243,7 @@ Function New-FEInfrastructure
             $This.MdtController.SelectDrive($Name)
             $Object                                = $This.MdtController.Selected
             $Object.Brand                          = $Null
+            $Object.Domain                         = $Null
             $Object.Connection                     = $Null
             $Object.Administrator                  = $Null
             $Object.Password                       = $Null
@@ -10639,6 +10642,7 @@ Function New-FEInfrastructure
         If ($Xaml.IO.DsProperty.SelectedIndex -ne -1)
         {
             $Main.MdtController.Selected.SetProperty($Xaml.IO.DsProperty.SelectedItem.Name,$Xaml.IO.DsPropertyValue.Text)
+            $Main.Reset($Xaml.IO.DsProperty.Items,$Main.MdtController.Selected.Property)
         }
     })
 
@@ -10872,7 +10876,7 @@ Function New-FEInfrastructure
 Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
 # New-FEInfrastructure2
 
-$Cap = New-FEInfrastructure2 -Test
+$Cap = New-FEInfrastructure -Test
 
 $Xaml = $Cap.Xaml
 $Main = $Cap.Main
