@@ -737,11 +737,12 @@ Function New-FEInfrastructure
             {
                 ForEach ($Site in $This.Topology)
                 {
+                    $Location = $This.Aggregate | ? Sitelink -match $Site.Name | % { "{0}, {1} {2}" -f $_.Location, $_.Region, $_.Postal }
                     Switch ($Site.Exists)
                     {
                         0
                         {
-                            New-ADReplicationSite -Name $Site.Name -Verbose
+                            New-ADReplicationSite -Name $Site.Name -Description $Site.Sitename -OtherAttributes @{ Location = $Location } -Verbose
                             $Site.Exists = 1
                         }
                         1
@@ -764,8 +765,15 @@ Function New-FEInfrastructure
 
                         1
                         {
-                            Remove-ADObject -Identity $Site.DistinguishedName -Verbose -Confirm:$False -Recursive
-                            $Site.Exists = 0
+                            Try
+                            {
+                                Remove-ADObject -Identity $Site.DistinguishedName -Verbose -Confirm:$False -Recursive
+                                $Site.Exists = 0
+                            }
+                            Catch
+                            {
+                                Write-Theme "Exception [!] The DSA object cannot be deleted, buddy..." 12,4,15
+                            }
                         }
                     }
                 }
@@ -1607,7 +1615,7 @@ Function New-FEInfrastructure
             {
                 If ($This.Get())
                 {
-                    If ($This.Type -eq "Domain Controller")
+                    If ($This.DistinguishedName -match "Domain Controller")
                     {
                         Remove-ADObject -Identity $This.DistinguishedName -Recursive -Confirm:$False -Verbose
                         $This.Type              = "Server"
@@ -1616,7 +1624,7 @@ Function New-FEInfrastructure
                     }
                     Else
                     {
-                        Remove-ADComputer -Identity $This.DistinguishedName -Verbose -Confirm:$False
+                        Remove-ADObject -Identity $This.DistinguishedName -Confirm:$False -Verbose
                     }
                 }
 
@@ -2103,23 +2111,38 @@ Function New-FEInfrastructure
                     {
                         Gateway
                         {
-                            $This.Output.Gateway     += [AddsHost]::New($Site,$Node)
+                            If ($Node.Name -notin $This.Output.Gateway.Hostname)
+                            {
+                                $This.Output.Gateway += [AddsHost]::New($Site,$Node)
+                            }
                         }
                         Server
                         {
-                            $This.Output.Server      += [AddsHost]::New($Site,$Node)
+                            If ($Node.Name -notin $This.Output.Server.Hostname)
+                            {
+                                $This.Output.Server  += [AddsHost]::New($Site,$Node)
+                            }
                         }
                         Workstation
                         {
-                            $This.Output.Workstation += [AddsHost]::New($Site,$Node)
+                            If ($Node.Name -notin $This.Output.Server.Hostname)
+                            {
+                                $This.Output.Workstation += [AddsHost]::New($Site,$Node)
+                            }
                         }
                         User
                         {
-                            $This.Output.User        += [AddsAccount]::New($Site,$Node)
+                            If ($Node.Name -notin $This.Output.Server.Name)
+                            {
+                                $This.Output.User        += [AddsAccount]::New($Site,$Node)
+                            }
                         }
                         Service
                         {
-                            $This.Output.Service     += [AddsAccount]::New($Site,$Node)
+                            If ($Node.Name -notin $This.Output.Server.Name)
+                            {
+                                $This.Output.Service     += [AddsAccount]::New($Site,$Node)
+                            }
                         }
                     }
                 }
@@ -3713,6 +3736,106 @@ Function New-FEInfrastructure
             }
         }
 
+        Class Brand
+        {
+            [String] $Wallpaper
+            [String] $Logo
+            [String] $Manufacturer
+            [String] $SupportPhone
+            [String] $SupportHours
+            [String] $SupportURL
+            Brand()
+            {
+                Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System -EA 0 | % {
+
+                    $This.Wallpaper    = $_.Wallpaper
+                }
+
+                Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\OEMInformation -EA 0 | % {
+
+                    $This.Logo         = $_.Logo
+                    $This.Manufacturer = $_.Manufacturer
+                    $This.SupportPhone = $_.SupportPhone
+                    $This.SupportHours = $_.SupportHours
+                    $This.SupportURL   = $_.SupportURL
+                }
+            }
+            Brand([String]$Wallpaper,[String]$Logo,[String]$Manufacturer,[String]$Phone,[String]$Hours,[String]$URL)
+            {
+                $This.Wallpaper    = $Wallpaper
+                $This.Logo         = $Logo
+                $This.Manufacturer = $Manufacturer
+                $This.SupportPhone = $Phone
+                $This.SupportHours = $Hours
+                $This.SupportURL   = $URL
+            }
+            [String] ToString()
+            {
+                Return "<Brand>"
+            }
+        }
+        
+        Class Key
+        {
+            [String]     $NetworkPath
+            [String]    $Organization
+            [String]      $CommonName
+            [String]      $Background
+            [String]            $Logo
+            [String]           $Phone
+            [String]           $Hours
+            [String]         $Website
+            Key([String]$Path)
+            {
+                $Root                 = Import-CSV $Path     
+                $This.NetworkPath     = $Root.NetworkPath
+                $This.Organization    = $Root.Organization
+                $This.CommonName      = $Root.CommonName
+                $This.Background      = $Root.Background 
+                $This.Logo            = $Root.Logo
+                $This.Phone           = $Root.Phone
+                $This.Hours           = $Root.Hours
+                $This.Website         = $Root.Website
+            }
+            Key([Object]$Object)
+            {
+                $This.NetworkPath     = $Object[0].Split('"')[1]
+                $This.Organization    = $Object[1].Split('"')[1]
+                $This.CommonName      = $Object[2].Split('"')[1]
+                $This.Background      = $Object[3].Split('"')[1]
+                $This.Logo            = $Object[4].Split('"')[1]
+                $This.Phone           = $Object[5].Split('"')[1]
+                $This.Hours           = $Object[6].Split('"')[1]
+                $This.Website         = $Object[7].Split('"')[1]
+            }
+            Key([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
+            {
+                $This.Networkpath     = $NetworkPath
+                $This.Organization    = $Organization
+                $This.CommonName      = $CommonName
+                $This.Background      = $Background
+                $This.Logo            = $Logo
+                $This.Phone           = $Phone
+                $This.Hours           = $Hours
+                $This.Website         = $Website
+            }
+        }
+
+        Class Domain
+        {
+            [Object] $Credential
+            [String] $NetBIOS
+            [String] $DnsName
+            [String] $MachineOU
+            Domain([String]$Username,[SecureString]$Password,[String]$NetBIOS,[String]$DnsName,[String]$OUName)
+            {
+                $This.Credential = [PSCredential]::New($Username,$Password)
+                $This.NetBIOS    = $NetBIOS
+                $This.DnsName    = $DnsName
+                $This.MachineOU  = $OUName
+            }
+        }
+
         Class PersistentDriveImages
         {
             [Object] $Current
@@ -3942,21 +4065,23 @@ Function New-FEInfrastructure
             }
             [Object] GetDriveProperties()
             {
+                Restore-MDTPersistentDrive
                 Return (Get-ItemProperty -Path "$($This.Name):").PSObject.Properties | % { [DGList]::New($_.Name,$_.Value) }
             }
             SetDriveProperty([String]$Name,[Object]$Value)
             {
-                $Item          = $This.Property | ? Name -eq $Name
                 Restore-MDTPersistentDrive
+                $Item          = $This.Property | ? Name -eq $Name
                 If ($Name -in $This.Property.Name)
                 {
-                    Set-ItemProperty -Path $This.Drive -Name $Name -Value $Value
+                    Set-ItemProperty -Path "$($This.Name):" -Name $Name -Value $Value
                 }
                 $This.Property = $This.GetDriveProperties()
             }
             [Object] GetDriveProperty([String]$Name)
             {
-                Return (Get-ItemProperty -Path $This.Drive -Name $Name)
+                Restore-MDTPersistentDrive
+                Return (Get-ItemProperty -Path "$($This.Name):" -Name $Name)
             }
             [String[]] Directives()
             {
@@ -3964,6 +4089,7 @@ Function New-FEInfrastructure
             }
             [Object] GetDriveContent()
             {
+                Restore-MDTPersistentDrive
                 Return ($This.Directives() | % { [PersistentDriveContent]::New($_) })
             }
             [Object[]] Select([String]$Type)
@@ -3981,106 +4107,6 @@ Function New-FEInfrastructure
             [String] ToString()
             {
                 Return $This.Name
-            }
-        }
-
-        Class Brand
-        {
-            [String] $Wallpaper
-            [String] $Logo
-            [String] $Manufacturer
-            [String] $SupportPhone
-            [String] $SupportHours
-            [String] $SupportURL
-            Brand()
-            {
-                Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System -EA 0 | % {
-
-                    $This.Wallpaper    = $_.Wallpaper
-                }
-
-                Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\OEMInformation -EA 0 | % {
-
-                    $This.Logo         = $_.Logo
-                    $This.Manufacturer = $_.Manufacturer
-                    $This.SupportPhone = $_.SupportPhone
-                    $This.SupportHours = $_.SupportHours
-                    $This.SupportURL   = $_.SupportURL
-                }
-            }
-            Brand([String]$Wallpaper,[String]$Logo,[String]$Manufacturer,[String]$Phone,[String]$Hours,[String]$URL)
-            {
-                $This.Wallpaper    = $Wallpaper
-                $This.Logo         = $Logo
-                $This.Manufacturer = $Manufacturer
-                $This.SupportPhone = $Phone
-                $This.SupportHours = $Hours
-                $This.SupportURL   = $URL
-            }
-            [String] ToString()
-            {
-                Return "<Brand>"
-            }
-        }
-        
-        Class Key
-        {
-            [String]     $NetworkPath
-            [String]    $Organization
-            [String]      $CommonName
-            [String]      $Background
-            [String]            $Logo
-            [String]           $Phone
-            [String]           $Hours
-            [String]         $Website
-            Key([String]$Path)
-            {
-                $Root                 = Import-CSV $Path     
-                $This.NetworkPath     = $Root.NetworkPath
-                $This.Organization    = $Root.Organization
-                $This.CommonName      = $Root.CommonName
-                $This.Background      = $Root.Background 
-                $This.Logo            = $Root.Logo
-                $This.Phone           = $Root.Phone
-                $This.Hours           = $Root.Hours
-                $This.Website         = $Root.Website
-            }
-            Key([Object]$Object)
-            {
-                $This.NetworkPath     = $Object[0].Split('"')[1]
-                $This.Organization    = $Object[1].Split('"')[1]
-                $This.CommonName      = $Object[2].Split('"')[1]
-                $This.Background      = $Object[3].Split('"')[1]
-                $This.Logo            = $Object[4].Split('"')[1]
-                $This.Phone           = $Object[5].Split('"')[1]
-                $This.Hours           = $Object[6].Split('"')[1]
-                $This.Website         = $Object[7].Split('"')[1]
-            }
-            Key([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
-            {
-                $This.Networkpath     = $NetworkPath
-                $This.Organization    = $Organization
-                $This.CommonName      = $CommonName
-                $This.Background      = $Background
-                $This.Logo            = $Logo
-                $This.Phone           = $Phone
-                $This.Hours           = $Hours
-                $This.Website         = $Website
-            }
-        }
-
-        Class Domain
-        {
-            [Object] $Credential
-            [String] $NetBIOS
-            [String] $DnsName
-            [String] $MachineOU
-            Domain([String]$Username,[SecureString]$Password,[String]$NetBIOS,[String]$DnsName,[String]$OUName)
-            {
-                $This.Credential = [PSCredential]::New($Username,$Password)
-                $This.NetBIOS    = $NetBIOS
-                $This.DnsName    = $DnsName
-                $This.MachineOU  = $OUName
             }
         }
 
@@ -4282,6 +4308,7 @@ Function New-FEInfrastructure
             RemoveDrive([String]$Name)
             {
                 $Select = $This.GetDrive($Name)
+                Restore-MDTPersistentDrive
                 If ($Select)
                 {
                     Remove-Item -Path $Select.Root -Force -Recurse -Confirm:$False  -Verbose
@@ -4289,6 +4316,20 @@ Function New-FEInfrastructure
                     Remove-MDTPersistentDrive -Name $Select.Name -Verbose
                     Write-Theme "Removed [!] Persistent Drive ($($Select.Name))" 12,4,15
                     $This.Drive.Remove($Select)
+                }
+            }
+            UpdateDrive([String]$Name,[UInt32]$Mode)
+            {
+                $Select = $This.GetDrive($Name)
+                Restore-MDTPersistentDrive
+                If ($Select)
+                {
+                    Switch($Mode)
+                    {
+                        0 { Update-MDTDeploymentShare -Path "$($Select.Name):"    -Force -Verbose }
+                        1 { Update-MDTDeploymentShare -Path "$($Select.Name):"           -Verbose }
+                        2 { Update-MDTDeploymentShare -Path "$($Select.Name):" -Compress -Verbose }
+                    }
                 }
             }
             [String] GuidPattern()
@@ -4333,6 +4374,7 @@ Function New-FEInfrastructure
                     Throw "Images not yet selected"
                 }
 
+                Restore-MDTPersistentDrive
                 ForEach ($Image in $This.Selected.Images.Import)
                 {
                     $Item = $This.Selected.Images.Current | ? Label -eq $Image.Label
@@ -4345,14 +4387,13 @@ Function New-FEInfrastructure
                         Remove-Item -Path $TS.Path -Verbose
                         Remove-Item -Path $OS.Path -Verbose
 
-                        $Image.Rank = $Item.Rank
+                        $Image.Rank                    = $Item.Rank
                         $This.Selected.Images.Current[$Item.Rank] = $Image
-                        $Item = $Null
                     }
                     If (!$Item)
                     {
                         $Image.Rank                    = $This.Selected.Images.Current.Count
-                        $This.Selected.Images.Current += $Item
+                        $This.Selected.Images.Current += $Image
                     }
 
                     $Root       = "$($This.Selected.Name):"
@@ -4395,7 +4436,7 @@ Function New-FEInfrastructure
                         Comments            = $Image.ImageDescription
                         ID                  = $Image.Label
                         Version             = "1.0"
-                        OperatingSystemPath = $This.Selected.Select("Operating Systems") | ? Name -match $Image.Label | % Path
+                        OperatingSystemPath = Get-ChildItem -Path $OSPath | ? Name -match $Image.Label | % { "{0}\{1}" -f $OSPath, $_.Name }
                         FullName            = $This.Selected.Administrator
                         OrgName             = $This.Selected.Brand.Manufacturer
                         HomePage            = $This.Selected.Brand.SupportURL
@@ -4406,12 +4447,51 @@ Function New-FEInfrastructure
                 }
 
                 $This.Selected.Images.Import = @( )
+                $This.RerankImages()
             }
-            [String] GetNextEventPort()
+            RemoveImages([Object[]]$File)
             {
-                $Collect = $This.Drive | % { Get-ItemProperty "$($_.Name):" }
-                $Port    = @( 9800..9899 | ? { $_ % 2 -eq 0 } | ? { $_ -notin $Collect.MonitorEventPort } )
-                Return $Port[0]
+                Restore-MDTPersistentDrive
+                If ($File.Count -eq 1)
+                {
+                    $TS    = $This.Selected.Select("Task Sequences") | ? Name -eq $File.ImageName
+                    $GUID  = $This.ExtractGUID($Ts.Node.GetPhysicalSourcePath())
+                    $OS    = $This.Selected.Select("Operating Systems") | ? GUID -eq "{$GUID}"
+
+                    Remove-Item -Path $TS.Path -Verbose -Recurse
+                    Remove-Item -Path $OS.Path -Verbose -Recurse
+                    $This.Selected.Images.Current = $This.Selected.Images.Current | ? ImageName -ne $File.ImageName
+                }
+
+                If ($File.Count -gt 1)
+                {
+                    $Files = $File
+                    ForEach ($File in $Files)
+                    {
+                        $TS    = $This.Selected.Select("Task Sequences") | ? Name -eq $File.ImageName
+                        $GUID  = $This.ExtractGUID($Ts.Node.GetPhysicalSourcePath())
+                        $OS    = $This.Selected.Select("Operating Systems") | ? GUID -eq "{$GUID}"
+
+                        Remove-Item -Path $TS.Path -Verbose -Recurse
+                        Remove-Item -Path $OS.Path -Verbose -Recurse
+                        $This.Selected.Images.Current = $This.Selected.Images.Current | ? ImageName -ne $File.ImageName 
+                    }
+                }
+
+                $This.RerankImages()
+            }
+            RerankImages()
+            {
+                If ($This.Selected.Images.Current.Count -gt 0)
+                {
+                    $X = 0
+                    Do
+                    {
+                        $This.Selected.Images.Current[$X].Rank = $X
+                        $X ++
+                    }
+                    Until ($X -eq $This.Selected.Images.Current.Count)
+                }
             }
             [Object] Enumerate([Hashtable]$Object)
             {
@@ -4471,16 +4551,12 @@ Function New-FEInfrastructure
             }
             [Object] CustomSettings([String]$Type,[String]$UNC,[String]$Org,[String]$NetBIOS,[String]$DNS,[String]$Server,[String]$OU,[String]$UserID,[String]$Password)
             {
+                Restore-MDTPersistentDrive
                 $Output = $Null
-                $Port   = $Null
-                $Exists = Get-Item "$UNC\Control\CustomSettings.ini" -EA 0
-                If (!$Exists)
+                $Port   = Get-ItemProperty -Path "$($This.Drive):" -Name MonitorEventPort | % MonitorEventPort
+                If (!$Port)
                 {
-                    $Port = $This.GetNextEventPort()
-                }
-                If ($Exists)
-                {
-                    $Port = [UInt32][Regex]::Matches((Get-Content "$UNC\Control\CustomSettings.ini"),"\/\/.+\:\d{4}").Value.Split(":")[-1]
+                    $Port = 9800
                 }
 
                 If ($Type -eq "MDT")
@@ -4552,7 +4628,7 @@ Function New-FEInfrastructure
             }
             [Object] NewKey([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
             {
-                Return [Key]::New($NetworkPath,$Organization,$CommonName,$Background,$Logo,$Phone,$Hours,$Website).PsObject.Properties | % { "$($_.Name)=`"$($_.Value)`"" }
+                Return ([Key]::New($NetworkPath,$Organization,$CommonName,$Background,$Logo,$Phone,$Hours,$Website).PsObject.Properties | % { "$($_.Name)=`"$($_.Value)`"" }) -join "`n"
             }
             [Object] NewDomainJoin([String]$Username,[SecureString]$Password,[String]$NetBIOS,[String]$DnsName,[String]$OUName)
             {
@@ -4983,7 +5059,7 @@ Function New-FEInfrastructure
     # Get-Content $Home\Desktop\FEInfrastructure.xaml | % { "        '$_',"} | Set-Clipboard
     Class FEInfrastructureGUI
     {
-        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
+        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -7028,7 +7104,7 @@ Function New-FEInfrastructure
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>',
         '                                            <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>',
-        '                                            <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>',
+        '                                            <DataGridTextColumn Header="Site"                Binding="{Binding Sitelink}"              Width="120"/>',
         '                                            <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>',
         '                                            <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>',
         '                                            <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>',
@@ -7087,7 +7163,7 @@ Function New-FEInfrastructure
         '                                        <Label    Grid.Row="0" Grid.Column="6" Content="[Core]:"/>',
         '                                        <TextBox  Grid.Row="0" Grid.Column="7" Name="VmGatewayCore"/>',
         '                                        <Label    Grid.Row="0" Grid.Column="8" Content="[Type]:"/>',
-        '                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmGatewayInstallType" SelectedIndex="0">',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmGatewayInstallType">',
         '                                            <ComboBoxItem Content="ISO"/>',
         '                                            <ComboBoxItem Content="Network"/>',
         '                                        </ComboBox>',
@@ -7126,7 +7202,7 @@ Function New-FEInfrastructure
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>',
         '                                            <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>',
-        '                                            <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>',
+        '                                            <DataGridTextColumn Header="Site"                Binding="{Binding Sitelink}"              Width="120"/>',
         '                                            <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>',
         '                                            <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>',
         '                                            <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>',
@@ -7185,7 +7261,7 @@ Function New-FEInfrastructure
         '                                        <Label    Grid.Row="0" Grid.Column="6" Content="[Core]:"/>',
         '                                        <TextBox  Grid.Row="0" Grid.Column="7" Name="VmServerCore"/>',
         '                                        <Label    Grid.Row="0" Grid.Column="8" Content="[Type]:"/>',
-        '                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmServerInstallType" SelectedIndex="0">',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmServerInstallType">',
         '                                            <ComboBoxItem Content="ISO"/>',
         '                                            <ComboBoxItem Content="Network"/>',
         '                                        </ComboBox>',
@@ -7224,7 +7300,7 @@ Function New-FEInfrastructure
         '                                        <DataGrid.Columns>',
         '                                            <DataGridTextColumn Header="Organization"        Binding="{Binding Organization}"      Width="150"/>',
         '                                            <DataGridTextColumn Header="CommonName"          Binding="{Binding CommonName}"        Width="150"/>',
-        '                                            <DataGridTextColumn Header="Site"                Binding="{Binding Site}"              Width="120"/>',
+        '                                            <DataGridTextColumn Header="Site"                Binding="{Binding Sitelink}"              Width="120"/>',
         '                                            <DataGridTextColumn Header="Location"            Binding="{Binding Location}"          Width="150"/>',
         '                                            <DataGridTextColumn Header="Region"              Binding="{Binding Region}"            Width="80"/>',
         '                                            <DataGridTextColumn Header="Country"             Binding="{Binding Country}"           Width="60"/>',
@@ -7283,7 +7359,7 @@ Function New-FEInfrastructure
         '                                        <Label    Grid.Row="0" Grid.Column="6" Content="[Core]:"/>',
         '                                        <TextBox  Grid.Row="0" Grid.Column="7" Name="VmWorkstationCore"/>',
         '                                        <Label    Grid.Row="0" Grid.Column="8" Content="[Type]:"/>',
-        '                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmWorkstationInstallType" SelectedIndex="1">',
+        '                                        <ComboBox Grid.Row="0" Grid.Column="9" Name="VmWorkstationInstallType">',
         '                                            <ComboBoxItem Content="ISO"/>',
         '                                            <ComboBoxItem Content="Network"/>',
         '                                        </ComboBox>',
@@ -7730,10 +7806,12 @@ Function New-FEInfrastructure
         '                                            <Grid>',
         '                                                <Grid.RowDefinitions>',
         '                                                    <RowDefinition Height="40"/>',
+        '                                                    <RowDefinition Height="40"/>',
         '                                                    <RowDefinition Height="*"/>',
         '                                                </Grid.RowDefinitions>',
         '                                                <Label Grid.Row="0" Content="[Current]: Operating Systems &amp; Task Sequences"/>',
-        '                                                <DataGrid Grid.Row="1" Name="DsCurrentWimFiles"',
+        '                                                <Button Grid.Row="1" Content="Remove" Name="DsCurrentWimFileRemove"/>',
+        '                                                <DataGrid Grid.Row="2" Name="DsCurrentWimFiles"',
         '                                                          ScrollViewer.CanContentScroll="True" ',
         '                                                          ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                                          ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -7886,13 +7964,162 @@ Function New-FEInfrastructure
         '                    <Grid Grid.Row="1">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="100"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Button Grid.Column="0" Grid.ColumnSpan="2" Name="DsUpdate" Content="Update" IsEnabled="False"/>',
+        '                        <Button Grid.Column="0" Name="DsUpdate" Content="Update"/>',
+        '                        <ComboBox Grid.Column="1" Name="DsUpdateMode" SelectedIndex="0">',
+        '                            <ComboBoxItem Content="Full"/>',
+        '                            <ComboBoxItem Content="Fast"/>',
+        '                            <ComboBoxItem Content="Compress"/>',
+        '                        </ComboBox>',
         '                    </Grid>',
         '                </Grid>',
         '            </TabItem>',
         '        </TabControl>',
+        '    </Grid>',
+        '</Window>' -join "`n")
+    }
+
+    # Get-Content $Home\Desktop\OUList.xaml | % { "        '$_',"} | Set-Clipboard
+    Class OUListGUI
+    {
+        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Select an Organizational Unit" Width="650" Height="300" HorizontalAlignment="Center" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+        '    <Window.Resources>',
+        '        <Style TargetType="GroupBox">',
+        '            <Setter Property="Margin" Value="10"/>',
+        '            <Setter Property="Padding" Value="10"/>',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
+        '            <Setter Property="Template">',
+        '                <Setter.Value>',
+        '                    <ControlTemplate TargetType="GroupBox">',
+        '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
+        '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
+        '                        </Border>',
+        '                    </ControlTemplate>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="Button">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="Height" Value="30"/>',
+        '            <Setter Property="FontWeight" Value="Semibold"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="Foreground" Value="Black"/>',
+        '            <Setter Property="Background" Value="#DFFFBA"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="5"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style TargetType="DataGridCell">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
+        '        </Style>',
+        '        <Style TargetType="DataGrid">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="AutoGenerateColumns" Value="False"/>',
+        '            <Setter Property="AlternationCount" Value="2"/>',
+        '            <Setter Property="HeadersVisibility" Value="Column"/>',
+        '            <Setter Property="CanUserResizeRows" Value="False"/>',
+        '            <Setter Property="CanUserAddRows" Value="False"/>',
+        '            <Setter Property="IsReadOnly" Value="True"/>',
+        '            <Setter Property="IsTabStop" Value="True"/>',
+        '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
+        '            <Setter Property="SelectionMode" Value="Extended"/>',
+        '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
+        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
+        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
+        '        </Style>',
+        '        <Style TargetType="DataGridRow">',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Style.Triggers>',
+        '                <Trigger Property="AlternationIndex" Value="0">',
+        '                    <Setter Property="Background" Value="White"/>',
+        '                </Trigger>',
+        '                <Trigger Property="AlternationIndex" Value="1">',
+        '                    <Setter Property="Background" Value="#FFC5E5EC"/>',
+        '                </Trigger>',
+        '                <Trigger Property="AlternationIndex" Value="2">',
+        '                    <Setter Property="Background" Value="#FFF0CBC5"/>',
+        '                </Trigger>',
+        '            </Style.Triggers>',
+        '        </Style>',
+        '        <Style TargetType="DataGridColumnHeader">',
+        '            <Setter Property="FontSize"   Value="10"/>',
+        '            <Setter Property="FontWeight" Value="Medium"/>',
+        '            <Setter Property="Margin" Value="2"/>',
+        '            <Setter Property="Padding" Value="2"/>',
+        '        </Style>',
+        '        <Style TargetType="ComboBox">',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '        </Style>',
+        '        <Style x:Key="DropShadow">',
+        '            <Setter Property="TextBlock.Effect">',
+        '                <Setter.Value>',
+        '                    <DropShadowEffect ShadowDepth="1"/>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="4"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="Foreground" Value="#000000"/>',
+        '            <Setter Property="TextWrapping" Value="Wrap"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="2"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '    </Window.Resources>',
+        '    <Grid>',
+        '        <Grid.Background>',
+        '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
+        '        </Grid.Background>',
+        '        <GroupBox>',
+        '            <Grid Margin="5">',
+        '                <Grid.RowDefinitions>',
+        '                    <RowDefinition Height="40"/>',
+        '                    <RowDefinition Height="*"/>',
+        '                    <RowDefinition Height="50"/>',
+        '                </Grid.RowDefinitions>',
+        '                <Grid Grid.Row="0">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="180"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <ComboBox Grid.Column="0" Name="Type" SelectedIndex="0">',
+        '                        <ComboBoxItem Content="Name"/>',
+        '                        <ComboBoxItem Content="DistinguishedName"/>',
+        '                    </ComboBox>',
+        '                    <TextBox  Grid.Column="1" Name="Filter"/>',
+        '                </Grid>',
+        '                <DataGrid Grid.Row="1" Grid.Column="0" Name="OrganizationalUnits">',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="Name"  Width="140" Binding="{Binding Name}"/>',
+        '                        <DataGridTextColumn Header="DistinguishedName" Width="*" Binding="{Binding DistinguishedName}"/>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
+        '                <Grid Grid.Row="2">',
+        '                    <Grid.ColumnDefinitions>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                        <ColumnDefinition Width="*"/>',
+        '                    </Grid.ColumnDefinitions>',
+        '                    <Button Grid.Row="1" Grid.Column="0" Name="Ok"        Content="Ok" />',
+        '                    <Button Grid.Row="1" Grid.Column="1" Content="Cancel" Name="Cancel"/>',
+        '                </Grid>',
+        '            </Grid>',
+        '        </GroupBox>',
         '    </Grid>',
         '</Window>' -join "`n")
     }
@@ -8264,7 +8491,8 @@ Function New-FEInfrastructure
             If ($Object.Name -match "(\<New\>)")
             {
                 # Drive Info
-                $Xaml.Types | ? Name -match ^Ds | ? Value -eq TextBox | % { $Xaml.IO.$($_.Name).Text = "" }
+                $Xaml.Types | ? Name -match ^Ds | ? Value -eq TextBox     | % { $Xaml.IO.$($_.Name).Text     = "" }
+                $Xaml.Types | ? Name -match ^Ds | ? Value -eq PasswordBox | % { $Xaml.IO.$($_.Name).Password = "" }
 
                 $Xaml.IO.DsDriveName.Text          = $This.MdtController.NewLabel()
                 $Xaml.IO.DsDescription.Text        = $This.MdtController.NewDescription()
@@ -9012,8 +9240,14 @@ Function New-FEInfrastructure
         }
     })
 
+    # [Get]
     $Xaml.IO.AddsGwGet.Add_Click(
     {
+        If ($Main.AddsController.Gateway.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Gateway] No Items in Aggregate List)" 12,4,15
+        }
+
         If ($Main.AddsController.Gateway.Count -gt 1)
         {
             Write-Theme "Getting [~] Adds Site ([Gateway] Aggregate -> Output)" 14,6,15
@@ -9025,12 +9259,18 @@ Function New-FEInfrastructure
                     $Item.Update()
                 }
             }
+            $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
             $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
         }
     })
 
     $Xaml.IO.AddsGwNew.Add_Click(
     {
+        If ($Main.AddsController.Output.Gateway.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Gateway] No Items in Output List)" 12,4,15
+        }
+
         If ($Main.AddsController.Output.Gateway.Count -gt 1)
         {
             ForEach ($Item in $Main.AddsController.Output.Gateway)
@@ -9044,13 +9284,19 @@ Function New-FEInfrastructure
                     $Item.New()
                 }
             }
+            $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
             $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
-            Write-Theme "Created [+] Adds Site ([Gateway] Output)" 10,2,15
+            Write-Theme "Created [+] Adds Site ([Gateway] Output)" 9,11,15
         }
     })
 
     $Xaml.IO.AddsGwRemove.Add_Click(
     {
+        If ($Main.AddsController.Output.Gateway.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Gateway] No Items in Output List)" 12,4,15
+        }
+
         If ($Main.AddsController.Output.Gateway.Count -gt 1)
         {
             ForEach ($Item in $Main.AddsController.Output.Gateway)
@@ -9064,6 +9310,7 @@ Function New-FEInfrastructure
                     $Item.Remove()
                 }
             }
+            $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
             $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
             Write-Theme "Removed [!] Adds Site ([Gateway] Output)" 12,4,15
         }
@@ -9196,8 +9443,14 @@ Function New-FEInfrastructure
         }
     })
     
+    # [Get]
     $Xaml.IO.AddsSrGet.Add_Click(
     {
+        If ($Main.AddsController.Server.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Server] No Items in Aggregate List)" 12,4,15
+        }
+
         If ($Main.AddsController.Server.Count -gt 1)
         {
             Write-Theme "Getting [~] Adds Site ([Server] Aggregate -> Output)" 14,6,15
@@ -9215,6 +9468,11 @@ Function New-FEInfrastructure
 
     $Xaml.IO.AddsSrNew.Add_Click(
     {
+        If ($Main.AddsController.Server.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Server] No Items in Output List)" 12,4,15
+        }
+
         If ($Main.AddsController.Output.Server.Count -gt 1)
         {
             ForEach ($Item in $Main.AddsController.Output.Server)
@@ -9229,12 +9487,17 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
-            Write-Theme "Created [+] Adds Site ([Server] Output)" 10,2,15
+            Write-Theme "Created [+] Adds Site ([Server] Output)" 9,11,15
         }
     })
 
     $Xaml.IO.AddsSrRemove.Add_Click(
     {
+        If ($Main.AddsController.Server.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Server] No Items in Output List)" 12,4,15
+        }
+
         If ($Main.AddsController.Output.Server.Count -gt 1)
         {
             ForEach ($Item in $Main.AddsController.Output.Server)
@@ -9245,14 +9508,7 @@ Function New-FEInfrastructure
                 }
                 If ($Item.Exists)
                 {
-                    If ($Item.Type -eq "Domain Controller")
-                    {
-
-                    }
-                    Else
-                    {
-                        $Item.Remove()
-                    }
+                    $Item.Remove()
                 }
             }
             $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
@@ -9387,8 +9643,14 @@ Function New-FEInfrastructure
         }
     })
 
+    # [Get]
     $Xaml.IO.AddsWsGet.Add_Click(
     {
+        If ($Main.AddsController.Workstation.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Workstation] No Items in Aggregate List)" 12,4,15
+        }
+
         If ($Main.AddsController.Workstation.Count -gt 1)
         {
             Write-Theme "Getting [~] Adds Site ([Workstation] Aggregate -> Output)" 14,6,15
@@ -9406,6 +9668,11 @@ Function New-FEInfrastructure
 
     $Xaml.IO.AddsWsNew.Add_Click(
     {
+        If ($Main.AddsController.Output.Workstation.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Workstation] No Items in Output List)" 12,4,15
+        }
+
         If ($Main.AddsController.Output.Workstation.Count -gt 1)
         {
             ForEach ($Item in $Main.AddsController.Output.Workstation)
@@ -9420,12 +9687,17 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
-            Write-Theme "Created [+] Adds Site ([Workstation] Output)" 10,2,15
+            Write-Theme "Created [+] Adds Site ([Workstation] Output)" 9,11,15
         }
     })
 
     $Xaml.IO.AddsWsRemove.Add_Click(
     {
+        If ($Main.AddsController.Output.Workstation.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Workstation] No Items in Output List)" 12,4,15
+        }
+
         If ($Main.AddsController.Output.Workstation.Count -gt 1)
         {
             ForEach ($Item in $Main.AddsController.Output.Workstation)
@@ -9571,8 +9843,14 @@ Function New-FEInfrastructure
         }
     })
 
+    # [Get]
     $Xaml.IO.AddsUserGet.Add_Click(
     {
+        If ($Main.AddsController.User.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([User] No Items in Aggregate List)" 12,4,15
+        }
+
         If ($Main.AddsController.User.Count -gt 1)
         {
             Write-Theme "Getting [~] Adds Site ([User] Aggregate -> Output)" 14,6,15
@@ -9590,6 +9868,11 @@ Function New-FEInfrastructure
 
     $Xaml.IO.AddsUserNew.Add_Click(
     {
+        If ($Main.AddsController.Output.User.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([User] No Items in Output List)" 12,4,15
+        }
+
         If ($Main.AddsController.Output.User.Count -gt 1)
         {
             ForEach ($Item in $Main.AddsController.Output.User)
@@ -9604,12 +9887,17 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
-            Write-Theme "Created [+] Adds Site ([User] Output)" 14,6,15
+            Write-Theme "Created [+] Adds Site ([User] Output)" 9,11,15
         }
     })
 
     $Xaml.IO.AddsUserRemove.Add_Click(
     {
+        If ($Main.AddsController.Output.User.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([User] No Items in Output List)" 12,4,15
+        }
+
         If ($Main.AddsController.Output.User.Count -gt 1)
         {
             ForEach ($Item in $Main.AddsController.Output.User)
@@ -9755,8 +10043,14 @@ Function New-FEInfrastructure
         }
     })
 
+    # [Get]
     $Xaml.IO.AddsSvcGet.Add_Click(
     {
+        If ($Main.AddsController.Service.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Service] No Items in Aggregate List)" 12,4,15
+        }
+
         If ($Main.AddsController.Service.Count -gt 1)
         {
             Write-Theme "Getting [~] Adds Site ([Service] Aggregate -> Output)" 14,6,15
@@ -9774,6 +10068,11 @@ Function New-FEInfrastructure
 
     $Xaml.IO.AddsSvcNew.Add_Click(
     {
+        If ($Main.AddsController.Output.Service.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Service] No Items in Output List)" 12,4,15
+        }
+
         If ($Main.AddsController.Output.Service.Count -gt 1)
         {
             ForEach ($Item in $Main.AddsController.Output.Service)
@@ -9788,12 +10087,17 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
-            Write-Theme "Created [+] Adds Site ([Service] Output)" 10,2,15
+            Write-Theme "Created [+] Adds Site ([Service] Output)" 9,11,15
         }
     })
 
     $Xaml.IO.AddsSvcRemove.Add_Click(
     {
+        If ($Main.AddsController.Output.Service.Count -lt 1)
+        {
+            Write-Theme "Exception [!] Adds Site ([Service] No Items in Output List)" 12,4,15
+        }
+
         If ($Main.AddsController.Output.Service.Count -gt 1)
         {
             ForEach ($Item in $Main.AddsController.Output.Service)
@@ -10518,7 +10822,7 @@ Function New-FEInfrastructure
 
         ElseIf ((Get-ChildItem $Item.SelectedPath -Recurse *.msu).Count -eq 0)
         {
-            Return [System.Windows.MessageBox]::Show("No .msu files were detected in the provided path","Error")
+            [System.Windows.MessageBox]::Show("No .msu files were detected in the provided path","Error")
         }
 
         Else
@@ -10552,7 +10856,7 @@ Function New-FEInfrastructure
 
         ElseIf ((Get-ChildItem $Item.SelectedPath -Recurse *.wim).Count -eq 0)
         {
-            Return [System.Windows.MessageBox]::Show("No (*.wim) files were detected in the provided path","Error")
+            [System.Windows.MessageBox]::Show("No (*.wim) files were detected in the provided path","Error")
         }
 
         Else
@@ -10694,12 +10998,21 @@ Function New-FEInfrastructure
     # DsPropertyValue  TextBox
     # DsPropertyApply  Button
     # DsProperty       DataGrid
+    $Xaml.IO.DsProperty.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.DsProperty.SelectedIndex -ne -1)
+        {
+            $Xaml.IO.DsPropertyValue.Text = $Xaml.IO.DsProperty.SelectedItem.Value
+        }
+    })
+
     $Xaml.IO.DsPropertyApply.Add_Click(
     {
         If ($Xaml.IO.DsProperty.SelectedIndex -ne -1)
         {
-            $Main.MdtController.Selected.SetProperty($Xaml.IO.DsProperty.SelectedItem.Name,$Xaml.IO.DsPropertyValue.Text)
+            $Main.MdtController.Selected.SetDriveProperty($Xaml.IO.DsProperty.SelectedItem.Name,$Xaml.IO.DsPropertyValue.Text)
             $Main.Reset($Xaml.IO.DsProperty.Items,$Main.MdtController.Selected.Property)
+            $Xaml.IO.DsPropertyValue.Text = ""
         }
     })
 
@@ -10914,6 +11227,25 @@ Function New-FEInfrastructure
         }
     })
 
+    $Xaml.IO.DsCurrentWimFiles.Add_SelectionChanged(
+    {
+        If ($Xaml.IO.DsCurrentWimFiles.SelectedIndex -eq -1)
+        {
+            $Xaml.IO.DsCurrentWimFileRemove.IsEnabled = 0
+        }
+
+        Else
+        {
+            $Xaml.IO.DsCurrentWimFileRemove.IsEnabled = 1
+        }
+    })
+
+    $Xaml.IO.DsCurrentWimFileRemove.Add_Click(
+    {
+        $Main.MdtController.RemoveImages($Xaml.IO.DsCurrentWimFiles.SelectedItems)
+        $Main.Reset($Xaml.IO.DsCurrentWimFiles.Items,$Main.MdtController.Selected.Images.Current)
+    })
+
     $Xaml.IO.DsImportSelect.Add_Click(
     {
         $Item                  = New-Object System.Windows.Forms.FolderBrowserDialog
@@ -10926,14 +11258,14 @@ Function New-FEInfrastructure
 
         ElseIf ((Get-ChildItem $Item.SelectedPath *.wim -Recurse).Count -eq 0)
         {
-            Return [System.Windows.MessageBox]::Show("No (*.wim) files found","Error")
+            [System.Windows.MessageBox]::Show("No (*.wim) files found","Error")
         }
 
         Else
         {
             $Xaml.IO.DsImportPath.Text = $Item.SelectedPath
             $Main.MdtController.Selected.Images.Load("Import",$Item.SelectedPath)
-            
+            $Main.Reset($Xaml.IO.DsImportWimFiles.Items,$Main.MdtController.Selected.Images.Import)
         }
     })
 
@@ -10941,6 +11273,7 @@ Function New-FEInfrastructure
     {
         $Main.MdtController.ImportImages($Xaml.IO.DsImportMode.SelectedIndex)
         $Main.Reset($Xaml.IO.DsImportWimFiles.Items,$Main.MdtController.Selected.Images.Import)
+        $Main.Reset($Xaml.IO.DsCurrentWimFiles.Items,$Main.MdtController.Selected.Images.Current)
     })
 
     # Select Images
@@ -10951,22 +11284,22 @@ Function New-FEInfrastructure
     {
         If (!$Main.MdtController.Selected.Brand)
         {
-            Return [System.Windows.MessageBox]::Show("Create a brand item first","Error")
+            [System.Windows.MessageBox]::Show("Create a brand item first","Error")
         }
 
         ElseIf (!$Main.MdtController.Selected.Domain)
         {
-            Return [System.Windows.MessageBox]::Show("Create a domain/network item first","Error")
+            [System.Windows.MessageBox]::Show("Create a domain/network item first","Error")
         }
 
         ElseIf (!$Main.MdtController.Selected.Administrator)
         {
-            Return [System.Windows.MessageBox]::Show("Enter a local administrator username first","Error")
+            [System.Windows.MessageBox]::Show("Enter a local administrator username first","Error")
         }
 
         ElseIf (!$Main.MdtController.Selected.Password)
         {
-            Return [System.Windows.MessageBox]::Show("Enter a local administrator password first","Error")
+            [System.Windows.MessageBox]::Show("Enter a local administrator password first","Error")
         }
 
         Else
@@ -10994,22 +11327,22 @@ Function New-FEInfrastructure
     {
         If (!$Main.MdtController.Selected.Brand)
         {
-            Return [System.Windows.MessageBox]::Show("Create a brand item first","Error")
+            [System.Windows.MessageBox]::Show("Create a brand item first","Error")
         }
 
         ElseIf (!$Main.MdtController.Selected.Domain)
         {
-            Return [System.Windows.MessageBox]::Show("Create a domain/network item first","Error")
+            [System.Windows.MessageBox]::Show("Create a domain/network item first","Error")
         }
 
         ElseIf (!$Main.MdtController.Selected.Administrator)
         {
-            Return [System.Windows.MessageBox]::Show("Enter a local administrator username first","Error")
+            [System.Windows.MessageBox]::Show("Enter a local administrator username first","Error")
         }
 
         ElseIf (!$Main.MdtController.Selected.Password)
         {
-            Return [System.Windows.MessageBox]::Show("Enter a local administrator password first","Error")
+            [System.Windows.MessageBox]::Show("Enter a local administrator password first","Error")
         }
 
         Else
@@ -11039,19 +11372,64 @@ Function New-FEInfrastructure
     # Generate Post
     $Xaml.IO.DsGeneratePostconfig.Add_Click(
     {
-        $Xaml.IO.PostConfig.Text = $Main.MdtController.Postconfig("$($Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name))\DSKey.csv")
+        $Xaml.IO.DsPostConfig.Text = $Main.MdtController.Postconfig("$($Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name))\DSKey.csv")
         Write-Theme "Generated [+] Post Config" 14,6,15
     })
 
     # Apply Post
     $Xaml.IO.DsApplyPostConfig.Add_Click(
     {
-        $Main.MdtController.Selected.Config | ? Name -eq Postconfig | % SetContent $Xaml.Io.PostConfig.Text
+        $Main.MdtController.Selected.Config | ? Name -eq Postconfig | % SetContent $Xaml.Io.PostConfig.Text.Split("`n")
         Write-Theme "Generated [+] Custom Settings" 9,11,15
     })
 
     # Generate Key
     $Xaml.IO.DsGenerateDSKey.Add_Click(
+    {
+        If (!$Main.MdtController.Selected.Brand)
+        {
+            [System.Windows.MessageBox]::Show("Create a brand item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Domain)
+        {
+            [System.Windows.MessageBox]::Show("Create a domain/network item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Administrator)
+        {
+            [System.Windows.MessageBox]::Show("Enter a local administrator username first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Password)
+        {
+            [System.Windows.MessageBox]::Show("Enter a local administrator password first","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.DsDSKey.Text = $Main.MdtController.NewKey(
+                $Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name),
+                $Main.MdtController.Organization,
+                $Main.MdtController.CommonName,
+                $Main.MdtController.Selected.Brand.Wallpaper,
+                $Main.MdtController.Selected.Brand.Logo,
+                $Main.MdtController.Selected.Brand.SupportPhone,
+                $Main.MdtController.Selected.Brand.SupportHours,
+                $Main.MdtController.Selected.Brand.SupportURL)
+                Write-Theme "Generated [+] DSKey" 14,6,15
+        }
+    })
+
+    # Apply Key
+    $Xaml.IO.DsApplyDsKey.Add_Click(
+    {
+        $Main.MdtController.Selected.Config | ? Name -eq DSKey | % SetContent $Xaml.IO.DsDSKey.Text.Split("`n")
+        Write-Theme "Applied [+] DSKey" 14,6,15
+    })
+
+    # Update mode
+    $Xaml.IO.DsUpdate.Add_Click(
     {
         If (!$Main.MdtController.Selected.Brand)
         {
@@ -11075,35 +11453,14 @@ Function New-FEInfrastructure
 
         Else
         {
-            $Xaml.IO.DsDSKey.Text = $Main.MdtController.NewKey(
-                $Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name),
-                $Main.MdtController.Organization,
-                $Main.MdtController.CommonName,
-                $Main.MdtController.Selected.Brand.Wallpaper,
-                $Main.MdtController.Selected.Brand.Logo,
-                $Main.MdtController.Selected.Brand.SupportPhone,
-                $Main.MdtController.Selected.Brand.SupportHours,
-                $Main.MdtController.Selected.Brand.SupportURL)
-                Write-Theme "Generated [+] DSKey" 14,6,15
+            Write-Theme "Updating [~] Deployment Share [$($Main.MdtController.Selected.Name)]" 14,6,15
+            $Main.MdtController.UpdateDrive($Main.MdtController.Selected.Name,$Xaml.IO.DsUpdateMode.SelectedIndex)
+            Write-Theme "Updated [+] Deployment Share [$($Main.MdtController.Selected.Name)]" 9,11,15
         }
     })
 
-    # Apply Key
-    $Xaml.IO.DsApplyDsKey.Add_Click(
-    {
-        $Main.MdtController.Selected.Config | ? Name -eq DSKey | % SetContent $Xaml.IO.DsDSKey.Text
-        Write-Theme "Applied [+] DSKey" 14,6,15
-    })
+    # Rename images and send to WDS ...
 
-    # Update mode
-    $Xaml.IO.DsUpdate.Add_Click(
-    {
-        Write-Theme "Updating [~] Deployment Share [$($Main.MdtController.Selected.Name)]" 14,6,15
-        Update-MDTDeploymentShare -Name $Main.MdtController.Selected.Name
-        Write-Theme "Updated [+] Deployment Share [$($Main.MdtController.Selected.Name)]"
-    })
-
-    # Send to WDS
     Switch($PSCmdLet.ParameterSetName)
     {
         0
@@ -11127,7 +11484,7 @@ Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
 . $Home\Desktop\New-FEInfrastructure.ps1
 # New-FEInfrastructure
 
-$Cap = New-FEInfrastructure2 -Test
+$Cap = New-FEInfrastructure -Test
 
 $Xaml = $Cap.Xaml
 $Main = $Cap.Main
