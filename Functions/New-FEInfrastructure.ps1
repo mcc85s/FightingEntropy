@@ -6,7 +6,7 @@
 .LINK
 
 .NOTES
-          FileName: New-FEInfrastructure2.ps1
+          FileName: New-FEInfrastructure.ps1
           Solution: FightingEntropy Module
           Purpose: For managing the configuration AND distribution of ADDS nodes, virtual hive clusters, MDT/WDS shares, and sewing it all together like a friggen badass... 
           Author: Michael C. Cook Sr.
@@ -3166,23 +3166,57 @@ Function New-FEInfrastructure
                     New-Item $Path -ItemType Directory -Verbose -Force
                 }
 
-                ForEach ($Type in "Gateway","Server","Workstation")
+                $List = @(
+
+                    If ($This.AddsNode.Gateway.Count -gt 0)
+                    {
+                        "Gateway"
+                    }
+
+                    If ($This.AddsNode.Server.Count -gt 0)
+                    {
+                        "Server"
+                    }
+
+                    If ($This.AddsNode.Workstation.Count -gt 0)
+                    {
+                        "Workstation"
+                    }
+                )
+
+                ForEach ($Type in $List)
                 {
                     If (!(Test-Path "$Path\$Type"))
                     {
                         New-Item $Path\$Type -ItemType Directory -Verbose -Force
                     }
 
-                    ForEach ($X in 0..($This.AddsNode.$Type.Count-1))
+                    If ($This.AddsNode.$Type.Count -gt 1)
                     {
-                        $Object   = $This.AddsNode.$Type[$X]
-                        $FullPath = "$Path\$Type\$X"
-            
+                        ForEach ($X in 0..($This.AddsNode.$Type.Count-1))
+                        {
+                            $Object   = $This.AddsNode.$Type[$X]
+                            $FullPath = "$Path\$Type\$X"
+                
+                            If (!(Test-Path $FullPath))
+                            {
+                                New-Item $FullPath -ItemType Directory -Verbose -Force
+                            }
+                
+                            Set-Content "$FullPath\node.txt" -Value ($Object.GetOutput() | ConvertTo-Json) -Verbose
+                        }
+                    }
+
+                    If ($This.AddsNode.$Type.Count -eq 1)
+                    {
+                        $Object = $This.AddsNode.$Type[0]
+                        $FullPath = "$Path\$Type\0"
+
                         If (!(Test-Path $FullPath))
                         {
                             New-Item $FullPath -ItemType Directory -Verbose -Force
                         }
-            
+                
                         Set-Content "$FullPath\node.txt" -Value ($Object.GetOutput() | ConvertTo-Json) -Verbose
                     }
                 }
@@ -3797,17 +3831,6 @@ Function New-FEInfrastructure
                 $This.Hours           = $Root.Hours
                 $This.Website         = $Root.Website
             }
-            Key([Object]$Object)
-            {
-                $This.NetworkPath     = $Object[0].Split('"')[1]
-                $This.Organization    = $Object[1].Split('"')[1]
-                $This.CommonName      = $Object[2].Split('"')[1]
-                $This.Background      = $Object[3].Split('"')[1]
-                $This.Logo            = $Object[4].Split('"')[1]
-                $This.Phone           = $Object[5].Split('"')[1]
-                $This.Hours           = $Object[6].Split('"')[1]
-                $This.Website         = $Object[7].Split('"')[1]
-            }
             Key([String]$NetworkPath,[String]$Organization,[String]$CommonName,[String]$Background,[String]$Logo,[String]$Phone,[String]$Hours,[String]$Website)
             {
                 $This.Networkpath     = $NetworkPath
@@ -3818,6 +3841,17 @@ Function New-FEInfrastructure
                 $This.Phone           = $Phone
                 $This.Hours           = $Hours
                 $This.Website         = $Website
+            }
+            Key([Object]$Object)
+            {
+                $This.NetworkPath     = $Object[0].Split('"')[1]
+                $This.Organization    = $Object[1].Split('"')[1]
+                $This.CommonName      = $Object[2].Split('"')[1]
+                $This.Background      = $Object[3].Split('"')[1]
+                $This.Logo            = $Object[4].Split('"')[1]
+                $This.Phone           = $Object[5].Split('"')[1]
+                $This.Hours           = $Object[6].Split('"')[1]
+                $This.Website         = $Object[7].Split('"')[1]
             }
         }
 
@@ -3901,7 +3935,7 @@ Function New-FEInfrastructure
                 $This.Content  = $Content
                 If ($This.Name -eq "DSKey")
                 {
-                    Export-CSV -Path $This.Path -InputObject $Content -Verbose
+                    Export-CSV -Path $This.Path -InputObject ([Key]::New($This.Content)) -Verbose
                 }
                 Else
                 {
@@ -4460,7 +4494,7 @@ Function New-FEInfrastructure
 
                     Remove-Item -Path $TS.Path -Verbose -Recurse
                     Remove-Item -Path $OS.Path -Verbose -Recurse
-                    $This.Selected.Images.Current = $This.Selected.Images.Current | ? ImageName -ne $File.ImageName
+                    $This.Selected.Images.Current = @( $This.Selected.Images.Current | ? ImageName -ne $File.ImageName )
                 }
 
                 If ($File.Count -gt 1)
@@ -4474,8 +4508,13 @@ Function New-FEInfrastructure
 
                         Remove-Item -Path $TS.Path -Verbose -Recurse
                         Remove-Item -Path $OS.Path -Verbose -Recurse
-                        $This.Selected.Images.Current = $This.Selected.Images.Current | ? ImageName -ne $File.ImageName 
+                        $This.Selected.Images.Current = @( $This.Selected.Images.Current | ? ImageName -ne $File.ImageName )
                     }
+                }
+
+                If ($This.Selected.Images.Current.Count -eq 0)
+                {
+                    $This.Selected.Images.Current = @( )
                 }
 
                 $This.RerankImages()
@@ -5059,7 +5098,7 @@ Function New-FEInfrastructure
     # Get-Content $Home\Desktop\FEInfrastructure.xaml | % { "        '$_',"} | Set-Clipboard
     Class FEInfrastructureGUI
     {
-        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
+        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -5163,7 +5202,7 @@ Function New-FEInfrastructure
         '            <Setter Property="Padding" Value="5"/>',
         '            <Setter Property="FontFamily" Value="Consolas"/>',
         '            <Setter Property="Height" Value="180"/>',
-        '            <Setter Property="FontSize" Value="10"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
         '            <Setter Property="FontWeight" Value="Normal"/>',
         '            <Setter Property="AcceptsReturn" Value="True"/>',
         '            <Setter Property="VerticalAlignment" Value="Top"/>',
@@ -11379,7 +11418,7 @@ Function New-FEInfrastructure
     # Apply Post
     $Xaml.IO.DsApplyPostConfig.Add_Click(
     {
-        $Main.MdtController.Selected.Config | ? Name -eq Postconfig | % SetContent $Xaml.Io.PostConfig.Text.Split("`n")
+        $Main.MdtController.Selected.Config | ? Name -eq Postconfig | % SetContent $Xaml.Io.DsPostConfig.Text.Split("`n")
         Write-Theme "Generated [+] Custom Settings" 9,11,15
     })
 
@@ -11484,7 +11523,7 @@ Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
 . $Home\Desktop\New-FEInfrastructure.ps1
 # New-FEInfrastructure
 
-$Cap = New-FEInfrastructure -Test
+$Cap = New-FEInfrastructure2 -Test
 
 $Xaml = $Cap.Xaml
 $Main = $Cap.Main
