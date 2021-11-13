@@ -6,14 +6,14 @@
 .LINK
 
 .NOTES
-          FileName: New-FEInfrastructure.ps1
+          FileName: New-FEInfrastructure2.ps1
           Solution: FightingEntropy Module
           Purpose: For managing the configuration AND distribution of ADDS nodes, virtual hive clusters, MDT/WDS shares, and sewing it all together like a friggen badass... 
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-11-10
-          Modified: 2021-11-12
+          Modified: 2021-11-13
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
@@ -751,6 +751,25 @@ Function New-FEInfrastructure
                     }
                 }
             }
+            DeleteSitelist()
+            {
+                ForEach ($Site in $This.Topology)
+                {
+                    Switch ($Site.Exists)
+                    {
+                        0
+                        {
+                            Write-Host ("Item [!] Does not exist [{0}]" -f $Site.DistinguishedName) -F 12
+                        }
+
+                        1
+                        {
+                            Remove-ADObject -Identity $Site.DistinguishedName -Verbose -Confirm:$False -Recursive
+                            $Site.Exists = 0
+                        }
+                    }
+                }
+            }
             [String] ToString()
             {
                 Return "<Sitelist>"
@@ -1047,6 +1066,25 @@ Function New-FEInfrastructure
                     }
                 }
             }
+            DeleteNetworkList()
+            {
+                ForEach ($Network in $This.Topology)
+                {
+                    Switch ($Network.Exists)
+                    {
+                        0
+                        {
+                            Write-Host ("Item [!] Does not exist [{0}]" -f $Network.DistinguishedName) -F 12
+                        }
+
+                        1
+                        {
+                            Remove-ADObject -Identity $Network.DistinguishedName -Verbose -Confirm:$False
+                            $Network.Exists = 0
+                        }
+                    }
+                }
+            }
             [String] ToString()
             {
                 Return "<NetworkList>"
@@ -1247,7 +1285,7 @@ Function New-FEInfrastructure
             }
             SetSitelinkBridge([String]$DistinguishedName)
             {
-                $This.SitelinkBridge = $This.Sitelink | ? DistinguishedName -eq $DistinguishedName
+                $This.SitelinkBridge = $This.Sitelink | ? DistinguishedName -eq $DistinguishedName | % DistinguishedName
             }
             GetSitemap()
             {
@@ -1256,14 +1294,30 @@ Function New-FEInfrastructure
                 ForEach ($Domain in $This.Aggregate)
                 {
                     $Item               = [Topology]::New($Domain.Name,"Main",$This.SearchBase())
-                    $Item.Exists        = @(0,1)[$Item.DistinguishedName -in $List.DistinguishedName]
+                    Try 
+                    { 
+                        Get-ADObject -Identity $Item.DistinguishedName
+                        $Item.Exists    = 1
+                    }
+                    Catch
+                    {
+                        $Item.Exists    = 0
+                    }
                     $Domain.Template.LoadChild($Item)
                     $This.Topology     += $Item
 
                     ForEach ($Child in $This.Template.Output | ? Create -eq 1)
                     {
                         $Item           = [Topology]::New($Domain.Name,$Child.Type,$This.SearchBase())
-                        $Item.Exists   += @(0,1)[$Item.DistinguishedName -in $List.DistinguishedName]
+                        Try
+                        {
+                            Get-AdObject -Identity $Item.DistinguishedName
+                            $Item.Exists = 1
+                        }
+                        Catch
+                        {
+                            $Item.Exists = 0
+                        }
                         $Domain.Template.LoadChild($Item)
                         $This.Topology += $Item
                     }
@@ -1280,38 +1334,107 @@ Function New-FEInfrastructure
                         Description = "[{0}/{1} {2}]" -f $Domain.Network,$Domain.Prefix,$Domain.Name
                         DisplayName = $Domain.Sitename
                         PostalCode  = $Domain.Postal
-                        State       = $Domain.State
-                        Name        = $Domain.Name
+                        State       = $Domain.Region
+                        Name        = $Null
                         Path        = $Null
                     }
 
                     ForEach ($Item in $Domain.Template.Children)
                     {
-                        $OU.Path    = $Item.DistinguishedName
+                        $OU.Name    = Switch ($Item.Type)
+                        {
+                            Default     { $Item.Type  }
+                            Main        { $Item.Name  }
+                            User        { "Users"     }
+                            Workstation { "Computers" }
+                        }
+                        
+                        $Split      = $Item.DistinguishedName -Split ","
+                        $OU.Path    = $Split[1..($Split.Count-1)] -join ","
+
+                        Try
+                        {
+                            Get-ADObject -Identity $Item.DistinguishedName
+                            $Item.Exists = 1
+                        }
+                        Catch
+                        {
+                            $Item.Exists = 0
+                        }
+                        
                         Switch ($Item.Exists)
                         {
                             0
                             {
                                 New-ADOrganizationalUnit @OU -Verbose
+
                                 If ($Item.Type -eq "Main")
                                 {
-                                    $Location    = ("{0}, {1} {2}" -f $OU.City, $OU.State, $OU.PostalCode)
-                                    $Description = ("{0}/{1}" -f $OU.Network, $OU.Prefix)
-                                    Get-ADReplicationSubnet -Filter * | ? Name -match $Description | Set-ADReplicationSubnet -Location $Location -Site $Item.Name -Verbose
-
-                                    $Config      = $Domain.Template.Subnet.DistinguishedName
+                                    $Location    = ("{0}, {1} {2}" -f $Domain.Location, $Domain.Region, $Domain.Postal)
+                                    $Description = ("{0}/{1}" -f $Domain.Network, $Domain.Prefix)
+                                    Get-ADReplicationSubnet -Filter * | ? Name -match $Description | Set-ADReplicationSubnet -Location $Location -Site $Item.Name -Description $Domain.Sitename -Verbose
+        
+                                    $Config      = $Domain.Template.Site.DistinguishedName
                                     If (Get-ADReplicationSiteLink -Filter * | ? DistinguishedName -eq $This.SitelinkBridge | ? $Config -notin SitesIncluded)
                                     {
                                         Set-ADReplicationSiteLink -Identity $This.SitelinkBridge -SitesIncluded @{"Add"=$Config} -Verbose
                                     }
                                 }
                             }
+
                             1
                             {
                                 Write-Host ("Item [+] Exists [({0}) {1}]" -f $Domain.Name, $OU.Path) -F 12
                             }
                         }
+                    }
+                }
+            }
+            DeleteSitemap()
+            {
+                ForEach ($Domain in $This.Aggregate)
+                {
+                    ForEach ($Item in $Domain.Template.Children)
+                    {
+                        Try
+                        {
+                            Get-ADObject -Identity $Item.DistinguishedName
+                            $Item.Exists = 1
+                        }
+                        Catch
+                        {
+                            $Item.Exists = 0
+                        }
 
+                        Switch ($Item.Exists)
+                        {
+                            0
+                            {
+                                Write-Host ("Item [!] Does not exist [({0}) {1}]" -f $Domain.Name, $Item.DistinguishedName) -F 12
+                            }
+                            1
+                            {
+                                Try
+                                {
+                                    Set-ADObject    -Identity $Item.DistinguishedName -ProtectedFromAccidentalDeletion $False -Verbose -EA 0
+                                    Remove-ADObject -Identity $Item.DistinguishedName -Confirm:$False -Recursive -Verbose -EA 0
+                                }
+                                Catch
+                                {
+                                    Write-Host ("Item [!] Does not exist [({0}) {1}]" -f $Domain.Name, $Item.DistinguishedName) -F 12
+                                }
+
+                                If ($Item.Type -eq "Main")
+                                {
+                                    If (Get-ADReplicationSiteLink -Filter * | ? DistinguishedName -eq $This.SitelinkBridge | ? $Domain.Template.Site.DistinguishedName -in SitesIncluded)
+                                    {
+                                        Set-ADReplicationSiteLink -Identity $This.SitelinkBridge -SitesIncluded @{"Delete"=$Domain.Template.Site.DistinguishedName} -Verbose
+                                    }
+                                }
+
+                                $Item.Exists = 0
+                            }
+                        }
                     }
                 }
             }
@@ -1484,7 +1607,17 @@ Function New-FEInfrastructure
             {
                 If ($This.Get())
                 {
-                    Remove-ADComputer -Identity $This.DistinguishedName -Verbose -Confirm:$False
+                    If ($This.Type -eq "Domain Controller")
+                    {
+                        Remove-ADObject -Identity $This.DistinguishedName -Recursive -Confirm:$False -Verbose
+                        $This.Type              = "Server"
+                        $This.Parent            = $This.Parent.Replace("OU=Domain Controllers,","OU=Server,OU=$($This.Sitelink),")
+                        $This.DistinguishedName = "CN=$($This.Hostname),$($This.Parent)"
+                    }
+                    Else
+                    {
+                        Remove-ADComputer -Identity $This.DistinguishedName -Verbose -Confirm:$False
+                    }
                 }
 
                 $This.Exists            = 0
@@ -4850,7 +4983,7 @@ Function New-FEInfrastructure
     # Get-Content $Home\Desktop\FEInfrastructure.xaml | % { "        '$_',"} | Set-Clipboard
     Class FEInfrastructureGUI
     {
-        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
+        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -5251,7 +5384,7 @@ Function New-FEInfrastructure
         '                                            <DataGridTextColumn Header="ScopeID"    Binding="{Binding ScopeID}"    Width="100"/>',
         '                                            <DataGridTextColumn Header="SubnetMask" Binding="{Binding SubnetMask}" Width="100"/>',
         '                                            <DataGridTextColumn Header="Name"       Binding="{Binding Name}"       Width="150"/>',
-        '                                            <DataGridTemplateColumn Header="State" Width="50">',
+        '                                            <DataGridTemplateColumn Header="State" Width="80">',
         '                                                <DataGridTemplateColumn.CellTemplate>',
         '                                                    <DataTemplate>',
         '                                                        <ComboBox SelectedIndex="{Binding State}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
@@ -5656,7 +5789,7 @@ Function New-FEInfrastructure
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>',
-        '                                    <DataGridTextColumn Header="Sitename" Binding="{Binding SiteName}" Width="200"/>',
+        '                                    <DataGridTextColumn Header="Sitename" Binding="{Binding SiteName}" Width="250"/>',
         '                                    <DataGridTemplateColumn Header="Exists" Width="50">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
@@ -5667,7 +5800,7 @@ Function New-FEInfrastructure
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="400"/>',
+        '                                    <DataGridTextColumn Header="Distinguished Name" Binding="{Binding DistinguishedName}" Width="550"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                        </Grid>',
@@ -5676,9 +5809,11 @@ Function New-FEInfrastructure
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Button Grid.Column="0" Name="DcGetTopology" Content="Get"/>',
-        '                        <Button Grid.Column="1" Name="DcNewTopology" Content="New"/>',
+        '                        <Button Grid.Column="0" Name="DcGetTopology"    Content="Get"/>',
+        '                        <Button Grid.Column="1" Name="DcNewTopology"    Content="New"/>',
+        '                        <Button Grid.Column="2" Name="DcDeleteTopology" Content="Delete"/>',
         '                    </Grid>',
         '                </Grid>',
         '            </TabItem>',
@@ -5707,13 +5842,14 @@ Function New-FEInfrastructure
         '                                      ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name"      Binding="{Binding Network}"   Width="100"/>',
-        '                                    <DataGridTextColumn Header="Netmask"   Binding="{Binding Netmask}"   Width="100"/>',
-        '                                    <DataGridTextColumn Header="Host Ct."  Binding="{Binding HostCount}" Width="60"/>',
-        '                                    <DataGridTextColumn Header="Range"     Binding="{Binding HostRange}" Width="150"/>',
-        '                                    <DataGridTextColumn Header="Start"     Binding="{Binding Start}"     Width="125"/>',
-        '                                    <DataGridTextColumn Header="End"       Binding="{Binding End}"       Width="125"/>',
-        '                                    <DataGridTextColumn Header="Broadcast" Binding="{Binding Broadcast}" Width="125"/>',
+        '                                    <DataGridTextColumn Header="Name"       Binding="{Binding Network}"    Width="100"/>',
+        '                                    <DataGridTextColumn Header="Netmask"    Binding="{Binding Netmask}"    Width="100"/>',
+        '                                    <DataGridTextColumn Header="Host Ct."   Binding="{Binding HostCount}"  Width="60"/>',
+        '                                    <DataGridTextColumn Header="ReverseDNS" Binding="{Binding ReverseDNS}" Width="150"/>',
+        '                                    <DataGridTextColumn Header="Range"      Binding="{Binding HostRange}"  Width="150"/>',
+        '                                    <DataGridTextColumn Header="Start"      Binding="{Binding Start}"      Width="125"/>',
+        '                                    <DataGridTextColumn Header="End"        Binding="{Binding End}"        Width="125"/>',
+        '                                    <DataGridTextColumn Header="Broadcast"  Binding="{Binding Broadcast}"  Width="125"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                            <Grid Grid.Row="2">',
@@ -5770,9 +5906,11 @@ Function New-FEInfrastructure
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Button Grid.Column="0" Name="NwGetSubnetName" Content="Get"/>',
-        '                        <Button Grid.Column="1" Name="NwNewSubnetName" Content="New"/>',
+        '                        <Button Grid.Column="0" Name="NwGetSubnetName"    Content="Get"/>',
+        '                        <Button Grid.Column="1" Name="NwNewSubnetName"    Content="New"/>',
+        '                        <Button Grid.Column="2" Name="NwDeleteSubnetName" Content="Delete"/>',
         '                    </Grid>',
         '                </Grid>',
         '            </TabItem>',
@@ -5897,9 +6035,11 @@ Function New-FEInfrastructure
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="*"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Button Grid.Column="0" Name="SmGetSitemap" Content="Get"/>',
-        '                        <Button Grid.Column="1" Name="SmNewSitemap" Content="New"/>',
+        '                        <Button Grid.Column="0" Name="SmGetSitemap"     Content="Get"/>',
+        '                        <Button Grid.Column="1" Name="SmNewSitemap"     Content="New"/>',
+        '                        <Button Grid.Column="2" Name="SmDeleteSitemap" Content="Delete"/>',
         '                    </Grid>',
         '                </Grid>',
         '            </TabItem>',
@@ -6086,7 +6226,7 @@ Function New-FEInfrastructure
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer}"          Width="200"/>',
         '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
@@ -6231,7 +6371,7 @@ Function New-FEInfrastructure
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer}"          Width="200"/>',
         '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
@@ -6376,7 +6516,7 @@ Function New-FEInfrastructure
         '                                                                </DataTemplate>',
         '                                                            </DataGridTemplateColumn.CellTemplate>',
         '                                                        </DataGridTemplateColumn>',
-        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer.Name}"     Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Computer"            Binding="{Binding Computer}"          Width="200"/>',
         '                                                        <DataGridTextColumn Header="Guid"                Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
@@ -6523,7 +6663,7 @@ Function New-FEInfrastructure
         '                                                        <DataGridTextColumn Header="Account"           Binding="{Binding Account}"           Width="200"/>',
         '                                                        <DataGridTextColumn Header="SamName"           Binding="{Binding SamName}"           Width="200"/>',
         '                                                        <DataGridTextColumn Header="UserPrincipalName" Binding="{Binding UserPrincipalName}" Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Guid"              Binding="{Binding Guid}"              Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Guid"              Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                                <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
@@ -6669,7 +6809,7 @@ Function New-FEInfrastructure
         '                                                        <DataGridTextColumn Header="Account"           Binding="{Binding Account}"           Width="200"/>',
         '                                                        <DataGridTextColumn Header="SamName"           Binding="{Binding SamName}"           Width="200"/>',
         '                                                        <DataGridTextColumn Header="UserPrincipalName" Binding="{Binding UserPrincipalName}" Width="200"/>',
-        '                                                        <DataGridTextColumn Header="Guid"              Binding="{Binding Guid}"              Width="200"/>',
+        '                                                        <DataGridTextColumn Header="Guid"              Binding="{Binding Guid}"              Width="300"/>',
         '                                                    </DataGrid.Columns>',
         '                                                </DataGrid>',
         '                                                <Border   Grid.Row="2" Background="Black" BorderThickness="0" Margin="4"/>',
@@ -7757,150 +7897,6 @@ Function New-FEInfrastructure
         '</Window>' -join "`n")
     }
 
-    # Get-Content $Home\Desktop\OUList.xaml | % { "        '$_',"} | Set-Clipboard
-    Class OUListGUI
-    {
-        Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Select an Organizational Unit" Width="650" Height="300" HorizontalAlignment="Center" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
-        '    <Window.Resources>',
-        '        <Style TargetType="GroupBox">',
-        '            <Setter Property="Margin" Value="10"/>',
-        '            <Setter Property="Padding" Value="10"/>',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
-        '            <Setter Property="Template">',
-        '                <Setter.Value>',
-        '                    <ControlTemplate TargetType="GroupBox">',
-        '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
-        '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
-        '                        </Border>',
-        '                    </ControlTemplate>',
-        '                </Setter.Value>',
-        '            </Setter>',
-        '        </Style>',
-        '        <Style TargetType="Button">',
-        '            <Setter Property="Margin" Value="5"/>',
-        '            <Setter Property="Padding" Value="5"/>',
-        '            <Setter Property="Height" Value="30"/>',
-        '            <Setter Property="FontWeight" Value="Semibold"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
-        '            <Setter Property="Foreground" Value="Black"/>',
-        '            <Setter Property="Background" Value="#DFFFBA"/>',
-        '            <Setter Property="BorderThickness" Value="2"/>',
-        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-        '            <Style.Resources>',
-        '                <Style TargetType="Border">',
-        '                    <Setter Property="CornerRadius" Value="5"/>',
-        '                </Style>',
-        '            </Style.Resources>',
-        '        </Style>',
-        '        <Style TargetType="DataGridCell">',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
-        '        </Style>',
-        '        <Style TargetType="DataGrid">',
-        '            <Setter Property="Margin" Value="5"/>',
-        '            <Setter Property="AutoGenerateColumns" Value="False"/>',
-        '            <Setter Property="AlternationCount" Value="3"/>',
-        '            <Setter Property="HeadersVisibility" Value="Column"/>',
-        '            <Setter Property="CanUserResizeRows" Value="False"/>',
-        '            <Setter Property="CanUserAddRows" Value="False"/>',
-        '            <Setter Property="IsReadOnly" Value="True"/>',
-        '            <Setter Property="IsTabStop" Value="True"/>',
-        '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
-        '            <Setter Property="SelectionMode" Value="Extended"/>',
-        '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
-        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
-        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
-        '        </Style>',
-        '        <Style TargetType="DataGridRow">',
-        '            <Setter Property="BorderBrush" Value="Black"/>',
-        '            <Style.Triggers>',
-        '                <Trigger Property="AlternationIndex" Value="0">',
-        '                    <Setter Property="Background" Value="White"/>',
-        '                </Trigger>',
-        '                <Trigger Property="AlternationIndex" Value="1">',
-        '                    <Setter Property="Background" Value="#FFC5E5EC"/>',
-        '                </Trigger>',
-        '                <Trigger Property="AlternationIndex" Value="2">',
-        '                    <Setter Property="Background" Value="#FFF0CBC5"/>',
-        '                </Trigger>',
-        '            </Style.Triggers>',
-        '        </Style>',
-        '        <Style TargetType="DataGridColumnHeader">',
-        '            <Setter Property="FontSize"   Value="10"/>',
-        '            <Setter Property="FontWeight" Value="Medium"/>',
-        '            <Setter Property="Margin" Value="2"/>',
-        '            <Setter Property="Padding" Value="2"/>',
-        '        </Style>',
-        '        <Style TargetType="ComboBox">',
-        '            <Setter Property="Height" Value="24"/>',
-        '            <Setter Property="Margin" Value="5"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
-        '            <Setter Property="FontWeight" Value="Normal"/>',
-        '        </Style>',
-        '        <Style x:Key="DropShadow">',
-        '            <Setter Property="TextBlock.Effect">',
-        '                <Setter.Value>',
-        '                    <DropShadowEffect ShadowDepth="1"/>',
-        '                </Setter.Value>',
-        '            </Setter>',
-        '        </Style>',
-        '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
-        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-        '            <Setter Property="Height" Value="24"/>',
-        '            <Setter Property="Margin" Value="4"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
-        '            <Setter Property="Foreground" Value="#000000"/>',
-        '            <Setter Property="TextWrapping" Value="Wrap"/>',
-        '            <Style.Resources>',
-        '                <Style TargetType="Border">',
-        '                    <Setter Property="CornerRadius" Value="2"/>',
-        '                </Style>',
-        '            </Style.Resources>',
-        '        </Style>',
-        '    </Window.Resources>',
-        '    <Grid>',
-        '        <Grid.Background>',
-        '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
-        '        </Grid.Background>',
-        '        <GroupBox>',
-        '            <Grid Margin="5">',
-        '                <Grid.RowDefinitions>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="*"/>',
-        '                    <RowDefinition Height="50"/>',
-        '                </Grid.RowDefinitions>',
-        '                <Grid Grid.Row="0">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="120"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <ComboBox Grid.Column="0" Name="Type" SelectedIndex="0">',
-        '                        <ComboBoxItem Content="Name"/>',
-        '                        <ComboBoxItem Content="DistinguishedName"/>',
-        '                    </ComboBox>',
-        '                    <TextBox  Grid.Column="1" Name="Filter"/>',
-        '                </Grid>',
-        '                <DataGrid Grid.Row="1" Grid.Column="0" Name="OrganizationalUnits">',
-        '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Name"  Width="140" Binding="{Binding Name}"/>',
-        '                        <DataGridTextColumn Header="DistinguishedName" Width="*" Binding="{Binding DistinguishedName}"/>',
-        '                    </DataGrid.Columns>',
-        '                </DataGrid>',
-        '                <Grid Grid.Row="2">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Button Grid.Row="1" Grid.Column="0" Name="Ok"        Content="Ok" />',
-        '                    <Button Grid.Row="1" Grid.Column="1" Content="Cancel" Name="Cancel"/>',
-        '                </Grid>',
-        '            </Grid>',
-        '        </GroupBox>',
-        '    </Grid>',
-        '</Window>' -join "`n")
-    }
-
     Class ModuleFile
     {
         [String] $Mode
@@ -8615,7 +8611,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.DcGetTopology.Add_Click(
     {
-        Write-Theme "Getting [!] Site List (Aggregate -> Topology)"
+        Write-Theme "Getting [~] Site List (Aggregate -> Topology)" 14,6,15
         $Main.Sitelist.GetSiteList()
         $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
@@ -8627,6 +8623,14 @@ Function New-FEInfrastructure
         $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
         Write-Theme "Created [~] Site List (Topology)" 9,11,15
+    })
+
+    $Xaml.IO.DcDeleteTopology.Add_Click(
+    {
+        $Main.Sitelist.DeleteSiteList()
+        $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
+        $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
+        Write-Theme "Removed [!] Site List (Topology)" 12,4,15
     })
 
     # ----------------------------- #
@@ -8700,7 +8704,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.NwGetSubnetName.Add_Click(
     {
-        Write-Theme "Getting [~] Network List (Aggregate -> Topology)"
+        Write-Theme "Getting [~] Network List (Aggregate -> Topology)" 14,6,15
         $Main.NetworkList.GetNetworkList()       
         $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
         $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
@@ -8711,7 +8715,15 @@ Function New-FEInfrastructure
         $Main.NetworkList.NewNetworkList()
         $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
         $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
-        Write-Theme "Created [+] Network List (Topology)"
+        Write-Theme "Created [+] Network List (Topology)" 9,11,15
+    })
+
+    $Xaml.IO.NwDeleteSubnetName.Add_Click(
+    {
+        $Main.NetworkList.DeleteNetworkList()
+        $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
+        $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
+        Write-Theme "Removed [!] Network List (Topology)" 12,4,15
     })
 
     # ----------------- #
@@ -8770,7 +8782,26 @@ Function New-FEInfrastructure
             $Main.AddsController.LoadSitemap($Main.Sitemap.Aggregate)
             $Main.Reset($Xaml.IO.AddsSite.Items,$Main.AddsController.Sitemap.Name)
             $Xaml.IO.AddsSite.SelectedIndex = 0
-            Write-Theme "Created [+] Sitemap (Topology)" 10,2,15
+            $Main.Reset($Xaml.IO.SmTopology.Items,$Main.Sitemap.Topology)
+            Write-Theme "Created [+] Sitemap (Topology)" 9,11,15
+        }
+    })
+
+    $Xaml.IO.SmDeleteSitemap.Add_Click(
+    {
+        If ($Xaml.IO.SmSiteLink.SelectedIndex -eq -1)
+        {
+            Return [System.Windows.MessageBox]::Show("Must select a master site link","Error")
+        }
+
+        Else
+        {
+            $Main.Sitemap.SetSitelinkBridge($Xaml.IO.SmSiteLink.SelectedItem.DistinguishedName)
+            $Main.Sitemap.DeleteSitemap()
+            $Main.AddsController.LoadSitemap($Main.Sitemap.Aggregate)
+            $Main.Reset($Xaml.IO.AddsSite.Items,$Main.AddsController.Sitemap.Name)
+            $Main.Reset($Xaml.IO.SmTopology.Items,$Main.Sitemap.Topology)
+            Write-Theme "Removed [!] Sitemap (Topology)" 12,4,15
         }
     })
 
@@ -9214,7 +9245,14 @@ Function New-FEInfrastructure
                 }
                 If ($Item.Exists)
                 {
-                    $Item.Remove()
+                    If ($Item.Type -eq "Domain Controller")
+                    {
+
+                    }
+                    Else
+                    {
+                        $Item.Remove()
+                    }
                 }
             }
             $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
@@ -11013,7 +11051,7 @@ Function New-FEInfrastructure
     })
 
     # Generate Key
-    $Xaml.IO.DsGenerateKey.Add_Click(
+    $Xaml.IO.DsGenerateDSKey.Add_Click(
     {
         If (!$Main.MdtController.Selected.Brand)
         {
@@ -11086,9 +11124,10 @@ Function New-FEInfrastructure
 <#
 
 Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
+. $Home\Desktop\New-FEInfrastructure.ps1
 # New-FEInfrastructure
 
-$Cap = New-FEInfrastructure -Test
+$Cap = New-FEInfrastructure2 -Test
 
 $Xaml = $Cap.Xaml
 $Main = $Cap.Main
