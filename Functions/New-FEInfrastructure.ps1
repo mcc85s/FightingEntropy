@@ -4992,7 +4992,7 @@ Function New-FEInfrastructure
         '                    <Setter Property="Background" Value="#FFC5E5EC"/>',
         '                </Trigger>',
         '                <Trigger Property="AlternationIndex" Value="2">',
-        '                    <Setter Property="Background" Value="#FFF0CBC5"/>',
+        '                    <Setter Property="Background" Value="#FFFDE1DC"/>',
         '                </Trigger>',
         '            </Style.Triggers>',
         '        </Style>',
@@ -7627,7 +7627,7 @@ Function New-FEInfrastructure
         '                                                    </Grid.ColumnDefinitions>',
         '                                                    <Button   Grid.Row="0" Grid.Column="0" Name="DsImportSelect" Content="Select"/>',
         '                                                    <TextBox  Grid.Row="0" Grid.Column="1" Name="DsImportPath" IsEnabled="False"/>',
-        '                                                    <ComboBox Grid.Row="0" Grid.Column="2" Name="DsImportMode">',
+        '                                                    <ComboBox Grid.Row="0" Grid.Column="2" Name="DsImportMode" SelectedIndex="0">',
         '                                                        <ComboBoxItem Content="Copy"/>',
         '                                                        <ComboBoxItem Content="Move"/>',
         '                                                    </ComboBox>',
@@ -10797,6 +10797,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.DsLogin.Add_Click(
     {
+        Write-Theme "Attempting [~] Service Account Login" 14,6,15
         $Main.MdtController.Selected.Connection = Get-FEADLogin
         If ($Main.MdtController.Selected.Connection)
         {
@@ -10805,13 +10806,14 @@ Function New-FEInfrastructure
             $Xaml.IO.DsDcConfirm.Password  = $Main.MdtController.Selected.Connection.Credential.GetNetworkCredential().Password
             $Xaml.IO.DsNetBiosName.Text    = $Main.MdtController.Selected.Connection.NetBios
             $Xaml.IO.DsDnsName.Text        = $Main.MdtController.GetHostname()
+            Write-Theme "Success [+] Service Account Login" 9,11,15
         }
     })
 
     $Xaml.IO.DsMachineOUSelect.Add_Click(
     {
         $OU = [XamlWindow][OUListGUI]::Tab
-        $Main.Reset($OU.IO.OrganizationalUnits.Items,$Main.Config.Adds.Ou)
+        $Main.Reset($OU.IO.OrganizationalUnits.Items,(Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)"))
         
         $OU.IO.Filter.Add_TextChanged(
         {
@@ -10870,6 +10872,7 @@ Function New-FEInfrastructure
         Else
         {
             $Main.MDTController.Selected.Domain = $Main.MdtController.NewDomainJoin($Xaml.IO.DsDcUsername.Text,$Xaml.IO.DsDcPassword.SecurePassword,$Xaml.IO.DsNetBiosName.Text,$Xaml.IO.DsDnsName.Text,$Xaml.IO.DsMachineOu.Text)
+            Write-Theme "Set [+] Network/Domain Credential"
         }
     })
 
@@ -10892,14 +10895,15 @@ Function New-FEInfrastructure
         {
             $Xaml.IO.DsImportPath.Text = $Item.SelectedPath
             $Main.MdtController.Selected.Images.Load("Import",$Item.SelectedPath)
+            
         }
     })
 
     $Xaml.IO.DsImport.Add_Click(
     {
         $Main.MdtController.ImportImages($Xaml.IO.DsImportMode.SelectedIndex)
+        $Main.Reset($Xaml.IO.DsImportWimFiles.Items,$Main.MdtController.Selected.Images.Import)
     })
-
 
     # Select Images
     # Import Images
@@ -10936,6 +10940,7 @@ Function New-FEInfrastructure
                 $Main.MdtController.Selected.Domain.Credential.Username,
                 $Main.MdtController.Selected.Domain.Credential.GetNetworkCredential().Password
             )
+            Write-Theme "Generated [+] Bootstrap" 14,6,15
         }
     })
 
@@ -10943,6 +10948,7 @@ Function New-FEInfrastructure
     $Xaml.IO.DsApplyBootstrap.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq Bootstrap | % SetContent $Xaml.IO.DsBootstrap.Text.Split("`n")
+        Write-Theme "Applied [+] Bootstrap" 9,11,15
     })
 
     # Generate Custom
@@ -10981,6 +10987,7 @@ Function New-FEInfrastructure
                 $Main.MdtController.Selected.Domain.Credential.Username,
                 $Main.MdtController.Selected.Domain.Credential.GetNetworkCredential().Password
             )
+            Write-Theme "Generated [+] Custom Settings" 14,6,15
         }
     })
 
@@ -10988,44 +10995,74 @@ Function New-FEInfrastructure
     $Xaml.IO.DsApplyCustomSettings.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq CustomSettings | % SetContent $Xaml.IO.DsCustomSettings.Text.Split("`n")
+        Write-Theme "Applied [+] Custom Settings" 9,11,15
     })
 
     # Generate Post
-    $Xaml.IO.GeneratePostconfig.Add_Click(
+    $Xaml.IO.DsGeneratePostconfig.Add_Click(
     {
         $Xaml.IO.PostConfig.Text = $Main.MdtController.Postconfig("$($Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name))\DSKey.csv")
+        Write-Theme "Generated [+] Post Config" 14,6,15
     })
 
     # Apply Post
-    $Xaml.IO.ApplyPostConfig.Add_Click(
+    $Xaml.IO.DsApplyPostConfig.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq Postconfig | % SetContent $Xaml.Io.PostConfig.Text
+        Write-Theme "Generated [+] Custom Settings" 9,11,15
     })
 
     # Generate Key
-    $Xaml.IO.GenerateKey.Add_Click(
+    $Xaml.IO.DsGenerateKey.Add_Click(
     {
-        $Xaml.IO.DsDSKey.Text = $Main.MdtController.NewKey(
-            $Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name),
-            $Main.MdtController.Organization,
-            $Main.MdtController.CommonName,
-            $Main.MdtController.Selected.Brand.Wallpaper,
-            $Main.MdtController.Selected.Brand.Logo,
-            $Main.MdtController.Selected.Brand.SupportPhone,
-            $Main.MdtController.Selected.Brand.SupportHours,
-            $Main.MdtController.Selected.Brand.SupportURL)
+        If (!$Main.MdtController.Selected.Brand)
+        {
+            Return [System.Windows.MessageBox]::Show("Create a brand item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Domain)
+        {
+            Return [System.Windows.MessageBox]::Show("Create a domain/network item first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Administrator)
+        {
+            Return [System.Windows.MessageBox]::Show("Enter a local administrator username first","Error")
+        }
+
+        ElseIf (!$Main.MdtController.Selected.Password)
+        {
+            Return [System.Windows.MessageBox]::Show("Enter a local administrator password first","Error")
+        }
+
+        Else
+        {
+            $Xaml.IO.DsDSKey.Text = $Main.MdtController.NewKey(
+                $Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name),
+                $Main.MdtController.Organization,
+                $Main.MdtController.CommonName,
+                $Main.MdtController.Selected.Brand.Wallpaper,
+                $Main.MdtController.Selected.Brand.Logo,
+                $Main.MdtController.Selected.Brand.SupportPhone,
+                $Main.MdtController.Selected.Brand.SupportHours,
+                $Main.MdtController.Selected.Brand.SupportURL)
+                Write-Theme "Generated [+] DSKey" 14,6,15
+        }
     })
 
     # Apply Key
-    $Xaml.IO.ApplyDsKey.Add_Click(
+    $Xaml.IO.DsApplyDsKey.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq DSKey | % SetContent $Xaml.IO.DsDSKey.Text
+        Write-Theme "Applied [+] DSKey" 14,6,15
     })
 
     # Update mode
     $Xaml.IO.DsUpdate.Add_Click(
     {
+        Write-Theme "Updating [~] Deployment Share [$($Main.MdtController.Selected.Name)]" 14,6,15
         Update-MDTDeploymentShare -Name $Main.MdtController.Selected.Name
+        Write-Theme "Updated [+] Deployment Share [$($Main.MdtController.Selected.Name)]"
     })
 
     # Send to WDS
@@ -11049,7 +11086,7 @@ Function New-FEInfrastructure
 <#
 
 Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
-# New-FEInfrastructure2
+# New-FEInfrastructure
 
 $Cap = New-FEInfrastructure -Test
 
