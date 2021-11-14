@@ -6,25 +6,25 @@
 .LINK
 
 .NOTES
-          FileName: New-FEInfrastructure.ps1
+          FileName: New-FEInfrastructure.ps1 (Version 2)
           Solution: FightingEntropy Module
           Purpose: For managing the configuration AND distribution of ADDS nodes, virtual hive clusters, MDT/WDS shares, and sewing it all together like a friggen badass... 
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-11-10
-          Modified: 2021-11-13
+          Modified: 2021-11-14
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
-          TODO: MDT, WDS
+          TODO: Feature parity reached with v1 (11/14/2021) - Overwriting New-FEInfrastructure.ps1
 
 .Example
 #>
 Function New-FEInfrastructure
 {
     [CmdLetBinding(DefaultParameterSetName=0)]Param([Parameter(ParameterSetName=1)][Switch]$Test)
-    # Testing an overhaul of New-FEInfrastructure
+
     Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
     Import-Module FightingEntropy
 
@@ -3870,6 +3870,39 @@ Function New-FEInfrastructure
             }
         }
 
+        Class BootImage
+        {
+            [Object] $Path
+            [Object] $Name
+            [Object] $Type
+            [Object] $ISO
+            [Object] $WIM
+            [Object] $XML
+            BootImage([String]$Path,[String]$Name)
+            {
+                $This.Path = $Path
+                $This.Name = $Name
+                $This.Type = Switch ([UInt32]($This.Name -match "\(x64\)")) { 0 { "x86" } 1 { "x64" } }
+                $This.ISO  = "$Path\$Name.iso"
+                $This.WIM  = "$Path\$Name.wim"
+                $This.XML  = "$Path\$Name.xml"
+            }
+        }
+
+        Class BootImages
+        {
+            [Object] $Images
+            BootImages([Object]$Directory)
+            {
+                $This.Images = @( )
+            
+                ForEach ($Item in Get-ChildItem $Directory | ? Extension | % BaseName | Select-Object -Unique)
+                {
+                    $This.Images += [BootImage]::New($Directory,$Item)
+                }
+            }
+        }
+
         Class PersistentDriveImages
         {
             [Object] $Current
@@ -4194,19 +4227,15 @@ Function New-FEInfrastructure
                 $Backup             = "$Root\Backup\Scripts"
 
                 # Create backup folder      
-                Write-Host "Creating [~] backup folder"
-                
                 New-Item $Backup -ItemType Directory -Force -Verbose
 
                 # Remove specific files
-                Write-Host "Moving [~] unneeded files to backup location"
                 ForEach ($I in "UDIWizard_Config.xml.app Wizard.hta Wizard.ico Wizard.css Autorun.inf BDD_Welcome_ENU.xml Credentials_ENU.xml Summary_Definition_ENU.xml DeployWiz_Roles.xsl" -Split " ")
                 {   
                     $Target           = "$Root\Scripts\$I"
 
                     If (Test-Path $Target)
                     {
-                        Write-Host "Moving [~] $Target"
                         Move-Item -Path $Target -Destination "$Backup\$I" -Verbose
                     }
                 }
@@ -4214,7 +4243,6 @@ Function New-FEInfrastructure
                 # Cleanup old stuff from DeploymentShare
                 ForEach ($I in Get-ChildItem "$Root\Scripts" | ? Name -match "(vbs|wsf|DeployWiz|UDI|WelcomeWiz_)")
                 {
-                    Write-Host "Moving [~] $($I.FullName)"
                     Move-Item -Path $I.FullName -Destination "$Backup\$($I.Name)" -Verbose
                 }
 
@@ -4225,7 +4253,6 @@ Function New-FEInfrastructure
                 Get-ChildItem "$PSD\Templates" | Copy-Item -Destination "$Root\Templates" -Verbose
 
                 # Copy/Unblock the modules
-                Write-Host "Copying [~] PSD Modules to $Root ..."
                 ForEach ($File in "PSDGather PSDDeploymentShare PSDUtility PSDWizard" -Split " ")
                 {
                     If (!(Test-Path "$Root\Tools\Modules\$File"))
@@ -4233,12 +4260,10 @@ Function New-FEInfrastructure
                         New-Item "$Root\Tools\Modules\$File" -ItemType Directory -Verbose
                     }
 
-                    Write-Host "Copying [~] Module:[$File] to $Root\Tools\Modules"
                     Copy-Item "$PSD\Scripts\$File.psm1" -Destination "$Root\Tools\Modules\$File" -Verbose
                 }
 
                 # Copy the PSProvider module files
-                Write-Host "Copying [~] MDT provider files to $Root\Tools\Modules"
                 If (!(Test-Path "$Root\Tools\Modules\Microsoft.BDD.PSSnapIn"))
                 {
                     New-Item "$Root\Tools\Modules\Microsoft.BDD.PSSnapIn" -ItemType Directory -Verbose
@@ -4250,7 +4275,6 @@ Function New-FEInfrastructure
                 }
 
                 # Copy the provider template files
-                Write-Host "Copying [~] PSD templates to $Root\Templates"
                 If (!(Test-Path "$Root\Templates"))
                 {
                     New-Item "$Root\Templates" -ItemType Directory -Verbose
@@ -4262,13 +4286,11 @@ Function New-FEInfrastructure
                 }
 
                 # Restore ZTIGather.XML
-                Write-Host "Adding [~] ZTIGather.XML to correct folder"
                 Copy-Item "$($This.Path)\Templates\Distribution\Scripts\ZTIGather.xml" -Destination "$Root\Tools\Modules\PSDGather" -Verbose
 
                 # Create folders
                 Foreach ($I in "Autopilot BootImageFiles\X86 BootImageFiles\X64 Branding Certificates CustomScripts DriverPackages DriverSources UserExitScripts BGInfo Prestart" -Split " ")
                 {
-                    Write-Host "Creating [~] [$I] folder in $Share\PSDResources"
                     New-Item "$Root\PSDResources\$I" -ItemType Directory -Force -Verbose
                 }
 
@@ -4294,11 +4316,9 @@ Function New-FEInfrastructure
                 }
 
                 # Disable support for x86
-                Write-Host "Disable [~] Support for x86"
                 Set-ItemProperty $Name -Name "SupportX86" -Value "False"
 
                 # Relax Permissions on Deploymentfolder and DeploymentShare
-                Write-Host "Relaxing [~] Permissons on $Share"
                 "Users Administrators SYSTEM" -Split " " | % { icacls $Root /grant "`"$_`":(OI)(CI)(RX)" }
                     
                 Grant-SmbShareAccess -Name $Share -AccountName "EVERYONE" -AccessRight Change -Force
@@ -4306,7 +4326,7 @@ Function New-FEInfrastructure
 
                 Get-ChildItem $Root -Recurse | Unblock-File -Verbose
 
-                Write-Host "PSD modification complete"
+                Write-Theme "Complete [+] PSD modification installed" 10,2,15
             }
             SelectDrive([String]$Drive)
             {
@@ -4354,17 +4374,116 @@ Function New-FEInfrastructure
             }
             UpdateDrive([String]$Name,[UInt32]$Mode)
             {
-                $Select = $This.GetDrive($Name)
+                $Select   = $This.GetDrive($Name)
                 Restore-MDTPersistentDrive
-                If ($Select)
+                Write-Theme "Updating [~] Deployment Share [$($Select.Name)]" 14,6,15
+
+                # Share Settings
+                Set-ItemProperty "$($Select.Name):" -Name Comments    -Value $("[FightingEntropy({0})]{1}[{2}]" -f [Char]960,(Get-Date -UFormat "[%Y-%m%d (MCC/SDP)]"), $Select.Type ) -Verbose
+                Set-ItemProperty "$($Select.Name):" -Name MonitorHost -Value $This.GetHostname() -Verbose
+
+                # DSKey
+                $Key      = Import-CSV ($Select.Config | ? Name -eq DSKey | % Path)
+                $Branding = "$($Select.Root)\Graphics"
+                If (!(Test-Path $Branding))
                 {
-                    Switch($Mode)
+                    New-Item $Branding -ItemType Directory -Verbose
+                }
+
+                If (!(Test-Path $Key.Background))
+                {
+                    $Key.Background = Get-FEModule -Graphics | ? Name -eq OEMbg.jpg | % FullName
+                    Copy-Item $Key.Background -Destination $Branding -Verbose
+                }
+
+                If ((Test-Path $Key.Background) -or (Test-Path $Key.Logo))
+                {   
+                    If (Test-Path $Key.Background)
                     {
-                        0 { Update-MDTDeploymentShare -Path "$($Select.Name):"    -Force -Verbose }
-                        1 { Update-MDTDeploymentShare -Path "$($Select.Name):"           -Verbose }
-                        2 { Update-MDTDeploymentShare -Path "$($Select.Name):" -Compress -Verbose }
+                        Copy-Item $Key.Background -Destination $Branding -Verbose
+                        $Background = $Key.Background | Split-Path -Leaf
+                    }
+
+                    If (Test-Path $Key.Logo)
+                    {
+                        Copy-Item $Key.Logo -Destination $Branding -Verbose
                     }
                 }
+
+                # Drive Properties
+                $Names  = 64, 86 | % { "Boot.x$_" } | % { "$_.Generate{0}ISO $_.{0}WIMDescription $_.{0}ISOName $_.BackgroundFile" -f "LiteTouch" -Split " " }
+                $Values = 64, 86 | % { "[$($This.Module.Name)($($This.Module.Version))][$(Get-Date -UFormat %Y_%m%d)][$($Select.Type)](x$_)" } | % { "True;$_;$_.iso;%DEPLOYROOT\Graphics\$Background" -Split ";" }
+                ForEach ($X in 0..($Names.Count-1))
+                {
+                    Set-ItemProperty -Path "$($Select.Name):" -Name $Names[$X] -Value $Values[$X] -Verbose 
+                }
+
+                Switch ($Mode)
+                {
+                    0 { Update-MDTDeploymentShare -Path "$($Select.Name):"    -Force -Verbose }
+                    1 { Update-MDTDeploymentShare -Path "$($Select.Name):"           -Verbose }
+                    2 { Update-MDTDeploymentShare -Path "$($Select.Name):" -Compress -Verbose }
+                }
+
+                $ImageLabel = Get-ItemProperty -Path "$($Select.Name):" | % { 
+
+                    @{  64 = $_.'Boot.x64.LiteTouchWIMDescription'
+                        86 = $_.'Boot.x86.LiteTouchWIMDescription' }
+                }
+    
+                # Rename the Litetouch_ files
+                Get-ChildItem -Path "$($Select.Root)\Boot" | ? Extension | % { 
+    
+                    $Label          = $ImageLabel[$(Switch -Regex ($_.Name) { 64 {64} 86 {86}})]
+                    $Image          = @{ 
+    
+                        Path        = $_.FullName
+                        Name        = $_.Name
+                        NewName     = "{0}{1}" -f $Label,$_.Extension
+                        Extension   = $_.Extension
+                    }
+    
+                    If ($Image.Name -match "LiteTouchPE_")
+                    {
+                        If (Test-Path $Image.NewName)
+                        {
+                            Remove-Item -Path $Image.NewName -Force -Verbose
+                        }
+    
+                        Rename-Item -Path $Image.Path -NewName $Image.NewName
+                    }
+                }
+
+                If (!(Get-Service -Name WDSServer))
+                {
+                    Throw "WDS Server not installed"
+                }
+
+                Get-Service -Name WDSServer | ? Status -ne Running | Start-Service -Verbose
+
+                # Update/Flush FEShare(WDS)
+                ForEach ($Image in [BootImages]::New("$($Select.Root)\Boot").Images)
+                {        
+                    If (Get-WdsBootImage -Architecture $Image.Type -ImageName $Image.Name -EA 0)
+                    {
+                        Write-Theme "Detected [!] ($($Image.Name)), removing..." 12,4,15
+                        Remove-WdsBootImage -Architecture $Image.Type -ImageName $Image.Name -Verbose
+                    }
+
+                    Write-Theme "Importing [~] ($($Image.Name))" 9,11,15
+                    Try 
+                    {
+                        Import-WdsBootImage -Path $Image.Wim -NewDescription $Image.Name -Verbose
+                    }
+                    Catch
+                    {
+                        Write-Theme "Exception [!] ($($Image.Name)) Not enabled" 12,4,15 
+                    }
+                }
+
+                Restart-Service -Name WDSServer
+
+                Write-Theme "Updated [+] Mdt Deployment Share ($($Select.Name))" 10,2,15
             }
             [String] GuidPattern()
             {
@@ -11177,14 +11296,6 @@ Function New-FEInfrastructure
     })
 
     # [Mdt.Drive.Domain/Network]
-    # DsDcUsername             TextBox
-    # DsDcPassword             PasswordBox
-    # DsDcConfirm              PasswordBox
-    # DsNetBiosName            TextBox
-    # DsDnsName                TextBox
-    # DsMachineOUSelect        Button
-    # DsMachineOu              TextBox
-
     $Xaml.IO.DsLogin.Add_Click(
     {
         Write-Theme "Attempting [~] Service Account Login" 14,6,15
@@ -11279,6 +11390,7 @@ Function New-FEInfrastructure
         }
     })
 
+    # [Mdt.OperatingSystems/Task Sequences]
     $Xaml.IO.DsCurrentWimFileRemove.Add_Click(
     {
         $Main.MdtController.RemoveImages($Xaml.IO.DsCurrentWimFiles.SelectedItems)
@@ -11315,10 +11427,7 @@ Function New-FEInfrastructure
         $Main.Reset($Xaml.IO.DsCurrentWimFiles.Items,$Main.MdtController.Selected.Images.Current)
     })
 
-    # Select Images
-    # Import Images
-
-    # Generate Bootstrap
+    # [Mdt.Config.Bootstrap]
     $Xaml.IO.DsGenerateBootstrap.Add_Click(
     {
         If (!$Main.MdtController.Selected.Brand)
@@ -11354,14 +11463,13 @@ Function New-FEInfrastructure
         }
     })
 
-    # Apply Bootstrap
     $Xaml.IO.DsApplyBootstrap.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq Bootstrap | % SetContent $Xaml.IO.DsBootstrap.Text.Split("`n")
         Write-Theme "Applied [+] Bootstrap" 9,11,15
     })
 
-    # Generate Custom
+    # [Mdt.Config.CustomSettings]
     $Xaml.IO.DsGenerateCustomSettings.Add_Click(
     {
         If (!$Main.MdtController.Selected.Brand)
@@ -11401,28 +11509,26 @@ Function New-FEInfrastructure
         }
     })
 
-    # Apply Custom
     $Xaml.IO.DsApplyCustomSettings.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq CustomSettings | % SetContent $Xaml.IO.DsCustomSettings.Text.Split("`n")
         Write-Theme "Applied [+] Custom Settings" 9,11,15
     })
 
-    # Generate Post
+    # [Mdt.Config.PostConfig]
     $Xaml.IO.DsGeneratePostconfig.Add_Click(
     {
         $Xaml.IO.DsPostConfig.Text = $Main.MdtController.Postconfig("$($Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name))\DSKey.csv")
         Write-Theme "Generated [+] Post Config" 14,6,15
     })
 
-    # Apply Post
     $Xaml.IO.DsApplyPostConfig.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq Postconfig | % SetContent $Xaml.Io.DsPostConfig.Text.Split("`n")
         Write-Theme "Generated [+] Custom Settings" 9,11,15
     })
 
-    # Generate Key
+    # [Mdt.Config.DSKey]
     $Xaml.IO.DsGenerateDSKey.Add_Click(
     {
         If (!$Main.MdtController.Selected.Brand)
@@ -11460,14 +11566,13 @@ Function New-FEInfrastructure
         }
     })
 
-    # Apply Key
     $Xaml.IO.DsApplyDsKey.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq DSKey | % SetContent $Xaml.IO.DsDSKey.Text.Split("`n")
         Write-Theme "Applied [+] DSKey" 14,6,15
     })
 
-    # Update mode
+    # [Mdt.Update]
     $Xaml.IO.DsUpdate.Add_Click(
     {
         If (!$Main.MdtController.Selected.Brand)
@@ -11492,13 +11597,9 @@ Function New-FEInfrastructure
 
         Else
         {
-            Write-Theme "Updating [~] Deployment Share [$($Main.MdtController.Selected.Name)]" 14,6,15
             $Main.MdtController.UpdateDrive($Main.MdtController.Selected.Name,$Xaml.IO.DsUpdateMode.SelectedIndex)
-            Write-Theme "Updated [+] Deployment Share [$($Main.MdtController.Selected.Name)]" 9,11,15
         }
     })
-
-    # Rename images and send to WDS ...
 
     Switch($PSCmdLet.ParameterSetName)
     {
@@ -11523,7 +11624,7 @@ Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
 . $Home\Desktop\New-FEInfrastructure.ps1
 # New-FEInfrastructure
 
-$Cap = New-FEInfrastructure2 -Test
+$Cap = New-FEInfrastructure -Test
 
 $Xaml = $Cap.Xaml
 $Main = $Cap.Main
