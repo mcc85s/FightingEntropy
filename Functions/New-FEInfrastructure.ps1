@@ -3296,28 +3296,34 @@ Function New-FEInfrastructure
             {
                 Return @( Get-DiskImage -ImagePath $This.Path )
             }
-            DriveLetter()
+            [String] DriveLetter()
             {
-                If ($This.GetDiskImage() | ? Attached -eq 1)
-                {
-                    $This.Letter = $This.GetDiskImage() | Get-Volume | % DriveLetter
-                }
+                Return @( $This.GetDiskImage() | Get-Volume | % DriveLetter )
             }
             MountDiskImage()
             {
-                Mount-DiskImage -ImagePath $This.Path
+                If ($This.GetDiskImage() | ? Attached -eq 0)
+                {
+                    Mount-DiskImage -ImagePath $This.Path
+                }
 
                 Do
                 {
                     Start-Sleep -Milliseconds 100
                 }
                 Until ($This.GetDiskImage() | ? Attached -eq 1)
-                
-                Start-Sleep 1
 
-                If ($This.GetDiskImage() | ? Attached -eq 1)
+                Start-Sleep 1
+                $This.Letter = $This.DriveLetter()
+
+                If ($This.Letter -notin [Char[]]@(65..90))
                 {
-                    $This.DriveLetter()
+                    Do 
+                    {
+                        Start-Sleep 1
+                        $This.Letter = $This.DriveLetter()
+                    } 
+                    Until ($This.Letter -in [Char[]]@(65..90))
                 }
             }
             DismountDiskImage()
@@ -3391,12 +3397,7 @@ Function New-FEInfrastructure
                     $This.Selected.MountDiskImage()
                 }
 
-                If ($This.Selected.Letter -notin [char[]]@(65..90))
-                {
-                    $This.Selected.DriveLetter()
-                }
-
-                $Path      = "$($This.Selected.Letter):\sources\install.wim"
+                $Path      = "$($This.Selected.DriveLetter()):\sources\install.wim"
 
                 If (!(Test-Path $Path))
                 {
