@@ -1625,7 +1625,16 @@ Function Get-FEWizard
         }
         SetTSEnv([String]$Name,[Object]$Value)
         {
-            $This.TSEnv | ? Name -eq $Name | % { $_.Value = $Value }
+            If (!(Get-item tsenv:\$Name))
+            {
+                New-Item -path tsenv:\$Name -Value $Value -Verbose
+            }
+            ElseIf (Get-Item tsenv:\$Name)
+            {
+                Set-Item -path tsenv:\$Name -Value $Value -Verbose
+            }
+            
+            $This.TSEnv = Get-ChildItem tsenv:
         }
         SetDomain([Object]$Xaml,[UInt32]$Slot)
         {
@@ -2035,15 +2044,24 @@ Function Get-FEWizard
     $Xaml.IO.System_BiosUefi.SelectedIndex            = $Main.System.BiosUefi -eq "UEFI"
     $Xaml.IO.System_BiosUefi.IsEnabled                = 0
 
-    $Xaml.IO.System_UseSerial.Add_Click(
+    $Xaml.IO.System_UseSerial.Add_Checked(
     {
-        $Xaml.IO.System_Name.Text = Switch ($Xaml.IO.System_UseSerial.IsChecked)
+        Switch ($Xaml.IO.System_UseSerial.IsChecked)
         {
-            0 { ($Main.System.Serial -Replace "\-","").ToCharArray()[0..14] -join '' } 1 { $Null }
+            0
+            { 
+                $Xaml.IO.System_Name.Text = $Null 
+            }
+
+            1
+            { 
+                $Xaml.IO.System_Name.Text = ($Main.System.Serial -Replace "\-","").ToCharArray()[0..14] -join '' 
+            } 
         }
     })
 
     $Xaml.IO.System_UseSerial.IsChecked               = 0
+    $Xaml.IO.System_Name.Text = $Env:ComputerName
 
     # Disks
     $Main.Reset($Xaml.IO.System_Disk.Items,$Main.System.Disk)
@@ -2067,7 +2085,7 @@ Function Get-FEWizard
             }
         }
     })
-    
+
     $Main.SetDomain($Xaml,1)
     $Xaml.IO.Domain_Type.Add_SelectionChanged(
     {
@@ -2088,7 +2106,7 @@ Function Get-FEWizard
     }
 
     # [Network]
-    $Main.Reset($Xaml.IO.Network_Adapter.Items,$Main.System.Network)
+    $Main.Reset($Xaml.IO.Network_Adapter.Items,$Main.System.Network.Name)
     $Xaml.IO.Network_Adapter.Add_SelectionChanged(
     {
         If ($Xaml.IO.Network_Adapter.SelectedIndex -ne -1)
@@ -2097,12 +2115,8 @@ Function Get-FEWizard
         }
     })
 
-    $Xaml.IO.Network_Type.SelectedIndex               = 0
-    $Xaml.IO.Network_Type.Add_SelectionChanged(
-    {
-        $Main.SetNetwork($Xaml,$Xaml.IO.Network_Type.SelectedIndex)
-    })
     $Main.SetNetwork($Xaml,0)
+    $Xaml.IO.Network_Adapter.SelectedIndex = 0
 
     # [Control]
     $Xaml.IO.Control_Mode.Add_SelectionChanged(
@@ -2117,7 +2131,6 @@ Function Get-FEWizard
             0 
             { 
                 $Description = "Perform a fresh installation of an operating system"
-                $Xaml.IO.Computer_Capture.Visibility  = "Visible"
                 $Xaml.IO.User_Restore.Visibility      = "Visible"
             }
 
@@ -2167,7 +2180,7 @@ Function Get-FEWizard
         }
         Else
         { 
-            $Main.SetTSEnv("TaskSequenceID",$Xaml.IO.Task_ID.Text)
+            $Main.SetTsEnv("TaskSequenceID",$Xaml.IO.Task_ID.Text)
             Write-Host "Task sequence [$($Xaml.IO.Task_ID.Text)] selected"
         }
 
@@ -2186,7 +2199,7 @@ Function Get-FEWizard
             Catch
             {
                 $Main.SetTSEnv("OSDComputerName",$Xaml.IO.System_Name.Text)
-                Write-Host "Set [+] System Name"
+                Write-Host "Set [+] System Name [$($Main.GetTSEnv("OSDComputerName"))]"
             }
         }
 
@@ -2194,7 +2207,7 @@ Function Get-FEWizard
         # [Finish action]
         If ($Xaml.IO.Misc_Finish_Action.SelectedIndex -gt 0)
         {
-            $Main.SetTSEnv("FinishAction",@("","REBOOT","SHUTDOWN","LOGOFF")[$Xaml.IO.Misc_Finish_Action.SelectedIndex])
+            $Main.SetTSEnv("FinishAction", @("","REBOOT","SHUTDOWN","LOGOFF")[$Xaml.IO.Misc_Finish_Action.SelectedIndex])
         }
 
         # [WSUS Server]
@@ -2203,11 +2216,11 @@ Function Get-FEWizard
             Try
             {
                 Test-Connection $Xaml.IO.Misc_WSUSServer.Text -Count 1 -EA 0
-                $Main.SetTSEnv("WSUSServer",$Xaml.IO.Misc_WSUSServer.Text)
+                $Main.SetTSEnv("WSUSServer", $Xaml.IO.Misc_WSUSServer.Text)
             }
             Catch
             {
-                $Main.SetTSEnv("WSUSServer","")
+                $Main.SetTSEnv("WSUSServer", $Null)
             }
             Write-Host "WSUS Server variable set"
         }
@@ -2237,7 +2250,7 @@ Function Get-FEWizard
                 }
                 Catch
                 {
-                    $Main.SetTSEnv("EventService","")
+                    $Main.SetTSEnv("EventService",$Null)
                 }
                 Write-Host "Event Service variable set"
             }
@@ -2249,11 +2262,11 @@ Function Get-FEWizard
             Try 
             {
                 Test-Path $Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text
-    			$Main.SetTSEnv("SLShareDynamicLogging",$Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text)
+    		    $Main.SetTSEnv("SLShareDynamicLogging",$Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text)
             }
             Catch
             {
-                $Main.SetTSEnv("SLShareDynamicLogging","")
+                $Main.SetTSEnv("SLShareDynamicLogging",$Null)
             }
             Write-Host "Script Log Share: Dynamic Logging"
 		}		
@@ -2262,7 +2275,7 @@ Function Get-FEWizard
 		{
             0
             {
-                $Main.SetTSEnv("SLShare","%OSD_Logs_SLShare")
+                $Main.SetTSEnv("SLShare","%OSD_Logs_SLShare%")
             }
             1
             {
@@ -2277,14 +2290,14 @@ Function Get-FEWizard
 			
 	    If ($Xaml.IO.Misc_NoExtraPartition.IsChecked)
 		{
-			$Main.SetTSEnv("DoNotCreateExtraPartition","YES")				
+			$Main.SetTSEnv("DoNotCreateExtraPartition","YES")
 		}		
 
         Switch ($Xaml.IO.Misc_Product_Key_Type.SelectedIndex)
         {
             0 
             { 
-                $Main.SetTSEnv("ProductKey","") 
+                $Main.SetTSEnv("ProductKey",$Null)
             }
             1 
             { 
@@ -2304,19 +2317,7 @@ Function Get-FEWizard
             }
         }
 
-        Get-ChildItem tsenv:
-
-        Switch ([System.Windows.MessageBox]::Show("Variables exposed","Continue?","YesNo"))
-        {
-            Yes 
-            { 
-                $Main.SetTSEnv("PSWizard_Complete","True")  
-            } 
-            No 
-            { 
-                Break 
-            }
-        }
+        $Main.SetTSEnv("Wizard_Complete",$True)
 
         $Xaml.IO.DialogResult = $True
         $Xaml.IO.Close()
