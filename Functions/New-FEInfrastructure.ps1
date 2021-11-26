@@ -3295,17 +3295,29 @@ Function New-FEInfrastructure
             {
                 Return @( Get-DiskImage -ImagePath $This.Path )
             }
+            DriveLetter()
+            {
+                If ($This.GetDiskImage() | ? Attached -eq 1)
+                {
+                    $This.Letter = $This.GetDiskImage() | Get-Volume | % DriveLetter
+                }
+            }
             MountDiskImage()
             {
                 Mount-DiskImage -ImagePath $This.Path
+
                 Do
                 {
                     Start-Sleep -Milliseconds 100
                 }
                 Until ($This.GetDiskImage() | ? Attached -eq 1)
+                
                 Start-Sleep 1
 
-                $This.Letter = $This.GetDiskImage() | Get-Volume | % DriveLetter
+                If ($This.GetDiskImage() | ? Attached -eq 1)
+                {
+                    $This.DriveLetter()
+                }
             }
             DismountDiskImage()
             {
@@ -3371,6 +3383,11 @@ Function New-FEInfrastructure
                 If ($This.Selected.GetDiskImage() | ? Attached -eq 0)
                 {
                     $This.Selected.MountDiskImage()
+                }
+
+                If ($This.Selected.Letter -notin [char[]]@(65..90))
+                {
+                    $This.Selected.DriveLetter()
                 }
 
                 $Path      = "$($This.Selected.Letter):\sources\install.wim"
