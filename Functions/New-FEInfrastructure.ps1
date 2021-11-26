@@ -3301,7 +3301,7 @@ Function New-FEInfrastructure
                             "^DATACENTER$"     { "Datacenter",      "DC" }
                         }
                         $This.DestinationName    = "Windows Server $Year $Edition (x64)"
-                        $This.Label              = "{0}{1}({2})" -f $Tag, $Year, $This.Version
+                        $This.Label              = "{0}{1}-{2}" -f $Tag, $Year, $This.Version
                     }
 
                     Default
@@ -3317,7 +3317,7 @@ Function New-FEInfrastructure
                             "^Pro N for Work.+$" { "PRO_N_WS"   } "Enterprise"          { "ENT"      }
                         }
                         $This.DestinationName    = "{0} (x{1})" -f $This.Name, $This.Architecture
-                        $This.Label              = "10{0}{1}({2})" -f $Tag, $This.Architecture, $This.Version
+                        $This.Label              = "10{0}{1}-{2}" -f $Tag, $This.Architecture, $This.Version
                     }
                 }
             }
