@@ -19,7 +19,8 @@
 
           TODO: Feature parity reached with v1 (11/14/2021) - Overwriting New-FEInfrastructure.ps1
           - Zip code panel throws an exception when removing an item from the list
-
+          - Exception thrown when loading an empty list of ADDS child items
+          - Image Mount still having an issue
 .Example
 #>
 Function New-FEInfrastructure
@@ -3302,6 +3303,7 @@ Function New-FEInfrastructure
                     Start-Sleep -Milliseconds 100
                 }
                 Until ($This.GetDiskImage() | ? Attached -eq $True)
+                Start-Sleep 1
             }
             DismountDiskImage()
             {
@@ -4413,7 +4415,7 @@ Function New-FEInfrastructure
 
                 # Drive Properties
                 $Names  = 64, 86 | % { "Boot.x$_" } | % { "$_.Generate{0}ISO $_.{0}WIMDescription $_.{0}ISOName $_.BackgroundFile" -f "LiteTouch" -Split " " }
-                $Values = 64, 86 | % { "[$($This.Module.Name)($($This.Module.Version))][$(Get-Date -UFormat %Y_%m%d)][$($Select.Type)](x$_)" } | % { "True;$_;$_.iso;%DEPLOYROOT\Graphics\$Background" -Split ";" }
+                $Values = 64, 86 | % { "[$($This.Module.Name)($($This.Module.Version))][$(Get-Date -UFormat %Y_%m%d)][$($Select.Type)](x$_)" } | % { "True;$_;$_.iso;%DEPLOYROOT%\Graphics\$Background" -Split ";" }
                 ForEach ($X in 0..($Names.Count-1))
                 {
                     Set-ItemProperty -Path "$($Select.Name):" -Name $Names[$X] -Value $Values[$X] -Verbose 
