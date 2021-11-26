@@ -3244,13 +3244,22 @@ Function New-FEInfrastructure
         Class ImageLabel
         {
             [String] $Name
+            [String] $Type
+            [String] $Version
             [String] $SelectedIndex
             [Object[]] $Content
             ImageLabel([Object]$Selected,[UInt32[]]$Index)
             {
                 $This.Name          = $Selected.Path
+                $This.Type          = $Selected.Type
+                $This.Version       = $Selected.Version
                 $This.SelectedIndex = $Index -join ","
                 $This.Content       = @($Selected.Content | ? Index -in $Index)
+                ForEach ($Item in $This.Content)
+                {
+                    $This.Type      = $Selected.Type
+                    $This.Version   = $Selected.Version
+                }
             }
         }
 
@@ -3259,19 +3268,58 @@ Function New-FEInfrastructure
             Hidden [Object] $ImageFile
             Hidden [Object] $Arch
             [UInt32] $Index
+            [String] $Type
+            [String] $Version
             [String] $Name
             [String] $Description
             [String] $Size
             [UInt32] $Architecture
-            ImageSlot([Object]$ImageFile,[UInt32]$Arch,[Object]$Slot)
+            [String] $DestinationName
+            [String] $Label
+            ImageSlot([Object]$ImageFile,[UInt32]$Arch,[String]$Type,[String]$Version,[Object]$Slot)
             {
                 $This.ImageFile    = $ImageFile
                 $This.Arch         = $Arch
+                $This.Type         = $Type
+                $This.Version      = $Version
                 $This.Index        = $Slot.ImageIndex
                 $This.Name         = $Slot.ImageName
                 $This.Description  = $Slot.ImageDescription
                 $This.Size         = "{0:n2} GB" -f ([Double]($Slot.ImageSize -Replace "(,|bytes|\s)","")/1073741824)
                 $This.Architecture = @(86,64)[$Arch -eq 9]
+                Switch -Regex ($This.Type)
+                {
+                    Server
+                    {
+                        $Year               = [Regex]::Matches($This.Name,"(\d{4})").Value
+                        $ID                 = $This.Name -Replace "Windows Server \d{4} SERVER",''
+                        $Edition, $Tag      = Switch -Regex ($ID) 
+                        {
+                            "^STANDARDCORE$"   { "Standard Core",  "SDX" }
+                            "^STANDARD$"       { "Standard",        "SD" }
+                            "^DATACENTERCORE$" { "Datacenter Core","DCX" }
+                            "^DATACENTER$"     { "Datacenter",      "DC" }
+                        }
+                        $This.DestinationName    = "Windows Server $Year $Edition (x64)"
+                        $This.Label              = "{0}{1}({2})" -f $Tag, $Year, $This.Version
+                    }
+
+                    Default
+                    {
+                        $ID                 = $This.Name -Replace "Windows 10 "
+                        $Tag                = Switch -Regex ($ID)
+                        {
+                            "^Home$"             { "HOME"       } "^Home N$"            { "HOME_N"   }
+                            "^Home Sin.+$"       { "HOME_SL"    } "^Education$"         { "EDUC"     }
+                            "^Education N$"      { "EDUC_N"     } "^Pro$"               { "PRO"      }
+                            "^Pro N$"            { "PRO_N"      } "^Pro Education$"     { "PRO_EDUC" }
+                            "^Pro Education N$"  { "PRO_EDUC_N" } "^Pro for Work.+$"    { "PRO_WS"   }
+                            "^Pro N for Work.+$" { "PRO_N_WS"   } "Enterprise"          { "ENT"      }
+                        }
+                        $This.DestinationName    = "{0} (x{1})" -f $This.Name, $This.Architecture
+                        $This.Label              = "10{0}{1}({2})" -f $Tag, $This.Architecture, $This.Version
+                    }
+                }
             }
         }
 
@@ -3339,7 +3387,7 @@ Function New-FEInfrastructure
                     $This.Type    = $_.InstallationType
                 }
 
-                $This.Content     = Get-WindowsImage -ImagePath $Path | % { [ImageSlot]::New($Path,$This.Arch,$_) }
+                $This.Content     = Get-WindowsImage -ImagePath $Path | % { [ImageSlot]::New($Path,$This.Arch,$This.Type,$This.Version,$_) }
             }
         }
 
@@ -3504,55 +3552,21 @@ Function New-FEInfrastructure
 
                     ForEach ($Item in $File.Content)
                     {
-                        Switch -Regex ($Item.Name)
-                        {
-                            Server
-                            {
-                                $Year               = [Regex]::Matches($Item.Name,"(\d{4})").Value
-                                $ID                 = $Item.Name -Replace "Windows Server \d{4} SERVER",''
-                                $Edition, $Tag      = Switch -Regex ($ID) 
-                                {
-                                    "^STANDARDCORE$"   { "Standard Core",  "SDX" }
-                                    "^STANDARD$"       { "Standard",        "SD" }
-                                    "^DATACENTERCORE$" { "Datacenter Core","DCX" }
-                                    "^DATACENTER$"     { "Datacenter",      "DC" }
-                                }
-                                $DestinationName    = "Windows Server $Year $Edition (x64)"
-                                $Label              = "{0}{1}({2})" -f $Tag, $Year, $File.Version
-                            }
-
-                            Default
-                            {
-                                $ID                 = $Item.Name -Replace "Windows 10 "
-                                $Tag                = Switch -Regex ($ID)
-                                {
-                                    "^Home$"             { "HOME"       } "^Home N$"            { "HOME_N"   }
-                                    "^Home Sin.+$"       { "HOME_SL"    } "^Education$"         { "EDUC"     }
-                                    "^Education N$"      { "EDUC_N"     } "^Pro$"               { "PRO"      }
-                                    "^Pro N$"            { "PRO_N"      } "^Pro Education$"     { "PRO_EDUC" }
-                                    "^Pro Education N$"  { "PRO_EDUC_N" } "^Pro for Work.+$"    { "PRO_WS"   }
-                                    "^Pro N for Work.+$" { "PRO_N_WS"   } "Enterprise"          { "ENT"      }
-                                }
-                                $DestinationName    = "{0} (x{1})" -f $Item.Name, $Item.Architecture
-                                $Label              = "10{0}{1}({2})" -f $Tag, $Item.Architecture, $File.Version
-                            }
-                        }
-
                         $ISO                        = @{
 
                             SourceIndex             = $Item.Index
                             SourceImagePath         = $Path
-                            DestinationImagePath    = ("{0}\({1}){2}\{2}.wim" -f $This.Target,$X,$Label)
-                            DestinationName         = $DestinationName
+                            DestinationImagePath    = ("{0}\({1}){2}\{2}.wim" -f $This.Target,$X,$Item.Label)
+                            DestinationName         = $Item.DestinationName
                         }
 
                         New-Item ($Iso.DestinationImagePath | Split-Path -Parent) -ItemType Directory -Verbose
 
-                        Write-Theme "Extracting [~] $DestinationName" 14,6,15
+                        Write-Theme "Extracting [~] $($Item.DestinationName)" 14,6,15
                         Start-Sleep 1
 
                         Export-WindowsImage @ISO
-                        Write-Theme "Extracted [~] $DestinationName" 10,2,15
+                        Write-Theme "Extracted [~] $($Item.DestinationName)" 10,2,15
                         Start-Sleep 1
 
                         $X ++
@@ -3571,6 +3585,13 @@ Function New-FEInfrastructure
         }
         [ImageController]::New()
     }
+    # $ImgCtrl = ImageController
+    # $ImgCtrl.LoadSilo("C:\Images")
+    # $ImgCtrl.LoadIso(18)
+    # $ImgCtrl.AddQueue(@(4,6))
+    # $ImgCtrl.UnloadIso()
+    # $ImgCtrl.SetTarget("C:\WimPath")
+    # $ImgCtrl.Extract()
 
     Function UpdateController # Heavily modified version of this https://github.com/MicksITBlogs/PowerShell/blob/master/Get-MSUFileInfo.ps1
     {
@@ -11636,7 +11657,7 @@ Function New-FEInfrastructure
         }
     })
 
-    Switch($PSCmdLet.ParameterSetName)
+    Switch ($PSCmdLet.ParameterSetName)
     {
         0
         {
