@@ -10883,8 +10883,9 @@ Function New-FEInfrastructure
 
         $Path = "$($Main.ImageController.Selected.Letter):\sources\install.wim"
 
-        If (Get-Item $Path)
+        Try
         {
+            Get-Item $Path
             $Main.ImageController.Selected.GetWindowsImage($Path)
             Do
             {
@@ -10896,7 +10897,7 @@ Function New-FEInfrastructure
             $Xaml.IO.IsoList.IsEnabled       = 0
             $Xaml.IO.IsoDismount.IsEnabled   = 1
         }
-        Else
+        Catch
         {
             Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
             $Main.ImageController.UnloadIso()
