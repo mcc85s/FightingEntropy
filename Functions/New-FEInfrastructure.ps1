@@ -3363,16 +3363,6 @@ Function New-FEInfrastructure
 
                 Start-Sleep 1
                 $This.Letter = $This.DriveLetter()
-
-                If ($This.Letter -notin [Char[]]@(65..90))
-                {
-                    Do 
-                    {
-                        Start-Sleep 1
-                        $This.Letter = $This.DriveLetter()
-                    } 
-                    Until ($This.Letter -in [Char[]]@(65..90))
-                }
             }
             DismountDiskImage()
             {
@@ -3452,14 +3442,11 @@ Function New-FEInfrastructure
                 } 
                 Until ($This.Selected.Letter -in [Char[]]@(65..90))
 
-                $Path = "$($This.Selected.DriveLetter()):\sources\install.wim"
+                $Path = "$($This.Selected.Letter):\sources\install.wim"
 
                 If (!(Test-Path $Path))
                 {
-                    $This.Selected.Letter = $This.Selected.DriveLetter()
-
                     $This.Selected.DismountDiskImage()
-                    [System.Windows.MessageBox]::Show("Not a valid Windows image","Error")
                 }
                 Else
                 {
@@ -10904,7 +10891,7 @@ Function New-FEInfrastructure
         $Xaml.IO.IsoMount.IsEnabled          = 0
 
         $Main.ImageController.LoadIso($Index)
-        Start-Sleep 1
+
         If ($Main.ImageController.Selected.Content.Count -eq 0)
         {
             Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
