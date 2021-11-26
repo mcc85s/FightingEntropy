@@ -3361,7 +3361,6 @@ Function New-FEInfrastructure
                 }
                 Until ($This.GetDiskImage() | ? Attached -eq 1)
 
-                Start-Sleep 1
                 $This.Letter = $This.DriveLetter()
             }
             DismountDiskImage()
@@ -3441,22 +3440,6 @@ Function New-FEInfrastructure
                     Start-Sleep -Milliseconds 100
                 } 
                 Until ($This.Selected.Letter -in [Char[]]@(65..90))
-
-                $Path = "$($This.Selected.Letter):\sources\install.wim"
-
-                If (!(Test-Path $Path))
-                {
-                    $This.Selected.DismountDiskImage()
-                }
-                Else
-                {
-                    $This.Selected.GetWindowsImage($Path)
-                    Do
-                    {
-                        Start-Sleep -Milliseconds 100
-                    }
-                    Until ($This.Selected.Content.Count -gt 0)
-                }
             }
             [Void] UnloadIso()
             {
@@ -10892,17 +10875,38 @@ Function New-FEInfrastructure
 
         $Main.ImageController.LoadIso($Index)
 
-        If ($Main.ImageController.Selected.Content.Count -eq 0)
+        Do 
         {
-            Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
-            $Main.ImageController.UnloadIso()
-            $Xaml.IO.IsoMount.IsEnabled      = 1
-        }
-        Else
+            Start-Sleep 1
+        } 
+        Until ($Main.ImageController.Selected.Letter -in [char[]]@(65..90))
+
+        $Path = "$($Main.ImageController.Selected.Letter):\sources\install.wim"
+
+        Write-Host $Path
+
+        Switch ([UInt32](Test-Path $Path))
         {
-            $Main.Reset($Xaml.IO.IsoView.Items,$Main.ImageController.Store[$Index].Content)
-            $Xaml.IO.IsoList.IsEnabled       = 0
-            $Xaml.IO.IsoDismount.IsEnabled   = 1
+            0
+            {
+                Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
+                $Main.ImageController.UnloadIso()
+                $Xaml.IO.IsoView.Items.Clear()
+                $Xaml.IO.IsoMount.IsEnabled      = 1
+            }
+            1
+            {
+                $Main.ImageController.Selected.GetWindowsImage($Path)
+                Do
+                {
+                    Start-Sleep -Milliseconds 100
+                }
+                Until ($Main.ImageController.Selected.Content.Count -gt 0)
+
+                $Main.Reset($Xaml.IO.IsoView.Items,$Main.ImageController.Selected.Content)
+                $Xaml.IO.IsoList.IsEnabled       = 0
+                $Xaml.IO.IsoDismount.IsEnabled   = 1
+            }
         }
     })
 
