@@ -18,6 +18,7 @@
           Version - 2021.10.0 - () - Still revising from version 1.
 
           TODO: Feature parity reached with v1 (11/14/2021) - Overwriting New-FEInfrastructure.ps1
+          - Zip code panel throws an exception when removing an item from the list
 
 .Example
 #>
