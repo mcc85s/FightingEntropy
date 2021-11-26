@@ -20,7 +20,7 @@
           TODO: Feature parity reached with v1 (11/14/2021) - Overwriting New-FEInfrastructure.ps1
           - Zip code panel throws an exception when removing an item from the list
           - Exception thrown when loading an empty list of ADDS child items
-          - Image Mount still having an issue
+          - Image Mount still having an issue 
 .Example
 #>
 Function New-FEInfrastructure
@@ -3302,8 +3302,10 @@ Function New-FEInfrastructure
                 {
                     Start-Sleep -Milliseconds 100
                 }
-                Until ($This.GetDiskImage() | ? Attached -eq $True)
+                Until ($This.GetDiskImage() | ? Attached -eq 1)
                 Start-Sleep 1
+
+                $This.Selected.Letter = $This.GetDiskImage() | Get-Volume | % DriveLetter
             }
             DismountDiskImage()
             {
@@ -3366,12 +3368,11 @@ Function New-FEInfrastructure
 
                 $This.Selected = $This.Store[$Index]
 
-                If ($This.Selected.GetDiskImage() | ? Attached -eq $False)
+                If ($This.Selected.GetDiskImage() | ? Attached -eq 0)
                 {
                     $This.Selected.MountDiskImage()
                 }
 
-                $This.Selected.Letter = $This.Selected.GetDiskImage() | Get-Volume | % DriveLetter
                 $Path      = "$($This.Selected.Letter):\sources\install.wim"
 
                 If (!(Test-Path $Path))
