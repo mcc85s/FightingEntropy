@@ -2145,7 +2145,7 @@ Function Get-FEWizard
             [System.Windows.MessageBox]::Show("Task sequence not selected","Error")
             Break
         }
-        ElseIf ($Xaml.IO.Task_ID.Text in $Main.Tree | ? Name -match Task | % { $_.Children.ID } )
+        ElseIf ($Xaml.IO.Task_ID.Text -in $Main.Tree | ? Name -match Task | % { $_.Children.ID } )
         {
             [System.Windows.MessageBox]::Show("Invalid task sequence selected","Error")
             Break
@@ -2179,7 +2179,7 @@ Function Get-FEWizard
         # [Finish action]
         If ($Xaml.IO.Misc_Finish_Action.SelectedIndex -gt 0)
         {
-            $Main.SetTSEnv("FinishAction",@("","REBOOT","SHUTDOWN","LOGOFF")[$Xaml.IO.Misc_Finish_Action.SelectedIndex)])
+            $Main.SetTSEnv("FinishAction",@("","REBOOT","SHUTDOWN","LOGOFF")[$Xaml.IO.Misc_Finish_Action.SelectedIndex])
         }
 
         # [WSUS Server]
