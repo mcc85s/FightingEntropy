@@ -2051,18 +2051,23 @@ Function Get-FEWizard
     # [Domain]
     $Xaml.IO.Domain_Type.SelectedIndex                = 0
     $Xaml.IO.Domain_OrgEdit.IsChecked                 = 0
-    $Xaml.IO.Domain_OrgEdit.Add_Check(
+    $Xaml.IO.Domain_OrgEdit.Add_Checked(
     {
-        If ($Xaml.IO.Domain_OrgEdit.IsChecked)
+        Switch ([UInt32]($Xaml.IO.Domain_OrgEdit.IsChecked))
         {
-            $Xaml.IO.Domain_OrgName.IsReadOnly        = 0
-            $Main.SetDomain($Xaml,1)
-        }
-        If (!$Xaml.IO.Domain_OrgEdit.IsChecked)
-        {
-            $Xaml.IO.Domain_OrgName.IsReadOnly        = 1
+            0
+            {
+                $Xaml.IO.Domain_OrgName.IsReadOnly    = 1
+            }
+
+            1
+            {
+                $Xaml.IO.Domain_OrgName.IsReadOnly        = 0
+                $Main.SetDomain($Xaml,1)
+            }
         }
     })
+    
     $Main.SetDomain($Xaml,1)
     $Xaml.IO.Domain_Type.Add_SelectionChanged(
     {
@@ -2071,6 +2076,16 @@ Function Get-FEWizard
             Domain { $Main.SetDomain($Xaml,1) } Workgroup { $Main.SetDomain($Xaml,0) }
         }
     })
+
+    If ($tsenv:MachineObjectOU)
+    {
+        $Xaml.IO.Domain_OU.Text = $tsenv:MachineObjectOU
+    }
+
+    If ($tsenv:Home_Page)
+    {
+        $xaml.IO.Domain.HomePage = $tsenv:Home_Page
+    }
 
     # [Network]
     $Main.Reset($Xaml.IO.Network_Adapter.Items,$Main.System.Network)
