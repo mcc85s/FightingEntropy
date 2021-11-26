@@ -3445,10 +3445,18 @@ Function New-FEInfrastructure
                     $This.Selected.MountDiskImage()
                 }
 
-                $Path      = "$($This.Selected.DriveLetter()):\sources\install.wim"
+                Do 
+                {
+                    $This.Selected.Letter = $This.Selected.GetDiskImage() | Get-Volume | % DriveLetter
+                } 
+                Until ($This.Selected.Letter -in [Char[]]@(65..90))
+
+                $Path = "$($This.Selected.DriveLetter()):\sources\install.wim"
 
                 If (!(Test-Path $Path))
                 {
+                    $This.Selected.Letter = $This.Selected.DriveLetter()
+
                     $This.Selected.DismountDiskImage()
                     [System.Windows.MessageBox]::Show("Not a valid Windows image","Error")
                 }
@@ -11657,7 +11665,7 @@ Function New-FEInfrastructure
         }
     })
 
-    Switch ($PSCmdLet.ParameterSetName)
+    Switch($PSCmdLet.ParameterSetName)
     {
         0
         {
