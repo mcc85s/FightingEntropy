@@ -3448,6 +3448,7 @@ Function New-FEInfrastructure
                 Do 
                 {
                     $This.Selected.Letter = $This.Selected.GetDiskImage() | Get-Volume | % DriveLetter
+                    Start-Sleep -Milliseconds 100
                 } 
                 Until ($This.Selected.Letter -in [Char[]]@(65..90))
 
