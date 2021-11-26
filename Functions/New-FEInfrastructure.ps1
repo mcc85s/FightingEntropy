@@ -3305,7 +3305,7 @@ Function New-FEInfrastructure
                 Until ($This.GetDiskImage() | ? Attached -eq 1)
                 Start-Sleep 1
 
-                $This.Selected.Letter = $This.GetDiskImage() | Get-Volume | % DriveLetter
+                $This.Letter = $This.GetDiskImage() | Get-Volume | % DriveLetter
             }
             DismountDiskImage()
             {
