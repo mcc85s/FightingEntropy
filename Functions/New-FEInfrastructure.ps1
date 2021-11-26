@@ -4253,7 +4253,7 @@ Function New-FEInfrastructure
                 Get-ChildItem "$PSD\Templates" | Copy-Item -Destination "$Root\Templates" -Verbose
 
                 # Copy/Unblock the modules
-                ForEach ($File in "PSDGather PSDDeploymentShare PSDUtility PSDWizard" -Split " ")
+                ForEach ($File in "PSDGather PSDDeploymentShare PSDUtility PSDWizard FEWizard" -Split " ")
                 {
                     If (!(Test-Path "$Root\Tools\Modules\$File"))
                     {
@@ -4741,6 +4741,7 @@ Function New-FEInfrastructure
                             KeyboardLocale       = "en-US"
                             TimeZoneName         = "$(Get-Timezone | % ID)"
                             EventService         = ("http://{0}:{1}" -f $Server,$Port)
+                            Home_Page            = $This.Selected.Brand.SupportURL
                         }
                     }
                 }
@@ -4754,9 +4755,15 @@ Function New-FEInfrastructure
                         }
                         Default                  = @{
                             _SMSTSOrgName        = $Org
-                            TimeZoneName         = "$(Get-Timezone | % ID)"
+                            JoinDomain           = $NetBIOS
+                            DomainAdmin          = $UserID.Split("@")[0]
+                            DomainAdminPassword  = $Password
+                            DomainAdminDomain    = $NetBIOS
+                            MachineObjectOU      = $OU
                             KeyboardLocale       = "en-US"
+                            TimeZoneName         = "$(Get-Timezone | % ID)"
                             EventService         = ("http://{0}:{1}" -f $Server,$Port)
+                            Home_Page            = $This.Selected.Brand.SupportURL
                         }
                     }
                 }
