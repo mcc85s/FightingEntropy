@@ -10885,7 +10885,6 @@ Function New-FEInfrastructure
 
         Try
         {
-            Get-Item $Path
             $Main.ImageController.Selected.GetWindowsImage($Path)
             Do
             {
@@ -10899,8 +10898,8 @@ Function New-FEInfrastructure
         }
         Catch
         {
-            Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
             $Main.ImageController.UnloadIso()
+            Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
             $Xaml.IO.IsoView.Items.Clear()
             $Xaml.IO.IsoMount.IsEnabled      = 1
         }
