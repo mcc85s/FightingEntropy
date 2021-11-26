@@ -10883,30 +10883,25 @@ Function New-FEInfrastructure
 
         $Path = "$($Main.ImageController.Selected.Letter):\sources\install.wim"
 
-        Write-Host $Path
-
-        Switch ([UInt32](Test-Path $Path))
+        If (Get-Item $Path)
         {
-            0
+            $Main.ImageController.Selected.GetWindowsImage($Path)
+            Do
             {
-                Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
-                $Main.ImageController.UnloadIso()
-                $Xaml.IO.IsoView.Items.Clear()
-                $Xaml.IO.IsoMount.IsEnabled      = 1
+                Start-Sleep -Milliseconds 100
             }
-            1
-            {
-                $Main.ImageController.Selected.GetWindowsImage($Path)
-                Do
-                {
-                    Start-Sleep -Milliseconds 100
-                }
-                Until ($Main.ImageController.Selected.Content.Count -gt 0)
-
-                $Main.Reset($Xaml.IO.IsoView.Items,$Main.ImageController.Selected.Content)
-                $Xaml.IO.IsoList.IsEnabled       = 0
-                $Xaml.IO.IsoDismount.IsEnabled   = 1
-            }
+            Until ($Main.ImageController.Selected.Content.Count -gt 0)
+                
+            $Main.Reset($Xaml.IO.IsoView.Items,$Main.ImageController.Selected.Content)
+            $Xaml.IO.IsoList.IsEnabled       = 0
+            $Xaml.IO.IsoDismount.IsEnabled   = 1
+        }
+        Else
+        {
+            Return [System.Windows.MessageBox]::Show("Not a windows image","Error")
+            $Main.ImageController.UnloadIso()
+            $Xaml.IO.IsoView.Items.Clear()
+            $Xaml.IO.IsoMount.IsEnabled      = 1
         }
     })
 
