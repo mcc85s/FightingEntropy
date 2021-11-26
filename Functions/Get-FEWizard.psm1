@@ -341,13 +341,12 @@ Function Get-FEWizard
         '                            <Label    Grid.Row="1" Grid.Column="0" Content="[Event Service]:"/>',
         '                            <TextBox  Grid.Row="1" Grid.Column="1" Name="Misc_EventService" ToolTip="For monitoring deployment process"/>',
         '                            <!-- Row 2 -->',
-        '                            <Label    Grid.Row="2" Grid.Column="0" Content="[End Log Files]:"/>',
+        '                            <Label    Grid.Row="2" Grid.Column="0" Content="[Script Log Path]:"/>',
         '                            <TextBox  Grid.Row="2" Grid.Column="1" Name="Misc_LogsSLShare"/>',
         '                            <CheckBox Grid.Row="2" Grid.Column="2" Content="Save in Root" Name="Misc_SLShare_DeployRoot"/>',
         '                            <!-- Row 3 -->',
-        '                            <Label    Grid.Row="3" Grid.Column="0" Content="[Real-Time Log]:"/>',
+        '                            <Label    Grid.Row="3" Grid.Column="0" Content="[Realtime SL Dir.]:"/>',
         '                            <TextBox  Grid.Row="3" Grid.Column="1" Name="Misc_LogsSLShare_DynamicLogging"/>',
-        '                            <Label    Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2" Content="[Enable Real-Time Task Sequence Logging]" HorizontalAlignment="Left"/>',
         '                            <Label    Grid.Row="4" Grid.Column="0" Content="[Product Key]:"/>',
         '                            <ComboBox Grid.Row="4" Grid.Column="1" Name="Misc_Product_Key_Type" SelectedIndex="0">',
         '                                <ComboBoxItem Content="No product key is required"/>',
@@ -1776,8 +1775,22 @@ Function Get-FEWizard
 
     # [Misc Panel]
     # Misc_Finish_Action
+    If ($tsenv:FinishAction)
+    {
+        $Xaml.IO.Misc_Finish_Action.SelectedIndex = @{""=0;"REBOOT"=1;"SHUTDOWN"=2;"LOGOFF"=3}[$tsenv:FinishAction]
+    }
+
     # Misc_WSUSServer
+    If ($tsenv:WSUSServer)
+    {
+        $Xaml.IO.Misc_WSUSServer.Text = $tsenv:WSUSServer
+    }
+
     # Misc_EventService
+    If ($tsenv:EventService)
+    {
+        $Xaml.IO.Misc_EventService.Text = $tsenv:EventService
+    }
     # Misc_LogsSLShare
     # Misc_SLShare_DeployRoot
     # Misc_LogsSLShare_DynamicLogging
@@ -1803,7 +1816,6 @@ Function Get-FEWizard
             }
         }
     })
-
 
     # [Root Panel]
     $Xaml.IO.TaskSequence.Add_SelectionChanged(
@@ -2127,28 +2139,171 @@ Function Get-FEWizard
 
     $Xaml.IO.Start.Add_Click(
     {
-        $Xaml.IO.DialogResult = $True
-        # Rules
-        Switch -Regex ($Xaml.IO.Task_ID.Text)
+        # Task Sequence Selection
+        If ($Xaml.IO.Task_ID.Text -eq "")
         {
-            "" 
-            { 
-                Return [System.Windows.MessageBox]::Show("Task sequence not selected","Error") 
+            [System.Windows.MessageBox]::Show("Task sequence not selected","Error")
+            Break
+        }
+        ElseIf ($Xaml.IO.Task_ID.Text in $Main.Tree | ? Name -match Task | % { $_.Children.ID } )
+        {
+            [System.Windows.MessageBox]::Show("Invalid task sequence selected","Error")
+            Break
+        }
+        Else
+        { 
+            $Main.SetTSEnv("TaskSequenceID",$Xaml.IO.Task_ID.Text)
+            Write-Host "Task sequence [$($Xaml.IO.Task_ID.Text)] selected"
+        }
+
+        # [System Name]
+        If ($Xaml.IO.System_Name.Text -eq "")
+        {
+            [System.Windows.MessageBox]::Show("Must designate a target computer name","Error")
+            Break
+        }
+        ElseIf ($Xaml.IO.System_Name.Text -ne "")
+        {
+            Try
+            {
+                Test-Connection $Xaml.IO.System_Name.Text -Count 1 -EA 0
             }
-            
-            Default 
+            Catch
+            {
+                $Main.SetTSEnv("OSDComputerName",$Xaml.IO.System_Name.Text)
+                Write-Host "Set [+] System Name"
+            }
+        }
+
+        # Misc Variables
+        # [Finish action]
+        If ($Xaml.IO.Misc_Finish_Action.SelectedIndex -gt 0)
+        {
+            $Main.SetTSEnv("FinishAction",@("","REBOOT","SHUTDOWN","LOGOFF")[$Xaml.IO.Misc_Finish_Action.SelectedIndex)])
+        }
+
+        # [WSUS Server]
+        If ($Xaml.IO.Misc_WSUSServer.Text -ne "")
+        {
+            Try
+            {
+                Test-Connection $Xaml.IO.Misc_WSUSServer.Text -Count 1 -EA 0
+                $Main.SetTSEnv("WSUSServer",$Xaml.IO.Misc_WSUSServer.Text)
+            }
+            Catch
+            {
+                $Main.SetTSEnv("WSUSServer","")
+            }
+            Write-Host "WSUS Server variable set"
+        }
+		
+        # [Event Service]
+        If ($Xaml.IO.Misc_EventService.Text -ne "")
+        {
+            If ($Xaml.IO.Misc_EventService.Text -ne $tsenv:EventService)
+            {
+                $Server = @( Switch -Regex ($Xaml.IO.Misc_EventService.Text)
+                {
+                    "http[s]*://"
+                    {
+                        $Xaml.IO.Misc_EventService.Text -Replace "http[s]*://", ""
+                    }
+                    Default
+                    {
+                        $Xaml.IO.Misc_EventService.Text
+                    }
+
+                }).Split(":")[0]
+
+                Try
+                {
+                    Test-Connection $Server -Count 1 -EA 0
+                    $Main.SetTSEnv("EventService",$Xaml.IO.Misc_EventService.Text)
+                }
+                Catch
+                {
+                    $Main.SetTSEnv("EventService","")
+                }
+                Write-Host "Event Service variable set"
+            }
+        }	
+
+        # [SLShare]
+	    If ($Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text -ne "")
+		{
+            Try 
+            {
+                Test-Path $Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text
+    			$Main.SetTSEnv("SLShareDynamicLogging",$Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text)
+            }
+            Catch
+            {
+                $Main.SetTSEnv("SLShareDynamicLogging","")
+            }
+            Write-Host "Script Log Share: Dynamic Logging"
+		}		
+
+	    Switch ([UInt32]($Xaml.IO.Misc_SLShare_DeployRoot.IsChecked))
+		{
+            0
+            {
+                $Main.SetTSEnv("SLShare","%OSD_Logs_SLShare")
+            }
+            1
+            {
+	    		$Main.SetTSEnv("SLShare","%DeployRoot%\Logs\$tsenv:OSDComputerName")
+            }		
+		}
+        
+        If ($Xaml.IO.Misc_HideShell.IsChecked)
+        {
+            $Main.SetTSEnv("HideShell","YES")
+        }
+			
+	    If ($Xaml.IO.Misc_NoExtraPartition.IsChecked)
+		{
+			$Main.SetTSEnv("DoNotCreateExtraPartition","YES")				
+		}		
+
+        Switch ($Xaml.IO.Misc_Product_Key_Type.SelectedIndex)
+        {
+            0 
             { 
-                $Main.SetTSEnv("TaskSequenceID",$Xaml.IO.Task_ID.Text)
+                $Main.SetTSEnv("ProductKey","") 
+            }
+            1 
+            { 
+                $Key = $Xaml.IO.Misc_Product_Key.Text -Replace "-",""
+                If ($Key -match "((\w|\d){25}")
+                {
+                    $Main.SetTSEnv("ProductKey",$Key) 
+                }
+            }
+            2 
+            {  
+                $Key = $Xaml.IO.Misc_Product_Key.Text -Replace "-",""
+                If ($Key -match "((\w|\d){25}")
+                {
+                    $Main.SetTSEnv("OverrideProductKey",$Key) 
+                }
             }
         }
 
         Get-ChildItem tsenv:
 
-        Switch ([System.Windows.MessageBox]::Show("Variables exposed","Continue?","YesNo")
+        Switch ([System.Windows.MessageBox]::Show("Variables exposed","Continue?","YesNo"))
         {
-            Yes { Continue } No { Break }
+            Yes 
+            { 
+                $Main.SetTSEnv("PSWizard_Complete","True")  
+            } 
+            No 
+            { 
+                Break 
+            }
         }
 
+        $Xaml.IO.DialogResult = $True
         $Xaml.IO.Close()
     })
     
