@@ -3279,6 +3279,7 @@ Function New-FEInfrastructure
         {
             [UInt32]      $Index
             [UInt32]       $Arch
+            [String]    $Version
             [String]       $Type
             [String]       $Name
             [String]       $Path
@@ -3324,10 +3325,15 @@ Function New-FEInfrastructure
                 Dismount-DiskImage -ImagePath $This.Path
             }
             GetWindowsImage([String]$Path)
-            {
-                $This.Arch     = Get-WindowsImage -ImagePath $Path -Index 1 | % Architecture
-                $This.Content  = Get-WindowsImage -ImagePath $Path | % { [ImageSlot]::New($Path,$This.Arch,$_) }
-                $This.Type     = @("Client","Server")[$This.Content[0].Name -match "Server"]
+            { 
+                Get-WindowsImage -ImagePath $Path -Index 1 | % { 
+
+                    $This.Arch    = $_.Architecture
+                    $This.Version = $_.Version
+                    $This.Type    = $_.InstallationType
+                }
+
+                $This.Content     = Get-WindowsImage -ImagePath $Path | % { [ImageSlot]::New($Path,$This.Arch,$_) }
             }
         }
 
@@ -3511,7 +3517,7 @@ Function New-FEInfrastructure
                                     "^DATACENTER$"     { "Datacenter",      "DC" }
                                 }
                                 $DestinationName    = "Windows Server $Year $Edition (x64)"
-                                $Label              = "{0}{1}" -f $Tag, $Year
+                                $Label              = "{0}{1}({2})" -f $Tag, $Year, $File.Version
                             }
 
                             Default
@@ -3527,7 +3533,7 @@ Function New-FEInfrastructure
                                     "^Pro N for Work.+$" { "PRO_N_WS"   } "Enterprise"          { "ENT"      }
                                 }
                                 $DestinationName    = "{0} (x{1})" -f $Item.Name, $Item.Architecture
-                                $Label              = "10{0}{1}" -f $Tag, $Item.Architecture
+                                $Label              = "10{0}{1}({2})" -f $Tag, $Item.Architecture, $File.Version
                             }
                         }
 
