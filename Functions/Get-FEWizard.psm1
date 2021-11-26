@@ -1774,6 +1774,7 @@ Function Get-FEWizard
         }
     })
 
+    # [Misc Panel]
     # Misc_Finish_Action
     # Misc_WSUSServer
     # Misc_EventService
@@ -1802,13 +1803,6 @@ Function Get-FEWizard
             }
         }
     })
-
-    $Xaml.IO.Misc_HideShell.Add_Checked(
-    {
-        
-    })
-
-
 
 
     # [Root Panel]
@@ -2135,6 +2129,26 @@ Function Get-FEWizard
     {
         $Xaml.IO.DialogResult = $True
         # Rules
+        Switch -Regex ($Xaml.IO.Task_ID.Text)
+        {
+            "" 
+            { 
+                Return [System.Windows.MessageBox]::Show("Task sequence not selected","Error") 
+            }
+            
+            Default 
+            { 
+                $Main.SetTSEnv("TaskSequenceID",$Xaml.IO.Task_ID.Text)
+            }
+        }
+
+        Get-ChildItem tsenv:
+
+        Switch ([System.Windows.MessageBox]::Show("Variables exposed","Continue?","YesNo")
+        {
+            Yes { Continue } No { Break }
+        }
+
         $Xaml.IO.Close()
     })
     
