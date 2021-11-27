@@ -12,7 +12,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-11-27
+          Modified: 2021-11-26
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -21,6 +21,7 @@
 .Example
 #>
 
+Add-Type -AssemblyName PresentationFramework
 # Check for debug in PowerShell and TSEnv
 If ($TSEnv:PSDDebug -eq "YES")
 {
@@ -34,10 +35,11 @@ If ($PSDDebug -eq $True)
 
 $Script:Wizard = $null
 $Script:Xaml   = $null
+$Script:Main   = $null
 
 Function Get-PSDWizard
 {
-    Param($XamlPath) 
+    Param ($XamlPath) 
 
     # Load the XAML
     [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -149,7 +151,9 @@ Function Show-PSDWizard
 
 Function Get-FEWizard
 {
-    Param([Object[]]$Drive = (Get-PSDrive))
+    Param($Drive)
+
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Processing wizard from [Get-FEWizard]"
 
     Class DGList
     {
@@ -1712,16 +1716,17 @@ Function Get-FEWizard
 
     Class Main
     {
-        [Object]       $Base
-        [Object]       $Tree
-        [Object]      $TSEnv
-        [Object[]]   $Locale
-        [Object[]] $TimeZone
-        [Object]     $System
-        [Object]     $Domain
-        [Object]    $Network
-        [Object]    $Control
-        [Uint32]       $Lock
+        Hidden [Object] $Xaml
+        [Object]        $Base
+        [Object]        $Tree
+        [Object]       $TSEnv
+        [Object[]]    $Locale
+        [Object[]]  $TimeZone
+        [Object]      $System
+        [Object]      $Domain
+        [Object]     $Network
+        [Object]     $Control
+        [UInt32]        $Lock
         Main([Object[]]$Drive)
         {
             $This.Base            = $Drive | ? Name -eq DeploymentShare
@@ -1774,11 +1779,11 @@ Function Get-FEWizard
         {
             If (!(Get-item tsenv:\$Name))
             {
-                New-Item -path tsenv:\$Name -Value $Value -Verbose
+                New-Item -Path tsenv:\$Name -Value $Value -Verbose
             }
             ElseIf (Get-Item tsenv:\$Name)
             {
-                Set-Item -path tsenv:\$Name -Value $Value -Verbose
+                Set-Item -Path tsenv:\$Name -Value $Value -Verbose
             }
             
             $This.TSEnv = Get-ChildItem tsenv:
@@ -1874,8 +1879,13 @@ Function Get-FEWizard
         }
     }
 
-    $Main = [Main]::New($Drive)
-    $Xaml = [XamlWindow][FEWizardGUI]::Tab
+    If (!$Drive)
+    {
+        $Drive = Get-PSDrive
+    } 
+
+    $Script:Main = [Main]::New($Drive)
+    $Script:Xaml = [XamlWindow][FEWizardGUI]::Tab
 
     # [Locale Panel]
     # TimeZone
@@ -2465,7 +2475,7 @@ Function Get-FEWizard
         }
 
         $Main.SetTSEnv("Wizard_Complete",$True)
-
+        $Main.Xaml            = $Xaml
         $Xaml.IO.DialogResult = $True
         $Xaml.IO.Close()
     })
@@ -2478,23 +2488,7 @@ Function Get-FEWizard
 
     $Xaml.Invoke()
 
-    Switch ([UInt32]($Xaml.IO.DialogResult -eq $True))
-    {
-        0
-        {
-            Write-Host "Exception [!] Either the user cancelled, or the dialog failed"
-        }
-
-        1
-        {
-            Return @{ 
-
-                Xaml = $Xaml
-                Main = $Main
-            }
-        }
-    }
+    Return $Main
 }
 
-Export-ModuleMember -Function Get-FEWizard
-Export-ModuleMember -Function Show-PSDWizard
+Export-ModuleMember -Function Get-FEWizard, Show-PSDWizard
