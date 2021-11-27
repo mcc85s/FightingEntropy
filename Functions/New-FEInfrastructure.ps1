@@ -4453,37 +4453,33 @@ Function New-FEInfrastructure
                     2 { Update-MDTDeploymentShare -Path "$($Select.Name):" -Compress -Verbose }
                 }
 
-                $ImageLabel = Get-ItemProperty -Path "$($Select.Name):" | % { 
+                $Label       = "$($Drive.Name):"
+                $Property    = Get-ItemProperty -Path $Label
+                $ImageLabel  = @{ 
 
-                    @{  64 = $_.'Boot.x64.LiteTouchWIMDescription'
-                        86 = $_.'Boot.x86.LiteTouchWIMDescription' }
+                    64       = $Property."Boot.x64.LiteTouchWimDescription"
+                    86       = $Property."Boot.x86.LiteTouchWimDescription"
                 }
-    
-                # Rename the Litetouch_ files
-                Get-ChildItem -Path "$($Select.Root)\Boot" | ? Extension | % { 
-    
-                    $Label          = $ImageLabel[$(Switch -Regex ($_.Name) { 64 {64} 86 {86}})]
-                    $Image          = @{ 
-    
-                        Path        = $_.FullName
-                        Name        = $_.Name
-                        NewName     = "{0}{1}" -f $Label,$_.Extension
-                        NewPath     = "{0}\{1}{2}" -f ($_.FullName | Split-Path -Parent),$Label,$_.Extension
-                        Extension   = $_.Extension
-                    }
-    
-                    If ($Image.Name -match "LiteTouchPE_")
+
+                $BootPath    = "$($Drive.Root)\Boot"
+                $Boot        = Get-ChildItem $BootPath| ? Extension
+                86,64        | % { 
+
+                    If ($Property."SupportX$_" -eq "True")
                     {
-                        $Path       = "{0}\{1}" -f $Image.Path | Split-Path -Parent
-
-                        If (Test-Path $Image.NewPath)
+                        $Label          = $ImageLabel[$_]
+                        ForEach ($File in "wim","xml")
                         {
-                            Remove-Item -Path $Image.NewPath -Force -Verbose
+                            $Item       = $Boot | ? Name -match "$Label.$File"
+                            If ($Item)
+                            {
+                                Remove-Item $Item.FullName -Force -Verbose -Confirm:$False
+                            }
+
+                            Rename-Item -Path "$BootPath\LiteTouchPE_x$_.$File" -NewName "$Label.$File"
                         }
-    
-                        Rename-Item -Path $Image.Path -NewName $Image.NewName
                     }
-                }
+                }    
 
                 If (!(Get-Service -Name WDSServer))
                 {
