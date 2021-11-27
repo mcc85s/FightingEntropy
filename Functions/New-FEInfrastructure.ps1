@@ -4491,7 +4491,7 @@ Function New-FEInfrastructure
                 # Update/Flush FEShare(WDS)
                 ForEach ($Image in [BootImages]::New("$($Select.Root)\Boot").Images)
                 {        
-                    If (Get-WdsBootImage -Architecture $Image.Type -ImageName $Image.Name -EA 0)
+                    If ($Image.Name -in (Get-WdsBootImage -Architecture $Image.Type).Name)
                     {
                         Write-Theme "Detected [!] ($($Image.Name)), removing..." 12,4,15
                         Remove-WdsBootImage -Architecture $Image.Type -ImageName $Image.Name -Verbose
