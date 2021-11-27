@@ -464,7 +464,7 @@ Else
                 {
                     $ServerName = $Item -Replace "(http[s]*\:\/\/)","" | Split-Path
                     $Token      = Switch -Regex ($ServerName) { "^https\:" { 0 } "^http\:" { 1 } }
-                    $Slot       = Switch ($Token) 0 { "HTTPS" } 1 { "HTTP" }
+                    $Slot       = Switch ($Token) { 0 { "HTTPS" } 1 { "HTTP" } }
                     $Result     = Test-PSDNetCon -Hostname $ServerName -Protocol $Slot 
 
                     If (!$Result)
@@ -641,12 +641,11 @@ Else
     # $tsenv:TaskSequenceID = ""
     If ($tsenv:SkipWizard -ine "YES")
     {
-        Add-Type -AssemblyName PresentationFramework
         Import-Module PSDWizard
         $Drives = Get-PSDrive
         Try
         {
-            $Result = Get-FEWizard -Drive $Drives
+            $Result = Get-FEWizard $Drives
             If ($Result.Xaml.IO.DialogResult -ne "True")
             {
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
