@@ -4281,7 +4281,7 @@ Function New-FEInfrastructure
                 Get-ChildItem "$PSD\Templates" | Copy-Item -Destination "$Root\Templates" -Verbose
 
                 # Copy/Unblock the modules
-                ForEach ($File in "PSDGather PSDDeploymentShare PSDUtility PSDWizard FEWizard" -Split " ")
+                ForEach ($File in "PSDGather PSDDeploymentShare PSDUtility PSDWizard" -Split " ")
                 {
                     If (!(Test-Path "$Root\Tools\Modules\$File"))
                     {
@@ -4468,14 +4468,17 @@ Function New-FEInfrastructure
                         Path        = $_.FullName
                         Name        = $_.Name
                         NewName     = "{0}{1}" -f $Label,$_.Extension
+                        NewPath     = "{0}\{1}{2}" -f ($_.FullName | Split-Path -Parent),$Label,$_.Extension
                         Extension   = $_.Extension
                     }
     
                     If ($Image.Name -match "LiteTouchPE_")
                     {
-                        If (Test-Path $Image.NewName)
+                        $Path       = "{0}\{1}" -f $Image.Path | Split-Path -Parent
+
+                        If (Test-Path $Image.NewPath)
                         {
-                            Remove-Item -Path $Image.NewName -Force -Verbose
+                            Remove-Item -Path $Image.NewPath -Force -Verbose
                         }
     
                         Rename-Item -Path $Image.Path -NewName $Image.NewName
