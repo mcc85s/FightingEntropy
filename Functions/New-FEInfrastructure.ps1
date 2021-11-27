@@ -4453,7 +4453,7 @@ Function New-FEInfrastructure
                     2 { Update-MDTDeploymentShare -Path "$($Select.Name):" -Compress -Verbose }
                 }
 
-                $Label       = "$($Drive.Name):"
+                $Label       = "$($Select.Name):"
                 $Property    = Get-ItemProperty -Path $Label
                 $ImageLabel  = @{ 
 
@@ -4461,7 +4461,7 @@ Function New-FEInfrastructure
                     86       = $Property."Boot.x86.LiteTouchWimDescription"
                 }
 
-                $BootPath    = "$($Drive.Root)\Boot"
+                $BootPath    = "$($Select.Root)\Boot"
                 $Boot        = Get-ChildItem $BootPath| ? Extension
                 86,64        | % { 
 
