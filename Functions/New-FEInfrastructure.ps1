@@ -13,14 +13,12 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-11-10
-          Modified: 2021-11-26
+          Modified: 2021-11-27
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
           TODO: Feature parity reached with v1 (11/14/2021) - Overwriting New-FEInfrastructure.ps1
-          - Zip code panel throws an exception when removing an item from the list
-          - Exception thrown when loading an empty list of ADDS child items
-          - Image Mount still having an issue 
+            - Array Lists throw an exception when (nullified/zero objects)
 .Example
 #>
 Function New-FEInfrastructure
@@ -4604,8 +4602,15 @@ Function New-FEInfrastructure
                     
                     Switch ($Mode)
                     {
-                        0 { Import-MDTOperatingSystem @OperatingSystem       -Verbose }
-                        1 { Import-MDTOperatingSystem @OperatingSystem -Move -Verbose }
+                        0 
+                        { 
+                            Import-MDTOperatingSystem @OperatingSystem       -Verbose 
+                        }
+                        1 
+                        { 
+                            Import-MDTOperatingSystem @OperatingSystem -Move -Verbose
+                            Remove-Item -Path ($Image.SourceImagePath | Split-Path) -Verbose -Force
+                        }
                     }
 
                     $TaskSequence           = @{ 
