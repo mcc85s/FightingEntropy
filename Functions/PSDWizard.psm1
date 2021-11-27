@@ -12,7 +12,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-11-26
+          Modified: 2021-11-27
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -149,9 +149,7 @@ Function Show-PSDWizard
 
 Function Get-FEWizard
 {
-    [CmdLetBinding()]
-    Param([Parameter()][Object[]]$Drive = (Get-PSDrive),
-          [Parameter()][Switch]$Test)
+    Param([Object[]]$Drive = (Get-PSDrive))
 
     Class DGList
     {
@@ -1917,20 +1915,17 @@ Function Get-FEWizard
     $Xaml.IO.Locale_SecondLanguage.IsChecked          = 0
     $Xaml.IO.Locale_SecondLanguage.Add_Checked(
     {
-        Switch ($Xaml.IO.Locale_SecondLanguage.IsChecked)
+        If (!$Xaml.IO.Locale_SecondLanguage.IsChecked)
         {
-            $False
-            {
-                $Xaml.IO.Locale_Language2.IsEnabled       = 0
-                $Xaml.IO.Locale_Language2.Items.Clear()
-                $Xaml.IO.Locale_Language2.SelectedIndex   = 0
-            }
-            $True
-            {
-                $Xaml.IO.Locale_Language2.IsEnabled       = 1
-                $Main.Reset($Xaml.IO.Locale_Language2.Items,$Main.Locale.Name)
-                $Xaml.IO.Locale_Language2.SelectedIndex   = 0
-            }
+            $Xaml.IO.Locale_Language2.IsEnabled       = 0
+            $Xaml.IO.Locale_Language2.Items.Clear()
+            $Xaml.IO.Locale_Language2.SelectedIndex   = 0
+        }
+        If ($Xaml.IO.Locale_SecondLanguage.IsChecked)
+        {
+            $Xaml.IO.Locale_Language2.IsEnabled       = 1
+            $Main.Reset($Xaml.IO.Locale_Language2.Items,$Main.Locale.Name)
+            $Xaml.IO.Locale_Language2.SelectedIndex   = 0
         }
     })
 
@@ -1961,11 +1956,21 @@ Function Get-FEWizard
     $Xaml.IO.Misc_Product_Key_Type.Add_SelectionChanged(
     {
         $Xaml.IO.Misc_Product_Key.Text      = ""
-        $Xaml.IO.Misc_Product_Key.IsEnabled = @{
-            0=0; # [No product key is required]
-            1=1; # [Activate with multiple activation key]
-            2=1; # [Use a specific product key]
-        }[$Xaml.IO.Misc_Product_Key_Type.SelectedIndex]
+        Switch ($Xaml.IO.Misc_Product_Key_Type.SelectedIndex)
+        {
+            0 # [No product key is required]
+            {
+                $Xaml.IO.Misc_Product_Key.IsEnabled = 0
+            }
+            1 # [Activate with multiple activation key]
+            {
+                $Xaml.IO.Misc_Product_Key.IsEnabled = 1
+            }
+            2 # [Use a specific product key]
+            {
+                $Xaml.IO.Misc_Product_Key.IsEnabled = 1
+            }
+        }
     })
 
     # [Root Panel]
@@ -2244,7 +2249,7 @@ Function Get-FEWizard
 
     If ($tsenv:Home_Page)
     {
-        $xaml.IO.Domain_HomePage = $tsenv:Home_Page
+        $xaml.IO.Domain.HomePage = $tsenv:Home_Page
     }
 
     # [Network]
@@ -2473,12 +2478,20 @@ Function Get-FEWizard
 
     $Xaml.Invoke()
 
-    If ($Test)
+    Switch ([UInt32]($Xaml.IO.DialogResult -eq $True))
     {
-        Return @{ 
+        0
+        {
+            Write-Host "Exception [!] Either the user cancelled, or the dialog failed"
+        }
 
-            Xaml = $Xaml
-            Main = $Main
+        1
+        {
+            Return @{ 
+
+                Xaml = $Xaml
+                Main = $Main
+            }
         }
     }
 }
