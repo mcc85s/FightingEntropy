@@ -12,7 +12,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-11-26
+          Modified: 2021-11-27
 
           Version - 0.0.0 - () - Finalized functional version 1.
           Version - 0.9.1 - Added check for network access when doing network deployment
@@ -458,49 +458,40 @@ Else
         ForEach ($Item in $Items)
         {
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Testing PSDDeployRoots value: [$item]"
-            If ($Item -ilike "https://*")
+            Switch -Regex ($Item)
             {
-                $ServerName = $Item.Replace("https://","") | Split-Path
-                $Result     = Test-PSDNetCon -Hostname $ServerName -Protocol HTTPS
-                If (!$Result)
+                "(http[s]*\:\/\/)"
                 {
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to access PSDDeployRoots value [$Item] using HTTP"
+                    $ServerName = $Item -Replace "(http[s]*\:\/\/)","" | Split-Path
+                    $Token      = Switch -Regex ($ServerName) { "^https\:" { 0 } "^http\:" { 1 } }
+                    $Slot       = Switch ($Token) 0 { "HTTPS" } 1 { "HTTP" }
+                    $Result     = Test-PSDNetCon -Hostname $ServerName -Protocol $Slot 
+
+                    If (!$Result)
+                    {
+                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to access PSDDeployRoots value [$Item] using $Slot"
+                    }
+                    Else
+                    {
+                        $tsenv:DeployRoot = $Item
+                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot [$Slot] is now [$tsenv:DeployRoot]"
+                        Break
+                    }
                 }
-                Else
+                "(\\\\*)"
                 {
-                    $tsenv:DeployRoot = $Item
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot [HTTP] is now [$tsenv:DeployRoot]"
-                    Break
-                }
-            }
-            If ($Item -ilike "http://*")
-            {
-                $ServerName = $Item.Replace("http://","") | Split-Path
-                $Result     = Test-PSDNetCon -Hostname $ServerName -Protocol HTTP
-                If (!$Result)
-                {
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to access PSDDeployRoots value [$Item] using [HTTPS]"
-                }
-                Else
-                {
-                    $tsenv:DeployRoot = $item
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot [HTTPS] is now [$tsenv:DeployRoot]"
-                    Break
-                }
-            }
-            If ($Item -like "\\*")
-            {
-                $ServerName = $Item.Split("\\")[2]
-                $Result     = Test-PSDNetCon -Hostname $ServerName -Protocol SMB
-                If (!$Result)
-                {
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to access [$Item] using [SMB]"
-                }
-                Else
-                {
-                    $tsenv:DeployRoot = $Item
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot [SMB] is now [$tsenv:DeployRoot]"
-                    Break
+                    $ServerName = $Item.Split("\\")[2]
+                    $Result     = Test-PSDNetCon -Hostname $ServerName -Protocol SMB
+                    If (!$Result)
+                    {
+                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to access [$Item] using [SMB]"
+                    }
+                    Else
+                    {
+                        $tsenv:DeployRoot = $Item
+                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot [SMB] is now [$tsenv:DeployRoot]"
+                        Break
+                    }
                 }
             }
         }
@@ -650,26 +641,34 @@ Else
     # $tsenv:TaskSequenceID = ""
     If ($tsenv:SkipWizard -ine "YES")
     {
-        Import-Module PSDWizard
         Add-Type -AssemblyName PresentationFramework
+        Import-Module PSDWizard
         $Drives = Get-PSDrive
         Try
         {
             $Result = Get-FEWizard -Drive $Drives
+            If ($Result.Xaml.IO.DialogResult -ne "True")
+            {
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
+                Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
+                Stop-PSDLogging
+                Clear-PSDInformation
+                Start-Process PowerShell -Wait
+                Exit 0
+            }
         }
         Catch
         {
             $Result = Show-PSDWizard "$Scripts\PSDWizardMod.xaml"
-        }
-        
-        If (!$Result.DialogResult)
-        {
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
-            Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
-            Stop-PSDLogging
-            Clear-PSDInformation
-            Start-Process PowerShell -Wait
-            Exit 0
+            If ($Result.DialogResult -ne "True")
+            {
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
+                Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
+                Stop-PSDLogging
+                Clear-PSDInformation
+                Start-Process PowerShell -Wait
+                Exit 0
+            }
         }
     }
 
