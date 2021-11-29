@@ -642,46 +642,57 @@ Else
     If ($tsenv:SkipWizard -ine "YES")
     {
         Import-Module PSDWizard
-        $Drives = Get-PSDrive
-        Try
+        Switch((Host).UI.PromptForChoice("[Wizard Selection]","Select a wizard",@("&FEWizard","&PSDWizard"),1))
         {
-            $Wizard = Show-FEWizard $Drives
-            $Wizard.Xaml.Invoke()
-            If ($Wizard.Xaml.IO.DialogResult -ne $True)
+            0
             {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
-                Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
-                Stop-PSDLogging
-                Clear-PSDInformation
-                Start-Process PowerShell -Wait
-                Exit 0
-            }
-            If ($Wizard.Xaml.IO.DialogResult -eq $True)
-            {
-                ForEach ($Item in $Wizard.TSEnv)
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Selected [FEWizard]"
+                $Drives = Get-PSDrive
+                $Wizard = Show-FEWizard $Drives
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Launching [FEWizard]"
+                $Wizard.Xaml.Invoke()
+                Switch ($Wizard.Xaml.IO.DialogResult) 
                 {
-                    If (Get-Item -Path "tsenv:$($Item.Name)")
+                    $True
                     {
-                        Set-Item -Path "tsenv:$($Item.Name)" -Value $Item.Value -Verbose
+                        ForEach ($Item in $Wizard.TSEnv)
+                        {
+                            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Setting tsenv:\$($Item.Name) to $($item.Value)"
+
+                            If (Get-Item -Path "tsenv:\$($Item.Name)")
+                            {
+                                Set-Item -Path "tsenv:\$($Item.Name)" -Value $Item.Value -Verbose
+                            }
+                            Else
+                            {
+                                New-Item -Path "tsenv:$($Item.Name)" -Value $Item.Value -Verbose
+                            }
+                        }
                     }
-                    Else
+                    $False
                     {
-                        New-Item -Path "tsenv:$($Item.Name)" -Value $Item.Value -Verbose
+                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
+                        Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
+                        Stop-PSDLogging
+                        Clear-PSDInformation
+                        Start-Process PowerShell -Wait
+                        Exit 0
                     }
                 }
             }
-        }
-        Catch
-        {
-            $Wizard = Show-PSDWizard "$Scripts\PSDWizardMod.xaml"
-            If ($Wizard.DialogResult -ne $True)
+            1
             {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
-                Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
-                Stop-PSDLogging
-                Clear-PSDInformation
-                Start-Process PowerShell -Wait
-                Exit 0
+
+                $Wizard = Show-PSDWizard "$Scripts\PSDWizardMod.xaml"
+                If ($Wizard.DialogResult -eq $False)
+                {
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
+                    Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
+                    Stop-PSDLogging
+                    Clear-PSDInformation
+                    Start-Process PowerShell -Wait
+                    Exit 0
+                }
             }
         }
     }
