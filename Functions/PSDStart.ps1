@@ -63,12 +63,13 @@ Function Write-PSDBootInfo
 }
 
 # Set the module path based on the current script path
+$Disk                  = $Env:SystemDrive
 $DeployRoot            = Split-Path $PSScriptRoot
-$env:PSModulePath     += ";$DeployRoot\Tools\Modules"
+$env:PSModulePath      = "$env:PSModulePath;$DeployRoot\Tools\Modules"
 
 # Check for debug settings
 $Global:PSDDebug       = $False
-If (Test-Path -Path "C:\MININT\PSDDebug.txt")
+If (Test-Path -Path "$Disk\MININT\PSDDebug.txt")
 {
     $DeBug             = $True
     $Global:PSDDebug   = $True
@@ -109,16 +110,22 @@ Write-PSDBootInfo -Message "Setting Power plan to High performance" -SleepSec 1
 
 # Load core modules
 Write-PSDBootInfo -SleepSec 1 -Message "Loading core PowerShell modules"
-Add-Type -AssemblyName PresentationFramework
-Import-Module PSDUtility -Force -Verbose:$False
+
+Write-PSDLog -Message "$($MyInvocation.Mycommand.Name): Loading [~] Storage"
 Import-Module Storage -Force -Verbose:$False
 
+Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] BDD.TaskSequenceModule"
+Import-Module Microsoft.BDD.TaskSequenceModule -Force -Verbose:$False
+
+Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSDUtility"
+Import-Module PSDUtility -Force -Verbose:$False
+
 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
-Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Beginning initial process in PSDStart.ps1"
+Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Beginning initial process in [PSDStart.ps1]"
 
 If ($PSDDeBug -eq $True)
 {
-    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Imported Module: PSDUtility,Storage "
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Imported Module: [Storage, Microsoft.BDD.TaskSequenceModule, PSDUtility]"
 }
 
 # Check if we booted from WinPE
@@ -204,8 +211,16 @@ If ($BootfromWinPE)
 # Load more modules
 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Load more modules"
 
+Write-PSDLog -Message "$($MyInvocation.Mycommand.Name): Loading [+] PSDDeploymentShare"
 Import-Module PSDDeploymentShare -Force -Verbose
+
+Write-PSDLog -Message "$($MyInvocation.Mycommand.Name): Loading [+] PSDGather"
 Import-Module PSDGather -Force -Verbose
+
+Write-PSDLog -Message "$($MyInvocation.Mycommand.Name): Loading [+] PresentationFramework"
+Add-Type -AssemblyName PresentationFramework
+
+Write-PSDLog -Message "$($MyInvocation.Mycommand.Name): Loading [+] PSDWizard"
 Import-Module PSDWizard -Force -Verbose
 
 #Set-PSDDebugPause -Prompt 182
@@ -264,12 +279,12 @@ Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Checking if there is an 
 # Check for an in-progress task sequence
 Write-PSDBootInfo -SleepSec 1 -Message "Check for an in-progress task sequence"
 $tsInProgress       = $False
-Get-Volume | ? DriveLetter | ? DriveType -eq Fixed | ? DriveLetter -ne X | ? {Test-Path "$($_.DriveLetter):\_SMSTaskSequence\TSEnv.dat"} | % {
+Get-WmiObject Win32_LogicalDisk | ? DriveType -eq 3 | ? DeviceID -ne X: | ? {Test-Path "$($_.DeviceID)\_SMSTaskSequence\TSEnv.dat"} | % {
 
     # Found it, save the location
-    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): In-progress task sequence found at $($_.DriveLetter):\_SMSTaskSequence"
+    $tsDrive = $_.DeviceID -Replace ":",""
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): In-progress task sequence found at $($tsdrive):\_SMSTaskSequence"
     $tsInProgress   = $True
-    $tsDrive        = $_.DriveLetter
 
     #Set-PSDDebugPause -Prompt 240
 
@@ -326,12 +341,13 @@ If ($tsInProgress)
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Task sequence engine located at $tsEngine."
 
     # Get full scripts location
-    $scripts           = Get-PSDContent -Content "Scripts"
+    $scripts           = Get-PSDContent -Content Scripts
     $env:ScriptRoot    = $scripts
 
     # Set the PSModulePath
-    $modules           = Get-PSDContent -Content "Tools\Modules"
-    $env:PSModulePath += ";$modules"
+    $modules           = Get-PSDContent -Content Tools\Modules
+    $env:PSModulePath += "$env:PSModulePath;$modules"
+    $Env:PSModulePath = ($Env:PSModulePath -Split ";" | Select-Object -Unique) -join ";"
 
     # Resume task sequence
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot is now $deployRoot"
@@ -365,11 +381,11 @@ Else
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Check if we are deploying from media"
 
-    Get-Volume | ? DriveLetter | ? DriveType -eq Fixed | ? DriveLetter -ne X | ? {Test-Path "$($_.DriveLetter):Deploy\Scripts\Media.tag"} | % {
+    Get-WmiObject Win32_LogicalDisk | ? DriveType -eq 3 | ? DeviceID -ne X: | ? {Test-Path "$($_.DeviceID)\Deploy\Scripts\Media.tag"} | % {
         
         # Found it, save the location
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Found Media Tag $($_.DriveLetter):Deploy\Scripts\Media.tag"
-        $tsDrive                = $_.DriveLetter
+        $tsDrive                = $_.DeviceID -Replace ":",""
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Found Media Tag $($tsdrive):\Deploy\Scripts\Media.tag"
 	    $tsenv:DeployRoot       = "$($tsDrive):\Deploy"
 	    $tsenv:ResourceRoot     = "$($tsDrive):\Deploy"
 	    $tsenv:DeploymentMethod = "MEDIA"
@@ -408,7 +424,7 @@ Else
             $macList     = @()
             $gwList      = @()
 
-            Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter "IPEnabled = 1" | % {
+            Get-WmiObject -Class Win32_NetworkAdapterConfiguration | ? IPEnabled | % {
                 $_.IPAddress            | % {  $ipList += $_ }
                 $_.MacAddress           | % { $macList += $_ }
                 If ($_.DefaultIPGateway) 
@@ -603,7 +619,7 @@ Else
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): New time on computer is: $Time"
 
     # Process CustomSettings.ini
-    $Control     = Get-PSDContent -Content "Control"
+    $Control     = Get-PSDContent -Content Control
 
     # Verify access to "$control\CustomSettings.ini" 
     If (!(Test-path "$Control\CustomSettings.ini"))
@@ -627,14 +643,14 @@ Else
     }
 
     # Get full scripts location
-    $Scripts          = Get-PSDContent -Content "Scripts"
+    $Scripts          = Get-PSDContent -Content Scripts
     $env:ScriptRoot   = $Scripts
 
     # Set the PSModulePath
-    $Modules          = Get-PSDContent -Content "Tools\Modules"
+    $Modules          = Get-PSDContent -Content Tools\Modules
     $env:PSModulePath += ";$modules"
 
-    #Set-PSDDebugPause -Prompt "Process wizard"
+    # Set-PSDDebugPause -Prompt "Process wizard"
 
     # Process wizard
     Write-PSDBootInfo -SleepSec 1 -Message "Loading the PSD Deployment Wizard"
@@ -642,62 +658,58 @@ Else
     If ($tsenv:SkipWizard -ine "YES")
     {
         Import-Module PSDWizard
-        Switch((Host).UI.PromptForChoice("[Wizard Selection]","Select a wizard",@("&FEWizard","&PSDWizard"),1))
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Selected [FEWizard]"
+        $Drives = Get-PSDrive
+        $Wizard = Show-FEWizard $Drives
+        Try
         {
-            0
+            $Wizard.Xaml.IO.ShowDialog()
+            $Xaml = $Wizard.Xaml
+            If ($Xaml.IO.DialogResult -eq $True)
             {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Selected [FEWizard]"
-                $Drives = Get-PSDrive
-                $Wizard = Show-FEWizard $Drives
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Launching [FEWizard]"
-                $Wizard.Xaml.Invoke()
-                Switch ($Wizard.Xaml.IO.DialogResult) 
+                ForEach ($Item in $Wizard.TSEnv)
                 {
-                    $True
-                    {
-                        ForEach ($Item in $Wizard.TSEnv)
-                        {
-                            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Setting tsenv:\$($Item.Name) to $($item.Value)"
+                    $Name  = $Item.Name
+                    $Value = $Item.Value
 
-                            If (Get-Item -Path "tsenv:\$($Item.Name)")
-                            {
-                                Set-Item -Path "tsenv:\$($Item.Name)" -Value $Item.Value -Verbose
-                            }
-                            Else
-                            {
-                                New-Item -Path "tsenv:$($Item.Name)" -Value $Item.Value -Verbose
-                            }
-                        }
-                    }
-                    $False
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Setting tsenv:\$Name to $Value"
+                    If (Get-Item -Path tsenv:\$Name)
                     {
-                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
-                        Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
-                        Stop-PSDLogging
-                        Clear-PSDInformation
-                        Start-Process PowerShell -Wait
-                        Exit 0
+                        Set-Item -Path tsenv:\$Name -Value $Value -Verbose
+                    }
+                    Else
+                    {
+                        New-Item -Path tsenv:\$Name -Value $Value -Verbose
                     }
                 }
             }
-            1
+            If ($Xaml.IO.DialogResult -eq $False)
             {
-
-                $Wizard = Show-PSDWizard "$Scripts\PSDWizardMod.xaml"
-                If ($Wizard.DialogResult -eq $False)
-                {
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
-                    Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
-                    Stop-PSDLogging
-                    Clear-PSDInformation
-                    Start-Process PowerShell -Wait
-                    Exit 0
-                }
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
+                Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
+                Stop-PSDLogging
+                Clear-PSDInformation
+                Start-Process PowerShell -Wait
+                Exit 0
+            }
+        }
+        Catch
+        {
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): GUI [FEWizard] failed to (launch/exit), pivoting to [PSDWizard]..."
+            $Wizard = Show-PSDWizard "$Scripts\PSDWizardMod.xaml"
+            If ($Wizard.DialogResult -eq $False)
+            {
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
+                Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
+                Stop-PSDLogging
+                Clear-PSDInformation
+                Start-Process PowerShell -Wait
+                Exit 0
             }
         }
     }
 
-    If ($tsenv:TaskSequenceID -eq "")
+    If ((Get-Item tsenv:\TaskSequenceID -eq "")
     {
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): No TaskSequence selected, aborting..."
         Show-PSDInfo -Message "No TaskSequence selected, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
@@ -707,9 +719,9 @@ Else
         Exit 0
     }
 
-    If ($tsenv:OSDComputerName -eq "")
+    If (Get-Item tsenv:\OSDComputerName -eq "")
     {
-        $tsenv:OSDComputerName = $env:COMPUTERNAME
+        Set-Item tsenv:OSDComputerName $env:COMPUTERNAME
     }
 
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
