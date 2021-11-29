@@ -12,7 +12,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-11-27
+          Modified: 2021-11-29
 
           Version - 0.0.0 - () - Finalized functional version 1.
           Version - 0.9.1 - Added check for network access when doing network deployment
@@ -645,8 +645,9 @@ Else
         $Drives = Get-PSDrive
         Try
         {
-            $Result = Get-FEWizard $Drives
-            If ($Result.Xaml.IO.DialogResult -ne "True")
+            $Wizard = Show-FEWizard $Drives
+            $Wizard.Xaml.Invoke()
+            If ($Wizard.Xaml.IO.DialogResult -ne $True)
             {
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
                 Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
@@ -655,11 +656,25 @@ Else
                 Start-Process PowerShell -Wait
                 Exit 0
             }
+            If ($Wizard.Xaml.IO.DialogResult -eq $True)
+            {
+                ForEach ($Item in $Wizard.TSEnv)
+                {
+                    If (Get-Item -Path "tsenv:$($Item.Name)")
+                    {
+                        Set-Item -Path "tsenv:$($Item.Name)" -Value $Item.Value -Verbose
+                    }
+                    Else
+                    {
+                        New-Item -Path "tsenv:$($Item.Name)" -Value $Item.Value -Verbose
+                    }
+                }
+            }
         }
         Catch
         {
-            $Result = Show-PSDWizard "$Scripts\PSDWizardMod.xaml"
-            If ($Result.DialogResult -ne "True")
+            $Wizard = Show-PSDWizard "$Scripts\PSDWizardMod.xaml"
+            If ($Wizard.DialogResult -ne $True)
             {
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
                 Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
