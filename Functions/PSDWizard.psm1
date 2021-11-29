@@ -1727,7 +1727,6 @@ Function Get-FEWizard
         [UInt32]        $Lock
         Main([Object[]]$Drive)
         {
-            $This.Xaml            = [XamlWindow][FEWizardGUI]::Tab
             $This.Base            = $Drive | ? Name -eq DeploymentShare
             $This.Tree            = $This.GetTree()
             $This.TSEnv           = $Drive | ? Name -eq TSEnv | % { Get-ChildItem "$_`:" } | % { $This.Pair($_.Name,$_.Value)}
@@ -1882,7 +1881,7 @@ Function Get-FEWizard
     } 
 
     $Script:Wizard = [Main]::New($Drive)
-    $Script:Xaml   = $Script:Wizard.Xaml
+    $Script:Xaml   = $Wizard.Xaml
 
     # [Locale Panel]
     # TimeZone
@@ -2322,133 +2321,182 @@ Function Get-FEWizard
     $Xaml.IO.Start.Add_Click(
     {
         # Task Sequence Selection
-        If ($Xaml.IO.Task_ID.Text -eq "")
+        Switch ($Xaml.IO.Task_ID.Text)
         {
-            Return [System.Windows.MessageBox]::Show("Task sequence not selected","Error")
-        }
-        ElseIf ($Xaml.IO.Task_ID.Text -in $Wizard.Tree | ? Name -match Task | % { $_.Children.ID } )
-        {
-            Return [System.Windows.MessageBox]::Show("Invalid task sequence selected","Error")
-        }
-        Else
-        { 
-            $Wizard.SetTsEnv("TaskSequenceID",$Xaml.IO.Task_ID.Text)
-            Write-Host "Task sequence [$($Xaml.IO.Task_ID.Text)] selected"
+            {$_ -eq ""} 
+            { 
+                Throw [System.Windows.MessageBox]::Show("Task sequence not selected","Error") 
+            }
+            {$_ -notin $Wizard.Tree | ? Name -match Task | % { $_.Children.ID}}
+            {
+                Throw [System.Windows.MessageBox]::Show("Invalid task sequence selected","Error")
+            }
+            Default
+            {
+                $Wizard.SetTsEnv("TaskSequenceID",$Xaml.IO.Task_ID.Text)
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): TaskSequenceID [+] [$($Xaml.IO.Task_ID.Text)]"
+            }
         }
 
         # [System Name]
-        If ($Xaml.IO.System_Name.Text -eq "")
+        Switch ($Xaml.IO.System_Name.Text)
         {
-            Return [System.Windows.MessageBox]::Show("Must designate a target computer name","Error")
-        }
-        ElseIf ($Xaml.IO.System_Name.Text -ne "")
-        {
-            Try
+            {$_ -eq ""}
             {
-                Test-Connection $Xaml.IO.System_Name.Text -Count 1 -EA 0
+                Throw [System.Windows.MessageBox]::Show("Must designate a target computer name","Error")
             }
-            Catch
+            {$_ -ne ""}
             {
-                $Wizard.SetTSEnv("OSDComputerName",$Xaml.IO.System_Name.Text)
-                Write-Host "Set [+] System Name [$($Wizard.GetTSEnv("OSDComputerName"))]"
-            }
-        }
-
-        # Misc Variables
-        # [Finish action]
-        If ($Xaml.IO.Misc_Finish_Action.SelectedIndex -gt 0)
-        {
-            $Wizard.SetTSEnv("FinishAction", @("","REBOOT","SHUTDOWN","LOGOFF")[$Xaml.IO.Misc_Finish_Action.SelectedIndex])
-        }
-
-        # [WSUS Server]
-        If ($Xaml.IO.Misc_WSUSServer.Text -ne "")
-        {
-            Try
-            {
-                Test-Connection $Xaml.IO.Misc_WSUSServer.Text -Count 1 -EA 0
-                $Wizard.SetTSEnv("WSUSServer", $Xaml.IO.Misc_WSUSServer.Text)
-            }
-            Catch
-            {
-                $Wizard.SetTSEnv("WSUSServer", $Null)
-            }
-            Write-Host "WSUS Server variable set"
-        }
-		
-        # [Event Service]
-        If ($Xaml.IO.Misc_EventService.Text -ne "")
-        {
-            If ($Xaml.IO.Misc_EventService.Text -ne $tsenv:EventService)
-            {
-                $Server = @( Switch -Regex ($Xaml.IO.Misc_EventService.Text)
-                {
-                    "http[s]*://"
-                    {
-                        $Xaml.IO.Misc_EventService.Text -Replace "http[s]*://", ""
-                    }
-                    Default
-                    {
-                        $Xaml.IO.Misc_EventService.Text
-                    }
-
-                }).Split(":")[0]
-
                 Try
                 {
-                    Test-Connection $Server -Count 1 -EA 0
-                    $Wizard.SetTSEnv("EventService",$Xaml.IO.Misc_EventService.Text)
+                    Test-Connection $Xaml.IO.System_Name.Text -Count 1 -EA 0
                 }
                 Catch
                 {
-                    $Wizard.SetTSEnv("EventService",$Null)
+                    $Wizard.SetTSEnv("OSDComputerName",$Xaml.IO.System_Name.Text)
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SystemName [+] [$($Xaml.IO.System_Name.Text)]"
                 }
-                Write-Host "Event Service variable set"
+            }
+
+        # Misc Variables
+        # [Finish action]
+        Switch ($Xaml.IO.Misc_Finish_Action.SelectedIndex)
+        {
+            0
+            {
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [null]"
+            }
+            1 
+            {
+                $Wizard.SetTSEnv("FinishAction","REBOOT")
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [Reboot]"
+            } 
+            2 
+            {
+                $Wizard.SetTSEnv("FinishAction","SHUTDOWN")
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [Shutdown]"
+            } 
+            3 
+            {
+                $Wizard.SetTSEnv("FinishAction","LOGOFF")
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [Logoff]"
+            }
+        }
+
+        # [WSUS Server]
+        Switch ($Xaml.IO.Misc_WSUSServer.Text -ne "")
+        {
+            $True
+            {
+                Try
+                {
+                    Test-Connection $Xaml.IO.Misc_WSUSServer.Text -Count 1 -EA 0
+                    $Wizard.SetTSEnv("WSUSServer", $Xaml.IO.Misc_WSUSServer.Text)
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): WSUSServer [+] [$($Xaml.IO.Misc_WSUSServer.Text)]"
+                }
+                Catch
+                {
+                    $Wizard.SetTSEnv("WSUSServer", $Null)
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): WSUSServer [!] [-null/$($Xaml.IO.Misc_WSUSServer.Text)]"
+                }
+            }
+            $False
+            {
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): WSUSServer [~] [null]"
+            }
+        }
+		
+        # [Event Service]
+        Switch ($Xaml.IO.Misc_EventService.Text -ne "")
+        {
+            $True
+            {
+                If ($Xaml.IO.Misc_EventService.Text -ne $tsenv:EventService)
+                {
+                    $Server = @( Switch -Regex ($Xaml.IO.Misc_EventService.Text)
+                    {
+                        "http[s]*://"
+                        {
+                            $Xaml.IO.Misc_EventService.Text -Replace "http[s]*://", ""
+                        }
+                        Default
+                        {
+                            $Xaml.IO.Misc_EventService.Text
+                        }
+    
+                    }).Split(":")[0]
+    
+                    Try
+                    {
+                        Test-Connection $Server -Count 1 -EA 0
+                        $Wizard.SetTSEnv("EventService",$Xaml.IO.Misc_EventService.Text)
+                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): EventService [+] [$($Xaml.IO.Misc_EventService.Text)]"
+                    }
+                    Catch
+                    {
+                        $Wizard.SetTSEnv("EventService",$Null)
+                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): EventService [!] [null]"
+                    }
+                }
+            }
+
+            $False
+            {
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): EventService [-] [null]"
+            }
+        }
+
+        # [SLShare]
+        Switch ($Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text -ne "")
+        {
+            $True
+            {
+                Try 
+                {
+                    Test-Path $Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text
+                    $Wizard.SetTSEnv("SLShareDynamicLogging",$Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text)
+                }
+                Catch
+                {
+                    $Wizard.SetTSEnv("SLShareDynamicLogging",$Null)
+                }
             }
         }	
 
-        # [SLShare]
-	    If ($Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text -ne "")
+	    Switch ($Xaml.IO.Misc_SLShare_DeployRoot.IsChecked)
 		{
-            Try 
-            {
-                Test-Path $Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text
-    		    $Wizard.SetTSEnv("SLShareDynamicLogging",$Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text)
-            }
-            Catch
-            {
-                $Wizard.SetTSEnv("SLShareDynamicLogging",$Null)
-            }
-            Write-Host "Script Log Share: Dynamic Logging"
-		}		
-
-	    Switch ([UInt32]($Xaml.IO.Misc_SLShare_DeployRoot.IsChecked))
-		{
-            0
-            {
-                $Wizard.SetTSEnv("SLShare","%OSD_Logs_SLShare%")
-            }
-            1
+            $True
             {
 	    		$Wizard.SetTSEnv("SLShare","%DeployRoot%\Logs\$tsenv:OSDComputerName")
+            }
+
+            $False
+            {
+                $Wizard.SetTSEnv("SLShare","%OSD_Logs_SLShare%")
             }		
 		}
         
-        If ($Xaml.IO.Misc_HideShell.IsChecked)
+        Switch ($Xaml.IO.Misc_HideShell.IsChecked)
         {
-            $Wizard.SetTSEnv("HideShell","YES")
+            $True
+            {
+                $Wizard.SetTSEnv("HideShell","YES")
+            }
         }
 			
-	    If ($Xaml.IO.Misc_NoExtraPartition.IsChecked)
+	    Switch ($Xaml.IO.Misc_NoExtraPartition.IsChecked)
 		{
-			$Wizard.SetTSEnv("DoNotCreateExtraPartition","YES")
+            $True
+            {
+    			$Wizard.SetTSEnv("DoNotCreateExtraPartition","YES")
+            }
 		}		
 
         Switch ($Xaml.IO.Misc_Product_Key_Type.SelectedIndex)
         {
-            0 
-            { 
-                $Wizard.SetTSEnv("ProductKey",$Null)
+            0
+            {
+                
             }
             1 
             { 
@@ -2468,7 +2516,6 @@ Function Get-FEWizard
             }
         }
 
-        $Wizard.TSEnv         = Get-ChildItem tsenv:
         $Xaml.IO.DialogResult = $True
     })
     
@@ -2484,8 +2531,7 @@ Function Show-FEWizard
 {
     Param ($Drive)
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Processing wizard from [Get-FEWizard]"
-    $Wizard = Get-FEWizard $Drive
-    Return $Wizard
+    Return Get-FEWizard $Drive
 }
 
 Export-ModuleMember -Function Show-FEWizard, Show-PSDWizard
