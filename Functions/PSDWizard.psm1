@@ -12,7 +12,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-11-26
+          Modified: 2021-11-28
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -35,7 +35,6 @@ If ($PSDDebug -eq $True)
 
 $Script:Wizard = $null
 $Script:Xaml   = $null
-$Script:Main   = $null
 
 Function Get-PSDWizard
 {
@@ -84,7 +83,8 @@ Function Get-PSDWizard
     })
 
     # Load wizard script and execute it
-    Invoke-Expression "$($XamlPath).Initialize.ps1" | Out-Null
+    $Init = $XamlPath -Replace "Mod",""
+    Invoke-Expression "$Init.Initialize.ps1" | Out-Null
 
     # Return the form to the caller
     Return $script:Wizard
@@ -111,7 +111,7 @@ Function Save-PSDWizardResult
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): TaskSequenceID is empty!!!"
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Re-Running Wizard, TaskSequenceID must not be empty..."
                 Show-PSDSimpleNotify -Message "No Task Sequence selected, restarting wizard..."
-                Show-PSDWizard "$Scripts\PSDWizard.xaml"
+                Show-PSDWizard "$Scripts\PSDWizardMod.xaml"
             }
         }
     }
@@ -139,7 +139,7 @@ Function Set-PSDWizardDefault
 
 Function Show-PSDWizard
 {
-    Param($xamlPath)
+    Param ($xamlPath)
 
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Processing wizard from [$XamlPath]"
     $Wizard = Get-PSDWizard $XamlPath
@@ -151,9 +151,7 @@ Function Show-PSDWizard
 
 Function Get-FEWizard
 {
-    Param($Drive)
-
-    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Processing wizard from [Get-FEWizard]"
+    Param ($Drive)
 
     Class DGList
     {
@@ -2259,7 +2257,7 @@ Function Get-FEWizard
 
     If ($tsenv:Home_Page)
     {
-        $xaml.IO.Domain.HomePage = $tsenv:Home_Page
+        $xaml.IO.Domain_HomePage.Text = $tsenv:Home_Page
     }
 
     # [Network]
@@ -2475,7 +2473,6 @@ Function Get-FEWizard
         }
 
         $Main.SetTSEnv("Wizard_Complete",$True)
-        $Main.Xaml            = $Xaml
         $Xaml.IO.DialogResult = $True
         $Xaml.IO.Close()
     })
@@ -2486,9 +2483,16 @@ Function Get-FEWizard
         $Xaml.IO.Close()
     })
 
-    $Xaml.Invoke()
+    $Main.Xaml = $Xaml
 
     Return $Main
 }
 
-Export-ModuleMember -Function Get-FEWizard, Show-PSDWizard
+Function Show-FEWizard
+{
+    Param ($Drive)
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Processing wizard from [Get-FEWizard]"
+    Return Get-FEWizard $Drive
+}
+
+Export-ModuleMember -Function Show-FEWizard, Show-PSDWizard
