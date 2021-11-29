@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-11-10
-          Modified: 2021-11-27
+          Modified: 2021-11-29
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
@@ -3562,13 +3562,6 @@ Function New-FEInfrastructure
         }
         [ImageController]::New()
     }
-    # $ImgCtrl = ImageController
-    # $ImgCtrl.LoadSilo("C:\Images")
-    # $ImgCtrl.LoadIso(18)
-    # $ImgCtrl.AddQueue(@(4,6))
-    # $ImgCtrl.UnloadIso()
-    # $ImgCtrl.SetTarget("C:\WimPath")
-    # $ImgCtrl.Extract()
 
     Function UpdateController # Heavily modified version of this https://github.com/MicksITBlogs/PowerShell/blob/master/Get-MSUFileInfo.ps1
     {
@@ -4453,31 +4446,26 @@ Function New-FEInfrastructure
 
                 $Label       = "$($Select.Name):"
                 $Property    = Get-ItemProperty -Path $Label
-                $ImageLabel  = @{ 
-
-                    64       = $Property."Boot.x64.LiteTouchWimDescription"
-                    86       = $Property."Boot.x86.LiteTouchWimDescription"
-                }
-
                 $BootPath    = "$($Select.Root)\Boot"
-                $Boot        = Get-ChildItem $BootPath| ? Extension
-                86,64        | % { 
-
-                    If ($Property."SupportX$_" -eq "True")
+                
+                # Remove Duplicate (XML/WIM)
+                ForEach ($Arch in "x86","x64")
+                {
+                    ForEach ($File in "wim","xml")
                     {
-                        $Label          = $ImageLabel[$_]
-                        ForEach ($File in "wim","xml")
+                        $Item = "{0}.{1}" -f $Property."Boot.$Arch.LiteTouchWimDescription",$File
+                        $Path = "$BootPath/$Item"
+                        If (Get-Item -LiteralPath $Path -EA 0)
                         {
-                            $Item       = $Boot | ? Name -match "$Label.$File"
-                            If ($Item)
-                            {
-                                Remove-Item $Item.FullName -Force -Verbose -Confirm:$False
-                            }
+                            Remove-Item -LiteralPath $Path -Verbose
+                        }
 
-                            Rename-Item -Path "$BootPath\LiteTouchPE_x$_.$File" -NewName "$Label.$File"
+                        If (Get-Item -LiteralPath "$BootPath\LiteTouchPE_$Arch.$File" -EA 0)
+                        {
+                            Rename-Item -LiteralPath "$BootPath\LiteTouchPE_$Arch.$File" -NewName $Item
                         }
                     }
-                }    
+                }
 
                 If (!(Get-Service -Name WDSServer))
                 {
@@ -4489,10 +4477,10 @@ Function New-FEInfrastructure
                 # Update/Flush FEShare(WDS)
                 ForEach ($Image in [BootImages]::New("$($Select.Root)\Boot").Images)
                 {        
-                    If ($Image.Name -in (Get-WdsBootImage -Architecture $Image.Type).Name)
+                    ForEach ($Item in Get-WDSBootImage -Architecture $Image.Type | ? ImageName -eq $Image.Name)
                     {
-                        Write-Theme "Detected [!] ($($Image.Name)), removing..." 12,4,15
-                        Remove-WdsBootImage -Architecture $Image.Type -ImageName $Image.Name -Verbose
+                        Write-Theme "Detected [!] ($($Item.Name)), removing..." 12,4,15
+                        $Item | Remove-WDSBootImage -Verbose
                     }
 
                     Write-Theme "Importing [~] ($($Image.Name))" 9,11,15
