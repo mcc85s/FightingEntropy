@@ -12,7 +12,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-11-29
+          Modified: 2021-11-30
 
           Version - 0.0.0 - () - Finalized functional version 1.
           Version - 0.9.1 - Added check for network access when doing network deployment
@@ -660,30 +660,10 @@ Else
         Import-Module PSDWizard
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Selected [FEWizard]"
         $Drives = Get-PSDrive
-        $Wizard = Show-FEWizard $Drives
         Try
         {
-            $Wizard.Xaml.IO.ShowDialog()
-            $Xaml = $Wizard.Xaml
-            If ($Xaml.IO.DialogResult -eq $True)
-            {
-                ForEach ($Item in $Wizard.TSEnv)
-                {
-                    $Name  = $Item.Name
-                    $Value = $Item.Value
-
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Setting tsenv:\$Name to $Value"
-                    If (Get-Item -Path tsenv:\$Name)
-                    {
-                        Set-Item -Path tsenv:\$Name -Value $Value -Verbose
-                    }
-                    Else
-                    {
-                        New-Item -Path tsenv:\$Name -Value $Value -Verbose
-                    }
-                }
-            }
-            If ($Xaml.IO.DialogResult -eq $False)
+            $Wizard = Show-FEWizard $Drives
+            If ($Wizard.Xaml.IO.DialogResult -eq $False)
             {
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cancelling, aborting..."
                 Show-PSDInfo -Message "Cancelling, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
@@ -709,7 +689,7 @@ Else
         }
     }
 
-    If ((Get-Item tsenv:\TaskSequenceID -eq "")
+    If (Get-Item tsenv:TaskSequenceID -eq "")
     {
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): No TaskSequence selected, aborting..."
         Show-PSDInfo -Message "No TaskSequence selected, aborting..." -Severity Information -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
@@ -719,7 +699,7 @@ Else
         Exit 0
     }
 
-    If (Get-Item tsenv:\OSDComputerName -eq "")
+    If (Get-Item tsenv:OSDComputerName -eq "")
     {
         Set-Item tsenv:OSDComputerName $env:COMPUTERNAME
     }
