@@ -12,7 +12,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-11-30
+          Modified: 2021-12-04
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -22,6 +22,7 @@
 #>
 
 Add-Type -AssemblyName PresentationFramework
+
 # Check for debug in PowerShell and TSEnv
 If ($TSEnv:PSDDebug -eq "YES")
 {
@@ -38,7 +39,7 @@ $Script:Xaml   = $null
 
 Function Get-PSDWizard
 {
-    Param ($XamlPath) 
+    Param ($XamlPath)
 
     # Load the XAML
     [void][System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
@@ -139,7 +140,7 @@ Function Set-PSDWizardDefault
 
 Function Show-PSDWizard
 {
-    Param ($xamlPath)
+    Param ([String]$xamlPath)
 
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Processing wizard from [$XamlPath]"
     $Script:Wizard = Get-PSDWizard $XamlPath
@@ -151,7 +152,7 @@ Function Show-PSDWizard
 
 Function Get-FEWizard
 {
-    Param ($Drive)
+    Param ([Object[]]$Drive)
 
     Class DGList
     {
@@ -167,7 +168,6 @@ Function Get-FEWizard
             Return $This.Name
         }
     }
-
     Class XamlWindow 
     {
         Hidden [Object]        $XAML
@@ -180,9 +180,7 @@ Function Get-FEWizard
         [String[]] FindNames()
         {
             Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
-
                 ($_ -Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
-
             } | Select-Object -Unique ) 
         }
         XamlWindow([String]$XAML)
@@ -191,16 +189,13 @@ Function Get-FEWizard
             {
                 Throw "Invalid XAML Input"
             }
-
             [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-
             $This.Xaml               = $Xaml
             $This.XML                = [XML]$Xaml
             $This.Names              = $This.FindNames()
             $This.Types              = @( )
             $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
             $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
-
             ForEach ($I in 0..( $This.Names.Count - 1))
             {
                 $Name                = $This.Names[$I]
@@ -227,8 +222,6 @@ Function Get-FEWizard
             Return "<Window>"
         }
     }
-
-    # (Get-Content $home\desktop\FEWizard.xaml) | % { "'$_',"} | Set-Clipboard
     Class FEWizardGUI
     {
         Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Deployment Wizard" Width="800" Height="640" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
@@ -1191,8 +1184,6 @@ Function Get-FEWizard
         '    </Grid>',
         '</Window>' -join "`n") 
     }
-
-    # Locale/Timezone classes
     Class Locale
     {
         [String] $ID
@@ -1211,7 +1202,6 @@ Function Get-FEWizard
             Return $This.Name
         }
     }
-
     Class TimeZone
     {
         [String] $ID
@@ -1226,8 +1216,6 @@ Function Get-FEWizard
             Return $This.DisplayName
         }
     }
-
-    # System classes
     Class Network
     {
         [String]$Name
@@ -1254,7 +1242,6 @@ Function Get-FEWizard
             Return $This.Index
         }
     }
-
     Class Disk
     {
         [String] $Name
@@ -1277,7 +1264,6 @@ Function Get-FEWizard
             Return $This.Name
         }
     }
-
     Class Processor
     {
         [String]$Name
@@ -1298,7 +1284,6 @@ Function Get-FEWizard
             Return $This.Name
         }
     }
-
     Class System
     {
         [Object] $Manufacturer
@@ -1320,16 +1305,13 @@ Function Get-FEWizard
             $This.Network          = Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter "IPEnabled = 1" | ? DefaultIPGateway | % { [Network]$_ }
             $This.Processor        = Get-WmiObject -Class Win32_Processor      | % { [Processor]$_ }
             Get-WmiObject Win32_ComputerSystem        | % { 
-
                 $This.Manufacturer = $_.Manufacturer;
                 $This.Model        = $_.Model; 
                 $This.Memory       = "{0}GB" -f [UInt32]($_.TotalPhysicalMemory/1GB)
             }
-
             Get-WmiObject Win32_ComputerSystemProduct | % { 
                 $This.UUID         = $_.UUID 
             }
-
             Get-WmiObject Win32_BaseBoard             | % { 
                 $This.Product      = $_.Product
                 $This.Serial       = $_.SerialNumber -Replace "\.",""
@@ -1355,7 +1337,6 @@ Function Get-FEWizard
                     {$_ -in 30..32+13}      {"Tablet"}
                 }
             }
-
             $This.Architecture = @{x86="x86";AMD64="x64"}[$Env:PROCESSOR_ARCHITECTURE]
         }
         [String] ToString()
@@ -1363,8 +1344,6 @@ Function Get-FEWizard
             Return "<System>"
         }
     }
-
-    # MDT Object Classes
     Class Application
     {
         Hidden [Object] $App
@@ -1395,7 +1374,6 @@ Function Get-FEWizard
             $This.Hide             = $App.Hide
             $This.Enable           = $App.Enable
             $This.Guid             = $App.Guid
-
             If (!$App) { $This.PSObject.Properties | % { $_.Value = "-" } }
         }
         [String] ToString()
@@ -1403,7 +1381,6 @@ Function Get-FEWizard
             Return "<App:$($This.Name)>"
         }
     }
-
     Class OperatingSystem
     {
         Hidden [Object] $OS
@@ -1422,7 +1399,6 @@ Function Get-FEWizard
             $This.Build       = $OS.Build
             $This.OSType      = $OS.OSType
             $This.Flags       = $OS.Flags
-
             If (!$OS) { $This.PSObject.Properties | % { $_.Value = "-" } }
         }
         [String] ToString()
@@ -1430,7 +1406,6 @@ Function Get-FEWizard
             Return "<OS:$($This.Name)>"
         }
     }
-
     Class Driver
     {
         Hidden [Object] $Driver
@@ -1457,7 +1432,6 @@ Function Get-FEWizard
             $This.Enable       = $Driver.Enable
             $This.Hash         = $Driver.Hash
             $This.Guid         = $Driver.Guid
-
             If (!$Driver) { $This.PSObject.Properties | % { $_.Value = "-" } }
         }
         [String] ToString()
@@ -1465,7 +1439,6 @@ Function Get-FEWizard
             Return "<Driver:$($This.Name)>"
         }
     }
-
     Class Package
     {
         Hidden [Object] $Package
@@ -1488,7 +1461,6 @@ Function Get-FEWizard
             $This.Keyword      = $Package.Keyword
             $This.Enable       = $Package.Enable
             $This.Guid         = $Package.Guid
-
             If (!$Package) { $This.PSObject.Properties | % { $_.Value = "-" } }
         }
         [String] ToString()
@@ -1496,7 +1468,6 @@ Function Get-FEWizard
             Return "<Pkg:$($This.Name)>"
         }
     }
-
     Class TaskSequence
     {
         Hidden [Object] $TS
@@ -1515,7 +1486,6 @@ Function Get-FEWizard
             $This.Template = $TS.Template
             $This.Enable   = $TS.Enable
             $This.Guid     = $TS.Guid
-
             If (!$TS) { $This.PSObject.Properties | % { $_.Value = "-" } }
         }
         [String] ToString()
@@ -1523,7 +1493,6 @@ Function Get-FEWizard
             Return "<TS:$($This.Name)>"
         }
     }
-
     Class SelectionProfile
     {
         Hidden [Object] $Selection
@@ -1538,7 +1507,6 @@ Function Get-FEWizard
             $This.Comments  = $Selection.Comments
             $This.ReadOnly  = $Selection.ReadOnly
             $This.Guid      = $Selection.Guid
-
             If (!$Selection) { $This.PSObject.Properties | % { $_.Value = "-" } }
         }
         [String] ToString()
@@ -1546,7 +1514,6 @@ Function Get-FEWizard
             Return "<SelectPro:$($This.Name)>"
         }
     }
-
     Class LinkedShare
     {
         Hidden [Object] $Link
@@ -1565,7 +1532,6 @@ Function Get-FEWizard
             $This.Replace    = $Link.Replace
             $This.SingleUser = $Link.SingleUser
             $This.Comments   = $Link.Comments
-
             If (!$Link) { $This.PSObject.Properties | % { $_.Value = "-" } }
         }
         [String] ToString()
@@ -1573,7 +1539,6 @@ Function Get-FEWizard
             Return "<LinkedShare:$($This.Name)>"
         }
     }
-    
     Class Media
     {
         Hidden [Object] $Media
@@ -1588,7 +1553,6 @@ Function Get-FEWizard
             $This.Root     = $Media.Root
             $This.Profile  = $Media.Profile
             $This.Comments = $Media.Comments
-
             If (!$Media) { $This.PSObject.Properties | % { $_.Value = "-" } }
         }
         [String] ToString()
@@ -1596,7 +1560,6 @@ Function Get-FEWizard
             Return "<Media:$($This.Name)>"
         }
     }
-
     Class Trunk
     {
         [UInt32] $Index
@@ -1636,7 +1599,6 @@ Function Get-FEWizard
                     7 {            $This.Media($Object) }
                 }
             })
-
             If ($This.Children.Count -eq 0)
             {
                 $This.Children = @($This.Template($This.Slot))
@@ -1711,7 +1673,6 @@ Function Get-FEWizard
             Return $This.Name
         }
     }
-
     Class Main
     {
         Hidden [Object] $Xaml
@@ -1784,55 +1745,47 @@ Function Get-FEWizard
                 Set-Item -Path tsenv:\$Name -Value $Value -Verbose
             }
         }
-        SetDomain([Object]$Xaml,[UInt32]$Slot)
+        SetDomain([UInt32]$Slot)
         {
-            $Xaml.IO.Domain_OrgName.Text                      = $tsenv:_SMSTSOrgName
-            $Xaml.IO.Domain_Name.Text                         = $tsenv:UserDomain
-            $Xaml.IO.Domain_OU.Text                           = $tsenv:MachineObjectOU
-            $Xaml.IO.Domain_Username.Text                     = $tsenv:UserId
-            $Xaml.IO.Domain_Password.Password                 = $tsenv:UserPassword
-            $Xaml.IO.Domain_Confirm.Password                  = $tsenv:UserPassword
+            $This.Xaml.IO.Domain_OrgName.Text                      = $tsenv:_SMSTSOrgName
+            $This.Xaml.IO.Domain_Name.Text                         = $tsenv:UserDomain
+            $This.Xaml.IO.Domain_OU.Text                           = $tsenv:MachineObjectOU
+            $This.Xaml.IO.Domain_Username.Text                     = $tsenv:UserId
+            $This.Xaml.IO.Domain_Password.Password                 = $tsenv:UserPassword
+            $This.Xaml.IO.Domain_Confirm.Password                  = $tsenv:UserPassword
         }
-        SetNetwork([Object]$Xaml,[UInt32]$Index)
+        SetNetwork([UInt32]$Index)
         {
             If ($This.Network.Count -eq 0)
             {
                 Throw "Invalid network count (0) - cannot proceed"
             }
-
             $IPInfo                                           = @($This.Network,$This.Network[$Index])[$This.Network.Count -gt 1]
             $X                                                = $IPInfo.DhcpServer.Count
-
             # [Network Type]
-            $Xaml.IO.Network_Type.SelectedIndex               = $X
-
+            $This.Xaml.IO.Network_Type.SelectedIndex               = $X
             # [Index]
-            $Xaml.IO.Network_Index.Text                       = $IPInfo.Index
-            $Xaml.IO.Network_Index.IsReadOnly                 = 1
-
+            $This.Xaml.IO.Network_Index.Text                       = $IPInfo.Index
+            $This.Xaml.IO.Network_Index.IsReadOnly                 = 1
             # [IPAddress]
-            $Xaml.IO.Network_IPAddress.Text                   = $IPInfo.IPAddress
-            $Xaml.IO.Network_IPAddress.IsReadOnly             = @(1,0)[$X]
-
+            $This.Xaml.IO.Network_IPAddress.Text                   = $IPInfo.IPAddress
+            $This.Xaml.IO.Network_IPAddress.IsReadOnly             = @(1,0)[$X]
             # [Subnetmask]
-            $Xaml.IO.Network_SubnetMask.Text                  = $IPInfo.SubnetMask
-            $Xaml.IO.Network_SubnetMask.IsReadOnly            = @(1,0)[$X]
-
+            $This.Xaml.IO.Network_SubnetMask.Text                  = $IPInfo.SubnetMask
+            $This.Xaml.IO.Network_SubnetMask.IsReadOnly            = @(1,0)[$X]
             # [Gateway]
-            $Xaml.IO.Network_Gateway.Text                     = $IPInfo.Gateway
-            $Xaml.IO.Network_Gateway.IsReadOnly               = @(1,0)[$X]
+            $This.Xaml.IO.Network_Gateway.Text                     = $IPInfo.Gateway
+            $This.Xaml.IO.Network_Gateway.IsReadOnly               = @(1,0)[$X]
             
             # [Dns]
-            $This.Reset($Xaml.IO.Network_DNS.Items,$IPInfo.DNSServer)
-            $Xaml.IO.Network_DNS.SelectedIndex                = 0
-
+            $This.Reset($This.Xaml.IO.Network_DNS.Items,$IPInfo.DNSServer)
+            $This.Xaml.IO.Network_DNS.SelectedIndex                = 0
             # [Dhcp]
-            $Xaml.IO.Network_Dhcp.Text                        = $IPInfo.DhcpServer
-            $Xaml.IO.Network_Dhcp.IsReadOnly                  = @(1,0)[$X]
-
+            $This.Xaml.IO.Network_Dhcp.Text                        = $IPInfo.DhcpServer
+            $This.Xaml.IO.Network_Dhcp.IsReadOnly                  = @(1,0)[$X]
             # [MacAddress]
-            $Xaml.IO.Network_MacAddress.Text                  = $IPInfo.MacAddress
-            $Xaml.IO.Network_MacAddress.IsReadOnly            = 1
+            $This.Xaml.IO.Network_MacAddress.Text                  = $IPInfo.MacAddress
+            $This.Xaml.IO.Network_MacAddress.IsReadOnly            = 1
         }
         [UInt32] MachineType()
         {
@@ -1877,746 +1830,717 @@ Function Get-FEWizard
         {
             $This.Xaml = $Xaml
         }
-        SetAllDefaults([Object]$Xaml)
-        {
-            # [Set Locale Panel]
-            $This.LoadXaml($Xaml)
-            $This.LocalePanel_TimeZone()
-            $This.LocalePanel_Keyboard()
-            $This.LocalePanel_Language()
-            $This.LocalePanel_SecondLanguage()
-
-            # [Set Misc Panel]
-            $This.MiscPanel_Finish_Action()
-            $This.MiscPanel_WSUSServer()
-            $This.MiscPanel_EventService()
-            $This.MiscPanel_ProductKey()
-
-            # [Set Root Panel]
-            $This.RootPanel_Init()
-            $This.RootPanel_TaskSequence()
-            $This.RootPanel_Application()
-            $This.RootPanel_Driver()
-            $This.RootPanel_Package()
-            $This.RootPanel_OperatingSystem()
-            $This.RootPanel_Profile()
-            $This.RootPanel_LinkedShare()
-            $This.RootPanel_Media()
-        }
-        LocalePanel_TimeZone()
-        {
-            $This.Reset($This.Xaml.IO.Locale_TimeZone.Items,$This.TimeZone.DisplayName)
-            $TimeZoneName = Get-Item tsenv:\TimeZoneName | % Value
-            If ($TimeZoneName)
-            {
-                $This.Xaml.IO.Locale_TimeZone.SelectedItem = $This.TimeZone | ? ID -eq $TimeZoneName | % DisplayName
-            }
-            Else
-            {
-                $This.Xaml.IO.Locale_TimeZone.SelectedIndex = 0
-            }
-        }
-        LocalePanel_Keyboard()
-        {
-            $This.Reset($This.Xaml.IO.Locale_Keyboard.Items,$This.Locale.Culture)
-            $KeyboardLocale = Get-Item tsenv:\KeyboardLocale
-            If ($KeyboardLocale)
-            {
-                $This.Xaml.IO.Locale_Keyboard.SelectedItem   = $This.Locale | ? Culture -eq $KeyboardLocale | Select-Object -Last 1 | % Culture
-            }
-            Else
-            {
-                $This.Xaml.IO.Locale_Keyboard.SelectedIndex  = 0
-            }
-        }
-        LocalePanel_Language()
-        {
-            $This.Reset($This.Xaml.IO.Locale_Language1.Items,$This.Locale.Name)
-            $KeyboardLocale = Get-Item tsenv:\KeyboardLocale
-            If ($KeyboardLocale)
-            {
-                $This.Xaml.IO.Locale_Language1.SelectedItem  = $This.Locale | ? Culture -eq $KeyboardLocale | Select-Object -Last 1 | % Name
-            }
-            Else
-            {
-                $This.Xaml.IO.Locale_Language1.SelectedIndex        = 0
-            }
-        }
-        LocalePanel_SecondLanguage()
-        {
-            $This.Xaml.IO.Locale_SecondLanguage.IsChecked          = 0
-            $This.Xaml.IO.Locale_SecondLanguage.Add_Checked(
-            {
-                Switch ($This.Xaml.IO.Locale_SecondLanguage.IsChecked)
-                {
-                    $False
-                    {
-                        $This.Xaml.IO.Locale_Language2.IsEnabled       = 0
-                        $This.Xaml.IO.Locale_Language2.Items.Clear()
-                        $This.Xaml.IO.Locale_Language2.SelectedIndex   = 0
-                    }
-                    $True
-                    {
-                        $This.Xaml.IO.Locale_Language2.IsEnabled       = 1
-                        $This.Reset($This.Xaml.IO.Locale_Language2.Items,$This.Locale.Name)
-                        $This.Xaml.IO.Locale_Language2.SelectedIndex   = 0
-                    }
-                }
-            })
-        }
-        MiscPanel_Finish_Action()
-        {
-            $Finish = Get-Item tsenv:\FinishAction | % Value
-            If ($Finish)
-            {
-                $This.Xaml.IO.Misc_Finish_Action.SelectedIndex = @{""=0;"REBOOT"=1;"SHUTDOWN"=2;"LOGOFF"=3}[$Finish]
-            }
-        }
-        MiscPanel_WSUSServer()
-        {
-            $WSUS = Get-Item tsenv:\WSUSServer | % Value
-            If ($WSUS)
-            {
-                $This.Xaml.IO.Misc_WSUSServer.Text = $WSUS
-            }
-        }
-        MiscPanel_EventService()
-        {
-            $EventService = Get-Item tsenv:\EventService | % Value
-            If ($EventService)
-            {
-                $This.Xaml.IO.Misc_EventService.Text = $EventService
-            }
-        }
-        MiscPanel_ProductKey()
-        {
-            $This.Xaml.IO.Misc_Product_Key_Type.Add_SelectionChanged(
-            {
-                $This.Xaml.IO.Misc_Product_Key.Text      = ""
-                Switch ($Xaml.IO.Misc_Product_Key_Type.SelectedIndex)
-                {
-                    0 # [No product key is required]
-                    {
-                        $Xaml.IO.Misc_Product_Key.IsEnabled = 0
-                    }
-                    1 # [Activate with multiple activation key]
-                    {
-                        $Xaml.IO.Misc_Product_Key.IsEnabled = 1
-                    }
-                    2 # [Use a specific product key]
-                    {
-                        $Xaml.IO.Misc_Product_Key.IsEnabled = 1
-                    }
-                }
-            })
-        }
-        RootPanel_Init()
-        {
-            # [Root.Init] - Loads the Root drive children items into the gui panels
-            $This.Cycle(4,$This.Xaml.IO.TaskSequence.Items)
-            $This.Cycle(0,$This.Xaml.IO.Application.Items)
-            $This.Cycle(2,$This.Xaml.IO.Driver.Items)
-            $This.Cycle(3,$This.Xaml.IO.Package.Items)
-            $This.Cycle(5,$This.Xaml.IO.Profile.Items)
-            $This.Cycle(1,$This.Xaml.IO.OperatingSystem.Items)
-            $This.Cycle(6,$This.Xaml.IO.LinkedShare.Items)
-            $This.Cycle(7,$This.Xaml.IO.Media.Items)
-        }
-        RootPanel_TaskSequence()
-        {
-            $This.Xaml.IO.TaskSequenceFilter.Add_TextChanged(
-            {
-                If ($This.Lock -eq 0)
-                {
-                    If ($This.Xaml.IO.TaskSequenceFilter.Text -ne "")
-                    {
-                        $This.Cycle(4,$This.Xaml.IO.TaskSequence.Items,$This.Xaml.IO.TaskSequenceProperty.SelectedItem.Content,$This.Xaml.IO.TaskSequenceFilter.Text)
-                    }
-                    Else
-                    {
-                        $This.Cycle(4,$This.Xaml.IO.TaskSequence.Items)
-                    }
-                }
-            })
-
-            $This.Xaml.IO.TaskSequenceRefresh.Add_Click(
-            {
-                $This.SafeClear($This.Xaml.IO.TaskSequenceFilter.Text)
-                $This.Cycle(4,$This.Xaml.IO.TaskSequence.Items)
-            })
-
-            $This.Xaml.IO.TaskSequence.Add_SelectionChanged(
-            {
-                If ($This.Xaml.IO.TaskSequence.SelectedIndex -gt -1)
-                {
-                    $This.Xaml.IO.Task_ID.Text               = $This.Xaml.IO.TaskSequence.SelectedItem.ID
-                }
-            })
-        }
-        RootPanel_Application()
-        {
-            $This.Xaml.IO.ApplicationFilter.Add_TextChanged(
-            {
-                If ($This.Lock -eq 0)
-                {
-                    If ($This.Xaml.IO.ApplicationFilter.Text -ne "")
-                    {
-                        $This.Cycle(0,$This.Xaml.IO.Application.Items,$This.Xaml.IO.ApplicationProperty.SelectedItem.Content,$This.Xaml.IO.ApplicationFilter.Text)
-                    }
-                    Else
-                    {
-                        $This.Cycle(0,$This.Xaml.IO.Application.Items)
-                    }
-                }
-            })
-
-            $This.Xaml.IO.ApplicationRefresh.Add_Click(
-            {
-                $This.SafeClear($This.Xaml.IO.ApplicationFilter.Text)
-                $This.Cycle(0,$This.Xaml.IO.Application.Items)
-            })
-        }
-        RootPanel_Driver()
-        {
-            $This.Xaml.IO.DriverFilter.Add_TextChanged(
-            {
-                If ($This.Lock -eq 0)
-                {
-                    If ($This.Xaml.IO.DriverFilter.Text -ne "")
-                    {
-                        $This.Cycle(2,$This.Xaml.IO.Driver.Items,$This.Xaml.IO.DriverProperty.SelectedItem.Content,$This.Xaml.IO.DriverFilter.Text)
-                    }
-                    Else
-                    {
-                        $This.Cycle(2,$This.Xaml.IO.Driver.Items)
-                    }
-                }
-            })
-        
-            $This.Xaml.IO.DriverRefresh.Add_Click(
-            {
-                $This.SafeClear($This.Xaml.IO.DriverFilter.Text)
-                $This.Cycle(2,$This.Xaml.IO.Driver.Items)
-            })
-        }
-        RootPanel_Package()
-        {
-            $This.Xaml.IO.PackageFilter.Add_TextChanged(
-            {
-                If ($This.Lock -eq 0)
-                {
-                    If ($This.Xaml.IO.PackageFilter.Text -ne "")
-                    {
-                        $This.Cycle(3,$This.Xaml.IO.Package.Items,$This.Xaml.IO.PackageProperty.SelectedItem.Content,$This.Xaml.IO.PackageFilter.Text)
-                    }
-                    Else
-                    {
-                        $This.Cycle(3,$This.Xaml.IO.Package.Items)
-                    }
-                }
-            })
-
-            $This.Xaml.IO.PackageRefresh.Add_Click(
-            {
-                $This.SafeClear($This.Xaml.IO.PackageFilter.Text)
-                $This.Cycle(3,$This.Xaml.IO.Package.Items)
-            })
-        }
-        RootPanel_Profile()
-        {
-            $This.Xaml.IO.ProfileFilter.Add_TextChanged(
-            {
-                If ($This.Lock -eq 0)
-                {
-                    If ($This.Xaml.IO.ProfileFilter.Text -ne "")
-                    {   
-                        $This.Cycle(5,$This.Xaml.IO.Profile.Items,$This.Xaml.IO.ProfileProperty.SelectedItem.Content,$This.Xaml.IO.ProfileFilter.Text)
-                    }
-                    Else
-                    {
-                        $This.Cycle(5,$This.Xaml.IO.Profile.Items)
-                    }
-                }
-            })
-
-            $This.Xaml.IO.ProfileRefresh.Add_Click(
-            {
-                $This.SafeClear($This.Xaml.IO.ProfileFilter.Text)
-                $This.Cycle(5,$This.Xaml.IO.Profile.Items)
-            })
-        }
-        RootPanel_OperatingSystem()
-        {
-            $This.Xaml.IO.OperatingSystemFilter.Add_TextChanged(
-            {
-                If ($This.Lock -eq 0)
-                {
-                    If ($This.Xaml.IO.OperatingSystemFilter.Text -ne "")
-                    {
-                        $This.Cycle(1,$This.Xaml.IO.OperatingSystem.Items,$This.Xaml.IO.OperatingSystemProperty.SelectedItem.Content,$This.Xaml.IO.OperatingSystemFilter.Text)
-                    }
-                    Else
-                    {
-                        $This.Cycle(1,$This.Xaml.IO.OperatingSystem.Items)
-                    }
-                }
-            })
-
-            $Xaml.IO.OperatingSystemRefresh.Add_Click(
-            {    
-                $This.SafeClear($This.Xaml.IO.OperatingSystemFilter.Text)
-                $This.Cycle(1,$This.Xaml.IO.OperatingSystem.Items)
-            })
-        }
-        RootPanel_LinkedShare()
-        {
-            $This.Xaml.IO.LinkedShareFilter.Add_TextChanged(
-            {
-                If ($This.Lock -eq 0)
-                {
-                    If ($This.Xaml.IO.LinkedShareFilter.Text -ne "")
-                    {
-                        $This.Cycle(6,$This.Xaml.IO.LinkedShare.Items,$This.Xaml.IO.LinkedShareProperty.SelectedItem.Content,$This.Xaml.IO.LinkedShareFilter.Text)
-                    }
-                    Else
-                    {
-                        $This.Cycle(6,$This.Xaml.IO.LinkedShare.Items)
-                    }
-                }
-            })
-
-            $This.Xaml.IO.LinkedShareRefresh.Add_Click(
-            {
-                $This.SafeClear($This.Xaml.IO.LinkedShareFilter.Text)
-                $This.Cycle(6,$This.Xaml.IO.LinkedShare.Items)
-            })
-        }
-        RootPanel_Media()
-        {
-            $This.Xaml.IO.MediaFilter.Add_TextChanged(
-            {
-                If ($This.Lock -eq 0)
-                {
-                    If ($This.Xaml.IO.MediaFilter.Items -ne "")
-                    {
-                        $This.Cycle(7,$This.Xaml.IO.Media.Items,$This.Xaml.IO.MediaProperty.SelectedItem.Content,$This.Xaml.IO.MediaFilter.Text)
-                    }
-                    Else
-                    {
-                        $This.Cycle(7,$This.Xaml.IO.Media.Items)
-                    }
-                }
-            })
-
-            $This.Xaml.IO.MediaRefresh.Add_Click(
-            {
-                $This.SafeClear($This.Xaml.IO.MediaFilter.Text)
-                $This.Cycle(7,$This.Xaml.IO.Media.Items)
-            })
-        }
-        SystemPanel_Init()
-        {
-            # [System]
-            $This.Xaml.IO.System_Manufacturer | % { $_.Text = $This.System.Manufacturer; $_.IsReadOnly = 1 }
-            $This.Xaml.IO.System_Model        | % { $_.Text = $This.System.Model;        $_.IsReadOnly = 1 }
-            $This.Xaml.IO.System_Product      | % { $_.Text = $This.System.Product;      $_.IsReadOnly = 1 } 
-            $This.Xaml.IO.System_Serial       | % { $_.Text = $This.System.Serial;       $_.IsReadOnly = 1 }
-            $This.Xaml.IO.System_Memory       | % { $_.Text = $This.System.Memory;       $_.IsReadOnly = 1 }
-            $This.Xaml.IO.System_UUID         | % { $_.Text = $This.System.UUID;         $_.IsReadOnly = 1 }
-
-            # Processor
-            $This.Reset($This.Xaml.IO.System_Processor.Items,$This.System.Processor.Name)
-            $This.Xaml.IO.System_Processor.SelectedIndex           = 0
-
-            $This.Xaml.IO.System_Architecture.SelectedIndex        = $This.System.Architecture -eq "x64"
-            $This.Xaml.IO.System_Architecture.IsEnabled            = 0
-
-            # Chassis
-            $This.Xaml.IO.System_IsVM.IsChecked                    = $This.GetTsEnv("IsVm")    
-            $This.Xaml.IO.System_Chassis.SelectedIndex             = $This.MachineType()
-            $This.Xaml.IO.System_Chassis.IsEnabled                 = 0
-
-            $This.Xaml.IO.System_BiosUefi.SelectedIndex            = $This.System.BiosUefi -eq "UEFI"
-            $This.Xaml.IO.System_BiosUefi.IsEnabled                = 0
-
-            $This.Xaml.IO.System_UseSerial.Add_Checked(
-            {
-                Switch ($This.Xaml.IO.System_UseSerial.IsChecked)
-                {
-                    0
-                    { 
-                        $This.Xaml.IO.System_Name.Text = $Null 
-                    }
-
-                    1
-                    { 
-                        $This.Xaml.IO.System_Name.Text = ($This.System.Serial -Replace "\-","").ToCharArray()[0..14] -join '' 
-                    } 
-                }
-            })
-
-            $This.Xaml.IO.System_UseSerial.IsChecked               = 0
-            $This.Xaml.IO.System_Name.Text = $Env:ComputerName
-
-            # Disks
-            $This.Reset($This.Xaml.IO.System_Disk.Items,$This.System.Disk)
-        }
-        DomainPanel_Init()
-        {
-            # [Domain]
-            $This.Xaml.IO.Domain_Type.SelectedIndex                = 0
-            $This.Xaml.IO.Domain_OrgEdit.IsChecked                 = 0
-            $This.Xaml.IO.Domain_OrgEdit.Add_Checked(
-            {
-                Switch ($This.Xaml.IO.Domain_OrgEdit.IsChecked)
-                {
-                    $False
-                    {
-                        $This.Xaml.IO.Domain_OrgName.IsReadOnly    = 1
-                    }
-
-                    $True
-                    {
-                        $This.Xaml.IO.Domain_OrgName.IsReadOnly    = 0
-                        $This.SetDomain($This.Xaml,1)
-                    }
-                }
-            })
-
-            $This.SetDomain($This.Xaml,1)
-            $This.Xaml.IO.Domain_Type.Add_SelectionChanged(
-            {
-                Switch ($This.Xaml.IO.Domain_Type.SelectedItem)
-                {
-                    Domain { $This.SetDomain($This.Xaml,1) } Workgroup { $This.SetDomain($This.Xaml,0) }
-                }
-            })
-
-            If ($tsenv:MachineObjectOU)
-            {
-                $This.Xaml.IO.Domain_OU.Text = $tsenv:MachineObjectOU
-            }
-
-            If ($tsenv:Home_Page)
-            {
-                $This.Xaml.IO.Domain_HomePage.Text = $tsenv:Home_Page
-            }
-        }
-        NetworkPanel_Init()
-        {
-            # [Network]
-            $This.Reset($This.Xaml.IO.Network_Adapter.Items,$This.System.Network.Name)
-            $This.Xaml.IO.Network_Adapter.Add_SelectionChanged(
-            {
-                If ($This.Xaml.IO.Network_Adapter.SelectedIndex -ne -1)
-                {
-                    $This.SetNetwork($This.Xaml,$This.Xaml.IO.Network_Adapter.SelectedIndex)
-                }
-            })
-
-            $This.SetNetwork($This.Xaml,0)
-            $This.Xaml.IO.Network_Adapter.SelectedIndex = 0
-        }
-        ControlPanel_Init()
-        {
-            # [Control]
-            $This.Xaml.IO.Control_Mode.Add_SelectionChanged(
-            {
-                $This.Xaml.IO.Computer_Backup.Visibility           = "Collapsed"
-                $This.Xaml.IO.Computer_Capture.Visibility          = "Collapsed"
-                $This.Xaml.IO.User_Backup.Visibility               = "Collapsed"
-                $This.Xaml.IO.User_Restore.Visibility              = "Collapsed"
-                
-                Switch ($This.Xaml.IO.Control_Mode.SelectedIndex)
-                {
-                    0 
-                    { 
-                        $Description = "Perform a fresh installation of an operating system"
-                        $This.Xaml.IO.User_Restore.Visibility      = "Visible"
-                    }
-
-                    1 
-                    { 
-                        $Description = "Perform an in-place upgrade, preserving the content"
-                        $This.Xaml.IO.Computer_Backup.Visibility   = "Visible"
-                        $This.Xaml.IO.User_Backup.Visibility       = "Visible"
-                    }
-
-                    2 
-                    { 
-                        $Description = "Convert a physical machine to a virtual machine"
-                        $This.Xaml.IO.Computer_Capture.Visibility  = "Visible"
-                        $This.Xaml.IO.User_Restore.Visibility      = "Visible"
-                    }
-
-                    3 
-                    { 
-                        $Description = "Convert a virtual machine to a physical machine"
-                        $This.Xaml.IO.Computer_Capture.Visibility  = "Visible"
-                        $This.Xaml.IO.User_Restore.Visibility      = "Visible"
-                    }
-                }
-                $This.Xaml.IO.Control_Description.Text             = $Description
-            })
-
-            $This.Xaml.IO.Control_Mode.SelectedIndex               = 0
-            
-            $This.Xaml.IO.Control_Username.Text                    = $This.GetTsEnv("UserID")
-            $This.Xaml.IO.Control_Domain.Text                      = $This.GetTsEnv("UserDomain")
-            $This.Xaml.IO.Control_Password.Password                = $This.GetTsEnv("UserPassword")
-            $This.Xaml.IO.Control_Confirm.Password                 = $This.GetTsEnv("UserPassword")
-        }
     }
-
-    If (!$Drive)
-    {
-        $Drive = Get-PSDrive
-    } 
 
     $Script:Wizard = [Main]::New($Drive)
     $Script:Xaml   = [XamlWindow][FEWizardGUI]::Tab
     $Wizard.LoadXaml($Xaml)
-    
+    $Script:Xaml   = $Wizard.Xaml
+
     # [Set Defaults]
-    $Wizard.SetAllDefaults($Xaml)
+
+    # [Locale Panel/TimeZone()]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Locale Panel/TimeZone()]"
+    $Wizard.Reset($Wizard.Xaml.IO.Locale_TimeZone.Items,$Wizard.TimeZone.DisplayName)
+    $TimeZoneName = Get-Item tsenv:\TimeZoneName | % Value
+    If ($TimeZoneName)
+    {
+        $Wizard.Xaml.IO.Locale_TimeZone.SelectedItem = $Wizard.TimeZone | ? ID -eq $TimeZoneName | % DisplayName
+    }
+    Else
+    {
+        $Wizard.Xaml.IO.Locale_TimeZone.SelectedIndex = 0
+    }
+    
+    # [Locale Panel/Keyboard()]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Locale Panel/Keyboard()]"
+    $Wizard.Reset($Wizard.Xaml.IO.Locale_Keyboard.Items,$Wizard.Locale.Culture)
+    $KeyboardLocale = Get-Item tsenv:\KeyboardLocale
+    If ($KeyboardLocale)
+    {
+        $Wizard.Xaml.IO.Locale_Keyboard.SelectedItem   = $Wizard.Locale | ? Culture -eq $KeyboardLocale | Select-Object -Last 1 | % Culture
+    }
+    Else
+    {
+        $Wizard.Xaml.IO.Locale_Keyboard.SelectedIndex  = 0
+    }
+
+    # [Locale Panel/Language()]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Locale Panel/Language()]"
+    $Wizard.Reset($Wizard.Xaml.IO.Locale_Language1.Items,$Wizard.Locale.Name)
+    $KeyboardLocale = Get-Item tsenv:\KeyboardLocale
+    If ($KeyboardLocale)
+    {
+        $Wizard.Xaml.IO.Locale_Language1.SelectedItem  = $Wizard.Locale | ? Culture -eq $KeyboardLocale | Select-Object -Last 1 | % Name
+    }
+    Else
+    {
+        $Wizard.Xaml.IO.Locale_Language1.SelectedIndex        = 0
+    }
+
+    # [Locale Panel/SecondLanguage()]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Locale Panel/SecondLanguage()]"
+    $Wizard.Xaml.IO.Locale_SecondLanguage.IsChecked          = 0
+    $Wizard.Xaml.IO.Locale_SecondLanguage.Add_Checked(
+    {
+        Switch ($Wizard.Xaml.IO.Locale_SecondLanguage.IsChecked)
+        {
+            $False
+            {
+                $Wizard.Xaml.IO.Locale_Language2.IsEnabled       = 0
+                $Wizard.Xaml.IO.Locale_Language2.Items.Clear()
+                $Wizard.Xaml.IO.Locale_Language2.SelectedIndex   = 0
+            }
+            $True
+            {
+                $Wizard.Xaml.IO.Locale_Language2.IsEnabled       = 1
+                $Wizard.Reset($Wizard.Xaml.IO.Locale_Language2.Items,$Wizard.Locale.Name)
+                $Wizard.Xaml.IO.Locale_Language2.SelectedIndex   = 0
+            }
+        }
+    })
+
+    # [Misc Panel/FinishAction()]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Misc Panel/FinishAction()]"
+    $Finish = Get-Item tsenv:\FinishAction | % Value
+    If ($Finish)
+    {
+        $Wizard.Xaml.IO.Misc_Finish_Action.SelectedIndex = @{""=0;"REBOOT"=1;"SHUTDOWN"=2;"LOGOFF"=3}[$Finish]
+    }
+
+    # [Misc Panel/WSUSServer()]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Misc Panel/WSUSServer()]"
+    $WSUS = Get-Item tsenv:\WSUSServer | % Value
+    If ($WSUS)
+    {
+        $Wizard.Xaml.IO.Misc_WSUSServer.Text = $WSUS
+    }
+
+    # [Misc Panel/EventService()]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Misc Panel/EventService()]"
+    $EventService = Get-Item tsenv:\EventService | % Value
+    If ($EventService)
+    {
+        $Wizard.Xaml.IO.Misc_EventService.Text = $EventService
+    }
+
+    # [Misc Panel/ProductKey()]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Misc Panel/ProductKey()]"
+    $Wizard.Xaml.IO.Misc_Product_Key_Type.Add_SelectionChanged(
+    {
+        $Wizard.Xaml.IO.Misc_Product_Key.Text      = ""
+        Switch ($Xaml.IO.Misc_Product_Key_Type.SelectedIndex)
+        {
+            0 # [No product key is required]
+            {
+                $Xaml.IO.Misc_Product_Key.IsEnabled = 0
+            }
+            1 # [Activate with multiple activation key]
+            {
+                $Xaml.IO.Misc_Product_Key.IsEnabled = 1
+            }
+            2 # [Use a specific product key]
+            {
+                $Xaml.IO.Misc_Product_Key.IsEnabled = 1
+            }
+        }
+    })
+    
+    # // TaskSequence (0/4) --------------------------------------------------------------------------------
+    # [Root Panel/TaskSequence (Items)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/TaskSequence (Items)]"
+    $Wizard.Cycle(4,$Wizard.Xaml.IO.TaskSequence.Items)
+
+    # [Root Panel/TaskSequence (SearchBox)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/TaskSequence (SearchBox)]"
+    $Wizard.Xaml.IO.TaskSequenceFilter.Add_TextChanged(
+    {
+        If ($Wizard.Lock -eq 0)
+        {
+            If ($Wizard.Xaml.IO.TaskSequenceFilter.Text -ne "")
+            {
+                $Wizard.Cycle(4,$Wizard.Xaml.IO.TaskSequence.Items,$Wizard.Xaml.IO.TaskSequenceProperty.SelectedItem.Content,$Wizard.Xaml.IO.TaskSequenceFilter.Text)
+            }
+            Else
+            {
+                $Wizard.Cycle(4,$Wizard.Xaml.IO.TaskSequence.Items)
+            }
+        }
+    })
+
+    # [Root Panel/TaskSequence (Refresh)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/TaskSequence (Refresh)]"
+    $Wizard.Xaml.IO.TaskSequenceRefresh.Add_Click(
+    {
+        $Wizard.SafeClear($Wizard.Xaml.IO.TaskSequenceFilter.Text)
+        $Wizard.Cycle(4,$Wizard.Xaml.IO.TaskSequence.Items)
+    })
+
+    # [Root Panel/TaskSequence (Changed)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/TaskSequence (Changed)]"
+    $Wizard.Xaml.IO.TaskSequence.Add_SelectionChanged(
+    {
+        If ($Wizard.Xaml.IO.TaskSequence.SelectedIndex -gt -1)
+        {
+            $Wizard.Xaml.IO.Task_ID.Text               = $Wizard.Xaml.IO.TaskSequence.SelectedItem.ID
+        }
+    })
+    # \\ TaskSequence (4/4) --------------------------------------------------------------------------------
+    
+    # // Application (0/3) --------------------------------------------------------------------------------
+    # [Root Panel/Application (Items)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Application (Items)]"
+    $Wizard.Cycle(0,$Wizard.Xaml.IO.Application.Items)
+    # [Root Panel/Application (SearchBox)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Application (SearchBox)]"
+    $Wizard.Xaml.IO.ApplicationFilter.Add_TextChanged(
+    {
+        If ($Wizard.Lock -eq 0)
+        {
+            If ($Wizard.Xaml.IO.ApplicationFilter.Text -ne "")
+            {
+                $Wizard.Cycle(0,$Wizard.Xaml.IO.Application.Items,$Wizard.Xaml.IO.ApplicationProperty.SelectedItem.Content,$Wizard.Xaml.IO.ApplicationFilter.Text)
+            }
+            Else
+            {
+                $Wizard.Cycle(0,$Wizard.Xaml.IO.Application.Items)
+            }
+        }
+    })
+    # [Root Panel/Application (Refresh)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Application (Refresh)]"
+    $Wizard.Xaml.IO.ApplicationRefresh.Add_Click(
+    {
+        $Wizard.SafeClear($Wizard.Xaml.IO.ApplicationFilter.Text)
+        $Wizard.Cycle(0,$Wizard.Xaml.IO.Application.Items)
+    })
+    # \\ Application (3/3) --------------------------------------------------------------------------------
+
+
+    # // Driver (0/3) --------------------------------------------------------------------------------
+    # [Root Panel/Driver (Items)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Driver (Items)]"
+    $Wizard.Cycle(2,$Wizard.Xaml.IO.Driver.Items)
+
+    # [Root Panel/Driver (SearchBox)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Driver (SearchBox)]"
+    $Wizard.Xaml.IO.DriverFilter.Add_TextChanged(
+    {
+        If ($Wizard.Lock -eq 0)
+        {
+            If ($Wizard.Xaml.IO.DriverFilter.Text -ne "")
+            {
+                $Wizard.Cycle(2,$Wizard.Xaml.IO.Driver.Items,$Wizard.Xaml.IO.DriverProperty.SelectedItem.Content,$Wizard.Xaml.IO.DriverFilter.Text)
+            }
+            Else
+            {
+                $Wizard.Cycle(2,$Wizard.Xaml.IO.Driver.Items)
+            }
+        }
+    })
+
+    # [Root Panel/Driver (Refresh)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Driver (Refresh)]"
+    $Wizard.Xaml.IO.DriverRefresh.Add_Click(
+    {
+        $Wizard.SafeClear($Wizard.Xaml.IO.DriverFilter.Text)
+        $Wizard.Cycle(2,$Wizard.Xaml.IO.Driver.Items)
+    })
+    # \\ Driver (3/3) --------------------------------------------------------------------------------
+
+    # // Package (0/3)
+    # [Root Panel/Package (Items)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Package (Items)]"
+    $Wizard.Cycle(3,$Wizard.Xaml.IO.Package.Items)
+
+    # [Root Panel/Package (SearchBox)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Package (SearchBox)]"
+    $Wizard.Xaml.IO.PackageFilter.Add_TextChanged(
+    {
+        If ($Wizard.Lock -eq 0)
+        {
+            If ($Wizard.Xaml.IO.PackageFilter.Text -ne "")
+            {
+                $Wizard.Cycle(3,$Wizard.Xaml.IO.Package.Items,$Wizard.Xaml.IO.PackageProperty.SelectedItem.Content,$Wizard.Xaml.IO.PackageFilter.Text)
+            }
+            Else
+            {
+                $Wizard.Cycle(3,$Wizard.Xaml.IO.Package.Items)
+            }
+        }
+    })
+
+    # [Root Panel/Package (Refresh)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Package (Refresh)]"
+    $Wizard.Xaml.IO.PackageRefresh.Add_Click(
+    {
+        $Wizard.SafeClear($Wizard.Xaml.IO.PackageFilter.Text)
+        $Wizard.Cycle(3,$Wizard.Xaml.IO.Package.Items)
+    })
+    # \\ Package (3/3)
+
+    # // Profile (0/3) --------------------------------------------------------------------------------
+    # [Root Panel/Profile (Items)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Profile (Items)]"
+    $Wizard.Cycle(5,$Wizard.Xaml.IO.Profile.Items)
+
+    # [Root Panel/Profile (SearchBox)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Profile (SearchBox)]"
+    $Wizard.Xaml.IO.ProfileFilter.Add_TextChanged(
+    {
+        If ($Wizard.Lock -eq 0)
+        {
+            If ($Wizard.Xaml.IO.ProfileFilter.Text -ne "")
+            {   
+                $Wizard.Cycle(5,$Wizard.Xaml.IO.Profile.Items,$Wizard.Xaml.IO.ProfileProperty.SelectedItem.Content,$Wizard.Xaml.IO.ProfileFilter.Text)
+            }
+            Else
+            {
+                $Wizard.Cycle(5,$Wizard.Xaml.IO.Profile.Items)
+            }
+        }
+    })
+
+    # [Root Panel/Profile (Refresh)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Profile (Refresh)]"
+    $Wizard.Xaml.IO.ProfileRefresh.Add_Click(
+    {
+        $Wizard.SafeClear($Wizard.Xaml.IO.ProfileFilter.Text)
+        $Wizard.Cycle(5,$Wizard.Xaml.IO.Profile.Items)
+    })
+    # \\ Profile (3/3) --------------------------------------------------------------------------------
+
+    # // OperatingSystem (0/3)
+    # [Root Panel/OperatingSystem (Items)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/OperatingSystem (Items)]"
+    $Wizard.Cycle(1,$Wizard.Xaml.IO.OperatingSystem.Items)
+
+    # [Root Panel/OperatingSystem (SearchBox)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/OperatingSystem (SearchBox)]"
+    $Wizard.Xaml.IO.OperatingSystemFilter.Add_TextChanged(
+    {
+        If ($Wizard.Lock -eq 0)
+        {
+            If ($Wizard.Xaml.IO.OperatingSystemFilter.Text -ne "")
+            {
+                $Wizard.Cycle(1,$Wizard.Xaml.IO.OperatingSystem.Items,$Wizard.Xaml.IO.OperatingSystemProperty.SelectedItem.Content,$Wizard.Xaml.IO.OperatingSystemFilter.Text)
+            }
+            Else
+            {
+                $Wizard.Cycle(1,$Wizard.Xaml.IO.OperatingSystem.Items)
+            }
+        }
+    })
+
+    # [Root Panel/OperatingSystem (Refresh)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/OperatingSystem (Refresh)]"
+    $Xaml.IO.OperatingSystemRefresh.Add_Click(
+    {    
+        $Wizard.SafeClear($Wizard.Xaml.IO.OperatingSystemFilter.Text)
+        $Wizard.Cycle(1,$Wizard.Xaml.IO.OperatingSystem.Items)
+    })
+    # \\ OperatingSystem (3/3) ------------------------------------------------------------------------
+    
+    # // LinkedShare (0/3) --------------------------------------------------------------------------------
+    # [Root Panel/LinkedShare (Items)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/LinkedShare (Items)]"
+    $Wizard.Cycle(6,$Wizard.Xaml.IO.LinkedShare.Items)
+
+    # [Root Panel/LinkedShare (SearchBox)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/LinkedShare (SearchBox)]"
+    $Wizard.Xaml.IO.LinkedShareFilter.Add_TextChanged(
+    {
+        If ($Wizard.Lock -eq 0)
+        {
+            If ($Wizard.Xaml.IO.LinkedShareFilter.Text -ne "")
+            {
+                $Wizard.Cycle(6,$Wizard.Xaml.IO.LinkedShare.Items,$Wizard.Xaml.IO.LinkedShareProperty.SelectedItem.Content,$Wizard.Xaml.IO.LinkedShareFilter.Text)
+            }
+            Else
+            {
+                $Wizard.Cycle(6,$Wizard.Xaml.IO.LinkedShare.Items)
+            }
+        }
+    })
+
+    # [Root Panel/LinkedShare (Refresh)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/LinkedShare (Refresh)]"
+    $Wizard.Xaml.IO.LinkedShareRefresh.Add_Click(
+    {
+        $Wizard.SafeClear($Wizard.Xaml.IO.LinkedShareFilter.Text)
+        $Wizard.Cycle(6,$Wizard.Xaml.IO.LinkedShare.Items)
+    })
+    # \\ LinkedShare (3/3) --------------------------------------------------------------------------------
+    
+    # // Media (0/3) --------------------------------------------------------------------------------
+    # [Root Panel/Media (Items)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Media (Items)]"
+    $Wizard.Cycle(7,$Wizard.Xaml.IO.Media.Items)
+
+    # [Root Panel/Media (SearchBox)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Media (SearchBox)]"
+    $Wizard.Xaml.IO.MediaFilter.Add_TextChanged(
+    {
+        If ($Wizard.Lock -eq 0)
+        {
+            If ($Wizard.Xaml.IO.MediaFilter.Items -ne "")
+            {
+                $Wizard.Cycle(7,$Wizard.Xaml.IO.Media.Items,$Wizard.Xaml.IO.MediaProperty.SelectedItem.Content,$Wizard.Xaml.IO.MediaFilter.Text)
+            }
+            Else
+            {
+                $Wizard.Cycle(7,$Wizard.Xaml.IO.Media.Items)
+            }
+        }
+    })
+
+    # [Root Panel/Media (Refresh)]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Media (Refresh)]"
+    $Wizard.Xaml.IO.MediaRefresh.Add_Click(
+    {
+        $Wizard.SafeClear($Wizard.Xaml.IO.MediaFilter.Text)
+        $Wizard.Cycle(7,$Wizard.Xaml.IO.Media.Items)
+    })
+    # \\ Media (3/3) --------------------------------------------------------------------------------
+
+
+    # [System/All]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [System/All]"
+    $Wizard.Xaml.IO.System_Manufacturer | % { $_.Text = $Wizard.System.Manufacturer; $_.IsReadOnly = 1 }
+    $Wizard.Xaml.IO.System_Model        | % { $_.Text = $Wizard.System.Model;        $_.IsReadOnly = 1 }
+    $Wizard.Xaml.IO.System_Product      | % { $_.Text = $Wizard.System.Product;      $_.IsReadOnly = 1 } 
+    $Wizard.Xaml.IO.System_Serial       | % { $_.Text = $Wizard.System.Serial;       $_.IsReadOnly = 1 }
+    $Wizard.Xaml.IO.System_Memory       | % { $_.Text = $Wizard.System.Memory;       $_.IsReadOnly = 1 }
+    $Wizard.Xaml.IO.System_UUID         | % { $_.Text = $Wizard.System.UUID;         $_.IsReadOnly = 1 }
+
+    # [Processor]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Processor]"
+    $Wizard.Reset($Wizard.Xaml.IO.System_Processor.Items,$Wizard.System.Processor.Name)
+    $Wizard.Xaml.IO.System_Processor.SelectedIndex           = 0
+    $Wizard.Xaml.IO.System_Architecture.SelectedIndex        = $Wizard.System.Architecture -eq "x64"
+    $Wizard.Xaml.IO.System_Architecture.IsEnabled            = 0
+    
+    # [Chassis]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Chassis]"
+    $Wizard.Xaml.IO.System_IsVM.IsChecked                    = $Wizard.GetTsEnv("IsVm")    
+    $Wizard.Xaml.IO.System_Chassis.SelectedIndex             = $Wizard.MachineType()
+    $Wizard.Xaml.IO.System_Chassis.IsEnabled                 = 0
+    $Wizard.Xaml.IO.System_BiosUefi.SelectedIndex            = $Wizard.System.BiosUefi -eq "UEFI"
+    $Wizard.Xaml.IO.System_BiosUefi.IsEnabled                = 0
+    $Wizard.Xaml.IO.System_UseSerial.Add_Checked(
+    {
+        Switch ($Wizard.Xaml.IO.System_UseSerial.IsChecked)
+        {
+            $False
+            { 
+                $Wizard.Xaml.IO.System_Name.Text = $Null 
+            }
+            $True
+            { 
+                $Wizard.Xaml.IO.System_Name.Text = ($Wizard.System.Serial -Replace "\-","").ToCharArray()[0..14] -join '' 
+            } 
+        }
+    })
+    $Wizard.Xaml.IO.System_UseSerial.IsChecked               = $False
+    $Wizard.Xaml.IO.System_Name.Text                         = $Env:ComputerName
+
+    # [Disks]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Disks]"
+    $Wizard.Reset($Wizard.Xaml.IO.System_Disk.Items,$Wizard.System.Disk)
+
+    # [Domain/All]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Domain/All]"
+    $Wizard.Xaml.IO.Domain_Type.SelectedIndex                = 0
+    $Wizard.Xaml.IO.Domain_OrgEdit.IsChecked                 = 0
+    $Wizard.Xaml.IO.Domain_OrgEdit.Add_Checked(
+    {
+        Switch ($Wizard.Xaml.IO.Domain_OrgEdit.IsChecked)
+        {
+            $False
+            {
+                $Wizard.Xaml.IO.Domain_OrgName.IsReadOnly    = 1
+            }
+            $True
+            {
+                $Wizard.Xaml.IO.Domain_OrgName.IsReadOnly    = 0
+                $Wizard.SetDomain(1)
+            }
+        }
+    })
+    $Wizard.SetDomain(1)
+    $Wizard.Xaml.IO.Domain_Type.Add_SelectionChanged(
+    {
+        Switch ($Wizard.Xaml.IO.Domain_Type.SelectedItem)
+        {
+            Domain { $Wizard.SetDomain(1) } Workgroup { $Wizard.SetDomain(0) }
+        }
+    })
+    If ($tsenv:MachineObjectOU)
+    {
+        $Wizard.Xaml.IO.Domain_OU.Text = $tsenv:MachineObjectOU
+    }
+    If ($tsenv:Home_Page)
+    {
+        $Wizard.Xaml.IO.Domain_HomePage.Text = $tsenv:Home_Page
+    }
+
+    # [Network]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Network/All]"
+    $Wizard.Reset($Wizard.Xaml.IO.Network_Adapter.Items,$Wizard.System.Network.Name)
+    $Wizard.Xaml.IO.Network_Adapter.Add_SelectionChanged(
+    {
+        If ($Wizard.Xaml.IO.Network_Adapter.SelectedIndex -ne -1)
+        {
+            $Wizard.SetNetwork($Wizard.Xaml.IO.Network_Adapter.SelectedIndex)
+        }
+    })
+    $Wizard.SetNetwork(0)
+    $Wizard.Xaml.IO.Network_Adapter.SelectedIndex = 0
+
+    # [Control]
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Control/All]"
+    $Wizard.Xaml.IO.Control_Mode.Add_SelectionChanged(
+    {
+        $Wizard.Xaml.IO.Computer_Backup.Visibility           = "Collapsed"
+        $Wizard.Xaml.IO.Computer_Capture.Visibility          = "Collapsed"
+        $Wizard.Xaml.IO.User_Backup.Visibility               = "Collapsed"
+        $Wizard.Xaml.IO.User_Restore.Visibility              = "Collapsed"
+        
+        Switch ($Wizard.Xaml.IO.Control_Mode.SelectedIndex)
+        {
+            0 
+            { 
+                $Description = "Perform a fresh installation of an operating system"
+                $Wizard.Xaml.IO.User_Restore.Visibility      = "Visible"
+            }
+            1 
+            { 
+                $Description = "Perform an in-place upgrade, preserving the content"
+                $Wizard.Xaml.IO.Computer_Backup.Visibility   = "Visible"
+                $Wizard.Xaml.IO.User_Backup.Visibility       = "Visible"
+            }
+            2 
+            { 
+                $Description = "Convert a physical machine to a virtual machine"
+                $Wizard.Xaml.IO.Computer_Capture.Visibility  = "Visible"
+                $Wizard.Xaml.IO.User_Restore.Visibility      = "Visible"
+            }
+            3 
+            { 
+                $Description = "Convert a virtual machine to a physical machine"
+                $Wizard.Xaml.IO.Computer_Capture.Visibility  = "Visible"
+                $Wizard.Xaml.IO.User_Restore.Visibility      = "Visible"
+            }
+        }
+        $Wizard.Xaml.IO.Control_Description.Text             = $Description
+    })
+    $Wizard.Xaml.IO.Control_Mode.SelectedIndex               = 0
+    
+    $Wizard.Xaml.IO.Control_Username.Text                    = $Wizard.GetTsEnv("UserID")
+    $Wizard.Xaml.IO.Control_Domain.Text                      = $Wizard.GetTsEnv("UserDomain")
+    $Wizard.Xaml.IO.Control_Password.Password                = $Wizard.GetTsEnv("UserPassword")
+    $Wizard.Xaml.IO.Control_Confirm.Password                 = $Wizard.GetTsEnv("UserPassword")
 
     Return $Wizard
 }
 
 Function Show-FEWizard
 {
-    Param ($Drive)
-    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Processing wizard from [Get-FEWizard]"
+    Param ([Object[]]$Drive)
+
     $Script:Wizard = Get-FEWizard $Drive
-    $Script:Xaml   = $Wizard.Xaml
 
-    $Xaml.IO.Start.Add_Click(
+    $Wizard.Xaml.IO.Start.Add_Click(
     {
-        # Task Sequence Selection
-        Switch ($Xaml.IO.Task_ID.Text)
+        # CheckTaskSequenceID()
+        If ($Wizard.Xaml.IO.Task_ID.Text -eq "")
         {
-            {$_ -eq ""} 
-            { 
-                Throw [System.Windows.MessageBox]::Show("Task sequence not selected","Error") 
-            }
-            {$_ -notin $Wizard.Tree | ? Name -match Task | % { $_.Children.ID}}
+            Return [System.Windows.MessageBox]::Show("Task sequence not selected","Error") 
+        }
+        ElseIf ($Wizard.Xaml.IO.Task_ID.Text -notin $Wizard.Tree | ? Name -match Task | % { $_.Children.ID })
+        {
+            Return [System.Windows.MessageBox]::Show("Invalid task sequence selected","Error")
+        }
+        Else
+        {
+            $Wizard.SetTsEnv("TaskSequenceID",$Wizard.Xaml.IO.Task_ID.Text)
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): TaskSequenceID [+] [$($Wizard.Xaml.IO.Task_ID.Text)]"
+        }
+        # CheckOSDComputerName()
+        If ($Wizard.Xaml.IO.System_Name.Text -eq "")
+        {
+            Return [System.Windows.MessageBox]::Show("Must designate a target computer name","Error")
+        }
+        Else
+        {
+            Try
             {
-                Throw [System.Windows.MessageBox]::Show("Invalid task sequence selected","Error")
+                $Result = Test-Connection $Wizard.Xaml.IO.System_Name.Text -Count 1 -EA 0
+                If ($Result)
+                {
+                    Return [System.Windows.MessageBox]::Show("Designated ComputerName already exists","Error")
+                }
             }
-            Default
+            Catch
             {
-                $Wizard.SetTsEnv("TaskSequenceID",$Xaml.IO.Task_ID.Text)
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): TaskSequenceID [+] [$($Xaml.IO.Task_ID.Text)]"
+                $Wizard.SetTSEnv("OSDComputerName",$Wizard.Xaml.IO.System_Name.Text)
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SystemName [+] [$($Wizard.Xaml.IO.System_Name.Text)]"
             }
         }
-
-        # [System Name]
-        Switch ($Xaml.IO.System_Name.Text)
+        # CheckFinishAction()
+        If ($Wizard.Xaml.IO.Misc_Finish_Action.SelectedIndex -ne -1)
         {
-            {$_ -eq ""}
+            Switch ($Wizard.Xaml.IO.Misc_Finish_Action.SelectedIndex)
             {
-                Throw [System.Windows.MessageBox]::Show("Must designate a target computer name","Error")
+                0
+                {
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [null]"
+                }
+                1 
+                {
+                    $Wizard.SetTSEnv("FinishAction","REBOOT")
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [Reboot]"
+                } 
+                2 
+                {
+                    $Wizard.SetTSEnv("FinishAction","SHUTDOWN")
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [Shutdown]"
+                } 
+                3 
+                {
+                    $Wizard.SetTSEnv("FinishAction","LOGOFF")
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [Logoff]"
+                }
             }
-            {$_ -ne ""}
+        }
+        # CheckWSUSServer()
+        If ($Wizard.Xaml.IO.Misc_WSUSServer.Text -ne "")
+        {
+            Try
             {
+                Test-Connection $Wizard.Xaml.IO.Misc_WSUSServer.Text -Count 1 -EA 0
+                $Wizard.SetTSEnv("WSUSServer", $Wizard.Xaml.IO.Misc_WSUSServer.Text)
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): WSUSServer [+] [$($Wizard.Xaml.IO.Misc_WSUSServer.Text)]"
+            }
+            Catch
+            {
+                $Wizard.SetTSEnv("WSUSServer", $Null)
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): WSUSServer [+] [null]"
+            }
+        }
+        Else
+        {
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): WSUSServer [+] [null]"
+        }
+        # Check_EventService()
+        If ($Wizard.Xaml.IO.Misc_EventService.Text -ne "")
+        {
+            If ($Wizard.Xaml.IO.Misc_EventService.Text -ne $tsenv:EventService)
+            {
+                $Server = @( Switch -Regex ($Wizard.Xaml.IO.Misc_EventService.Text)
+                {
+                    "http[s]*://"
+                    {
+                        $Wizard.Xaml.IO.Misc_EventService.Text -Replace "http[s]*://", ""
+                    }
+                    Default
+                    {
+                        $Wizard.Xaml.IO.Misc_EventService.Text
+                    }
+
+                }).Split(":")[0]
+
                 Try
                 {
-                    Test-Connection $Xaml.IO.System_Name.Text -Count 1 -EA 0
+                    Test-Connection $Server -Count 1 -EA 0
+                    $Wizard.SetTSEnv("EventService",$Wizard.Xaml.IO.Misc_EventService.Text)
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): EventService [+] [$($Wizard.Xaml.IO.Misc_EventService.Text)]"
                 }
                 Catch
                 {
-                    $Wizard.SetTSEnv("OSDComputerName",$Xaml.IO.System_Name.Text)
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SystemName [+] [$($Xaml.IO.System_Name.Text)]"
+                    $Wizard.SetTSEnv("EventService",$Null)
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): EventService [+] [null]"
                 }
-            }
-
-        # Misc Variables
-        # [Finish action]
-        Switch ($Xaml.IO.Misc_Finish_Action.SelectedIndex)
-        {
-            0
-            {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [null]"
-            }
-            1 
-            {
-                $Wizard.SetTSEnv("FinishAction","REBOOT")
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [Reboot]"
-            } 
-            2 
-            {
-                $Wizard.SetTSEnv("FinishAction","SHUTDOWN")
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [Shutdown]"
-            } 
-            3 
-            {
-                $Wizard.SetTSEnv("FinishAction","LOGOFF")
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): FinishAction [+] [Logoff]"
             }
         }
-
-        # [WSUS Server]
-        Switch ($Xaml.IO.Misc_WSUSServer.Text -ne "")
+        Else
         {
-            $True
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): EventService [+] [null]"
+        }
+        # Check_SLShare()
+        If ($Wizard.Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text -ne "")
+        {
+            $Logging = $Wizard.Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text
+            Try 
             {
-                Try
-                {
-                    Test-Connection $Xaml.IO.Misc_WSUSServer.Text -Count 1 -EA 0
-                    $Wizard.SetTSEnv("WSUSServer", $Xaml.IO.Misc_WSUSServer.Text)
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): WSUSServer [+] [$($Xaml.IO.Misc_WSUSServer.Text)]"
-                }
-                Catch
-                {
-                    $Wizard.SetTSEnv("WSUSServer", $Null)
-                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): WSUSServer [!] [-null/$($Xaml.IO.Misc_WSUSServer.Text)]"
-                }
+                Test-Path $Logging
+                $Wizard.SetTSEnv("SLShareDynamicLogging",$Logging)
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SLShareDynamicLogging [+] [$Logging]"
             }
-            $False
+            Catch
             {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): WSUSServer [~] [null]"
+                $Wizard.SetTSEnv("SLShareDynamicLogging",$Null)
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SLShareDynamicLogging [+] [null]"
             }
         }
-        
-        # [Event Service]
-        Switch ($Xaml.IO.Misc_EventService.Text -ne "")
+        Else
         {
-            $True
-            {
-                If ($Xaml.IO.Misc_EventService.Text -ne $tsenv:EventService)
-                {
-                    $Server = @( Switch -Regex ($Xaml.IO.Misc_EventService.Text)
-                    {
-                        "http[s]*://"
-                        {
-                            $Xaml.IO.Misc_EventService.Text -Replace "http[s]*://", ""
-                        }
-                        Default
-                        {
-                            $Xaml.IO.Misc_EventService.Text
-                        }
-    
-                    }).Split(":")[0]
-    
-                    Try
-                    {
-                        Test-Connection $Server -Count 1 -EA 0
-                        $Wizard.SetTSEnv("EventService",$Xaml.IO.Misc_EventService.Text)
-                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): EventService [+] [$($Xaml.IO.Misc_EventService.Text)]"
-                    }
-                    Catch
-                    {
-                        $Wizard.SetTSEnv("EventService",$Null)
-                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): EventService [!] [null]"
-                    }
-                }
-            }
-
-            $False
-            {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): EventService [-] [null]"
-            }
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SLShareDynamicLogging [+] [null]"
         }
-
-        # [SLShare]
-        Switch ($Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text -ne "")
+        # Check_SLShareDeployRoot()
+        If ($Wizard.Xaml.IO.Misc_SLShare_DeployRoot.IsChecked -eq $True)
         {
-            $True
-            {
-                Try 
-                {
-                    Test-Path $Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text
-                    $Wizard.SetTSEnv("SLShareDynamicLogging",$Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text)
-                }
-                Catch
-                {
-                    $Wizard.SetTSEnv("SLShareDynamicLogging",$Null)
-                }
-            }
+            $Wizard.SetTSEnv("SLShare","%DeployRoot%\Logs\$tsenv:OSDComputerName")
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SLShare [+] [%DeployRoot%\Logs\$tsenv:OSDComputerName]"
+        }
+        Else
+        {
+            $Wizard.SetTSEnv("SLShare","%OSD_Logs_SLShare%")
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SLShare [+] [%OSD_Logs_SLShare%]"		
+        }
+        # Check_HideShell()
+        If ($Wizard.Xaml.IO.Misc_HideShell.IsChecked -eq $True)
+        {
+            $Wizard.SetTSEnv("HideShell","YES")
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): HideShell [+] [YES]"
+        }
+        # Check_NoExtraPartition()
+        If ($Wizard.Xaml.IO.Misc_NoExtraPartition.IsChecked -eq $True)
+        {
+            $Wizard.SetTSEnv("DoNotCreateExtraPartition","YES")
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): DoNotCreateExtraPartition [+] [YES]"
         }	
-
-        Switch ($Xaml.IO.Misc_SLShare_DeployRoot.IsChecked)
+        # Check_ProductKey()
+        If ($Wizard.Xaml.IO.Misc_Product_Key_Type.SelectedIndex -gt 0)
         {
-            $True
-            {
-                $Wizard.SetTSEnv("SLShare","%DeployRoot%\Logs\$tsenv:OSDComputerName")
-            }
-
-            $False
-            {
-                $Wizard.SetTSEnv("SLShare","%OSD_Logs_SLShare%")
-            }		
-        }
-        
-        Switch ($Xaml.IO.Misc_HideShell.IsChecked)
-        {
-            $True
-            {
-                $Wizard.SetTSEnv("HideShell","YES")
-            }
-        }
-            
-        Switch ($Xaml.IO.Misc_NoExtraPartition.IsChecked)
-        {
-            $True
-            {
-                $Wizard.SetTSEnv("DoNotCreateExtraPartition","YES")
-            }
-        }		
-
-        Switch ($Xaml.IO.Misc_Product_Key_Type.SelectedIndex)
-        {
-            0
-            {
-
-            }
             1 
             { 
-                $Key = $Xaml.IO.Misc_Product_Key.Text -Replace "-",""
+                $Key = $Wizard.Xaml.IO.Misc_Product_Key.Text -Replace "-",""
                 If ($Key -match "((\w|\d){25}")
                 {
                     $Wizard.SetTSEnv("ProductKey",$Key) 
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): ProductKey [+] [$Key]"
                 }
             }
             2 
             {  
-                $Key = $Xaml.IO.Misc_Product_Key.Text -Replace "-",""
+                $Key = $Wizard.Xaml.IO.Misc_Product_Key.Text -Replace "-",""
                 If ($Key -match "((\w|\d){25}")
                 {
                     $Wizard.SetTSEnv("OverrideProductKey",$Key) 
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): OverrideProductKey [+] [$Key]"
                 }
             }
         }
-
-        $Xaml.IO.DialogResult = $True
+        $Wizard.Xaml.IO.DialogResult = $True
     })
     
-    $Xaml.IO.Cancel.Add_Click(
+    $Wizard.Xaml.IO.Cancel.Add_Click(
     {
-        $Xaml.IO.DialogResult = $False
+        $Wizard.Xaml.IO.DialogResult = $False
     })
 
-    $Wizard.Xaml.Invoke()
-
-    If ($Xaml.IO.DialogResult -eq $True)
-    {
-        ForEach ($Item in $Wizard.TSEnv)
-        {
-            $Name  = $Item.Name
-            $Value = $Item.Valu
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Setting tsenv:\$Name to $Value"
-            If (Get-Item -Path tsenv:$Name)
-            {
-                Set-Item -Path tsenv:$Name -Value $Value -Verbose
-            }
-            Else
-            {
-                New-Item -Path tsenv:$Name -Value $Value -Verbose
-            }
-        }
-    }
-
-    Return $Script:Wizard
+    Return $Wizard
 }
 
-Export-ModuleMember -Function Show-FEWizard, Show-PSDWizard
+Export-ModuleMember -Function Show-PSDWizard, Show-FEWizard
