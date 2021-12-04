@@ -4455,10 +4455,10 @@ Function New-FEInfrastructure
                     ForEach ($File in "wim","xml")
                     {
                         $Item = "{0}.{1}" -f $Property."Boot.$Arch.LiteTouchWimDescription",$File
-                        $Path = "$BootPath/$Item"
-                        If (Get-Item -LiteralPath $Path -EA 0)
+                        $ImagePath = "$BootPath/$Item"
+                        If (Get-Item -LiteralPath $ImagePath -EA 0)
                         {
-                            Remove-Item -LiteralPath $Path -Verbose
+                            Remove-Item -LiteralPath $ImagePath -Verbose
                         }
 
                         If (Get-Item -LiteralPath "$BootPath\LiteTouchPE_$Arch.$File" -EA 0)
