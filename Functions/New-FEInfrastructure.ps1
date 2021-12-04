@@ -8,7 +8,8 @@
 .NOTES
           FileName: New-FEInfrastructure.ps1 (Version 2)
           Solution: FightingEntropy Module
-          Purpose: For managing the configuration AND distribution of ADDS nodes, virtual hive clusters, MDT/WDS shares, and sewing it all together like a friggen badass... 
+          Purpose: For managing the configuration AND distribution of ADDS nodes, virtual hive clusters, MDT/WDS shares, and sewing it all together 
+          with a PowerShell Class-based XAML GUI that kicks ass and takes names. 
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
