@@ -460,7 +460,6 @@ Function Search-WirelessNetwork
             {
                 Yes 
                 { 
-                    Write-Host $Select
                     $Xaml.IO.DialogResult = $True
                 }
                 No  
@@ -477,4 +476,8 @@ Function Search-WirelessNetwork
     })
     
     $Xaml.Invoke()
+    If ($Xaml.IO.DialogResult)
+    {
+        Return $Xaml.IO.Output.SelectedItem
+    }
 }
