@@ -405,6 +405,13 @@ Function Get-Vault7
                 0 { $Null } 1 { $This.Output } Default { $This.Output[0..($This.Output.Count-1)] }
             })
         }
+        [Void] Draw()
+        {
+            ForEach ($Part in $This.Output)
+            {
+                Write-Theme -InputObject $Part -Title $Part.Name -Prompt $Part.URL
+            }
+        }
     }
     [Vault_7]::New()
 }
