@@ -1855,7 +1855,7 @@ Function Get-FEWizard
     # [Locale Panel/Keyboard()]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Locale Panel/Keyboard()]"
     $Wizard.Reset($Wizard.Xaml.IO.Locale_Keyboard.Items,$Wizard.Locale.Culture)
-    $KeyboardLocale = Get-Item tsenv:\KeyboardLocale
+    $KeyboardLocale = (Get-Item tsenv:\KeyboardLocale).Value
     If ($KeyboardLocale)
     {
         $Wizard.Xaml.IO.Locale_Keyboard.SelectedItem   = $Wizard.Locale | ? Culture -eq $KeyboardLocale | Select-Object -Last 1 | % Culture
@@ -1868,10 +1868,10 @@ Function Get-FEWizard
     # [Locale Panel/Language()]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Locale Panel/Language()]"
     $Wizard.Reset($Wizard.Xaml.IO.Locale_Language1.Items,$Wizard.Locale.Name)
-    $KeyboardLocale = Get-Item tsenv:\KeyboardLocale
+    $KeyboardLocale = (Get-Item tsenv:\KeyboardLocale).Value
     If ($KeyboardLocale)
     {
-        $Wizard.Xaml.IO.Locale_Language1.SelectedItem  = $Wizard.Locale | ? Culture -eq $KeyboardLocale | Select-Object -Last 1 | % Name
+        $Wizard.Xaml.IO.Locale_Language1.SelectedItem         = $Wizard.Locale | ? Culture -eq $KeyboardLocale | Select-Object -Last 1 | % Name
     }
     Else
     {
@@ -1883,26 +1883,23 @@ Function Get-FEWizard
     $Wizard.Xaml.IO.Locale_SecondLanguage.IsChecked          = 0
     $Wizard.Xaml.IO.Locale_SecondLanguage.Add_Checked(
     {
-        Switch ($Wizard.Xaml.IO.Locale_SecondLanguage.IsChecked)
+        If ($Wizard.Xaml.IO.Locale_SecondLanguage.IsChecked)
         {
-            $False
-            {
-                $Wizard.Xaml.IO.Locale_Language2.IsEnabled       = 0
-                $Wizard.Xaml.IO.Locale_Language2.Items.Clear()
-                $Wizard.Xaml.IO.Locale_Language2.SelectedIndex   = 0
-            }
-            $True
-            {
-                $Wizard.Xaml.IO.Locale_Language2.IsEnabled       = 1
-                $Wizard.Reset($Wizard.Xaml.IO.Locale_Language2.Items,$Wizard.Locale.Name)
-                $Wizard.Xaml.IO.Locale_Language2.SelectedIndex   = 0
-            }
+            $Wizard.Xaml.IO.Locale_Language2.IsEnabled       = 1
+            $Wizard.Reset($Wizard.Xaml.IO.Locale_Language2.Items,$Wizard.Locale.Name)
+            $Wizard.Xaml.IO.Locale_Language2.SelectedIndex   = 0
+        }
+        Else
+        {
+            $Wizard.Xaml.IO.Locale_Language2.IsEnabled       = 0
+            $Wizard.Xaml.IO.Locale_Language2.Items.Clear()
+            $Wizard.Xaml.IO.Locale_Language2.SelectedIndex   = 0
         }
     })
 
     # [Misc Panel/FinishAction()]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Misc Panel/FinishAction()]"
-    $Finish = Get-Item tsenv:\FinishAction | % Value
+    $Finish = (Get-Item tsenv:\FinishAction).Value
     If ($Finish)
     {
         $Wizard.Xaml.IO.Misc_Finish_Action.SelectedIndex = @{""=0;"REBOOT"=1;"SHUTDOWN"=2;"LOGOFF"=3}[$Finish]
@@ -1910,7 +1907,7 @@ Function Get-FEWizard
 
     # [Misc Panel/WSUSServer()]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Misc Panel/WSUSServer()]"
-    $WSUS = Get-Item tsenv:\WSUSServer | % Value
+    $WSUS = (Get-Item tsenv:\WSUSServer).Value
     If ($WSUS)
     {
         $Wizard.Xaml.IO.Misc_WSUSServer.Text = $WSUS
@@ -1918,7 +1915,7 @@ Function Get-FEWizard
 
     # [Misc Panel/EventService()]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Misc Panel/EventService()]"
-    $EventService = Get-Item tsenv:\EventService | % Value
+    $EventService = (Get-Item tsenv:\EventService).Value
     If ($EventService)
     {
         $Wizard.Xaml.IO.Misc_EventService.Text = $EventService
@@ -1946,7 +1943,6 @@ Function Get-FEWizard
         }
     })
     
-    # // TaskSequence (0/4) --------------------------------------------------------------------------------
     # [Root Panel/TaskSequence (Items)]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/TaskSequence (Items)]"
     $Wizard.Cycle(4,$Wizard.Xaml.IO.TaskSequence.Items)
@@ -1985,12 +1981,11 @@ Function Get-FEWizard
             $Wizard.Xaml.IO.Task_ID.Text               = $Wizard.Xaml.IO.TaskSequence.SelectedItem.ID
         }
     })
-    # \\ TaskSequence (4/4) --------------------------------------------------------------------------------
     
-    # // Application (0/3) --------------------------------------------------------------------------------
     # [Root Panel/Application (Items)]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Application (Items)]"
     $Wizard.Cycle(0,$Wizard.Xaml.IO.Application.Items)
+
     # [Root Panel/Application (SearchBox)]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Application (SearchBox)]"
     $Wizard.Xaml.IO.ApplicationFilter.Add_TextChanged(
@@ -2014,10 +2009,7 @@ Function Get-FEWizard
         $Wizard.SafeClear($Wizard.Xaml.IO.ApplicationFilter.Text)
         $Wizard.Cycle(0,$Wizard.Xaml.IO.Application.Items)
     })
-    # \\ Application (3/3) --------------------------------------------------------------------------------
 
-
-    # // Driver (0/3) --------------------------------------------------------------------------------
     # [Root Panel/Driver (Items)]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Driver (Items)]"
     $Wizard.Cycle(2,$Wizard.Xaml.IO.Driver.Items)
@@ -2046,9 +2038,7 @@ Function Get-FEWizard
         $Wizard.SafeClear($Wizard.Xaml.IO.DriverFilter.Text)
         $Wizard.Cycle(2,$Wizard.Xaml.IO.Driver.Items)
     })
-    # \\ Driver (3/3) --------------------------------------------------------------------------------
 
-    # // Package (0/3)
     # [Root Panel/Package (Items)]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Package (Items)]"
     $Wizard.Cycle(3,$Wizard.Xaml.IO.Package.Items)
@@ -2077,9 +2067,7 @@ Function Get-FEWizard
         $Wizard.SafeClear($Wizard.Xaml.IO.PackageFilter.Text)
         $Wizard.Cycle(3,$Wizard.Xaml.IO.Package.Items)
     })
-    # \\ Package (3/3)
 
-    # // Profile (0/3) --------------------------------------------------------------------------------
     # [Root Panel/Profile (Items)]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Profile (Items)]"
     $Wizard.Cycle(5,$Wizard.Xaml.IO.Profile.Items)
@@ -2108,9 +2096,7 @@ Function Get-FEWizard
         $Wizard.SafeClear($Wizard.Xaml.IO.ProfileFilter.Text)
         $Wizard.Cycle(5,$Wizard.Xaml.IO.Profile.Items)
     })
-    # \\ Profile (3/3) --------------------------------------------------------------------------------
 
-    # // OperatingSystem (0/3)
     # [Root Panel/OperatingSystem (Items)]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/OperatingSystem (Items)]"
     $Wizard.Cycle(1,$Wizard.Xaml.IO.OperatingSystem.Items)
@@ -2139,9 +2125,7 @@ Function Get-FEWizard
         $Wizard.SafeClear($Wizard.Xaml.IO.OperatingSystemFilter.Text)
         $Wizard.Cycle(1,$Wizard.Xaml.IO.OperatingSystem.Items)
     })
-    # \\ OperatingSystem (3/3) ------------------------------------------------------------------------
-    
-    # // LinkedShare (0/3) --------------------------------------------------------------------------------
+
     # [Root Panel/LinkedShare (Items)]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/LinkedShare (Items)]"
     $Wizard.Cycle(6,$Wizard.Xaml.IO.LinkedShare.Items)
@@ -2170,9 +2154,7 @@ Function Get-FEWizard
         $Wizard.SafeClear($Wizard.Xaml.IO.LinkedShareFilter.Text)
         $Wizard.Cycle(6,$Wizard.Xaml.IO.LinkedShare.Items)
     })
-    # \\ LinkedShare (3/3) --------------------------------------------------------------------------------
-    
-    # // Media (0/3) --------------------------------------------------------------------------------
+
     # [Root Panel/Media (Items)]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [Root Panel/Media (Items)]"
     $Wizard.Cycle(7,$Wizard.Xaml.IO.Media.Items)
@@ -2201,8 +2183,6 @@ Function Get-FEWizard
         $Wizard.SafeClear($Wizard.Xaml.IO.MediaFilter.Text)
         $Wizard.Cycle(7,$Wizard.Xaml.IO.Media.Items)
     })
-    # \\ Media (3/3) --------------------------------------------------------------------------------
-
 
     # [System/All]
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Default [~] [System/All]"
@@ -2366,6 +2346,7 @@ Function Show-FEWizard
             $Wizard.SetTsEnv("TaskSequenceID",$Wizard.Xaml.IO.Task_ID.Text)
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): TaskSequenceID [+] [$($Wizard.Xaml.IO.Task_ID.Text)]"
         }
+
         # CheckOSDComputerName()
         If ($Wizard.Xaml.IO.System_Name.Text -eq "")
         {
@@ -2373,20 +2354,21 @@ Function Show-FEWizard
         }
         Else
         {
-            Try
+            Switch -Regex ((Test-Connection $Wizard.Xaml.IO.System_Name.Text -Count 1 -EA 0).Address)
             {
-                $Result = Test-Connection $Wizard.Xaml.IO.System_Name.Text -Count 1 -EA 0
-                If ($Result)
-                {
+                $Null
+                { 
+                    $Wizard.SetTSEnv("OSDComputerName",$Wizard.Xaml.IO.System_Name.Text)
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SystemName [+] [$($Wizard.Xaml.IO.System_Name.Text)]" 
+                }
+                
+                Default 
+                { 
                     Return [System.Windows.MessageBox]::Show("Designated ComputerName already exists","Error")
                 }
             }
-            Catch
-            {
-                $Wizard.SetTSEnv("OSDComputerName",$Wizard.Xaml.IO.System_Name.Text)
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SystemName [+] [$($Wizard.Xaml.IO.System_Name.Text)]"
-            }
         }
+
         # CheckFinishAction()
         If ($Wizard.Xaml.IO.Misc_Finish_Action.SelectedIndex -ne -1)
         {
@@ -2413,6 +2395,7 @@ Function Show-FEWizard
                 }
             }
         }
+
         # CheckWSUSServer()
         If ($Wizard.Xaml.IO.Misc_WSUSServer.Text -ne "")
         {
@@ -2432,6 +2415,7 @@ Function Show-FEWizard
         {
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): WSUSServer [+] [null]"
         }
+
         # Check_EventService()
         If ($Wizard.Xaml.IO.Misc_EventService.Text -ne "")
         {
@@ -2467,6 +2451,7 @@ Function Show-FEWizard
         {
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): EventService [+] [null]"
         }
+
         # Check_SLShare()
         If ($Wizard.Xaml.IO.Misc_LogsSLShare_DynamicLogging.Text -ne "")
         {
@@ -2487,6 +2472,7 @@ Function Show-FEWizard
         {
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SLShareDynamicLogging [+] [null]"
         }
+
         # Check_SLShareDeployRoot()
         If ($Wizard.Xaml.IO.Misc_SLShare_DeployRoot.IsChecked -eq $True)
         {
@@ -2498,18 +2484,21 @@ Function Show-FEWizard
             $Wizard.SetTSEnv("SLShare","%OSD_Logs_SLShare%")
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SLShare [+] [%OSD_Logs_SLShare%]"		
         }
+
         # Check_HideShell()
         If ($Wizard.Xaml.IO.Misc_HideShell.IsChecked -eq $True)
         {
             $Wizard.SetTSEnv("HideShell","YES")
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): HideShell [+] [YES]"
         }
+
         # Check_NoExtraPartition()
         If ($Wizard.Xaml.IO.Misc_NoExtraPartition.IsChecked -eq $True)
         {
             $Wizard.SetTSEnv("DoNotCreateExtraPartition","YES")
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): DoNotCreateExtraPartition [+] [YES]"
         }	
+
         # Check_ProductKey()
         If ($Wizard.Xaml.IO.Misc_Product_Key_Type.SelectedIndex -gt 0)
         {
@@ -2532,6 +2521,7 @@ Function Show-FEWizard
                 }
             }
         }
+
         $Wizard.Xaml.IO.DialogResult = $True
     })
     
