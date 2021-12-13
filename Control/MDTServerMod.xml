@@ -492,7 +492,7 @@
         <variable name="SMSTSRunCommandLineUserPassword" property="SMSTSRunCommandLineUserPassword"></variable>
         <variable name="LoadProfile" property="LoadProfile">false</variable>
       </defaultVarList>
-      <action>powershell.exe -file %SCRIPTROOT%\Install-FightingEntropy.ps1</action>
+      <action>powershell.exe -file "%SCRIPTROOT%\Install-FightingEntropy.ps1"</action>
     </step>
     <step type="BDD_InstallApplication" name="Install Applications" disable="false" continueOnError="false" successCodeList="0 3010" description="" startIn="">
       <action>cscript.exe "%SCRIPTROOT%\ZTIApplications.wsf"</action>
