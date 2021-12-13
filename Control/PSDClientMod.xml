@@ -167,7 +167,7 @@
         <variable name="SMSTSRunCommandLineUserPassword" property="SMSTSRunCommandLineUserPassword"></variable>
         <variable name="LoadProfile" property="LoadProfile">false</variable>
       </defaultVarList>
-      <action>powershell.exe -file %SCRIPTROOT%\Install-FightingEntropy.ps1</action>
+      <action>powershell.exe -file "%SCRIPTROOT%\Install-FightingEntropy.ps1"</action>
     </step>
     <step name="Windows Update Pass 1" disable="false" continueOnError="true" successCodeList="0 3010" description="" startIn="">
       <action>powershell.exe -file %SCRIPTROOT%\PSDWindowsUpdate.ps1</action>
