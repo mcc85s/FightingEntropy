@@ -4792,7 +4792,8 @@ Function New-FEInfrastructure
             }
             [Object] PostConfig([String]$KeyPath)
             {
-                Return @("[Net.ServicePointManager]::SecurityProtocol = 3072",
+                Return @("Set-ExecutionPolicy Bypass -Scope Process -Force",
+                "[Net.ServicePointManager]::SecurityProtocol = 3072",
                 "Invoke-RestMethod https://github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | Invoke-Expression",
                 "`$Module = Get-FEModule","`$Module.Role.LoadEnvironmentKey(`"$KeyPath`")","`$Module.Role.Choco()" -join "`n")
             }
@@ -10806,7 +10807,7 @@ Function New-FEInfrastructure
             $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
             $AddsNode.LoadVmObject($Object)
 
-            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.DnsName) 10,2,15
+            Write-Theme ("Initialized [+] Virtual Workstation ({0})" -f $Object.DnsName) 10,2,15
         }
         $Main.VmController.AddsNode.Workstation = $Master.Container | ? Type -eq Workstation
 
