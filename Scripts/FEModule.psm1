@@ -1,3 +1,27 @@
+<#
+.SYNOPSIS
+
+.DESCRIPTION
+
+.LINK
+
+.NOTES
+          FileName: FEModule.psm1
+          Solution: FightingEntropy PSDModification
+          Purpose:  Providing utilities for PXE Environment
+          Author: Michael C. Cook Sr.
+          Contact: 
+          Primary: 
+          Created: 
+          Modified: 2021-12-13
+
+          Version - 0.0.0 - () - Finalized functional version 1.
+
+          TODO:
+
+.Example
+#>
+
 Function Get-FENtpTime 
 {
     [CmdletBinding()]
@@ -526,7 +550,7 @@ Function Invoke-FERules
             }
             If ($This.Con)
             {
-
+                
             }
         }
     }
