@@ -121,7 +121,7 @@
     <condition></condition>
     <step type="BDD_InstallOS" name="Install Operating System" description="" disable="false" continueOnError="false" runIn="WinPEandFullOS" successCodeList="0 3010">
       <defaultVarList>
-        <variable name="OSGUID" property="OSGUID">{00000000-0000-0000-0000-000000000000}</variable>
+        <variable name="OSGUID" property="OSGUID">{6dd77460-6e1c-4b99-9d42-9ed2049ed2ab}</variable>
         <variable name="DestinationDisk" property="DestinationDisk">0</variable>
         <variable name="DestinationPartition" property="DestinationPartition">1</variable>
         <variable name="DestinationOSVariable" property="DestinationOSVariable"></variable>
@@ -158,6 +158,12 @@
         <variable name="RulesFile" property="RulesFile"></variable>
       </defaultVarList>
       <action>cscript.exe "%SCRIPTROOT%\ZTIGather.wsf"</action>
+    </step>
+    <step type="BDD_RecoverDomainJoin" name="Recover From Domain " description="" disable="false" continueOnError="false" runIn="WinPEandFullOS" successCodeList="0 3010">
+      <defaultVarList>
+        <variable name="DomainErrorRecovery" property="DomainErrorRecovery">Auto</variable>
+      </defaultVarList>
+      <action>cscript.exe "%SCRIPTROOT%\ZTIDomainJoin.wsf" </action>
     </step>
     <step type="SMS_TaskSequence_RunCommandLineAction" name="Install FightingEntropy" description="Installs the FightingEntropy modification for PowerShell" disable="false" continueOnError="false" startIn="" successCodeList="0 3010" runIn="WinPEandFullOS">
       <defaultVarList>
@@ -197,14 +203,14 @@
     <condition></condition>
   </group>
   <globalVarList>
-    <variable name="OSGUID" property="OSGUID">{00000000-0000-0000-0000-000000000000}</variable>
+    <variable name="OSGUID" property="OSGUID">{6dd77460-6e1c-4b99-9d42-9ed2049ed2ab}</variable>
     <variable name="DestinationDisk" property="DestinationDisk">0</variable>
     <variable name="DestinationPartition" property="DestinationPartition">1</variable>
     <variable name="DestinationOSVariable" property="DestinationOSVariable"></variable>
     <variable name="DestinationOSRefresh" property="DestinationOSRefresh"></variable>
     <variable name="DestinationOSDriveLetter" property="DestinationOSDriveLetter"></variable>
     <variable name="DestinationOSInstallType" property="DestinationOSInstallType">NextPartition</variable>
-    <variable name="OSGUID" property="OSGUID">{00000000-0000-0000-0000-000000000000}</variable>
+    <variable name="OSGUID" property="OSGUID">{6dd77460-6e1c-4b99-9d42-9ed2049ed2ab}</variable>
   </globalVarList>
   <group expand="true" name="Custom Tasks" description="" disable="false" continueOnError="false">
     <action />
