@@ -6,7 +6,7 @@
 .LINK
 
 .NOTES
-          FileName: PSDUtility.psd1
+          FileName: PSDGather.psd1
           Solution: PowerShell Deployment for MDT
           Purpose: Module for gathering information about the OS and environment
                     (mostly from WMI), and for processing rules (Bootstrap.ini, 
