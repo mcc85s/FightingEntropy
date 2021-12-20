@@ -8,34 +8,20 @@
 .NOTES
           FileName: PSDStart.ps1
           Solution: PowerShell Deployment for MDT
-          Author: PSD Development Team
+          Author: (Original) PSD Development Team, (Modified)
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2019-06-02
+          Modified: 2021-12-19
 
           Version - 0.0.0 - () - Finalized functional version 1.
-          Version - 0.9.1 - Added check for network access when doing network deployment
-          Version - 0.9.2 - Check that needed files are in WinPE for XAML files to show correctly
-                            Logic for detection if running in WinPE
-                            Check for unsupported variables
-          Version - 0.9.2 - Added logic when removing tscore.dll and TSprogressUI to avoid errors in log files
-          Version - 0.9.3 - ZTINextPhase.wsf is now replaced with PSDNextPhase.ps1
-                            ZTIApplications.wsf is now replaced with PSDApplications.ps1
-          Version - 0.9.4 - Added partial support for HTTPS
-          version - 0.9.5 - Added detection if we can find certificate in certain folders, of so they will be imported as Root Cert's
-                            $($env:SYSTEMDRIVE)\Deploy\Certificates
-                            $($env:SYSTEMDRIVE)\MININT\Certificates
-          version - 0.9.6 - Added https condition for NTP, and set time
-          version - 0.9.7 - Debugging, logging, Write to screen has changed... alot...
-          TODO:
-
+          Version - v2 FEWizard [Launch]
 .Example
 #>
 
 Param ([Switch]$Start,[Switch]$Debug)
 
-function Write-PSDBootInfo
+Function Write-PSDBootInfo
 {
     Param([String]$Message,[UInt32]$SleepSec=0)
 
@@ -62,38 +48,77 @@ function Write-PSDBootInfo
     }
 }
 
-# Set the module path based on the current script path
-$deployRoot = Split-Path -Path "$PSScriptRoot"
-$env:PSModulePath = $env:PSModulePath + ";$deployRoot\Tools\Modules"
+Function Get-PSDVolume
+{
+    # Shape volume class
+    Class PSDVolume
+    {
+        Hidden [Object] $Volume
+        [String] $GUID
+        [String] $DriveType
+        [String] $DriveLetter
+        [String] $DeviceID
+        PSDVolume([Object]$Volume)
+        {
+            $This.Volume      = $Volume
+            $This.GUID        = [Regex]::Matches($Volume.DeviceID,"{$((8,4,4,4,12|%{"[a-f0-9]{$_}"}) -join "-")}")
+            $This.DriveType   = $Volume.DriveType
+            $This.DriveLetter = $Volume.DriveLetter
+            $This.DeviceID    = $Volume.DeviceID
+        }
+    }
+    Get-WmiObject Win32_Volume | ? DriveType -eq 3 | ? DriveLetter | % { [PSDVolume]::New($_) }
+}
+
+# Add PresentationFramework for GUI
+Add-Type -AssemblyName PresentationFramework
+
+# Set the $deployroot path based on the current script path
+$Env:ScriptRoot        = "$PSScriptRoot"
+Write-PSDBootInfo -Message "Found [~] ScriptRoot: [$PSScriptRoot]" -SleepSec 1
+
+$Env:deployRoot        = "$PSScriptRoot" | Split-Path
+Write-PSDBootInfo -Message "Found [~] DeployRoot: [$Env:DeployRoot]" -SleepSec 1
+
+# Get Module path regardless of starting conditions
+$Modules               = "$Env:DeployRoot\Tools\Modules"
+If (!(Test-Path $Modules))
+{
+    $Env:PSModulePath += ";$(Get-ChildItem "$Env:SystemDrive\" -Recurse -EA 0 | ? FullName -notmatch Windows | ? FullName -match "Tools\\Modules$" | Select-Object -First 1 | % FullName)"
+}
+If (Test-Path $Modules)
+{
+    $Env:PSModulePath += ";$Modules"
+}
+Write-PSDBootInfo -Message "Found [~] Tools\Modules: [$Modules]" -SleepSec 1
 
 # Check for debug settings
-
-$Global:PSDDebug = $false
+$Global:PSDDebug       = $false
 If (Test-Path -Path "C:\MININT\PSDDebug.txt")
 {
-    $DeBug = $true
-    $Global:PSDDebug = $True
+    $DeBug             = $true
+    $Global:PSDDebug   = $True
 }
 
 If ($Global:PSDDebug -eq $false)
 {
     If ($DeBug -eq $true)
     {
-        $Result = Read-Host -Prompt "Press y and Enter to continue in debug mode, any other key to exit from debug..."
+        $Result        = Read-Host -Prompt "Press y and Enter to continue in debug mode, any other key to exit from debug..."
         If ($Result -eq "y")
         {
-            $DeBug = $True
+            $DeBug     = $True
         }
         Else
         {
-            $DeBug = $False
+            $DeBug     = $False
         }
     }
 }
 
 If ($DeBug -eq $true)
 {
-    $Global:PSDDebug = $True
+    $Global:PSDDebug   = $True
     $verbosePreference = "Continue"
 }
 
@@ -109,9 +134,22 @@ Write-PSDBootInfo -Message "Setting Power plan to High performance" -SleepSec 1
 & powercfg.exe /s 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c
 
 # Load core modules
-Write-PSDBootInfo -SleepSec 1 -Message "Loading core PowerShell modules"
-Import-Module PSDUtility -Force -Verbose:$False
-Import-Module Storage -Force -Verbose:$False
+Write-PSDBootInfo -SleepSec 1 -Message "Loading [~] Modules: Storage, PSDUtility"
+Import-Module Storage -Force -Scope Global -Verbose:$False
+
+Import-Module Microsoft.BDD.TaskSequenceModule -Scope Global -Force -Verbose:$False
+Import-Module PSDUtility -Force -Scope Global -Verbose:$False
+If ($? -eq $False)
+{
+    Throw "Unable to load module [PSDUtility]"
+}
+If ($? -eq $True)
+{
+    Write-PSDLog -Message "$($MyInvocation.Mycommand.Name): Loading [~] PSModules += Storage"
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += PSDUtility"
+    Write-PSDBootInfo -SleepSec 1 -Message "Initialized [+] PSDUtility, PSDStart -> Beginning"
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Beginning initial process in [PSDStart.ps1]"
+}
 
 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Beginning initial process in PSDStart.ps1"
@@ -145,7 +183,7 @@ ForEach ($CertificateLocation in "Deploy","MININT" | % { "$($env:SYSTEMDRIVE)\$_
     }
 }
 
-ForEach($Certificate in $Certificates)
+ForEach ($Certificate in $Certificates)
 {
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Found $($Certificate.FullName), trying to add as root certificate"
     # Write-PSDBootInfo -SleepSec 1 -Message "Installing PSDRoot certificate"
@@ -186,7 +224,7 @@ If ($BootfromWinPE -eq $true)
     # We need more than 1.5 GB (Testing for at least 1499MB of RAM)
     Write-PSDBootInfo -SleepSec 2 -Message "Checking that we have at least 1.5 GB of RAM"
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Check for minimum amount of memory in WinPE to run PSD"
-    If ((Get-WmiObject -Class Win32_computersystem).TotalPhysicalMemory -le 1499MB)
+    If ((Get-WmiObject Win32_ComputerSystem).TotalPhysicalMemory -le 1499MB)
     {
         Show-PSDInfo -Message "Not enough memory to run PSD, aborting..." -Severity Error -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
         Start-Process PowerShell -Wait
@@ -198,7 +236,9 @@ If ($BootfromWinPE -eq $true)
 }
 
 # Load more modules
-Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Load more modules"
+Write-PSDBootInfo -SleepSec 1 -Message "Loading [~] Modules: PSDDeploymentShare, PSDGather, PSDWizard"
+Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Modules [~] PSDDeploymentShare, PSDGather, PSDWizard"
+
 Import-Module PSDDeploymentShare -ErrorAction Stop -Force -Verbose:$False
 Import-Module PSDGather -ErrorAction Stop -Force -Verbose:$False
 Import-Module PSDWizard -ErrorAction Stop -Force -Verbose:$False
@@ -246,9 +286,10 @@ If ($start)
 }
 
 # Gather local info to make sure key variables are set (e.g. Architecture)
-Write-PSDBootInfo -SleepSec 1 -Message "Running local gather"
+Write-PSDBootInfo -Message "Running local gather" -SleepSec 1 
 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): About to run Get-PSDLocalInfo"
 Get-PSDLocalInfo
+
 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot is now $deployRoot"
 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): env:PSModulePath is now $env:PSModulePath"
 
@@ -257,25 +298,27 @@ Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Checking if there is an 
 
 # Check for an in-progress task sequence
 Write-PSDBootInfo -SleepSec 1 -Message "Check for an in-progress task sequence"
-$tsInProgress = $false
-$List         = Get-WmiObject Win32_Volume | ? DriveType -eq 3 | ? DeviceID -ne X: | ? {Test-Path "$($_.DeviceID)\_SMSTaskSequence\TSEnv.dat" }
+
+$tsInProgress     = $False
+$List             = @( Get-PSDVolume | ? { Test-Path "$($_.DriveLetter)\_SMSTaskSequence\TSEnv.dat" } )
 
 If ($List.Count -gt 0)
 {
-    $tsDrive      = $List[0].DeviceID 
-    $tsInProgress = $true
+    $tsDrive      = $List[0].DriveLetter
+    $tsInProgress = $True
 
     # Found it, save the location
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): In-progress task sequence found at $tsDrive\_SMSTaskSequence"
-    #Set-PSDDebugPause -Prompt 240
+
+    # Set-PSDDebugPause -Prompt 240
 
     # Restore the task sequence variables
     $variablesPath = Restore-PSDVariables
     Try
     {
-        ForEach ($item in (Get-ChildItem -Path TSEnv:))
+        ForEach ($Item in Get-ChildItem TSEnv:)
         {
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Property $($item.Name) is $($item.Value)"
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Property $($Item.Name) is $($Item.Value)"
         }
     }
     Catch
@@ -322,11 +365,11 @@ If ($tsInProgress)
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Task sequence engine located at $tsEngine."
 
     # Get full scripts location
-    $scripts = Get-PSDContent -Content "Scripts"
-    $env:ScriptRoot = $scripts
+    $scripts           = Get-PSDContent -Content "Scripts"
+    $env:ScriptRoot    = $scripts
 
     # Set the PSModulePath
-    $modules = Get-PSDContent -Content "Tools\Modules"
+    $modules           = Get-PSDContent -Content "Tools\Modules"
     $env:PSModulePath += ";$modules"
 
     # Resume task sequence
@@ -334,9 +377,9 @@ If ($tsInProgress)
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): env:PSModulePath is now $env:PSModulePath"
     Stop-PSDLogging
     Write-PSDBootInfo -SleepSec 1 -Message "Resuming existing task sequence"
-    $result = Start-Process -FilePath "$tsEngine\TSMBootstrap.exe" -ArgumentList "/env:SAContinue" -Wait -Passthru
+    $Result            = Start-Process -FilePath "$tsEngine\TSMBootstrap.exe" -ArgumentList "/env:SAContinue" -Wait -Passthru
 }
-If ($List.Count -eq 0)
+If (!$tsInProgress)
 {
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): No task sequence is in progress."
 
@@ -349,8 +392,8 @@ If ($List.Count -eq 0)
     }
     Else
     {
-        $mappingFile = "$deployRoot\Scripts\ZTIGather.xml"
-        Invoke-PSDRules -FilePath "$deployRoot\Control\Bootstrap.ini" -MappingFile $mappingFile
+        $mappingFile = "$Env:deployRoot\Tools\Modules\PSDGather\ZTIGather.xml"
+        Invoke-PSDRules -FilePath "$Env:deployRoot\Scripts\Bootstrap.ini" -MappingFile $mappingFile
     }
 
     # Determine the Deployroot
@@ -361,12 +404,12 @@ If ($List.Count -eq 0)
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Check if we are deploying from media"
 
-    $List = Get-WmiObject Win32_Volume | ? DriveType -eq 3 | ? DeviceID -ne X: | ? {Test-Path "$($_.DeviceID)\Deploy\Scripts\Media.tag"}
+    $List = @( Get-PSDVolume | ? {Test-Path "$($_.DriveLetter)\Deploy\Scripts\Media.tag"} )
 
     If ($List.Count -gt 0)
     {
         # Found it, save the location
-        $tsDrive                = $List[0].DeviceID
+        $tsDrive                = $List[0].DriveLetter
         $tsenv:DeployRoot       = "$tsDrive\Deploy"
 	    $tsenv:ResourceRoot     = "$tsDrive\Deploy"
 	    $tsenv:DeploymentMethod = "MEDIA"
@@ -456,34 +499,35 @@ If ($List.Count -eq 0)
         ForEach ($item in $items)
         {
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Testing PSDDeployRoots value: $item"
-            Switch -Regex ($DeployRoot)
+            Switch -Regex ($item)
             {
                 "(https\:\/\/.+)"
                 {
-                    $ServerName = $deployRoot.Replace("https://","") | Split-Path
+                    $ServerName = $item -Replace "^https\:\/\/",""
                     $Protocol   = "HTTPS"
                 }
                 "(http\:\/\/.+)"
                 {
-                    $ServerName = $deployRoot.Replace("http://","") | Split-Path
+                    $ServerName = $item -Replace "^http\:\/\/",""
                     $Protocol   = "HTTP"
                 }
                 "(\\\\.+)"
                 {
-                    $ServerName = $deployRoot.Split("\\")[2]
+                    $ServerName = $item.Split("\\")[2]
                     $Protocol   = "SMB"
                 }
             }
-            $Result     = Test-PSDNetCon -Hostname $ServerName -Protocol $Protocol
+            $Result             = Test-PSDNetCon -Hostname $ServerName -Protocol $Protocol
 
-            if (!$Result)
+            If (!$Result)
             {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to access PSDDeployRoots value $item using [$HTTP"
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to access PSDDeployRoots value [$item] using [$Protocol]"
             }
-            Else
+            If ($Result)
             {
                 $tsenv:DeployRoot = $item
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot is now $tsenv:DeployRoot"
+                $DeployRoot       = $item
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): DeployRoot is now [$tsenv:DeployRoot]"
                 Break
             }
         }
@@ -497,7 +541,7 @@ If ($List.Count -eq 0)
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Validating network access to $tsenv:DeployRoot"
     Write-PSDBootInfo -SleepSec 2 -Message "Validating network access to $tsenv:DeployRoot"
 
-    #Set-PSDDebugPause -Prompt 451
+    # Set-PSDDebugPause -Prompt 451
 
     If (!($tsenv:DeployRoot -notlike $null -or ""))
     {
@@ -526,17 +570,17 @@ If ($List.Count -eq 0)
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): New deploy root is $deployRoot."
         Switch -Regex ($DeployRoot)
         {
-            "(https\:\/\/.+)"
+            "^https\:\/\/.+)"
             {
-                $ServerName = $deployRoot.Replace("https://","") | Split-Path
+                $ServerName = $deployRoot -Replace "^https\:\/\/",""
                 $Protocol   = "HTTPS"
             }
-            "(http\:\/\/.+)"
+            "^http\:\/\/.+"
             {
-                $ServerName = $deployRoot.Replace("http://","") | Split-Path
+                $ServerName = $deployRoot -Replace "^http\:\/\/",""
                 $Protocol   = "HTTP"
             }
-            "(\\\\.+)"
+            "^\\\\\w+)"
             {
                 $ServerName = $deployRoot.Split("\\")[2]
                 $Protocol   = "SMB"
@@ -563,7 +607,7 @@ If ($List.Count -eq 0)
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): New deploy root is $deployRoot."
     Get-PSDConnection -DeployRoot $tsenv:DeployRoot -Username "$tsenv:UserDomain\$tsenv:UserID" -Password $tsenv:UserPassword
 
-    #Set-PSDDebugPause -Prompt 518
+    # Set-PSDDebugPause -Prompt 518
 
     # Set time on client
     $Time = Get-Date
@@ -571,30 +615,23 @@ If ($List.Count -eq 0)
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Set time on client"
     If ($tsenv:DeploymentMethod -ne "MEDIA")
     {
-        If ($deployRoot -like "\\*")
+        Switch -Regex ($DeployRoot)
         {
-            net time \\$ServerName /set /y
-        }
-        If ($deployRoot -ilike "https://*")
-        {
-            $NTPTime = Get-PSDNtpTime
-            If ($NTPTime -ne $null)
+            "^http"
             {
-                Set-Date -Date $NTPTime.NtpTime
+                $NTPTime = @{$False=Get-PSDNtpTime;$True=Get-PSDNtpTime -Server Gunk.gunk.gunk}[$DeployRoot -match "^https"]
+                If ($NTPTime)
+                {
+                    Set-Date -Date $NTPTime.NtpTime
+                }
+                If (!$NtpTime)
+                {
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Failed to set time/date" -LogLevel 2
+                }
             }
-            Else
+            "^\\\\\w+"
             {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Failed to set time/date" -LogLevel 2
-            }
-            
-        }
-        if ($deployRoot -ilike "http://*"){
-            $NTPTime = Get-PSDNtpTime -Server Gunk.gunk.gunk
-            if($NTPTime -ne $null){
-                Set-Date -Date $NTPTime.NtpTime
-            }
-            else{
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Failed to set time/date" -LogLevel 2
+                net time \\$ServerName /set /y
             }
         }
     }
@@ -806,8 +843,13 @@ Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): env:PSModulePath is now 
 
 # Process the exit code from the task sequence
 # Start-PSDLogging
-#if($result.ExitCode -eq $null){$result.ExitCode = 0}
-#Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Return code from TSMBootstrap.exe is $($result.ExitCode)"
+
+# If ($result.ExitCode -eq $null)
+# {
+#    $result.ExitCode = 0
+# }
+
+# Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Return code from TSMBootstrap.exe is $($result.ExitCode)"
 
 Switch ($Result.ExitCode)
 {
@@ -841,7 +883,7 @@ Switch ($Result.ExitCode)
         # Read-Host -Prompt "Check for FinishAction and cleanup leftovers"
         Write-Verbose "tsenv:FinishAction is $tsenv:FinishAction"
         
-        If ($tsenv:FinishAction -match "(Reboot|Restart)")
+        If ($tsenv:FinishAction -eq "Reboot" -or $tsenv:FinishAction -eq "Restart")
         {
             $Global:RebootAfterTS = $True
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Will reboot for finishaction"
@@ -851,7 +893,7 @@ Switch ($Result.ExitCode)
        
         Stop-PSDLogging
 
-        Copy-Item -Path $env:SystemDrive\MININT\Cache\Scripts\PSDFinal.ps1 -Destination $env:TEMP
+        Copy-Item -Path "$env:SystemDrive\MININT\Cache\Scripts\PSDFinal.ps1" -Destination $env:TEMP
         Clear-PSDInformation
                 
         #Checking for FinalSummary
@@ -903,7 +945,7 @@ Switch ($Result.ExitCode)
             # Exit with a zero return code and let Windows PE reboot
 
             # Assuming that the first Volume having mspaint.exe is the correct OS volume
-            Foreach ($Drive in Get-PSDrive | ? Provider -like *filesystem )
+            Foreach ($Drive in Get-PSDrive | ? Provider -like *filesystem)
             {
                 # TODO: Need to find a better file for detection of running OS
                 If (Test-Path -Path "$($Drive.Name):\Windows\System32\mspaint.exe")
@@ -1016,11 +1058,11 @@ Switch ($Result.ExitCode)
                 Read-Host -Prompt "Exit -2147021886 (Windows)"
             }
             
-            #Restart-Computer -Force
+            # Restart-Computer -Force
             Shutdown.exe /r /t 30 /f
 
             Stop-PSDLogging
-            exit 0
+            Exit 0
         }
     }
     Default 
@@ -1052,7 +1094,7 @@ Switch ($Result.ExitCode)
         If (!(Test-Path -Path "$Tools\TSProgressUI.exe"))
         {
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): About to run: $Executable $Arguments"
-            $return = Invoke-PSDEXE -Executable $Executable -Arguments $Arguments
+            $return = Invoke-PSDEXE -Executable $Executable -Arguments $Argument
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Exitcode: $return"
         }
 
