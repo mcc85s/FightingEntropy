@@ -13,7 +13,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-09-21
+          Modified: 2021-12-19
 
           Version - 0.0.0 - () - Finalized functional version 1.
           Version - 0.0.1 - () - Added Import-PSDCertificate.
@@ -40,9 +40,31 @@ If ($PSDDebug -eq $True)
 $Global:psuDataPath = ""
 $caller = Split-Path -Path $MyInvocation.PSCommandPath -Leaf
 
+Function Get-PSDVolume
+{
+    # Shape volume class
+    Class PSDVolume
+    {
+        Hidden [Object] $Volume
+        [String] $GUID
+        [String] $DriveType
+        [String] $DriveLetter
+        [String] $DeviceID
+        PSDVolume([Object]$Volume)
+        {
+            $This.Volume      = $Volume
+            $This.GUID        = [Regex]::Matches($Volume.DeviceID,"{$((8,4,4,4,12|%{"[a-f0-9]{$_}"}) -join "-")}")
+            $This.DriveType   = $Volume.DriveType
+            $This.DriveLetter = $Volume.DriveLetter
+            $This.DeviceID    = $Volume.DeviceID
+        }
+    }
+    Get-WmiObject Win32_Volume | ? DriveType -eq 3 | ? DriveLetter | % { [PSDVolume]::New($_) }
+}
+
 Function Get-PSDLocalDataPath
 {
-    Param([switch] $move)
+    Param([Switch]$Move)
 
     # Return the cached local data path if possible
     If ($Global:psuDataPath -ne "" -and (-not $move))
@@ -87,10 +109,7 @@ Function Get-PSDLocalDataPath
             # If the OS volume GUID is set, we should use that volume (UEFI)
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Get the OS image details (UEFI)"
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Checking for OS volume using $($tsenv:OSVolumeGuid)."
-            Get-Volume | ? UniqueID -like "*$($tsenv:OSVolumeGuid)*" | % {
-
-                $LocalPath = "$($_.DriveLetter):\MININT"
-            }
+            $LocalPath = Get-PSDVolume | ? GUID -eq $tsenv:OSVolumeGUID | % { "$($_.DriveLetter)\MININT" }
         }
     }
     
@@ -98,9 +117,7 @@ Function Get-PSDLocalDataPath
     {
         # Look on all other volumes 
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Checking other volumes for a MININT folder."
-        Get-Volume | ? DriveLetter | ? DriveType -eq Fixed | ? DriveLetter -ne X | ? {Test-Path "$($_.DriveLetter):\MININT"} | Select-Object -First 1 | % {
-            $LocalPath = "$($_.DriveLetter):\MININT"
-        }
+        $LocalPath = Get-PSDVolume | ? {Test-Path "$($_.DriveLetter)\MININT"} | % { "$($_.DriveLetter)\MININT" }
     }
     
     # Not found on any drive, create one on the current system drive
@@ -251,7 +268,7 @@ Function Restore-PSDVariables
 {
     $Path = "$(Get-PSDLocaldataPath)\Variables.dat"
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Restore-PSDVariables from $Path"
-    If (Test-Path -Path $Path) 
+    If (Test-Path -Path $Path)
     {
         [xml]$V = Get-Content -Path $Path
         $V | Select-Xml -Xpath "//var" | % { Set-Item tsenv:$($_.Node.name) -Value $_.Node.'#cdata-section' } 
