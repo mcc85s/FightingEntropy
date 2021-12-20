@@ -6,17 +6,16 @@
 .LINK
 
 .NOTES
-          FileName: PSDGather.psd1
+          FileName: PSDGather.psm1
           Solution: PowerShell Deployment for MDT
           Purpose: Module for gathering information about the OS and environment
-                    (mostly from WMI), and for processing rules (Bootstrap.ini, 
-                    CustomSettings.ini).  All the resulting information is saved
-          into task sequence variables.
+                    (mostly from WMI), and for processing rules (Bootstrap.ini, CustomSettings.ini).  
+                    All the resulting information is saved into task sequence variables.
           Author: (Original) PSD Development Team, (Modified) Michael C. Cook Sr.
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-09-21
+          Modified: 2021-12-19
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -310,6 +309,7 @@ Function Invoke-PSDRule
         }
     }
 }
+
 Function Get-PSDSettings
 {
     [CmdletBinding()]Param($Section) 
@@ -402,6 +402,7 @@ Function Get-PSDSettings
         }
     }
 }
+
 Function Get-IniContent
 { 
     <# 
