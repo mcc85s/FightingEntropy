@@ -13,7 +13,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-12-04
+          Modified: 2021-12-19
 
           Version - 0.0.0 - () - Finalized functional version 1.
           Version - 0.1.1 - () - Removed blocker if we item could not be found, instead we continue and log, error handling must happen when object is needed, not when downloading.
@@ -35,8 +35,7 @@ If ($PSDDebug -eq $true)
 }
 
 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Importing module Bitstransfer"
-
-Import-Module BitsTransfer -Global -Force -Verbose:$False
+Import-Module BitsTransfer -Scope Global -Force -Verbose:$False
 
 # Local variables
 $global:psddsDeployRoot     = ""
@@ -48,8 +47,7 @@ $global:psddsCredential     = ""
 Function Get-PSDConnection
 {
     Param([String]$DeployRoot,[String]$Username,[String]$Password)
-
-# If these fields are mandatory, no need for these settings
+    # If these fields are mandatory, no need for these settings
     If (($Username -eq "\") -or ($Username -eq "")) 
     {
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): No UserID specified"
@@ -63,6 +61,7 @@ Function Get-PSDConnection
         $Password               = Get-PSDInputFromScreen -Header UserPassword -Message "Enter Password"  -ButtonText Ok -PasswordText
         $tsenv:UserPassword     = $Password
     }
+
     Save-PSDVariables | Out-Null
     # Save values in local variables
     $Global:psddsDeployRoot     = $DeployRoot
@@ -87,19 +86,19 @@ Function Get-PSDConnection
     # Make sure we can connect to the specified location
     Switch -Regex ($Global:psddsDeployRoot)
     {
-        "(http[s]*)"
+        "^http[s]*"
         {
             # Get a copy of the Control folder
-            $Cache                  = Get-PSDContent -Content Control
+            $Cache                  = Get-PSDContent -Content "Control"
             $Root                   = Split-Path -Path $Cache -Parent
 
             # Get a copy of the Templates folder
-            $null                   = Get-PSDContent -Content Templates
+            $null                   = Get-PSDContent -Content "Templates"
 
             # Connect to the cache
             Get-PSDProvider -DeployRoot $root
         }
-        "(\\\\.+)"
+        "\\\\\w+"
         {
             # Connect to a UNC path
             Try
@@ -156,16 +155,8 @@ Function Get-PSDProvider
 # Internal function for getting the next available drive letter.
 Function Get-PSDAvailableDriveLetter
 {
-    $Drives  = (Get-PSDrive -PSProvider FileSystem).Name
-    $Letters = [Char[]]@(90..65)
-    ForEach ($Letter in $Letters)
-    {
-        If ($Drives -notcontains $Letter) 
-        {
-            Return $Letter
-            Break
-        }
-    }
+    $Drive = (Get-PSDrive -PSProvider FileSystem).Name
+    Return [Char[]]@(90..65) | ? { $_ -notin $Drive.Name } | Select-Object -First 1
 }
 
 # Function for finding and retrieving the specified content.  The source location specifies
@@ -194,7 +185,7 @@ Function Get-PSDContent
         $Dest = "$PSDLocalDataPath\Cache\$Content"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Dest is $dest"
     }
-    Else
+    If ($Destination -ne "")
     {
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Destination is NOT blank"
         $Dest = $Destination
