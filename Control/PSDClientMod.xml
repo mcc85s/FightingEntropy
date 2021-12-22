@@ -159,12 +159,6 @@
       </defaultVarList>
       <action>cscript.exe "%SCRIPTROOT%\ZTIGather.wsf"</action>
     </step>
-    <step type="BDD_RecoverDomainJoin" name="Recover From Domain " description="" disable="false" continueOnError="false" runIn="WinPEandFullOS" successCodeList="0 3010">
-      <defaultVarList>
-        <variable name="DomainErrorRecovery" property="DomainErrorRecovery">Auto</variable>
-      </defaultVarList>
-      <action>cscript.exe "%SCRIPTROOT%\ZTIDomainJoin.wsf" </action>
-    </step>
     <step type="SMS_TaskSequence_RunCommandLineAction" name="Install FightingEntropy" description="Installs the FightingEntropy modification for PowerShell" disable="false" continueOnError="false" startIn="" successCodeList="0 3010" runIn="WinPEandFullOS">
       <defaultVarList>
         <variable name="PackageID" property="PackageID"></variable>
