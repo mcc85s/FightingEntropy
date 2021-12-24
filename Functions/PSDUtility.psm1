@@ -13,7 +13,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-12-19
+          Modified: 2021-12-24
 
           Version - 0.0.0 - () - Finalized functional version 1.
           Version - 0.0.1 - () - Added Import-PSDCertificate.
@@ -49,6 +49,9 @@ Function Get-PSDVolume
         [String] $GUID
         [String] $DriveType
         [String] $DriveLetter
+        [UInt32] $WinPE
+        [UInt32] $TSDrive
+        [UInt32] $Media
         [String] $DeviceID
         PSDVolume([Object]$Volume)
         {
@@ -57,6 +60,18 @@ Function Get-PSDVolume
             $This.DriveType   = $Volume.DriveType
             $This.DriveLetter = $Volume.DriveLetter
             $This.DeviceID    = $Volume.DeviceID
+            
+            # Checks if running WinPE
+            If ($This.DriveLetter -eq "X:" -and $Env:SystemDrive -eq "X:")
+            {
+                $This.WinPE   = 1
+            }
+
+            # Checks if task sequence and variable data files exist
+            If ((Test-Path "$($This.DriveLetter)\_SMSTaskSequence\TSEnv.dat") -and (Test-Path "$($This.DriveLetter)\Minint\Variables.dat"))
+            {
+                $This.TSDrive = 1
+            }
         }
     }
     Get-WmiObject Win32_Volume | ? DriveType -eq 3 | ? DriveLetter | % { [PSDVolume]::New($_) }
@@ -117,7 +132,7 @@ Function Get-PSDLocalDataPath
     {
         # Look on all other volumes 
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Checking other volumes for a MININT folder."
-        $LocalPath = Get-PSDVolume | ? {Test-Path "$($_.DriveLetter)\MININT"} | % { "$($_.DriveLetter)\MININT" }
+        $LocalPath = Get-PSDVolume | ? TsDrive -eq 1 | % { "$($_.DriveLetter)\MININT" }
     }
     
     # Not found on any drive, create one on the current system drive
@@ -247,7 +262,7 @@ Start-PSDLogging
 Function Save-PSDVariables
 {
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Running Save-PSDVariables"
-    $PSDLocaldataPath = Get-PSDLocaldataPath
+    $PSDLocaldataPath = Get-PSDLocalDataPath
     $V                = [xml]"<?xml version=`"1.0`" ?><MediaVarList Version=`"4.00.5345.0000`"></MediaVarList>"
 
     ForEach ($Item in Get-ChildItem TSEnv:)
@@ -267,11 +282,11 @@ Function Save-PSDVariables
 Function Restore-PSDVariables
 {
     $Path = "$(Get-PSDLocaldataPath)\Variables.dat"
+
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Restore-PSDVariables from $Path"
     If (Test-Path -Path $Path)
     {
-        [xml]$V = Get-Content -Path $Path
-        $V | Select-Xml -Xpath "//var" | % { Set-Item tsenv:$($_.Node.name) -Value $_.Node.'#cdata-section' } 
+        [xml](Get-Content -Path $Path) | Select-Xml -Xpath "//var" | % Node | % { Set-Item "tsenv:$($_.Name)" -Value "$($_."#cdata-section")" }
     }
     Return $Path
 }
@@ -285,9 +300,9 @@ Function Clear-PSDInformation
 
     # Process each volume looking for MININT folders
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Process each volume looking for MININT folders"
-    Get-Volume | ? {-not [String]::IsNullOrWhiteSpace($_.DriveLetter) } | ? DriveType -eq Fixed | ? DriveLetter -ne X | ? {Test-Path "$($_.DriveLetter):\MININT"} | % {
+    $Select = Get-PSDVolume | ? { Test-Path "$($_.DriveLetter)\MININT" }
 
-        $LocalPath = "$($_.DriveLetter):\MININT"
+        $LocalPath = "$($Select.DriveLetter)\MININT"
 
         # Copy PSD logs
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy PSD logs"
@@ -306,8 +321,15 @@ Function Clear-PSDInformation
             New-Item -Path "$LogDest\Panther\UnattendGC" -ItemType Directory -Force | Out-Null
 
             # Check for log files in different locations
-            $Logfiles = @("wpeinit","Debug\DCPROMO","Debug\DCPROMOUI","Debug\Netsetup","Panther\cbs_unattend","Panther\setupact",
-            "Panther\setuperr","Panther\UnattendGC\setupact","Panther\UnattendGC\setuperr" | % { "$_.log" })
+            $Logfiles = @("wpeinit",
+            "Debug\DCPROMO",
+            "Debug\DCPROMOUI",
+            "Debug\Netsetup",
+            "Panther\cbs_unattend",
+            "Panther\setupact",
+            "Panther\setuperr",
+            "Panther\UnattendGC\setupact",
+            "Panther\UnattendGC\setuperr" | % { "$_.log" })
 
             ForEach ($Logfile in $Logfiles)
             {
@@ -380,7 +402,7 @@ Function Clear-PSDInformation
 
 Function Copy-PSDFolder
 {
-    Param(
+    Param (
     [Parameter(Mandatory,Position=0)][String]$Source,
     [Parameter(Mandatory,Position=1)][String]$Destination)
 
@@ -541,7 +563,10 @@ Function Show-PSDInfo
     
     $BackColor, $Label1Text = Switch ($Severity)
     {
-        Error {"salmon","Error"} Warning {"yellow","Warning"} Information {"#F0F0F0","Information"} Default {"#F0F0F0","Information"}
+        Error {"salmon","Error"} 
+        Warning {"yellow","Warning"} 
+        Information {"#F0F0F0","Information"} 
+        Default {"#F0F0F0","Information"}
     }
 
     Get-WmiObject Win32_ComputerSystem        | % { $Manufacturer = $_.Manufacturer; 
@@ -635,7 +660,7 @@ Function Show-PSDInfo
         $Label                  += $Item
     }
 
-    $TextBox1                        = New-Object system.Windows.Forms.TextBox
+    $TextBox1                        = New-Object System.Windows.Forms.TextBox
     $TextBox1.MultiLine              = $True
     $TextBox1.Width                  = 550
     $TextBox1.Height                 = 100
@@ -644,7 +669,7 @@ Function Show-PSDInfo
     $TextBox1.Text                   = $Message
     $TextBox1.ReadOnly               = $True
 
-    $Button1                         = New-Object system.Windows.Forms.Button
+    $Button1                         = New-Object System.Windows.Forms.Button
     $Button1.text                    = "Ok"
     $Button1.width                   = 60
     $Button1.height                  = 30
