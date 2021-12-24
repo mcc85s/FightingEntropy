@@ -15,7 +15,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-12-19
+          Modified: 2021-12-24
 
           Version - 0.0.0 - () - Finalized functional version 1.
 
@@ -70,7 +70,8 @@ Function Get-PSDLocalInfo
         $macList                  = @()
         $gwList                   = @()
 
-        Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter "IPEnabled = 1" | % {
+        $Config                   = Get-WmiObject Win32_NetworkAdapterConfiguration | ? IPEnabled
+        $Config                     | % {
             $_.IPAddress            | % {  $ipList += $_ }
             $_.MacAddress           | % { $macList += $_ }
             If ($_.DefaultIPGateway) 
