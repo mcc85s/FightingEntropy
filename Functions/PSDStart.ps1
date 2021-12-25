@@ -8,14 +8,17 @@
 .NOTES
           FileName: PSDStart.ps1
           Solution: PowerShell Deployment for MDT
-          Author: (Original) PSD Development Team, (Modified) MCC
-          Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
-          Primary: @Mikael_Nystrom 
+          Purpose:  Intializes a task sequence
+          Author:   Original [PSD Development Team], 
+                    Modified [mcc85s]
+          Contact:  Original [@Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy]
+                    Modified [@mcc85s]
+          Primary:  Original [@Mikael_Nystrom]
+                    Modofied [@mcc85s]
           Created: 
           Modified: 2021-12-25
 
           Version - 0.0.0 - () - Finalized functional version 1.
-          Version - v2 FEWizard [Launch]
 .Example
 #>
 
