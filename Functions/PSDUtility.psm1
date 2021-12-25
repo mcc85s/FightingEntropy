@@ -8,18 +8,17 @@
 .NOTES
           FileName: PSDUtility.psd1
           Solution: PowerShell Deployment for MDT
-          Purpose: General utility routines useful for all PSD scripts.
-          Author: (Original) PSD Development Team, (Modified) Michael C. Cook Sr.
-          Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
-          Primary: @Mikael_Nystrom 
+          Purpose:  General utility calls for PSD (Logging/Pathing/Variables)
+          Author:   Original [PSD Development Team], 
+                    Modified [mcc85s]
+          Contact:  Original [@Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy]
+                    Modified [@mcc85s]
+          Primary:  Original [@Mikael_Nystrom]
+                    Modofied [@mcc85s]
           Created: 
           Modified: 2021-12-25
 
           Version - 0.0.0 - () - Finalized functional version 1.
-          Version - 0.0.1 - () - Added Import-PSDCertificate.
-          Version - 0.0.2 - () - Replaced Get-PSDNtpTime
-          TODO:
-
 .Example
 #>
 
