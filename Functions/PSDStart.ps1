@@ -12,7 +12,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-12-24
+          Modified: 2021-12-25
 
           Version - 0.0.0 - () - Finalized functional version 1.
           Version - v2 FEWizard [Launch]
@@ -88,46 +88,51 @@ Function Get-PSDVolume
 #    ____                                                                                                    ________    
 #   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
 #   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Initialize [+] Assembly, ScriptRoot, Modules, Ready to [Import-Module(s) ]____________________//¯¯¯        
+#    ¯¯¯\\__[ Initialize [+] Assembly, ScriptRoot, Modules, Ready to Import-Module ]________________________//¯¯¯        
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
     # Add PresentationFramework for GUI
     Add-Type -AssemblyName PresentationFramework
 
     # Set $ScriptRoot to the current script path
-    $Env:ScriptRoot        = "$PSScriptRoot"
-    Write-PSDBootInfo -Message "Found [~] ScriptRoot: [$PSScriptRoot]" -SleepSec 1
+    $Env:ScriptRoot         = "$PSScriptRoot"
+    Write-PSDBootInfo -Message "Found [~] ScriptRoot: [$Env:ScriptRoot]" -SleepSec 1
+
+    # Set Bootstrap path to the Bootstrap.ini file
+    $Env:Bootstrap          = Get-ChildItem $PSScriptRoot | ? Name -eq Bootstrap.ini | % FullName
+    Write-PSDBootInfo -Message "Found [~] Bootstrap: [$Env:Bootstrap]" -SleepSec 1
 
     # Set $DeployRoot to the parent of Env:ScriptRoot
-    $Env:deployRoot        = "$PSScriptRoot" | Split-Path
-    Write-PSDBootInfo -Message "Found [~] DeployRoot: [$Env:DeployRoot]" -SleepSec 1
- 
-    # Return a valid module path for Env:PsModulePath
-    $Modules               = "$Env:DeployRoot\Tools\Modules"
-    If (!(Test-Path $Modules))
-    {
-        $Modules = "$Env:SystemDrive\MININT\Tools\Modules"
-        If (!(Test-Path $Modules))
-        {
-            $Modules = "$Env:SystemDrive\MININT\Cache\Tools\Modules"
-            If (!(Test-Path $Modules))
-            {
-                Throw "Unable to locate module path"
-            }
-        }
-    }
-    If (Test-Path $Modules)
-    {
-        $Env:PSModulePath += ";$Modules"
-    }
-    Write-PSDBootInfo -Message "Found [~] Tools\Modules: [$Modules]" -SleepSec 1
+    $DeployRoot             = "$PSScriptRoot" | Split-Path
 
+    If (!(Test-Path $DeployRoot)) # If it doesn't exist, look in bootstrap
+    {
+        $Line = Get-Content $Env:Bootstrap | ? { $_ -match "[PSD]*DeployRoot[s]*\=.+" }
+        If ($Line)
+        {
+            $DeployRoot     = $Line -Replace "[PSD]*DeployRoot[s]*\=",''
+        }
+
+        # Class DGList {[String]$Name;[Object]$Value;DGList([String]$Name,[Object]$Value){$This.Name=$Name;$This.Value=$Value}}
+        # $Group            = ForEach ($Line in $Content)
+        # {
+        #     If ($Line -match "\w+\=.+")
+        #     {
+        #         $Group   += [DGList]::New($Line.Split("=")[0],$Line.Substring($Line.Length+1))
+        #     }
+        # }
+    }   
+    
+    $Env:DeployRoot         = $DeployRoot
+    Write-PSDBootInfo -Message "Found [~] DeployRoot: [$Env:DeployRoot]" -SleepSec 1
+
+    $Env:PsModulePath       = "$Env:PSModulePath;$Env:DeployRoot\Tools\Modules;$Env:SystemDrive\MININT\Tools\Modules;$Env:SystemDrive\MININT\Cache\Tools\Modules"
+    
 #    ____                                                                                                    ________    
 #   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
 #   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
 #    ¯¯¯\\__[ Debug [+] Settings ]__________________________________________________________________________//¯¯¯        
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
-
     $Global:PSDDebug       = $false
     If (Test-Path -Path "C:\MININT\PSDDebug.txt")
     {
@@ -176,27 +181,28 @@ Function Get-PSDVolume
 
     # Load Storage, BDD, PSDUtility (Necessary)
     Write-PSDBootInfo -SleepSec 1 -Message "Loading [~] Modules: [Storage, BDD, PSDUtility]"
-    Import-Module Storage -Force -Scope Global -Verbose:$False
-    Import-Module Microsoft.BDD.TaskSequenceModule -Scope Global -Force -Verbose:$False
-    Import-Module PSDUtility -Force -Scope Global -Verbose:$False
+    
+    Try
+    {
+        Import-Module Storage -Force -Scope Global -Verbose:$False
+        Import-Module Microsoft.BDD.TaskSequenceModule -Scope Global -Force -Verbose:$False
+        Import-Module PSDUtility -Force -Scope Global -Verbose:$False
 
-    If ($? -eq $False)
-    {
-        # An error occurred, module not loaded
-        Throw "Unable to load module [PSDUtility]"
-    }
-    If ($? -eq $True)
-    {
         # Now Write-PSDLog and other PSDUtility functions can be used
         Write-PSDBootInfo -SleepSec 1 -Message "Initialized [+] [PSDUtility, PSDStart] -> Beginning"
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): DeployRoot is now [$deployRoot]"
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): DeployRoot is now [$Env:deployRoot]"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): env:PSModulePath is now [$env:PSModulePath]"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += Storage"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += PSDUtility"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Beginning initial process in [PSDStart.ps1]"
-        
+    }
+    Catch
+    {
+        # An error occurred, module not loaded
+        Write-PSDBootInfo "Failed [!] Import-Module(s)"
+        Throw "Unable to load module [PSDUtility]"
     }
 
     If ($PSDDeBug -eq $true)
@@ -336,18 +342,18 @@ Function Get-PSDVolume
         # Create a shortcut to run this script
         $allUsersStartup     = [Environment]::GetFolderPath('CommonStartup')
         $linkPath            = "$allUsersStartup\PSDStartup.lnk"
-        $wshShell            = New-Object -comObject WScript.Shell
+        $wshShell            = New-Object -ComObject WScript.Shell
         $shortcut            = $WshShell.CreateShortcut($linkPath)
         $shortcut.TargetPath = "powershell.exe"
         
         If ($PSDDebug -eq $True)
         {
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Command set to:PowerShell.exe -Noprofile -Executionpolicy Bypass -File $PSCommandPath -Debug"
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Command set to: PowerShell.exe -NoProfile -ExecutionPolicy Bypass -File $PSCommandPath -Debug"
             $shortcut.Arguments = "-Noprofile -Executionpolicy Bypass -File $PSCommandPath -Debug"
         }
         Else
         {
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Command set to:PowerShell.exe -Noprofile -Executionpolicy Bypass -Windowstyle Hidden -File $PSCommandPath"
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Command set to: PowerShell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File $PSCommandPath"
             $shortcut.Arguments = "-Noprofile -Executionpolicy Bypass -Windowstyle Hidden -File $PSCommandPath"
         }
         $shortcut.Save()
@@ -426,12 +432,14 @@ Function Get-PSDVolume
 #    ¯¯¯\\__[ Initialize [~] TS Engine, Scripts, Modules ]__________________________________________________//¯¯¯        
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
-    # If a task sequence is in progress, resume it.  Otherwise, start a new one
+    # Sets the current directory to the SYSTEMDRIVE:\Windows\System32 path
     [Environment]::CurrentDirectory = "$($env:WINDIR)\System32"
+        
+    # If a task sequence is in progress, resume it
     If ($tsInProgress)
     {
         # Find the task sequence engine
-        If (Test-Path -Path "X:\Deploy\Tools\$($tsenv:Architecture)\tsmbootstrap.exe")
+        If (Test-Path -Path "X:\Deploy\Tools\$($tsenv:Architecture)\TSMBootstrap.exe")
         {
             $tsEngine = "X:\Deploy\Tools\$($tsenv:Architecture)"
         }
@@ -442,20 +450,21 @@ Function Get-PSDVolume
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Task sequence engine located at $tsEngine."
 
         # Get full scripts location
-        $scripts           = Get-PSDContent -Content "Scripts"
+        $Scripts           = Get-PSDContent -Content "Scripts"
         $env:ScriptRoot    = $scripts
 
         # Set the PSModulePath
-        $modules           = Get-PSDContent -Content "Tools\Modules"
-        $env:PSModulePath += ";$modules"
+        $Modules           = Get-PSDContent -Content "Tools\Modules"
+        $env:PSModulePath += ";$Modules"
 
         # Resume task sequence
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot is now $deployRoot"
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): DeployRoot is now $env:deployRoot"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): env:PSModulePath is now $env:PSModulePath"
         Stop-PSDLogging
         Write-PSDBootInfo -SleepSec 1 -Message "Resuming existing task sequence"
         $Result            = Start-Process -FilePath "$tsEngine\TSMBootstrap.exe" -ArgumentList "/env:SAContinue" -Wait -Passthru
     }
+    # Otherwise, start a new task sequence
     If (!$tsInProgress)
     {
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): No task sequence is in progress."
