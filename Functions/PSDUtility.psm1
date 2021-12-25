@@ -6,7 +6,7 @@
 .LINK
 
 .NOTES
-          FileName: PSDUtility.psd1
+          FileName: PSDUtility.psm1
           Solution: PowerShell Deployment for MDT
           Purpose:  General utility calls for PSD (Logging/Pathing/Variables)
           Author:   Original [PSD Development Team], 
@@ -285,7 +285,8 @@ Function Restore-PSDVariables
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Restore-PSDVariables from $Path"
     If (Test-Path -Path $Path)
     {
-        [Xml](Get-Content -Path $Path) | Select-Xml -Xpath "//var" | % Node | % { Set-Item "tsenv:$($_.Name)" -Value "$($_."#cdata-section")" }
+        [Xml]$V = Get-Content -Path $Path
+        $V | Select-Xml -Xpath "//var" | % { Set-Item tsenv:$($_.Node.Name) -Value $_.Node.'#cdata-section' }
     }
     Return $Path
 }
