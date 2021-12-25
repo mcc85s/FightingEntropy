@@ -13,7 +13,7 @@
           Contact: @Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy
           Primary: @Mikael_Nystrom 
           Created: 
-          Modified: 2021-12-24
+          Modified: 2021-12-25
 
           Version - 0.0.0 - () - Finalized functional version 1.
           Version - 0.0.1 - () - Added Import-PSDCertificate.
@@ -286,7 +286,7 @@ Function Restore-PSDVariables
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Restore-PSDVariables from $Path"
     If (Test-Path -Path $Path)
     {
-        [xml](Get-Content -Path $Path) | Select-Xml -Xpath "//var" | % Node | % { Set-Item "tsenv:$($_.Name)" -Value "$($_."#cdata-section")" }
+        [Xml](Get-Content -Path $Path) | Select-Xml -Xpath "//var" | % Node | % { Set-Item "tsenv:$($_.Name)" -Value "$($_."#cdata-section")" }
     }
     Return $Path
 }
@@ -300,89 +300,88 @@ Function Clear-PSDInformation
 
     # Process each volume looking for MININT folders
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Process each volume looking for MININT folders"
-    $Select = Get-PSDVolume | ? { Test-Path "$($_.DriveLetter)\MININT" }
+    $Select   = Get-PSDVolume | ? { Test-Path "$($_.DriveLetter)\MININT" }
 
-        $LocalPath = "$($Select.DriveLetter)\MININT"
+    $LocalPath = "$($Select.DriveLetter)\MININT"
 
-        # Copy PSD logs
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy PSD logs"
-        If (Test-Path "$localPath\SMSOSD\OSDLOGS")
+    # Copy PSD logs
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy PSD logs"
+    If (Test-Path "$localPath\SMSOSD\OSDLOGS")
+    {
+        Write-Verbose "Copy-Item $LocalPath\SMSOSD\OSDLOGS\* $LogDest"
+        Copy-Item "$localPath\SMSOSD\OSDLOGS\*" $LogDest -Force
+    }
+
+    # Copy Panther,Debug and other logs
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy Panther,Debug and other logs"
+    If (Test-Path "$env:SystemRoot\Panther")
+    {
+        New-Item -Path "$LogDest\Panther" -ItemType Directory -Force | Out-Null
+        New-Item -Path "$LogDest\Debug"   -ItemType Directory -Force | Out-Null
+        New-Item -Path "$LogDest\Panther\UnattendGC" -ItemType Directory -Force | Out-Null
+
+        # Check for log files in different locations
+        $Logfiles = @("wpeinit",
+        "Debug\DCPROMO",
+        "Debug\DCPROMOUI",
+        "Debug\Netsetup",
+        "Panther\cbs_unattend",
+        "Panther\setupact",
+        "Panther\setuperr",
+        "Panther\UnattendGC\setupact",
+        "Panther\UnattendGC\setuperr" | % { "$_.log" })
+
+        ForEach ($Logfile in $Logfiles)
         {
-            Write-Verbose "Copy-Item $LocalPath\SMSOSD\OSDLOGS\* $LogDest"
-            Copy-Item "$localPath\SMSOSD\OSDLOGS\*" $LogDest -Force
-        }
-
-        # Copy Panther,Debug and other logs
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy Panther,Debug and other logs"
-        If (Test-Path "$env:SystemRoot\Panther")
-        {
-            New-Item -Path "$LogDest\Panther" -ItemType Directory -Force | Out-Null
-            New-Item -Path "$LogDest\Debug"   -ItemType Directory -Force | Out-Null
-            New-Item -Path "$LogDest\Panther\UnattendGC" -ItemType Directory -Force | Out-Null
-
-            # Check for log files in different locations
-            $Logfiles = @("wpeinit",
-            "Debug\DCPROMO",
-            "Debug\DCPROMOUI",
-            "Debug\Netsetup",
-            "Panther\cbs_unattend",
-            "Panther\setupact",
-            "Panther\setuperr",
-            "Panther\UnattendGC\setupact",
-            "Panther\UnattendGC\setuperr" | % { "$_.log" })
-
-            ForEach ($Logfile in $Logfiles)
+            $Sources = "$env:TEMP\$Logfile","$env:SystemRoot\$Logfile","$env:SystemRoot\System32\$Logfile","$env:Systemdrive\`$WINDOWS.~BT\Sources"
+            ForEach ($Source in $Sources)
             {
-                $Sources = "$env:TEMP\$Logfile","$env:SystemRoot\$Logfile","$env:SystemRoot\System32\$Logfile","$env:Systemdrive\`$WINDOWS.~BT\Sources"
-                ForEach ($Source in $Sources)
+                If (Test-Path -Path "$Source")
                 {
-                    If (Test-Path -Path "$Source")
-                    {
-                        Write-Verbose "$($MyInvocation.MyCommand.Name): Copying $Source to $logDest\$Logfile"
-                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copying $Source to $logDest\$Logfile"
-                        Copy-Item -Path "$Source" -Destination $logDest\$Logfile
-                    }
+                    Write-Verbose "$($MyInvocation.MyCommand.Name): Copying $Source to $logDest\$Logfile"
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copying $Source to $logDest\$Logfile"
+                    Copy-Item -Path "$Source" -Destination $logDest\$Logfile
                 }
             }
         }
+    }
 
-        # Copy SMSTS log
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy SMSTS log"
-        If (Test-Path "$env:LOCALAPPDATA\temp\smstslog\smsts.log")
+    # Copy SMSTS log
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy SMSTS log"
+    If (Test-Path "$env:LOCALAPPDATA\temp\smstslog\smsts.log")
+    {
+        Copy-Item -Path "$env:LOCALAPPDATA\temp\smstslog\smsts.log" -Destination $logDest
+    }
+
+    # Copy variables.dat (TODO: Password needs to be cleaned out)
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy variables.dat (TODO)"
+    if (Test-Path "$localPath\Variables.dat")
+    {
+        Copy-Item "$localPath\Variables.dat" $logDest -Force
+    }
+
+    # Check if DEVRunCleanup is set to NO
+    If ($($tsenv:DEVRunCleanup) -eq "NO")
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): tsenv:DEVRunCleanup is now $tsenv:DEVRunCleanup."
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cleanup will not remove MININT or Drivers folder."
+    }
+    Else
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): tsenv:DEVRunCleanup is now $tsenv:DEVRunCleanup."
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cleanup will remove MININT and Drivers folder."
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): This will be the last log entry."
+
+        # Remove the MININT folder
+        If (Test-Path -Path "$localPath")
         {
-            Copy-Item -Path "$env:LOCALAPPDATA\temp\smstslog\smsts.log" -Destination $logDest
+            Remove-Item "$localPath" -Recurse -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
         }
-
-        # Copy variables.dat (TODO: Password needs to be cleaned out)
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy variables.dat (TODO)"
-        if (Test-Path "$localPath\Variables.dat")
+        
+        # Remove the Drivers folder
+        If (Test-Path -Path "$($env:Systemdrive + "\Drivers")")
         {
-            Copy-Item "$localPath\Variables.dat" $logDest -Force
-        }
-
-        # Check if DEVRunCleanup is set to NO
-        If ($($tsenv:DEVRunCleanup) -eq "NO")
-        {
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): tsenv:DEVRunCleanup is now $tsenv:DEVRunCleanup."
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cleanup will not remove MININT or Drivers folder."
-        }
-        Else
-        {
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): tsenv:DEVRunCleanup is now $tsenv:DEVRunCleanup."
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Cleanup will remove MININT and Drivers folder."
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): This will be the last log entry."
-
-            # Remove the MININT folder
-            If (Test-Path -Path "$localPath")
-            {
-                Remove-Item "$localPath" -Recurse -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
-            }
-            
-            # Remove the Drivers folder
-            If (Test-Path -Path "$($env:Systemdrive + "\Drivers")")
-            {
-                Remove-Item "$($env:Systemdrive + "\Drivers")" -Recurse -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
-            }
+            Remove-Item "$($env:Systemdrive + "\Drivers")" -Recurse -Force -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
         }
     }
 
@@ -680,7 +679,10 @@ Function Show-PSDInfo
 
     $Button1.Add_Click({ Ok })
     
-    Function Ok (){$Form.close()}
+    Function Ok ()
+    {
+        $Form.Close()
+    }
 
     [void]$Form.ShowDialog()
     }
