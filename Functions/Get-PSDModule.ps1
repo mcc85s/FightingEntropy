@@ -57,7 +57,7 @@ Function Get-PSDModule
             Invoke-RestMethod "$Branch2/PSDGather.psm1?raw=true" -Outfile "$PSD\Scripts\PSDGather.psm1" -Verbose
             
             # [PSDBackground.bmp]
-            Invoke-RestMethod "$Branch2/PSDBackground.bmp?raw=true" -Outfile "$PSD\Branding\PSDBackground.bmp" -Verbose
+            Invoke-RestMethod "$Branch1/PSDBackground.bmp?raw=true" -Outfile "$PSD\Branding\PSDBackground.bmp" -Verbose
 
             # [Set-ScreenResolution.ps1]
             Invoke-RestMethod "$Branch2/Set-ScreenResolution.ps1?raw=true" -Outfile "$PSD\Scripts\Set-ScreenResolution.ps1" -Verbose
