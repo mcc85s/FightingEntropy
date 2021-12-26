@@ -11,10 +11,10 @@
           Purpose:  Intializes a task sequence
           Author:   Original [PSD Development Team], 
                     Modified [mcc85s]
-          Contact:  Original [@Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy]
+          Contact:  Original [@Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy],
                     Modified [@mcc85s]
-          Primary:  Original [@Mikael_Nystrom]
-                    Modofied [@mcc85s]
+          Primary:  Original [@Mikael_Nystrom],
+                    Modified [@mcc85s]
           Created: 
           Modified: 2021-12-25
 
@@ -88,11 +88,9 @@ Function Get-PSDVolume
     Get-WmiObject Win32_Volume | ? DriveType -eq 3 | ? DriveLetter | % { [PSDVolume]::New($_) }
 }
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Initialize [+] Assembly, ScriptRoot, Modules, Ready to Import-Module ]________________________//¯¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+# ------------------------------------------------------------------------
+# [ Initialize [+] Assembly, ScriptRoot, Modules, Ready to Import-Module ]
+# ------------------------------------------------------------------------
 
     # Add PresentationFramework for GUI
     Add-Type -AssemblyName PresentationFramework
@@ -115,15 +113,6 @@ Function Get-PSDVolume
         {
             $DeployRoot     = $Line -Replace "[PSD]*DeployRoot[s]*\=",''
         }
-
-        # Class DGList {[String]$Name;[Object]$Value;DGList([String]$Name,[Object]$Value){$This.Name=$Name;$This.Value=$Value}}
-        # $Group            = ForEach ($Line in $Content)
-        # {
-        #     If ($Line -match "\w+\=.+")
-        #     {
-        #         $Group   += [DGList]::New($Line.Split("=")[0],$Line.Substring($Line.Length+1))
-        #     }
-        # }
     }   
     
     $Env:DeployRoot         = $DeployRoot
@@ -131,11 +120,10 @@ Function Get-PSDVolume
 
     $Env:PsModulePath       = "$Env:PSModulePath;$Env:DeployRoot\Tools\Modules;$Env:SystemDrive\MININT\Tools\Modules;$Env:SystemDrive\MININT\Cache\Tools\Modules"
     
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Debug [+] Settings ]__________________________________________________________________________//¯¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+# ----------------------
+# [ Debug [+] Settings ] 
+# ----------------------
+
     $Global:PSDDebug       = $false
     If (Test-Path -Path "C:\MININT\PSDDebug.txt")
     {
@@ -172,11 +160,9 @@ Function Get-PSDVolume
         Write-Verbose $env:PSModulePath
     }
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Initialize [+] Powercfg, Import-Module(s)  ]__________________________________________________//¯¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+# ---------------------------------------------
+# [ Initialize [+] PowerCfg, Import-Module(s) ]
+# ---------------------------------------------
 
     # Make sure we run at full power
     Write-PSDBootInfo -Message "Setting Power plan to High performance" -SleepSec 1
@@ -213,11 +199,9 @@ Function Get-PSDVolume
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Imported Module: [PSDUtility, Storage]"
     }
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Resolve [+] WinPE, Certificates    ]__________________________________________________________//¯¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+# -----------------------------------
+# [ Resolve [+] WinPE, Certificates ]
+# -----------------------------------
 
     # Check if we booted from WinPE
     $Global:BootfromWinPE = $false
@@ -244,28 +228,30 @@ Function Get-PSDVolume
         }
     }
 
-    # Import each certificate in collection
-    ForEach ($Certificate in $Certificates)
+    If ($Certificates.Count -gt 0)
     {
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Found $($Certificate.FullName), trying to add as root certificate"
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Certificates [+] ($($Certificates.Count)) Found"
+        # Import each certificate in collection
+        ForEach ($Certificate in $Certificates)
+        {
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Found $($Certificate.FullName), trying to add as root certificate"
 
-        # [OA]: Write-PSDBootInfo -SleepSec 1 -Message "Installing PSDRoot certificate"
-        $Return = Import-PSDCertificate -Path $Certificate.FullName -CertStoreScope "LocalMachine" -CertStoreName "Root"
-        If ($Return -eq "0")
-        {
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Succesfully imported [$($Certificate.FullName)]"
-        }
-        Else
-        {
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Failed to import [$($Certificate.FullName)]"
+            # [OA]: Write-PSDBootInfo -SleepSec 1 -Message "Installing PSDRoot certificate"
+            $Return = Import-PSDCertificate -Path $Certificate.FullName -CertStoreScope "LocalMachine" -CertStoreName "Root"
+            If ($Return -eq "0")
+            {
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Succesfully imported [$($Certificate.FullName)]"
+            }
+            Else
+            {
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Failed to import [$($Certificate.FullName)]"
+            }
         }
     }
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Stage [+] Command Window, WinPE Checks, (Remaining) Import-Module(s)   ]______________________//¯¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+# ------------------------------------------------------------------------
+# [ Stage [+] Command Window, WinPE Checks, (Remaining) Import-Module(s) ]
+# ------------------------------------------------------------------------
 
     # Set Command Window size [OA]: "99 seems to use the screen in the best possible way, 100 is just one pixel to much"
     If ($Global:PSDDebug -ne $True)
@@ -305,37 +291,67 @@ Function Get-PSDVolume
 
     # Load more modules
     Write-PSDBootInfo -SleepSec 1 -Message "Loading [~] Modules: PSDDeploymentShare, PSDGather, PSDWizard"
+
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Modules [~] PSDDeploymentShare, PSDGather, PSDWizard"
-
+    
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += PSDDeploymentShare"
     Import-Module PSDDeploymentShare -ErrorAction Stop -Force -Verbose:$False
-    Import-Module PSDGather -ErrorAction Stop -Force -Verbose:$False
-    Import-Module PSDWizard -ErrorAction Stop -Force -Verbose:$False
+    If ($? -eq $True)
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Success [+] PSModules += PSDDeploymentShare"
+    }
+    If ($? -eq $False)
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Failed [!] PSModules += PSDDeploymentShare"
+    }
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Check [~] tsenv:   ]__________________________________________________________________________//¯¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += PSDGather"
+    Import-Module PSDGather -ErrorAction Stop -Force -Verbose:$False
+    If ($? -eq $True)
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Success [+] PSModules += PSDGather"
+    }
+    If ($? -eq $False)
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Failed [!] PSModules += PSDGather"
+    }
+
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += PSDWizard"
+    Import-Module PSDWizard -ErrorAction Stop -Force -Verbose:$False
+    If ($? -eq $True)
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Success [+] PSModules += PSDWizard"
+    }
+    If ($? -eq $False)
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Failed [!] PSModules += PSDWizard"
+    }
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
+
+# --------------------
+# [ Check [~] tsenv: ]
+# --------------------
 
     # Set-PSDDebugPause -Prompt 182
     # Check if tsenv: works
 
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Testing [~] TSEnv Access"
     Try
     {
         Get-ChildItem -Path TSEnv:
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Able to read from TSEnv"
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Success [+] TSEnv accessible"
     }
     Catch
     {
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to read from TSEnv"
-        # Break
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Warning [!] TSEnv not accessible"
     }
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Check [~] RunOnce  ]__________________________________________________________________________//¯¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+# ---------------------
+# [ Check [~] RunOnce ]
+# ---------------------
 
     # If running from RunOnce, create a startup folder item and then exit
     If ($start)
@@ -363,11 +379,9 @@ Function Get-PSDVolume
         Exit 0
     }
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Check [~] Gather Local Info, Task Sequence ]__________________________________________________//¯¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+# ----------------------------------------------
+# [ Check [~] Gather Local Info, Task Sequence ]
+# ----------------------------------------------
 
     # Gather local info to make sure key variables are set (e.g. Architecture)
     Write-PSDBootInfo -Message "Running local gather" -SleepSec 1 
@@ -429,11 +443,9 @@ Function Get-PSDVolume
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot is now [$deployRoot]"
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): env:PSModulePath is now [$env:PSModulePath]"
 
-#    ____                                                                                                    ________    
-#   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-#    ¯¯¯\\__[ Initialize [~] TS Engine, Scripts, Modules ]__________________________________________________//¯¯¯        
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
+# ----------------------------------------------
+# [ Initialize [~] TS Engine, Scripts, Modules ]
+# ----------------------------------------------
 
     # Sets the current directory to the SYSTEMDRIVE:\Windows\System32 path
     [Environment]::CurrentDirectory = "$($env:WINDIR)\System32"
@@ -899,47 +911,54 @@ Function Get-PSDVolume
         $Result = Start-Process -FilePath "$tsEngine\TSMBootstrap.exe" -ArgumentList "/env:SAStart" -Wait -Passthru
     }
 
-# If we are in WinPE and we have deployed an operating system, we should write logfiles to the new drive
-If ($BootfromWinPE -eq $True)
-{
-    # Assuming that the first Volume having mspaint.exe is the correct OS volume
-    ForEach ($Drive in Get-PSDrive | ? Provider -like *filesystem)
+# -------------------------------------------------------
+# [ Check [~] WinPE/FullOS, Write Logfiles to new drive ]
+# -------------------------------------------------------
+
+    # If we are in WinPE and we have deployed an operating system, we should write logfiles to the new drive
+    If ($BootfromWinPE -eq $True)
     {
-        # TODO: Need to find a better file for detection of running OS
-        If (Test-Path -Path "$($Drive.Name):\Windows\System32\mspaint.exe")
+        # Assuming that the first Volume having mspaint.exe is the correct OS volume
+        ForEach ($Drive in Get-PSDrive | ? Provider -match Filesystem)
         {
-            Start-PSDLogging -Logpath "$($Drive.Name):\MININT\SMSOSD\OSDLOGS"
-            Break
-        }
+            # TODO: Need to find a better file for detection of running OS
+            If (Test-Path -Path "$($Drive.Name):\Windows\System32\mspaint.exe")
+            {
+                Start-PSDLogging -Logpath "$($Drive.Name):\MININT\SMSOSD\OSDLOGS"
+                Break
+            }
+        }
     }
-}
 
-Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): logPath is now $logPath"
-Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Task Sequence is done, PSDStart.ps1 is now in charge.."
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): logPath is now $logPath"
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Task Sequence is done, PSDStart.ps1 is now in charge.."
 
-# Make sure variables.dat is in the current local directory
-If (Test-Path -Path "$(Get-PSDLocalDataPath)\Variables.dat")
-{
-    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Variables.dat found in the correct location, $(Get-PSDLocalDataPath)\Variables.dat, no need to copy."
-}
-Else
-{
-    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copying Variables.dat to the current location, $(Get-PSDLocalDataPath)\Variables.dat."
-    Copy-Item $variablesPath "$(Get-PSDLocalDataPath)\"
-}
+    # Make sure variables.dat is in the current local directory
+    If (Test-Path -Path "$(Get-PSDLocalDataPath)\Variables.dat")
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Variables.dat found in the correct location, $(Get-PSDLocalDataPath)\Variables.dat, no need to copy."
+    }
+    Else
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copying Variables.dat to the current location, $(Get-PSDLocalDataPath)\Variables.dat."
+        Copy-Item $variablesPath "$(Get-PSDLocalDataPath)\"
+    }
 
-Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot is now $deployRoot"
-Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): env:PSModulePath is now $env:PSModulePath"
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Deployroot is now $deployRoot"
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): env:PSModulePath is now $env:PSModulePath"
 
-# Process the exit code from the task sequence
-# Start-PSDLogging
+# ------------------------------------------------
+# [ Process the exit code from the task sequence ]
+# ------------------------------------------------
 
-# If ($result.ExitCode -eq $null)
-# {
-#    $result.ExitCode = 0
-# }
+    # Start-PSDLogging
 
-# Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Return code from TSMBootstrap.exe is $($result.ExitCode)"
+    # If ($result.ExitCode -eq $null)
+    # {
+    #    $result.ExitCode = 0
+    # }
+
+    # Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Return code from TSMBootstrap.exe is $($result.ExitCode)"
 
 Switch ($Result.ExitCode)
 {
@@ -1029,7 +1048,7 @@ Switch ($Result.ExitCode)
 
         Try
         {
-            ForEach ($item in (Get-ChildItem -Path TSEnv:))
+            ForEach ($item in Get-ChildItem -Path TSEnv:)
             {
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Property $($item.Name) is $($item.Value)"
             }
@@ -1040,16 +1059,11 @@ Switch ($Result.ExitCode)
 
         If ($env:SYSTEMDRIVE -eq "X:")
         {
-            # We are running in WinPE and need to reboot, if we have a hard disk, then we need files to continute the TS after reboot, copy files...
-            # Exit with a zero return code and let Windows PE reboot
-
-            # Assuming that the first Volume having mspaint.exe is the correct OS volume
-            Foreach ($Drive in Get-PSDrive | ? Provider -match filesystem)
+            # Running WinPE, reboot needed. Search for FullOSDisk, write variables for post-reboot | Exit 0
+            ForEach ($Drive in Get-PSDrive | ? Provider -match filesystem)
             {
-                # TODO: Need to find a better file for detection of running OS
                 If (Test-Path -Path "$($Drive.Name):\Windows\System32\mspaint.exe")
                 {
-                    # Copy files needed for full OS
                     Write-PSDLog -Message "Copy-Item $scripts\PSDStart.ps1 $($Drive.Name):\MININT\Scripts"
                     Initialize-PSDFolder "$($Drive.Name):\MININT\Scripts"
                     Copy-Item "$scripts\PSDStart.ps1" "$($Drive.Name):\MININT\Scripts"
@@ -1059,19 +1073,25 @@ Switch ($Result.ExitCode)
                         $drvcache = "$($Drive.Name):\MININT\Cache"
                         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy-Item X:\Deploy\Tools -Destination $drvcache"
                         $cres = Copy-Item -Path "X:\Deploy\Tools" -Destination "$drvcache" -Recurse -Force -Verbose -PassThru
-                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): $cres"
+                        ForEach ($Item in $Cres)
+                        {
+                            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copied -> $Item"
+                        }
                         
                         # Simulate download to x:\MININT\Cache\Tools
                         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy-Item X:\Deploy\Tools -Destination X:\MININT\Cache\Tools"
                         $cres = Copy-Item -Path "X:\Deploy\Tools" -Destination "X:\MININT\Cache" -Recurse -Force -Verbose -PassThru
-                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): $cres"
+                        ForEach ($Item in $Cres)
+                        {
+                            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copied -> $Item"
+                        }
 
-                        # Copies from x:\MININT\Cache to target drive
+                        # Copies from X:\MININT\Cache to target drive
                         $Modules = Get-PSDContent "Tools\Modules"
                         Write-PSDLog -Message "Copy-PSDFolder $Modules $($Drive.Name):\MININT\Tools\Modules"
                         Copy-PSDFolder "$Modules" "$($Drive.Name):\MININT\Tools\Modules"
                         
-                        # Copies from x:\MININT\Cache\Tools\<arc> to target drive
+                        # Copies from X:\MININT\Cache\Tools\<arc> to target drive
                         $Tools = Get-PSDContent "Tools\$($tsenv:Architecture)"
                         Write-PSDLog -Message "Copy-PSDFolder $Tools $($Drive.Name):\MININT\Tools\$($tsenv:Architecture)"
                         Copy-PSDFolder "$Tools" "$($Drive.Name):\MININT\Tools\$($tsenv:Architecture)"
@@ -1080,25 +1100,16 @@ Switch ($Result.ExitCode)
                     Catch
                     {
                         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy failed"
-                        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): $_"
                     }
 
                     Write-PSDLog -Message "Copy-PSDFolder $Certificates $($Drive.Name):\MININT\Certificates"
                     $Certificates = Get-PSDContent "PSDResources\Certificates"
                     Copy-PSDFolder "$Certificates" "$($Drive.Name):\MININT\Certificates"
 
-                    # Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Copy items from X:\Deploy\Tools to $($tsenv:OSVolume):\MININT\Cache\Tools"
-                    # Copy-PSDFolder -Source X:\Deploy\Tools -Destination "$($tsenv:OSVolume):\MININT\Cache\Tools"
-                    # Get-ChildItem -Path "$($tsenv:OSVolume):\MININT\Cache\Tools" -Filter ts.xml -Recurse | Remove-Item -Force
-                    # Get-ChildItem -Path "$($tsenv:OSVolume):\MININT\Cache\Tools" -Filter variables.dat -Recurse | Remove-Item -Force
-
                     If ($PSDDeBug -eq $True)
                     {
                         New-Item -Path "$($Drive.Name):\MININT\PSDDebug.txt" -ItemType File -Force
                     }
-
-                    # Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): We are now on line 775 and we are doing a break on line 776..."
-                    # Break
                 }
             }
 
@@ -1112,7 +1123,7 @@ Switch ($Result.ExitCode)
 
             Exit 0
         }
-        Else
+        If ($Env:SystemDrive -ne "X:")
         {
             # In full OS, need to initiate a reboot
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): In full OS, need to initiate a reboot"
@@ -1158,13 +1169,13 @@ Switch ($Result.ExitCode)
             }
             
             # Restart-Computer -Force
-            Shutdown.exe /r /t 30 /f | Out-Null
+            Shutdown.exe /r /t 30 /f
 
             Stop-PSDLogging
             Exit 0
         }
     }
-    Default 
+    Default
     {
         # Exit with a non-zero return code
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Task sequence failed, rc = $($result.ExitCode)"
