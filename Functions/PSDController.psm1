@@ -1,21 +1,3 @@
-<#
-.SYNOPSIS
-.DESCRIPTION
-.LINK
-.NOTES
-          FileName: FEModule.psm1
-          Solution: FightingEntropy PSDModification
-          Purpose:  Providing utilities for PXE Environment
-          Author: Michael C. Cook Sr.
-          Contact: 
-          Primary: 
-          Created: 
-          Modified: 2021-12-27
-          Version - 0.0.0 - () - Finalized functional version 1.
-          TODO:
-.Example
-#>
-
 Function Write-PSDBootInfo
 {
     Param ([String]$Message,[UInt32]$SleepSec=0)
@@ -314,7 +296,7 @@ Function Get-PSDController
                 $This.ScriptRoot = $ScriptRoot
             }
             $This.DeployRoot     = $This.ScriptRoot | Split-Path
-            $This.ModuleRoot     = ";{0}\Cache\{1};{0}\{1}" -f $This.DeployRoot, "Tools\Modules"
+            $This.ModuleRoot     = "\Cache","" | % { "$($This.DeployRoot)$_\Tools\Modules"
         }
         [String] GetBootstrap()
         {
