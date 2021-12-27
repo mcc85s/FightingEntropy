@@ -331,4 +331,5 @@ Function Get-PSDController
     {
         $PSD.StartBootstrap($Bootstrap)
     }
+    $PSD
 }
