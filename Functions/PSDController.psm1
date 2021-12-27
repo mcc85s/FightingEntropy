@@ -329,6 +329,6 @@ Function Get-PSDController
     $Bootstrap = $PSD.GetBootstrap()
     If ($Bootstrap)
     {
-        $PSD.StartBootstrap($Boostrap)
+        $PSD.StartBootstrap($Bootstrap)
     }
 }
