@@ -3,7 +3,7 @@
 .DESCRIPTION
 .LINK
 .NOTES
-          FileName: PSDController.psm1
+          FileName: FEModule.psm1
           Solution: FightingEntropy PSDModification
           Purpose:  Providing utilities for PXE Environment
           Author: Michael C. Cook Sr.
@@ -15,6 +15,7 @@
           TODO:
 .Example
 #>
+
 Function Write-PSDBootInfo
 {
     Param ([String]$Message,[UInt32]$SleepSec=0)
@@ -300,6 +301,7 @@ Function Get-PSDController
         [Object] $ModuleRoot
         [Object]  $Bootstrap
         [Object] $Connection
+        [Object] $ModuleList
         [Object]    $Scripts
         [Object]      $Tools
         [Object]    $Modules
