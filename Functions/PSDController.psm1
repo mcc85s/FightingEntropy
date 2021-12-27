@@ -296,7 +296,7 @@ Function Get-PSDController
                 $This.ScriptRoot = $ScriptRoot
             }
             $This.DeployRoot     = $This.ScriptRoot | Split-Path
-            $This.ModuleRoot     = "\Cache","" | % { "$($This.DeployRoot)$_\Tools\Modules"
+            $This.ModuleRoot     = @("\Cache","" | % { "$($This.DeployRoot)$_\Tools\Modules" }) -join ";"
         }
         [String] GetBootstrap()
         {
