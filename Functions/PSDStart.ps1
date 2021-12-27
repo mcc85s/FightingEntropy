@@ -16,7 +16,7 @@
           Primary:  Original [@Mikael_Nystrom],
                     Modified [@mcc85s]
           Created: 
-          Modified: 2021-12-25
+          Modified: 2021-12-27
 
           Version - 0.0.0 - () - Finalized functional version 1.
 .Example
@@ -79,7 +79,7 @@ Function Get-PSDVolume
             }
 
             # Checks if task sequence and variable data files exist
-            If ((Test-Path "$($This.DriveLetter)\_SMSTaskSequence\TSEnv.dat") -and (Test-Path "$($This.DriveLetter)\Minint\Variables.dat"))
+            If ((Test-Path "$($This.DriveLetter)\_SMSTaskSequence\TSEnv.dat") -or (Test-Path "$($This.DriveLetter)\Minint\Variables.dat"))
             {
                 $This.TSDrive = 1
             }
@@ -290,13 +290,13 @@ Function Get-PSDVolume
     }
 
     # Load more modules
-    Write-PSDBootInfo -SleepSec 1 -Message "Loading [~] Modules: PSDDeploymentShare, PSDGather, PSDWizard"
+    Write-PSDBootInfo -SleepSec 1 -Message "Loading [~] Modules: [PSDDeploymentShare, PSDGather, PSDWizard]"
 
-    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Modules [~] PSDDeploymentShare, PSDGather, PSDWizard"
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Modules [~] [PSDDeploymentShare, PSDGather, PSDWizard]"
     
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += PSDDeploymentShare"
-    Import-Module PSDDeploymentShare -ErrorAction Stop -Force -Verbose:$False
+    Import-Module PSDDeploymentShare -Scope Global -Force -Verbose:$False
     If ($? -eq $True)
     {
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Success [+] PSModules += PSDDeploymentShare"
@@ -308,7 +308,7 @@ Function Get-PSDVolume
 
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += PSDGather"
-    Import-Module PSDGather -ErrorAction Stop -Force -Verbose:$False
+    Import-Module PSDGather -Scope Global -Force -Verbose:$False
     If ($? -eq $True)
     {
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Success [+] PSModules += PSDGather"
@@ -320,7 +320,7 @@ Function Get-PSDVolume
 
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += PSDWizard"
-    Import-Module PSDWizard -ErrorAction Stop -Force -Verbose:$False
+    Import-Module PSDWizard -Scope Global -Force -Verbose:$False
     If ($? -eq $True)
     {
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Success [+] PSModules += PSDWizard"
@@ -347,6 +347,16 @@ Function Get-PSDVolume
     Catch
     {
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Warning [!] TSEnv not accessible"
+        Import-Module Microsoft.BDD.TaskSequenceModule
+        Try 
+        {
+            Get-ChildItem -Path TSEnv:
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Success [+] TSEnv accessible"
+        }
+        Catch
+        {
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Failure [!] TSEnv accessible"
+        }
     }
 
 # ---------------------
@@ -475,7 +485,8 @@ Function Get-PSDVolume
         # Resume task sequence
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): DeployRoot is now $env:deployRoot"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): env:PSModulePath is now $env:PSModulePath"
-        Stop-PSDLogging
+        
+        # Stop-PSDLogging
         Write-PSDBootInfo -SleepSec 1 -Message "Resuming existing task sequence"
         $Result            = Start-Process -FilePath "$tsEngine\TSMBootstrap.exe" -ArgumentList "/env:SAContinue" -Wait -Passthru
     }
@@ -995,7 +1006,7 @@ Switch ($Result.ExitCode)
         If ($tsenv:FinishAction -eq "Reboot" -or $tsenv:FinishAction -eq "Restart")
         {
             $Global:RebootAfterTS = $True
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Will reboot for finishaction"
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Will reboot for finish action"
         }
 
         # Set-PSDDebugPause -Prompt "Before PSDFinal.ps1"
@@ -1139,26 +1150,34 @@ Switch ($Result.ExitCode)
             $Arguments     = "/u /s $tools\tscore.dll"
             If (!(Test-Path -Path "$tools\tscore.dll"))
             {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): About to run: $Executable $Arguments"
-                $return    = Invoke-PSDEXE -Executable $Executable -Arguments $Arguments
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Exitcode: $return"
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to find the [tscore.dll] file"
             }
-            If ($Return -ne 0)
+            Else
             {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to unload $tools\tscore.dll" -Loglevel 2
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): About to run: $Executable $Arguments"
+                $return    = Invoke-PSDEXE -Executable $Executable -Arguments $Arguments -Wait
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Exitcode: $return"
+                If ($Return -ne 0)
+                {
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to unload $tools\tscore.dll" -Loglevel 2
+                }
             }
 
             $Executable    = "$Tools\TSProgressUI.exe"
             $Arguments     = "/Unregister"
             If (!(Test-Path -Path "$Tools\TSProgressUI.exe"))
             {
+                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to find the [tsprogressui.exe] file"
+            }
+            Else
+            {
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): About to run: $Executable $Arguments"
                 $return    = Invoke-PSDEXE -Executable $Executable -Arguments $Arguments
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Exitcode: $return"
-            }
-            If ($return -ne 0)
-            {
-                Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to unload $Tools\TSProgressUI.exe" -Loglevel 2
+                If ($return -ne 0)
+                {
+                    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to unload $Tools\TSProgressUI.exe" -Loglevel 2
+                }
             }
 
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Restart, see you on the other side... (Shutdown.exe /r /t 30 /f)"
@@ -1186,7 +1205,7 @@ Switch ($Result.ExitCode)
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Reset HKLM:\Software\Microsoft\SMS"
         Get-ItemProperty "HKLM:\Software\Microsoft\SMS" -ErrorAction SilentlyContinue | Remove-Item -Force -Recurse
 
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Findig out where the tools folder is..."
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Finding out where the tools folder is..."
         $Tools          = Get-PSDContent -Content "Tools\$($tsenv:Architecture)"
 
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Tools is now $Tools"
