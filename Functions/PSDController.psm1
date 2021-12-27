@@ -15,7 +15,6 @@
           TODO:
 .Example
 #>
-
 Function Write-PSDBootInfo
 {
     Param ([String]$Message,[UInt32]$SleepSec=0)
@@ -88,7 +87,7 @@ Function Get-PSDController
 {
     Param([Object]$ScriptRoot)
 
-    # PSD Connection object (Unused)
+    # PSD Controller object
     Class PSDConnection
     {
         [String] $DeployRoot
@@ -102,7 +101,6 @@ Function Get-PSDController
         }
     }
 
-    # For Ini file properties
     Class PSDProperty
     {
         [String] $Type
@@ -116,7 +114,6 @@ Function Get-PSDController
         }
     }
 
-    # Creates a connection test template
     Class PSDTestConnection
     {
         [String] $Protocol
@@ -207,7 +204,6 @@ Function Get-PSDController
         }
     }
 
-    # Retrieves values from bootstrap
     Class PSDBootstrap
     {
         [String] $Path
@@ -295,13 +291,13 @@ Function Get-PSDController
         }
     }
 
-    # Controller for the process
     Class PSDController
     {
         [String]   $Location
         [Object[]]   $Volume
         [Object] $ScriptRoot
         [Object] $DeployRoot
+        [Object] $ModuleRoot
         [Object]  $Bootstrap
         [Object] $Connection
         [Object]    $Scripts
@@ -316,6 +312,7 @@ Function Get-PSDController
                 $This.ScriptRoot = $ScriptRoot
             }
             $This.DeployRoot     = $This.ScriptRoot | Split-Path
+            $This.ModuleRoot     = ";{0}\Cache\{1};{0}\{1}" -f $This.DeployRoot, "Tools\Modules"
         }
         [String] GetBootstrap()
         {
@@ -332,7 +329,6 @@ Function Get-PSDController
     $Bootstrap = $PSD.GetBootstrap()
     If ($Bootstrap)
     {
-        $PSD.StartBootstrap($Bootstrap)
+        $PSD.StartBootstrap($Boostrap)
     }
-    $PSD
 }
