@@ -345,6 +345,94 @@ Function Get-PSDController
     $PSD
 }
 
+Function Get-PSDLog
+{
+    Param ($Path)
+
+    Class PSDLogItem
+    {
+        [UInt32] $Index
+        [String] $Message
+        [String] $Time
+        [String] $Date
+        [String] $Component
+        [String] $Context
+        [String] $Type
+        [String] $Thread
+        [String] $File
+        PSDLogItem([UInt32]$Index,[String]$Line)
+        {
+            $InputObject      = $Line -Replace "(\>\<)", ">`n<" -Split "`n"
+            $This.Index       = $Index
+            $This.Message     = $InputObject[0] -Replace "((\<!\[LOG\[)|(\]LOG\]!\>))",""
+            $Body             = ($InputObject[1] -Replace "(\<|\>)", "" -Replace "(\`" )", "`"`n").Split("`n")
+            $This.Time        = $Body[0] -Replace "(^time\=|\`")" ,""
+            $This.Date        = $Body[1] -Replace "(^date\=|\`")" ,""
+            $This.Component   = $Body[2] -Replace "(^component\=|\`")" ,""
+            $This.Context     = $Body[3] -Replace "(^context\=|\`")" ,""
+            $This.Type        = $Body[4] -Replace "(^type\=|\`")" ,""
+            $This.Thread      = $Body[5] -Replace "(^thread\=|\`")" ,""
+            $This.File        = $Body[6] -Replace "(^file\=|\`")" ,""
+        }
+        [String] ToString()
+        {
+            Return @( "{0}/{1}" -f $This.Index, $This.Component )
+        }
+    }
+    
+    Class PSDLog
+    {
+        [Object] $Output
+        PSDLog([UInt32]$Index,[String]$Path)
+        {
+            If (!(Test-Path $Path))
+            {
+                Throw "Invalid path"
+            }
+    
+            $This.Output = @( )
+            $Swap = (Get-Content $Path) -join '' -Replace "><!",">`n<!" -Split "`n"
+            ForEach ($Line in $Swap)
+            {
+                $This.Output += $This.Line($This.Output.Count,$Line)
+            }
+        }
+        [Object] Line([Uint32]$Index,[String]$Line)
+        {
+            Return [PSDLogItem]::New($Index,$Line)
+        }
+    }
+
+    Class PSDProcedure
+    {
+        [Object] $Output
+        PSDProcedure([String]$Path)
+        {
+            $Swap = @( )
+
+            ForEach ($Item in Get-Childitem $Path *.Log)
+            {
+                $File = [PSDLog]::New($Swap.Count,$Item.FullName).Output
+                ForEach ($Item in $File)
+                {
+                    $Swap += $Item
+                }
+            }
+
+            $Swap 
+        }
+    }
+
+    If (!(Test-Path $Path))
+    {
+        Throw "Invalid path"
+    }
+    Else
+    {
+        [PSDProcedure]::New($Path)
+    }
+}
+
 # ------------------------------------------------------------------------
 # [ Initialize [+] Assembly, ScriptRoot, Modules, Ready to Import-Module ]
 # ------------------------------------------------------------------------
@@ -884,7 +972,7 @@ Function Get-PSDController
         
         If ($NICIPOK -eq $False)
         {
-            If ($deployRoot -notlike $null -or "")
+            If ($tsenv:deployRoot -notlike $null -or "")
             {
                 $Message = "Since we are deploying from network, we should have network access but we don't, check networking"
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): $Message"
@@ -895,24 +983,24 @@ Function Get-PSDController
         }
 
         # Validate network route to $deployRoot
-        If ($deployRoot -notlike $null -or "")
+        If ($tsenv:deployRoot -notlike $null -or "")
         {
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): New deploy root is $deployRoot."
-            Switch -Regex ($DeployRoot)
+            Switch -Regex ($tsenv:DeployRoot)
             {
                 "^https\:.+)"
                 {
-                    $ServerName = $deployRoot -Replace "^https\:\/\/",""
+                    $ServerName = $tsenv:deployRoot -Replace "^https\:\/\/",""
                     $Protocol   = "HTTPS"
                 }
                 "^http\:.+"
                 {
-                    $ServerName = $deployRoot -Replace "^http\:\/\/",""
+                    $ServerName = $tsenv:deployRoot -Replace "^http\:\/\/",""
                     $Protocol   = "HTTP"
                 }
                 "^\\\\\w+)"
                 {
-                    $ServerName = $deployRoot.Split("\\")[2]
+                    $ServerName = $tsenv:deployRoot.Split("\\")[2]
                     $Protocol   = "SMB"
                 }
             }
@@ -934,7 +1022,7 @@ Function Get-PSDController
             Break
         }
 
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): New deploy root is $deployRoot."
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): New deploy root is $tsenv:deployRoot."
         Get-PSDConnection -DeployRoot $tsenv:DeployRoot -Username "$tsenv:UserDomain\$tsenv:UserID" -Password $tsenv:UserPassword
 
         # Set-PSDDebugPause -Prompt 518
@@ -945,11 +1033,11 @@ Function Get-PSDController
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Set time on client"
         If ($tsenv:DeploymentMethod -ne "MEDIA")
         {
-            Switch -Regex ($DeployRoot)
+            Switch -Regex ($tsenv:DeployRoot)
             {
                 "^http"
                 {
-                    $NTPTime = @{ $False = Get-PSDNtpTime -Server Gunk.gunk.gunk; $True = Get-PSDNtpTime }[$DeployRoot -match "^https"]
+                    $NTPTime = @{ $False = Get-PSDNtpTime -Server Gunk.gunk.gunk; $True = Get-PSDNtpTime }[$tsenv:DeployRoot -match "^https"]
                     If ($NTPTime)
                     {
                         Set-Date -Date $NTPTime.NtpTime
@@ -976,7 +1064,7 @@ Function Get-PSDController
         # Verify access to "$control\CustomSettings.ini" 
         If (!(Test-Path -Path "$env:control\CustomSettings.ini"))
         {
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to access $control\CustomSettings.ini"
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to access $Env:control\CustomSettings.ini"
             Show-PSDInfo -Message "Unable to access $env:control\CustomSettings.ini, aborting..." -Severity Error -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
             Start-Process PowerShell -Wait
             Break    
@@ -1383,7 +1471,7 @@ Switch ($Result.ExitCode)
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): About to run: $Executable $Arguments"
                 $return    = Invoke-PSDEXE -Executable $Executable -Arguments $Arguments -Wait
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Exitcode: $return"
-                If ($Return -ne 0)
+                If ($Return -ne "0")
                 {
                     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to unload $Env:tools\tscore.dll" -Loglevel 2
                 }
@@ -1400,7 +1488,7 @@ Switch ($Result.ExitCode)
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): About to run: $Executable $Arguments"
                 $return    = Invoke-PSDEXE -Executable $Executable -Arguments $Arguments
                 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Exitcode: $return"
-                If ($return -ne 0)
+                If ($return -ne "0")
                 {
                     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Unable to unload $Env:Tools\TSProgressUI.exe" -Loglevel 2
                 }
