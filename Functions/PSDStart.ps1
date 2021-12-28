@@ -13,7 +13,7 @@
           Contact: 
           Primary: 
           Created: 
-          Modified: 2021-12-27
+          Modified: 2021-12-28
 
           Version - 0.0.0 - () - Finalized functional version 1.
           
@@ -312,6 +312,7 @@ Function Get-PSDController
         [Object] $Connection
         [Object] $ModuleList
         [Object]    $Scripts
+        [Object]    $Control
         [Object]      $Tools
         [Object]    $Modules
         PSDController([String]$ScriptRoot)
