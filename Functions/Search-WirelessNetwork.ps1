@@ -1,15 +1,8 @@
+
+Add-Type -AssemblyName System.Runtime.WindowsRuntime
+Add-Type -AssemblyName PresentationFramework
 Function Search-WirelessNetwork
 {
-    Add-Type -AssemblyName System.Runtime.WindowsRuntime,PresentationFramework
-
-    Function Await ([Object]$WinRtTask,[Object]$ResultType)
-    {
-        $asTask = $asTaskGeneric.MakeGenericMethod($ResultType)
-        $netTask = $asTask.Invoke($null, @($WinRtTask))
-        $netTask.Wait(-1) | Out-Null
-        $netTask.Result
-    }
-
     Class TxSsid
     {
         [UInt32] $Index
@@ -111,41 +104,41 @@ Function Search-WirelessNetwork
         }
     }
 
-    Class Wireless
+    $asTaskGeneric = ([System.WindowsRuntimeSystemExtensions].GetMethods() | ? { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1'})[0]
+
+    Function Await ([Object]$WinRtTask,[Object]$ResultType)
     {
-        [Object] $WiFi
-        [Object] $Output
-        Wireless()
-        {
-            $asTaskGeneric = ([System.WindowsRuntimeSystemExtensions].GetMethods() | ? { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1'})[0]
-            Add-Type -AssemblyName System.Runtime.WindowsRuntime
+        $asTask = $asTaskGeneric.MakeGenericMethod($ResultType)
+        $netTask = $asTask.Invoke($null, @($WinRtTask))
+        $netTask.Wait(-1) | Out-Null
+        $netTask.Result
+    }
 
-            # Radios, RadioAccess
-            [Windows.Devices.Radios.Radio, Windows.System.Devices, ContentType=WindowsRuntime] | Out-Null
-            [Windows.Devices.Radios.RadioAccessStatus, Windows.System.Devices, ContentType=WindowsRuntime] | Out-Null
-            Await ([Windows.Devices.Radios.Radio]::RequestAccessAsync()) ([Windows.Devices.Radios.RadioAccessStatus])
-            $This.WiFi = Await ([Windows.Devices.Radios.Radio]::GetRadiosAsync()) ([System.Collections.Generic.IReadOnlyList[Windows.Devices.Radios.Radio]]) | ? Kind -eq WiFi
-            [Windows.Devices.Radios.RadioState, Windows.System.Devices, ContentType=WindowsRuntime] | Out-Null
-        }
-        [Object[]] Scan()
-        {
-            $Res = $Null
-            $This.Output = @( )
-            $This.Wifi | ? State -eq On | % {
-
-                [Windows.Devices.WiFi.WiFiAdapter, Windows.System.Devices, Contenttype=WindowsRuntime] | Out-Null
-                $Res = Await ([Windows.Devices.WiFi.WiFiAdapter]::FindAllAdaptersAsync())([System.Collections.Generic.IReadOnlyList[Windows.Devices.WiFi.WiFiAdapter]])
-                $Res.NetworkReport.AvailableNetworks | % { $This.Output += [TxSsid]::New($This.Output.Count,$_) }
+    Function Scan
+    {
+        [Windows.Devices.Radios.Radio, Windows.System.Devices, ContentType=WindowsRuntime] | Out-Null
+        [Windows.Devices.Radios.RadioAccessStatus, Windows.System.Devices, ContentType=WindowsRuntime] | Out-Null
+        Await ([Windows.Devices.Radios.Radio]::RequestAccessAsync()) ([Windows.Devices.Radios.RadioAccessStatus])
+        $WiFi = Await ([Windows.Devices.Radios.Radio]::GetRadiosAsync()) ([System.Collections.Generic.IReadOnlyList[Windows.Devices.Radios.Radio]]) | ? Kind -eq WiFi
+        [Windows.Devices.Radios.RadioState, Windows.System.Devices, ContentType=WindowsRuntime] | Out-Null
+        
+        $Output = @( )
+        $Wifi | ? State -eq On | % {
             
-            } | Sort-Object Strength -Descending
+            [Windows.Devices.WiFi.WiFiAdapter, Windows.System.Devices, Contenttype=WindowsRuntime] | Out-Null
+            $Res = Await ([Windows.Devices.WiFi.WiFiAdapter]::FindAllAdaptersAsync())([System.Collections.Generic.IReadOnlyList[Windows.Devices.WiFi.WiFiAdapter]])
+            $Res.NetworkReport.AvailableNetworks | % { $Output += [TxSsid]::New($Output.Count,$_) }
+                
+        } 
+        
+        $Output  = $Output | Sort-Object Strength -Descending
 
-            ForEach ($X in 0..($This.Output.Count-1))
-            {
-                $This.Output[$X].Index = $X
-            }
-
-            Return $This.Output
+        ForEach ($X in 0..($Output.Count-1))
+        {
+            $Output[$X].Index = $X
         }
+
+        Return $Output
     }
 
     Class DGList
@@ -424,12 +417,11 @@ Function Search-WirelessNetwork
     # V2 | $WiFi = [Wireless]::New() | $WiFi.Scan()
 
     $Xaml = [XamlWindow][WirelessGUI]::Tab
-    $WiFi = [Wireless]::New()
     
     $Xaml.IO.Refresh.Add_Click(
     {
         $Xaml.IO.Output.Items.Clear()
-        $WiFi.Scan() | % { $Xaml.IO.Output.Items.Add($_) }
+        Scan | % { $Xaml.IO.Output.Items.Add($_) }
         Start-Sleep -Milliseconds 25
     })
 
@@ -437,16 +429,20 @@ Function Search-WirelessNetwork
     {
         $Xaml.IO.Output.Items.Clear()
 
-        If ($WiFi.Output.Count -gt 0)
+        If ($Xaml.IO.Output.Items.Count -gt 0)
         {
             If ($Xaml.IO.Filter.Text -ne "")
             {
-                $WiFi.Output | ? Name -match $Xaml.IO.Filter.Text | % { $Xaml.IO.Output.Items.Add($_) }
+                Scan | ? Name -match $Xaml.IO.Filter.Text | % { $Xaml.IO.Output.Items.Add($_) }
             }
             If ($Xaml.IO.Filter.Text -eq "")
             {
-                $Wifi.Output | % { $Xaml.IO.Output.Items.Add($_) }
+                Scan | % { $Xaml.IO.Output.Items.Add($_) }
             }
+        }
+        If ($Xaml.IO.Output.Items.Count -eq 0)
+        {
+            Scan | % { $Xaml.IO.Output.Items.Add($_) }
         }
         Start-Sleep -Milliseconds 25
     })
