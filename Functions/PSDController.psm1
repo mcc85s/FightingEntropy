@@ -285,6 +285,7 @@ Function Get-PSDController
         [Object] $Connection
         [Object] $ModuleList
         [Object]    $Scripts
+        [Object]    $Control
         [Object]      $Tools
         [Object]    $Modules
         PSDController([String]$ScriptRoot)
