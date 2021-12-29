@@ -13,7 +13,7 @@
           Contact: 
           Primary: 
           Created: 
-          Modified: 2021-12-28
+          Modified: 2021-12-27
 
           Version - 0.0.0 - () - Finalized functional version 1.
           
@@ -328,7 +328,7 @@ Function Get-PSDController
         }
         [String] GetBootstrap()
         {
-            Return @(Get-Childitem $This.DeployRoot -Recurse | ? Name -eq Bootstrap.ini | % FullName | Select-Object -First 1)
+            Return @(Get-Childitem $This.DeployRoot *.ini -Recurse | ? Name -match Bootstrap.ini | Select-Object -First 1 | % FullName )
         }
         StartBootstrap([String]$Path)
         {
@@ -511,13 +511,13 @@ Function Get-PSDLog
 
         # Now Write-PSDLog and other PSDUtility functions can be used
         Write-PSDBootInfo -SleepSec 1 -Message "Initialized [+] [PSDUtility, PSDStart] -> Beginning"
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): DeployRoot is now [$Env:deployRoot]"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): env:PSModulePath is now [$env:PSModulePath]"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += Microsoft.BDD.TaskSequenceModule"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Loading [~] PSModules += PSDUtility"
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Beginning initial process in [PSDStart.ps1]"
     }
     Catch
     {
@@ -525,6 +525,8 @@ Function Get-PSDLog
         Write-PSDBootInfo "Failed [!] Import-Module(s)"
         Throw "Unable to load module [PSDUtility]"
     }
+
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Beginning initial process in [PSDStart.ps1]"
 
     If ($PSDDeBug -eq $true)
     {
@@ -541,6 +543,7 @@ Function Get-PSDLog
     {
         $Global:BootfromWinPE = $true
     }
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): BootfromWinPE is now [$BootfromWinPE]"
 
     # Write Debug status to logfile
@@ -571,6 +574,10 @@ Function Get-PSDLog
             }
         }
     }
+    If ($Certificates.Count -eq 0)
+    {
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Certificates [-] (0)"
+    }
 
 # ------------------------------------------
 # [ Stage [+] Command Window, WinPE Checks ]
@@ -585,22 +592,22 @@ Function Get-PSDLog
     If ($BootfromWinPE -eq $true)
     {
         # [OA]: "Windows ADK v1809 could be missing certain files, we need to check for that."
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Check if we are running Windows ADK 10 v1809"
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Check [~] Windows ADK Version"
         If ([UInt32](Get-WmiObject Win32_OperatingSystem).BuildNumber -eq 17763)
         {
-            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Check for BCP47Langs.dll and BCP47mrm.dll, needed for WPF"
+            Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Check [~] (BCP47Langs.dll/BCP47mrm.dll), needed for WPF"
             If (!(Test-Path -Path X:\Windows\System32\BCP47Langs.dll) -or !(Test-Path -Path X:\Windows\System32\BCP47mrm.dll))
             {
                 Start-Process PowerShell -ArgumentList {
-                    "Write-warning -Message 'We are missing the BCP47Langs.dll and BCP47mrm.dll files required for WinPE 1809.';Write-warning -Message 'Please check the PSD documentation on how to add those files.';Write-warning -Message 'Critical error, deployment can not continue..';Pause"
+                    "Write-warning -Message 'Missing (BCP47Langs.dll/BCP47mrm.dll) files for WPF in WinPE 1809.';Write-warning -Message 'Please check the PSD documentation on how to add those files.';Write-warning -Message 'Critical error, deployment can not continue..';Pause"
                 } -Wait
                 Exit 1
             }
         }
 
         # [OA]: "We need more than 1.5 GB (Testing for at least 1499MB of RAM)"
-        Write-PSDBootInfo -SleepSec 2 -Message "Checking that we have at least 1.5 GB of RAM"
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Check for minimum amount of memory in WinPE to run PSD"
+        Write-PSDBootInfo -SleepSec 2 -Message "Check [~] System Memory >= [1.5 GB]"
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Check [~] System Memory >= [1.5 GB]"
         If ((Get-WmiObject Win32_ComputerSystem).TotalPhysicalMemory -le 1499MB)
         {
             Show-PSDInfo -Message "Not enough memory to run PSD, aborting..." -Severity Error -OSDComputername $OSDComputername -Deployroot $global:psddsDeployRoot
@@ -617,8 +624,9 @@ Function Get-PSDLog
 # --------------------------------
 
     Write-PSDBootInfo -SleepSec 1 -Message "Loading [~] Modules: [PSDDeploymentShare, PSDGather, PSDWizard]"
-    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Modules [~] [PSDDeploymentShare, PSDGather, PSDWizard]"
+    
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Modules [~] [PSDDeploymentShare, PSDGather, PSDWizard]"
     $Env.ModuleList = Get-Module
     $ModList        = "PSDUtility PSDDeploymentShare PSDGather PSDWizard" -Split " "
     ForEach ($Item in $ModList)
@@ -646,7 +654,7 @@ Function Get-PSDLog
 
     # Set-PSDDebugPause -Prompt 182
     # Check if tsenv: works
-    
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Testing [~] TSEnv Access"
     Try
     {
@@ -667,6 +675,7 @@ Function Get-PSDLog
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Failure [!] TSEnv accessible"
         }
     }
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
 
 # ---------------------
 # [ Check [~] RunOnce ]
@@ -957,7 +966,7 @@ Function Get-PSDLog
         }
 
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): --------------------"
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Validating network access to $tsenv:DeployRoot"
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Network [~] $tsenv:DeployRoot"
         Write-PSDBootInfo -SleepSec 2 -Message "Validating network access to $tsenv:DeployRoot"
 
         # Set-PSDDebugPause -Prompt 451
@@ -1279,9 +1288,26 @@ Function Get-PSDLog
     # Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Return code from TSMBootstrap.exe is $($result.ExitCode)"
 If ($tsenv:Architecture)
 {
-    $Env.Tools = Get-PSDContent -Content "Tools\$($tsenv:Architecture)"
-    $Env:Tools = $Env.Tools
+    $Env.Tools   = Get-PSDContent -Content "Tools\$($tsenv:Architecture)"
+    $Env:Tools   = $Env.Tools
+
+    $Env.Scripts = Get-PSDContent -Content "Scripts"
+    $Env:Scripts = $Env.Scripts
+
+    $Env.Control = Get-PSDContent -Content "Control"
+    $Env:Control = $Env.Control
+
+    $Env.Modules = Get-PSDContent -Content "Tools\Modules"
+    $Env:Modules = $Env.Modules
 }
+
+Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Display [~] `$Env Variables..."
+ForEach ($Item in $Env.PSObject.Properties)
+{
+    Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Env.$($Item.Name) [=] $($Item.Value)"
+}
+
+Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Handling [~] Result.ExitCode..."
 
 Switch ($Result.ExitCode)
 {
@@ -1290,7 +1316,7 @@ Switch ($Result.ExitCode)
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): SUCCESS!"
         Write-PSDEvent -MessageID 41015 -Severity 4 -Message "PSD deployment completed successfully."
         
-        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Reset HKLM:\Software\Microsoft\Deployment 4"
+        Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Reset [~] HKLM:\Software\Microsoft\Deployment 4"
         Get-ItemProperty "HKLM:\Software\Microsoft\Deployment 4" | Remove-Item -Force -Recurse
 
         $Executable      = "regsvr32.exe"
@@ -1322,7 +1348,6 @@ Switch ($Result.ExitCode)
         }
 
         # Set-PSDDebugPause -Prompt "Before PSDFinal.ps1"
-        Stop-PSDLogging
 
         $LogPath = "$Env:SystemDrive\OSDLOGS($(Get-Date -UFormat %Y_%m%d))"
         If (!(Test-Path $LogPath))
@@ -1334,8 +1359,9 @@ Switch ($Result.ExitCode)
         {
             Copy-Item $Item.FullName $LogPath
         }
-
+        Copy-Item "$Env:SystemDrive\_SMSTaskSequence\Logs\smsts.log" $LogPath
         Copy-Item -Path "$env:SystemDrive\MININT\Cache\Scripts\PSDFinal.ps1" -Destination $env:TEMP
+        Stop-PSDLogging
         Clear-PSDInformation
                 
         # Checking for FinalSummary
@@ -1387,7 +1413,7 @@ Switch ($Result.ExitCode)
             {
                 If (Test-Path -Path "$($Drive.Name):\Windows\System32\mspaint.exe")
                 {
-                    Write-PSDLog -Message "Copy-Item $scripts\PSDStart.ps1 $($Drive.Name):\MININT\Scripts"
+                    Write-PSDLog -Message "Copy-Item $Env:scripts\PSDStart.ps1 $($Drive.Name):\MININT\Scripts"
                     Initialize-PSDFolder "$($Drive.Name):\MININT\Scripts"
                     Copy-Item "$env:scripts\PSDStart.ps1" "$($Drive.Name):\MININT\Scripts"
 
@@ -1435,8 +1461,17 @@ Switch ($Result.ExitCode)
                     {
                         New-Item -Path "$($Drive.Name):\MININT\PSDDebug.txt" -ItemType File -Force
                     }
+
+                    $LogPath = "$($Drive.Name):\OSDLOGS($(Get-Date -UFormat %Y_%m%d))"
+                    If (!(Test-Item $LogPath))
+                    {
+                        New-Item -Path $LogPath -ItemType Directory -Force
+                    }
+
+                    Copy-Item "X:\_SMSTaskSequence\Logs\smsts.log" $LogPath
                 }
             }
+           
 
             Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Exit with a zero return code and let Windows PE reboot"
             Stop-PSDLogging
@@ -1501,6 +1536,9 @@ Switch ($Result.ExitCode)
             {
                 Read-Host -Prompt "Exit -2147021886 (Windows)"
             }
+
+            $LogPath = Get-ChildItem "$Env:SystemDrive\" | ? Name -match "\d{4}_\d{4}" | % FullName           
+            Copy-Item "$env:SystemDrive\_SMSTaskSequence\Logs\smsts.log" $LogPath -Force
             
             # Restart-Computer -Force
             Shutdown.exe /r /t 30 /f
