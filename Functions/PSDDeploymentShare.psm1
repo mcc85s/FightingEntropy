@@ -16,7 +16,7 @@
           Primary:  Original [@Mikael_Nystrom]
                     Modofied [@mcc85s]
           Created: 
-          Modified: 2021-12-25
+          Modified: 2021-12-29
 
           Version - 0.0.0 - () - Finalized functional version 1.
 .Example
@@ -27,6 +27,7 @@ If ($TSEnv:PSDDebug -eq "YES")
 {
     $Global:PSDDebug = $true
 }
+
 If ($PSDDebug -eq $true)
 {
     $verbosePreference = "Continue"
@@ -34,7 +35,7 @@ If ($PSDDebug -eq $true)
 
 Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Importing module Bitstransfer"
 
-Import-Module BitsTransfer -Global -Force -Verbose:$False
+Import-Module BitsTransfer -Scope Global -Force -Verbose:$False
 
 # Local variables
 $global:psddsDeployRoot     = ""
