@@ -16,7 +16,7 @@
           Primary:  Original [@Mikael_Nystrom]
                     Modofied [@mcc85s]
           Created: 
-          Modified: 2021-12-25
+          Modified: 2021-12-29
 
           Version - 0.0.0 - () - Finalized functional version 1.
 .Example
@@ -27,6 +27,7 @@ If ($TSEnv:PSDDebug -eq "YES")
 {
     $Global:PSDDebug = $true
 }
+
 If ($PSDDebug -eq $True)
 {
     $verbosePreference = "Continue"
@@ -501,6 +502,7 @@ Function Get-IniContent
             } 
         } 
         # Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Finished Processing file: $FilePath" 
+        # "^\[(.+)\]$" Section | "^(;.*)$" Comment | "(.+?)\s*=\s*(.*)" Key
         Return $Ini 
     } 
          
