@@ -16,7 +16,7 @@
           Primary:  Original [@Mikael_Nystrom]
                     Modofied [@mcc85s]
           Created: 
-          Modified: 2021-12-25
+          Modified: 2021-12-29
 
           Version - 0.0.0 - () - Finalized functional version 1.
 .Example
@@ -36,8 +36,8 @@ If ($PSDDebug -eq $True)
     $verbosePreference = "Continue"
 }
 
-$Global:psuDataPath = ""
-$caller = Split-Path -Path $MyInvocation.PSCommandPath -Leaf
+$Global:psuDataPath = $Null
+$caller             = Split-Path -Path $MyInvocation.PSCommandPath -Leaf
 
 Function Get-PSDVolume
 {
@@ -81,7 +81,7 @@ Function Get-PSDLocalDataPath
     Param([Switch]$Move)
 
     # Return the cached local data path if possible
-    If ($Global:psuDataPath -ne "" -and (-not $move))
+    If ($Global:psuDataPath -eq "" -and !($move))
     {
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): global:psuDataPath is $psuDataPath, testing access"
         If (Test-Path $global:psuDataPath)
@@ -131,7 +131,7 @@ Function Get-PSDLocalDataPath
     {
         # Look on all other volumes 
         Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Checking other volumes for a MININT folder."
-        $LocalPath = Get-PSDVolume | ? TsDrive -eq 1 | % { "$($_.DriveLetter)\MININT" }
+        $LocalPath = Get-PSDVolume | % { "$($_.DriveLetter)\MININT" } | ? { Test-Path $_ }
     }
     
     # Not found on any drive, create one on the current system drive
@@ -145,7 +145,7 @@ Function Get-PSDLocalDataPath
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): Create the MININT folder if it doesn't exist"
     If (!(Test-Path $LocalPath))
     {
-        New-Item -ItemType Directory -Force -Path $LocalPath | Out-Null
+        New-Item -Path $LocalPath -ItemType Directory -Force | Out-Null
     }
     
     Write-PSDLog -Message "$($MyInvocation.MyCommand.Name): localpath set to $LocalPath"
