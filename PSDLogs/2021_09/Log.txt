@@ -1,0 +1,1280 @@
+			\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\cmi2migxml.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\Config_AppsAndSettings.xml\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\Config_AppsOnly.xml\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\Config_SettingsOnly.xml\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\csiagent.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\loadstate.exe\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\MigApp.xml\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\migcore.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\MigDocs.xml\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\mighost.exe\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\migres.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\migstore.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\migsys.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\MigUser.xml\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\MigXML.xsd\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\mxeagent.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\scanstate.exe\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFCN.DAT\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFLCID.DAT\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFLISTRS1.DAT\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFLISTW7.DAT\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFLISTW8.DAT\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFLISTW8.WOA.DAT\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFLISTWB.DAT\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFLISTWB.WOA.DAT\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFLISTWT.DAT\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFLISTWT.WOA.DAT\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFPAT.INF\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFPATRS1.INF\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFPATW7.INF\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFPATW8.INF\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFPATWB.INF\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\SFPATWT.INF\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\unbcl.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\usmtutils.exe\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\wdscore.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\DLManifests\dpapi_keys-DL.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\DLManifests\TextServicesFramework-Migration-DL.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\DLManifests\Microsoft-Windows-TextServicesFramework-Migration-DL\msctfmig.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Application-Experience-Program-Compatibility-Assistant-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\CAPI2_certs-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\CertificateEnrollment-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\DataIntegrityScan-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\DisplayConfigSettings_Win7Update.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\dpapi_keys-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\eudcedit-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\explorer-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\ExtensibleAuthenticationProtocolHostService-Rep.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\IdentityServer-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\IdentityServer-ProxyMigration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\International-Core-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Internet-Naming-Service-Runtime-Rep.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\media-settings-migration-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\mfmpeg2srcsnk-migration-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\mfsrcsnk-migration-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-Fax-Service-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-Identity-Foundation-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-IE-ClientNetworkProtocolImplementation-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-IE-InternetExplorer-repl-2.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-IE-InternetExplorer-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-NETFX35CDFComp-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-OfflineFiles-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-Security-NGC-CtnrSvc-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-ServerManager-Shell-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-WCFCoreComp-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\mmsys-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\msmpeg2vdec-migration-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Netfx4-Policy-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\ngcpopkeysrv_dll-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\notepad-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\odbc32dll-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\onecore_speechcommon-rep.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\PCPKsp_dll-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\PeerDist-Client-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\PeerDist-Server-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Printing-LocalPrinting-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\profsvcReplacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\RasApi-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\RasBase-Rassstp-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\RasBase-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\RasmanService-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\RasmanService-ReplV2.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Rasppp-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\RasRqs-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\ReFS-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\ReFS-v1-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Rights-Management-Client-v1-API-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\shmig-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\sounds-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\sysdm-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\SysMain-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\TerminalServices-AppServer-Licensing-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\TerminalServices-LicenseServer-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\TerminalServices-RAPWebPart-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\TerminalServices-RDP-WinStationExtensions-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\TerminalServices-SessionDirectory-Client-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\TextServicesFramework-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\UDFS-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\UPnPDeviceHost-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\UPnPDeviceHost-Server-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\UPnPSSDP-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\UPnPSSDP-Server-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\VirtualDiskService-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\WCF-HTTP-Activation-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\WCF-NonHTTP-Activation-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\win32k-settings-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Windows.Media-migration-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\WindowsSearchEngine-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Winlogon-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\winmde-migration-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\wlidsvc.vista-win7.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-OfflineFiles-Core\cscmig.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-shmig\shmig.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\Microsoft-Windows-TextServicesFramework-Migration\msctfmig.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests\WindowsSearchEngine\WSearchMigPlugin.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Application-Experience-Program-Compatibility-Assistant-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\eudcedit-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\ExtensibleAuthenticationProtocolHostService-Rep.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\International-Core-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Microsoft-Windows-Fax-Service-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Microsoft-Windows-IE-InternetExplorer-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Microsoft-Windows-NETFX35CDFComp-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Microsoft-Windows-OfflineFiles-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Microsoft-Windows-WCFCoreComp-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\mmsys-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\odbc32dll-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Printing-LocalPrinting-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\RasApi-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\RasmanService-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Rasppp-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Rights-Management-Client-v1-API-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\shmig-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\sounds-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\stickyNotes-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\sysdm-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\SysMain-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\TabletPCStickyNotes-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\TerminalServices-AppServer-Licensing-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\TerminalServices-LicenseServer-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\TerminalServices-Manager-SnapIn-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\TerminalServices-RAPWebPart-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\WCF-HTTP-Activation-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\WCF-NonHTTP-Activation-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\WindowsSearchEngine-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\WSRM-Service-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Microsoft-Windows-shmig\shmig.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\Microsoft-Windows-TerminalServices-LicenseServer\TlsRepPlugin.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests7\WindowsSearchEngine\WSearchMigPlugin.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Application-Experience-Program-Compatibility-Assistant-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\CAPI2_certs-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\CertificateEnrollment-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\DisplayConfigSettings_Win7Update.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\eudcedit-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\explorer-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\ExtensibleAuthenticationProtocolHostService-Rep.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\IdentityServer-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\IdentityServer-ProxyMigration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\International-Core-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Internet-Naming-Service-Runtime-Rep.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Microsoft-Windows-Fax-Service-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Microsoft-Windows-Identity-Foundation-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Microsoft-Windows-IE-InternetExplorer-repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Microsoft-Windows-IE-PDM-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Microsoft-Windows-NETFX35CDFComp-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Microsoft-Windows-OfflineFiles-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Microsoft-Windows-PowerShell-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Microsoft-Windows-PowerShell-WS08-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Microsoft-Windows-WCFCoreComp-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\mmsys-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Netfx4-Policy-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\odbc32dll-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\PeerDist-Client-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\PeerDist-Server-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Printing-LocalPrinting-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\RasApi-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\RasBase-Rassstp-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\RasBase-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\RasmanService-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\RasmanService-ReplV2.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Rasppp-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\RasRqs-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Rights-Management-Client-v1-API-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\shmig-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\sounds-Migration-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\stickyNotes-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\sysdm-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\SysMain-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\TabletPCStickyNotes-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\TerminalServices-AppServer-Licensing-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\TerminalServices-LicenseServer-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\TerminalServices-RAPWebPart-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\TerminalServices-RDP-WinStationExtensions-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\TerminalServices-SessionDirectory-Client-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\UDFS-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\VirtualDiskService-Repl.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\WCF-HTTP-Activation-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\WCF-NonHTTP-Activation-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\WindowsSearchEngine-replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Winlogon-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\WSRM-Service-Replacement.man\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\Microsoft-Windows-shmig\shmig.dll\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5\ReplacementManifests8\WindowsSearchEngine\WSearchMigPlugin.dll202 File(s) copied	
+ No 3rd party drivers found. 6]LOG]!			Skipping Device USB\VID_1235&PID_8016&REV_01>	
+&MI_00 No 3rd party drivers found. 5]LOG]!			Skipping Device USB\VID_1235&PID_8016&REV_01>	
+&MI_03 No 3rd party drivers found. 5]LOG]!			Skipping Device USB\VID_1235&PID_8016&REV_01>	
+07:01:17.000+000	09-13-2021	LiteTouch	Found Possible OS Target Partition: \\MININT-07VIN4O\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #2"	
+07:01:17.000+000	09-13-2021	LiteTouch	New ZTIDiskPartition : \\MININT-07VIN4O\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #2"    \\MININT-07VIN4O\root\cimv2:Win32_LogicalDisk.DeviceID="C:"	
+07:01:17.000+000	09-13-2021	LiteTouch	Found Possible OS Target Partition: \\MININT-07VIN4O\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #1"	
+07:01:17.000+000	09-13-2021	LiteTouch	Target Partition not big enough: \\MININT-07VIN4O\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #1"	
+07:01:17.000+000	09-13-2021	LiteTouch	Found Drive: C:	
+07:01:17.000+000	09-13-2021	LiteTouch	Property LogPath is now = X:\MININT\SMSOSD\OSDLOGS	
+07:01:17.000+000	09-13-2021	LiteTouch	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:01:17.000+000	09-13-2021	LiteTouch	Found FirstPossibleSystemDrive: C:	
+07:01:17.000+000	09-13-2021	LiteTouch	Property SMSTSLocalDataDrive is now = C:	
+07:01:17.000+000	09-13-2021	LiteTouch	Target Partition not big enough: \\MININT-07VIN4O\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #0"	
+07:01:17.000+000	09-13-2021	LiteTouch	New ZTIDisk : \\MININT-07VIN4O\root\cimv2:Win32_DiskDrive.DeviceID="\\\\.\\PHYSICALDRIVE0"	
+07:01:17.000+000	09-13-2021	LiteTouch	Property Debug is now = FALSE	
+07:01:17.000+000	09-13-2021	LiteTouch	ZTIUtility!GetAllFixedDrives (False)	
+07:01:17.000+000	09-13-2021	LiteTouch	Found Possible OS TargetDisk: \\MININT-07VIN4O\root\cimv2:Win32_DiskDrive.DeviceID="\\\\.\\PHYSICALDRIVE0"	
+07:01:17.000+000	09-13-2021	LiteTouch	GetPartitions: 3	
+07:01:17.000+000	09-13-2021	LiteTouch	Found Possible OS Target Partition: \\MININT-07VIN4O\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #0"	
+07:01:17.000+000	09-13-2021	LiteTouch	ZTIUtility!GetAllFixedDrives =    C:	
+07:01:17.000+000	09-13-2021	LiteTouch	No task sequence is in progress.	
+07:01:22.000+000	09-13-2021	LiteTouch	Unable to connect to BCDStore.	
+07:01:23.000+000	09-13-2021	ZTIGather	Property IsServerCoreOS is now = False	
+07:01:23.000+000	09-13-2021	LiteTouch	Property LogPath is now = C:\MININT\SMSOSD\OSDLOGS	
+07:01:23.000+000	09-13-2021	ZTIGather	Finished getting HAL information	
+07:01:23.000+000	09-13-2021	ZTIGather	Finished getting OS info	
+07:01:23.000+000	09-13-2021	ZTIGather	Getting HAL information	
+07:01:23.000+000	09-13-2021	ZTIGather	Property HALName is now = acpiapic	
+07:01:23.000+000	09-13-2021	LiteTouch	Using a local or mapped drive, no connection is required.	
+07:01:23.000+000	09-13-2021	LiteTouch	DeployRoot = X:\Deploy	
+07:01:23.000+000	09-13-2021	LiteTouch	Property DeployDrive is now = X:	
+07:01:23.000+000	09-13-2021	LiteTouch	Property DeployRoot is now = X:\Deploy	
+07:01:23.000+000	09-13-2021	LiteTouch	Not running within WinPE or WinRE.	
+07:01:23.000+000	09-13-2021	LiteTouch	Property DeploymentMethod is now = UNC	
+07:01:23.000+000	09-13-2021	LiteTouch	DeploymentMethod = UNC	
+07:01:23.000+000	09-13-2021	ZTIGather	------------------------- Initialization -------------------------	
+07:01:23.000+000	09-13-2021	ZTIGather	Synchronizing the environments.	
+07:01:23.000+000	09-13-2021	ZTIGather	Property DeployRoot is now = X:\Deploy	
+07:01:23.000+000	09-13-2021	ZTIGather	------------------------- Object Initialization -------------------------	
+07:01:23.000+000	09-13-2021	ZTIGather	Property inifile is now = Bootstrap.ini	
+07:01:23.000+000	09-13-2021	ZTIGather	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:01:23.000+000	09-13-2021	ZTIGather	Property DeployDrive is now = X:	
+07:01:23.000+000	09-13-2021	ZTIGather	Property OSVersion is now = WinPE	
+07:01:23.000+000	09-13-2021	ZTIGather	Property IsServerOS is now = False	
+07:01:23.000+000	09-13-2021	ZTIGather	Property OSCurrentBuild is now = 18362	
+07:01:23.000+000	09-13-2021	ZTIGather	Finished synchronizing the environments.	
+07:01:23.000+000	09-13-2021	ZTIGather	Getting OS info	
+07:01:23.000+000	09-13-2021	ZTIGather	Property OSCurrentVersion is now = 10.0.18362	
+07:01:23.000+000	09-13-2021	LiteTouch	DeployDrive = X:	
+07:01:23.000+000	09-13-2021	ZTIGather	Property IPAddress004 is now = 2603:7080:8f01:efb8:2cb9:21b8:a1db:e674	
+07:01:23.000+000	09-13-2021	ZTIGather	Property IPAddress003 is now = 2603:7080:8f01:efb8:cc22:49de:1501:76cf	
+07:01:23.000+000	09-13-2021	ZTIGather	Property IPAddress002 is now = fe80::2cb9:21b8:a1db:e674	
+07:01:23.000+000	09-13-2021	ZTIGather	Property MacAddress001 is now = 04:7D:7B:5F:D5:45	
+07:01:23.000+000	09-13-2021	ZTIGather	Finished getting network info	
+07:01:23.000+000	09-13-2021	ZTIGather	Property DefaultGateway002 is now = fe80::20a:cdff:fe22:2a20	
+07:01:23.000+000	09-13-2021	ZTIGather	Property DefaultGateway001 is now = 172.16.0.1	
+07:01:23.000+000	09-13-2021	ZTIGather	Property IPAddress001 is now = 172.16.0.24	
+07:01:23.000+000	09-13-2021	ZTIGather	IP Address = fe80::2cb9:21b8:a1db:e674	
+07:01:23.000+000	09-13-2021	ZTIGather	IP Address = 172.16.0.24	
+07:01:23.000+000	09-13-2021	ZTIGather	MAC address = 04:7D:7B:5F:D5:45	
+07:01:23.000+000	09-13-2021	ZTIGather	IP Address = 2603:7080:8f01:efb8:cc22:49de:1501:76cf	
+07:01:23.000+000	09-13-2021	ZTIGather	Default Gateway = fe80::20a:cdff:fe22:2a20	
+07:01:23.000+000	09-13-2021	ZTIGather	Default Gateway = 172.16.0.1	
+07:01:23.000+000	09-13-2021	ZTIGather	IP Address = 2603:7080:8f01:efb8:2cb9:21b8:a1db:e674	
+07:01:23.000+000	09-13-2021	LiteTouch	About to run command: wscript.exe "X:\Deploy\Scripts\ZTIGather.wsf" /inifile:Bootstrap.ini	
+07:01:23.000+000	09-13-2021	LiteTouch	Property LTIFirstTime is now = NO	
+07:01:23.000+000	09-13-2021	LiteTouch	Property PHASE is now = PREINSTALL	
+07:01:23.000+000	09-13-2021	LiteTouch	Property DeploymentType is now = NEWCOMPUTER	
+07:01:23.000+000	09-13-2021	LiteTouch	Phase = PREINSTALL	
+07:01:23.000+000	09-13-2021	Wizard	Property definition is now = BDD_Welcome_ENU.xml	
+07:01:23.000+000	09-13-2021	ZTIGather	Finished getting DP info	
+07:01:23.000+000	09-13-2021	ZTIGather	Unable to determine ConfigMgr distribution point	
+07:01:23.000+000	09-13-2021	ZTIGather	Getting DP info	
+07:01:23.000+000	09-13-2021	ZTIGather	Getting WDS server info	
+07:01:23.000+000	09-13-2021	Wizard	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:01:23.000+000	09-13-2021	ZTIGather	Getting network info	
+07:01:23.000+000	09-13-2021	ZTIGather	Checking network adapter: [00000001] Realtek PCIe GbE Family Controller	
+07:01:24.000+000	09-13-2021	ZTIGather	Getting asset info	
+07:01:24.000+000	09-13-2021	Wizard	Not Wizard = False	
+07:01:24.000+000	09-13-2021	ZTIGather	Finished getting WDS server info	
+07:01:24.000+000	09-13-2021	ZTIGather	Property HostName is now = MININT-07VIN4O	
+07:01:24.000+000	09-13-2021	Wizard	Property WizardComplete is now = N	
+07:01:24.000+000	09-13-2021	ZTIGather	Property WDSServer is now = dsc0.securedigitsplus.com	
+07:01:25.000+000	09-13-2021	ZTIGather	Property SupportsSLAT is now = True	
+07:01:25.000+000	09-13-2021	ZTIGather	Property IsOnBattery is now = False	
+07:01:25.000+000	09-13-2021	ZTIGather	Property SupportsX64 is now = True	
+07:01:25.000+000	09-13-2021	ZTIGather	Property SupportsX86 is now = True	
+07:01:25.000+000	09-13-2021	ZTIGather	Property IsLaptop is now = True	
+07:01:25.000+000	09-13-2021	ZTIGather	Property CapableArchitecture is now = AMD64 X64 X86	
+07:01:25.000+000	09-13-2021	ZTIGather	Property ProcessorSpeed is now = 2501	
+07:01:25.000+000	09-13-2021	ZTIGather	Property IsUEFI is now = False	
+07:01:25.000+000	09-13-2021	ZTIGather	Unable to determine Windows SKU while in Windows PE.	
+07:01:25.000+000	09-13-2021	ZTIGather	Property IsDesktop is now = False	
+07:01:25.000+000	09-13-2021	ZTIGather	Property IsHypervisorRunning is now = False	
+07:01:25.000+000	09-13-2021	ZTIGather	Property SupportsVT is now = True	
+07:01:25.000+000	09-13-2021	ZTIGather	Getting virtualization info	
+07:01:25.000+000	09-13-2021	ZTIGather	Determining the Disk and Partition Number from the Logical Drive X:\WINDOWS	
+07:01:25.000+000	09-13-2021	ZTIGather	Property OriginalArchitecture is now = X64	
+07:01:25.000+000	09-13-2021	ZTIGather	Getting OS SKU info	
+07:01:25.000+000	09-13-2021	ZTIGather	Finished getting asset info	
+07:01:25.000+000	09-13-2021	ZTIGather	Property SupportsNX is now = True	
+07:01:25.000+000	09-13-2021	ZTIGather	Property Supports64Bit is now = True	
+07:01:25.000+000	09-13-2021	ZTIGather	Finished getting virtualization info	
+07:01:25.000+000	09-13-2021	ZTIGather	Connection succeeded to MicrosoftVolumeEncryption	
+07:01:25.000+000	09-13-2021	ZTIGather	FindFile: The file x86\Microsoft.BDD.Utility.dll could not be found in any standard locations.	
+07:01:25.000+000	09-13-2021	ZTIGather	RUN: regsvr32.exe /s ""	
+07:01:25.000+000	09-13-2021	ZTIGather	FindFile(...\Microsoft.BDD.Utility.dll)  Result : 1	
+07:01:25.000+000	09-13-2021	ZTIGather	Determining the INI file to use.	
+07:01:25.000+000	09-13-2021	ZTIGather	Finished determining the INI file to use.	
+07:01:25.000+000	09-13-2021	ZTIGather	Processing the PREINSTALL phase.	
+07:01:25.000+000	09-13-2021	ZTIGather	There are no encrypted drives	
+07:01:25.000+000	09-13-2021	ZTIGather	Property IsBDE is now = False	
+07:01:25.000+000	09-13-2021	ZTIGather	Property Product is now = 7829AU6	
+07:01:25.000+000	09-13-2021	ZTIGather	Property Model is now = 7829AU6	
+07:01:25.000+000	09-13-2021	ZTIGather	Property UUID is now = D4059A81-4AEE-11CB-8D7D-E9D79C51C524	
+07:01:25.000+000	09-13-2021	ZTIGather	Property Architecture is now = X64	
+07:01:25.000+000	09-13-2021	ZTIGather	Property Memory is now = 3936	
+07:01:25.000+000	09-13-2021	ZTIGather	RUN: regsvr32.exe /s "X:\Deploy\Tools\x64\Microsoft.BDD.Utility.dll"	
+07:01:25.000+000	09-13-2021	ZTIGather	FindFile(...\Microsoft.BDD.Utility.dll)  Result : 0	
+07:01:25.000+000	09-13-2021	ZTIGather	Property AssetTag is now = No Asset Information	
+07:01:25.000+000	09-13-2021	ZTIGather	Property Make is now = LENOVO	
+07:01:25.000+000	09-13-2021	ZTIGather	Property SerialNumber is now = LR0FXTA	
+07:01:25.000+000	09-13-2021	ZTIGather	Property SupportsHyperVRole is now = True	
+07:01:25.000+000	09-13-2021	ZTIGather	This computer does not appear to be a virtual machine (BIOS is 'LENOVO - 1230').	
+07:01:25.000+000	09-13-2021	ZTIGather	Property IsVM is now = False	
+07:01:25.000+000	09-13-2021	ZTIGather	Property IsServer is now = False	
+07:01:26.000+000	09-13-2021	ZTIGather	Property SKIPBDDWELCOME is now = YES	
+07:01:26.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: SKIPBDDWELCOME = YES	
+07:01:26.000+000	09-13-2021	ZTIGather	<Message containing password has been suppressed>	
+07:01:26.000+000	09-13-2021	ZTIGather	Property TaskSequenceID is now = 	
+07:01:26.000+000	09-13-2021	ZTIGather	Property DeploymentType is now = NEWCOMPUTER	
+07:01:26.000+000	09-13-2021	ZTIGather	------ Done processing X:\Deploy\Scripts\Bootstrap.ini ------	
+07:01:26.000+000	09-13-2021	ZTIGather	Remapping variables.	
+07:01:26.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: USERID = fightingentropy@securedigitsplus.com	
+07:01:26.000+000	09-13-2021	ZTIGather	Using from [Settings]: Rule Priority = DEFAULT	
+07:01:26.000+000	09-13-2021	ZTIGather	------ Processing the [DEFAULT] section ------	
+07:01:26.000+000	09-13-2021	LiteTouch	Command completed, return code = 0	
+07:01:26.000+000	09-13-2021	ZTIGather	ZTIGather processing completed successfully.	
+07:01:26.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: DEPLOYROOT = \\dsc0.securedigitsplus.com\FlightTest$	
+07:01:26.000+000	09-13-2021	ZTIGather	Property USERID is now = fightingentropy@securedigitsplus.com	
+07:01:26.000+000	09-13-2021	ZTIGather	Property DEPLOYROOT is now = \\dsc0.securedigitsplus.com\FlightTest$	
+07:01:26.000+000	09-13-2021	ZTIGather	Finished remapping variables.	
+07:01:27.000+000	09-13-2021	LiteTouch	About to run command: wscript.exe "X:\Deploy\Scripts\ZTIGather.wsf" /nolocalonly	
+07:01:27.000+000	09-13-2021	LiteTouch	Successfully established connection using supplied credentials.	
+07:01:27.000+000	09-13-2021	Wizard	Property definition is now = WelcomeWiz_Initialize.xml	
+07:01:27.000+000	09-13-2021	ZTIGather	Property nolocalonly is now = 	
+07:01:27.000+000	09-13-2021	LiteTouch	Found Existing UNC Path Z: = \\dsc0.securedigitsplus.com\FlightTest$	
+07:01:27.000+000	09-13-2021	LiteTouch	Validating connection to \\dsc0.securedigitsplus.com\FlightTest$	
+07:01:27.000+000	09-13-2021	Wizard	Property WizardComplete is now = Y	
+07:01:27.000+000	09-13-2021	LiteTouch	Mapped Network UNC Path Z:  = \\dsc0.securedigitsplus.com\FlightTest$	
+07:01:27.000+000	09-13-2021	LiteTouch	Mapping server share: \\dsc0.securedigitsplus.com\FlightTest$	
+07:01:27.000+000	09-13-2021	Wizard	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:01:27.000+000	09-13-2021	ZTIGather	------------------------- Object Initialization -------------------------	
+07:01:27.000+000	09-13-2021	ZTIGather	------------------------- Initialization -------------------------	
+07:01:27.000+000	09-13-2021	ZTIGather	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: MACHINEOBJECTOU = OU=Computers,OU=CP-NY-US-12065,DC=securedigitsplus,DC=com	
+07:01:28.000+000	09-13-2021	ZTIGather	Property TIMEZONENAME is now = Eastern Standard Time	
+07:01:28.000+000	09-13-2021	ZTIGather	<Message containing password has been suppressed>	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: DOMAINADMIN = fightingentropy@securedigitsplus.com	
+07:01:28.000+000	09-13-2021	ZTIGather	Property MACHINEOBJECTOU is now = OU=Computers,OU=CP-NY-US-12065,DC=securedigitsplus,DC=com	
+07:01:28.000+000	09-13-2021	ZTIGather	Property DOMAINADMIN is now = fightingentropy@securedigitsplus.com	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: _SMSTSORGNAME = Secure Digits Plus LLC	
+07:01:28.000+000	09-13-2021	ZTIGather	Property _SMSTSORGNAME is now = Secure Digits Plus LLC	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: SKIPCAPTURE = NO	
+07:01:28.000+000	09-13-2021	ZTIGather	Property SKIPCAPTURE is now = NO	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: SKIPBITLOCKER = YES	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: TIMEZONENAME = Eastern Standard Time	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: KEYBOARDLOCALE = en-US	
+07:01:28.000+000	09-13-2021	ZTIGather	Property KEYBOARDLOCALE is now = en-US	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: JOINDOMAIN = securedigitsplus.com	
+07:01:28.000+000	09-13-2021	ZTIGather	------ Done processing \\dsc0.securedigitsplus.com\FlightTest$\Control\CustomSettings.ini ------	
+07:01:28.000+000	09-13-2021	ZTIGather	Using DEFAULT VALUE: Ini file = \\dsc0.securedigitsplus.com\FlightTest$\Control\CustomSettings.ini	
+07:01:28.000+000	09-13-2021	ZTIGather	Added new custom property MYCUSTOMPROPERTY	
+07:01:28.000+000	09-13-2021	ZTIGather	Finished determining the INI file to use.	
+07:01:28.000+000	09-13-2021	ZTIGather	Skipping local settings gathering because it has already been done.	
+07:01:28.000+000	09-13-2021	ZTIGather	Finished synchronizing the environments.	
+07:01:28.000+000	09-13-2021	ZTIGather	Determining the INI file to use.	
+07:01:28.000+000	09-13-2021	ZTIGather	Processing the PREINSTALL phase.	
+07:01:28.000+000	09-13-2021	ZTIGather	Property OSINSTALL is now = Y	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: EVENTSERVICE = http://dsc0.securedigitsplus.com:9800	
+07:01:28.000+000	09-13-2021	ZTIGather	Property JOINDOMAIN is now = securedigitsplus.com	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: OSINSTALL = Y	
+07:01:28.000+000	09-13-2021	ZTIGather	Property DeployDrive is now = X:	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [Settings]: Rule Priority = DEFAULT	
+07:01:28.000+000	09-13-2021	ZTIGather	Property EVENTSERVICE is now = http://dsc0.securedigitsplus.com:9800	
+07:01:28.000+000	09-13-2021	ZTIGather	------ Processing the [DEFAULT] section ------	
+07:01:28.000+000	09-13-2021	Wizard	Not Wizard = False	
+07:01:28.000+000	09-13-2021	Wizard	Property WizardComplete is now = N	
+07:01:28.000+000	09-13-2021	ZTIGather	Property SKIPBITLOCKER is now = YES	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: SKIPPRODUCTKEY = YES	
+07:01:28.000+000	09-13-2021	ZTIGather	Identifying the client.	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: SKIPCOMPUTERBACKUP = NO	
+07:01:28.000+000	09-13-2021	ZTIGather	Property SKIPCOMPUTERBACKUP is now = NO	
+07:01:28.000+000	09-13-2021	ZTIGather	Property SKIPPRODUCTKEY is now = YES	
+07:01:28.000+000	09-13-2021	ZTIGather	Using from [DEFAULT]: SKIPDOMAINMEMBERSHIP = YES	
+07:01:28.000+000	09-13-2021	ZTIGather	Property SKIPDOMAINMEMBERSHIP is now = YES	
+07:01:28.000+000	09-13-2021	ZTIGather	Property DeployRoot is now = \\dsc0.securedigitsplus.com\FlightTest$	
+07:01:28.000+000	09-13-2021	ZTIGather	Synchronizing the environments.	
+07:01:30.000+000	09-13-2021	ZTIGather	Property LTIGUID is now = 3bd16d57-0cef-4eae-a7be-79a861ab18ee	
+07:01:30.000+000	09-13-2021	ZTIGather	Event 41000 sent: Identifying the client.	
+07:01:31.000+000	09-13-2021	ZTIGather	Finished remapping variables.	
+07:01:31.000+000	09-13-2021	ZTIGather	ZTIGather processing completed successfully.	
+07:01:31.000+000	09-13-2021	ZTIGather	<Message containing password has been suppressed>	
+07:01:31.000+000	09-13-2021	ZTIGather	Property OSDDomainOUName is now = OU=Computers,OU=CP-NY-US-12065,DC=securedigitsplus,DC=com	
+07:01:31.000+000	09-13-2021	LiteTouch	Found Existing UNC Path Z: = \\dsc0.securedigitsplus.com\FlightTest$	
+07:01:31.000+000	09-13-2021	ZTIGather	Event 41001 sent: ZTIGather processing completed successfully.	
+07:01:31.000+000	09-13-2021	LiteTouch	Successfully established connection using supplied credentials.	
+07:01:31.000+000	09-13-2021	ZTIGather	Property TaskSequenceID is now = 	
+07:01:31.000+000	09-13-2021	ZTIGather	Property DeploymentType is now = NEWCOMPUTER	
+07:01:31.000+000	09-13-2021	LiteTouch	Command completed, return code = 0	
+07:01:31.000+000	09-13-2021	ZTIGather	Remapping variables.	
+07:01:31.000+000	09-13-2021	ZTIGather	Property OSDJoinAccount is now = \fightingentropy@securedigitsplus.com	
+07:01:31.000+000	09-13-2021	ZTIGather	Property OSDNetworkJoinType is now = 0	
+07:01:31.000+000	09-13-2021	ZTIGather	Property OSDDomainName is now = securedigitsplus.com	
+07:01:31.000+000	09-13-2021	LiteTouch	Mapping server share: \\dsc0.securedigitsplus.com\FlightTest$	
+07:01:31.000+000	09-13-2021	LiteTouch	Validating connection to \\dsc0.securedigitsplus.com\FlightTest$	
+07:01:32.000+000	09-13-2021	LiteTouch	About to run command: MSHTA.exe "\\dsc0.securedigitsplus.com\FlightTest$\Scripts\Wizard.hta" /definition:DeployWiz_Definition_ENU.xml	
+07:01:32.000+000	09-13-2021	LiteTouch	Property LTIDirty is now = TRUE	
+07:01:32.000+000	09-13-2021	Wizard	Property WizardComplete is now = Y	
+07:01:32.000+000	09-13-2021	Wizard	Not Wizard = False	
+07:01:32.000+000	09-13-2021	Wizard	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:01:32.000+000	09-13-2021	Wizard	Property definition is now = DeployWiz_Definition_ENU.xml	
+07:01:34.000+000	09-13-2021	Wizard		Open Control File: TaskSequences	
+07:01:34.000+000	09-13-2021	Wizard	Property WizardComplete is now = N	
+07:01:43.000+000	09-13-2021	Wizard	Property TaskSequenceName is now = Windows 10 Pro (x64) (x64)	
+07:01:43.000+000	09-13-2021	Wizard	Property DeploymentType is now = NEWCOMPUTER	
+07:01:43.000+000	09-13-2021	Wizard	Property IsOSUpgrade is now = 0	
+07:01:43.000+000	09-13-2021	Wizard	Property TaskSequenceTemplate is now = FEClientMod.xml	
+07:01:43.000+000	09-13-2021	Wizard	Property TaskSequenceVersion is now = 1.0	
+07:01:43.000+000	09-13-2021	Wizard	Property TaskSequenceID is now = 10P64	
+07:01:44.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallUpdatesOffline' and @name='Apply Patches'] = True	
+07:01:44.000+000	09-13-2021	Wizard		QUERY: //packages/package[(ProcessorArchitecture = 'amd64' or ProcessorArchitecture = 'neutral') and PackageType = 'LanguagePack' and ( ProductName = 'Microsoft-Windows-Client-LanguagePack-Package' or ProductName = 'Microsoft-Windows-Client-Refresh-LanguagePack-Package' or ProductName = 'Microsoft.LanguageExperiencePack') and substring(ProductVersion,1,7) = '10.0.19' and substring(ProductVersion,5,4) >= '.190']	
+07:01:44.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallUpdatesOffline' and @name='Apply Patches']	
+07:01:44.000+000	09-13-2021	Wizard		Open Control File: Packages	
+07:01:44.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallRoles'] = 	
+07:01:44.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallRoles']	
+07:01:44.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallApplication' and ./defaultVarList/variable[@name='ApplicationGUID'] and ./defaultVarList[variable='']] = True	
+07:01:44.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallApplication' and ./defaultVarList/variable[@name='ApplicationGUID'] and ./defaultVarList[variable='']]	
+07:01:44.000+000	09-13-2021	Wizard		Open Control File: Applications	
+07:01:44.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@name='Restore User State']	
+07:01:44.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@name='Offline User State Capture'] = True	
+07:01:44.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@name='Restore User State'] = True	
+07:01:44.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@name='Offline User State Capture']	
+07:01:44.000+000	09-13-2021	Wizard	Property InstallFromPath is now = \\dsc0.securedigitsplus.com\flighttest$\Operating Systems\10P64\10P64.wim	
+07:01:44.000+000	09-13-2021	Wizard	Property OSGUID is now = {4be70491-e453-40e3-80b6-f20a0d9ac6bb}	
+07:01:44.000+000	09-13-2021	Wizard	Property SourcePath is now = \\dsc0.securedigitsplus.com\FlightTest$\Operating Systems\10P64	
+07:01:44.000+000	09-13-2021	Wizard	SourcePath: \\dsc0.securedigitsplus.com\FlightTest$\Operating Systems\10P64	
+07:01:44.000+000	09-13-2021	Wizard	Property ImageFlags is now = Professional	
+07:01:44.000+000	09-13-2021	Wizard	Property ImageBuild is now = 10.0.19041.928	
+07:01:44.000+000	09-13-2021	Wizard	Property ImageIndex is now = 1	
+07:01:44.000+000	09-13-2021	Wizard	Property ImageSize is now = 14346	
+07:01:44.000+000	09-13-2021	Wizard	Property ImageProcessor is now = x64	
+07:01:44.000+000	09-13-2021	Wizard	Property ImageLanguage001 is now = en-US	
+07:01:44.000+000	09-13-2021	Wizard	InstallFromPath: \\dsc0.securedigitsplus.com\FlightTest$\Operating Systems\10P64\10P64.wim	
+07:01:45.000+000	09-13-2021	Wizard	FindFile: The file DomainOUList.xml could not be found in any standard locations.	
+07:02:03.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@name='Offline User State Capture']	
+07:02:03.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallUpdatesOffline' and @name='Apply Patches'] = True	
+07:02:03.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@name='Offline User State Capture'] = True	
+07:02:03.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallUpdatesOffline' and @name='Apply Patches']	
+07:02:03.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@name='Restore User State'] = True	
+07:02:03.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@name='Restore User State']	
+07:02:03.000+000	09-13-2021	Wizard		QUERY: //packages/package[(ProcessorArchitecture = 'amd64' or ProcessorArchitecture = 'neutral') and PackageType = 'LanguagePack' and ( ProductName = 'Microsoft-Windows-Client-LanguagePack-Package' or ProductName = 'Microsoft-Windows-Client-Refresh-LanguagePack-Package' or ProductName = 'Microsoft.LanguageExperiencePack') and substring(ProductVersion,1,7) = '10.0.19' and substring(ProductVersion,5,4) >= '.190']	
+07:02:03.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallApplication' and ./defaultVarList/variable[@name='ApplicationGUID'] and ./defaultVarList[variable='']] = True	
+07:02:03.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallApplication' and ./defaultVarList/variable[@name='ApplicationGUID'] and ./defaultVarList[variable='']]	
+07:02:03.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallRoles']	
+07:02:03.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallRoles'] = 	
+07:02:04.000+000	09-13-2021	Wizard	Nothing to display Disk0part1 OK TO Skip!	
+07:02:04.000+000	09-13-2021	Wizard	Nothing to display Disk0part2 OK TO Skip!	
+07:02:04.000+000	09-13-2021	Wizard	Add Entry to Dialog: GPT  0  2  1  EFI  100  \\?\Volume{21ac364e-4dd0-4650-9189-8e0bdee2b231}      71	
+07:02:04.000+000	09-13-2021	Wizard	Add Entry to Dialog: GPT  0  3  0  MSR  16        16	
+07:02:04.000+000	09-13-2021	Wizard	Add Entry to Dialog: GPT  0  4  0  Primary  1000995  \\?\Volume{982d3c80-a38e-49d3-b5fb-038c0a082ff4}  C:\    839446	
+07:02:04.000+000	09-13-2021	Wizard	Nothing to display Disk0part3 OK TO Skip!	
+07:02:04.000+000	09-13-2021	Wizard	Add Entry to Dialog: GPT  0  1  0  Recovery  450  \\?\Volume{2687b1e7-cfb9-4d57-8c09-b469554d0455}    Recovery  139	
+07:02:13.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallUpdatesOffline' and @name='Apply Patches']	
+07:02:13.000+000	09-13-2021	Wizard	Migrate!	
+07:02:13.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallApplication' and ./defaultVarList/variable[@name='ApplicationGUID'] and ./defaultVarList[variable='']]	
+07:02:13.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallUpdatesOffline' and @name='Apply Patches'] = True	
+07:02:13.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallRoles'] = 	
+07:02:13.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallApplication' and ./defaultVarList/variable[@name='ApplicationGUID'] and ./defaultVarList[variable='']] = True	
+07:02:13.000+000	09-13-2021	Wizard		QUERY: //packages/package[(ProcessorArchitecture = 'amd64' or ProcessorArchitecture = 'neutral') and PackageType = 'LanguagePack' and ( ProductName = 'Microsoft-Windows-Client-LanguagePack-Package' or ProductName = 'Microsoft-Windows-Client-Refresh-LanguagePack-Package' or ProductName = 'Microsoft.LanguageExperiencePack') and substring(ProductVersion,1,7) = '10.0.19' and substring(ProductVersion,5,4) >= '.190']	
+07:02:13.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallRoles']	
+07:02:14.000+000	09-13-2021	Wizard	Languages Displayed: 	en-US	
+07:02:14.000+000	09-13-2021	Wizard	###### Locale_Initialization ###### 	
+07:02:17.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallApplication' and ./defaultVarList/variable[@name='ApplicationGUID'] and ./defaultVarList[variable='']] = True	
+07:02:17.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallRoles']	
+07:02:17.000+000	09-13-2021	Wizard	Found Task Sequence Item: //step[@type='BDD_InstallApplication' and ./defaultVarList/variable[@name='ApplicationGUID'] and ./defaultVarList[variable='']]	
+07:02:17.000+000	09-13-2021	Wizard	Found Task Sequence step of type //step[@type='BDD_InstallRoles'] = 	
+07:02:29.000+000	09-13-2021	Wizard	Property USMTOfflineMigration is now = TRUE	
+07:02:29.000+000	09-13-2021	Wizard	Property OfflineMigration is now = C:	
+07:02:29.000+000	09-13-2021	Wizard	Property OSDWinPEWindir is now = C:\Windows	
+07:02:29.000+000	09-13-2021	Wizard	Property OriginalArchitecture is now = X64	
+07:02:29.000+000	09-13-2021	Wizard	Property UILanguage is now = en-us	
+07:02:29.000+000	09-13-2021	Wizard	<Message containing password has been suppressed>	
+07:02:29.000+000	09-13-2021	Wizard	Property LanguagePacks001 is now = 	
+07:02:29.000+000	09-13-2021	Wizard	Property KeyboardLocale is now = en-us;0409:00000409	
+07:02:29.000+000	09-13-2021	Wizard	Property OSDisk is now = C:	
+07:02:29.000+000	09-13-2021	Wizard	Property DomainAdmin is now = fightingentropy@securedigitsplus.com	
+07:02:29.000+000	09-13-2021	Wizard	Property MachineObjectOU is now = OU=Computers,OU=CP-NY-US-12065,DC=securedigitsplus,DC=com	
+07:02:29.000+000	09-13-2021	Wizard	Property doNotFormatAndPartition is now = YES	
+07:02:29.000+000	09-13-2021	Wizard	Property JoinWorkgroup is now = 	
+07:02:29.000+000	09-13-2021	Wizard	Property DomainAdminDomain is now = 	
+07:02:29.000+000	09-13-2021	Wizard	Property JoinDomain is now = securedigitsplus.com	
+07:02:29.000+000	09-13-2021	Wizard	Property DestinationOSInstallType is now = ByVariable	
+07:02:29.000+000	09-13-2021	Wizard	Property DestinationOSVariable is now = OSDisk	
+07:02:29.000+000	09-13-2021	Wizard	Property UserDataLocation is now = AUTO	
+07:02:29.000+000	09-13-2021	Wizard	Property OSDComputerName is now = ws1-12065	
+07:02:29.000+000	09-13-2021	Wizard	Property TSGuid is now = {1fae3183-93b9-4e93-96ad-2ddf3c9841b2}	
+07:02:30.000+000	09-13-2021	LiteTouch	SMS Task Sequencer already found on X:\Deploy\Tools\X64	
+07:02:30.000+000	09-13-2021	LiteTouch	ResourceDrive = Z:	
+07:02:30.000+000	09-13-2021	LiteTouch	Property _SMSTSPackageName is now = Lite Touch Installation	
+07:02:30.000+000	09-13-2021	LiteTouch	DeployDrive = Z:	
+07:02:30.000+000	09-13-2021	LiteTouch	ResourceRoot = \\dsc0.securedigitsplus.com\FlightTest$	
+07:02:30.000+000	09-13-2021	LiteTouch	Property ResourceDrive is now = Z:	
+07:02:30.000+000	09-13-2021	LiteTouch	Property ResourceRoot is now = \\dsc0.securedigitsplus.com\FlightTest$	
+07:02:30.000+000	09-13-2021	LiteTouch	DeploymentType = NEWCOMPUTER	
+07:02:30.000+000	09-13-2021	LiteTouch	Event 41016 sent: LTI beginning deployment	
+07:02:30.000+000	09-13-2021	LiteTouch	LTI beginning deployment	
+07:02:30.000+000	09-13-2021	LiteTouch	Property LTIDirty is now = TRUE	
+07:02:30.000+000	09-13-2021	LiteTouch	About to run command: "X:\Deploy\Tools\X64\TsmBootstrap.exe" /env:SAStart	
+07:02:30.000+000	09-13-2021	LiteTouch	Saving task sequence XML to X:\Deploy\Tools\X64\TS.XML	
+07:02:30.000+000	09-13-2021	LiteTouch	Reading \\dsc0.securedigitsplus.com\FlightTest$\Control\10P64\TS.XML	
+07:02:30.000+000	09-13-2021	LiteTouch	Found Existing UNC Path Z: = \\dsc0.securedigitsplus.com\FlightTest$	
+07:02:30.000+000	09-13-2021	LiteTouch	Copying C:\MININT\SMSOSD\OSDLOGS\VARIABLES.DAT to X:\Deploy\Tools\X64\VARIABLES.DAT	
+07:02:30.000+000	09-13-2021	LiteTouch	Property DeployDrive is now = Z:	
+07:02:30.000+000	09-13-2021	Wizard	Property UserLocale_Edit is now = en-us;0409	
+07:02:30.000+000	09-13-2021	Wizard	Property UserLocale is now = en-us	
+07:02:30.000+000	09-13-2021	Wizard	Property KeyboardLocale_Edit is now = 00000409	
+07:02:30.000+000	09-13-2021	Wizard	Property TimeZoneName is now = Eastern Standard Time	
+07:02:30.000+000	09-13-2021	Wizard	Property WizardComplete is now = Y	
+07:02:30.000+000	09-13-2021	LiteTouch	Mapping server share: \\dsc0.securedigitsplus.com\FlightTest$	
+07:02:30.000+000	09-13-2021	LiteTouch	Successfully established connection using supplied credentials.	
+07:02:30.000+000	09-13-2021	LiteTouch	Validating connection to \\dsc0.securedigitsplus.com\FlightTest$	
+07:02:30.000+000	09-13-2021	LiteTouch	Command completed, return code = 0	
+07:02:31.000+000	09-13-2021	ZTIGather	Property IsServerCoreOS is now = False	
+07:02:31.000+000	09-13-2021	ZTIGather	Finished getting OS info	
+07:02:31.000+000	09-13-2021	ZTIGather	Property IsServerOS is now = False	
+07:02:31.000+000	09-13-2021	ZTIGather	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:02:31.000+000	09-13-2021	ZTIGather	Property OSVersion is now = WinPE	
+07:02:31.000+000	09-13-2021	ZTIGather	Getting HAL information	
+07:02:31.000+000	09-13-2021	ZTIGather	Checking network adapter: [00000001] Realtek PCIe GbE Family Controller	
+07:02:31.000+000	09-13-2021	ZTIGather	MAC address = 04:7D:7B:5F:D5:45	
+07:02:31.000+000	09-13-2021	ZTIGather	Getting network info	
+07:02:31.000+000	09-13-2021	ZTIGather	Property HALName is now = acpiapic	
+07:02:31.000+000	09-13-2021	ZTIGather	Finished getting HAL information	
+07:02:31.000+000	09-13-2021	ZTIGather	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:02:31.000+000	09-13-2021	ZTIGather	Finished synchronizing the environments.	
+07:02:31.000+000	09-13-2021	ZTIGather	Property ResourceDrive is now = Z:	
+07:02:31.000+000	09-13-2021	ZTIGather	Getting OS info	
+07:02:31.000+000	09-13-2021	ZTIGather	Property OSCurrentBuild is now = 18362	
+07:02:31.000+000	09-13-2021	ZTIGather	Property OSCurrentVersion is now = 10.0.18362	
+07:02:31.000+000	09-13-2021	ZTIGather	Property ResourceRoot is now = \\dsc0.securedigitsplus.com\FlightTest$	
+07:02:31.000+000	09-13-2021	ZTIGather	------------------------- Initialization -------------------------	
+07:02:31.000+000	09-13-2021	ZTIGather	------------------------- Object Initialization -------------------------	
+07:02:31.000+000	09-13-2021	ZTIGather	Synchronizing the environments.	
+07:02:31.000+000	09-13-2021	ZTIGather	Property DeployDrive is now = Z:	
+07:02:31.000+000	09-13-2021	ZTIGather	Property DeployRoot is now = \\dsc0.securedigitsplus.com\FlightTest$	
+07:02:31.000+000	09-13-2021	ZTIGather	ConfigMgr distribution point = dsc0.securedigitsplus.com	
+07:02:31.000+000	09-13-2021	ZTIGather	Property SMSDP is now = dsc0.securedigitsplus.com	
+07:02:31.000+000	09-13-2021	ZTIGather	Getting DP info	
+07:02:31.000+000	09-13-2021	ZTIGather	Property DefaultGateway002 is now = fe80::20a:cdff:fe22:2a20	
+07:02:31.000+000	09-13-2021	ZTIGather	Finished getting network info	
+07:02:31.000+000	09-13-2021	ZTIGather	Finished getting DP info	
+07:02:31.000+000	09-13-2021	ZTIGather	Property HostName is now = MININT-07VIN4O	
+07:02:31.000+000	09-13-2021	ZTIGather	Getting asset info	
+07:02:31.000+000	09-13-2021	ZTIGather	Finished getting WDS server info	
+07:02:31.000+000	09-13-2021	ZTIGather	Getting WDS server info	
+07:02:31.000+000	09-13-2021	ZTIGather	Property WDSServer is now = dsc0.securedigitsplus.com	
+07:02:31.000+000	09-13-2021	ZTIGather	Property DefaultGateway001 is now = 172.16.0.1	
+07:02:31.000+000	09-13-2021	ZTIGather	IP Address = 2603:7080:8f01:efb8:2cb9:21b8:a1db:e674	
+07:02:31.000+000	09-13-2021	ZTIGather	Default Gateway = 172.16.0.1	
+07:02:31.000+000	09-13-2021	ZTIGather	IP Address = 2603:7080:8f01:efb8:cc22:49de:1501:76cf	
+07:02:31.000+000	09-13-2021	ZTIGather	IP Address = 172.16.0.24	
+07:02:31.000+000	09-13-2021	ZTIGather	IP Address = fe80::2cb9:21b8:a1db:e674	
+07:02:31.000+000	09-13-2021	ZTIGather	Default Gateway = fe80::20a:cdff:fe22:2a20	
+07:02:31.000+000	09-13-2021	ZTIGather	Property IPAddress004 is now = 2603:7080:8f01:efb8:2cb9:21b8:a1db:e674	
+07:02:31.000+000	09-13-2021	ZTIGather	Property MacAddress001 is now = 04:7D:7B:5F:D5:45	
+07:02:31.000+000	09-13-2021	ZTIGather	Property IPAddress003 is now = 2603:7080:8f01:efb8:cc22:49de:1501:76cf	
+07:02:31.000+000	09-13-2021	ZTIGather	Property IPAddress001 is now = 172.16.0.24	
+07:02:31.000+000	09-13-2021	ZTIGather	Property IPAddress002 is now = fe80::2cb9:21b8:a1db:e674	
+07:02:32.000+000	09-13-2021	ZTIGather	Property IsOnBattery is now = False	
+07:02:32.000+000	09-13-2021	ZTIGather	Property SupportsX86 is now = True	
+07:02:32.000+000	09-13-2021	ZTIGather	Property IsUEFI is now = False	
+07:02:32.000+000	09-13-2021	ZTIGather	Property IsDesktop is now = False	
+07:02:32.000+000	09-13-2021	ZTIGather	Property IsServer is now = False	
+07:02:32.000+000	09-13-2021	ZTIGather	Getting OS SKU info	
+07:02:32.000+000	09-13-2021	ZTIGather	Unable to determine Windows SKU while in Windows PE.	
+07:02:32.000+000	09-13-2021	ZTIGather	Finished getting asset info	
+07:02:32.000+000	09-13-2021	ZTIGather	Property SupportsX64 is now = True	
+07:02:32.000+000	09-13-2021	ZTIGather	Property SupportsSLAT is now = True	
+07:02:32.000+000	09-13-2021	ZTIGather	Property IsLaptop is now = True	
+07:02:32.000+000	09-13-2021	ZTIGather	Property Model is now = 7829AU6	
+07:02:32.000+000	09-13-2021	ZTIGather	Property Product is now = 7829AU6	
+07:02:32.000+000	09-13-2021	ZTIGather	Property Make is now = LENOVO	
+07:02:32.000+000	09-13-2021	ZTIGather	Property AssetTag is now = No Asset Information	
+07:02:32.000+000	09-13-2021	ZTIGather	Property SerialNumber is now = LR0FXTA	
+07:02:32.000+000	09-13-2021	ZTIGather	Property ProcessorSpeed is now = 2501	
+07:02:32.000+000	09-13-2021	ZTIGather	Property CapableArchitecture is now = AMD64 X64 X86	
+07:02:32.000+000	09-13-2021	ZTIGather	Property Architecture is now = X64	
+07:02:32.000+000	09-13-2021	ZTIGather	Property UUID is now = D4059A81-4AEE-11CB-8D7D-E9D79C51C524	
+07:02:32.000+000	09-13-2021	ZTIGather	Property Memory is now = 3936	
+07:02:32.000+000	09-13-2021	ZTIGather	Determining the Disk and Partition Number from the Logical Drive X:\WINDOWS	
+07:02:32.000+000	09-13-2021	ZTIGather	Processing the PREINSTALL phase.	
+07:02:32.000+000	09-13-2021	ZTIGather	Getting virtualization info	
+07:02:32.000+000	09-13-2021	ZTIGather	Property IsHypervisorRunning is now = False	
+07:02:32.000+000	09-13-2021	ZTIGather	There are no encrypted drives	
+07:02:32.000+000	09-13-2021	ZTIGather	Connection succeeded to MicrosoftVolumeEncryption	
+07:02:32.000+000	09-13-2021	ZTIGather	Finished getting virtualization info	
+07:02:32.000+000	09-13-2021	ZTIGather	Property IsBDE is now = False	
+07:02:32.000+000	09-13-2021	ZTIGather	Property IsVM is now = False	
+07:02:32.000+000	09-13-2021	ZTIGather	Property SupportsNX is now = True	
+07:02:32.000+000	09-13-2021	ZTIGather	Property SupportsVT is now = True	
+07:02:32.000+000	09-13-2021	ZTIGather	This computer does not appear to be a virtual machine (BIOS is 'LENOVO - 1230').	
+07:02:32.000+000	09-13-2021	ZTIGather	Property SupportsHyperVRole is now = True	
+07:02:32.000+000	09-13-2021	ZTIGather	Property Supports64Bit is now = True	
+07:02:33.000+000	09-13-2021	ZTIGather	ConfigMgr distribution point = dsc0.securedigitsplus.com	
+07:02:33.000+000	09-13-2021	ZTIGather	Finished getting network info	
+07:02:33.000+000	09-13-2021	ZTIGather	Getting DP info	
+07:02:33.000+000	09-13-2021	ZTIGather	Finished getting DP info	
+07:02:33.000+000	09-13-2021	ZTIGather	Property SMSDP is now = dsc0.securedigitsplus.com	
+07:02:33.000+000	09-13-2021	ZTIGather	Property WDSServer is now = dsc0.securedigitsplus.com	
+07:02:33.000+000	09-13-2021	ZTIGather	Getting WDS server info	
+07:02:33.000+000	09-13-2021	ZTIGather	IP Address = 172.16.0.24	
+07:02:33.000+000	09-13-2021	ZTIGather	MAC address = 04:7D:7B:5F:D5:45	
+07:02:33.000+000	09-13-2021	ZTIGather	IP Address = 2603:7080:8f01:efb8:cc22:49de:1501:76cf	
+07:02:33.000+000	09-13-2021	ZTIGather	IP Address = fe80::2cb9:21b8:a1db:e674	
+07:02:33.000+000	09-13-2021	ZTIGather	Checking network adapter: [00000001] Realtek PCIe GbE Family Controller	
+07:02:33.000+000	09-13-2021	ZTIGather	Property HALName is now = acpiapic	
+07:02:33.000+000	09-13-2021	ZTIGather	Getting HAL information	
+07:02:33.000+000	09-13-2021	ZTIGather	Getting network info	
+07:02:33.000+000	09-13-2021	ZTIGather	Finished getting HAL information	
+07:02:33.000+000	09-13-2021	ZTIGather	IP Address = 2603:7080:8f01:efb8:2cb9:21b8:a1db:e674	
+07:02:33.000+000	09-13-2021	ZTIGather	Property MacAddress001 is now = 04:7D:7B:5F:D5:45	
+07:02:33.000+000	09-13-2021	ZTIGather	Property IPAddress004 is now = 2603:7080:8f01:efb8:2cb9:21b8:a1db:e674	
+07:02:33.000+000	09-13-2021	ZTIGather	Property DefaultGateway002 is now = fe80::20a:cdff:fe22:2a20	
+07:02:33.000+000	09-13-2021	ZTIGather	Property DefaultGateway001 is now = 172.16.0.1	
+07:02:33.000+000	09-13-2021	ZTIGather	Property IPAddress003 is now = 2603:7080:8f01:efb8:cc22:49de:1501:76cf	
+07:02:33.000+000	09-13-2021	ZTIGather	Default Gateway = fe80::20a:cdff:fe22:2a20	
+07:02:33.000+000	09-13-2021	ZTIGather	Default Gateway = 172.16.0.1	
+07:02:33.000+000	09-13-2021	ZTIGather	Property IPAddress002 is now = fe80::2cb9:21b8:a1db:e674	
+07:02:33.000+000	09-13-2021	ZTIGather	Property IPAddress001 is now = 172.16.0.24	
+07:02:33.000+000	09-13-2021	ZTIGather	Property HostName is now = MININT-07VIN4O	
+07:02:33.000+000	09-13-2021	ZTIGather	Getting asset info	
+07:02:33.000+000	09-13-2021	ZTIGather	------------------------- Initialization -------------------------	
+07:02:33.000+000	09-13-2021	ZTIGather	Finished getting WDS server info	
+07:02:33.000+000	09-13-2021	ZTIGather	Finished getting OS info	
+07:02:33.000+000	09-13-2021	ZTIGather	Property ResourceDrive is now = Z:	
+07:02:33.000+000	09-13-2021	ZTIGather	Property ResourceRoot is now = \\dsc0.securedigitsplus.com\FlightTest$	
+07:02:33.000+000	09-13-2021	ZTIGather	Getting OS info	
+07:02:33.000+000	09-13-2021	ZTIGather	Finished synchronizing the environments.	
+07:02:33.000+000	09-13-2021	ZTIGather	Property DeployDrive is now = Z:	
+07:02:33.000+000	09-13-2021	ZTIGather	------------------------- Object Initialization -------------------------	
+07:02:33.000+000	09-13-2021	ZTIGather	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:02:33.000+000	09-13-2021	ZTIGather	Property DeployRoot is now = \\dsc0.securedigitsplus.com\FlightTest$	
+07:02:33.000+000	09-13-2021	ZTIGather	Synchronizing the environments.	
+07:02:33.000+000	09-13-2021	ZTIGather	Property IsServerCoreOS is now = False	
+07:02:33.000+000	09-13-2021	ZTIGather	Property OSCurrentBuild is now = 18362	
+07:02:33.000+000	09-13-2021	ZTIGather	Property OSCurrentVersion is now = 10.0.18362	
+07:02:33.000+000	09-13-2021	ZTIGather	Property IsServerOS is now = False	
+07:02:33.000+000	09-13-2021	ZTIGather	Property OSVersion is now = WinPE	
+07:02:33.000+000	09-13-2021	ZTIGather	Remapping variables.	
+07:02:33.000+000	09-13-2021	ZTIGather	Skipping rules processing.	
+07:02:33.000+000	09-13-2021	ZTIGather	Property DeploymentType is now = NEWCOMPUTER	
+07:02:33.000+000	09-13-2021	ZTIGather	Property TaskSequenceID is now = 10P64	
+07:02:33.000+000	09-13-2021	ZTIGather	Finished determining the INI file to use.	
+07:02:33.000+000	09-13-2021	ZTIGather	Only gathering local settings (no rules processing).	
+07:02:33.000+000	09-13-2021	ZTIGather	Event 41000 sent: Processing the PREINSTALL phase.	
+07:02:33.000+000	09-13-2021	ZTIGather	Using DEFAULT VALUE: Ini file = \\dsc0.securedigitsplus.com\FlightTest$\Control\CustomSettings.ini	
+07:02:33.000+000	09-13-2021	ZTIGather	Determining the INI file to use.	
+07:02:33.000+000	09-13-2021	ZTIGather	ZTIGather processing completed successfully.	
+07:02:33.000+000	09-13-2021	ZTIGather	Finished remapping variables.	
+07:02:33.000+000	09-13-2021	ZTIGather	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:02:33.000+000	09-13-2021	ZTIGather	Event 41001 sent: ZTIGather processing completed successfully.	
+07:02:33.000+000	09-13-2021	ZTIGather	Property OSDDomainOUName is now = OU=Computers,OU=CP-NY-US-12065,DC=securedigitsplus,DC=com	
+07:02:33.000+000	09-13-2021	ZTIGather	Property OSDDomainName is now = securedigitsplus.com	
+07:02:33.000+000	09-13-2021	ZTIGather	Property OSDNetworkJoinType is now = 0	
+07:02:33.000+000	09-13-2021	ZTIGather	<Message containing password has been suppressed>	
+07:02:33.000+000	09-13-2021	ZTIGather	Property OSDJoinAccount is now = \fightingentropy@securedigitsplus.com	
+07:02:35.000+000	09-13-2021	ZTIGather	<Message containing password has been suppressed>	
+07:02:35.000+000	09-13-2021	ZTIGather	Remapping variables.	
+07:02:35.000+000	09-13-2021	ZTIGather	Skipping rules processing.	
+07:02:35.000+000	09-13-2021	ZTIGather	Finished determining the INI file to use.	
+07:02:35.000+000	09-13-2021	ZTIGather	Property TaskSequenceID is now = 10P64	
+07:02:35.000+000	09-13-2021	ZTIGather	Property OSDDomainName is now = securedigitsplus.com	
+07:02:35.000+000	09-13-2021	ZTIGather	Property OSDNetworkJoinType is now = 0	
+07:02:35.000+000	09-13-2021	ZTIGather	Property DeploymentType is now = NEWCOMPUTER	
+07:02:35.000+000	09-13-2021	ZTIGather	Using DEFAULT VALUE: Ini file = \\dsc0.securedigitsplus.com\FlightTest$\Control\CustomSettings.ini	
+07:02:35.000+000	09-13-2021	ZTIGather	Property IsBDE is now = False	
+07:02:35.000+000	09-13-2021	ZTIGather	There are no encrypted drives	
+07:02:35.000+000	09-13-2021	ZTIGather	Connection succeeded to MicrosoftVolumeEncryption	
+07:02:35.000+000	09-13-2021	ZTIGather	Processing the PREINSTALL phase.	
+07:02:35.000+000	09-13-2021	ZTIGather	Determining the INI file to use.	
+07:02:35.000+000	09-13-2021	ZTIGather	Only gathering local settings (no rules processing).	
+07:02:35.000+000	09-13-2021	ZTIGather	Event 41000 sent: Processing the PREINSTALL phase.	
+07:02:35.000+000	09-13-2021	ZTIGather	Property OSDJoinAccount is now = \fightingentropy@securedigitsplus.com	
+07:02:35.000+000	09-13-2021	ZTIGather	Property AssetTag is now = No Asset Information	
+07:02:35.000+000	09-13-2021	ZTIGather	Finished remapping variables.	
+07:02:35.000+000	09-13-2021	ZTIGather	ZTIGather processing completed successfully.	
+07:02:35.000+000	09-13-2021	ZTIGather	Property OSDDomainOUName is now = OU=Computers,OU=CP-NY-US-12065,DC=securedigitsplus,DC=com	
+07:02:35.000+000	09-13-2021	ZTIGather	Event 41001 sent: ZTIGather processing completed successfully.	
+07:02:35.000+000	09-13-2021	ZTIGather	Property IsDesktop is now = False	
+07:02:35.000+000	09-13-2021	ZTIGather	Property IsLaptop is now = True	
+07:02:35.000+000	09-13-2021	ZTIGather	Property CapableArchitecture is now = AMD64 X64 X86	
+07:02:35.000+000	09-13-2021	ZTIGather	Property IsServer is now = False	
+07:02:35.000+000	09-13-2021	ZTIGather	Property SupportsX86 is now = True	
+07:02:35.000+000	09-13-2021	ZTIGather	Property IsOnBattery is now = False	
+07:02:35.000+000	09-13-2021	ZTIGather	Property IsUEFI is now = False	
+07:02:35.000+000	09-13-2021	ZTIGather	Property ProcessorSpeed is now = 2501	
+07:02:35.000+000	09-13-2021	ZTIGather	Property Model is now = 7829AU6	
+07:02:35.000+000	09-13-2021	ZTIGather	Property Make is now = LENOVO	
+07:02:35.000+000	09-13-2021	ZTIGather	Property SerialNumber is now = LR0FXTA	
+07:02:35.000+000	09-13-2021	ZTIGather	Property Product is now = 7829AU6	
+07:02:35.000+000	09-13-2021	ZTIGather	Property Architecture is now = X64	
+07:02:35.000+000	09-13-2021	ZTIGather	Property Memory is now = 3936	
+07:02:35.000+000	09-13-2021	ZTIGather	Property UUID is now = D4059A81-4AEE-11CB-8D7D-E9D79C51C524	
+07:02:35.000+000	09-13-2021	ZTIGather	Property Supports64Bit is now = True	
+07:02:35.000+000	09-13-2021	ZTIGather	Property SupportsNX is now = True	
+07:02:35.000+000	09-13-2021	ZTIGather	Property SupportsVT is now = True	
+07:02:35.000+000	09-13-2021	ZTIGather	Property SupportsHyperVRole is now = True	
+07:02:35.000+000	09-13-2021	ZTIGather	Finished getting virtualization info	
+07:02:35.000+000	09-13-2021	ZTIGather	Property IsVM is now = False	
+07:02:35.000+000	09-13-2021	ZTIGather	This computer does not appear to be a virtual machine (BIOS is 'LENOVO - 1230').	
+07:02:35.000+000	09-13-2021	ZTIGather	Property IsHypervisorRunning is now = False	
+07:02:35.000+000	09-13-2021	ZTIGather	Finished getting asset info	
+07:02:35.000+000	09-13-2021	ZTIGather	Property SupportsSLAT is now = True	
+07:02:35.000+000	09-13-2021	ZTIGather	Property SupportsX64 is now = True	
+07:02:35.000+000	09-13-2021	ZTIGather	Getting OS SKU info	
+07:02:35.000+000	09-13-2021	ZTIGather	Getting virtualization info	
+07:02:35.000+000	09-13-2021	ZTIGather	Determining the Disk and Partition Number from the Logical Drive X:\WINDOWS	
+07:02:35.000+000	09-13-2021	ZTIGather	Unable to determine Windows SKU while in Windows PE.	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Property TargetPartitionIdentifier is now = 	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Property OSDTargetDriveCache is now = C:	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Property OSDisk is now = C:	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Set the Tag variable: TargetPartitionIdentifier	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Free Drive Letter(s): E: F: G: H: I: J: K: L: N: O: P: Q: R: T: U: V: W:	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Property LogPath is now = X:\MININT\SMSOSD\OSDLOGS	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	New ZTIDisk : \\MININT-07VIN4O\root\cimv2:Win32_DiskDrive.DeviceID="\\\\.\\PHYSICALDRIVE0"	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	DoNotFormatAndPartition = YES!   Find the OS Target Drive Letter.	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Found: DestinationOSVariable: C:	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Found Disk Index: 0   size: 1050211975680	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Disk Index: 0   size: 1 TB	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Property TargetPartitionIdentifier is now = SELECT * FROM Win32_LogicalDisk WHERE Size = '1049619329024' and VolumeName = '' and VolumeSerialNumber = '1A8E7ED4'	
+07:02:36.000+000	09-13-2021	ZTIValidate	Compare the current processor speed with the speed requested [800] = [2501].	
+07:02:36.000+000	09-13-2021	ZTIValidate	OSInstall flag is set, install is allowed.	
+07:02:36.000+000	09-13-2021	ZTIValidate	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:02:36.000+000	09-13-2021	ZTIValidate	ImageProcessorSpeed set to : 790.	
+07:02:36.000+000	09-13-2021	ZTIValidate	Using specified ImageSize = 14346	
+07:02:36.000+000	09-13-2021	ZTIValidate	Computer has sufficient processor speed.	
+07:02:36.000+000	09-13-2021	ZTIValidate	Computer has sufficient memory.	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	ZTIDiskpart processing completed successfully.	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Property SMSTSLocalDataDrive is now = C:	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Do Not Format and Partition Disk. OS Drive has been pre-set: C:	
+07:02:36.000+000	09-13-2021	ZTIDiskpart	Event 41001 sent: ZTIDiskpart processing completed successfully.	
+07:02:36.000+000	09-13-2021	ZTIValidate	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:02:36.000+000	09-13-2021	ZTIValidate	Assuming that the drive has enough disk space (once cleaned)	
+07:02:36.000+000	09-13-2021	ZTIValidate	ZTIValidate processing completed successfully.	
+07:02:36.000+000	09-13-2021	ZTIValidate	Event 41001 sent: ZTIValidate processing completed successfully.	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\plusicon.gif to C:\MININT\Scripts\plusicon.gif	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\BackButton.jpg to C:\MININT\Scripts\BackButton.jpg	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\Wizard.ico to C:\MININT\Scripts\Wizard.ico	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\NavBar.png to C:\MININT\Scripts\NavBar.png	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\Computer.png to C:\MININT\Scripts\Computer.png	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\SetupComplete.cmd to C:\MININT\Scripts\SetupComplete.cmd	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\DeployWiz_Validation.vbs to C:\MININT\Scripts\DeployWiz_Validation.vbs	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\Summary_Definition_ENU.xml to C:\MININT\Scripts\Summary_Definition_ENU.xml	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\Summary_scripts.vbs to C:\MININT\Scripts\Summary_scripts.vbs	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\minusico.gif to C:\MININT\Scripts\minusico.gif	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\DeployWiz_Definition_ENU.xml to C:\MININT\Scripts\DeployWiz_Definition_ENU.xml	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\DeployWiz_Initialization.vbs to C:\MININT\Scripts\DeployWiz_Initialization.vbs	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\header-image.png to C:\MININT\Scripts\header-image.png	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\LTICleanup.wsf to C:\MININT\Scripts\LTICleanup.wsf	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\LTIGetFolder.wsf to C:\MININT\Scripts\LTIGetFolder.wsf	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTINICConfig.wsf to C:\MININT\Scripts\ZTINICConfig.wsf	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\LTISuspend.wsf to C:\MININT\Scripts\LTISuspend.wsf	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTIDiskUtility.vbs to C:\MININT\Scripts\ZTIDiskUtility.vbs	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTIRunCommandHidden.wsf to C:\MININT\Scripts\ZTIRunCommandHidden.wsf	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTINICUtility.vbs to C:\MININT\Scripts\ZTINICUtility.vbs	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTIBCDUTILITY.VBS to C:\MININT\Scripts\ZTIBCDUTILITY.VBS	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTIDataAccess.vbs to C:\MININT\Scripts\ZTIDataAccess.vbs	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\Wizard.hta to C:\MININT\Scripts\Wizard.hta	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTIGather.xml to C:\MININT\Scripts\ZTIGather.xml	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTIGather.wsf to C:\MININT\Scripts\ZTIGather.wsf	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\WizUtility.vbs to C:\MININT\Scripts\WizUtility.vbs	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\Credentials_scripts.vbs to C:\MININT\Scripts\Credentials_scripts.vbs	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\Credentials_ENU.xml to C:\MININT\Scripts\Credentials_ENU.xml	
+07:02:37.000+000	09-13-2021	LTICopyScripts	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Property LogPath is now = C:\MININT\SMSOSD\OSDLOGS	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTIUtility.vbs to C:\MININT\Scripts\ZTIUtility.vbs	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\LiteTouch.wsf to C:\MININT\Scripts\LiteTouch.wsf	
+07:02:37.000+000	09-13-2021	LTICopyScripts	--------- Script Start ---------	
+07:02:37.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\Wizard.css to C:\MININT\Scripts\Wizard.css	
+07:02:38.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\SetupRollback.cmd to C:\MININT\Scripts\SetupRollback.cmd	
+07:02:38.000+000	09-13-2021	ZTIUserState	About to run command: cmd.exe /c xcopy /iesryhd "\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5" "C:\MININT\USMT\X64" 1>> C:\MININT\SMSOSD\OSDLOGS\ZTIUserState_xcopy.log 2>>&1 	
+07:02:38.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\LTIBootstrap.vbs to C:\MININT\Scripts\LTIBootstrap.vbs	
+07:02:38.000+000	09-13-2021	LTICopyScripts	Event 41001 sent: LTICopyScripts processing completed successfully.	
+07:02:38.000+000	09-13-2021	LTICopyScripts	LTICopyScripts processing completed successfully.	
+07:02:38.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTISetupRollback.wsf to C:\MININT\Scripts\ZTISetupRollback.wsf	
+07:02:38.000+000	09-13-2021	LTICopyScripts	Copying file \\dsc0.securedigitsplus.com\FlightTest$\Scripts\LTITriggerUpgradeFailure.wsf to C:\MININT\Scripts\LTITriggerUpgradeFailure.wsf	
+07:02:38.000+000	09-13-2021	ZTIUserState	Command has been started (process ID 1832)	
+07:02:38.000+000	09-13-2021	ZTIUserState	Property OSDisk is now = C:	
+07:02:38.000+000	09-13-2021	ZTIUserState	Property OSDTargetDriveCache is now = C:	
+07:02:38.000+000	09-13-2021	ZTIUserState	Found scanstate.exe version = 10.0.18362.1	
+07:02:38.000+000	09-13-2021	ZTIUserState	Checking for USMT Files in \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\USMT5	
+07:02:38.000+000	09-13-2021	ZTIUserState	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:02:38.000+000	09-13-2021	ZTIUserState	Property capture is now = 	
+07:02:38.000+000	09-13-2021	ZTIUserState	OSDTargetDriveCache was determined earlier : C:	
+07:02:38.000+000	09-13-2021	ZTIUserState	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:02:39.000+000	09-13-2021	ZTIUserState	Event 41003 sent: ZTI Heartbeat: command has been running for 0 minutes (process ID 1832)	
+07:02:39.000+000	09-13-2021	ZTIUserState	ZTI Heartbeat: command has been running for 0 minutes (process ID 1832)	
+07:02:53.000+000	09-13-2021	ZTIUserState	Copying \\dsc0.securedigitsplus.com\FlightTest$\Scripts\UDIOffline.xml to local install directory C:\MININT\USMT\X64	
+07:02:53.000+000	09-13-2021	ZTIUserState	Migration XML file C:\MININT\USMT\X64\Migdocs.xml is already present and up to date.	
+07:02:53.000+000	09-13-2021	ZTIUserState	Migration XML file C:\MININT\USMT\X64\MigApp.xml is already present and up to date.	
+07:02:53.000+000	09-13-2021	ZTIUserState	Return code from command = 0	
+07:02:54.000+000	09-13-2021	ZTIUserState	Base arguments:  /v:5 /c /o  /i:"C:\MININT\USMT\X64\MigApp.xml" /i:"C:\MININT\USMT\X64\Migdocs.xml" /i:"C:\MININT\USMT\X64\UDIOffline.xml" /config:"C:\MININT\USMT\X64\ZTIUserState_Config.xml"	
+07:02:54.000+000	09-13-2021	ZTIUserState	ZTI Beginning user state capture	
+07:02:54.000+000	09-13-2021	ZTIUserState	ScanState arguments: "C:\StateStore"  /v:5 /c /o  /i:"C:\MININT\USMT\X64\MigApp.xml" /i:"C:\MININT\USMT\X64\Migdocs.xml" /i:"C:\MININT\USMT\X64\UDIOffline.xml" /config:"C:\MININT\USMT\X64\ZTIUserState_Config.xml" /hardlink /efs:hardlink /nocompress /l:C:\MININT\SMSOSD\OSDLOGS\USMTcapture.log /progress:C:\MININT\SMSOSD\OSDLOGS\USMTcapture.prg /offlineWinDir:C:\Windows	
+07:02:54.000+000	09-13-2021	ZTIUserState	About to run command: cmd /c ""C:\MININT\USMT\X64\scanstate.exe" "C:\StateStore"  /v:5 /c /o  /i:"C:\MININT\USMT\X64\MigApp.xml" /i:"C:\MININT\USMT\X64\Migdocs.xml" /i:"C:\MININT\USMT\X64\UDIOffline.xml" /config:"C:\MININT\USMT\X64\ZTIUserState_Config.xml" /hardlink /efs:hardlink /nocompress /l:C:\MININT\SMSOSD\OSDLOGS\USMTcapture.log /progress:C:\MININT\SMSOSD\OSDLOGS\USMTcapture.prg /offlineWinDir:C:\Windows > nul 2>&1"	
+07:02:54.000+000	09-13-2021	ZTIUserState	Event 41004 sent: ZTI Beginning user state capture	
+07:02:54.000+000	09-13-2021	ZTIUserState	------ Performing State Capture ------	
+07:02:54.000+000	09-13-2021	ZTIUserState	Property OSDStateStorePath is now = C:\StateStore	
+07:02:54.000+000	09-13-2021	ZTIUserState	USMT progress file: C:\MININT\SMSOSD\OSDLOGS\USMTcapture.prg	
+07:02:54.000+000	09-13-2021	ZTIUserState	USMT log file: C:\MININT\SMSOSD\OSDLOGS\USMTcapture.log	
+07:02:54.000+000	09-13-2021	ZTIUserState	Copying \\dsc0.securedigitsplus.com\FlightTest$\Scripts\ZTIUserState_Config.xml to local install directory C:\MININT\USMT\X64	
+07:07:09.000+000	09-13-2021	ZTIUserState	Return code from command = 0	
+07:07:11.000+000	09-13-2021	ZTIUserState	Event 41010 sent: ZTI USMT SCANSTATE reported 0 errors and 0 warnings.	
+07:07:11.000+000	09-13-2021	ZTIUserState	ZTIUserState processing completed successfully.	
+07:07:11.000+000	09-13-2021	ZTIUserState	Event 41001 sent: ZTIUserState processing completed successfully.	
+07:07:11.000+000	09-13-2021	ZTIUserState	ZTI USMT SCANSTATE reported 0 errors and 0 warnings.	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Copied \\dsc0.securedigitsplus.com\FlightTest$\Control\10P64\Unattend.xml to C:\MININT\Unattend.xml	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Property OSDAnswerFilePath is now = C:\MININT\Unattend.xml	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Loaded C:\MININT\Unattend.xml	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Property OSDAnswerFilePathSysprep is now = 	
+07:07:12.000+000	09-13-2021	ZTIConfigure	The unattend.txt file was not found.	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Found unattend.xml at \\dsc0.securedigitsplus.com\FlightTest$\Control\10P64\Unattend.xml, will copy to C:\MININT\Unattend.xml	
+07:07:12.000+000	09-13-2021	ZTIConfigure	No value found for ProductKey	
+07:07:12.000+000	09-13-2021	ZTIConfigure	No value found for InputLocale	
+07:07:12.000+000	09-13-2021	ZTIConfigure	No value found for Language	
+07:07:12.000+000	09-13-2021	ZTIConfigure	No value found for ComputerName	
+07:07:12.000+000	09-13-2021	ZTIConfigure	No value found for FullName	
+07:07:12.000+000	09-13-2021	ZTIConfigure	No value found for OrgName	
+07:07:12.000+000	09-13-2021	ZTIConfigure	---------------- Initialization ----------------	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Validating connection to \\dsc0.securedigitsplus.com\FlightTest$	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Mapping server share: \\dsc0.securedigitsplus.com\FlightTest$	
+07:07:12.000+000	09-13-2021	ZTIConfigure	No value found for JoinWorkgroup	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:07:12.000+000	09-13-2021	ZTIConfigure	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Property OSDisk is now = C:	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Looking for Sysprep.inf in C:\sysprep\Sysprep.inf	
+07:07:12.000+000	09-13-2021	ZTIConfigure	The sysprep.inf file was not found.	
+07:07:12.000+000	09-13-2021	ZTIConfigure	OSDTargetDriveCache was determined earlier : C:	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Already connected to server dsc0.securedigitsplus.com as that is where this script is running from.	
+07:07:12.000+000	09-13-2021	ZTIConfigure	Property OSDTargetDriveCache is now = C:	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for Home_Page	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for AutoMode	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for LongDistanceAccess	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for AreaCode	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for CountryCode	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for AutoUsers	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Rewrote C:\MININT\Unattend.xml with changes	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with DestinationPartition=1 (value was 1)	
+07:07:13.000+000	09-13-2021	ZTIConfigure	ZTIConfigure COMPLETED.  Return Value = 0	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Event 41001 sent: ZTIConfigure processing completed successfully.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	ZTIConfigure processing completed successfully.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for TimeZone	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for AutoLogon	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for SystemLocale	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for Dialing	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for LanguageGroup	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for AutoLogonCount	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for Yresolution	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for Vrefresh	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for Xresolution	
+07:07:13.000+000	09-13-2021	ZTIConfigure	<Message containing password has been suppressed>	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for BitsPerPel	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with DestinationDisk=0 (value was 0)	
+07:07:13.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="oobeSystem"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:UserAccounts/unattend:LocalAccounts not found in C:\MININT\Unattend.xml, unable to update.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for Organization	
+07:07:13.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="windowsPE"]/unattend:component[@name="Microsoft-Windows-Setup"]/unattend:ImageInstall/unattend:OSImage/unattend:InstallFrom/unattend:MetaData[Key="/image/index"]/Value not found in C:\MININT\Unattend.xml, unable to update.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="windowsPE"]/unattend:component[@name="Microsoft-Windows-Setup"]/unattend:ImageInstall/unattend:OSImage/unattend:InstallFrom/unattend:MetaData[Key="/IMAGE/INDEX"]/Value not found in C:\MININT\Unattend.xml, unable to update.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for FullName	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Removed //unattend:settings[@pass="oobeSystem"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:Display/unattend:RefreshRate from C:\MININT\Unattend.xml because the value was blank.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Removed //unattend:settings[@pass="oobeSystem"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:Display/unattend:ColorDepth from C:\MININT\Unattend.xml because the value was blank.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Removed //unattend:settings[@pass="oobeSystem"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:Display/unattend:HorizontalResolution from C:\MININT\Unattend.xml because the value was blank.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Removed //unattend:settings[@pass="oobeSystem"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:Display/unattend:VerticalResolution from C:\MININT\Unattend.xml because the value was blank.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Removed parent of //unattend:settings[@pass="windowsPE"]/unattend:component[@name="Microsoft-Windows-Setup"]/unattend:UserData/unattend:ProductKey/unattend:Key from C:\MININT\Unattend.xml because the value was blank.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Removed //unattend:settings[@pass="specialize"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:ProductKey from C:\MININT\Unattend.xml because the value was blank.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with JoinDomain=securedigitsplus.com (value was )	
+07:07:13.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="windowsPE"]/unattend:component[@name="Microsoft-Windows-Setup"]/unattend:UpgradeData/unattend:Upgrade not found in C:\MININT\Unattend.xml, unable to update.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with OSDComputerName=ws1-12065 (value was )	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for ProductKey	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Removed //unattend:settings[@pass="specialize"]/unattend:component[@name="Microsoft-Windows-UnattendedJoin"]/unattend:Identification/unattend:JoinWorkgroup entry from C:\MININT\Unattend.xml	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for DomainAdminDomain	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with InstallFromPath=\\dsc0.securedigitsplus.com\flighttest$\Operating Systems\10P64\10P64.wim (value was .\Operating Systems\10P64\10P64.wim)	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with MachineObjectOU=OU=Computers,OU=CP-NY-US-12065,DC=securedigitsplus,DC=com (value was )	
+07:07:13.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="specialize"]/unattend:component[@name="Microsoft-Windows-UnattendedJoin"]/unattend:Identification/unattend:JoinWorkgroup not found in C:\MININT\Unattend.xml, unable to update.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with DomainAdmin=fightingentropy@securedigitsplus.com (value was )	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with ImageLanguage001=en-US (value was en-US)	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with UILanguage=en-us (value was en-US)	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Removed //unattend:settings[@pass="specialize"]/unattend:component[@name="Microsoft-Windows-IE-InternetExplorer"]/unattend:Home_Page from C:\MININT\Unattend.xml because the value was blank.	
+07:07:13.000+000	09-13-2021	ZTIConfigure	No value found for OrgName	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with KeyboardLocale=en-us;0409:00000409 (value was 0409:00000409)	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with TimeZoneName=Eastern Standard Time (value was Pacific Standard Time)	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with TimeZoneName=Eastern Standard Time (value was )	
+07:07:13.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with UserLocale=en-us (value was en-US)	
+07:07:14.000+000	09-13-2021	ZTIBDE	The deployment method is not using ConfigMgr.	
+07:07:14.000+000	09-13-2021	ZTIBDE	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:07:14.000+000	09-13-2021	ZTIBDE	BDE installation not selected	
+07:07:14.000+000	09-13-2021	ZTIBDE	ZTIBDE processing completed successfully.	
+07:07:14.000+000	09-13-2021	ZTIBDE	Event 41001 sent: ZTIBDE processing completed successfully.	
+07:07:14.000+000	09-13-2021	ZTIBDE	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:07:14.000+000	09-13-2021	ZTIBDE	System drive is: X:	
+07:07:15.000+000	09-13-2021	ZTIDrivers	Processing drivers for an X64 operating system.	
+07:07:15.000+000	09-13-2021	ZTIDrivers	OSDTargetDriveCache was determined earlier : C:	
+07:07:15.000+000	09-13-2021	ZTIDrivers	Property OSDTargetDriveCache is now = C:	
+07:07:15.000+000	09-13-2021	ZTIDrivers	Return code from command = 0	
+07:07:15.000+000	09-13-2021	ZTIDrivers	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:07:15.000+000	09-13-2021	ZTIDrivers	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:07:15.000+000	09-13-2021	ZTIDrivers	Property OSDisk is now = C:	
+07:07:15.000+000	09-13-2021	ZTIDrivers	About to run command: cmd /c "\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\Microsoft.BDD.PnpEnum.exe" > C:\MININT\SMSOSD\OSDLOGS\PnpEnum.xml	
+07:07:15.000+000	09-13-2021	ZTIDrivers	Command has been started (process ID 1180)	
+07:07:15.000+000	09-13-2021	ZTIDrivers		Open Control File: Drivers	
+07:07:15.000+000	09-13-2021	ZTIDrivers	Property DriverCleanup is now = DONE	
+07:07:15.000+000	09-13-2021	ZTIDrivers	Compare Image processor Type with Original [X64] = [X64].	
+07:07:15.000+000	09-13-2021	ZTIDrivers	Copying any drivers that may be needed for this computer into Target.	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device USB\VID_8087&PID_0024&REV_0000 No 3rd party drivers found. 5	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\FixedButton No 3rd party drivers found. 2	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_10EC&DEV_5209&SUBSYS_21DD17AA&REV_01 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_10EC&DEV_8176&SUBSYS_819510EC&REV_01 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C22&SUBSYS_21DD17AA&REV_04 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device STORAGE\Volume No 3rd party drivers found. 1	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C10&SUBSYS_21DD17AA&REV_B4 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C18&SUBSYS_21DD17AA&REV_B4 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI_HAL\PNP0C08 No 3rd party drivers found. 2	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ROOT\BasicRender No 3rd party drivers found. 1	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device HID\VID_046D&PID_C31C&REV_6400&MI_01&Col03 No 3rd party drivers found. 6	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0C0C No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device USB\VID_046D&PID_C31C&REV_6400&MI_00 No 3rd party drivers found. 5	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_SMO&DEV_1200 No 3rd party drivers found. 4	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device USB\VID_0A5C&PID_217F&REV_0748 No 3rd party drivers found. 7	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C3A&SUBSYS_21DD17AA&REV_04 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device MONITOR\AOC2757 No 3rd party drivers found. 2	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device USB\VID_046D&PID_C31C&REV_6400&MI_01 No 3rd party drivers found. 5	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C49&SUBSYS_21DD17AA&REV_04 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0200 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C12&SUBSYS_21DD17AA&REV_B4 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ROOT\SWENUM No 3rd party drivers found. 1	
+07:07:16.000+000	09-13-2021	ZTIDrivers	ZTIDrivers processing completed successfully.	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Event 41001 sent: ZTIDrivers processing completed successfully.	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Updating downlevel OS configuration.	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Vista identified, skipping update of Device Path	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_INT&DEV_3F0D No 3rd party drivers found. 4	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device USB\VID_046D&PID_C025&REV_9802 No 3rd party drivers found. 5	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0B00 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device SCSI\Disk________Crucial_CT1050MX_M0C No 3rd party drivers found. 9	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ROOT\NdisVirtualBus No 3rd party drivers found. 1	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0303 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ROOT\mssmbios No 3rd party drivers found. 1	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device HDAUDIO\FUNC_01&VEN_8086&DEV_2805&SUBSYS_80860101&REV_1000 No 3rd party drivers found. 15	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0000 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C14&SUBSYS_21DD17AA&REV_B4 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device USB\VID_046D&PID_C31C&REV_6400 No 3rd party drivers found. 6	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ROOT\vdrvroot No 3rd party drivers found. 1	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0C14 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0100 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device Ramdisk\RamVolume No 3rd party drivers found. 1	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device root\umbus No 3rd party drivers found. 1	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device DETECTEDInternal\Ramdisk No 3rd party drivers found. 2	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\ThermalZone No 3rd party drivers found. 2	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0C0D No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C1A&SUBSYS_21DD17AA&REV_B4 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device USB\ROOT_HUB20&VID8086&PID1C2D&REV0004 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0103 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_0126&SUBSYS_21DD17AA&REV_09 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device root\kdnic No 3rd party drivers found. 1	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_ACPI&DEV_0003 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device Root\Spaceport No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_INT&DEV_0800 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C26&SUBSYS_21DD17AA&REV_04 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device SCSI\CdRomHL-DT-STDVDRAM_GT50N____LT20 No 3rd party drivers found. 8	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\GenuineIntel_-_Intel64_Family_6_Model_42 No 3rd party drivers found. 7	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_0104&SUBSYS_21DD17AA&REV_09 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C2D&SUBSYS_21DD17AA&REV_04 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0C0A No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0C02 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device HID\VID_046D&PID_C31C&REV_6400&MI_00 No 3rd party drivers found. 6	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0C09 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ROOT\BasicDisplay No 3rd party drivers found. 1	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0C0E No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_IBM&DEV_0068 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device HID\VID_046D&PID_C31C&REV_6400&MI_01&Col01 No 3rd party drivers found. 6	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device HDAUDIO\FUNC_01&VEN_10EC&DEV_0269&SUBSYS_17AA21DE&REV_1001 No 3rd party drivers found. 15	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ROOT\VOLMGR No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device HID\VID_046D&PID_C025&REV_9802 No 3rd party drivers found. 6	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device acpiapic No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_10EC&DEV_8168&SUBSYS_21DD17AA&REV_03 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0C04 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C20&SUBSYS_21DD17AA&REV_04 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_LEN&DEV_0017 No 3rd party drivers found. 4	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C16&SUBSYS_21DD17AA&REV_B4 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Filtered.Count: 0	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Indexed PnP Ids: 0	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device HID\VID_046D&PID_C31C&REV_6400&MI_01&Col02 No 3rd party drivers found. 6	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device USB\ROOT_HUB20&VID8086&PID1C26&REV0004 No 3rd party drivers found. 3	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device PCI\VEN_8086&DEV_1C03&SUBSYS_21DD17AA&REV_04 No 3rd party drivers found. 11	
+07:07:16.000+000	09-13-2021	ZTIDrivers	Skipping Device ACPI\VEN_PNP&DEV_0A08 No 3rd party drivers found. 4	
+07:07:17.000+000	09-13-2021	ZTIPatches	Language pack entries added to unattend.xml successfully	
+07:07:17.000+000	09-13-2021	ZTIPatches	Adding language pack entries to unattend.xml	
+07:07:17.000+000	09-13-2021	ZTIPatches	Adding non-language pack entries to unattend.xml	
+07:07:17.000+000	09-13-2021	ZTIPatches	Unable to find the Packages.xml file, assuming there are no packages to inject.	
+07:07:17.000+000	09-13-2021	ZTIPatches	No <servicing> node found, adding a new one.	
+07:07:17.000+000	09-13-2021	ZTIPatches	Event 41001 sent: ZTIPatches processing completed successfully.	
+07:07:17.000+000	09-13-2021	ZTIPatches	ZTIPatches processing completed successfully.	
+07:07:17.000+000	09-13-2021	ZTIPatches	Nothing to save, exit.	
+07:07:17.000+000	09-13-2021	ZTIPatches	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:07:17.000+000	09-13-2021	ZTIPatches	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:07:17.000+000	09-13-2021	ZTIPatches		Open Control File: Packages	
+07:07:17.000+000	09-13-2021	ZTIPatches	ZTIPatches Entered PREINSTALL state. Deployment Method = UNC	
+07:07:17.000+000	09-13-2021	ZTIPatches	Load XML....	
+07:07:17.000+000	09-13-2021	ZTIPatches	Operating system being deployed requires amd64 updates.	
+07:07:18.000+000	09-13-2021	ZTINextPhase	Event 41001 sent: ZTINextPhase processing completed successfully.	
+07:07:18.000+000	09-13-2021	ZTINextPhase	Property PHASE is now = INSTALL	
+07:07:18.000+000	09-13-2021	ZTINextPhase	ZTINextPhase COMPLETED.  Return Value = 0	
+07:07:18.000+000	09-13-2021	ZTINextPhase	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:07:18.000+000	09-13-2021	ZTINextPhase	ZTINextPhase processing completed successfully.	
+07:07:18.000+000	09-13-2021	ZTINextPhase	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:07:19.000+000	09-13-2021	LTIApply	Property OSDisk is now = C:	
+07:07:19.000+000	09-13-2021	LTIApply	LTI applying image \\dsc0.securedigitsplus.com\FlightTest$\Operating Systems\10P64\10P64.wim using DISM	
+07:07:19.000+000	09-13-2021	LTIApply	------  Applying Windows image using DISM.exe ------	
+07:07:19.000+000	09-13-2021	LTIApply	Property SourcePath is now = \\dsc0.securedigitsplus.com\FlightTest$\Operating Systems\10P64	
+07:07:19.000+000	09-13-2021	LTIApply	Event 41023 sent: LTI applying image \\dsc0.securedigitsplus.com\FlightTest$\Operating Systems\10P64\10P64.wim using DISM	
+07:07:19.000+000	09-13-2021	LTIApply	Property OSDTargetDriveCache is now = C:	
+07:07:19.000+000	09-13-2021	LTIApply	OSDTargetDriveCache was determined earlier : C:	
+07:07:19.000+000	09-13-2021	LTIApply		Open Control File: OperatingSystems	
+07:07:19.000+000	09-13-2021	LTIApply	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:07:19.000+000	09-13-2021	LTIApply	Cleaning off old operating system	
+07:07:19.000+000	09-13-2021	LTIApply	Will boot into Windows PE architecture x64 to match OS being deployed.	
+07:07:19.000+000	09-13-2021	LTIApply	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:07:19.000+000	09-13-2021	LTIApply	Deleting C:\$Recycle.Bin	
+07:07:20.000+000	09-13-2021	LTIApply	Deleting C:\Microsoft	
+07:07:20.000+000	09-13-2021	LTIApply	Deleting C:\inetpub	
+07:07:20.000+000	09-13-2021	LTIApply	Deleting C:\Imaging	
+07:07:20.000+000	09-13-2021	LTIApply	Deleting C:\Documents and Settings	
+07:07:20.000+000	09-13-2021	LTIApply	Deleting C:\Intel	
+07:07:29.000+000	09-13-2021	LTIApply	Deleting C:\PerfLogs	
+07:07:29.000+000	09-13-2021	LTIApply	Deleting C:\Program Files	
+07:07:29.000+000	09-13-2021	LTIApply	Skipping C:\MININT	
+07:07:29.000+000	09-13-2021	LTIApply	Deleting C:\Module	
+07:07:48.000+000	09-13-2021	LTIApply	Deleting C:\Program Files (x86)	
+07:09:42.000+000	09-13-2021	LTIApply	Deleting C:\ProgramData	
+07:09:51.000+000	09-13-2021	LTIApply	Deleting C:\Recovery	
+07:09:52.000+000	09-13-2021	LTIApply	Deleting C:\RemoteInstall	
+07:09:52.000+000	09-13-2021	LTIApply	Skipping C:\System Volume Information	
+07:09:52.000+000	09-13-2021	LTIApply	Deleting C:\Users	
+07:09:52.000+000	09-13-2021	LTIApply	Deleting C:\SDPRoot	
+07:09:52.000+000	09-13-2021	LTIApply	Skipping C:\StateStore because it contains user state.	
+07:10:39.000+000	09-13-2021	LTIApply	Deleting C:\Windows	
+07:10:39.000+000	09-13-2021	LTIApply	Deleting C:\VDI	
+07:12:48.000+000	09-13-2021	LTIApply	New ZTIDiskPartition : \\MININT-07VIN4O\root\cimv2:Win32_LogicalDisk.DeviceID="C:"    \\MININT-07VIN4O\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #2"	
+07:12:48.000+000	09-13-2021	LTIApply	About to run command: "\\dsc0.securedigitsplus.com\FlightTest$\Servicing\X64\DISM.exe"  /Apply-Image /ImageFile:"\\dsc0.securedigitsplus.com\FlightTest$\Operating Systems\10P64\10P64.wim" /Index:1 /ApplyDir:C:	
+07:12:48.000+000	09-13-2021	LTIApply	Skipping C:\_SMSTaskSequence	
+07:12:49.000+000	09-13-2021	LTIApply	  Console > Version: 10.0.18362.1	
+07:12:49.000+000	09-13-2021	LTIApply	Command has been started (process ID 1936)	
+07:12:49.000+000	09-13-2021	LTIApply	  Console > Deployment Image Servicing and Management tool	
+07:12:49.000+000	09-13-2021	LTIApply	ZTI Heartbeat: command has been running for 0 minutes (process ID 1936)	
+07:12:49.000+000	09-13-2021	LTIApply	Event 41003 sent: ZTI Heartbeat: command has been running for 0 minutes (process ID 1936)	
+07:13:09.000+000	09-13-2021	LTIApply	  Console > Applying image	
+07:13:09.000+000	09-13-2021	LTIApply	  Console > [                           1.0%                           ] 	
+07:13:21.000+000	09-13-2021	LTIApply	  Console > [=                          2.0%                           ] 	
+07:13:28.000+000	09-13-2021	LTIApply	  Console > [=                          3.0%                           ] 	
+07:13:35.000+000	09-13-2021	LTIApply	  Console > [==                         4.0%                           ] 	
+07:13:41.000+000	09-13-2021	LTIApply	  Console > [==                         5.0%                           ] 	
+07:13:48.000+000	09-13-2021	LTIApply	  Console > [===                        6.0%                           ] 	
+07:13:55.000+000	09-13-2021	LTIApply	  Console > [====                       7.0%                           ] 	
+07:14:04.000+000	09-13-2021	LTIApply	  Console > [====                       8.0%                           ] 	
+07:14:09.000+000	09-13-2021	LTIApply	  Console > [=====                      9.0%                           ] 	
+07:14:16.000+000	09-13-2021	LTIApply	  Console > [=====                      10.0%                          ] 	
+07:14:22.000+000	09-13-2021	LTIApply	  Console > [======                     11.0%                          ] 	
+07:14:28.000+000	09-13-2021	LTIApply	  Console > [======                     12.0%                          ] 	
+07:14:32.000+000	09-13-2021	LTIApply	  Console > [=======                    13.0%                          ] 	
+07:14:38.000+000	09-13-2021	LTIApply	  Console > [========                   14.0%                          ] 	
+07:14:42.000+000	09-13-2021	LTIApply	  Console > [========                   15.0%                          ] 	
+07:14:46.000+000	09-13-2021	LTIApply	  Console > [=========                  16.0%                          ] 	
+07:14:51.000+000	09-13-2021	LTIApply	  Console > [=========                  17.0%                          ] 	
+07:14:55.000+000	09-13-2021	LTIApply	  Console > [==========                 18.0%                          ] 	
+07:15:00.000+000	09-13-2021	LTIApply	  Console > [===========                19.0%                          ] 	
+07:15:04.000+000	09-13-2021	LTIApply	  Console > [===========                20.0%                          ] 	
+07:15:08.000+000	09-13-2021	LTIApply	  Console > [============               21.0%                          ] 	
+07:15:11.000+000	09-13-2021	LTIApply	  Console > [============               22.0%                          ] 	
+07:15:15.000+000	09-13-2021	LTIApply	  Console > [=============              23.0%                          ] 	
+07:15:18.000+000	09-13-2021	LTIApply	  Console > [=============              24.0%                          ] 	
+07:15:22.000+000	09-13-2021	LTIApply	  Console > [==============             25.0%                          ] 	
+07:15:25.000+000	09-13-2021	LTIApply	  Console > [===============            26.0%                          ] 	
+07:15:28.000+000	09-13-2021	LTIApply	  Console > [===============            27.0%                          ] 	
+07:15:30.000+000	09-13-2021	LTIApply	  Console > [================           28.0%                          ] 	
+07:15:32.000+000	09-13-2021	LTIApply	  Console > [================           29.0%                          ] 	
+07:15:35.000+000	09-13-2021	LTIApply	  Console > [=================          30.0%                          ] 	
+07:15:40.000+000	09-13-2021	LTIApply	  Console > [=================          31.0%                          ] 	
+07:15:45.000+000	09-13-2021	LTIApply	  Console > [==================         32.0%                          ] 	
+07:15:49.000+000	09-13-2021	LTIApply	  Console > [===================        33.0%                          ] 	
+07:15:54.000+000	09-13-2021	LTIApply	  Console > [===================        34.0%                          ] 	
+07:16:00.000+000	09-13-2021	LTIApply	  Console > [====================       35.0%                          ] 	
+07:16:04.000+000	09-13-2021	LTIApply	  Console > [====================       36.0%                          ] 	
+07:16:08.000+000	09-13-2021	LTIApply	  Console > [=====================      37.0%                          ] 	
+07:16:11.000+000	09-13-2021	LTIApply	  Console > [======================     38.0%                          ] 	
+07:16:16.000+000	09-13-2021	LTIApply	  Console > [======================     39.0%                          ] 	
+07:16:20.000+000	09-13-2021	LTIApply	  Console > [=======================    40.0%                          ] 	
+07:16:24.000+000	09-13-2021	LTIApply	  Console > [=======================    41.0%                          ] 	
+07:16:29.000+000	09-13-2021	LTIApply	  Console > [========================   42.0%                          ] 	
+07:16:34.000+000	09-13-2021	LTIApply	  Console > [========================   43.0%                          ] 	
+07:16:38.000+000	09-13-2021	LTIApply	  Console > [=========================  44.0%                          ] 	
+07:16:41.000+000	09-13-2021	LTIApply	  Console > [========================== 45.0%                          ] 	
+07:16:45.000+000	09-13-2021	LTIApply	  Console > [========================== 46.0%                          ] 	
+07:16:49.000+000	09-13-2021	LTIApply	  Console > [===========================47.0%                          ] 	
+07:16:53.000+000	09-13-2021	LTIApply	  Console > [===========================48.0%                          ] 	
+07:16:58.000+000	09-13-2021	LTIApply	  Console > [===========================49.0%                          ] 	
+07:17:02.000+000	09-13-2021	LTIApply	ZTI Heartbeat: command has been running for 5 minutes (process ID 1936)	
+07:17:02.000+000	09-13-2021	LTIApply	  Console > [===========================50.0%                          ] 	
+07:17:03.000+000	09-13-2021	LTIApply	Event 41003 sent: ZTI Heartbeat: command has been running for 5 minutes (process ID 1936)	
+07:17:06.000+000	09-13-2021	LTIApply	  Console > [===========================51.0%                          ] 	
+07:17:11.000+000	09-13-2021	LTIApply	  Console > [===========================52.0%                          ] 	
+07:17:15.000+000	09-13-2021	LTIApply	  Console > [===========================53.0%                          ] 	
+07:17:18.000+000	09-13-2021	LTIApply	  Console > [===========================54.0%                          ] 	
+07:17:22.000+000	09-13-2021	LTIApply	  Console > [===========================55.0%                          ] 	
+07:17:26.000+000	09-13-2021	LTIApply	  Console > [===========================56.0%                          ] 	
+07:17:30.000+000	09-13-2021	LTIApply	  Console > [===========================57.0%=                         ] 	
+07:17:34.000+000	09-13-2021	LTIApply	  Console > [===========================58.0%=                         ] 	
+07:17:38.000+000	09-13-2021	LTIApply	  Console > [===========================59.0%==                        ] 	
+07:17:41.000+000	09-13-2021	LTIApply	  Console > [===========================60.0%==                        ] 	
+07:17:46.000+000	09-13-2021	LTIApply	  Console > [===========================61.0%===                       ] 	
+07:17:50.000+000	09-13-2021	LTIApply	  Console > [===========================62.0%===                       ] 	
+07:17:53.000+000	09-13-2021	LTIApply	  Console > [===========================63.0%====                      ] 	
+07:17:58.000+000	09-13-2021	LTIApply	  Console > [===========================64.0%=====                     ] 	
+07:18:02.000+000	09-13-2021	LTIApply	  Console > [===========================65.0%=====                     ] 	
+07:18:06.000+000	09-13-2021	LTIApply	  Console > [===========================66.0%======                    ] 	
+07:18:10.000+000	09-13-2021	LTIApply	  Console > [===========================67.0%======                    ] 	
+07:18:14.000+000	09-13-2021	LTIApply	  Console > [===========================68.0%=======                   ] 	
+07:18:18.000+000	09-13-2021	LTIApply	  Console > [===========================69.0%========                  ] 	
+07:18:23.000+000	09-13-2021	LTIApply	  Console > [===========================70.0%========                  ] 	
+07:18:27.000+000	09-13-2021	LTIApply	  Console > [===========================71.0%=========                 ] 	
+07:18:31.000+000	09-13-2021	LTIApply	  Console > [===========================72.0%=========                 ] 	
+07:18:35.000+000	09-13-2021	LTIApply	  Console > [===========================73.0%==========                ] 	
+07:18:38.000+000	09-13-2021	LTIApply	  Console > [===========================74.0%==========                ] 	
+07:18:42.000+000	09-13-2021	LTIApply	  Console > [===========================75.0%===========               ] 	
+07:18:46.000+000	09-13-2021	LTIApply	  Console > [===========================76.0%============              ] 	
+07:18:50.000+000	09-13-2021	LTIApply	  Console > [===========================77.0%============              ] 	
+07:18:55.000+000	09-13-2021	LTIApply	  Console > [===========================78.0%=============             ] 	
+07:19:00.000+000	09-13-2021	LTIApply	  Console > [===========================79.0%=============             ] 	
+07:19:06.000+000	09-13-2021	LTIApply	  Console > [===========================80.0%==============            ] 	
+07:19:12.000+000	09-13-2021	LTIApply	  Console > [===========================81.0%==============            ] 	
+07:19:17.000+000	09-13-2021	LTIApply	  Console > [===========================82.0%===============           ] 	
+07:19:21.000+000	09-13-2021	LTIApply	  Console > [===========================83.0%================          ] 	
+07:19:25.000+000	09-13-2021	LTIApply	  Console > [===========================84.0%================          ] 	
+07:19:30.000+000	09-13-2021	LTIApply	  Console > [===========================85.0%=================         ] 	
+07:19:33.000+000	09-13-2021	LTIApply	  Console > [===========================86.0%=================         ] 	
+07:19:37.000+000	09-13-2021	LTIApply	  Console > [===========================87.0%==================        ] 	
+07:19:42.000+000	09-13-2021	LTIApply	  Console > [===========================88.0%===================       ] 	
+07:19:46.000+000	09-13-2021	LTIApply	  Console > [===========================89.0%===================       ] 	
+07:19:52.000+000	09-13-2021	LTIApply	  Console > [===========================90.0%====================      ] 	
+07:20:03.000+000	09-13-2021	LTIApply	  Console > [===========================91.0%====================      ] 	
+07:20:15.000+000	09-13-2021	LTIApply	  Console > [===========================92.0%=====================     ] 	
+07:20:23.000+000	09-13-2021	LTIApply	  Console > [===========================93.0%=====================     ] 	
+07:20:35.000+000	09-13-2021	LTIApply	  Console > [===========================94.0%======================    ] 	
+07:21:12.000+000	09-13-2021	LTIApply	  Console > [===========================95.0%=======================   ] 	
+07:21:18.000+000	09-13-2021	LTIApply	  Console > [===========================96.0%=======================   ] 	
+07:21:23.000+000	09-13-2021	LTIApply	  Console > [===========================97.0%========================  ] 	
+07:21:29.000+000	09-13-2021	LTIApply	  Console > [===========================98.0%========================  ] 	
+07:21:49.000+000	09-13-2021	LTIApply	The image \\dsc0.securedigitsplus.com\FlightTest$\Operating Systems\10P64\10P64.wim was applied successfully.	
+07:21:49.000+000	09-13-2021	LTIApply	Property LTIDirtyOS is now = TRUE	
+07:21:49.000+000	09-13-2021	LTIApply	About to run command: "\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\bootsect.exe"  /nt60 C:	
+07:21:49.000+000	09-13-2021	LTIApply	Event 5625 sent: The image \\dsc0.securedigitsplus.com\FlightTest$\Operating Systems\10P64\10P64.wim was applied successfully.	
+07:21:49.000+000	09-13-2021	LTIApply	  Console > [==========================100.0%==========================] 	
+07:21:49.000+000	09-13-2021	LTIApply	  Console > The operation completed successfully.	
+07:21:49.000+000	09-13-2021	LTIApply	Return code from command = 0	
+07:21:50.000+000	09-13-2021	LTIApply	  Console >         Access is denied.	
+07:21:50.000+000	09-13-2021	LTIApply	  Console >     volume could not be locked during the update:	
+07:21:50.000+000	09-13-2021	LTIApply	Return code from command = 0	
+07:21:50.000+000	09-13-2021	LTIApply	  Console > Bootcode was successfully updated on all targeted volumes.	
+07:21:50.000+000	09-13-2021	LTIApply	  Console >     Updated NTFS filesystem bootcode.  The update may be unreliable since the	
+07:21:50.000+000	09-13-2021	LTIApply	Command has been started (process ID 1808)	
+07:21:50.000+000	09-13-2021	LTIApply	Find the boot drive (if any) [True] [10.0.19041.928] [False]	
+07:21:50.000+000	09-13-2021	LTIApply	  Console > C: (\\?\Volume{982d3c80-a38e-49d3-b5fb-038c0a082ff4})	
+07:21:50.000+000	09-13-2021	LTIApply	  Console > Target volumes will be updated with BOOTMGR compatible bootcode.	
+07:21:51.000+000	09-13-2021	ztiRunCommandHidden	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:21:51.000+000	09-13-2021	ztiRunCommandHidden	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:21:51.000+000	09-13-2021	ztiRunCommandHidden	About to run command: DiskPart.exe /s X:\Windows\temp\rad2FF91.tmp	
+07:21:51.000+000	09-13-2021	LTIApply	DISKPART + Select Partition 2	
+07:21:51.000+000	09-13-2021	ztiRunCommandHidden	Command has been started (process ID 628)	
+07:21:51.000+000	09-13-2021	LTIApply	DISKPART + Select Disk 0	
+07:21:51.000+000	09-13-2021	LTIApply	New ZTIDisk : \\MININT-07VIN4O\root\cimv2:Win32_DiskDrive.DeviceID="\\\\.\\PHYSICALDRIVE0"	
+07:21:51.000+000	09-13-2021	LTIApply	DISKPART + Assign	
+07:21:51.000+000	09-13-2021	LTIApply	About to run command: cscript.exe //nologo "\\dsc0.securedigitsplus.com\FlightTest$\Scripts\ztiRunCommandHidden.wsf" "DiskPart.exe /s X:\Windows\temp\rad2FF91.tmp"	
+07:21:51.000+000	09-13-2021	LTIApply	DISKPART + Exit	
+07:21:52.000+000	09-13-2021	ztiRunCommandHidden	  Console > Copyright (C) Microsoft Corporation.	
+07:21:52.000+000	09-13-2021	ztiRunCommandHidden	  Console > On computer: MININT-07VIN4O	
+07:21:52.000+000	09-13-2021	ztiRunCommandHidden	ZTI Heartbeat: command has been running for 0 minutes (process ID 628)	
+07:21:52.000+000	09-13-2021	ztiRunCommandHidden	Event 41003 sent: ZTI Heartbeat: command has been running for 0 minutes (process ID 628)	
+07:21:52.000+000	09-13-2021	ztiRunCommandHidden	  Console > Microsoft DiskPart version 10.0.18362.1	
+07:21:55.000+000	09-13-2021	ztiRunCommandHidden	Return code from command = 0	
+07:21:55.000+000	09-13-2021	LTIApply	Command has returned: 0	
+07:21:55.000+000	09-13-2021	ztiRunCommandHidden	  Console > Leaving DiskPart...	
+07:21:55.000+000	09-13-2021	ztiRunCommandHidden	  Console > Disk 0 is now the selected disk.	
+07:21:55.000+000	09-13-2021	ztiRunCommandHidden	  Console > Partition 2 is now the selected partition.	
+07:21:55.000+000	09-13-2021	ztiRunCommandHidden	  Console > DiskPart successfully assigned the drive letter or mount point.	
+07:21:56.000+000	09-13-2021	ztiRunCommandHidden	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:21:56.000+000	09-13-2021	ztiRunCommandHidden	About to run command: \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\BCDBoot.exe C:\windows /l en-us  /s E:	
+07:21:56.000+000	09-13-2021	ztiRunCommandHidden	Command has been started (process ID 748)	
+07:21:56.000+000	09-13-2021	ztiRunCommandHidden	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:21:56.000+000	09-13-2021	LTIApply	Found bootable drive (No Boot File Test) [ E: ]: \\MININT-07VIN4O\root\cimv2:Win32_LogicalDisk.DeviceID="E:"	
+07:21:56.000+000	09-13-2021	LTIApply	New ZTIDiskPartition : \\MININT-07VIN4O\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #1"    \\MININT-07VIN4O\root\cimv2:Win32_LogicalDisk.DeviceID="E:"	
+07:21:56.000+000	09-13-2021	LTIApply	About to run command: cscript.exe //nologo "\\dsc0.securedigitsplus.com\FlightTest$\Scripts\ztiRunCommandHidden.wsf" ""\\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\BCDBoot.exe" C:\windows /l en-us  /s E:"	
+07:21:56.000+000	09-13-2021	LTIApply	Ready to Prepare boot partition: E:	
+07:21:57.000+000	09-13-2021	LTIApply	Copy File: C:\MININT\unattend.xml to C:\Windows\Panther\Unattend.xml	
+07:21:57.000+000	09-13-2021	LTIApply	About to run command: dism.exe /Image:C:\ /Apply-Unattend:C:\Windows\Panther\Unattend.xml /ScratchDir:C:\MININT\Scratch	
+07:21:57.000+000	09-13-2021	LTIApply	Created scratch folder.	
+07:21:57.000+000	09-13-2021	LTIApply	BCDEdit returned ErrorLevel = 0	
+07:21:57.000+000	09-13-2021	LTIApply	Command has been started (process ID 1596)	
+07:21:57.000+000	09-13-2021	LTIApply	Copied unattend.xml to C:\Windows\Panther for image apply.	
+07:21:57.000+000	09-13-2021	ztiRunCommandHidden	  Console > Boot files successfully created.	
+07:21:57.000+000	09-13-2021	ztiRunCommandHidden	Event 41003 sent: ZTI Heartbeat: command has been running for 0 minutes (process ID 748)	
+07:21:57.000+000	09-13-2021	ztiRunCommandHidden	ZTI Heartbeat: command has been running for 0 minutes (process ID 748)	
+07:21:57.000+000	09-13-2021	ztiRunCommandHidden	Return code from command = 0	
+07:21:57.000+000	09-13-2021	LTIApply	BCD> The operation completed successfully.	
+07:21:57.000+000	09-13-2021	LTIApply	Run Command: X:\WINDOWS\SYSTEM32\bcdedit.exe /Store "E:\boot\bcd" /timeout 0	
+07:21:57.000+000	09-13-2021	LTIApply	Command has returned: 0	
+07:21:58.000+000	09-13-2021	LTIApply	  Console > Version: 10.0.18362.1	
+07:21:58.000+000	09-13-2021	LTIApply	  Console > Deployment Image Servicing and Management tool	
+07:22:02.000+000	09-13-2021	LTIApply	  Console > Image Version: 10.0.19043.928	
+07:22:02.000+000	09-13-2021	LTIApply	ZTI Heartbeat: command has been running for 1 minutes (process ID 1596)	
+07:22:03.000+000	09-13-2021	LTIApply	Event 41003 sent: ZTI Heartbeat: command has been running for 1 minutes (process ID 1596)	
+07:22:09.000+000	09-13-2021	LTIApply	Return code from command = 0	
+07:22:09.000+000	09-13-2021	LTIApply	  Console > The operation completed successfully.	
+07:22:09.000+000	09-13-2021	LTIApply	LTIApply processing completed successfully.	
+07:22:10.000+000	09-13-2021	ZTINextPhase	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:22:10.000+000	09-13-2021	ZTINextPhase	ZTINextPhase processing completed successfully.	
+07:22:10.000+000	09-13-2021	ZTINextPhase	Event 41001 sent: ZTINextPhase processing completed successfully.	
+07:22:10.000+000	09-13-2021	ZTINextPhase	Property PHASE is now = POSTINSTALL	
+07:22:10.000+000	09-13-2021	ZTINextPhase	ZTINextPhase COMPLETED.  Return Value = 0	
+07:22:10.000+000	09-13-2021	ZTINextPhase	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:22:10.000+000	09-13-2021	LTIApply	Event 41001 sent: LTIApply processing completed successfully.	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\ZTIGather.wsf already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\ZTIUtility.vbs already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\LiteTouch.wsf already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\ZTIGather.xml already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\Credentials_scripts.vbs already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\Credentials_ENU.xml already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\Wizard.hta already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	LTICopyScripts processing completed successfully.	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\LTIBootstrap.vbs already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\LTITriggerUpgradeFailure.wsf already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\ZTISetupRollback.wsf already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	--------- Script Start ---------	
+07:22:11.000+000	09-13-2021	LTICopyScripts	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:22:11.000+000	09-13-2021	LTICopyScripts	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\WizUtility.vbs already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\ZTIDataAccess.vbs already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\LTISuspend.wsf already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\ZTIDiskUtility.vbs already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\ZTINICConfig.wsf already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\ZTINICUtility.vbs already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\ZTIBCDUTILITY.VBS already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\Computer.png already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\SetupComplete.cmd already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\SetupRollback.cmd already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\ZTIRunCommandHidden.wsf already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\header-image.png already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\NavBar.png already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\plusicon.gif already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\minusico.gif already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\DeployWiz_Definition_ENU.xml already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\Wizard.css already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\Wizard.ico already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\BackButton.jpg already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\Summary_scripts.vbs already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\LTICleanup.wsf already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\LTIGetFolder.wsf already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\DeployWiz_Initialization.vbs already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\DeployWiz_Validation.vbs already exists in Target	
+07:22:11.000+000	09-13-2021	LTICopyScripts	File C:\MININT\Scripts\Summary_Definition_ENU.xml already exists in Target	
+07:22:14.000+000	09-13-2021	LTICopyScripts	Event 41001 sent: LTICopyScripts processing completed successfully.	
+07:22:14.000+000	09-13-2021	ZTIConfigure	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:22:14.000+000	09-13-2021	ZTIConfigure	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	ZTIConfigure COMPLETED.  Return Value = 0	
+07:22:15.000+000	09-13-2021	ZTIConfigure	ZTIConfigure processing completed successfully.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Mapping server share: \\dsc0.securedigitsplus.com\FlightTest$	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Rewrote C:\MININT\Unattend.xml with changes	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for FullName	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for OrgName	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with DestinationPartition=1 (value was 1)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with DestinationDisk=0 (value was 0)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Validating connection to \\dsc0.securedigitsplus.com\FlightTest$	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Property OSDTargetDriveCache is now = C:	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Property OSDisk is now = C:	
+07:22:15.000+000	09-13-2021	ZTIConfigure	OSDTargetDriveCache was determined earlier : C:	
+07:22:15.000+000	09-13-2021	ZTIConfigure	<Message containing password has been suppressed>	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Already connected to server dsc0.securedigitsplus.com as that is where this script is running from.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Loaded C:\MININT\Unattend.xml	
+07:22:15.000+000	09-13-2021	ZTIConfigure	---------------- Initialization ----------------	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Property OSDAnswerFilePathSysprep is now = 	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Looking for Sysprep.inf in C:\sysprep\Sysprep.inf	
+07:22:15.000+000	09-13-2021	ZTIConfigure	The sysprep.inf file was not found.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for AutoMode	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for Home_Page	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="windowsPE"]/unattend:component[@name="Microsoft-Windows-Setup"]/unattend:UpgradeData/unattend:Upgrade not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for AutoUsers	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for CountryCode	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for AreaCode	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for LongDistanceAccess	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for Dialing	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with MachineObjectOU=OU=Computers,OU=CP-NY-US-12065,DC=securedigitsplus,DC=com (value was OU=Computers,OU=CP-NY-US-12065,DC=securedigitsplus,DC=com)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with JoinDomain=securedigitsplus.com (value was securedigitsplus.com)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with DomainAdmin=fightingentropy@securedigitsplus.com (value was fightingentropy@securedigitsplus.com)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="specialize"]/unattend:component[@name="Microsoft-Windows-UnattendedJoin"]/unattend:Identification/unattend:JoinWorkgroup not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="specialize"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:ProductKey not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with OSDComputerName=ws1-12065 (value was ws1-12065)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="windowsPE"]/unattend:component[@name="Microsoft-Windows-Setup"]/unattend:UserData/unattend:ProductKey/unattend:Key not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for Language	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for InputLocale	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for SystemLocale	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for LanguageGroup	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for JoinWorkgroup	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for ProductKey	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for Xresolution	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for BitsPerPel	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for Vrefresh	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for Yresolution	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for AutoLogon	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for TimeZone	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for AutoLogonCount	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with KeyboardLocale=en-us;0409:00000409 (value was en-us;0409:00000409)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with UserLocale=en-us (value was en-us)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with TimeZoneName=Eastern Standard Time (value was Eastern Standard Time)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with ImageLanguage001=en-US (value was en-US)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="specialize"]/unattend:component[@name="Microsoft-Windows-IE-InternetExplorer"]/unattend:Home_Page not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with UILanguage=en-us (value was en-us)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="windowsPE"]/unattend:component[@name="Microsoft-Windows-Setup"]/unattend:ImageInstall/unattend:OSImage/unattend:InstallFrom/unattend:MetaData[Key="/IMAGE/INDEX"]/Value not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="oobeSystem"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:UserAccounts/unattend:LocalAccounts not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for ComputerName	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for DomainAdminDomain	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="windowsPE"]/unattend:component[@name="Microsoft-Windows-Setup"]/unattend:ImageInstall/unattend:OSImage/unattend:InstallFrom/unattend:MetaData[Key="/image/index"]/Value not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	Updated C:\MININT\Unattend.xml with InstallFromPath=\\dsc0.securedigitsplus.com\flighttest$\Operating Systems\10P64\10P64.wim (value was \\dsc0.securedigitsplus.com\flighttest$\Operating Systems\10P64\10P64.wim)	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="oobeSystem"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:Display/unattend:RefreshRate not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="oobeSystem"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:Display/unattend:VerticalResolution not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	No value found for Organization	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="oobeSystem"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:Display/unattend:HorizontalResolution not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:15.000+000	09-13-2021	ZTIConfigure	//unattend:settings[@pass="oobeSystem"]/unattend:component[@name="Microsoft-Windows-Shell-Setup"]/unattend:Display/unattend:ColorDepth not found in C:\MININT\Unattend.xml, unable to update.	
+07:22:16.000+000	09-13-2021	ZTIdrivers	No driver copying needs to be performed during the Lite Touch postinstall phase.	
+07:22:16.000+000	09-13-2021	ZTIdrivers	Property OSDisk is now = C:	
+07:22:16.000+000	09-13-2021	ZTIdrivers	Property OSDTargetDriveCache is now = C:	
+07:22:16.000+000	09-13-2021	ZTIdrivers	Event 41001 sent: ZTIdrivers processing completed successfully.	
+07:22:16.000+000	09-13-2021	ZTIdrivers	ZTIdrivers processing completed successfully.	
+07:22:16.000+000	09-13-2021	ZTIdrivers	Vista identified, skipping update of Device Path	
+07:22:16.000+000	09-13-2021	ZTIdrivers	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:22:16.000+000	09-13-2021	ZTIConfigure	Event 41001 sent: ZTIConfigure processing completed successfully.	
+07:22:16.000+000	09-13-2021	ZTIdrivers	Updating downlevel OS configuration.	
+07:22:16.000+000	09-13-2021	ZTIdrivers	OSDTargetDriveCache was determined earlier : C:	
+07:22:16.000+000	09-13-2021	ZTIdrivers	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:22:16.000+000	09-13-2021	ZTIdrivers	Processing drivers for an X64 operating system.	
+07:22:17.000+000	09-13-2021	ZTIPatches	Adding language pack entries to unattend.xml	
+07:22:17.000+000	09-13-2021	ZTIPatches		Open Control File: Packages	
+07:22:17.000+000	09-13-2021	ZTIPatches	Adding non-language pack entries to unattend.xml	
+07:22:17.000+000	09-13-2021	ZTIPatches	No <servicing> node found, adding a new one.	
+07:22:17.000+000	09-13-2021	ZTIPatches	Event 41001 sent: ZTIPatches processing completed successfully.	
+07:22:17.000+000	09-13-2021	ZTIPatches	ZTIPatches processing completed successfully.	
+07:22:17.000+000	09-13-2021	ZTIPatches	Language pack entries added to unattend.xml successfully	
+07:22:17.000+000	09-13-2021	ZTIPatches	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:22:17.000+000	09-13-2021	ZTIPatches	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:22:17.000+000	09-13-2021	ZTIPatches	Nothing to save, exit.	
+07:22:17.000+000	09-13-2021	ZTIPatches	ZTIPatches Entered POSTINSTALL state. Deployment Method = UNC	
+07:22:17.000+000	09-13-2021	ZTIPatches	Unable to find the Packages.xml file, assuming there are no packages to inject.	
+07:22:17.000+000	09-13-2021	ZTIPatches	Operating system being deployed requires amd64 updates.	
+07:22:17.000+000	09-13-2021	ZTIPatches	Load XML....	
+07:22:18.000+000	09-13-2021	ZTINextPhase	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:22:18.000+000	09-13-2021	ZTIWinRE	ZTIWinRE processing completed successfully.	
+07:22:18.000+000	09-13-2021	ZTIWinRE	WinRE is not enabled, Skip.	
+07:22:18.000+000	09-13-2021	ZTINextPhase	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:22:18.000+000	09-13-2021	ZTINextPhase	ZTINextPhase processing completed successfully.	
+07:22:18.000+000	09-13-2021	ZTINextPhase	ZTINextPhase COMPLETED.  Return Value = 0	
+07:22:18.000+000	09-13-2021	ZTINextPhase	Property PHASE is now = STATERESTORE	
+07:22:18.000+000	09-13-2021	ZTIWinRE	The task sequencer log is located at X:\WINDOWS\TEMP\SMSTSLog\SMSTS.LOG.  For task sequence failures, please consult this log.	
+07:22:18.000+000	09-13-2021	ZTIWinRE	Will boot into Windows PE architecture x64 to match OS being deployed.	
+07:22:18.000+000	09-13-2021	ZTIWinRE	Event 41001 sent: ZTIWinRE processing completed successfully.	
+07:22:18.000+000	09-13-2021	ZTIWinRE	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:22:18.000+000	09-13-2021	ZTIWinRE	Property OSDTargetDriveCache is now = C:	
+07:22:18.000+000	09-13-2021	ZTIWinRE	Property OSDisk is now = C:	
+07:22:18.000+000	09-13-2021	ZTIWinRE	OSDTargetDriveCache was determined earlier : C:	
+07:22:19.000+000	09-13-2021	LiteTouch	If there is a drive letter defined, make sure we clear it now so we can *force* recalcutation.	
+07:22:19.000+000	09-13-2021	LiteTouch	Property OSDTargetDriveCache is now = DIRTY	
+07:22:19.000+000	09-13-2021	LiteTouch	LTI initiating task sequence-requested reboot.	
+07:22:19.000+000	09-13-2021	LiteTouch	Property LTIDirty is now = FALSE	
+07:22:19.000+000	09-13-2021	LiteTouch	Command completed, return code = -2147021886	
+07:22:19.000+000	09-13-2021	ZTINextPhase	Event 41001 sent: ZTINextPhase processing completed successfully.	
+07:22:20.000+000	09-13-2021	LiteTouch	Event 41017 sent: LTI initiating task sequence-requested reboot.	
+07:45:53.000+000	09-13-2021	LiteTouch	Property start is now = 	
+07:45:53.000+000	09-13-2021	LiteTouch	ZTIUtility!GetAllFixedDrives (False)	
+07:45:53.000+000	09-13-2021	LiteTouch	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:45:54.000+000	09-13-2021	LiteTouch	New ZTIDisk : \\WS1-12065\root\cimv2:Win32_DiskDrive.DeviceID="\\\\.\\PHYSICALDRIVE0"	
+07:45:54.000+000	09-13-2021	LiteTouch	New ZTIDiskPartition : \\WS1-12065\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #2"    \\WS1-12065\root\cimv2:Win32_LogicalDisk.DeviceID="C:"	
+07:45:55.000+000	09-13-2021	LiteTouch	Creating startup folder item to run LiteTouch.wsf once the shell is loaded.	
+07:45:55.000+000	09-13-2021	LiteTouch	Found existing task sequence state information in C:\_SMSTaskSequence, will continue	
+07:45:55.000+000	09-13-2021	LiteTouch	Shortcut "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\LiteTouch.lnk" created.	
+07:45:55.000+000	09-13-2021	LiteTouch	New ZTIDisk : \\WS1-12065\root\cimv2:Win32_DiskDrive.DeviceID="\\\\.\\PHYSICALDRIVE0"	
+07:45:55.000+000	09-13-2021	LiteTouch	Property LTIDirtyOS is now = FALSE	
+07:45:55.000+000	09-13-2021	LiteTouch	ZTIUtility!GetAllFixedDrives =    C:	
+07:48:04.000+000	09-13-2021	LiteTouch	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:48:05.000+000	09-13-2021	LiteTouch	New ZTIDisk : \\WS1-12065\root\cimv2:Win32_DiskDrive.DeviceID="\\\\.\\PHYSICALDRIVE0"	
+07:48:05.000+000	09-13-2021	LiteTouch	New ZTIDiskPartition : \\WS1-12065\root\cimv2:Win32_DiskPartition.DeviceID="Disk #0, Partition #2"    \\WS1-12065\root\cimv2:Win32_LogicalDisk.DeviceID="C:"	
+07:48:05.000+000	09-13-2021	LiteTouch	ZTIUtility!GetAllFixedDrives (False)	
+07:48:05.000+000	09-13-2021	LiteTouch	ZTIUtility!GetAllFixedDrives =    C:	
+07:48:05.000+000	09-13-2021	LiteTouch	Mapped Network UNC Path Z:  = \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:05.000+000	09-13-2021	LiteTouch	Found Existing UNC Path Z: = \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:05.000+000	09-13-2021	LiteTouch	Found existing task sequence state information in C:\_SMSTaskSequence, will continue	
+07:48:05.000+000	09-13-2021	LiteTouch	Not running within WinPE.	
+07:48:05.000+000	09-13-2021	LiteTouch	Validating connection to \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:05.000+000	09-13-2021	LiteTouch	Mapping server share: \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:05.000+000	09-13-2021	LiteTouch	DeploymentMethod = UNC	
+07:48:06.000+000	09-13-2021	LiteTouch	Successfully established connection using supplied credentials.	
+07:48:06.000+000	09-13-2021	LiteTouch	Mapping server share: \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:06.000+000	09-13-2021	LiteTouch	Validating connection to \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:06.000+000	09-13-2021	LiteTouch	Found Existing UNC Path Z: = \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:06.000+000	09-13-2021	LiteTouch	DeployRoot = \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:06.000+000	09-13-2021	LiteTouch	Property DeployDrive is now = Z:	
+07:48:06.000+000	09-13-2021	LiteTouch	DeployDrive = Z:	
+07:48:06.000+000	09-13-2021	LiteTouch	Phase = STATERESTORE	
+07:48:06.000+000	09-13-2021	LiteTouch	ResourceDrive = Z:	
+07:48:06.000+000	09-13-2021	LiteTouch	Property ResourceDrive is now = Z:	
+07:48:06.000+000	09-13-2021	LiteTouch	ResourceRoot = \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:06.000+000	09-13-2021	LiteTouch	SMS Task Sequencer found at \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64, copying to C:\MININT\Tools\X64	
+07:48:06.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\CcmUtilLib.dll to C:\MININT\Tools\X64\CcmUtilLib.dll	
+07:48:06.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\CcmCore.dll to C:\MININT\Tools\X64\CcmCore.dll	
+07:48:06.000+000	09-13-2021	LiteTouch	DeploymentType = NEWCOMPUTER	
+07:48:07.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\SmsCore.dll to C:\MININT\Tools\X64\SmsCore.dll	
+07:48:07.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\TsMessaging.dll to C:\MININT\Tools\X64\TsMessaging.dll	
+07:48:07.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\TsCore.dll to C:\MININT\Tools\X64\TsCore.dll	
+07:48:07.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\TsmBootstrap.exe to C:\MININT\Tools\X64\TsmBootstrap.exe	
+07:48:07.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\TSEnv.exe to C:\MININT\Tools\X64\TSEnv.exe	
+07:48:07.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\TsManager.exe to C:\MININT\Tools\X64\TsManager.exe	
+07:48:07.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\Smsboot.exe to C:\MININT\Tools\X64\Smsboot.exe	
+07:48:08.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\msvcr120.dll to C:\MININT\Tools\X64\msvcr120.dll	
+07:48:08.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\msvcp120.dll to C:\MININT\Tools\X64\msvcp120.dll	
+07:48:08.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\TSResNlc.dll to C:\MININT\Tools\X64\TSResNlc.dll	
+07:48:08.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\TsProgressUI.exe to C:\MININT\Tools\X64\TsProgressUI.exe	
+07:48:08.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\CommonUtils.dll to C:\MININT\Tools\X64\CommonUtils.dll	
+07:48:08.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\ccmgencert.dll to C:\MININT\Tools\X64\ccmgencert.dll	
+07:48:08.000+000	09-13-2021	LiteTouch	Copying \\dsc0.securedigitsplus.com\FlightTest$\Tools\X64\00000409\tsres.dll to C:\MININT\Tools\X64\00000409\tsres.dll	
+07:48:09.000+000	09-13-2021	LiteTouch	Saving task sequence XML to C:\MININT\Tools\X64\TS.XML	
+07:48:09.000+000	09-13-2021	LiteTouch	Copying C:\MININT\SMSOSD\OSDLOGS\VARIABLES.DAT to C:\MININT\Tools\X64\VARIABLES.DAT	
+07:48:09.000+000	09-13-2021	LiteTouch	FindFile(...\Microsoft.BDD.Utility.dll)  Result : 0	
+07:48:09.000+000	09-13-2021	LiteTouch	RUN: regsvr32.exe /s "C:\Users\ADMINI~1\AppData\Local\Temp\Tools\x86\Microsoft.BDD.Utility.dll"	
+07:48:09.000+000	09-13-2021	LiteTouch	Copy File: \\dsc0.securedigitsplus.com\FlightTest$\Tools\x86\Microsoft.BDD.Utility.dll to C:\Users\ADMINI~1\AppData\Local\Temp\Tools\x86\	
+07:48:09.000+000	09-13-2021	LiteTouch	Reading \\dsc0.securedigitsplus.com\FlightTest$\Control\10P64\TS.XML	
+07:48:10.000+000	09-13-2021	LiteTouch	FindFile(...\Microsoft.BDD.Utility.dll)  Result : 0	
+07:48:10.000+000	09-13-2021	LiteTouch	Copy File: \\dsc0.securedigitsplus.com\FlightTest$\Tools\x64\Microsoft.BDD.Utility.dll to C:\Users\ADMINI~1\AppData\Local\Temp\Tools\x64\	
+07:48:10.000+000	09-13-2021	LiteTouch	About to run command: "C:\MININT\Tools\X64\TsmBootstrap.exe" /env:SAContinue	
+07:48:10.000+000	09-13-2021	LiteTouch	Property LTIDirty is now = TRUE	
+07:48:10.000+000	09-13-2021	LiteTouch	RUN: regsvr32.exe /s "C:\Users\ADMINI~1\AppData\Local\Temp\Tools\x64\Microsoft.BDD.Utility.dll"	
+07:48:10.000+000	09-13-2021	LiteTouch	TargetOS is the current SystemDrive	
+07:48:13.000+000	09-13-2021	LiteTouch	Event 41014 sent: Litetouch deployment failed, Return Code = -2146893819  0x80090005	
+07:48:13.000+000	09-13-2021	LiteTouch	Litetouch deployment failed, Return Code = -2146893819  0x80090005	
+07:48:13.000+000	09-13-2021	LiteTouch	Command completed, return code = -2146893819	
+07:48:13.000+000	09-13-2021	LiteTouch	For more information, consult the task sequencer log ...\SMSTS.LOG.	
+07:48:13.000+000	09-13-2021	LiteTouch	Unable to copy log to the network as no SLShare value was specified.	
+07:48:13.000+000	09-13-2021	LiteTouch	Property RetVal is now = -2146893819	
+07:48:14.000+000	09-13-2021	LiteTouch	CleanStartItems Complete	
+07:48:14.000+000	09-13-2021	LiteTouch	Unregistering TSCore.dll.	
+07:48:15.000+000	09-13-2021	LiteTouch	About to run command: wscript.exe "C:\MININT\Scripts\LTICleanup.wsf"	
+07:48:15.000+000	09-13-2021	LTICleanup	Microsoft Deployment Toolkit version: 6.3.8456.1000	
+07:48:16.000+000	09-13-2021	LTICleanup	Checking mapped network drive.	
+07:48:16.000+000	09-13-2021	LTICleanup	No Windows PE image to delete.	
+07:48:16.000+000	09-13-2021	LTICleanup	Disconnecting drive Z: mapped to \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:16.000+000	09-13-2021	LTICleanup	Cleaning up TOOLS, SCRIPTS, and PACKAGES directories.	
+07:48:16.000+000	09-13-2021	LTICleanup	Cleaning up C:\MININT directory.	
+07:48:16.000+000	09-13-2021	LTICleanup	Removing AutoAdminLogon registry entries	
+07:48:16.000+000	09-13-2021	LTICleanup	testing drive Z: mapped to \\dsc0.securedigitsplus.com\FlightTest$	
+07:48:16.000+000	09-13-2021	LTICleanup	Re-enabling UAC for built-in Administrator account	
+07:48:16.000+000	09-13-2021	LTICleanup	Logs contained 3 errors and 0 warnings.	
+07:48:16.000+000	09-13-2021	LTICleanup	VSSMaxSize not specified using 5% of volume.	
+07:48:51.000+000	09-13-2021	LTICleanup	Removing C:\MININT folder (final log entry)	
