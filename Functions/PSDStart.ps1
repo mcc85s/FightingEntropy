@@ -1253,7 +1253,7 @@ Function Get-PSDLog
             {
                 Start-PSDLogging -Logpath "$($Drive.Name):\MININT\SMSOSD\OSDLOGS"
                 Break
-            }
+            }
         }
     }
 
@@ -1469,7 +1469,7 @@ Switch ($Result.ExitCode)
                     }
 
                     Copy-Item "X:\_SMSTaskSequence\Logs\smsts.log" $LogPath
-                }
+                }
             }
            
 
