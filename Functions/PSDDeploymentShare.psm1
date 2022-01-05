@@ -14,9 +14,9 @@
           Contact:  Original [@Mikael_Nystrom , @jarwidmark , @mniehaus , @SoupAtWork , @JordanTheItGuy]
                     Modified [@mcc85s]
           Primary:  Original [@Mikael_Nystrom]
-                    Modofied [@mcc85s]
+                    Modified [@mcc85s]
           Created: 
-          Modified: 2021-12-31
+          Modified: 2022-01-05
 
           Version - 0.0.0 - () - Finalized functional version 1.
 .Example
