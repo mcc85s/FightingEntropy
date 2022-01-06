@@ -14,7 +14,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-11-10
-          Modified: 2021-12-31
+          Modified: 2022-01-06
           
           Version - 2021.10.0 - () - Still revising from version 1.
 
@@ -4832,7 +4832,6 @@ Function New-FEInfrastructure
         }
         [MdtController]::New($Module)
     }
-
     Function WdsController
     {
         Class WdsRegItem
@@ -10725,7 +10724,7 @@ Function New-FEInfrastructure
                         $Xaml.IO.VmGatewayDrive.Text,
                         $Xaml.IO.VmGatewayGeneration.Text,
                         $Xaml.IO.VmGatewayCore.Text,
-                        $Object.Sitelink)
+                        $Xaml.IO.VmControllerSwitch.SelectedItem)
 
                     $Main.Validate.Gateway.Output += $Item
                 }
@@ -10823,8 +10822,12 @@ Function New-FEInfrastructure
             $Reserve = $Main.VmController.Reservation | ? SwitchName -match $Object.Name 
             $Reserve.SetMacAddress($MacAddress)
             $Reserve.Add()
+            
+            $Object.Get() | Add-VmNetworkAdapter -SwitchName $Object.Sitelink
+            
             $Object.LoadIso($Master.Iso)
             $Object.SetIsoBoot()
+            $Object.Get()
 
             $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
             $AddsNode.LoadVmObject($Object)
