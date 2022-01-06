@@ -10823,7 +10823,7 @@ Function New-FEInfrastructure
             $Reserve.SetMacAddress($MacAddress)
             $Reserve.Add()
             
-            $Object.Get() | Add-VmNetworkAdapter -SwitchName $Object.Sitelink
+            Get-VM -Name $Object.Name | Add-VmNetworkAdapter -SwitchName $Object.Name -Verbose
             
             $Object.LoadIso($Master.Iso)
             $Object.SetIsoBoot()
