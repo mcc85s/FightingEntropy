@@ -26,11 +26,11 @@ Class AdminAutoLogin
             Set-ItemProperty -Path $This.Path -Name $This.Keys[$X] -Value @($This.Dis,$This.En)[$Mode][$X] -Verbose
         }
     }
-    Enable()
+    Disable()
     {
         $This.Set(0)
     }
-    Disable()
+    Enable()
     {
         $This.Set(1)
     }
