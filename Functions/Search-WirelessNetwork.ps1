@@ -361,6 +361,111 @@ Function Search-WirelessNetwork
             '</Window>' -join "`n")
     }
 
+    # GC $Home\Desktop\EnterKey.xaml | % { "        '$_'," } | Set-Clipboard
+    Class Passphrase
+    {
+        Static [String] $Tab = @(
+            '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Enter Passphrase" Width="400" Height="160" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+            '    <Window.Resources>',
+            '        <Style TargetType="GroupBox">',
+            '            <Setter Property="Margin" Value="10"/>',
+            '            <Setter Property="Padding" Value="10"/>',
+            '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
+            '            <Setter Property="Template">',
+            '                <Setter.Value>',
+            '                    <ControlTemplate TargetType="GroupBox">',
+            '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
+            '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
+            '                        </Border>',
+            '                    </ControlTemplate>',
+            '                </Setter.Value>',
+            '            </Setter>',
+            '        </Style>',
+            '        <Style TargetType="Button">',
+            '            <Setter Property="Margin" Value="5"/>',
+            '            <Setter Property="Padding" Value="5"/>',
+            '            <Setter Property="Height" Value="30"/>',
+            '            <Setter Property="FontWeight" Value="Semibold"/>',
+            '            <Setter Property="FontSize" Value="12"/>',
+            '            <Setter Property="Foreground" Value="Black"/>',
+            '            <Setter Property="Background" Value="#DFFFBA"/>',
+            '            <Setter Property="BorderThickness" Value="2"/>',
+            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+            '            <Style.Resources>',
+            '                <Style TargetType="Border">',
+            '                    <Setter Property="CornerRadius" Value="5"/>',
+            '                </Style>',
+            '            </Style.Resources>',
+            '        </Style>',
+            '        <Style x:Key="DropShadow">',
+            '            <Setter Property="TextBlock.Effect">',
+            '                <Setter.Value>',
+            '                    <DropShadowEffect ShadowDepth="1"/>',
+            '                </Setter.Value>',
+            '            </Setter>',
+            '        </Style>',
+            '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+            '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+            '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+            '            <Setter Property="Height" Value="24"/>',
+            '            <Setter Property="Margin" Value="4"/>',
+            '            <Setter Property="FontSize" Value="12"/>',
+            '            <Setter Property="Foreground" Value="#000000"/>',
+            '            <Setter Property="TextWrapping" Value="Wrap"/>',
+            '            <Style.Resources>',
+            '                <Style TargetType="Border">',
+            '                    <Setter Property="CornerRadius" Value="2"/>',
+            '                </Style>',
+            '            </Style.Resources>',
+            '        </Style>',
+            '        <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource DropShadow}">',
+            '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+            '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+            '            <Setter Property="Margin" Value="4"/>',
+            '            <Setter Property="Height" Value="24"/>',
+            '            <Setter Property="PasswordChar" Value="*"/> ',
+            '        </Style> ',
+            '        <Style TargetType="Label">',
+            '            <Setter Property="Margin" Value="5"/>',
+            '            <Setter Property="FontWeight" Value="Bold"/>',
+            '            <Setter Property="Background" Value="Black"/>',
+            '            <Setter Property="Foreground" Value="White"/>',
+            '            <Setter Property="BorderBrush" Value="Gray"/>',
+            '            <Setter Property="BorderThickness" Value="2"/>',
+            '            <Style.Resources>',
+            '                <Style TargetType="Border">',
+            '                    <Setter Property="CornerRadius" Value="5"/>',
+            '                </Style>',
+            '            </Style.Resources>',
+            '        </Style>',
+            '    </Window.Resources>',
+            '    <Grid>',
+            '        <Grid.Background>',
+            '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
+            '        </Grid.Background>',
+            '        <GroupBox>',
+            '            <Grid>',
+            '                <Grid.RowDefinitions>',
+            '                    <RowDefinition Height="*"/>',
+            '                    <RowDefinition Height="*"/>',
+            '                </Grid.RowDefinitions>',
+            '                <PasswordBox Grid.Row="0" Name="Passphrase"/>',
+            '                <Grid Grid.Row="1">',
+            '                    <Grid.ColumnDefinitions>',
+            '                            <ColumnDefinition Width="*"/>',
+            '                            <ColumnDefinition Width="*"/>',
+            '                        </Grid.ColumnDefinitions>',
+            '                    <Button Grid.Row="1" Grid.Column="0" Name="Connect" Content="Continue"/>',
+            '                    <Button Grid.Row="1" Grid.Column="2" Name="Cancel"  Content="Cancel"/>',
+            '                </Grid>',
+            '            </Grid>',
+            '        </GroupBox>',
+            '    </Grid>',
+            '</Window>' -join "`n") 
+    }
+
     Class TxSsid
     {
         [UInt32] $Index
@@ -620,39 +725,39 @@ Function Search-WirelessNetwork
         }
         [String] NewProfile([Object]$Interface,[String]$SSID,[String]$Key)
         {
-            $Path  = "$($Interface.Name)-$SSID"
-            $Value = @("<?xml version='1.0'?>",
-            "<WLANProfile xmlns='http://www.microsoft.com/networking/WLAN/profile/v1'>",
-            "    <name>$Path</name>",
-            "    <SSIDConfig>",
-            "        <SSID>",
-            "            <hex>XXXXXX</hex>",
-            "            <name>$SSID</name>",
-            "        </SSID>",
-            "    </SSIDConfig>",
-            "    <connectionType>ESS</connectionType>",
-            "    <connectionMode>auto</connectionMode>",
-            "    <MSM>",
-            "        <security>",
-            "            <authEncryption>",
-            "                <authentication>WPA2PSK</authentication>",
-            "                <encryption>AES</encryption>",
-            "                <useOneX>false</useOneX>",
-            "            </authEncryption>",
-            "            <sharedKey>",
-            "                <keyType>passPhrase</keyType>",
-            "                <protected>false</protected>",
-            "                <keyMaterial>$Key</keyMaterial>",
-            "            </sharedKey>",
-            "        </security>",
-            "    </MSM>",
-            "    <MacRandomization xmlns='http://www.microsoft.com/networking/WLAN/profile/v3'>",
-            "        <enableRandomization>false</enableRandomization>",
-            "    </MacRandomization>",
-            "</WLANProfile>")
+            $Hex   = ($SSID.ToCharArray() | % { '{0:X}' -f [int]$_ }) -join ''
+            $Value = @('<?xml version="1.0"?>',
+            '<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">',
+            "        <name>$SSID</name>",
+            "        <SSIDConfig>",
+            "                <SSID>",
+            "                        <hex>$Hex</hex>",
+            "                        <name>$SSID</name>",
+            "                </SSID>",
+            "        </SSIDConfig>",
+            "        <connectionType>ESS</connectionType>",
+            "        <connectionMode>auto</connectionMode>",
+            "        <MSM>",
+            "                <security>",
+            "                        <authEncryption>",
+            "                                <authentication>WPA2PSK</authentication>",
+            "                                <encryption>AES</encryption>",
+            "                                <useOneX>false</useOneX>",
+            "                        </authEncryption>",
+            "                        <sharedKey>",
+            "                                <keyType>passPhrase</keyType>",
+            "                                <protected>false</protected>",
+            "                                <keyMaterial>$Key</keyMaterial>",
+            "                        </sharedKey>",
+            "                </security>",
+            "        </MSM>",
+            '        <MacRandomization xmlns="http://www.microsoft.com/networking/WLAN/profile/v3">',
+            "                <enableRandomization>false</enableRandomization>",
+            "        </MacRandomization>",
+            "</WLANProfile>" -join "`n")
 
-            Set-Content -Path ".\$Path.xml" -Value $Value -Verbose
-            Return ".\$Path.xml"
+            Set-Content -Path ".\$($Interface.Name)-$SSID.xml" -Value $Value
+            Return ".\$($Interface.Name)-$SSID.xml"
         }
         [Object] Query([Object]$Interface)
         {
@@ -662,17 +767,36 @@ Function Search-WirelessNetwork
         {
             If ($This.Query($Interface) -ne "disconnected")
             {
-                $Attempt = netsh wlan disconnect $Interface.Guid
+                $Attempt = netsh wlan disconnect $Interface.Name
             }
         }
         Connect([String]$SSID,[Object]$Interface)
         {
             If ($This.Query($Interface) -ne "connected")
             {
-                $Attempt = netsh wlan connect $ssid $Interface.Guid
+                $Attempt = netsh wlan connect $ssid $Interface.Name
                 If ($Attempt -match "no profile")
                 {
-                    $This.NewProfile($Interface,$SSID)
+                    $Pass = [XamlWindow][Passphrase]::Tab
+                    $Pass.IO.Connect.Add_Click(
+                    {
+                        If ($Pass.IO.Passphrase.Password -in @($Null,""))
+                        {
+                            [System.Windows.Messagebox]::Show("Invalid passphrase detected.","Error") 
+                        }
+                        Else
+                        {
+                            $path    = $Wifi.NewProfile($Interface,$SSID,$Pass.IO.Passphrase.Password)
+                            netsh wlan add profile filename="$path"
+                            $Attempt = netsh wlan connect $ssid $Interface.Name
+                            $Pass.IO.DialogResult = $True
+                        }
+                    })
+                    $Pass.IO.Cancel.Add_Click(
+                    {
+                        $Pass.IO.DialogResult = $False
+                    })
+                    $Pass.Invoke()
                 }
             }
         }
@@ -703,9 +827,9 @@ Function Search-WirelessNetwork
         }
     }
 
-    $Xaml.IO.SSID.Text            = @($Null,$Wifi.Connected.SSID)[$Wifi.Connected]
-    $Xaml.IO.BSSID.Text           = @($Null,$Wifi.Connected.Bssid)[$Wifi.Connected]
-    $Xaml.IO.Disconnect.IsEnabled = @(0,1)[$Wifi.Connected]
+    $Xaml.IO.SSID.Text            = If ($Wifi.Connected) { $Wifi.Connected.Ssid  } Else { $Null }
+    $Xaml.IO.BSSID.Text           = If ($Wifi.Connected) { $Wifi.Connected.Bssid } Else { $Null }
+    $Xaml.IO.Disconnect.IsEnabled = If ($Wifi.Connected) { 1 } Else { 0 }
 
     $Xaml.IO.Output.Add_SelectionChanged(
     {
@@ -761,6 +885,11 @@ Function Search-WirelessNetwork
 
         Write-Progress -Activity Scanning -Status Complete -Completed
         Start-Sleep -Milliseconds 50
+
+        If ($Xaml.IO.Filter.Text -ne "")
+        {
+            $Wifi.Output | ? $Xaml.IO.Type.SelectedItem.Content -match $Xaml.IO.Filter.Text | % { $Xaml.IO.Output.Items.Add($_) }
+        }
     })
 
     $Xaml.IO.Filter.Add_TextChanged(
@@ -783,7 +912,7 @@ Function Search-WirelessNetwork
             $Interface = $Wifi.Adapters | ? InterfaceDescription -eq $Xaml.IO.Interface.SelectedItem
             $Wifi.Disconnect($Interface)
             $Xaml.IO.Disconnect.IsEnabled = 0
-            $Xaml.IO.Connect.IsEnabled
+            $Xaml.IO.Connect.IsEnabled    = 0
         }
     })
     $Xaml.IO.Connect.Add_Click(
