@@ -13,7 +13,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2022-02-24
+          Modified: 2022-02-25
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -21,17 +21,9 @@
 
 .Example
 #>
+
 # Load assemblies
 Add-Type -AssemblyName System.Runtime.WindowsRuntime, PresentationFramework
-
-# Load runtime(s)
-"Radio RadioAccessStatus RadioState" -Split " " | % { Invoke-Expression "[Windows.Devices.Radios.$_, Windows.System.Devices, ContentType=WindowsRuntime]"}
-
-# Declare functions
-Function Get-AsTaskGeneric
-{
-    ([System.WindowsRuntimeSystemExtensions].GetMethods() | ? { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1'})[0]
-}
 
 Function Search-WirelessNetwork
 {
@@ -257,8 +249,8 @@ Function Search-WirelessNetwork
             '                        <DataGridTextColumn Header="Index"  Width="35"  Binding="{Binding Index}"/>',
             '                        <DataGridTextColumn Header="Name"   Width="150" Binding="{Binding Name}"/>',
             '                        <DataGridTextColumn Header="Bssid"  Width="110" Binding="{Binding Bssid}"/>',
-            '                        <DataGridTextColumn Header="Type"   Width="60"   Binding="{Binding Type}"/>',
-            '                        <DataGridTextColumn Header="Uptime" Width="140"   Binding="{Binding Uptime}"/>',
+            '                        <DataGridTextColumn Header="Type"   Width="60"  Binding="{Binding Type}"/>',
+            '                        <DataGridTextColumn Header="Uptime" Width="140" Binding="{Binding Uptime}"/>',
             '                        <DataGridTemplateColumn Header="Authentication" Width="80">',
             '                            <DataGridTemplateColumn.CellTemplate>',
             '                                <DataTemplate>',
@@ -466,7 +458,7 @@ Function Search-WirelessNetwork
             '</Window>' -join "`n") 
     }
 
-    Class TxSsid
+    Class Ssid
     {
         [UInt32] $Index
         Hidden [Object] $Ssid
@@ -487,7 +479,7 @@ Function Search-WirelessNetwork
         [String] $BeaconInterval
         [Double] $ChannelFrequency
         [Bool]   $IsWifiDirect
-        TxSsid([UInt32]$Index,[Object]$Object)
+        Ssid([UInt32]$Index,[Object]$Object)
         {
             $This.Index              = $Index
             $This.Ssid               = $Object
@@ -504,6 +496,10 @@ Function Search-WirelessNetwork
             $This.BeaconInterval     = $Object.BeaconInterval
             $This.ChannelFrequency   = $Object.ChannelCenterFrequencyInKilohertz
             $This.IsWiFiDirect       = $Object.IsWiFiDirect
+        }
+        [String] ToString()
+        {
+            Return $This.Name
         }
         [String] GetUptime([String]$Uptime)
         {
@@ -545,17 +541,50 @@ Function Search-WirelessNetwork
             $This.TypeSlot           = ("Unknown Fhss Dsss IRBaseband Ofdm Hrdsss Erp HT Vht Dmg HE" -Split " ").IndexOf($PhyKind)
             $This.TypeDescription    = Switch ($PhyKind)
             {
-                Unknown    { "Unspecified PHY type"                                }
-                Fhss       { "Frequency-hopping, spread-spectrum (FHSS) PHY."      }
-                Dsss       { "Direct sequence, spread-spectrum (DSSS) PHY."        }
-                IRBaseband { "Infrared (IR) baseband PHY."                         }
-                Ofdm       { "Orthogonal frequency division multiplex (OFDM) PHY." }
-                Hrdsss     { "High-rated DSSS (HRDSSS) PHY."                       }
-                Erp        { "Extended Rate (ERP) PHY." }
-                HT         { "High Throughput (HT) PHY for 802.11n PHY." }
-                Vht        { "Very High Throughput (VHT) PHY for 802.11ac PHY." }
-                Dmg        { "Directional multi-gigabit (DMG) PHY for 802.11ad." }
-                HE         { "High-Efficiency Wireless (HEW) PHY for 802.11ax." }
+                Unknown
+                { 
+                    "Unspecified physical type"
+                }
+                Fhss
+                { 
+                    "(FHSS/Frequency-Hopping Spread-Spectrum)"
+                }
+                Dsss
+                { 
+                    "(DSSS/Direct Sequence Spread-Spectrum)"
+                }
+                IRBaseband
+                { 
+                    "(IR/Infrared baseband)"
+                }
+                Ofdm
+                { 
+                    "(OFDM/Orthogonal Frequency Division Multiplex)"
+                }
+                Hrdsss
+                { 
+                    "(HRDSSS/High-rated DSSS)"
+                }
+                Erp
+                { 
+                    "(ERP/Extended Rate)"
+                }
+                HT
+                { 
+                    "(HT/High Throughput [802.11n])"
+                }
+                Vht
+                { 
+                    "(VHT/Very High Throughput [802.11ac])"
+                }
+                Dmg
+                { 
+                    " (DMG/Directional Multi-Gigabit [802.11ad])" 
+                }
+                HE         
+                { 
+                    "(HEW/High-Efficiency Wireless [802.11ax])"
+                }
             }
             $This.Type               = @("Unknown",[Regex]::Matches($this.TypeDescription,"(802\.11\w+)").Value)[$This.TypeDescription -match 802.11]
         }
@@ -564,20 +593,80 @@ Function Search-WirelessNetwork
             $This.AuthenticationSlot = ("None Unknown Open80211 SharedKey80211 Wpa WpaPsk WpaNone Rsna RsnaPsk Ihv Wpa3 Wpa3Enterprise192Bits Wpa3Sae Owe Wpa3Enterprise" -Split " ").IndexOf($Auth)
             $This.AuthenticationDescription = Switch -Regex ($Auth)
             {
-                "(^None$)" {"No authentication enabled."}
-                "(^Unknown$)" {"Authentication method unknown."}
-                "(^Open80211$)" {"Open authentication over 802.11 wireless.Devices are authenticated and can connect to an access point, but communication with the network requires a matching Wired Equivalent Privacy (WEP) key."}
-                "(^SharedKey80211$)" { "Specifies an IEEE 802.11 Shared Key authentication algorithm that requires the use of a pre-shared Wired Equivalent Privacy (WEP) key for the 802.11 authentication."}
-                "(^Wpa$)"            { "Specifies a Wi-Fi Protected Access (WPA) algorithm. IEEE 802.1X port authorization is performed by the supplicant, authenticator, and authentication server. Cipher keys are dynamically derived through the authentication process."}
-                "(^WpaPsk$)" {"Specifies a Wi-Fi Protected Access (WPA) algorithm that uses pre-shared keys (PSK). IEEE 802.1X port authorization is performed by the supplicant and authenticator. Cipher keys are dynamically derived through a pre-shared key that is used on both the supplicant and authenticator."}
-                "(^WpaNone$)" {"Wi-Fi Protected Access."}
-                "(^Rsna$)" {"Specifies an IEEE 802.11i Robust Security Network Association (RSNA) algorithm. IEEE 802.1X port authorization is performed by the supplicant, authenticator, and authentication server. Cipher keys are dynamically derived through the authentication process."}
-                "(^RsnaPsk$)" {"Specifies an IEEE 802.11i RSNA algorithm that uses PSK. IEEE 802.1X port authorization is performed by the supplicant and authenticator. Cipher keys are dynamically derived through a pre-shared key that is used on both the supplicant and authenticator."}
-                "(^Ihv$)" {"Specifies an authentication type defined by an independent hardware vendor (IHV)."}
-                "(^Wpa3$|^Wpa3Enterprise192Bits$)" { "Specifies a 192-bit encryption mode for Wi-Fi Protected Access 3 Enterprise (WPA3-Enterprise) networks."}
-                "(^Wpa3Sae$)" {"Specifies a Wi-Fi Protected Access 3 Simultaneous Authentication of Equals (WPA3 SAE) algorithm. WPA3 SAE is the consumer version of WPA3. Simultaneous Authentication of Equals (SAE) is a secure key establishment protocol between devices; it provides synchronous authentication, and stronger protections for users against password-guessing attempts by third parties."}
-                "(^Owe$)" {"Specifies an opportunistic wireless encryption (OWE) algorithm. OWE provides opportunistic encryption over 802.11 wireless, where cipher keys are dynamically derived through a Diffie-Hellman key exchange; enabling data protection without authentication."}
-                "(^Wpa3Enterprise$)" {"Specifies a Wi-Fi Protected Access 3 Enterprise (WPA3-Enterprise) algorithm. WPA3-Enterprise uses IEEE 802.1X in a similar way as RSNA, but provides increased security through the use of mandatory certificate validation and protected management frames."}
+                ^None$ 
+                {
+                    "No authentication enabled."
+                }
+                ^Unknown$ 
+                {
+                    "Authentication method unknown."
+                }
+                ^Open80211$ 
+                {
+                    "Open authentication over 802.11 wireless.",
+                    "Devices are authenticated and can connect to an access point.",
+                    "Communication w/ network requires matching (WEP/Wired Equivalent Privacy) key."
+                }
+                ^SharedKey80211$ 
+                { 
+                    "Specifies an IEEE 802.11 Shared Key authentication algorithm.",
+                    "Requires pre-shared (WEP/Wired Equivalent Privacy) key for 802.11 authentication."
+                }
+                ^Wpa$            
+                { 
+                    "Specifies a (WPA/Wi-Fi Protected Access) algorithm.",
+                    "IEEE 802.1X port authorization is performed by the supplicant, authenticator, and authentication server.",
+                    "Cipher keys are dynamically derived through the authentication process."
+                }
+                ^WpaPsk$ 
+                {
+                    "Specifies a (WPA/Wi-Fi Protected Access) algorithm that uses (PSK/pre-shared key).",
+                    "IEEE 802.1X port authorization is performed by the supplicant and authenticator.",
+                    "Cipher keys are dynamically derived through a PSK that is used on both the supplicant and authenticator."
+                }
+                ^WpaNone$ 
+                {
+                    "Wi-Fi Protected Access."
+                }
+                ^Rsna$
+                {
+                    "Specifies an IEEE 802.11i (RSNA/Robust Security Network Association) algorithm.",
+                    "IEEE 802.1X port authorization is performed by the supplicant, authenticator, and authentication server.",
+                    "Cipher keys are dynamically derived through the authentication process."
+                }
+                ^RsnaPsk$ 
+                {
+                    "Specifies an IEEE 802.11i RSNA algorithm that uses (PSK/pre-shared key).",
+                    "IEEE 802.1X port authorization is performed by the supplicant and authenticator.",
+                    "Cipher keys are dynamically derived through a PSK that is used on both the supplicant and authenticator."
+                }
+                ^Ihv$ 
+                {
+                    "Specifies an authentication type defined by an (IHV/Independent Hardware Vendor)."
+                }
+                "(^Wpa3$|^Wpa3Enterprise192Bits$)" 
+                { 
+                    "Specifies a 192-bit encryption mode for (WPA3-Enterprise/Wi-Fi Protected Access 3 Enterprise) networks."
+                }
+                ^Wpa3Sae$ 
+                {
+                    "Specifies (WPA3 SAE/Wi-Fi Protected Access 3 Simultaneous Authentication of Equals) algorithm.",
+                    "WPA3 SAE is the consumer version of WPA3. SAE is a secure key establishment protocol between devices;",
+                    "SAE provides: synchronous authentication, and stronger protections for users against password-guessing attempts by third parties."
+                }
+                ^Owe$ 
+                {
+                    "Specifies an (OWE/Opportunistic Wireless Encryption) algorithm.",
+                    "OWE provides opportunistic encryption over 802.11 wireless networks.",
+                    "Cipher keys are dynamically derived through a (DH/Diffie-Hellman) key exchange-",
+                    "Enabling data protection without authentication."
+                }
+                ^Wpa3Enterprise$ 
+                {
+                    "Specifies a (WPA3-Enterprise/Wi-Fi Protected Access 3 Enterprise) algorithm.",
+                    "WPA3-Enterprise uses IEEE 802.1X in a similar way as (RSNA/Robust Security Network Association)-",
+                    "However, it provides increased security through the use of mandatory certificate validation and protected management frames."
+                }
             }
         }
         GetNetEncType([String]$Enc)
@@ -585,24 +674,71 @@ Function Search-WirelessNetwork
             $This.EncryptionSlot = ("None Unknown Wep Wep40 Wep104 Tkip Ccmp WpaUseGroup RsnUseGroup Ihv Gcmp Gcmp256" -Split " ").IndexOf($Enc)
             $This.EncryptionDescription = Switch ($Enc)
             {
-                None        { "No encryption enabled."   }
-                Unknown     {"Encryption method unknown."}
-                Wep         {"Specifies a WEP cipher algorithm with a cipher key of any length."}
-                Wep40       {"Specifies a Wired Equivalent Privacy (WEP) algorithm, which is the RC4-based algorithm that is specified in the IEEE 802.11-1999 standard. This enumerator specifies the WEP cipher algorithm with a 40-bit cipher key."}
-                Wep104      {"Specifies a WEP cipher algorithm with a 104-bit cipher key."}
-                Tkip        {"Specifies a Temporal Key Integrity Protocol (TKIP) algorithm, which is the RC4-based cipher suite that is based on the algorithms that are defined in the WPA specification and IEEE 802.11i-2004 standard. This cipher also uses the Michael Message Integrity Code (MIC) algorithm for forgery protection."}
-                Ccmp        {"Specifies an AES-CCMP algorithm, as specified in the IEEE 802.11i-2004 standard and RFC 3610. Advanced Encryption Standard (AES) is the encryption algorithm defined in FIPS PUB 197."}
-                WpaUseGroup {"Specifies a Wifi Protected Access (WPA) Use Group Key cipher suite. For more information about the Use Group Key cipher suite, refer to Clause 7.3.2.25.1 of the IEEE 802.11i-2004 standard."}
-                RsnUseGroup {"Specifies a Robust Security Network (RSN) Use Group Key cipher suite. For more information about the Use Group Key cipher suite, refer to Clause 7.3.2.25.1 of the IEEE 802.11i-2004 standard."}
-                Ihv         {"Specifies an encryption type defined by an independent hardware vendor (IHV)."}
-                Gcmp        {"Specifies an AES-GCMP algorithm, as specified in the IEEE 802.11-2016 standard, with a 128-bit key. Advanced Encryption Standard (AES) is the encryption algorithm defined in FIPS PUB 197."}
-                Gcmp256     { "Specifies an AES-GCMP algorithm, as specified in the IEEE 802.11-2016 standard, with a 256-bit key. Advanced Encryption Standard (AES) is the encryption algorithm defined in FIPS PUB 197." }
+                None
+                { 
+                    "No encryption enabled."
+                }
+                Unknown
+                {
+                    "Encryption method unknown."
+                }
+                Wep
+                {
+                    "Specifies a WEP cipher algorithm with a cipher key of any length."
+                }
+                Wep40
+                {
+                    "Specifies an RC4-based (WEP/Wired Equivalent Privacy) algorithm specified in IEEE 802.11-1999.",
+                    "This enumerator specifies the WEP cipher algorithm with a 40-bit cipher key."
+                }
+                Wep104
+                {
+                    "Specifies a (WEP/Wired Equivalent Privacy) cipher algorithm with a 104-bit cipher key."
+                }
+                Tkip
+                {
+                    "Specifies an RC4-based cipher (TKIP/Temporal Key Integrity Protocol) algorithm",
+                    "This cipher suite that is based on algorithms defined in WPA + IEEE 802.11i-2004 standards.",
+                    "This cipher also uses the (MIC/Message Integrity Code) algorithm for forgery protection."
+                }
+                Ccmp
+                {
+                    "Specifies an [IEEE 802.11i-2004 & RFC 3610] AES-CCMP algorithm standard.",
+                    "(AES/Advanced Encryption Standard) is the encryption algorithm defined in FIPS PUB 197."
+                }
+                WpaUseGroup
+                {
+                    "Specifies a (WPA/Wifi Protected Access) Use Group Key cipher suite.",
+                    "For more information about the Use Group Key cipher suite, refer to:",
+                    "Clause 7.3.2.25.1 of the IEEE 802.11i-2004 standard."
+                }
+                RsnUseGroup
+                {
+                    "Specifies a (RSN/Robust Security Network) Use Group Key cipher suite.",
+                    "For more information about the Use Group Key cipher suite, refer to:",
+                    "Clause 7.3.2.25.1 of the IEEE 802.11i-2004 standard."
+                }
+                Ihv
+                {
+                    "Specifies an encryption type defined by an (IHV/Independent Hardware Vendor)."
+                }
+                Gcmp
+                {
+                    "Specifies an [IEEE 802.11-2016] AES-GCMP algorithm w/ 128-bit key.",
+                    "(AES/Advanced Encryption Standard) is the encryption algorithm defined in FIPS PUB 197."
+                }
+                Gcmp256
+                { 
+                    "Specifies an [IEEE 802.11-2016] AES-GCMP algorithm w/ 256-bit key.",
+                    "(AES/Advanced Encryption Standard) is the encryption algorithm defined in FIPS PUB 197."
+                }
             }
         }
     }
 
     Class WLANInterface
     {
+        Hidden [String[]] $Select
         [String] $Name
         [String] $Description
         [String] $Guid
@@ -624,82 +760,152 @@ Function Search-WirelessNetwork
         [String] $Profile
         WLANInterface([String[]]$Select)
         {
-            $This.Name                   = ($Select | ? { $_ -match "(^\s+Name\s+\:)" }).Substring(29)
-            $This.Description            = ($Select | ? { $_ -match "(^\s+Description\s+\:)" }).Substring(29)
-            $This.GUID                   = ($Select | ? { $_ -match "(^\s+GUID\s+\:)" }).Substring(29)
-            $This.MacAddress             = ($Select | ? { $_ -match "(^\s+Physical address\s+\:)" }).Substring(29).ToUpper()
-            $This.InterfaceType          = ($Select | ? { $_ -match "(^\s+Interface type\s+\:)" }).Substring(29)
-            $This.State                  = ($Select | ? { $_ -match "(^\s+State\s+\:)" }).Substring(29)
-            $This.SSID                   = ($Select | ? { $_ -match "(^\s+SSID\s+\:)" }).Substring(29)
-            $This.BSSID                  = ($Select | ? { $_ -match "(^\s+BSSID\s+\:)" }).Substring(29).ToUpper()
-            $This.NetworkType            = ($Select | ? { $_ -match "(^\s+Network type\s+\:)" }).Substring(29)
-            $This.RadioType              = ($Select | ? { $_ -match "(^\s+Radio type\s+\:)" }).Substring(29)
-            $This.Authentication         = ($Select | ? { $_ -match "(^\s+Authentication\s+\:)" }).Substring(29)
-            $This.Cipher                 = ($Select | ? { $_ -match "(^\s+Cipher\s+\:)" }).Substring(29)
-            $This.Connection             = ($Select | ? { $_ -match "(^\s+Connection mode\s+\:)" }).Substring(29)
-            $This.Band                   = ($Select | ? { $_ -match "(^\s+Band\s+\:)" }).Substring(29)
-            $This.Channel                = ($Select | ? { $_ -match "(^\s+Channel\s+\:)" }).Substring(29)
-            $This.Receive                = ($Select | ? { $_ -match "(^\s+Receive rate \(Mbps\)\s+\:)" }).Substring(29)
-            $This.Transmit               = ($Select | ? { $_ -match "(^\s+Transmit rate \(Mbps\)\s+\:)" }).Substring(29)
-            $This.Signal                 = ($Select | ? { $_ -match "(^\s+Signal\s+\:)" }).Substring(29)
-            $This.Profile                = ($Select | ? { $_ -match "(^\s+Profile\s+\:)" }).Substring(29)
+            $This.Select                 = $Select
+            $This.Name                   = $This.Find("Name")
+            $This.Description            = $This.Find("Description")
+            $This.GUID                   = $This.Find("GUID")
+            $This.MacAddress             = $This.Find("Physical address")
+            $This.InterfaceType          = $This.Find("Interface type")
+            $This.State                  = $This.Find("State")
+            $This.SSID                   = $This.Find("SSID")
+            $This.BSSID                  = $This.Find("BSSID")
+            $This.NetworkType            = $This.Find("Network type")
+            $This.RadioType              = $This.Find("Radio type")
+            $This.Authentication         = $This.Find("Authentication")
+            $This.Cipher                 = $This.Find("Cipher")
+            $This.Connection             = $This.Find("Connection mode")
+            $This.Band                   = $This.Find("Band")
+            $This.Channel                = $This.Find("Channel")
+            $This.Receive                = $This.Find("Receive rate \(Mbps\)")
+            $This.Transmit               = $This.Find("Transmit rate \(Mbps\)")
+            $This.Signal                 = $This.Find("Signal")
+            $This.Profile                = $This.Find("Profile")
+        }
+        [String] Find([String]$String)
+        {
+            Return @(($This.Select | ? { $_ -match "(^\s+$String\s+\:)" }).Substring(29))
         }
     }
 
     Class Wireless
     {
+        Hidden [Object] $Xaml
         [Object] $Adapters
         [Object] $Request
         [Object] $Radios
         [Object] $List
         [Object] $Output
+        [Object] $Selected
         [Object] $Connected
+        [Object] Task()
+        {
+            Return @( ([System.WindowsRuntimeSystemExtensions].GetMethods() | ? { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1'})[0] )
+        }
+        Select([String]$Adapter)
+        {
+            # Select the adapter from its description
+            $This.Selected                  = Get-NetAdapter | ? InterfaceDescription -eq $Adapter
+
+            # Set other Xaml fields
+            $This.Xaml.IO.Index.Text        = $This.Selected.InterfaceIndex
+            $This.Xaml.IO.MacAddress.Text   = $This.Selected.MacAddress.Replace("-",":")
+
+            $This.Update()
+        }
+        Update()
+        {
+            # Determine/Set connection state
+            Switch -Regex ($This.Selected.Status)
+            {
+                Up
+                {
+                    $This.Connected                    = [WLANInterface]::New((netsh wlan show interface $This.Selected.Name))
+                    $This.Xaml.IO.Ssid.Text            = $This.Connected.Ssid
+                    $This.Xaml.IO.Bssid.Text           = $This.Connected.Bssid
+                    $This.Xaml.IO.Disconnect.IsEnabled = 1
+                    $This.Xaml.IO.Connect.IsEnabled    = 0
+                }
+                Default
+                {
+                    $This.Connected                    = $Null
+                    $This.Xaml.IO.Ssid.Text            = "<Not connected>"
+                    $This.Xaml.IO.Bssid.Text           = "<Not connected>"
+                    $This.Xaml.IO.Disconnect.IsEnabled = 0
+                    $This.Xaml.IO.Connect.IsEnabled    = 0
+                }
+            }
+            $This.Xaml.IO.Output.SelectedIndex         = -1
+        }
         Wireless()
         {
+            [Windows.Devices.Radios.Radio, Windows.System.Devices, ContentType=WindowsRuntime] > $Null
+            [Windows.Devices.Radios.RadioAccessStatus, Windows.System.Devices, ContentType=WindowsRuntime] > $Null 
+            [Windows.Devices.Radios.RadioState, Windows.System.Devices, ContentType=WindowsRuntime] > $Null
+
+            # Prime the Xaml object
+            $This.Xaml     = [XamlWindow][GUI]::Tab
+
             # Get access to any wireless adapters
-            $This.Adapters = Get-NetAdapter | ? PhysicalMediaType -match "(Native 802.11|Wireless (W|L)AN)"
+            $This.Adapters = $This.RefreshAdapterList()
+
+            # Throw if no existing wireless adapters
+            If ($This.Adapters.Count -eq 0)
+            {
+                Throw "No existing wireless adapters on this system"
+            }
+
+            # Populate the datagrid with the available adapters
+            ForEach ($Adapter in $This.Adapters)
+            {
+                $This.Xaml.IO.Interface.Items.Add($Adapter.InterfaceDescription)
+            }
 
             # Requesting Radio Access
-            $This.Request = (Get-AsTaskGeneric).MakeGenericMethod([Windows.Devices.Radios.RadioAccessStatus]).Invoke($null, @([Windows.Devices.Radios.Radio]::RequestAccessAsync()))
-            $This.Request.Wait(-1) | Out-Null
+            $This.Request = $This.Task().MakeGenericMethod([Windows.Devices.Radios.RadioAccessStatus]).Invoke($null, @([Windows.Devices.Radios.Radio]::RequestAccessAsync()))
+            $This.Request.Wait(-1) > $Null
+
+            # Throw if unable to ascertain access
             If ($This.Request.Result -ne "Allowed")
             {
                 Throw "Unable to request radio access"
             }
 
-            $This.Radios = (Get-AsTaskGeneric).MakeGenericMethod([System.Collections.Generic.IReadOnlyList[Windows.Devices.Radios.Radio]]).Invoke($null, @([Windows.Devices.Radios.Radio]::GetRadiosAsync()))
-            $This.Radios.Wait(-1) | Out-Null
+            # Establish radio synchronization
+            $This.Radios  = $This.Task().MakeGenericMethod([System.Collections.Generic.IReadOnlyList[Windows.Devices.Radios.Radio]]).Invoke($null, @([Windows.Devices.Radios.Radio]::GetRadiosAsync()))
+            $This.Radios.Wait(-1) > $Null
 
-            # Radios Async
+            # Throw if unable to synchronize radios
             If (!($This.Radios.Result | ? Kind -eq WiFi))
             {
                 Throw "Unable to synchronize wireless radio(s)"
             }
-            Else
-            {
-                Write-Host "Wi-Fi [+] found, proceeding"
-            }
 
-            $This.List   = @( )
-            $This.Output = @( )
-            $This.Scan()
+            $This.Refresh()
+        }
+        [Object[]] RefreshAdapterList()
+        {
+            Return @( Get-NetAdapter | ? PhysicalMediaType -match "(Native 802.11|Wireless (W|L)AN)" )
+        }
+        [Object] Query([Object]$Interface)
+        {
+            Return ((netsh wlan show interface $Interface.GUID) -match "^\s+State\s+\:").Substring(29)
         }
         Scan()
         {
-            $This.Output = @( ) 
+            $This.List   = @( )
+            $This.Output = @( )
 
-            [Windows.Devices.WiFi.WiFiAdapter, Windows.System.Devices, ContentType=WindowsRuntime] | Out-Null
-            $This.List   = (Get-AsTaskGeneric).MakeGenericMethod([System.Collections.Generic.IReadOnlyList[Windows.Devices.WiFi.WiFiAdapter]]).Invoke($null, @([Windows.Devices.WiFi.WiFiAdapter]::FindAllAdaptersAsync()))
-            $This.List.Wait(-1) | Out-Null
+            [Windows.Devices.WiFi.WiFiAdapter, Windows.System.Devices, ContentType=WindowsRuntime] > $Null
+            $This.List   = $This.Task().MakeGenericMethod([System.Collections.Generic.IReadOnlyList[Windows.Devices.WiFi.WiFiAdapter]]).Invoke($null, @([Windows.Devices.WiFi.WiFiAdapter]::FindAllAdaptersAsync()))
+            $This.List.Wait(-1) > $Null
             $This.List.Result
 
             $This.List.Result.NetworkReport.AvailableNetworks | % {
 
-                $This.Output += [TxSsid]::New($This.Output.Count,$_) 
+                $This.Output += [Ssid]::New($This.Output.Count,$_) 
             }
 
             $This.Output = $This.Output | Sort-Object Strength -Descending
-
             Switch ($This.Output.Count)
             {
                 {$_ -gt 1}
@@ -715,15 +921,36 @@ Function Search-WirelessNetwork
                 }
                 {$_ -eq 0}
                 {
-                    Write-Host "No networks detected"
+                    Throw "No networks detected"
                 }
             }
         }
         Refresh()
         {
+            $This.Xaml.IO.Output.Items.Clear()
+
+            Start-Sleep -Milliseconds 150
             $This.Scan()
+
+            Write-Progress -Activity Scanning -Status Starting -PercentComplete 0  
+
+            $C = 0
+            $This.Output | % { 
+                
+                Write-Progress -Activity Scanning -Status "($C/$($This.Output.Count-1)" -PercentComplete ([long]($C * 100 / $This.Output.Count))
+                $This.Xaml.IO.Output.Items.Add($_) 
+                $C ++
+            }
+
+            Write-Progress -Activity Scanning -Status Complete -Completed
+            Start-Sleep -Milliseconds 50
+
+            If ($This.Xaml.IO.Filter.Text -ne "")
+            {
+                $This.Output | ? $This.Xaml.IO.Type.SelectedItem.Content -match $This.Xaml.IO.Filter.Text | % { $This.Xaml.IO.Output.Items.Add($_) }
+            }
         }
-        [String] NewProfile([Object]$Interface,[String]$SSID,[String]$Key)
+        [String] NewProfile([String]$SSID,[String]$Key)
         {
             $Hex   = ($SSID.ToCharArray() | % { '{0:X}' -f [int]$_ }) -join ''
             $Value = @('<?xml version="1.0"?>',
@@ -756,84 +983,88 @@ Function Search-WirelessNetwork
             "        </MacRandomization>",
             "</WLANProfile>" -join "`n")
 
-            Set-Content -Path ".\$($Interface.Name)-$SSID.xml" -Value $Value
-            Return ".\$($Interface.Name)-$SSID.xml"
+            Set-Content -Path ".\$($This.Selected.Name)-$SSID.xml" -Value $Value
+            Return ".\$($This.Selected.Name)-$SSID.xml"
         }
-        [Object] Query([Object]$Interface)
+        Disconnect()
         {
-            Return ((netsh wlan show interface $Interface.GUID) -match "^\s+State\s+\:").Substring(29)
+            netsh wlan disconnect $This.Selected.Name
+            $This.Update()
         }
-        Disconnect([Object]$Interface)
+        Connect([String]$SSID)
         {
-            If ($This.Query($Interface) -ne "disconnected")
+            $Attempt = netsh wlan connect $ssid $This.Selected.Name
+            If ($Attempt -match "(no profile|does not exist)")
             {
-                $Attempt = netsh wlan disconnect $Interface.Name
-            }
-        }
-        Connect([String]$SSID,[Object]$Interface)
-        {
-            If ($This.Query($Interface) -ne "connected")
-            {
-                $Attempt = netsh wlan connect $ssid $Interface.Name
-                If ($Attempt -match "no profile")
+                $Pass = [XamlWindow][Passphrase]::Tab
+                $Pass.IO.Connect.Add_Click(
                 {
-                    $Pass = [XamlWindow][Passphrase]::Tab
-                    $Pass.IO.Connect.Add_Click(
+                    If ($Pass.IO.Passphrase.Password -in @($Null,""))
                     {
-                        If ($Pass.IO.Passphrase.Password -in @($Null,""))
+                        [System.Windows.Messagebox]::Show("Invalid passphrase detected.","Error") 
+                    }
+                    Else
+                    {
+                        $path    = $Wifi.NewProfile($SSID,$Pass.IO.Passphrase.Password)
+                        netsh wlan add profile filename="$path"
+                        $Attempt = netsh wlan connect $ssid $This.Selected.Name 
+                        If ($Attempt -match "Success")
                         {
-                            [System.Windows.Messagebox]::Show("Invalid passphrase detected.","Error") 
+                            $Pass.IO.DialogResult = $True
                         }
                         Else
                         {
-                            $path    = $Wifi.NewProfile($Interface,$SSID,$Pass.IO.Passphrase.Password)
-                            netsh wlan add profile filename="$path"
-                            $Attempt = netsh wlan connect $ssid $Interface.Name
-                            $Pass.IO.DialogResult = $True
+                            $Pass.IO.DialogResult = $False
                         }
-                    })
-                    $Pass.IO.Cancel.Add_Click(
-                    {
-                        $Pass.IO.DialogResult = $False
-                    })
-                    $Pass.Invoke()
-                }
+                    }
+                })
+
+                $Pass.IO.Cancel.Add_Click(
+                {
+                    $Pass.IO.DialogResult = $False
+                })
+
+                $Pass.Invoke()
             }
         }
-        Update()
+        SearchFilter()
         {
-            $This.Connected = Switch -Regex (((netsh wlan show interface) -match "(\s+State\s+\:)").Substring(29))
+            If ($This.Xaml.IO.Filter.Text -ne "" -and $This.Output.Count -gt 0)
             {
-                ^connected$ { [WLANInterface]::New((netsh wlan show interface)) } ^disconnected$ { $Null }
+                Start-Sleep -Milliseconds 50
+                $This.Xaml.IO.Output.Items.Clear()
+                $This.Output | ? $This.Xaml.IO.Type.SelectedItem.Content -match $This.Xaml.IO.Filter.Text | % { $This.Xaml.IO.Output.Items.Add($_) }
+            }
+            Else
+            {
+                $This.Xaml.IO.Output.Items.Clear()
+                $This.Output | % { $This.Xaml.IO.Output.Items.Add($_) }
             }
         }
     }
 
-    $Xaml = [XamlWindow][GUI]::Tab
     $Wifi = [Wireless]::New()
 
-    If ($Wifi.Adapters.Count -eq 0)
+    If (!$Wifi)
     {
-        Throw "No existing wireless adapters on this system"
+        Throw "Unable to stage the GUI"
     }
 
-    ForEach ($Adapter in $Wifi.Adapters)
-    {
-        $Xaml.IO.Interface.Items.Add($Adapter.InterfaceDescription)
-        # Will need to get this working for multiple WLAN adapters...
-        If ($Adapter | ? Status -eq Up)
-        {
-            $Wifi.Update() 
-        }
-    }
+    $Xaml = $Wifi.Xaml
 
-    $Xaml.IO.SSID.Text            = If ($Wifi.Connected) { $Wifi.Connected.Ssid  } Else { $Null }
-    $Xaml.IO.BSSID.Text           = If ($Wifi.Connected) { $Wifi.Connected.Bssid } Else { $Null }
-    $Xaml.IO.Disconnect.IsEnabled = If ($Wifi.Connected) { 1 } Else { 0 }
+    # Event handlers
+    $Xaml.IO.Interface.Add_SelectionChanged(
+    {
+        $Wifi.Select($Xaml.IO.Interface.SelectedItem)
+    })
 
     $Xaml.IO.Output.Add_SelectionChanged(
     {
-        If ($Xaml.IO.Output.SelectedIndex -gt -1)
+        If ($Xaml.IO.Output.SelectedIndex -eq -1)
+        {
+            $Xaml.IO.Connect.IsEnabled        = 0
+        }
+        If ($Xaml.IO.Output.SelectedIndex -ne -1)
         {
             If ($Xaml.IO.Output.SelectedItem.Name -eq $Xaml.IO.SSID.Text)
             {
@@ -846,90 +1077,43 @@ Function Search-WirelessNetwork
                 $Xaml.IO.Connect.IsEnabled    = 1
             }
         }
-        If ($Xaml.IO.Output.SelectedIndex -eq -1)
-        {
-            $Xaml.IO.Connect.IsEnabled        = 0
-        }
     })
 
-    $Xaml.IO.Interface.Add_SelectionChanged(
-    {
-        If ($Xaml.IO.Interface.SelectedIndex -gt -1)
-        {
-            $Adapter                   = $Wifi.Adapters  | ? InterfaceDescription -eq $Xaml.IO.Interface.SelectedItem
-            $Xaml.IO.Index.Text        = $Adapter.InterfaceIndex
-            $Xaml.IO.MacAddress.Text   = $Adapter.MacAddress -Replace "-",":"
-        }
-        If ($Xaml.IO.Interface.SelectedIndex -eq -1)
-        {
-            $Xaml.IO.Index.Text        = $Null
-            $Xaml.IO.MacAddress.Text   = $Null
-        }
-    })
-
-    $Xaml.IO.Interface.SelectedIndex   = 0
     $Xaml.IO.Refresh.Add_Click(
     {
-        $Xaml.IO.Output.Items.Clear()
-        Start-Sleep -Milliseconds 150
-        $Wifi.Scan()
-        Write-Progress -Activity Scanning -Status Starting -PercentComplete 0  
-
-        $C = 0
-        $Wifi.Output | % { 
-            
-            Write-Progress -Activity Scanning -Status "($C/$($Wifi.Output.Count-1)" -PercentComplete ([long]($C * 100 / $Wifi.Output.Count))
-            $Xaml.IO.Output.Items.Add($_) 
-            $C ++
-        }
-
-        Write-Progress -Activity Scanning -Status Complete -Completed
-        Start-Sleep -Milliseconds 50
-
-        If ($Xaml.IO.Filter.Text -ne "")
-        {
-            $Wifi.Output | ? $Xaml.IO.Type.SelectedItem.Content -match $Xaml.IO.Filter.Text | % { $Xaml.IO.Output.Items.Add($_) }
-        }
+        $Wifi.Refresh()
+        $Wifi.SearchFilter()
     })
 
     $Xaml.IO.Filter.Add_TextChanged(
     {
-        Start-Sleep -Milliseconds 50
-        $Xaml.IO.Output.Items.Clear()
-        If ($Xaml.IO.Filter.Text -ne "" -and $Wifi.Output.Count -gt 0)
-        {
-            $Wifi.Output | ? $Xaml.IO.Type.SelectedItem.Content -match $Xaml.IO.Filter.Text | % { $Xaml.IO.Output.Items.Add($_) }
-        }
-        If ($Xaml.IO.Filter.Text -eq "" -and $Wifi.Output.Count -gt 0)
-        {
-            $Wifi.Output | % { $Xaml.IO.Output.Items.Add($_) }
-        }
+        $Wifi.SearchFilter()
     })
-    $Xaml.IO.Disconnect.Add_Click(
-    {
-        If ($Xaml.IO.Interface.SelectedItem -gt -1)
-        {
-            $Interface = $Wifi.Adapters | ? InterfaceDescription -eq $Xaml.IO.Interface.SelectedItem
-            $Wifi.Disconnect($Interface)
-            $Xaml.IO.Disconnect.IsEnabled = 0
-            $Xaml.IO.Connect.IsEnabled    = 0
-        }
-    })
+
     $Xaml.IO.Connect.Add_Click(
     {
-        If ($Xaml.IO.Interface.SelectedIndex -gt -1 -and $Xaml.IO.Output.SelectedIndex -gt -1)
+        If (!$Wifi.Connected -and $Xaml.IO.Output.SelectedIndex -ne -1)
         {
-            $Interface = $Wifi.Adapters | ? InterfaceDescription -eq $Xaml.IO.Interface.SelectedItem
-            $SSID      = $Xaml.IO.Output.SelectedItem.Name
-            $Wifi.Connect($SSID,$Interface)
-            $Xaml.IO.Connect.IsEnabled    = 0
-            $Xaml.IO.Disconnect.IsEnabled = 1
+            $Wifi.Connect($Xaml.IO.Output.SelectedItem.Name)
         }
     })
+
+    $Xaml.IO.Disconnect.Add_Click(
+    {
+        If ($Wifi.Connected)
+        {
+            $Wifi.Disconnect()
+        }
+    })
+
     $Xaml.IO.Cancel.Add_Click(
     {
         $Xaml.IO.DialogResult = $False
     })
 
+    # Initial adapter selection
+    $Xaml.IO.Interface.SelectedIndex   = 0
+
+    # Show Dialog
     $Xaml.Invoke()
 }
