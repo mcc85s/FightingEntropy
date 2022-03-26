@@ -1,12 +1,79 @@
 # Links to the resources/videos I've uploaded of the attack(s) occurring
 # ----------------------------------------------------------------------
-# Normally during an investigation, you would think that the police or whatever,
-# would collect stuff like this during an 'investigation', but no. They just ignore stuff like this.
-# Mainly because it's just way too difficult for them to be that thorough.
-
-# 2022_0217-(A Matter of National Security) https://youtu.be/e4VnZObiez8
+# You would think that the police (or whatever), would collect stuff like this during an actual 'investigation'. but- no. 
+# They ignore stuff like this (and they probably shouldn't), I wouldn't say it if I didn't visually observe it, repeatedly.
+# Mainly because it's just WAY too difficult for them to be that thorough, this is the lesson I've learned since May 26th, 2020. 
+# If someone is using a SERIES of exploits, like "Weeping Willow" to eavesdrop on people's SmartTV's (https://youtu.be/bPdWt7kcd3M), 
+# or someone is using "Pegasus"/"Phantom" to follow me around on my smartphone for (days/weeks/months/years),
+# or someone is using "Archimedes" to collect data from my Windows session (sending it to a [Hyper-V C2/port-mirroring] server elsewhere, then routing it back),
+# or someone is using any combination of "Grasshopper","Marble","After Midnight","Athena","Hera" and other Vault 7 tools to distribute malware to my devices...?
+# ----------------------------------------------------------------------
+# Maybe there are (0) experts out there that know these things have all been used against:
+# ME, my COMPANY, MY EQUIPMENT, and my CLIENTS... and nobody actually knows for sure I'm correct.
+# ...except the experts being paid to use them...
+# *Those* experts know for sure that they're *definitely* using many, many tools against me for some unspecified reason.
+# ----------------------------------------------------------------------
+# When I try to share my *research*/*evidence* with other people, "they" will censor me on the internet...
+# ...and send local cops to butcher the accuracy of every single incident I have with the police...
+# ...so, I decided to make an audio recording of my interaction with SCSO on March 1st, 2022.
+# That audio recording is below, and it directly contradicts the statements (3) SCSO officers made that day.
+# ----------------------------------------------------------------------
+# At this point, I highly doubt that they have any internal mechanism that looks for whether any of their records are inaccurate...
+# ...and I start to believe that perhaps *SOME* of the police commit *MORE* crimes than the citizens do (like, "The Shield")
+# The case is not consistent, however. I study the psychology of people I talk to, including the police.
+# And I can tell with absolute certainty when they are being honest and cooperative, or when they're dishonest and have malicious intent.
+# Some of them are very aware of this. 
+# ----------------------------------------------------------------------
+# There probably ARE *plenty* of experts out there *somewhere*... but, they're out of reach.
+# Since there aren't any experts WITHIN REACH who are able to determine with sheer certainty, whether these tools are NOT being used against me...?
+# I have to consider that they may not actually exist. 
+# Or, that few people will actually look at my evidence, videos, audio recordings, or log files.
+# Which sucks.
+# ----------------------------------------------------------------------
+# As a result, they can just send some clowns to handle each and every interaction I have with the police.
+# I say "clowns" because they may have a badge, and a long record of service... 
+# But, I question if they are the *real* police, or the *fake* police (like the ones on "The Shield")...
+# Especially since March 1st, 2022 when the *fake* police decided to insert comments I never made,
+# into a record that the county records department hasn't provided me with quite yet.
+# Most of that interaction wasn't bad, but then they wrote in their statement that I:
+# "threatened to hurt myself, others, and kill the police", and then transported me to Saratoga Hospital,
+# ...even though I never made any such threat whatsoever. Nope. They all agreed in unison that they heard me say that...?
+# ...but the audio recording is simply much more powerful than the testimony of those (3) SCSO officers...
+# ----------------------------------------------------------------------
+# Maybe the *real* police would get pretty pissed off if they saw how many *fake* police are out there.
+# Maybe the *fake* police insert their opinions into statements which may be 100% fictional...
+# ...and then some innocent person gets charged with a crime they didn't commit...
+# ...or dragged to a hospital where they're fed medications they don't actually need...
+# ...or accused of doing something that they didn't actually do...
+# ...and then the records department may *ASSIST* in concealing the crime(s) their officers commit...
+# ...and maybe the police will charge an innocent person with every crime that the police committed...
+# ...and the citizens all believe that this process is called "dutifully enforcing the law"...
+# ...not "breaking the law whichever way they choose to". Ya know?
+# ----------------------------------------------------------------------
+# Since May 26th, 2020, I have observed that they will use a variety of means to do what I just described,
+# bending the law to their will, ignoring evidence of THEIR wrongdoing,
+# and highlighting things taken completely out of context.
+# It is literally what they do when you start to annoy certain people who have no integrity.
+# ----------------------------------------------------------------------
+# Idk though. Maybe they are pretty thorough after all, and it just APPEARS as if the (NYSP & SCSO),
+# as well as the county records department... they've been EXTREMELY IMPRESSED with MY (research/work/investigation).
+# And, because of how HIGHLY IMPRESSED they are...? 
+# Well, maybe it just APPEARS as if they get a "fairy tale" that describes me BEFORE they talk with me, every time I see them.
+# Since they get this "fairy tale", immediately BEFORE they show up, they don't actually take me seriously.
+# Mainly because that "fairy tale" they're briefed on before they start talking to me...? 
+# They don't know that they're being given the wrong information, each time.
+# ----------------------------------------------------------------------
+# So, if the report says XXXX, it could literally be a completely fictional profile that's been having
+# details added to it that are consistently wrong. Intentionally written incorrectly.
+# ----------------------------------------------------------------------
+# 2022_0215-(A Matter of National Security) https://youtu.be/e4VnZObiez8
 # 2022_0225-(Censorship on Facebook)        https://youtu.be/Jmq4yBqGhTs
 # 2022_0226-(Smartphone-WhileBSOD)          https://youtu.be/40sQXpVh_8Y
 # 2022_0226-(Smartphone-Post-BSOD)          https://youtu.be/oShPs6_uXIk
 # 2022_0226-(OBS-Laptop-Post-BSOD)          https://youtu.be/LYVUMLpofWg
 # 2022_0301-(SCSO Committing a Felony)      https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL/view?usp=sharing
+# 2022_0318-(Email SCSO Records)            https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0318-(Email%20SCSO%20Records).jpg
+# 2022_0320-(FOIL 1)                        https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0320-(FOIL%201).pdf
+# 2022_0320-(FOIL 2)                        https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0320-(FOIL%202).pdf
+# 2022_0320-(FOIL 3)                        https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0320-(FOIL%203).pdf
+# ----------------------------------------------------------------------
