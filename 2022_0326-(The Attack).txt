@@ -1,8 +1,13 @@
 # Links to the resources/videos I've uploaded of the attack(s) occurring
 # ----------------------------------------------------------------------
-# You would think that the police (or whatever), would collect stuff like this during an actual 'investigation'. but- no. 
+# [Preface]
+# ----------------------------------------------------------------------
+# You would think that the police (or whatever), would collect stuff like this during an actual 'investigation', but- no. 
 # They ignore stuff like this (and they probably shouldn't), I wouldn't say it if I didn't visually observe it, repeatedly.
-# Mainly because it's just WAY too difficult for them to be that thorough, this is the lesson I've learned since May 26th, 2020. 
+# Mainly because it's just WAY too difficult for them to be that thorough, this is the lesson I've learned since May 26th, 2020...
+# ...when (2) guys spent over 90 minutes trying to run me over and then corner me on foot, and I called 911 twice, but those calls
+# never made it to the dispatch station, and then SCSO Scott Schelling ignored writing any details or notes on SCSO-2020-028501.
+# ----------------------------------------------------------------------
 # If someone is using a SERIES of exploits, like "Weeping Willow" to eavesdrop on people's SmartTV's (https://youtu.be/bPdWt7kcd3M), 
 # or someone is using "Pegasus"/"Phantom" to follow me around on my smartphone for (days/weeks/months/years),
 # or someone is using "Archimedes" to collect data from my Windows session (sending it to a [Hyper-V C2/port-mirroring] server elsewhere, then routing it back),
@@ -10,10 +15,10 @@
 # ----------------------------------------------------------------------
 # Maybe there are (0) experts out there that know these things have all been used against:
 # ME, my COMPANY, MY EQUIPMENT, and my CLIENTS... and nobody actually knows for sure I'm correct.
-# ...except the experts being paid to use them...
+# ...except MYSELF, and the experts being paid to use them...
 # *Those* experts know for sure that they're *definitely* using many, many tools against me for some unspecified reason.
 # ----------------------------------------------------------------------
-# When I try to share my *research*/*evidence* with other people, "they" will censor me on the internet...
+# When I try to share my *research*/*evidence* with other people, "they" will censor me on the internet, and downsample my videos...
 # ...and send local cops to butcher the accuracy of every single incident I have with the police...
 # ...so, I decided to make an audio recording of my interaction with SCSO on March 1st, 2022.
 # That audio recording is below, and it directly contradicts the statements (3) SCSO officers made that day.
