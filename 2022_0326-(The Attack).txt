@@ -1,5 +1,8 @@
-# Links to the videos I uploaded of the attack(s) occurring
-# ---------------------------------------------------------
+# Links to the resources/videos I've uploaded of the attack(s) occurring
+# ----------------------------------------------------------------------
+# Normally during an investigation, you would think that the police or whatever,
+# would collect stuff like this during an 'investigation', but no. They just ignore stuff like this.
+# Mainly because it's just way too difficult for them to be that thorough.
 
 # 2022_0217-(A Matter of National Security) https://youtu.be/e4VnZObiez8
 # 2022_0225-(Censorship on Facebook)        https://youtu.be/Jmq4yBqGhTs
