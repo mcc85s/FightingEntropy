@@ -4,7 +4,8 @@
 .DESCRIPTION
 
 .LINK
-          Inspiration: https://www.reddit.com/r/sysadmin/comments/9az53e/need_help_controlling_wifi/
+          Inspiration:   https://www.reddit.com/r/sysadmin/comments/9az53e/need_help_controlling_wifi/
+          Also: jcwalker https://github.com/jcwalker/WiFiProfileManagement/blob/dev/Classes/AddNativeWiFiFunctions.ps1
 .NOTES
           FileName: Search-WirelessNetwork.ps1
           Solution: FightingEntropy Module
@@ -13,7 +14,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2022-02-25
+          Modified: 2022-04-22
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
@@ -96,7 +97,6 @@ Function Search-WirelessNetwork
         }
     }
 
-    # GC $Home\Desktop\Wirelessnetwork.xaml | % { "        '$_'," } | Set-Clipboard
     Class GUI
     {
         Static [String] $Tab = (
@@ -350,10 +350,10 @@ Function Search-WirelessNetwork
             '            </Grid>',
             '        </GroupBox>',
             '    </Grid>',
-            '</Window>' -join "`n")
+            '</Window>' -join "`n"
+        )
     }
 
-    # GC $Home\Desktop\EnterKey.xaml | % { "        '$_'," } | Set-Clipboard
     Class Passphrase
     {
         Static [String] $Tab = @(
@@ -455,8 +455,372 @@ Function Search-WirelessNetwork
             '            </Grid>',
             '        </GroupBox>',
             '    </Grid>',
-            '</Window>' -join "`n") 
+            '</Window>' -join "`n"
+        )
     }
+
+    Class wlanapi # https://github.com/jcwalker/WiFiProfileManagement/blob/dev/Classes/AddNativeWiFiFunctions.ps1
+    {
+        Static [String] $Tab = @(
+        '[DllImport("wlanapi.dll")]',
+        'public static extern uint WlanOpenHandle(',
+        '    [In] UInt32 clientVersion,',
+        '    [In, Out] IntPtr pReserved,',
+        '    [Out] out UInt32 negotiatedVersion,',
+        '    [Out] out IntPtr clientHandle',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll")]',
+        'public static extern uint WlanCloseHandle(',
+        '    [In] IntPtr ClientHandle,',
+        '    IntPtr pReserved',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll", EntryPoint = "WlanFreeMemory")]',
+        'public static extern void WlanFreeMemory(',
+        '    [In] IntPtr pMemory',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll", SetLastError = true)]',
+        'public static extern uint WlanEnumInterfaces(',
+        '    [In] IntPtr hClientHandle,',
+        '    [In] IntPtr pReserved,',
+        '    [Out] out IntPtr ppInterfaceList',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]',
+        'public static extern uint WlanGetProfileList(',
+        '    [In] IntPtr clientHandle,',
+        '    [In, MarshalAs(UnmanagedType.LPStruct)] Guid interfaceGuid,',
+        '    [In] IntPtr pReserved,',
+        '    [Out] out IntPtr profileList',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll")]',
+        'public static extern uint WlanGetProfile(',
+        '    [In] IntPtr clientHandle,',
+        '    [In, MarshalAs(UnmanagedType.LPStruct)] Guid interfaceGuid,',
+        '    [In, MarshalAs(UnmanagedType.LPWStr)] string profileName,',
+        '    [In, Out] IntPtr pReserved,',
+        '    [Out, MarshalAs(UnmanagedType.LPWStr)] out string pstrProfileXml,',
+        '    [In, Out, Optional] ref uint flags,',
+        '    [Out, Optional] out uint grantedAccess',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll")]',
+        'public static extern uint WlanDeleteProfile(',
+        '    [In] IntPtr clientHandle,',
+        '    [In, MarshalAs(UnmanagedType.LPStruct)] Guid interfaceGuid,',
+        '    [In, MarshalAs(UnmanagedType.LPWStr)] string profileName,',
+        '    [In, Out] IntPtr pReserved',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]',
+        'public static extern uint WlanSetProfile(',
+        '    [In] IntPtr clientHandle,',
+        '    [In] ref Guid interfaceGuid,',
+        '    [In] uint flags,',
+        '    [In] IntPtr ProfileXml,',
+        '    [In, Optional] IntPtr AllUserProfileSecurity,',
+        '    [In] bool Overwrite,',
+        '    [In, Out] IntPtr pReserved,',
+        '    [In, Out] ref IntPtr pdwReasonCode',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll", SetLastError = true, CharSet = CharSet.Unicode)]',
+        'public static extern uint WlanReasonCodeToString(',
+        '    [In] uint reasonCode,',
+        '    [In] uint bufferSize,',
+        '    [In, Out] StringBuilder builder,',
+        '    [In, Out] IntPtr Reserved',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll", SetLastError = true)]',
+        'public static extern uint WlanGetAvailableNetworkList(',
+        '    [In] IntPtr hClientHandle,',
+        '    [In, MarshalAs(UnmanagedType.LPStruct)] Guid interfaceGuid,',
+        '    [In] uint dwFlags,',
+        '    [In] IntPtr pReserved,',
+        '    [Out] out IntPtr ppAvailableNetworkList',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll", SetLastError = true)]',
+        'public static extern uint WlanConnect(',
+        '    [In] IntPtr hClientHandle,',
+        '    [In] ref Guid interfaceGuid,',
+        '    [In] ref WLAN_CONNECTION_PARAMETERS pConnectionParameters,',
+        '    [In, Out] IntPtr pReserved',
+        ');',
+        '',
+        '[DllImport("wlanapi.dll", SetLastError = true)]',
+        'public static extern uint WlanDisconnect(',
+        '    [In] IntPtr hClientHandle,',
+        '    [In] ref Guid interfaceGuid,',
+        '    [In, Out] IntPtr pReserved',
+        ');',
+        '',
+        '[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]',
+        'public struct WLAN_CONNECTION_PARAMETERS',
+        '{',
+        '    public WLAN_CONNECTION_MODE wlanConnectionMode;',
+        '    public string strProfile;',
+        '    public DOT11_SSID[] pDot11Ssid;',
+        '    public DOT11_BSSID_LIST[] pDesiredBssidList;',
+        '    public DOT11_BSS_TYPE dot11BssType;',
+        '    public uint dwFlags;',
+        '}',
+        '',
+        'public struct DOT11_BSSID_LIST',
+        '{',
+        '    public NDIS_OBJECT_HEADER Header;',
+        '    public ulong uNumOfEntries;',
+        '    public ulong uTotalNumOfEntries;',
+        '    public IntPtr BSSIDs;',
+        '}',
+        '',
+        'public struct NDIS_OBJECT_HEADER',
+        '{',
+        '    public byte Type;',
+        '    public byte Revision;',
+        '    public ushort Size;',
+        '}',
+        '',
+        'public struct WLAN_PROFILE_INFO_LIST',
+        '{',
+        '    public uint dwNumberOfItems;',
+        '    public uint dwIndex;',
+        '    public WLAN_PROFILE_INFO[] ProfileInfo;',
+        '',
+        '    public WLAN_PROFILE_INFO_LIST(IntPtr ppProfileList)',
+        '    {',
+        '        dwNumberOfItems = (uint)Marshal.ReadInt32(ppProfileList);',
+        '        dwIndex = (uint)Marshal.ReadInt32(ppProfileList, 4);',
+        '        ProfileInfo = new WLAN_PROFILE_INFO[dwNumberOfItems];',
+        '        IntPtr ppProfileListTemp = new IntPtr(ppProfileList.ToInt64() + 8);',
+        '',
+        '        for (int i = 0; i < dwNumberOfItems; i++)',
+        '        {',
+        '            ppProfileList = new IntPtr(ppProfileListTemp.ToInt64() + i * Marshal.SizeOf(typeof(WLAN_PROFILE_INFO)));',
+        '            ProfileInfo[i] = (WLAN_PROFILE_INFO)Marshal.PtrToStructure(ppProfileList, typeof(WLAN_PROFILE_INFO));',
+        '        }',
+        '    }',
+        '}',
+        '',
+        '[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]',
+        'public struct WLAN_PROFILE_INFO',
+        '{',
+        '    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]',
+        '    public string strProfileName;',
+        '    public WlanProfileFlags ProfileFlags;',
+        '}',
+        '',
+        '[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]',
+        'public struct WLAN_AVAILABLE_NETWORK_LIST',
+        '{',
+        '    public uint dwNumberOfItems;',
+        '    public uint dwIndex;',
+        '    public WLAN_AVAILABLE_NETWORK[] wlanAvailableNetwork;',
+        '    public WLAN_AVAILABLE_NETWORK_LIST(IntPtr ppAvailableNetworkList)',
+        '    {',
+        '        dwNumberOfItems = (uint)Marshal.ReadInt64 (ppAvailableNetworkList);',
+        '        dwIndex = (uint)Marshal.ReadInt64 (ppAvailableNetworkList, 4);',
+        '        wlanAvailableNetwork = new WLAN_AVAILABLE_NETWORK[dwNumberOfItems];',
+        '        for (int i = 0; i < dwNumberOfItems; i++)',
+        '        {',
+        '            IntPtr pWlanAvailableNetwork = new IntPtr (ppAvailableNetworkList.ToInt64() + i * Marshal.SizeOf (typeof(WLAN_AVAILABLE_NETWORK)) + 8 );',
+        '            wlanAvailableNetwork[i] = (WLAN_AVAILABLE_NETWORK)Marshal.PtrToStructure (pWlanAvailableNetwork, typeof(WLAN_AVAILABLE_NETWORK));',
+        '        }',
+        '    }',
+        '}',
+        '',
+        '[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]',
+        'public struct WLAN_AVAILABLE_NETWORK',
+        '{',
+        '    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]',
+        '    public string ProfileName;',
+        '    public DOT11_SSID Dot11Ssid;',
+        '    public DOT11_BSS_TYPE dot11BssType;',
+        '    public uint uNumberOfBssids;',
+        '    public bool bNetworkConnectable;',
+        '    public uint wlanNotConnectableReason;',
+        '    public uint uNumberOfPhyTypes;',
+        '',
+        '    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)]',
+        '    public DOT11_PHY_TYPE[] dot11PhyTypes;',
+        '    public bool bMorePhyTypes;',
+        '    public uint SignalQuality;',
+        '    public bool SecurityEnabled;',
+        '    public DOT11_AUTH_ALGORITHM dot11DefaultAuthAlgorithm;',
+        '    public DOT11_CIPHER_ALGORITHM dot11DefaultCipherAlgorithm;',
+        '    public uint dwFlags;',
+        '    public uint dwReserved;',
+        '}',
+        '',
+        '[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]',
+        'public struct DOT11_SSID',
+        '{',
+        '    public uint uSSIDLength;',
+        '    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]',
+        '    public string ucSSID;',
+        '}',
+        '',
+        'public enum DOT11_BSS_TYPE',
+        '{',
+        '    Infrastructure = 1,',
+        '    Independent    = 2,',
+        '    Any            = 3,',
+        '}',
+        '',
+        'public enum DOT11_PHY_TYPE',
+        '{',
+        '    DOT11_PHY_TYPE_UNKNOWN = 0,',
+        '    DOT11_PHY_TYPE_ANY = 0,',
+        '    DOT11_PHY_TYPE_FHSS = 1,',
+        '    DOT11_PHY_TYPE_DSSS = 2,',
+        '    DOT11_PHY_TYPE_IRBASEBAND = 3,',
+        '    DOT11_PHY_TYPE_OFDM = 4,',
+        '    DOT11_PHY_TYPE_HRDSSS = 5,',
+        '    DOT11_PHY_TYPE_ERP = 6,',
+        '    DOT11_PHY_TYPE_HT = 7,',
+        '    DOT11_PHY_TYPE_VHT = 8,',
+        '    DOT11_PHY_TYPE_IHV_START = -2147483648,',
+        '    DOT11_PHY_TYPE_IHV_END = -1,',
+        '}',
+        '',
+        'public enum DOT11_AUTH_ALGORITHM',
+        '{',
+        '    DOT11_AUTH_ALGO_80211_OPEN = 1,',
+        '    DOT11_AUTH_ALGO_80211_SHARED_KEY = 2,',
+        '    DOT11_AUTH_ALGO_WPA = 3,',
+        '    DOT11_AUTH_ALGO_WPA_PSK = 4,',
+        '    DOT11_AUTH_ALGO_WPA_NONE = 5,',
+        '    DOT11_AUTH_ALGO_RSNA = 6,',
+        '    DOT11_AUTH_ALGO_RSNA_PSK = 7,',
+        '    DOT11_AUTH_ALGO_WPA3 = 8,',
+        '    DOT11_AUTH_ALGO_WPA3_SAE = 9,',
+        '    DOT11_AUTH_ALGO_OWE = 10,',
+        '    DOT11_AUTH_ALGO_WPA3_ENT = 11,',
+        '    DOT11_AUTH_ALGO_IHV_START = -2147483648,',
+        '    DOT11_AUTH_ALGO_IHV_END = -1,',
+        '}',
+        '',
+        'public enum DOT11_CIPHER_ALGORITHM',
+        '{',
+        '    DOT11_CIPHER_ALGO_NONE = 0,',
+        '    DOT11_CIPHER_ALGO_WEP40 = 1,',
+        '    DOT11_CIPHER_ALGO_TKIP = 2,',
+        '    DOT11_CIPHER_ALGO_CCMP = 4,',
+        '    DOT11_CIPHER_ALGO_WEP104 = 5,',
+        '    DOT11_CIPHER_ALGO_BIP = 6,',
+        '    DOT11_CIPHER_ALGO_GCMP = 8,',
+        '    DOT11_CIPHER_ALGO_GCMP_256 = 9,',
+        '    DOT11_CIPHER_ALGO_CCMP_256 = 10,',
+        '    DOT11_CIPHER_ALGO_BIP_GMAC_128 = 11,',
+        '    DOT11_CIPHER_ALGO_BIP_GMAC_256 = 12,',
+        '    DOT11_CIPHER_ALGO_BIP_CMAC_256 = 13,',
+        '    DOT11_CIPHER_ALGO_WPA_USE_GROUP = 256,',
+        '    DOT11_CIPHER_ALGO_RSN_USE_GROUP = 256,',
+        '    DOT11_CIPHER_ALGO_WEP = 257,',
+        '    DOT11_CIPHER_ALGO_IHV_START = -2147483648,',
+        '    DOT11_CIPHER_ALGO_IHV_END = -1,',
+        '}',
+        '',
+        'public enum WLAN_CONNECTION_MODE',
+        '{',
+        '    WLAN_CONNECTION_MODE_PROFILE,',
+        '    WLAN_CONNECTION_MODE_TEMPORARY_PROFILE,',
+        '    WLAN_CONNECTION_MODE_DISCOVERY_SECURE,',
+        '    WLAN_CONNECTION_MODE_DISCOVERY_UNSECURE,',
+        '    WLAN_CONNECTION_MODE_AUTO,',
+        '    WLAN_CONNECTION_MODE_INVALID,',
+        '}',
+        '',
+        '[Flags]',
+        'public enum WlanConnectionFlag',
+        '{',
+        '    Default = 0,',
+        '    HiddenNetwork = 1,',
+        '    AdhocJoinOnly = 2,',
+        '    IgnorePrivacyBit = 4,',
+        '    EapolPassThrough = 8,',
+        '    PersistDiscoveryProfile = 10,',
+        '    PersistDiscoveryProfileConnectionModeAuto = 20,',
+        '    PersistDiscoveryProfileOverwriteExisting = 40',
+        '}',
+        '',
+        '[Flags]',
+        'public enum WlanProfileFlags',
+        '{',
+        '    AllUser = 0,',
+        '    GroupPolicy = 1,',
+        '    User = 2',
+        '}',
+        '',
+        'public class ProfileInfo',
+        '{',
+        '    public string ProfileName;',
+        '    public string ConnectionMode;',
+        '    public string Authentication;',
+        '    public string Encryption;',
+        '    public string Password;',
+        '    public bool ConnectHiddenSSID;',
+        '    public string EAPType;',
+        '    public string ServerNames;',
+        '    public string TrustedRootCA;',
+        '    public string Xml;',
+        '}',
+        '',
+        'public struct WLAN_INTERFACE_INFO_LIST',
+        '{',
+        '    public uint dwNumberOfItems;',
+        '    public uint dwIndex;',
+        '    public WLAN_INTERFACE_INFO[] wlanInterfaceInfo;',
+        '    public WLAN_INTERFACE_INFO_LIST(IntPtr ppInterfaceInfoList)',
+        '    {',
+        '        dwNumberOfItems = (uint)Marshal.ReadInt32(ppInterfaceInfoList);',
+        '        dwIndex = (uint)Marshal.ReadInt32(ppInterfaceInfoList, 4);',
+        '        wlanInterfaceInfo = new WLAN_INTERFACE_INFO[dwNumberOfItems];',
+        '        IntPtr ppInterfaceInfoListTemp = new IntPtr(ppInterfaceInfoList.ToInt64() + 8);',
+        '        for (int i = 0; i < dwNumberOfItems; i++)',
+        '        {',
+        '            ppInterfaceInfoList = new IntPtr(ppInterfaceInfoListTemp.ToInt64() + i * Marshal.SizeOf(typeof(WLAN_INTERFACE_INFO)));',
+        '            wlanInterfaceInfo[i] = (WLAN_INTERFACE_INFO)Marshal.PtrToStructure(ppInterfaceInfoList, typeof(WLAN_INTERFACE_INFO));',
+        '        }',
+        '    }',
+        '}',
+        '',
+        '[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]',
+        'public struct WLAN_INTERFACE_INFO',
+        '{',
+        '    public Guid Guid;',
+        '    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]',
+        '    public string Description;',
+        '    public WLAN_INTERFACE_STATE State;',
+        '}',
+        '',
+        'public enum WLAN_INTERFACE_STATE',
+        '{',
+        '    NOT_READY = 0,',
+        '    CONNECTED = 1,',
+        '    AD_HOC_NETWORK_FORMED = 2,',
+        '    DISCONNECTING = 3,',
+        '    DISCONNECTED = 4,',
+        '    ASSOCIATING = 5,',
+        '    DISCOVERING = 6,',
+        '    AUTHENTICATING = 7',
+        '}',
+        '',
+        '[DllImport("wlanapi.dll", SetLastError = true)]',
+        'public static extern uint WlanScan(',
+        '    IntPtr hClientHandle,',
+        '    ref Guid pInterfaceGuid,',
+        '    IntPtr pDot11Ssid,',
+        '    IntPtr pIeData,',
+        '    IntPtr pReserved',
+        ');' -join "`n")
+    }
+
+    Add-Type -MemberDefinition ([wlanapi]::Tab) -Name ProfileManagement -Namespace WiFi -Using System.Text -Passthru | Out-Null
 
     Class Ssid
     {
@@ -736,6 +1100,73 @@ Function Search-WirelessNetwork
         }
     }
 
+    Class WiFiProfile
+    {
+        [Object] $Interface
+        [String] $Name
+        [String] $Flags
+        [Object] $Detail
+        WiFiProfile([Object]$Interface,[Object]$ProfileInfo)
+        {
+            $This.Interface = $Interface
+            $This.Name      = $ProfileInfo.strProfileName
+            $This.Flags     = $ProfileInfo.ProfileFlags
+            $This.Detail    = $Null
+        }
+        [String[]] ToString()
+        {
+            Return @(
+            " ",
+            "Interface       : $($This.Interface.Name)",
+            "Guid            : $($This.Interface.Guid)",
+            "Description     : $($This.Interface.Description)",
+            "IfIndex         : $($This.Interface.ifIndex)",
+            "Status          : $($This.Interface.Status)",
+            "MacAddress      : $($This.Interface.MacAddress)",
+            "LinkSpeed       : $($This.Interface.LinkSpeed)",
+            "State           : $($This.Interface.State)",
+            "----"
+            "SSID            : $($This.Name)",
+            "Flags           : $($This.Flags)",
+            "ProfileName     : $($This.Detail.ProfileName)",
+            "ConnectionMode  : $($This.Detail.ConnectionMode)",
+            "Authentication  : $($This.Detail.Authentication)",
+            "Encryption      : $($This.Detail.Encryption)",
+            "Password        : $($This.Detail.Password)",
+            "HiddenSSID      : $($This.Detail.ConnectHiddenSSID)",
+            "EAPType         : $($This.Detail.EAPType)",
+            "ServerNames     : $($This.Detail.ServerNames)",
+            "TrustedRootCA   : $($This.Detail.TrustedRootCA)",
+            "----",
+            "XML             : $($This.Detail.Xml)",
+            " "
+            )
+        }
+    }
+
+    Class InterfaceObject
+    {
+        [String] $Name
+        [String] $Guid
+        [String] $Description
+        [UInt32] $ifIndex 
+        [String] $Status
+        [String] $MacAddress
+        [String] $LinkSpeed
+        [String] $State
+        InterfaceObject([Object]$Info,[Object]$Interface)
+        {
+            $This.Name        = $Interface.Name
+            $This.Guid        = $Info.Guid
+            $This.Description = $Info.Description
+            $This.ifIndex     = $Interface.ifIndex
+            $This.Status      = $Interface.Status
+            $This.MacAddress  = $Interface.MacAddress.Replace("-",":")
+            $This.LinkSpeed   = $Interface.LinkSpeed
+            $This.State       = $Info.State
+        }
+    }
+
     Class WLANInterface
     {
         Hidden [String[]] $Select
@@ -801,16 +1232,865 @@ Function Search-WirelessNetwork
         {
             Return @( ([System.WindowsRuntimeSystemExtensions].GetMethods() | ? { $_.Name -eq 'AsTask' -and $_.GetParameters().Count -eq 1 -and $_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1'})[0] )
         }
-        Select([String]$Adapter)
+        [String] Win32Exception([UInt32]$ReturnCode)
+        {
+            Return ("[System.ComponentModel.Win32Exception]::new($ReturnCode)" | Invoke-Expression)
+        }
+        [String] WiFiReasonCode([IntPtr]$ReasonCode)
+        {
+            $stringBuilder          = New-Object -TypeName Text.StringBuilder
+            $stringBuilder.Capacity = 1024
+            $result                 = [WiFi.ProfileManagement]::WlanReasonCodeToString($ReasonCode.ToInt32(),$stringBuilder.Capacity,$stringBuilder,[IntPtr]::zero)
+
+            If ($result -ne 0)
+            {
+                Return $This.Win32Exception($result)
+            }
+
+            Return $stringBuilder.ToString()
+        }
+        [Void] WlanFreeMemory([IntPtr]$Pointer)
+        {
+            [WiFi.ProfileManagement]::WlanFreeMemory($Pointer)
+        }
+        [IntPtr] NewWifiHandle()
+        {
+            $maxClient               = 2
+            [Ref] $negotiatedVersion = 0
+            $clientHandle            = [IntPtr]::zero
+            $result                  = [WiFi.ProfileManagement]::WlanOpenHandle($maxClient,[IntPtr]::Zero,$negotiatedVersion,[Ref]$clientHandle)
+
+            If ($result -eq 0)
+            {
+                Return $clientHandle
+            }
+            Else
+            {
+                Throw $This.Win32Exception($Result)
+            }
+        }
+        [Void] RemoveWifiHandle([IntPtr]$ClientHandle)
+        {
+            $result = [WiFi.ProfileManagement]::WlanCloseHandle($ClientHandle, [IntPtr]::zero)
+
+            If ($result -ne 0)
+            {
+                Throw $This.Win32Exception($Result)
+            }
+        }
+        [Object] GetWiFiInterfaceGuid([String]$WiFiAdapterName)
+        {
+            $InterfaceGuid   = $Null
+            Switch ([Environment]::OSVersion.Version -ge [Version]6.2)
+            {
+                $True
+                {
+                    $InterfaceGuid   = Get-NetAdapter -Name $WiFiAdapterName -EA 0 | % InterfaceGuid
+                }
+                $False
+                {
+                    $wifiAdapterInfo = Get-WmiObject Win32_NetworkAdapter | ? NetConnectionID -eq $WiFiAdapterName
+                    $InterfaceGuid   = Get-WmiObject Win32_NetworkAdapterConfiguration | ? Description -eq $WiFiAdapterInfo.Name | % SettingID
+                }
+            }
+    
+            Return [System.Guid]$InterfaceGuid
+        }
+        [Object[]] GetWiFiInterface()
+        {
+            $interfaceListPtr = 0
+            $clientHandle     = $This.NewWiFiHandle()
+            $This.Adapters    = $This.RefreshAdapterList()
+            $Return           = @( )
+            Try
+            {
+                [void][WiFi.ProfileManagement]::WlanEnumInterfaces($clientHandle, [IntPtr]::zero, [ref] $interfaceListPtr)
+                $wiFiInterfaceList = [WiFi.ProfileManagement+WLAN_INTERFACE_INFO_LIST]::new($interfaceListPtr)
+                ForEach ($wlanInterfaceInfo in $wiFiInterfaceList.wlanInterfaceInfo)
+                {
+                    $Info      = [WiFi.ProfileManagement+WLAN_INTERFACE_INFO]$wlanInterfaceInfo
+                    $Interface = $This.Adapters | ? InterfaceDescription -eq $Info.Description
+                    $Return   += [InterfaceObject]::New($Info,$Interface)
+                }
+            }
+            Catch
+            {
+                Write-Host "No wireless interface(s) found"
+                $Return += $Null
+            }
+            Finally
+            {
+                $This.RemoveWiFiHandle($clientHandle)
+            }
+
+            Return @($Return)
+        }
+        [Object[]] GetWiFiProfileList([String]$Name)
+        {
+            $profileListPointer = 0
+            $Interface          = $This.GetWifiInterface() | ? Name -match $Name
+            $ClientHandle       = $This.NewWifiHandle()
+            $Return             = @( )
+
+            [WiFi.ProfileManagement]::WlanGetProfileList($ClientHandle,$interface.GUID,[IntPtr]::zero,[ref] $profileListPointer)
+            
+            $ProfileList        = [WiFi.ProfileManagement+WLAN_PROFILE_INFO_LIST]::new($profileListPointer).ProfileInfo
+
+            ForEach ($ProfileName in $ProfileList)
+            {
+                $Item           = [WiFiProfile]::New($Interface,$ProfileName)
+                $Item.Detail    = $This.GetWiFiProfileInfo($Item.Name,$Interface.Guid)
+                $Return        += $Item
+            }
+
+            $This.RemoveWiFiHandle($ClientHandle)
+
+            Return $Return
+        }
+        [Object] GetWiFiProfileInfo([String]$ProfileName,[Guid]$InterfaceGuid,[Int16]$WlanProfileFlags)
+        {
+            [IntPtr]$ClientHandle    = $This.NewWifiHandle()
+            $WlanProfileFlagsInput   = $WlanProfileFlags
+            $Return                  = $This.WiFiProfileInfo($ProfileName,$InterfaceGuid,$ClientHandle,$WlanProfileFlagsInput)
+            $This.RemoveWiFiHandle($ClientHandle)
+            Return $Return
+        }
+        [Object] GetWifiProfileInfo([String]$ProfileName,[Guid]$InterfaceGuid)
+        {
+            [IntPtr]$ClientHandle    = $This.NewWifiHandle()
+            $WlanProfileFlagsInput   = 0
+            $Return                  = $This.WiFiProfileInfo($ProfileName,$InterfaceGuid,$ClientHandle,$WlanProfileFlagsInput)
+            $This.RemoveWiFiHandle($ClientHandle)
+            Return $Return
+        }
+        [Object] WiFiProfileInfo([String]$ProfileName,[Guid]$InterfaceGuid,[IntPtr]$ClientHandle,[Int16]$WlanProfileFlagsInput)
+        {
+            [String] $pstrProfileXml = $null
+            $wlanAccess              = 0
+            $WlanProfileFlags        = $WlanProfileFlagsInput
+            $result                  = [WiFi.ProfileManagement]::WlanGetProfile($ClientHandle, $InterfaceGuid, $ProfileName, [IntPtr]::Zero, [ref] $pstrProfileXml, [ref] $WlanProfileFlags, [ref] $wlanAccess)
+            $Password                = $Null
+            $connectHiddenSSID       = $Null
+            $EapType                 = $Null
+            $xmlPtr                  = $Null
+            $serverNames             = $Null
+            $trustedRootCA           = $Null
+            $Return                  = $Null
+
+            If ($result -ne 0)
+            {
+                Return $This.Win32Exception($Result)
+            }
+
+            $wlanProfile             = [xml] $pstrProfileXml
+
+            # Parse password
+            If ($WlanProfileFlagsInput -eq 13)
+            {
+                $Password            = $wlanProfile.WLANProfile.MSM.security.sharedKey.keyMaterial
+            }
+            If ($WlanProfileFlagsInput -ne 13)
+            {
+                $Password            = $Null
+            }
+
+            # Parse nonBroadcast flag
+            If ([bool]::TryParse($wlanProfile.WLANProfile.SSIDConfig.nonBroadcast, [ref] $null))
+            {
+                $connectHiddenSSID   = [bool]::Parse($wlanProfile.WLANProfile.SSIDConfig.nonBroadcast)
+            }
+            Else
+            {
+                $connectHiddenSSID   = $false
+            }
+
+            # Parse EAP type
+            If ($wlanProfile.WLANProfile.MSM.security.authEncryption.useOneX -eq $true)
+            {
+                $EapType = Switch ($wlanProfile.WLANProfile.MSM.security.OneX.EAPConfig.EapHostConfig.EapMethod.Type.InnerText)
+                {   # 25 = EAP-PEAP (MSCHAPv2); 13 = EAP-TLS
+                    25 { 'PEAP' } 13 { 'TLS'  } Default { 'Unknown' }
+                }
+            }
+            Else
+            {
+                $EapType = $null
+            }
+
+            # Parse Validation Server Name
+            If (!!$EapType)
+            {
+                Switch ($EapType)
+                {
+                    PEAP
+                    { 
+                        $serverNames = $wlanProfile.WLANProfile.MSM.security.OneX.EAPConfig.EapHostConfig.Config.Eap.EapType.ServerValidation.ServerNames
+                    }
+
+                    TLS
+                    {
+                        $node        = $wlanProfile.WLANProfile.MSM.security.OneX.EAPConfig.EapHostConfig.Config.SelectNodes("//*[local-name()='ServerNames']")
+                        $serverNames = $node[0].InnerText
+                    }
+                }
+            }
+            
+            # Parse Validation TrustedRootCA
+            If (!!$EapType)
+            {
+                Switch ($EapType)
+                {
+                    PEAP
+                    { 
+                        $trustedRootCa = ([string] ($wlanProfile.WLANProfile.MSM.security.OneX.EAPConfig.EapHostConfig.Config.Eap.EapType.ServerValidation.TrustedRootCA -replace ' ', [string]::Empty)).ToLower()
+                    }
+
+                    TLS
+                    {
+                        $node          = $wlanProfile.WLANProfile.MSM.security.OneX.EAPConfig.EapHostConfig.Config.SelectNodes("//*[local-name()='TrustedRootCA']")
+                        $trustedRootCa = ([string] ($node[0].InnerText -replace ' ', [string]::Empty)).ToLower()
+                    }
+                }
+            }
+
+            $Return               = [WiFi.ProfileManagement+ProfileInfo]@{
+                ProfileName       = $wlanProfile.WLANProfile.SSIDConfig.SSID.name
+                ConnectionMode    = $wlanProfile.WLANProfile.connectionMode
+                Authentication    = $wlanProfile.WLANProfile.MSM.security.authEncryption.authentication
+                Encryption        = $wlanProfile.WLANProfile.MSM.security.authEncryption.encryption
+                Password          = $password
+                ConnectHiddenSSID = $connectHiddenSSID
+                EAPType           = $EapType
+                ServerNames       = $serverNames
+                TrustedRootCA     = $trustedRootCa
+                Xml               = $pstrProfileXml
+            }
+            
+            $xmlPtr               = [System.Runtime.InteropServices.Marshal]::StringToHGlobalAuto($pstrProfileXml)
+            $This.WlanFreeMemory($xmlPtr)
+
+            Return $Return
+        }
+        [Object] GetWiFiConnectionParameter([String]$ProfileName,[String]$ConnectionMode,[String]$Dot11BssType,[String]$Flag)
+        {
+            Return $This.WifiConnectionParameter($ProfileName,$ConnectionMode,$Dot11BssType,$Flag)
+        }
+        [Object] GetWiFiConnectionParameter([String]$ProfileName,[String]$ConnectionMode,[String]$Dot11BssType)
+        {
+            $Flag           = "Default"
+            Return $This.WifiConnectionParameter($ProfileName,$ConnectionMode,$Dot11BssType,$Flag)
+        }
+        [Object] GetWiFiConnectionParameter([String]$ProfileName,[String]$ConnectionMode)
+        {
+            $Dot11BssType   = "Any"
+            $Flag           = "Default"
+            Return $This.WifiConnectionParameter($ProfileName,$ConnectionMode,$Dot11BssType,$Flag)
+        }
+        [Object] GetWiFiConnectionParameter([String]$ProfileName)
+        {
+            $ConnectionMode = "Profile"
+            $Dot11BssType   = "Any"
+            $Flag           = "Default"
+            Return $This.WifiConnectionParameter($ProfileName,$ConnectionMode,$Dot11BssType,$Flag)
+        }
+        [Object] WifiConnectionParameter([String]$ProfileName,[String]$ConnectionMode,[String]$Dot11BssType,[String]$Flag)
+        {
+            Try
+            {
+                $connectionModeResolver = @{
+                    Profile           = 'WLAN_CONNECTION_MODE_PROFILE'
+                    TemporaryProfile  = 'WLAN_CONNECTION_MODE_TEMPORARY_PROFILE'
+                    DiscoverySecure   = 'WLAN_CONNECTION_MODE_DISCOVERY_SECURE'
+                    DiscoveryUnsecure = 'WLAN_CONNECTION_MODE_DISCOVERY_UNSECURE'
+                    Auto              = 'WLAN_CONNECTION_MODE_AUTO'
+                }
+
+                $connectionParameters                    = [WiFi.ProfileManagement+WLAN_CONNECTION_PARAMETERS]::new()
+                $connectionParameters.strProfile         = $ProfileName
+                $connectionParameters.wlanConnectionMode = [WiFi.ProfileManagement+WLAN_CONNECTION_MODE]::$($connectionModeResolver[$ConnectionMode])
+                $connectionParameters.dot11BssType       = [WiFi.ProfileManagement+DOT11_BSS_TYPE]::$Dot11BssType
+                $connectionParameters.dwFlags            = [WiFi.ProfileManagement+WlanConnectionFlag]::$Flag
+            }
+            Catch
+            {
+                Throw "An error occurred while setting connection parameters"
+            }
+
+            Return $connectionParameters
+        }
+        [String] NewWifiXmlProfile_OldMethod([String]$SSID,[String]$Key)
+        {
+            $Hex   = ($SSID.ToCharArray() | % { '{0:X}' -f [int]$_ }) -join ''
+            $Value = @('<?xml version="1.0"?>',
+            '<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">',
+            "        <name>$SSID</name>",
+            "        <SSIDConfig>",
+            "                <SSID>",
+            "                        <hex>$Hex</hex>",
+            "                        <name>$SSID</name>",
+            "                </SSID>",
+            "        </SSIDConfig>",
+            "        <connectionType>ESS</connectionType>",
+            "        <connectionMode>auto</connectionMode>",
+            "        <MSM>",
+            "                <security>",
+            "                        <authEncryption>",
+            "                                <authentication>WPA2PSK</authentication>",
+            "                                <encryption>AES</encryption>",
+            "                                <useOneX>false</useOneX>",
+            "                        </authEncryption>",
+            "                        <sharedKey>",
+            "                                <keyType>passPhrase</keyType>",
+            "                                <protected>false</protected>",
+            "                                <keyMaterial>$Key</keyMaterial>",
+            "                        </sharedKey>",
+            "                </security>",
+            "        </MSM>",
+            '        <MacRandomization xmlns="http://www.microsoft.com/networking/WLAN/profile/v3">',
+            "                <enableRandomization>false</enableRandomization>",
+            "        </MacRandomization>",
+            "</WLANProfile>" -join "`n")
+
+            Set-Content -Path ".\$($This.Selected.Name)-$SSID.xml" -Value $Value
+            Return ".\$($This.Selected.Name)-$SSID.xml"
+        }
+        [Object] XmlTemplate([String]$Type)
+        {
+            $xList = "WiFiProfileXmlPersonal","WiFiProfileXmlEapPeap","WiFiProfileXmlEapTls"
+            If ($Type -notin $xList)
+            {
+                Throw "Invalid type, select (1): [$($xList -join ", ")]"
+            }
+            
+            $Return = Switch ($Type)
+            {
+                WiFiProfileXmlPersonal
+                {
+                    '<?xml version="1.0"?>',
+                    '<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">',
+                    '  <name>{0}</name>',
+                    '  <SSIDConfig>',
+                    '    <SSID>',
+                    '      <hex>{1}</hex>',
+                    '      <name>{0}</name>',
+                    '    </SSID>',
+                    '  </SSIDConfig>',
+                    '  <connectionType>ESS</connectionType>',
+                    '  <connectionMode>{2}</connectionMode>',
+                    '  <MSM>',
+                    '    <security>',
+                    '      <authEncryption>',
+                    '        <authentication>{3}</authentication>',
+                    '        <encryption>{4}</encryption>',
+                    '        <useOneX>false</useOneX>',
+                    '      </authEncryption>',
+                    '      <sharedKey>',
+                    '        <keyType>passPhrase</keyType>',
+                    '        <protected>false</protected>',
+                    '        <keyMaterial>{5}</keyMaterial>',
+                    '      </sharedKey>',
+                    '    </security>',
+                    '  </MSM>',
+                    '  <MacRandomization xmlns="http://www.microsoft.com/networking/WLAN/profile/v3">',
+                    "    <enableRandomization>false</enableRandomization>",
+                    "  </MacRandomization>",
+                    '</WLANProfile>'
+                }
+                WiFiProfileXmlEapPeap
+                {
+                    '<?xml version="1.0"?>',
+                    '<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">',
+                    '  <name>{0}</name>',
+                    '  <SSIDConfig>',
+                    '    <SSID>',
+                    '      <hex>{1}</hex>',
+                    '      <name>{0}</name>',
+                    '    </SSID>',
+                    '  </SSIDConfig>',
+                    '  <connectionType>ESS</connectionType>',
+                    '  <connectionMode>{2}</connectionMode>',
+                    '  <MSM>',
+                    '    <security>',
+                    '      <authEncryption>',
+                    '        <authentication>{3}</authentication>',
+                    '        <encryption>{4}</encryption>',
+                    '        <useOneX>true</useOneX>',
+                    '      </authEncryption>',
+                    '      <PMKCacheMode>enabled</PMKCacheMode>',
+                    '      <PMKCacheTTL>720</PMKCacheTTL>',
+                    '      <PMKCacheSize>128</PMKCacheSize>',
+                    '      <preAuthMode>disabled</preAuthMode>',
+                    '      <OneX xmlns="http://www.microsoft.com/networking/OneX/v1">',
+                    '        <authMode>machineOrUser</authMode>',
+                    '        <EAPConfig>',
+                    '          <EapHostConfig xmlns="http://www.microsoft.com/provisioning/EapHostConfig">',
+                    '            <EapMethod>',
+                    '              <Type xmlns="http://www.microsoft.com/provisioning/EapCommon">25</Type>',
+                    '              <VendorId xmlns="http://www.microsoft.com/provisioning/EapCommon">0</VendorId>',
+                    '              <VendorType xmlns="http://www.microsoft.com/provisioning/EapCommon">0</VendorType>',
+                    '              <AuthorId xmlns="http://www.microsoft.com/provisioning/EapCommon">0</AuthorId>',
+                    '            </EapMethod>',
+                    '            <Config xmlns="http://www.microsoft.com/provisioning/EapHostConfig">',
+                    '              <Eap xmlns="http://www.microsoft.com/provisioning/BaseEapConnectionPropertiesV1">',
+                    '                <Type>25</Type>',
+                    '                <EapType xmlns="http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV1">',
+                    '                  <ServerValidation>',
+                    '                    <DisableUserPromptForServerValidation>false</DisableUserPromptForServerValidation>',
+                    '                    <ServerNames></ServerNames>',
+                    '                    <TrustedRootCA></TrustedRootCA>',
+                    '                  </ServerValidation>',
+                    '                  <FastReconnect>true</FastReconnect>',
+                    '                  <InnerEapOptional>false</InnerEapOptional>',
+                    '                  <Eap xmlns="http://www.microsoft.com/provisioning/BaseEapConnectionPropertiesV1">',
+                    '                    <Type>26</Type>',
+                    '                    <EapType xmlns="http://www.microsoft.com/provisioning/MsChapV2ConnectionPropertiesV1">',
+                    '                      <UseWinLogonCredentials>false</UseWinLogonCredentials>',
+                    '                    </EapType>',
+                    '                  </Eap>',
+                    '                  <EnableQuarantineChecks>false</EnableQuarantineChecks>',
+                    '                  <RequireCryptoBinding>false</RequireCryptoBinding>',
+                    '                  <PeapExtensions>',
+                    '                    <PerformServerValidation xmlns="http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV2">true</PerformServerValidation>',
+                    '                    <AcceptServerName xmlns="http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV2">true</AcceptServerName>',
+                    '                    <PeapExtensionsV2 xmlns="http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV2">',
+                    '                      <AllowPromptingWhenServerCANotFound xmlns="http://www.microsoft.com/provisioning/MsPeapConnectionPropertiesV3">true</AllowPromptingWhenServerCANotFound>',
+                    '                    </PeapExtensionsV2>',
+                    '                  </PeapExtensions>',
+                    '                </EapType>',
+                    '              </Eap>',
+                    '            </Config>',
+                    '          </EapHostConfig>',
+                    '        </EAPConfig>',
+                    '      </OneX>',
+                    '    </security>',
+                    '  </MSM>',
+                    '  <MacRandomization xmlns="http://www.microsoft.com/networking/WLAN/profile/v3">',
+                    "    <enableRandomization>false</enableRandomization>",
+                    "  </MacRandomization>",
+                    '</WLANProfile>'
+                }
+                WiFiProfileXmlEapTls
+                {
+                    '<?xml version="1.0"?>',
+                    '<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">',
+                    '  <name>{0}</name>',
+                    '  <SSIDConfig>',
+                    '    <SSID>',
+                    '      <hex>{1}</hex>',
+                    '      <name>{0}</name>',
+                    '    </SSID>',
+                    '  </SSIDConfig>',
+                    '  <connectionType>ESS</connectionType>',
+                    '  <connectionMode>{2}</connectionMode>',
+                    '  <MSM>',
+                    '    <security>',
+                    '      <authEncryption>',
+                    '        <authentication>{3}</authentication>',
+                    '        <encryption>{4}</encryption>',
+                    '        <useOneX>true</useOneX>',
+                    '      </authEncryption>',
+                    '      <PMKCacheMode>enabled</PMKCacheMode>',
+                    '      <PMKCacheTTL>720</PMKCacheTTL>',
+                    '      <PMKCacheSize>128</PMKCacheSize>',
+                    '      <preAuthMode>disabled</preAuthMode>',
+                    '      <OneX xmlns="http://www.microsoft.com/networking/OneX/v1">',
+                    '        <authMode>machineOrUser</authMode>',
+                    '        <EAPConfig>',
+                    '          <EapHostConfig xmlns="http://www.microsoft.com/provisioning/EapHostConfig">',
+                    '            <EapMethod>',
+                    '              <Type xmlns="http://www.microsoft.com/provisioning/EapCommon">13</Type>',
+                    '              <VendorId xmlns="http://www.microsoft.com/provisioning/EapCommon">0</VendorId>',
+                    '              <VendorType xmlns="http://www.microsoft.com/provisioning/EapCommon">0</VendorType>',
+                    '              <AuthorId xmlns="http://www.microsoft.com/provisioning/EapCommon">0</AuthorId>',
+                    '            </EapMethod>',
+                    '            <Config xmlns:baseEap="http://www.microsoft.com/provisioning/BaseEapConnectionPropertiesV1" xmlns:eapTls="http://www.microsoft.com/provisioning/EapTlsConnectionPropertiesV1">',
+                    '              <baseEap:Eap>',
+                    '                <baseEap:Type>13</baseEap:Type>',
+                    '                <eapTls:EapType>',
+                    '                  <eapTls:CredentialsSource>',
+                    '                    <eapTls:CertificateStore />',
+                    '                  </eapTls:CredentialsSource>',
+                    '                  <eapTls:ServerValidation>',
+                    '                    <eapTls:DisableUserPromptForServerValidation>false</eapTls:DisableUserPromptForServerValidation>',
+                    '                    <eapTls:ServerNames></eapTls:ServerNames>',
+                    '                    <eapTls:TrustedRootCA></eapTls:TrustedRootCA>',
+                    '                  </eapTls:ServerValidation>',
+                    '                  <eapTls:DifferentUsername>false</eapTls:DifferentUsername>',
+                    '                </eapTls:EapType>',
+                    '              </baseEap:Eap>',
+                    '            </Config>',
+                    '          </EapHostConfig>',
+                    '        </EAPConfig>',
+                    '      </OneX>',
+                    '    </security>',
+                    '  </MSM>',
+                    '  <MacRandomization xmlns="http://www.microsoft.com/networking/WLAN/profile/v3">',
+                    "    <enableRandomization>false</enableRandomization>",
+                    "  </MacRandomization>",
+                    '</WLANProfile>'
+                }
+            }
+
+            Return ($Return -join "`n") 
+        }
+        [String] NewWiFiProfileXmlPsk([String]$ProfileName,[String]$ConnectionMode='auto',[String]$Authentication='WPA2PSK',[String]$Encryption='AES',[SecureString]$Password)
+        {
+            $PlainPassword = $Null
+            $ProfileXml    = $Null
+            $Hex           = ($ProfileName.ToCharArray() | % { '{0:X}' -f [int]$_ }) -join ''
+            Try
+            {
+                If ($Password)
+                {
+                    $secureStringToBstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password)
+                    $plainPassword      = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($secureStringToBstr)
+                }
+                
+                $profileXml             = [XML]($This.XmlTemplate("WiFiProfileXmlPersonal") -f $ProfileName, $Hex, $ConnectionMode, $Authentication, $Encryption, $plainPassword)
+                If (!$plainPassword)
+                {
+                    $null = $profileXml.WLANProfile.MSM.security.RemoveChild($profileXml.WLANProfile.MSM.security.sharedKey)
+                }
+
+                If ($Authentication -eq 'WPA3SAE')
+                {
+                    # Set transition mode as true for WPA3-SAE
+                    $nsmg = [System.Xml.XmlNamespaceManager]::new($profileXml.NameTable)
+                    $nsmg.AddNamespace('WLANProfile', $profileXml.DocumentElement.GetAttribute('xmlns'))
+                    $refNode = $profileXml.SelectSingleNode('//WLANProfile:authEncryption', $nsmg)
+                    $xmlnode = $profileXml.CreateElement('transitionMode', 'http://www.microsoft.com/networking/WLAN/profile/v4')
+                    $xmlnode.InnerText = 'true'
+                    $null = $refNode.AppendChild($xmlnode)
+                }
+
+                Return $This.FormatXml($profileXml.OuterXml)
+            }
+            Catch
+            {
+                Throw "Failed to create a new profile"
+            }
+        }
+        [String] NewWifiProfileXmlEap([String]$ProfileName,[String]$ConnectionMode='auto',[String]$Authentication='WPA2PSK',[String]$Encryption='AES',[String]$EAPType,[String[]]$ServerNames,[String]$TrustedRootCA)
+        {
+            $ProfileXml = $Null
+            $Hex        = ($ProfileName.ToCharArray() | % { '{0:X}' -f [int]$_ }) -join ''
+            Try
+            {
+                If ($EAPType -eq 'PEAP')
+                {
+                    $profileXml = [Xml] ($This.XmlTemplate("WiFiProfileXmlEap$EapType") -f $ProfileName, $Hex, $ConnectionMode, $Authentication, $Encryption)
+
+                    If ($ServerNames)
+                    {
+                        $profileXml.WLANProfile.MSM.security.OneX.EAPConfig.EapHostConfig.Config.Eap.EapType.ServerValidation.ServerNames = $ServerNames
+                    }
+
+                    If ($TrustedRootCA)
+                    {
+                        [String]$formattedCaHash = $TrustedRootCA -replace '..', '$& '
+                        $profileXml.WLANProfile.MSM.security.OneX.EAPConfig.EapHostConfig.Config.Eap.EapType.ServerValidation.TrustedRootCA = $formattedCaHash
+                    }
+                }
+                ElseIf ($EAPType -eq 'TLS')
+                {
+                    $profileXml = [Xml] ($This.XmlTemplate("WiFiProfileXmlEap$EapType") -f $ProfileName, $Hex, $ConnectionMode, $Authentication, $Encryption)
+
+                    If ($ServerNames)
+                    {
+                        $node = $profileXml.WLANProfile.MSM.security.OneX.EapConfig.EapHostConfig.Config.SelectNodes("//*[local-name()='ServerNames']")
+                        $node[0].InnerText = $ServerNames
+                    }
+
+                    If ($TrustedRootCA)
+                    {
+                        [String]$formattedCaHash = $TrustedRootCA -replace '..', '$& '
+                        $node = $profileXml.WLANProfile.MSM.security.OneX.EapConfig.EapHostConfig.Config.SelectNodes("//*[local-name()='TrustedRootCA']")
+                        $node[0].InnerText = $formattedCaHash
+                    }
+                }
+
+                If ($Authentication -eq 'WPA3SAE')
+                {
+                    # Set transition mode as true for WPA3-SAE
+                    $nsmg = [System.Xml.XmlNamespaceManager]::new($profileXml.NameTable)
+                    $nsmg.AddNamespace('WLANProfile', $profileXml.DocumentElement.GetAttribute('xmlns'))
+                    $refNode = $profileXml.SelectSingleNode('//WLANProfile:authEncryption', $nsmg)
+                    $xmlnode = $profileXml.CreateElement('transitionMode', 'http://www.microsoft.com/networking/WLAN/profile/v4')
+                    $xmlnode.InnerText = 'true'
+                    $null = $refNode.AppendChild($xmlnode)
+                }
+
+                Return $This.FormatXml($profileXml.OuterXml)
+            }
+            Catch
+            {
+                Throw "Failed to create a new profile"
+            }
+        }
+        [Object] NewWiFiProfilePsk([String]$ProfileName,[String]$Password,[String]$WiFiAdapterName)
+        {
+            $ConnectionMode  = 'auto'
+            $Authentication  = 'WPA2PSK'
+            $Encryption      = 'AES'
+            $ProfileTemp     = $This.NewWifiProfileXmlPsk($ProfileName,$ConnectionMode,$Authentication,$Encryption,$Password)
+            Return $This.NewWifiProfile($ProfileTemp,$WiFiAdapterName)
+        }
+        [Object] NewWiFiProfilePsk([String]$ProfileName,[String]$Password,[String]$ConnectionMode,[String]$WiFiAdapterName)
+        {
+            $Authentication  = 'WPA2PSK'
+            $Encryption      = 'AES'
+            $ProfileTemp     = $This.NewWifiProfileXmlPsk($ProfileName,$ConnectionMode,$Authentication,$Encryption)
+            Return $This.NewWifiProfile($ProfileTemp,$WiFiAdapterName)
+        }
+        [Object] NewWiFiProfilePsk([String]$ProfileName,[String]$Password,[String]$ConnectionMode,[String]$Authentication,[String]$WiFiAdapterName)
+        {
+            $Encryption      = 'AES'
+            $ProfileTemp     = $This.NewWifiProfileXmlPsk($ProfileName,$ConnectionMode,$Authentication,$Encryption,$WiFiAdapterName)
+            Return $This.NewWifiProfile($ProfileTemp,$WiFiAdapterName)
+        }
+        [Object] NewWiFiProfilePsk([String]$ProfileName,[String]$Password,[String]$ConnectionMode,[String]$Authentication,[String]$Encryption,[String]$WiFiAdapterName)
+        {
+            $ProfileTemp     = $This.NewWifiProfileXmlPsk($ProfileName,$ConnectionMode,$Authentication,$Encryption,$WiFiAdapterName)
+            Return $This.NewWifiProfile($ProfileTemp,$WiFiAdapterName)
+        }
+        [Object] NewWifiProfileEap([String]$ProfileName,[String]$EapType,[String]$WifiAdapterName)
+        {
+            $ConnectionMode    = 'auto'
+            $Authentication    = 'WPA2PSK'
+            $Encryption        = 'AES'
+            $ServerNames       = ''
+            $TrustedRootCA     = $Null
+            $ProfileTemp       = $This.NewWifiProfileXmlEap($ProfileName,$ConnectionMode,$Authentication,$Encryption,$EapType,$ServerNames,$TrustedRootCA)
+            Return $This.NewWifiProfile($ProfileTemp,$WiFiAdapterName)
+        }
+        [Object] NewWifiProfileEap([String]$ProfileName,[String]$ConnectionMode,[String]$EapType,[String]$WifiAdapterName)
+        {
+            $Authentication    = 'WPA2PSK'
+            $Encryption        = 'AES'
+            $ServerNames       = ''
+            $TrustedRootCA     = $Null
+            $ProfileTemp       = $This.NewWifiProfileXmlEap($ProfileName,$ConnectionMode,$Authentication,$Encryption,$EapType,$ServerNames,$TrustedRootCA)
+            Return $This.NewWifiProfile($ProfileTemp,$WiFiAdapterName)
+        }
+        [Object] NewWifiProfileEap([String]$ProfileName,[String]$ConnectionMode,[String]$Authentication,[String]$EapType,[String]$WifiAdapterName)
+        {
+            $Encryption        = 'AES'
+            $ServerNames       = ''
+            $TrustedRootCA     = $Null
+            $ProfileTemp       = $This.NewWifiProfileXmlEap($ProfileName,$ConnectionMode,$Authentication,$Encryption,$EapType,$ServerNames,$TrustedRootCA)
+            Return $This.NewWifiProfile($ProfileTemp,$WiFiAdapterName)
+        }
+        [Object] NewWifiProfileEap([String]$ProfileName,[String]$ConnectionMode,[String]$Authentication,[String]$Encryption,[String]$EapType,[String]$WifiAdapterName)
+        {
+            $ServerNames       = ''
+            $TrustedRootCA     = $Null
+            $ProfileTemp       = $This.NewWifiProfileXmlEap($ProfileName,$ConnectionMode,$Authentication,$Encryption,$EapType,$ServerNames,$TrustedRootCA)
+            Return $This.NewWifiProfile($ProfileTemp,$WiFiAdapterName)
+        }
+        [Object] NewWifiProfileEap([String]$ProfileName,[String]$ConnectionMode,[String]$Authentication,[String]$Encryption,[String]$EapType,[String[]]$ServerNames,[String]$WifiAdapterName)
+        {
+            $TrustedRootCA     = $Null
+            $ProfileTemp       = $This.NewWifiProfileXmlEap($ProfileName,$ConnectionMode,$Authentication,$Encryption,$EapType,$ServerNames,$TrustedRootCA)
+            Return $This.NewWifiProfile($ProfileTemp,$WiFiAdapterName)
+        }
+        [Object] NewWifiProfileEap([String]$ProfileName,[String]$ConnectionMode,[String]$Authentication,[String]$Encryption,[String]$EapType,[String[]]$ServerNames,[String]$TrustedRootCA,[String]$WifiAdapterName)
+        {
+            $ProfileTemp       = $This.NewWifiProfileXmlEap($ProfileName,$ConnectionMode,$Authentication,$Encryption,$EapType,$ServerNames,$TrustedRootCA)
+            Return $This.NewWifiProfile($ProfileTemp,$WiFiAdapterName)
+        }
+        [Object] NewWifiProfileXml([String]$ProfileXml,[String]$WiFiAdapterName,[Bool]$Overwrite)
+        {
+            Return $This.NewWifiProfile($ProfileXml,$WiFiAdapterName)
+        }
+        [String] FormatXml([String]$ProfileXml)
+        {
+            $StringWriter          = [System.IO.StringWriter]::New()
+            $XmlWriter             = [System.Xml.XmlTextWriter]::New($StringWriter)
+            $XmlWriter.Formatting  = "indented"
+            $XmlWriter.Indentation = 4
+            ([Xml]$ProfileXml).WriteContentTo($XmlWriter)
+            $XmlWriter.Flush()
+            $StringWriter.Flush()
+            Return $StringWriter.ToString()
+        }
+        NewWifiProfile([String]$ProfileXml,[String]$WiFiAdapterName,[Bool]$Overwrite)
+        {
+            Try
+            {
+                $interfaceGuid       = $This.GetWiFiInterfaceGuid($WiFiAdapterName)
+                $clientHandle        = $This.NewWiFiHandle()
+                $flags               = 0
+                $reasonCode          = [IntPtr]::Zero
+                $profilePointer      = [System.Runtime.InteropServices.Marshal]::StringToHGlobalUni($profileXML)    
+                $returnCode          = [WiFi.ProfileManagement]::WlanSetProfile($clientHandle,[ref] $interfaceGuid,$flags,$profilePointer,[IntPtr]::Zero,$Overwrite,[IntPtr]::Zero,[ref]$reasonCode)
+                $returnCodeMessage   = $This.Win32Exception($ReturnCode)
+                $reasonCodeMessage   = $This.WiFiReasonCode($ReasonCode)
+
+                <# For Testing
+                $interfaceGuid       = $Wifi.GetWiFiInterfaceGuid($WiFiAdapterName)
+                $clientHandle        = $Wifi.NewWiFiHandle()
+                $flags               = 0
+                $reasonCode          = [IntPtr]::Zero
+                $profilePointer      = [System.Runtime.InteropServices.Marshal]::StringToHGlobalUni($profileXML)    
+                $returnCode          = [WiFi.ProfileManagement]::WlanSetProfile($clientHandle,[ref] $interfaceGuid,$flags,$profilePointer,[IntPtr]::Zero,$Overwrite,[IntPtr]::Zero,[ref]$reasonCode)
+                $returnCodeMessage   = $Wifi.Win32Exception($ReturnCode)
+                $reasonCodeMessage   = $Wifi.WiFiReasonCode($ReasonCode)
+                #>
+
+                If ($returnCode -eq 0)
+                {
+                    Write-Verbose -Message $returnCodeMessage
+                }
+                Else
+                {
+                    throw $returnCodeMessage
+                }
+
+                Write-Verbose -Message $reasonCodeMessage
+            }
+            Catch
+            {
+                Throw "Failed to create the profile"
+            }
+            Finally
+            {
+                If ($clientHandle)
+                {
+                    $This.RemoveWiFiHandle($clientHandle)
+                }
+            }
+        }
+        Select([String]$Description)
         {
             # Select the adapter from its description
-            $This.Selected                  = Get-NetAdapter | ? InterfaceDescription -eq $Adapter
+            $This.Selected                  = $This.GetWifiInterface() | ? Description -eq $Description
 
             # Set other Xaml fields
             $This.Xaml.IO.Index.Text        = $This.Selected.InterfaceIndex
-            $This.Xaml.IO.MacAddress.Text   = $This.Selected.MacAddress.Replace("-",":")
+            $This.Xaml.IO.MacAddress.Text   = $This.Selected.MacAddress
 
             $This.Update()
+        }
+        Unselect()
+        {
+            $This.Selected                  = $Null
+            $This.Xaml.IO.Index.Text        = $Null
+            $This.Xaml.IO.MacAddress.Text   = $Null
+
+            $This.Update()
+        }
+        Disconnect()
+        {
+            If (!$This.Selected)
+            {
+                Write-Host "No network selected"
+            }
+            If ($This.Selected.State -eq "CONNECTED")
+            {
+                $ClientHandle                      = $This.NewWiFiHandle()
+                [WiFi.ProfileManagement]::WlanDisconnect($ClientHandle, [Ref] $This.Selected.Guid, [IntPtr]::Zero)
+                $This.RemoveWifiHandle($ClientHandle)
+
+                <# For Testing
+                $ClientHandle                      = $Wifi.NewWiFiHandle()
+                [WiFi.ProfileManagement]::WlanDisconnect($ClientHandle, [Ref] $Wifi.Selected.Guid, [IntPtr]::Zero)
+                $Wifi.RemoveWifiHandle($ClientHandle)
+                #>
+
+                $This.Connected                    = $Null
+                $Link                              = $This.Selected.Description
+                $This.Unselect()
+                $This.Select($Link)
+                $This.Xaml.IO.Ssid.Text            = "<Not connected>"
+                $This.Xaml.IO.Bssid.Text           = "<Not connected>"
+                $This.Xaml.IO.Disconnect.IsEnabled = 0
+                $This.Xaml.IO.Connect.IsEnabled    = 0
+                $This.Xaml.IO.Output.SelectedIndex = -1
+            }
+        }
+        Connect([String]$SSID)
+        {
+            If (!$This.Selected)
+            {
+                Write-Host "No network selected"
+            }
+
+            If ($This.Selected)
+            {
+                $Link                              = $This.Selected.Description
+                $This.Unselect()
+                $This.Select($Link)
+
+                If ($This.Selected.State -ne "CONNECTED")
+                {
+                    $Result = $This.GetWifiProfileInfo($SSID,$This.Selected.Guid)
+                    If ($Result)
+                    {
+                        $Param  = $This.GetWiFiConnectionParameter($SSID)
+
+                        $ClientHandle                      = $This.NewWiFiHandle()
+                        [WiFi.ProfileManagement]::WlanConnect($ClientHandle, [Ref] $This.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
+                        $This.RemoveWifiHandle($ClientHandle)
+
+                        <#  For Testing
+                        $Param = $Wifi.GetWifiConnectionParameter($SSID)
+                        $ClientHandle                      = $Wifi.NewWiFiHandle()
+                        [WiFi.ProfileManagement]::WlanConnect($ClientHandle, [Ref] $Wifi.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
+                        $Wifi.RemoveWifiHandle($ClientHandle)
+                        #>
+
+                        $Link                              = $This.Selected.Description
+                        $This.Unselect()
+                        $This.Select($Link)
+                        
+                        $This.Update()
+                    }
+                    If (!$Result)
+                    {
+                        $Network = $This.Output.SelectedItem
+                        If ($Network.Authentication -match "psk")
+                        {
+                            $Pass    = [XamlWindow][Passphrase]::Tab
+                            $Pass.IO.Connect.Add_Click(
+                            {
+                                If ($Pass.IO.Passphrase.Password -in @($Null,""))
+                                {
+                                    [System.Windows.Messagebox]::Show("Invalid passphrase detected.","Error") 
+                                }
+                                Else
+                                {
+                                    $ProfileXml = $This.NewWifiProfileXmlPsk($Network.Name,"auto","WPA2PSK","AES",$Pass.IO.Passphrase.SecurePassword)
+                                    $This.NewWifiProfile($ProfileXml,"Wi-Fi",$True)
+                                    $Param  = $This.GetWiFiConnectionParameter($SSID)
+
+                                    $ClientHandle                      = $This.NewWiFiHandle()
+                                    [WiFi.ProfileManagement]::WlanConnect($ClientHandle, [Ref] $This.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
+                                    $This.RemoveWifiHandle($ClientHandle)
+
+                                    $Link                              = $This.Selected.Description
+                                    $This.Unselect()
+                                    $This.Select($Link)
+
+                                    $This.Update()
+                                    If ($This.Connected)
+                                    {
+                                        $Pass.IO.DialogResult = $True
+                                    }
+                                    Else
+                                    {
+                                        $Pass.IO.DialogResult = $False
+                                    }
+                                }
+                            })
+
+                            $Pass.IO.Cancel.Add_Click(
+                            {
+                                $Pass.IO.DialogResult = $False
+                            })
+                        }
+                    }
+                }
+            }
         }
         Update()
         {
@@ -834,7 +2114,6 @@ Function Search-WirelessNetwork
                     $This.Xaml.IO.Connect.IsEnabled    = 0
                 }
             }
-            $This.Xaml.IO.Output.SelectedIndex         = -1
         }
         Wireless()
         {
@@ -884,11 +2163,7 @@ Function Search-WirelessNetwork
         }
         [Object[]] RefreshAdapterList()
         {
-            Return @( Get-NetAdapter | ? PhysicalMediaType -match "(Native 802.11|Wireless (W|L)AN)" )
-        }
-        [Object] Query([Object]$Interface)
-        {
-            Return ((netsh wlan show interface $Interface.GUID) -match "^\s+State\s+\:").Substring(29)
+            Return @( Get-NetAdapter | ? PhysicalMediaType -match "(Native 802.11|Wireless (W|L)AN)")
         }
         Scan()
         {
@@ -950,83 +2225,6 @@ Function Search-WirelessNetwork
                 $This.Output | ? $This.Xaml.IO.Type.SelectedItem.Content -match $This.Xaml.IO.Filter.Text | % { $This.Xaml.IO.Output.Items.Add($_) }
             }
         }
-        [String] NewProfile([String]$SSID,[String]$Key)
-        {
-            $Hex   = ($SSID.ToCharArray() | % { '{0:X}' -f [int]$_ }) -join ''
-            $Value = @('<?xml version="1.0"?>',
-            '<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">',
-            "        <name>$SSID</name>",
-            "        <SSIDConfig>",
-            "                <SSID>",
-            "                        <hex>$Hex</hex>",
-            "                        <name>$SSID</name>",
-            "                </SSID>",
-            "        </SSIDConfig>",
-            "        <connectionType>ESS</connectionType>",
-            "        <connectionMode>auto</connectionMode>",
-            "        <MSM>",
-            "                <security>",
-            "                        <authEncryption>",
-            "                                <authentication>WPA2PSK</authentication>",
-            "                                <encryption>AES</encryption>",
-            "                                <useOneX>false</useOneX>",
-            "                        </authEncryption>",
-            "                        <sharedKey>",
-            "                                <keyType>passPhrase</keyType>",
-            "                                <protected>false</protected>",
-            "                                <keyMaterial>$Key</keyMaterial>",
-            "                        </sharedKey>",
-            "                </security>",
-            "        </MSM>",
-            '        <MacRandomization xmlns="http://www.microsoft.com/networking/WLAN/profile/v3">',
-            "                <enableRandomization>false</enableRandomization>",
-            "        </MacRandomization>",
-            "</WLANProfile>" -join "`n")
-
-            Set-Content -Path ".\$($This.Selected.Name)-$SSID.xml" -Value $Value
-            Return ".\$($This.Selected.Name)-$SSID.xml"
-        }
-        Disconnect()
-        {
-            netsh wlan disconnect $This.Selected.Name
-            $This.Update()
-        }
-        Connect([String]$SSID)
-        {
-            $Attempt = netsh wlan connect $ssid $This.Selected.Name
-            If ($Attempt -match "(no profile|does not exist)")
-            {
-                $Pass = [XamlWindow][Passphrase]::Tab
-                $Pass.IO.Connect.Add_Click(
-                {
-                    If ($Pass.IO.Passphrase.Password -in @($Null,""))
-                    {
-                        [System.Windows.Messagebox]::Show("Invalid passphrase detected.","Error") 
-                    }
-                    Else
-                    {
-                        $path    = $Wifi.NewProfile($SSID,$Pass.IO.Passphrase.Password)
-                        netsh wlan add profile filename="$path"
-                        $Attempt = netsh wlan connect $ssid $This.Selected.Name 
-                        If ($Attempt -match "Success")
-                        {
-                            $Pass.IO.DialogResult = $True
-                        }
-                        Else
-                        {
-                            $Pass.IO.DialogResult = $False
-                        }
-                    }
-                })
-
-                $Pass.IO.Cancel.Add_Click(
-                {
-                    $Pass.IO.DialogResult = $False
-                })
-
-                $Pass.Invoke()
-            }
-        }
         SearchFilter()
         {
             If ($This.Xaml.IO.Filter.Text -ne "" -and $This.Output.Count -gt 0)
@@ -1044,7 +2242,6 @@ Function Search-WirelessNetwork
     }
 
     $Wifi = [Wireless]::New()
-
     If (!$Wifi)
     {
         Throw "Unable to stage the GUI"
