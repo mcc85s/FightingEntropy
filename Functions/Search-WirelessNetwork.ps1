@@ -1,464 +1,42 @@
 <#
 .SYNOPSIS
-
+        Allows for the management of wireless networks from a PowerShell based graphical user interface.
 .DESCRIPTION
-
+        After seeing various scripts on the internet related to wireless network management, I decided
+        to build a graphical user interface that is able to 1) scan for wirelss networks, 2) create profiles,
+        and 3) handle everything from the GUI. Still workin' on it... but- I imagine this will probably be
+        pretty fun to learn from.
 .LINK
           Inspiration:   https://www.reddit.com/r/sysadmin/comments/9az53e/need_help_controlling_wifi/
           Also: jcwalker https://github.com/jcwalker/WiFiProfileManagement/blob/dev/Classes/AddNativeWiFiFunctions.ps1
+                jcwalker wrote most of the C# code, I have implemented it and edited his original code, as parsing
+                the output of netsh just wasn't my cup of tea... 
 .NOTES
           FileName: Search-WirelessNetwork.ps1
           Solution: FightingEntropy Module
-          Purpose: For scanning wireless networks
+          Purpose: For scanning wireless networks (eventually for use in a PXE environment)
           Author: Michael C. Cook Sr.
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2021-10-09
-          Modified: 2022-04-22
+          Modified: 2022-04-02
           
           Version - 2021.10.0 - () - Finalized functional version 1.
 
           TODO:
-
 .Example
 #>
+
+# Relax execution policy for this process only
+Set-ExecutionPolicy Bypass -Scope Process -Force
+Import-Module FightingEntropy
 
 # Load assemblies
 Add-Type -AssemblyName System.Runtime.WindowsRuntime, PresentationFramework
 
-Function Search-WirelessNetwork
+# Some C# Code
+Function Use-Wlanapi
 {
-    # Declare classes
-    Class DGList
-    {
-        [String]$Name
-        [Object]$Value
-        DGList([String]$Name,[Object]$Value)
-        {
-            $This.Name  = $Name
-            $This.Value = $Value
-        }
-    }
-
-    Class XamlWindow 
-    {
-        Hidden [Object]        $XAML
-        Hidden [Object]         $XML
-        [String[]]            $Names
-        [Object[]]            $Types
-        [Object]               $Node
-        [Object]                 $IO
-        [String]          $Exception
-        [String[]] FindNames()
-        {
-            Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
-
-                ($_ -Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
-
-            } | Select-Object -Unique ) 
-        }
-        XamlWindow([String]$XAML)
-        {           
-            If (!$Xaml)
-            {
-                Throw "Invalid XAML Input"
-            }
-
-            [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-
-            $This.Xaml               = $Xaml
-            $This.XML                = [XML]$Xaml
-            $This.Names              = $This.FindNames()
-            $This.Types              = @( )
-            $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
-            $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
-
-            ForEach ($I in 0..($This.Names.Count - 1))
-            {
-                $Name                = $This.Names[$I]
-                $Object              = $This.IO.FindName($Name)
-                $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $Object -Force
-                If ($Object -ne $Null)
-                {
-                    $This.Types         += [DGList]::New($Name,$This.IO.FindName($Name).GetType().Name)
-                }
-            }
-        }
-        Invoke()
-        {
-            Try
-            {
-                $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
-            }
-            Catch
-            {
-                $This.Exception = $PSItem
-            }
-        }
-    }
-
-    Class GUI
-    {
-        Static [String] $Tab = (
-            '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Wireless Network Scanner" Width="800" Height="650" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
-            '    <Window.Resources>',
-            '        <Style TargetType="GroupBox">',
-            '            <Setter Property="Margin" Value="10"/>',
-            '            <Setter Property="Padding" Value="10"/>',
-            '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
-            '            <Setter Property="Template">',
-            '                <Setter.Value>',
-            '                    <ControlTemplate TargetType="GroupBox">',
-            '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
-            '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
-            '                        </Border>',
-            '                    </ControlTemplate>',
-            '                </Setter.Value>',
-            '            </Setter>',
-            '        </Style>',
-            '        <Style TargetType="Button">',
-            '            <Setter Property="Margin" Value="5"/>',
-            '            <Setter Property="Padding" Value="5"/>',
-            '            <Setter Property="Height" Value="30"/>',
-            '            <Setter Property="FontWeight" Value="Semibold"/>',
-            '            <Setter Property="FontSize" Value="12"/>',
-            '            <Setter Property="Foreground" Value="Black"/>',
-            '            <Setter Property="Background" Value="#DFFFBA"/>',
-            '            <Setter Property="BorderThickness" Value="2"/>',
-            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-            '            <Style.Resources>',
-            '                <Style TargetType="Border">',
-            '                    <Setter Property="CornerRadius" Value="5"/>',
-            '                </Style>',
-            '            </Style.Resources>',
-            '        </Style>',
-            '        <Style TargetType="DataGridCell">',
-            '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
-            '        </Style>',
-            '        <Style TargetType="DataGrid">',
-            '            <Setter Property="Margin" Value="5"/>',
-            '            <Setter Property="AutoGenerateColumns" Value="False"/>',
-            '            <Setter Property="AlternationCount" Value="3"/>',
-            '            <Setter Property="HeadersVisibility" Value="Column"/>',
-            '            <Setter Property="CanUserResizeRows" Value="False"/>',
-            '            <Setter Property="CanUserAddRows" Value="False"/>',
-            '            <Setter Property="IsReadOnly" Value="True"/>',
-            '            <Setter Property="IsTabStop" Value="True"/>',
-            '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
-            '            <Setter Property="SelectionMode" Value="Extended"/>',
-            '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
-            '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
-            '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
-            '        </Style>',
-            '        <Style TargetType="DataGridRow">',
-            '            <Setter Property="BorderBrush" Value="Black"/>',
-            '            <Style.Triggers>',
-            '                <Trigger Property="AlternationIndex" Value="0">',
-            '                    <Setter Property="Background" Value="White"/>',
-            '                </Trigger>',
-            '                <Trigger Property="AlternationIndex" Value="1">',
-            '                    <Setter Property="Background" Value="#FFC5E5EC"/>',
-            '                </Trigger>',
-            '                <Trigger Property="AlternationIndex" Value="2">',
-            '                    <Setter Property="Background" Value="#FFFDE1DC"/>',
-            '                </Trigger>',
-            '            </Style.Triggers>',
-            '        </Style>',
-            '        <Style TargetType="DataGridColumnHeader">',
-            '            <Setter Property="FontSize"   Value="10"/>',
-            '            <Setter Property="FontWeight" Value="Medium"/>',
-            '            <Setter Property="Margin" Value="2"/>',
-            '            <Setter Property="Padding" Value="2"/>',
-            '        </Style>',
-            '        <Style TargetType="ComboBox">',
-            '            <Setter Property="Height" Value="24"/>',
-            '            <Setter Property="Margin" Value="5"/>',
-            '            <Setter Property="FontSize" Value="12"/>',
-            '            <Setter Property="FontWeight" Value="Normal"/>',
-            '        </Style>',
-            '        <Style x:Key="DropShadow">',
-            '            <Setter Property="TextBlock.Effect">',
-            '                <Setter.Value>',
-            '                    <DropShadowEffect ShadowDepth="1"/>',
-            '                </Setter.Value>',
-            '            </Setter>',
-            '        </Style>',
-            '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
-            '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
-            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-            '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-            '            <Setter Property="Height" Value="24"/>',
-            '            <Setter Property="Margin" Value="4"/>',
-            '            <Setter Property="FontSize" Value="12"/>',
-            '            <Setter Property="Foreground" Value="#000000"/>',
-            '            <Setter Property="TextWrapping" Value="Wrap"/>',
-            '            <Style.Resources>',
-            '                <Style TargetType="Border">',
-            '                    <Setter Property="CornerRadius" Value="2"/>',
-            '                </Style>',
-            '            </Style.Resources>',
-            '        </Style>',
-            '        <Style TargetType="Label">',
-            '            <Setter Property="Margin" Value="5"/>',
-            '            <Setter Property="FontWeight" Value="Bold"/>',
-            '            <Setter Property="Background" Value="Black"/>',
-            '            <Setter Property="Foreground" Value="White"/>',
-            '            <Setter Property="BorderBrush" Value="Gray"/>',
-            '            <Setter Property="BorderThickness" Value="2"/>',
-            '            <Style.Resources>',
-            '                <Style TargetType="Border">',
-            '                    <Setter Property="CornerRadius" Value="5"/>',
-            '                </Style>',
-            '            </Style.Resources>',
-            '        </Style>',
-            '    </Window.Resources>',
-            '    <Grid>',
-            '        <Grid.Background>',
-            '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
-            '        </Grid.Background>',
-            '        <GroupBox>',
-            '            <Grid Margin="5">',
-            '                <Grid.RowDefinitions>',
-            '                    <RowDefinition Height="40"/>',
-            '                    <RowDefinition Height="*"/>',
-            '                    <RowDefinition Height="40"/>',
-            '                    <RowDefinition Height="40"/>',
-            '                    <RowDefinition Height="50"/>',
-            '                </Grid.RowDefinitions>',
-            '                <Grid Grid.Row="0">',
-            '                    <Grid.ColumnDefinitions>',
-            '                        <ColumnDefinition Width="120"/>',
-            '                        <ColumnDefinition Width="120"/>',
-            '                        <ColumnDefinition Width="*"/>',
-            '                        <ColumnDefinition Width="120"/>',
-            '                    </Grid.ColumnDefinitions>',
-            '                    <Label Grid.Column="0" Content="[Search/Filter]:"/>',
-            '                    <ComboBox Grid.Column="1" Name="Type" SelectedIndex="0">',
-            '                        <ComboBoxItem Content="Name"/>',
-            '                        <ComboBoxItem Content="Index"/>',
-            '                        <ComboBoxItem Content="BSSID"/>',
-            '                        <ComboBoxItem Content="Type"/>',
-            '                        <ComboBoxItem Content="Encryption"/>',
-            '                        <ComboBoxItem Content="Strength"/>',
-            '                    </ComboBox>',
-            '                    <TextBox Grid.Column="2" Name="Filter"/>',
-            '                    <Button Grid.Column="3" Content="Refresh" Name="Refresh"/>',
-            '                </Grid>',
-            '                <DataGrid Grid.Row="1" Grid.Column="0" Name="Output">',
-            '                    <DataGrid.Columns>',
-            '                        <DataGridTextColumn Header="Index"  Width="35"  Binding="{Binding Index}"/>',
-            '                        <DataGridTextColumn Header="Name"   Width="150" Binding="{Binding Name}"/>',
-            '                        <DataGridTextColumn Header="Bssid"  Width="110" Binding="{Binding Bssid}"/>',
-            '                        <DataGridTextColumn Header="Type"   Width="60"  Binding="{Binding Type}"/>',
-            '                        <DataGridTextColumn Header="Uptime" Width="140" Binding="{Binding Uptime}"/>',
-            '                        <DataGridTemplateColumn Header="Authentication" Width="80">',
-            '                            <DataGridTemplateColumn.CellTemplate>',
-            '                                <DataTemplate>',
-            '                                    <ComboBox SelectedIndex="{Binding AuthenticationSlot}"  ToolTip="{Binding AuthenticationDescription}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
-            '                                        <ComboBoxItem Content="None"/>',
-            '                                        <ComboBoxItem Content="Unknown"/>',
-            '                                        <ComboBoxItem Content="Open80211"/>',
-            '                                        <ComboBoxItem Content="SharedKey80211"/>',
-            '                                        <ComboBoxItem Content="Wpa"/>',
-            '                                        <ComboBoxItem Content="WpaPsk"/>',
-            '                                        <ComboBoxItem Content="WpaNone"/>',
-            '                                        <ComboBoxItem Content="Rsna"/>',
-            '                                        <ComboBoxItem Content="RsnaPsk"/>',
-            '                                        <ComboBoxItem Content="Ihv"/>',
-            '                                        <ComboBoxItem Content="Wpa3Enterprise192Bits"/>',
-            '                                        <ComboBoxItem Content="Wpa3Sae"/>',
-            '                                        <ComboBoxItem Content="Owe"/>',
-            '                                        <ComboBoxItem Content="Wpa3Enterprise"/>',
-            '                                    </ComboBox>',
-            '                                </DataTemplate>',
-            '                            </DataGridTemplateColumn.CellTemplate>',
-            '                        </DataGridTemplateColumn>',
-            '                        <DataGridTemplateColumn Header="Encryption" Width="70">',
-            '                            <DataGridTemplateColumn.CellTemplate>',
-            '                                <DataTemplate>',
-            '                                    <ComboBox SelectedIndex="{Binding EncryptionSlot}" ToolTip="{Binding EncryptionDescription}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
-            '                                        <ComboBoxItem Content="None"/>',
-            '                                        <ComboBoxItem Content="Unknown"/>',
-            '                                        <ComboBoxItem Content="Wep"/>',
-            '                                        <ComboBoxItem Content="Wep40"/>',
-            '                                        <ComboBoxItem Content="Wep104"/>',
-            '                                        <ComboBoxItem Content="Tkip"/>',
-            '                                        <ComboBoxItem Content="Ccmp"/>',
-            '                                        <ComboBoxItem Content="WpaUseGroup"/>',
-            '                                        <ComboBoxItem Content="RsnUseGroup"/>',
-            '                                        <ComboBoxItem Content="Ihv"/>',
-            '                                        <ComboBoxItem Content="Gcmp"/>',
-            '                                        <ComboBoxItem Content="Gcmp256"/>',
-            '                                    </ComboBox>',
-            '                                </DataTemplate>',
-            '                            </DataGridTemplateColumn.CellTemplate>',
-            '                        </DataGridTemplateColumn>',
-            '                        <DataGridTemplateColumn Header="Strength" Width="50">',
-            '                            <DataGridTemplateColumn.CellTemplate>',
-            '                                <DataTemplate>',
-            '                                    <ComboBox SelectedIndex="{Binding Strength}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
-            '                                        <ComboBoxItem Content="0"/>',
-            '                                        <ComboBoxItem Content="1"/>',
-            '                                        <ComboBoxItem Content="2"/>',
-            '                                        <ComboBoxItem Content="3"/>',
-            '                                        <ComboBoxItem Content="4"/>',
-            '                                        <ComboBoxItem Content="5"/>',
-            '                                    </ComboBox>',
-            '                                </DataTemplate>',
-            '                            </DataGridTemplateColumn.CellTemplate>',
-            '                        </DataGridTemplateColumn>',
-            '                    </DataGrid.Columns>',
-            '                </DataGrid>',
-            '                <Grid Grid.Row="2">',
-            '                    <Grid.ColumnDefinitions>',
-            '                        <ColumnDefinition Width="100"/>',
-            '                        <ColumnDefinition Width="300"/>',
-            '                        <ColumnDefinition Width="110"/>',
-            '                        <ColumnDefinition Width="*"/>',
-            '                        <ColumnDefinition Width="70"/>',
-            '                        <ColumnDefinition Width="40"/>',
-            '                    </Grid.ColumnDefinitions>',
-            '                    <Label Grid.Column="0" Content="[Interface]:"/>',
-            '                    <ComboBox Grid.Column="1" Name="Interface"/>',
-            '                    <Label Grid.Column="2" Content="[MacAddress]:"/>',
-            '                    <TextBox Grid.Column="3" Name="MacAddress" IsReadOnly="True"/>',
-            '                    <Label Grid.Column="4" Content="[Index]:"/>',
-            '                    <TextBox Grid.Column="5" Name="Index" IsReadOnly="True"/>',
-            '                </Grid>',
-            '                <Grid Grid.Row="3">',
-            '                    <Grid.ColumnDefinitions>',
-            '                        <ColumnDefinition Width="100"/>',
-            '                        <ColumnDefinition Width="300"/>',
-            '                        <ColumnDefinition Width="110"/>',
-            '                        <ColumnDefinition Width="*"/>',
-            '                    </Grid.ColumnDefinitions>',
-            '                    <Label Grid.Column="0" Content="[SSID/Name]:"/>',
-            '                    <TextBox Grid.Column="1" Name="SSID" IsReadOnly="True"/>',
-            '                    <Label Grid.Column="2" Content="[BSSID]:"/>',
-            '                    <TextBox Grid.Column="3" Name="BSSID" IsReadOnly="True"/>',
-            '                </Grid>',
-            '                <Grid Grid.Row="4">',
-            '                    <Grid.ColumnDefinitions>',
-            '                        <ColumnDefinition Width="*"/>',
-            '                        <ColumnDefinition Width="*"/>',
-            '                        <ColumnDefinition Width="*"/>',
-            '                    </Grid.ColumnDefinitions>',
-            '                    <Button Grid.Row="1" Grid.Column="0" Name="Connect"    Content="Connect"    IsEnabled="False"/>',
-            '                    <Button Grid.Row="1" Grid.Column="1" Name="Disconnect" Content="Disconnect" IsEnabled="False"/>',
-            '                    <Button Grid.Row="1" Grid.Column="2" Name="Cancel"     Content="Cancel"/>',
-            '                </Grid>',
-            '            </Grid>',
-            '        </GroupBox>',
-            '    </Grid>',
-            '</Window>' -join "`n"
-        )
-    }
-
-    Class Passphrase
-    {
-        Static [String] $Tab = @(
-            '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Enter Passphrase" Width="400" Height="160" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
-            '    <Window.Resources>',
-            '        <Style TargetType="GroupBox">',
-            '            <Setter Property="Margin" Value="10"/>',
-            '            <Setter Property="Padding" Value="10"/>',
-            '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
-            '            <Setter Property="Template">',
-            '                <Setter.Value>',
-            '                    <ControlTemplate TargetType="GroupBox">',
-            '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
-            '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
-            '                        </Border>',
-            '                    </ControlTemplate>',
-            '                </Setter.Value>',
-            '            </Setter>',
-            '        </Style>',
-            '        <Style TargetType="Button">',
-            '            <Setter Property="Margin" Value="5"/>',
-            '            <Setter Property="Padding" Value="5"/>',
-            '            <Setter Property="Height" Value="30"/>',
-            '            <Setter Property="FontWeight" Value="Semibold"/>',
-            '            <Setter Property="FontSize" Value="12"/>',
-            '            <Setter Property="Foreground" Value="Black"/>',
-            '            <Setter Property="Background" Value="#DFFFBA"/>',
-            '            <Setter Property="BorderThickness" Value="2"/>',
-            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-            '            <Style.Resources>',
-            '                <Style TargetType="Border">',
-            '                    <Setter Property="CornerRadius" Value="5"/>',
-            '                </Style>',
-            '            </Style.Resources>',
-            '        </Style>',
-            '        <Style x:Key="DropShadow">',
-            '            <Setter Property="TextBlock.Effect">',
-            '                <Setter.Value>',
-            '                    <DropShadowEffect ShadowDepth="1"/>',
-            '                </Setter.Value>',
-            '            </Setter>',
-            '        </Style>',
-            '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
-            '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
-            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-            '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-            '            <Setter Property="Height" Value="24"/>',
-            '            <Setter Property="Margin" Value="4"/>',
-            '            <Setter Property="FontSize" Value="12"/>',
-            '            <Setter Property="Foreground" Value="#000000"/>',
-            '            <Setter Property="TextWrapping" Value="Wrap"/>',
-            '            <Style.Resources>',
-            '                <Style TargetType="Border">',
-            '                    <Setter Property="CornerRadius" Value="2"/>',
-            '                </Style>',
-            '            </Style.Resources>',
-            '        </Style>',
-            '        <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource DropShadow}">',
-            '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
-            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-            '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-            '            <Setter Property="Margin" Value="4"/>',
-            '            <Setter Property="Height" Value="24"/>',
-            '            <Setter Property="PasswordChar" Value="*"/> ',
-            '        </Style> ',
-            '        <Style TargetType="Label">',
-            '            <Setter Property="Margin" Value="5"/>',
-            '            <Setter Property="FontWeight" Value="Bold"/>',
-            '            <Setter Property="Background" Value="Black"/>',
-            '            <Setter Property="Foreground" Value="White"/>',
-            '            <Setter Property="BorderBrush" Value="Gray"/>',
-            '            <Setter Property="BorderThickness" Value="2"/>',
-            '            <Style.Resources>',
-            '                <Style TargetType="Border">',
-            '                    <Setter Property="CornerRadius" Value="5"/>',
-            '                </Style>',
-            '            </Style.Resources>',
-            '        </Style>',
-            '    </Window.Resources>',
-            '    <Grid>',
-            '        <Grid.Background>',
-            '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
-            '        </Grid.Background>',
-            '        <GroupBox>',
-            '            <Grid>',
-            '                <Grid.RowDefinitions>',
-            '                    <RowDefinition Height="*"/>',
-            '                    <RowDefinition Height="*"/>',
-            '                </Grid.RowDefinitions>',
-            '                <PasswordBox Grid.Row="0" Name="Passphrase"/>',
-            '                <Grid Grid.Row="1">',
-            '                    <Grid.ColumnDefinitions>',
-            '                            <ColumnDefinition Width="*"/>',
-            '                            <ColumnDefinition Width="*"/>',
-            '                        </Grid.ColumnDefinitions>',
-            '                    <Button Grid.Row="1" Grid.Column="0" Name="Connect" Content="Continue"/>',
-            '                    <Button Grid.Row="1" Grid.Column="2" Name="Cancel"  Content="Cancel"/>',
-            '                </Grid>',
-            '            </Grid>',
-            '        </GroupBox>',
-            '    </Grid>',
-            '</Window>' -join "`n"
-        )
-    }
-
     Class wlanapi # https://github.com/jcwalker/WiFiProfileManagement/blob/dev/Classes/AddNativeWiFiFunctions.ps1
     {
         Static [String] $Tab = @(
@@ -820,7 +398,441 @@ Function Search-WirelessNetwork
         ');' -join "`n")
     }
 
-    Add-Type -MemberDefinition ([wlanapi]::Tab) -Name ProfileManagement -Namespace WiFi -Using System.Text -Passthru | Out-Null
+    [wlanapi]::Tab
+}
+
+Add-Type -MemberDefinition (Use-Wlanapi) -Name ProfileManagement -Namespace WiFi -Using System.Text -Passthru | Out-Null
+
+Function Search-WirelessNetwork
+{
+    # Declare classes
+    Class DGList
+    {
+        [String]$Name
+        [Object]$Value
+        DGList([String]$Name,[Object]$Value)
+        {
+            $This.Name  = $Name
+            $This.Value = $Value
+        }
+    }
+
+    Class XamlWindow 
+    {
+        Hidden [Object]        $XAML
+        Hidden [Object]         $XML
+        [String[]]            $Names
+        [Object[]]            $Types
+        [Object]               $Node
+        [Object]                 $IO
+        [String]          $Exception
+        [String[]] FindNames()
+        {
+            Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
+
+                ($_ -Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
+
+            } | Select-Object -Unique ) 
+        }
+        XamlWindow([String]$XAML)
+        {           
+            If (!$Xaml)
+            {
+                Throw "Invalid XAML Input"
+            }
+
+            [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+
+            $This.Xaml               = $Xaml
+            $This.XML                = [XML]$Xaml
+            $This.Names              = $This.FindNames()
+            $This.Types              = @( )
+            $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
+            $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
+
+            ForEach ($I in 0..($This.Names.Count - 1))
+            {
+                $Name                = $This.Names[$I]
+                $Object              = $This.IO.FindName($Name)
+                $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $Object -Force
+                If ($Object -ne $Null)
+                {
+                    $This.Types         += [DGList]::New($Name,$This.IO.FindName($Name).GetType().Name)
+                }
+            }
+        }
+        Invoke()
+        {
+            Try
+            {
+                $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
+            }
+            Catch
+            {
+                $This.Exception = $PSItem
+            }
+        }
+    }
+
+    Class GUI
+    {
+        Static [String] $Tab = (
+            '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Wireless Network Scanner" Width="800" Height="650" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+            '    <Window.Resources>',
+            '        <Style TargetType="GroupBox">',
+            '            <Setter Property="Margin" Value="10"/>',
+            '            <Setter Property="Padding" Value="10"/>',
+            '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
+            '            <Setter Property="Template">',
+            '                <Setter.Value>',
+            '                    <ControlTemplate TargetType="GroupBox">',
+            '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
+            '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
+            '                        </Border>',
+            '                    </ControlTemplate>',
+            '                </Setter.Value>',
+            '            </Setter>',
+            '        </Style>',
+            '        <Style TargetType="Button">',
+            '            <Setter Property="Margin" Value="5"/>',
+            '            <Setter Property="Padding" Value="5"/>',
+            '            <Setter Property="Height" Value="30"/>',
+            '            <Setter Property="FontWeight" Value="Semibold"/>',
+            '            <Setter Property="FontSize" Value="12"/>',
+            '            <Setter Property="Foreground" Value="Black"/>',
+            '            <Setter Property="Background" Value="#DFFFBA"/>',
+            '            <Setter Property="BorderThickness" Value="2"/>',
+            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+            '            <Style.Resources>',
+            '                <Style TargetType="Border">',
+            '                    <Setter Property="CornerRadius" Value="5"/>',
+            '                </Style>',
+            '            </Style.Resources>',
+            '        </Style>',
+            '        <Style TargetType="DataGridCell">',
+            '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
+            '        </Style>',
+            '        <Style TargetType="DataGrid">',
+            '            <Setter Property="Margin" Value="5"/>',
+            '            <Setter Property="AutoGenerateColumns" Value="False"/>',
+            '            <Setter Property="AlternationCount" Value="3"/>',
+            '            <Setter Property="HeadersVisibility" Value="Column"/>',
+            '            <Setter Property="CanUserResizeRows" Value="False"/>',
+            '            <Setter Property="CanUserAddRows" Value="False"/>',
+            '            <Setter Property="IsReadOnly" Value="True"/>',
+            '            <Setter Property="IsTabStop" Value="True"/>',
+            '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
+            '            <Setter Property="SelectionMode" Value="Extended"/>',
+            '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
+            '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
+            '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
+            '        </Style>',
+            '        <Style TargetType="DataGridRow">',
+            '            <Setter Property="BorderBrush" Value="Black"/>',
+            '            <Style.Triggers>',
+            '                <Trigger Property="AlternationIndex" Value="0">',
+            '                    <Setter Property="Background" Value="White"/>',
+            '                </Trigger>',
+            '                <Trigger Property="AlternationIndex" Value="1">',
+            '                    <Setter Property="Background" Value="#FFC5E5EC"/>',
+            '                </Trigger>',
+            '                <Trigger Property="AlternationIndex" Value="2">',
+            '                    <Setter Property="Background" Value="#FFFDE1DC"/>',
+            '                </Trigger>',
+            '            </Style.Triggers>',
+            '        </Style>',
+            '        <Style TargetType="DataGridColumnHeader">',
+            '            <Setter Property="FontSize"   Value="10"/>',
+            '            <Setter Property="FontWeight" Value="Medium"/>',
+            '            <Setter Property="Margin" Value="2"/>',
+            '            <Setter Property="Padding" Value="2"/>',
+            '        </Style>',
+            '        <Style TargetType="ComboBox">',
+            '            <Setter Property="Height" Value="24"/>',
+            '            <Setter Property="Margin" Value="5"/>',
+            '            <Setter Property="FontSize" Value="12"/>',
+            '            <Setter Property="FontWeight" Value="Normal"/>',
+            '        </Style>',
+            '        <Style x:Key="DropShadow">',
+            '            <Setter Property="TextBlock.Effect">',
+            '                <Setter.Value>',
+            '                    <DropShadowEffect ShadowDepth="1"/>',
+            '                </Setter.Value>',
+            '            </Setter>',
+            '        </Style>',
+            '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+            '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+            '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+            '            <Setter Property="Height" Value="24"/>',
+            '            <Setter Property="Margin" Value="4"/>',
+            '            <Setter Property="FontSize" Value="12"/>',
+            '            <Setter Property="Foreground" Value="#000000"/>',
+            '            <Setter Property="TextWrapping" Value="Wrap"/>',
+            '            <Style.Resources>',
+            '                <Style TargetType="Border">',
+            '                    <Setter Property="CornerRadius" Value="2"/>',
+            '                </Style>',
+            '            </Style.Resources>',
+            '        </Style>',
+            '        <Style TargetType="Label">',
+            '            <Setter Property="Margin" Value="5"/>',
+            '            <Setter Property="FontWeight" Value="Bold"/>',
+            '            <Setter Property="Background" Value="Black"/>',
+            '            <Setter Property="Foreground" Value="White"/>',
+            '            <Setter Property="BorderBrush" Value="Gray"/>',
+            '            <Setter Property="BorderThickness" Value="2"/>',
+            '            <Style.Resources>',
+            '                <Style TargetType="Border">',
+            '                    <Setter Property="CornerRadius" Value="5"/>',
+            '                </Style>',
+            '            </Style.Resources>',
+            '        </Style>',
+            '    </Window.Resources>',
+            '    <Grid>',
+            '        <Grid.Background>',
+            '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
+            '        </Grid.Background>',
+            '        <GroupBox>',
+            '            <Grid Margin="5">',
+            '                <Grid.RowDefinitions>',
+            '                    <RowDefinition Height="40"/>',
+            '                    <RowDefinition Height="*"/>',
+            '                    <RowDefinition Height="40"/>',
+            '                    <RowDefinition Height="40"/>',
+            '                    <RowDefinition Height="50"/>',
+            '                </Grid.RowDefinitions>',
+            '                <Grid Grid.Row="0">',
+            '                    <Grid.ColumnDefinitions>',
+            '                        <ColumnDefinition Width="120"/>',
+            '                        <ColumnDefinition Width="120"/>',
+            '                        <ColumnDefinition Width="*"/>',
+            '                        <ColumnDefinition Width="120"/>',
+            '                    </Grid.ColumnDefinitions>',
+            '                    <Label Grid.Column="0" Content="[Search/Filter]:"/>',
+            '                    <ComboBox Grid.Column="1" Name="Type" SelectedIndex="0">',
+            '                        <ComboBoxItem Content="Name"/>',
+            '                        <ComboBoxItem Content="Index"/>',
+            '                        <ComboBoxItem Content="BSSID"/>',
+            '                        <ComboBoxItem Content="Type"/>',
+            '                        <ComboBoxItem Content="Encryption"/>',
+            '                        <ComboBoxItem Content="Strength"/>',
+            '                    </ComboBox>',
+            '                    <TextBox Grid.Column="2" Name="Filter"/>',
+            '                    <Button Grid.Column="3" Content="Refresh" Name="Refresh"/>',
+            '                </Grid>',
+            '                <DataGrid Grid.Row="1" Grid.Column="0" Name="Output">',
+            '                    <DataGrid.Columns>',
+            '                        <DataGridTextColumn Header="Index"  Width="35"  Binding="{Binding Index}"/>',
+            '                        <DataGridTextColumn Header="Name"   Width="150" Binding="{Binding Name}"/>',
+            '                        <DataGridTextColumn Header="Bssid"  Width="110" Binding="{Binding Bssid}"/>',
+            '                        <DataGridTextColumn Header="Type"   Width="60"  Binding="{Binding Type}"/>',
+            '                        <DataGridTextColumn Header="Uptime" Width="140" Binding="{Binding Uptime}"/>',
+            '                        <DataGridTemplateColumn Header="Authentication" Width="80">',
+            '                            <DataGridTemplateColumn.CellTemplate>',
+            '                                <DataTemplate>',
+            '                                    <ComboBox SelectedIndex="{Binding AuthenticationSlot}"  ToolTip="{Binding AuthenticationDescription}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+            '                                        <ComboBoxItem Content="None"/>',
+            '                                        <ComboBoxItem Content="Unknown"/>',
+            '                                        <ComboBoxItem Content="Open80211"/>',
+            '                                        <ComboBoxItem Content="SharedKey80211"/>',
+            '                                        <ComboBoxItem Content="Wpa"/>',
+            '                                        <ComboBoxItem Content="WpaPsk"/>',
+            '                                        <ComboBoxItem Content="WpaNone"/>',
+            '                                        <ComboBoxItem Content="Rsna"/>',
+            '                                        <ComboBoxItem Content="RsnaPsk"/>',
+            '                                        <ComboBoxItem Content="Ihv"/>',
+            '                                        <ComboBoxItem Content="Wpa3Enterprise192Bits"/>',
+            '                                        <ComboBoxItem Content="Wpa3Sae"/>',
+            '                                        <ComboBoxItem Content="Owe"/>',
+            '                                        <ComboBoxItem Content="Wpa3Enterprise"/>',
+            '                                    </ComboBox>',
+            '                                </DataTemplate>',
+            '                            </DataGridTemplateColumn.CellTemplate>',
+            '                        </DataGridTemplateColumn>',
+            '                        <DataGridTemplateColumn Header="Encryption" Width="70">',
+            '                            <DataGridTemplateColumn.CellTemplate>',
+            '                                <DataTemplate>',
+            '                                    <ComboBox SelectedIndex="{Binding EncryptionSlot}" ToolTip="{Binding EncryptionDescription}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+            '                                        <ComboBoxItem Content="None"/>',
+            '                                        <ComboBoxItem Content="Unknown"/>',
+            '                                        <ComboBoxItem Content="Wep"/>',
+            '                                        <ComboBoxItem Content="Wep40"/>',
+            '                                        <ComboBoxItem Content="Wep104"/>',
+            '                                        <ComboBoxItem Content="Tkip"/>',
+            '                                        <ComboBoxItem Content="Ccmp"/>',
+            '                                        <ComboBoxItem Content="WpaUseGroup"/>',
+            '                                        <ComboBoxItem Content="RsnUseGroup"/>',
+            '                                        <ComboBoxItem Content="Ihv"/>',
+            '                                        <ComboBoxItem Content="Gcmp"/>',
+            '                                        <ComboBoxItem Content="Gcmp256"/>',
+            '                                    </ComboBox>',
+            '                                </DataTemplate>',
+            '                            </DataGridTemplateColumn.CellTemplate>',
+            '                        </DataGridTemplateColumn>',
+            '                        <DataGridTemplateColumn Header="Strength" Width="50">',
+            '                            <DataGridTemplateColumn.CellTemplate>',
+            '                                <DataTemplate>',
+            '                                    <ComboBox SelectedIndex="{Binding Strength}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+            '                                        <ComboBoxItem Content="0"/>',
+            '                                        <ComboBoxItem Content="1"/>',
+            '                                        <ComboBoxItem Content="2"/>',
+            '                                        <ComboBoxItem Content="3"/>',
+            '                                        <ComboBoxItem Content="4"/>',
+            '                                        <ComboBoxItem Content="5"/>',
+            '                                    </ComboBox>',
+            '                                </DataTemplate>',
+            '                            </DataGridTemplateColumn.CellTemplate>',
+            '                        </DataGridTemplateColumn>',
+            '                    </DataGrid.Columns>',
+            '                </DataGrid>',
+            '                <Grid Grid.Row="2">',
+            '                    <Grid.ColumnDefinitions>',
+            '                        <ColumnDefinition Width="100"/>',
+            '                        <ColumnDefinition Width="300"/>',
+            '                        <ColumnDefinition Width="110"/>',
+            '                        <ColumnDefinition Width="*"/>',
+            '                        <ColumnDefinition Width="70"/>',
+            '                        <ColumnDefinition Width="40"/>',
+            '                    </Grid.ColumnDefinitions>',
+            '                    <Label Grid.Column="0" Content="[Interface]:"/>',
+            '                    <ComboBox Grid.Column="1" Name="Interface"/>',
+            '                    <Label Grid.Column="2" Content="[MacAddress]:"/>',
+            '                    <TextBox Grid.Column="3" Name="MacAddress" IsReadOnly="True"/>',
+            '                    <Label Grid.Column="4" Content="[Index]:"/>',
+            '                    <TextBox Grid.Column="5" Name="Index" IsReadOnly="True"/>',
+            '                </Grid>',
+            '                <Grid Grid.Row="3">',
+            '                    <Grid.ColumnDefinitions>',
+            '                        <ColumnDefinition Width="100"/>',
+            '                        <ColumnDefinition Width="300"/>',
+            '                        <ColumnDefinition Width="110"/>',
+            '                        <ColumnDefinition Width="*"/>',
+            '                    </Grid.ColumnDefinitions>',
+            '                    <Label Grid.Column="0" Content="[SSID/Name]:"/>',
+            '                    <TextBox Grid.Column="1" Name="SSID" IsReadOnly="True"/>',
+            '                    <Label Grid.Column="2" Content="[BSSID]:"/>',
+            '                    <TextBox Grid.Column="3" Name="BSSID" IsReadOnly="True"/>',
+            '                </Grid>',
+            '                <Grid Grid.Row="4">',
+            '                    <Grid.ColumnDefinitions>',
+            '                        <ColumnDefinition Width="*"/>',
+            '                        <ColumnDefinition Width="*"/>',
+            '                        <ColumnDefinition Width="*"/>',
+            '                    </Grid.ColumnDefinitions>',
+            '                    <Button Grid.Row="1" Grid.Column="0" Name="Connect"    Content="Connect"    IsEnabled="False"/>',
+            '                    <Button Grid.Row="1" Grid.Column="1" Name="Disconnect" Content="Disconnect" IsEnabled="False"/>',
+            '                    <Button Grid.Row="1" Grid.Column="2" Name="Cancel"     Content="Cancel"/>',
+            '                </Grid>',
+            '            </Grid>',
+            '        </GroupBox>',
+            '    </Grid>',
+            '</Window>' -join "`n")
+    }
+
+    Class Passphrase
+    {
+        Static [String] $Tab = @(
+            '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Enter Passphrase" Width="400" Height="160" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+            '    <Window.Resources>',
+            '        <Style TargetType="GroupBox">',
+            '            <Setter Property="Margin" Value="10"/>',
+            '            <Setter Property="Padding" Value="10"/>',
+            '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
+            '            <Setter Property="Template">',
+            '                <Setter.Value>',
+            '                    <ControlTemplate TargetType="GroupBox">',
+            '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
+            '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
+            '                        </Border>',
+            '                    </ControlTemplate>',
+            '                </Setter.Value>',
+            '            </Setter>',
+            '        </Style>',
+            '        <Style TargetType="Button">',
+            '            <Setter Property="Margin" Value="5"/>',
+            '            <Setter Property="Padding" Value="5"/>',
+            '            <Setter Property="Height" Value="30"/>',
+            '            <Setter Property="FontWeight" Value="Semibold"/>',
+            '            <Setter Property="FontSize" Value="12"/>',
+            '            <Setter Property="Foreground" Value="Black"/>',
+            '            <Setter Property="Background" Value="#DFFFBA"/>',
+            '            <Setter Property="BorderThickness" Value="2"/>',
+            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+            '            <Style.Resources>',
+            '                <Style TargetType="Border">',
+            '                    <Setter Property="CornerRadius" Value="5"/>',
+            '                </Style>',
+            '            </Style.Resources>',
+            '        </Style>',
+            '        <Style x:Key="DropShadow">',
+            '            <Setter Property="TextBlock.Effect">',
+            '                <Setter.Value>',
+            '                    <DropShadowEffect ShadowDepth="1"/>',
+            '                </Setter.Value>',
+            '            </Setter>',
+            '        </Style>',
+            '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+            '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+            '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+            '            <Setter Property="Height" Value="24"/>',
+            '            <Setter Property="Margin" Value="4"/>',
+            '            <Setter Property="FontSize" Value="12"/>',
+            '            <Setter Property="Foreground" Value="#000000"/>',
+            '            <Setter Property="TextWrapping" Value="Wrap"/>',
+            '            <Style.Resources>',
+            '                <Style TargetType="Border">',
+            '                    <Setter Property="CornerRadius" Value="2"/>',
+            '                </Style>',
+            '            </Style.Resources>',
+            '        </Style>',
+            '        <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource DropShadow}">',
+            '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+            '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+            '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+            '            <Setter Property="Margin" Value="4"/>',
+            '            <Setter Property="Height" Value="24"/>',
+            '            <Setter Property="PasswordChar" Value="*"/> ',
+            '        </Style> ',
+            '        <Style TargetType="Label">',
+            '            <Setter Property="Margin" Value="5"/>',
+            '            <Setter Property="FontWeight" Value="Bold"/>',
+            '            <Setter Property="Background" Value="Black"/>',
+            '            <Setter Property="Foreground" Value="White"/>',
+            '            <Setter Property="BorderBrush" Value="Gray"/>',
+            '            <Setter Property="BorderThickness" Value="2"/>',
+            '            <Style.Resources>',
+            '                <Style TargetType="Border">',
+            '                    <Setter Property="CornerRadius" Value="5"/>',
+            '                </Style>',
+            '            </Style.Resources>',
+            '        </Style>',
+            '    </Window.Resources>',
+            '    <Grid>',
+            '        <Grid.Background>',
+            '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
+            '        </Grid.Background>',
+            '        <GroupBox>',
+            '            <Grid>',
+            '                <Grid.RowDefinitions>',
+            '                    <RowDefinition Height="*"/>',
+            '                    <RowDefinition Height="*"/>',
+            '                </Grid.RowDefinitions>',
+            '                <PasswordBox Grid.Row="0" Name="Passphrase"/>',
+            '                <Grid Grid.Row="1">',
+            '                    <Grid.ColumnDefinitions>',
+            '                            <ColumnDefinition Width="*"/>',
+            '                            <ColumnDefinition Width="*"/>',
+            '                        </Grid.ColumnDefinitions>',
+            '                    <Button Grid.Row="1" Grid.Column="0" Name="Connect" Content="Continue"/>',
+            '                    <Button Grid.Row="1" Grid.Column="2" Name="Cancel"  Content="Cancel"/>',
+            '                </Grid>',
+            '            </Grid>',
+            '        </GroupBox>',
+            '    </Grid>',
+            '</Window>' -join "`n") 
+    }
 
     Class Ssid
     {
@@ -1198,8 +1210,8 @@ Function Search-WirelessNetwork
             $This.MacAddress             = $This.Find("Physical address")
             $This.InterfaceType          = $This.Find("Interface type")
             $This.State                  = $This.Find("State")
-            $This.SSID                   = $This.Find("SSID")
-            $This.BSSID                  = $This.Find("BSSID")
+            $This.Ssid                   = $This.Find("SSID")
+            $This.Bssid                  = $This.Find("BSSID") | % ToUpper
             $This.NetworkType            = $This.Find("Network type")
             $This.RadioType              = $This.Find("Radio type")
             $This.Authentication         = $This.Find("Authentication")
@@ -1220,6 +1232,8 @@ Function Search-WirelessNetwork
 
     Class Wireless
     {
+        Hidden [Object] $Module
+        Hidden [String] $OEMLogo
         Hidden [Object] $Xaml
         [Object] $Adapters
         [Object] $Request
@@ -1926,7 +1940,7 @@ Function Search-WirelessNetwork
                 $returnCodeMessage   = $This.Win32Exception($ReturnCode)
                 $reasonCodeMessage   = $This.WiFiReasonCode($ReasonCode)
 
-                <# For Testing
+                <#
                 $interfaceGuid       = $Wifi.GetWiFiInterfaceGuid($WiFiAdapterName)
                 $clientHandle        = $Wifi.NewWiFiHandle()
                 $flags               = 0
@@ -1960,13 +1974,19 @@ Function Search-WirelessNetwork
                 }
             }
         }
+        RemoveWifiProfile([String]$ProfileName)
+        {
+            $ClientHandle = $This.NewWiFiHandle()
+            [WiFi.ProfileManagement]::WlanDeleteProfile($clientHandle,[Ref]$This.Selected.Guid,$ProfileName,[IntPtr]::Zero)
+            $This.RemoveWifiHandle($ClientHandle)
+        }
         Select([String]$Description)
         {
             # Select the adapter from its description
             $This.Selected                  = $This.GetWifiInterface() | ? Description -eq $Description
 
             # Set other Xaml fields
-            $This.Xaml.IO.Index.Text        = $This.Selected.InterfaceIndex
+            $This.Xaml.IO.Index.Text        = $This.Selected.ifIndex
             $This.Xaml.IO.MacAddress.Text   = $This.Selected.MacAddress
 
             $This.Update()
@@ -1998,6 +2018,8 @@ Function Search-WirelessNetwork
                 #>
 
                 $This.Connected                    = $Null
+                Show-ToastNotification -Type Image -Mode 2 -Image $This.OEMLogo -Message "Disconnected: $($This.Xaml.IO.Ssid.Text)"
+
                 $Link                              = $This.Selected.Description
                 $This.Unselect()
                 $This.Select($Link)
@@ -2012,7 +2034,7 @@ Function Search-WirelessNetwork
         {
             If (!$This.Selected)
             {
-                Write-Host "No network selected"
+                Write-Host "Must select an active interface"
             }
 
             If ($This.Selected)
@@ -2032,7 +2054,7 @@ Function Search-WirelessNetwork
                         [WiFi.ProfileManagement]::WlanConnect($ClientHandle, [Ref] $This.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
                         $This.RemoveWifiHandle($ClientHandle)
 
-                        <#  For Testing
+                        <# For Testing
                         $Param = $Wifi.GetWifiConnectionParameter($SSID)
                         $ClientHandle                      = $Wifi.NewWiFiHandle()
                         [WiFi.ProfileManagement]::WlanConnect($ClientHandle, [Ref] $Wifi.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
@@ -2044,53 +2066,72 @@ Function Search-WirelessNetwork
                         $This.Select($Link)
                         
                         $This.Update()
+                        Show-ToastNotification -Type Image -Mode 2 -Image $This.OEMLogo -Message "Connected: $SSID"
                     }
                     If (!$Result)
                     {
                         $Network = $This.Output.SelectedItem
                         If ($Network.Authentication -match "psk")
                         {
-                            $Pass    = [XamlWindow][Passphrase]::Tab
-                            $Pass.IO.Connect.Add_Click(
-                            {
-                                If ($Pass.IO.Passphrase.Password -in @($Null,""))
-                                {
-                                    [System.Windows.Messagebox]::Show("Invalid passphrase detected.","Error") 
-                                }
-                                Else
-                                {
-                                    $ProfileXml = $This.NewWifiProfileXmlPsk($Network.Name,"auto","WPA2PSK","AES",$Pass.IO.Passphrase.SecurePassword)
-                                    $This.NewWifiProfile($ProfileXml,"Wi-Fi",$True)
-                                    $Param  = $This.GetWiFiConnectionParameter($SSID)
-
-                                    $ClientHandle                      = $This.NewWiFiHandle()
-                                    [WiFi.ProfileManagement]::WlanConnect($ClientHandle, [Ref] $This.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
-                                    $This.RemoveWifiHandle($ClientHandle)
-
-                                    $Link                              = $This.Selected.Description
-                                    $This.Unselect()
-                                    $This.Select($Link)
-
-                                    $This.Update()
-                                    If ($This.Connected)
-                                    {
-                                        $Pass.IO.DialogResult = $True
-                                    }
-                                    Else
-                                    {
-                                        $Pass.IO.DialogResult = $False
-                                    }
-                                }
-                            })
-
-                            $Pass.IO.Cancel.Add_Click(
-                            {
-                                $Pass.IO.DialogResult = $False
-                            })
+                            $This.Passphrase($Network)
+                        }
+                        Else
+                        {
+                            Write-Host "Eas/Peap not yet implemented"
                         }
                     }
                 }
             }
+        }
+        Passphrase([Object]$Ctrl,[Object]$Network)
+        {
+            $Pass    = [XamlWindow][Passphrase]::Tab
+            $Auth    = $Null
+            $Enc     = $Null
+            $Pass.IO.Connect.Add_Click(
+            {
+                If ($Network.Authentication -match "RsnaPsk")
+                {
+                    $Auth      = "WPA2PSK"
+                }
+                If ($Network.Encryption -match "Ccmp")
+                {
+                    $Enc       = "AES"
+                }
+                $Password      = $Pass.IO.Passphrase.Password
+                $SP            = $Password | ConvertTo-SecureString -AsPlainText -Force
+                $ProfileXml    = $Ctrl.NewWifiProfileXmlPsk($Network.Name,"manual",$Auth,$Enc,$SP)
+                $Ctrl.NewWifiProfile($ProfileXml,$Ctrl.Selected.Name,$True)
+                    
+                $Param         = $Ctrl.GetWiFiConnectionParameter($Network.Name)
+                $ClientHandle  = $Ctrl.NewWiFiHandle()
+                [WiFi.ProfileManagement]::WlanConnect($ClientHandle, [Ref] $Ctrl.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
+                $Ctrl.RemoveWifiHandle($ClientHandle)
+
+                Start-Sleep 3
+                $Link                              = $Ctrl.Selected.Description
+                $Ctrl.Unselect()
+                $Ctrl.Select($Link)
+
+                $Ctrl.Update()
+                If ($Ctrl.Connected)
+                {
+                    $Pass.IO.DialogResult = $True
+                    Show-ToastNotification -Type Image -Mode 2 -Image $This.OEMLogo -Message "Connected: $($Network.Name)"
+                }
+                If (!$Ctrl.Connected)
+                {
+                    $Ctrl.RemoveWifiProfile($Network.Name)
+                    Show-ToastNotification -Type Image -Mode 2 -Image $This.OEMLogo -Message "Unsuccessful: Passphrase failure"
+                }
+            })
+
+            $Pass.IO.Cancel.Add_Click(
+            {
+                $Pass.IO.DialogResult = $False
+            })
+
+            $Pass.Invoke()
         }
         Update()
         {
@@ -2120,6 +2161,10 @@ Function Search-WirelessNetwork
             [Windows.Devices.Radios.Radio, Windows.System.Devices, ContentType=WindowsRuntime] > $Null
             [Windows.Devices.Radios.RadioAccessStatus, Windows.System.Devices, ContentType=WindowsRuntime] > $Null 
             [Windows.Devices.Radios.RadioState, Windows.System.Devices, ContentType=WindowsRuntime] > $Null
+
+            # Prime the module
+            $This.Module   = Get-FEModule
+            $This.OEMLogo  = $This.Module.Graphics | ? Name -eq OEMLogo.bmp | % Fullname
 
             # Prime the Xaml object
             $This.Xaml     = [XamlWindow][GUI]::Tab
@@ -2257,22 +2302,24 @@ Function Search-WirelessNetwork
 
     $Xaml.IO.Output.Add_SelectionChanged(
     {
-        If ($Xaml.IO.Output.SelectedIndex -eq -1)
+        If (!$Wifi.Connected)
         {
-            $Xaml.IO.Connect.IsEnabled        = 0
-        }
-        If ($Xaml.IO.Output.SelectedIndex -ne -1)
-        {
-            If ($Xaml.IO.Output.SelectedItem.Name -eq $Xaml.IO.SSID.Text)
+            $Xaml.IO.Disconnect.IsEnabled     = 0
+
+            If ($Xaml.IO.Output.SelectedIndex -eq -1)
             {
-                $Xaml.IO.Disconnect.IsEnabled = 1
                 $Xaml.IO.Connect.IsEnabled    = 0
             }
-            If ($Xaml.IO.Output.SelectedItem.Name -ne $Xaml.IO.SSID.Text)
+
+            If ($Xaml.IO.Output.SelectedIndex -ne -1)
             {
-                $Xaml.IO.Disconnect.IsEnabled = 0
                 $Xaml.IO.Connect.IsEnabled    = 1
             }
+        }
+        If ($Wifi.Connected)
+        {
+            $Xaml.IO.Connect.IsEnabled        = 0
+            $Xaml.IO.Disconnect.IsEnabled     = 1
         }
     })
 
@@ -2291,7 +2338,34 @@ Function Search-WirelessNetwork
     {
         If (!$Wifi.Connected -and $Xaml.IO.Output.SelectedIndex -ne -1)
         {
-            $Wifi.Connect($Xaml.IO.Output.SelectedItem.Name)
+            $Test = $Wifi.GetWifiProfileInfo($Xaml.IO.Output.SelectedItem.Name,$Wifi.Selected.Guid)
+            If ($Test -notmatch "Element not found")
+            {
+                $Wifi.Connect($Xaml.IO.Output.SelectedItem.Name)
+                $Count             = 0
+                Do
+                {
+                    Start-Sleep 1
+                    $Wifi.Adapters = $Wifi.RefreshAdapterList()
+                    $Link          = $Wifi.Selected.Description
+                    $Wifi.Unselect()
+                    $Wifi.Select($Link)
+                    $Wifi.Update()
+                    $Count ++
+                }
+                Until ($Wifi.Connected -or $Count -gt 5)
+
+            }
+            If ($Test -match "Element not found")
+            {
+                $Network = $Xaml.IO.Output.SelectedItem
+                $Wifi.Passphrase($Wifi,$Network)
+                $Wifi.Update()
+            }
+        }
+        If ($Wifi.Connected)
+        {
+            $Wifi.Update()
         }
     })
 
@@ -2300,6 +2374,22 @@ Function Search-WirelessNetwork
         If ($Wifi.Connected)
         {
             $Wifi.Disconnect()
+            Do
+            {
+                Start-Sleep 1
+                $Wifi.Adapters = $Wifi.RefreshAdapterList()
+                $Link          = $Wifi.Selected.Description
+                $Wifi.Unselect()
+                $Wifi.Select($Link)
+                $Wifi.Update()
+            }
+            Until ($Wifi.Selected.State -eq "DISCONNECTED")
+
+            $Wifi.Refresh()
+        }
+        If (!$Wifi.Connect)
+        {
+            $Xaml.IO.Disconnect.IsEnabled = 0
         }
     })
 
