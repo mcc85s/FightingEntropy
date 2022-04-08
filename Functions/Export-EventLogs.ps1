@@ -157,7 +157,7 @@ Function Export-EventLogs
                 }
                 {$_ -eq 1}
                 {
-                    Write-Progress -ParentID 1 -Activity "Extracting [~] Event: $($This.List[0].Date)" -Status "50.00% (1/1) [~] Elapsed: [$($This.Time.Elapsed)]" -PercentComplete 50
+                    Write-Progress -ParentID 1 -Activity "Extracting [~] Event: $($This.List[0].TimeCreated.ToString("yyyy_MMdd-HHmmss"))" -Status "50.00% (1/1) [~] Elapsed: [$($This.Time.Elapsed)]" -PercentComplete 50
                     $Hash.Add(0,[EventEntry]::New(0,$This.Index,$This.List[0]))
                     $This.Output = @($Hash[0])
                 }
@@ -180,7 +180,7 @@ Function Export-EventLogs
                         {
                             $Remain      = [TimeSpan]::FromSeconds(0)
                         }
-                        Write-Progress -ParentID 1 -Activity "Extracting [~] Event: $($This.List[$X].Date)" -Status "$Str ($X/$($This.List.Count)) [~] Elapsed: [$($This.Time.Elapsed)], Remaining: [$Remain]" -PercentComplete $PercentComplete
+                        Write-Progress -ParentID 1 -Activity "Extracting [~] Event: $($This.List[$X].TimeCreated.ToString("yyyy_MMdd-HHmmss"))" -Status "$Str ($X/$($This.List.Count)) [~] Elapsed: [$($This.Time.Elapsed)], Remaining: [$Remain]" -PercentComplete $PercentComplete
                         $Hash.Add($X,[EventEntry]::New($X,$This.Index,$This.List[$X]))
                     }
                     $This.Output = @($Hash[0..($Hash.Count-1)])
@@ -330,9 +330,20 @@ Function Export-EventLogs
                 Set-Content $TargetPath $TargetValue
                 [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Zip,$TargetPath,$Item.Name,[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
             }
-            $Zip.Dispose()
-            $This.Time.Stop()
             Write-Progress -Activity "Exporting [+] Event log list" -Status "100.00% [~] Elapsed: [$($This.Time.Elapsed)], Complete" -Complete
+
+            Write-Host "Saving [~] Elapsed: [$($This.Time.Elapsed)],  File: $Destination.zip [~] Please wait, the process may appear to freeze."
+            $Zip.Dispose()
+            $Item = Get-Item "$Destination.zip"
+            If ($Item)
+            {
+                Write-Host "Success [+] File: [$Destination.zip], Size: [$("{0:n3}MB" -f ($Item.Length/1MB))]"
+            }
+            If (!$Item)
+            {
+                Write-Host "Failure [!] File: [$Destination.zip], the file does not exist."
+            }
+            $This.Time.Stop()
         }
     }
 
