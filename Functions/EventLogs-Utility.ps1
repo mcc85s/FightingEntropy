@@ -18,7 +18,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2022-04-08
-          Modified: 2022-04-08
+          Modified: 2022-04-14
           
           Version - 2021.10.0 - () - Finalized functional version 1.
           TODO:
@@ -27,475 +27,7 @@
 
 Add-Type -Assembly System.IO.Compression.Filesystem, PresentationFramework
 
-Class DGList
-{
-    [String]$Name
-    [Object]$Value
-    DGList([String]$Name,[Object]$Value)
-    {
-        $This.Name  = $Name
-        $This.Value = Switch ($Value.Count) { 0 { "" } 1 { $Value } Default { $Value -join "`n" } }
-    }
-}
-
-Class XamlWindow
-{
-    Hidden [Object]        $XAML
-    Hidden [Object]         $XML
-    [String[]]            $Names
-    [Object[]]            $Types
-    [Object]               $Node
-    [Object]                 $IO
-    [Object]         $Dispatcher
-    [Object]          $Exception
-    [String[]] FindNames()
-    {
-        Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
-            ($_ -Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
-        } | Select-Object -Unique ) 
-    }
-    XamlWindow([String]$XAML)
-    {           
-        If (!$Xaml)
-        {
-            Throw "Invalid XAML Input"
-        }
-        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-        $This.Xaml               = $Xaml
-        $This.XML                = [XML]$Xaml
-        $This.Names              = $This.FindNames()
-        $This.Types              = @( )
-        $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
-        $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
-        $This.Dispatcher         = $This.IO.Dispatcher
-        ForEach ($I in 0..($This.Names.Count - 1))
-        {
-            $Name                = $This.Names[$I]
-            $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $This.IO.FindName($Name) -Force
-            If ($This.IO.$Name)
-            {
-                $This.Types    += [DGList]::New($Name,$This.IO.$Name.GetType().Name)
-            }
-        }
-    }
-    Invoke()
-    {
-        Try
-        {
-            $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
-        }
-        Catch
-        {
-            $This.Exception     = $PSItem
-        }
-    }
-}
-
-# Get-Content $Home\Desktop\EventLogs.xaml | % { "        '$_'," } | Set-Clipboard
-Class EventLogsGUI
-{
-    Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Event Log Utility" Width="800" Height="650" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
-    '    <Window.Resources>',
-    '        <Style TargetType="GroupBox">',
-    '            <Setter Property="Margin" Value="10"/>',
-    '            <Setter Property="Padding" Value="10"/>',
-    '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
-    '            <Setter Property="Template">',
-    '                <Setter.Value>',
-    '                    <ControlTemplate TargetType="GroupBox">',
-    '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
-    '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
-    '                        </Border>',
-    '                    </ControlTemplate>',
-    '                </Setter.Value>',
-    '            </Setter>',
-    '        </Style>',
-    '        <Style TargetType="Button">',
-    '            <Setter Property="Margin" Value="5"/>',
-    '            <Setter Property="Padding" Value="5"/>',
-    '            <Setter Property="Height" Value="30"/>',
-    '            <Setter Property="FontWeight" Value="Semibold"/>',
-    '            <Setter Property="FontSize" Value="12"/>',
-    '            <Setter Property="Foreground" Value="Black"/>',
-    '            <Setter Property="Background" Value="#DFFFBA"/>',
-    '            <Setter Property="BorderThickness" Value="2"/>',
-    '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-    '            <Style.Resources>',
-    '                <Style TargetType="Border">',
-    '                    <Setter Property="CornerRadius" Value="5"/>',
-    '                </Style>',
-    '            </Style.Resources>',
-    '        </Style>',
-    '        <Style TargetType="DataGridCell">',
-    '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
-    '        </Style>',
-    '        <Style TargetType="DataGrid">',
-    '            <Setter Property="Margin" Value="5"/>',
-    '            <Setter Property="AutoGenerateColumns" Value="False"/>',
-    '            <Setter Property="AlternationCount" Value="3"/>',
-    '            <Setter Property="HeadersVisibility" Value="Column"/>',
-    '            <Setter Property="CanUserResizeRows" Value="False"/>',
-    '            <Setter Property="CanUserAddRows" Value="False"/>',
-    '            <Setter Property="IsReadOnly" Value="True"/>',
-    '            <Setter Property="IsTabStop" Value="True"/>',
-    '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
-    '            <Setter Property="SelectionMode" Value="Extended"/>',
-    '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
-    '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
-    '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
-    '        </Style>',
-    '        <Style TargetType="DataGridRow">',
-    '            <Setter Property="BorderBrush" Value="Black"/>',
-    '            <Style.Triggers>',
-    '                <Trigger Property="AlternationIndex" Value="0">',
-    '                    <Setter Property="Background" Value="White"/>',
-    '                </Trigger>',
-    '                <Trigger Property="AlternationIndex" Value="1">',
-    '                    <Setter Property="Background" Value="#FFC5E5EC"/>',
-    '                </Trigger>',
-    '                <Trigger Property="AlternationIndex" Value="2">',
-    '                    <Setter Property="Background" Value="#FFFDE1DC"/>',
-    '                </Trigger>',
-    '            </Style.Triggers>',
-    '        </Style>',
-    '        <Style TargetType="DataGridColumnHeader">',
-    '            <Setter Property="FontSize"   Value="10"/>',
-    '            <Setter Property="FontWeight" Value="Medium"/>',
-    '            <Setter Property="Margin" Value="2"/>',
-    '            <Setter Property="Padding" Value="2"/>',
-    '        </Style>',
-    '        <Style TargetType="ComboBox">',
-    '            <Setter Property="Height" Value="24"/>',
-    '            <Setter Property="Margin" Value="5"/>',
-    '            <Setter Property="FontSize" Value="12"/>',
-    '            <Setter Property="FontWeight" Value="Normal"/>',
-    '        </Style>',
-    '        <Style x:Key="DropShadow">',
-    '            <Setter Property="TextBlock.Effect">',
-    '                <Setter.Value>',
-    '                    <DropShadowEffect ShadowDepth="1"/>',
-    '                </Setter.Value>',
-    '            </Setter>',
-    '        </Style>',
-    '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
-    '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
-    '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-    '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-    '            <Setter Property="Height" Value="24"/>',
-    '            <Setter Property="Margin" Value="4"/>',
-    '            <Setter Property="FontSize" Value="12"/>',
-    '            <Setter Property="Foreground" Value="#000000"/>',
-    '            <Setter Property="TextWrapping" Value="Wrap"/>',
-    '            <Style.Resources>',
-    '                <Style TargetType="Border">',
-    '                    <Setter Property="CornerRadius" Value="2"/>',
-    '                </Style>',
-    '            </Style.Resources>',
-    '        </Style>',
-    '        <Style TargetType="Label">',
-    '            <Setter Property="Margin" Value="5"/>',
-    '            <Setter Property="FontWeight" Value="Bold"/>',
-    '            <Setter Property="Background" Value="Black"/>',
-    '            <Setter Property="Foreground" Value="White"/>',
-    '            <Setter Property="BorderBrush" Value="Gray"/>',
-    '            <Setter Property="BorderThickness" Value="2"/>',
-    '            <Style.Resources>',
-    '                <Style TargetType="Border">',
-    '                    <Setter Property="CornerRadius" Value="5"/>',
-    '                </Style>',
-    '            </Style.Resources>',
-    '        </Style>',
-    '        <Style TargetType="TabItem">',
-    '            <Setter Property="Template">',
-    '                <Setter.Value>',
-    '                    <ControlTemplate TargetType="TabItem">',
-    '                        <Border Name="Border" BorderThickness="2" BorderBrush="Black" CornerRadius="2" Margin="2">',
-    '                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Right" ContentSource="Header" Margin="5"/>',
-    '                        </Border>',
-    '                        <ControlTemplate.Triggers>',
-    '                            <Trigger Property="IsSelected" Value="True">',
-    '                                <Setter TargetName="Border" Property="Background" Value="#4444FF"/>',
-    '                                <Setter Property="Foreground" Value="#FFFFFF"/>',
-    '                            </Trigger>',
-    '                            <Trigger Property="IsSelected" Value="False">',
-    '                                <Setter TargetName="Border" Property="Background" Value="#DFFFBA"/>',
-    '                                <Setter Property="Foreground" Value="#000000"/>',
-    '                            </Trigger>',
-    '                            <Trigger Property="IsEnabled" Value="False">',
-    '                                <Setter TargetName="Border" Property="Background" Value="#6F6F6F"/>',
-    '                                <Setter Property="Foreground" Value="#9F9F9F"/>',
-    '                            </Trigger>',
-    '                        </ControlTemplate.Triggers>',
-    '                    </ControlTemplate>',
-    '                </Setter.Value>',
-    '            </Setter>',
-    '        </Style>',
-    '    </Window.Resources>',
-    '    <Grid>',
-    '        <Grid.Background>',
-    '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
-    '        </Grid.Background>',
-    '        <GroupBox>',
-    '            <Grid>',
-    '                <Grid.RowDefinitions>',
-    '                    <RowDefinition Height="40"/>',
-    '                    <RowDefinition Height="40"/>',
-    '                    <RowDefinition Height="*"/>',
-    '                </Grid.RowDefinitions>',
-    '                <Grid Grid.Row="0">',
-    '                    <Grid.ColumnDefinitions>',
-    '                        <ColumnDefinition Width="100"/>',
-    '                        <ColumnDefinition Width="*"/>',
-    '                        <ColumnDefinition Width="100"/>',
-    '                    </Grid.ColumnDefinitions>',
-    '                    <Label Grid.Column="0" Content="[Selection]:"/>',
-    '                    <ComboBox Grid.Column="1" Name="ModeSelect" SelectedIndex="0">',
-    '                        <ComboBoxItem Content="(Get/View) event logs on this system"/>',
-    '                        <ComboBoxItem Content="Export event logs on this system, to a file"/>',
-    '                        <ComboBoxItem Content="Import event logs from a file"/>',
-    '                    </ComboBox>',
-    '                    <Button Grid.Column="2" Content="Continue" Name="Continue"/>',
-    '                </Grid>',
-    '                <Grid Grid.Row="1">',
-    '                    <Grid.ColumnDefinitions>',
-    '                        <ColumnDefinition Width="100"/>',
-    '                        <ColumnDefinition Width="*"/>',
-    '                        <ColumnDefinition Width="100"/>',
-    '                    </Grid.ColumnDefinitions>',
-    '                    <Label Grid.Column="0" Content="[File Path]:"/>',
-    '                    <TextBox Grid.Column="1" Name="FilePath"/>',
-    '                    <Button Grid.Column="2"  Name="FilePathBrowse" Content="Browse"/>',
-    '                </Grid>',
-    '                <TabControl Grid.Row="2" Name="TabControl">',
-    '                    <TabItem Header="Main">',
-    '                        <Grid>',
-    '                            <Grid.RowDefinitions>',
-    '                                <RowDefinition Height="40"/>',
-    '                                <RowDefinition Height="40"/>',
-    '                                <RowDefinition Height="40"/>',
-    '                                <RowDefinition Height="40"/>',
-    '                                <RowDefinition Height="40"/>',
-    '                                <RowDefinition Height="*"/>',
-    '                            </Grid.RowDefinitions>',
-    '                            <Grid Grid.Row="0">',
-    '                                <Grid.ColumnDefinitions>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                    <ColumnDefinition Width="300"/>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                </Grid.ColumnDefinitions>',
-    '                                <Label Grid.Column="0" Content="[Time]:"/>',
-    '                                <TextBox Grid.Column="1" Name="Time"/>',
-    '                            </Grid>',
-    '                            <Grid Grid.Row="1">',
-    '                                <Grid.ColumnDefinitions>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                    <ColumnDefinition Width="300"/>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                </Grid.ColumnDefinitions>',
-    '                                <Label Grid.Column="0" Content="[Start]:"/>',
-    '                                <TextBox Grid.Column="1" Name="Start"/>',
-    '                            </Grid>',
-    '                            <Grid Grid.Row="2">',
-    '                                <Grid.ColumnDefinitions>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                    <ColumnDefinition Width="300"/>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                </Grid.ColumnDefinitions>',
-    '                                <Label Grid.Column="0" Content="[Title]:"/>',
-    '                                <TextBox Grid.Column="1" Name="Title"/>',
-    '                            </Grid>',
-    '                            <Grid Grid.Row="3">',
-    '                                <Grid.ColumnDefinitions>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                </Grid.ColumnDefinitions>',
-    '                                <Label Grid.Column="0" Content="[Destination]:"/>',
-    '                                <TextBox Grid.Column="1" Name="Destination"/>',
-    '                                <Button Grid.Column="2" Content="Export" Name="Export" IsEnabled="False"/>',
-    '                            </Grid>',
-    '                            <Grid Grid.Row="4">',
-    '                                <Grid.ColumnDefinitions>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                    <ColumnDefinition Width="380"/>',
-    '                                    <ColumnDefinition Width="80"/>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                </Grid.ColumnDefinitions>',
-    '                                <Label Grid.Column="0" Content="[Providers]:"/>',
-    '                                <ComboBox Grid.Column="1" Name="Providers"/>',
-    '                                <Label Grid.Column="2" Content="[Count]:"/>',
-    '                                <TextBox Grid.Column="3" Name="ProviderCount"/>',
-    '                            </Grid>',
-    '                        </Grid>',
-    '                    </TabItem>',
-    '                    <TabItem Header="Logs">',
-    '                        <Grid Name="LogPanel">',
-    '                            <Grid.RowDefinitions>',
-    '                                <RowDefinition Height="40"/>',
-    '                                <RowDefinition Height="*"/>',
-    '                                <RowDefinition Height="40"/>',
-    '                                <RowDefinition Height="40"/>',
-    '                                <RowDefinition Height="*"/>',
-    '                            </Grid.RowDefinitions>',
-    '                            <Grid Grid.Row="0">',
-    '                                <Grid.ColumnDefinitions>',
-    '                                    <ColumnDefinition Width="110"/>',
-    '                                    <ColumnDefinition Width="150"/>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                </Grid.ColumnDefinitions>',
-    '                                <Label Grid.Column="0" Content="[Log Main]:"/>',
-    '                                <ComboBox Grid.Column="1" Name="LogMainProperty" SelectedIndex="1">',
-    '                                    <ComboBoxItem Content="Rank"/>',
-    '                                    <ComboBoxItem Content="Name"/>',
-    '                                    <ComboBoxItem Content="Type"/>',
-    '                                    <ComboBoxItem Content="Path"/>',
-    '                                </ComboBox>',
-    '                                <TextBox Grid.Column="2" Name="LogMainFilter"/>',
-    '                                <Button Grid.Column="3" Name="LogMainRefresh" Content="Refresh"/>',
-    '                            </Grid>',
-    '                            <DataGrid Grid.Row="1" Name="LogMainResult">',
-    '                                <DataGrid.Columns>',
-    '                                    <DataGridTextColumn Header="Rank"       Binding="{Binding Rank}"         Width="40"/>',
-    '                                    <DataGridTextColumn Header="Name"       Binding="{Binding LogName}"      Width="425"/>',
-    '                                    <DataGridTextColumn Header="Total"      Binding="{Binding Total}"        Width="100"/>',
-    '                                    <DataGridTextColumn Header="Type"       Binding="{Binding LogType}"      Width="100"/>',
-    '                                    <DataGridTextColumn Header="Isolation"  Binding="{Binding LogIsolation}" Width="100"/>',
-    '                                    <DataGridTextColumn Header="Enabled"    Binding="{Binding IsEnabled}"    Width="50"/>',
-    '                                    <DataGridTextColumn Header="Classic"    Binding="{Binding IsClassicLog}" Width="50"/>',
-    '                                </DataGrid.Columns>',
-    '                            </DataGrid>',
-    '                            <Grid Grid.Row="2">',
-    '                                <Grid.ColumnDefinitions>',
-    '                                    <ColumnDefinition Width="110"/>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                    <ColumnDefinition Width="110"/>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                </Grid.ColumnDefinitions>',
-    '                                <Label Grid.Column="0" Content="[Log Selected]:"/>',
-    '                                <TextBox Grid.Column="1" Name="LogSelected"/>',
-    '                                <Label Grid.Column="2" Content="[Log Total]:"/>',
-    '                                <TextBox Grid.Column="3" Name="LogTotal"/>',
-    '                            </Grid>',
-    '                            <Grid Grid.Row="3">',
-    '                                <Grid.ColumnDefinitions>',
-    '                                    <ColumnDefinition Width="110"/>',
-    '                                    <ColumnDefinition Width="150"/>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                </Grid.ColumnDefinitions>',
-    '                                <Label Grid.Column="0" Content="[Log Output]:"/>',
-    '                                <ComboBox Grid.Column="1" Name="LogOutputProperty" SelectedIndex="1">',
-    '                                    <ComboBoxItem Content="Index"/>',
-    '                                    <ComboBoxItem Content="Date"/>',
-    '                                    <ComboBoxItem Content="Log"/>',
-    '                                    <ComboBoxItem Content="Rank"/>',
-    '                                    <ComboBoxItem Content="Provider"/>',
-    '                                    <ComboBoxItem Content="Id"/>',
-    '                                    <ComboBoxItem Content="Type"/>',
-    '                                    <ComboBoxItem Content="Message"/>',
-    '                                    <ComboBoxItem Content="Content"/>',
-    '                                </ComboBox>',
-    '                                <TextBox Grid.Column="2" Name="LogOutputFilter"/>',
-    '                                <Button Grid.Column="3" Name="LogOutputRefresh" Content="Refresh"/>',
-    '                            </Grid>',
-    '                            <DataGrid Grid.Row="4" Name="LogOutputResult">',
-    '                                <DataGrid.Columns>',
-    '                                    <DataGridTextColumn Header="Index"    Binding="{Binding Index}"    Width="50"/>',
-    '                                    <DataGridTextColumn Header="Date"     Binding="{Binding Date}"     Width="120"/>',
-    '                                    <DataGridTextColumn Header="Rank"     Binding="{Binding Rank}"     Width="50"/>',
-    '                                    <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="200"/>',
-    '                                    <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>',
-    '                                    <DataGridTextColumn Header="Type"     Binding="{Binding Type}"     Width="100"/>',
-    '                                    <DataGridTextColumn Header="Message"  Binding="{Binding Message}"  Width="500"/>',
-    '                                </DataGrid.Columns>',
-    '                            </DataGrid>',
-    '                        </Grid>',
-    '                    </TabItem>',
-    '                    <TabItem Header="Output">',
-    '                        <Grid Name="OutputPanel">',
-    '                            <Grid.RowDefinitions>',
-    '                                <RowDefinition Height="40"/>',
-    '                                <RowDefinition Height="*"/>',
-    '                            </Grid.RowDefinitions>',
-    '                            <Grid Grid.Row="0">',
-    '                                <Grid.ColumnDefinitions>',
-    '                                    <ColumnDefinition Width="110"/>',
-    '                                    <ColumnDefinition Width="150"/>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                    <ColumnDefinition Width="100"/>',
-    '                                </Grid.ColumnDefinitions>',
-    '                                <Label Grid.Column="0" Content="[Output]:"/>',
-    '                                <ComboBox Grid.Column="1" Name="OutputProperty" SelectedIndex="0">',
-    '                                    <ComboBoxItem Content="Index"/>',
-    '                                    <ComboBoxItem Content="Date"/>',
-    '                                    <ComboBoxItem Content="Log"/>',
-    '                                    <ComboBoxItem Content="Rank"/>',
-    '                                    <ComboBoxItem Content="Provider"/>',
-    '                                    <ComboBoxItem Content="Id"/>',
-    '                                    <ComboBoxItem Content="Type"/>',
-    '                                    <ComboBoxItem Content="Message"/>',
-    '                                </ComboBox>',
-    '                                <TextBox Grid.Column="2" Name="OutputFilter"/>',
-    '                                <Button Grid.Column="3" Name="OutputRefresh" Content="Refresh"/>',
-    '                            </Grid>',
-    '                            <DataGrid Grid.Row="1" Name="OutputResult">',
-    '                                <DataGrid.Columns>',
-    '                                    <DataGridTextColumn Header="Index"    Binding="{Binding Index}"    Width="50"/>',
-    '                                    <DataGridTextColumn Header="Date"     Binding="{Binding Date}"     Width="120"/>',
-    '                                    <DataGridTextColumn Header="Log"      Binding="{Binding Log}"      Width="50"/>',
-    '                                    <DataGridTextColumn Header="Rank"     Binding="{Binding Rank}"     Width="50"/>',
-    '                                    <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="200"/>',
-    '                                    <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>',
-    '                                    <DataGridTextColumn Header="Type"     Binding="{Binding Type}"     Width="100"/>',
-    '                                    <DataGridTextColumn Header="Message"  Binding="{Binding Message}"  Width="500"/>',
-    '                                </DataGrid.Columns>',
-    '                            </DataGrid>',
-    '                        </Grid>',
-    '                    </TabItem>',
-    '                    <TabItem Header="Viewer">',
-    '                        <Grid Name="ViewerPanel">',
-    '                            <Grid.RowDefinitions>',
-    '                                <RowDefinition Height="*"/>',
-    '                                <RowDefinition Height="40"/>',
-    '                            </Grid.RowDefinitions>',
-    '                            <DataGrid Grid.Row="0" Name="ViewerResult">',
-    '                                <DataGrid.Columns>',
-    '                                    <DataGridTextColumn Header="Name"     Binding="{Binding Name}"     Width="200"/>',
-    '                                    <DataGridTextColumn Header="Value"    Binding="{Binding Value}"    Width="*">',
-    '                                        <DataGridTextColumn.ElementStyle>',
-    '                                            <Style TargetType="TextBlock">',
-    '                                                <Setter Property="TextWrapping" Value="Wrap"/>',
-    '                                            </Style>',
-    '                                        </DataGridTextColumn.ElementStyle>',
-    '                                        <DataGridTextColumn.EditingElementStyle>',
-    '                                            <Style TargetType="TextBox">',
-    '                                                <Setter Property="TextWrapping" Value="Wrap"/>',
-    '                                                <Setter Property="AcceptsReturn" Value="True"/>',
-    '                                            </Style>',
-    '                                        </DataGridTextColumn.EditingElementStyle>',
-    '                                    </DataGridTextColumn>',
-    '                                </DataGrid.Columns>',
-    '                            </DataGrid>',
-    '                            <Grid Grid.Row="1">',
-    '                                <Grid.ColumnDefinitions>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                    <ColumnDefinition Width="*"/>',
-    '                                </Grid.ColumnDefinitions>',
-    '                                <Button Grid.Column="0" Name="ViewerCopy"  Content="Copy to clipboard"/>',
-    '                                <Button Grid.Column="2" Name="ViewerClear" Content="Clear"/>',
-    '                            </Grid>',
-    '                        </Grid>',
-    '                    </TabItem>',
-    '                </TabControl>',
-    '            </Grid>',
-    '        </GroupBox>',
-    '    </Grid>',
-    '</Window>' -join "`n")
-}
-
+# Functional classes
 Class EventLogRec
 {
     [UInt32]   $Index
@@ -757,7 +289,7 @@ Class EventLogCfg
     {
         Return $This | Select-Object Rank,LogName,LogType,LogIsolation,IsEnabled,IsClassicLog,SecurityDescriptor,LogFilePath,MaximumSizeInBytes,Maximum,Current,LogMode,
         OwningProviderName,ProviderNames,ProviderLevel,ProviderKeywords,ProviderBufferSize,ProviderMinimumNumberOfBuffers,ProviderMaximumNumberOfBuffers,ProviderLatency,
-        ProvicerControlGuid
+        ProviderControlGuid
     }
     [Void] Insert([UInt32]$Index)
     {
@@ -1064,23 +596,532 @@ Class EventLogs
     }
 }
 
+# UI classes
+Class DGList
+{
+    [String]$Name
+    [Object]$Value
+    DGList([String]$Name,[Object]$Value)
+    {
+        $This.Name  = $Name
+        $This.Value = Switch ($Value.Count) { 0 { "" } 1 { $Value } Default { $Value -join "`n" } }
+    }
+}
+
+Class XamlWindow
+{
+    Hidden [Object]        $XAML
+    Hidden [Object]         $XML
+    [String[]]            $Names
+    [Object[]]            $Types
+    [Object]               $Node
+    [Object]                 $IO
+    [Object]         $Dispatcher
+    [Object]          $Exception
+    [String[]] FindNames()
+    {
+        Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
+            ($_ -Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
+        } | Select-Object -Unique ) 
+    }
+    XamlWindow([String]$XAML)
+    {           
+        If (!$Xaml)
+        {
+            Throw "Invalid XAML Input"
+        }
+        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+        $This.Xaml               = $Xaml
+        $This.XML                = [XML]$Xaml
+        $This.Names              = $This.FindNames()
+        $This.Types              = @( )
+        $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
+        $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
+        $This.Dispatcher         = $This.IO.Dispatcher
+        ForEach ($I in 0..($This.Names.Count - 1))
+        {
+            $Name                = $This.Names[$I]
+            $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $This.IO.FindName($Name) -Force
+            If ($This.IO.$Name)
+            {
+                $This.Types    += [DGList]::New($Name,$This.IO.$Name.GetType().Name)
+            }
+        }
+    }
+    Invoke()
+    {
+        Try
+        {
+            $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
+        }
+        Catch
+        {
+            $This.Exception     = $PSItem
+        }
+    }
+}
+
+# Get-Content $Home\Desktop\EventLogs.xaml | % { "        '$_'," } | Set-Clipboard
+Class EventLogsGUI
+{
+    Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Event Log Utility" Width="800" Height="650" HorizontalAlignment="Center" Topmost="False" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+    '    <Window.Resources>',
+    '        <Style TargetType="GroupBox">',
+    '            <Setter Property="Margin" Value="10"/>',
+    '            <Setter Property="Padding" Value="10"/>',
+    '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
+    '            <Setter Property="Template">',
+    '                <Setter.Value>',
+    '                    <ControlTemplate TargetType="GroupBox">',
+    '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
+    '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
+    '                        </Border>',
+    '                    </ControlTemplate>',
+    '                </Setter.Value>',
+    '            </Setter>',
+    '        </Style>',
+    '        <Style TargetType="Button">',
+    '            <Setter Property="Margin" Value="5"/>',
+    '            <Setter Property="Padding" Value="5"/>',
+    '            <Setter Property="Height" Value="30"/>',
+    '            <Setter Property="FontWeight" Value="Semibold"/>',
+    '            <Setter Property="FontSize" Value="12"/>',
+    '            <Setter Property="Foreground" Value="Black"/>',
+    '            <Setter Property="Background" Value="#DFFFBA"/>',
+    '            <Setter Property="BorderThickness" Value="2"/>',
+    '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+    '            <Style.Resources>',
+    '                <Style TargetType="Border">',
+    '                    <Setter Property="CornerRadius" Value="5"/>',
+    '                </Style>',
+    '            </Style.Resources>',
+    '        </Style>',
+    '        <Style TargetType="DataGridCell">',
+    '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
+    '        </Style>',
+    '        <Style TargetType="DataGrid">',
+    '            <Setter Property="Margin" Value="5"/>',
+    '            <Setter Property="AutoGenerateColumns" Value="False"/>',
+    '            <Setter Property="AlternationCount" Value="3"/>',
+    '            <Setter Property="HeadersVisibility" Value="Column"/>',
+    '            <Setter Property="CanUserResizeRows" Value="False"/>',
+    '            <Setter Property="CanUserAddRows" Value="False"/>',
+    '            <Setter Property="IsReadOnly" Value="True"/>',
+    '            <Setter Property="IsTabStop" Value="True"/>',
+    '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
+    '            <Setter Property="SelectionMode" Value="Extended"/>',
+    '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
+    '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
+    '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
+    '        </Style>',
+    '        <Style TargetType="DataGridRow">',
+    '            <Setter Property="BorderBrush" Value="Black"/>',
+    '            <Style.Triggers>',
+    '                <Trigger Property="AlternationIndex" Value="0">',
+    '                    <Setter Property="Background" Value="White"/>',
+    '                </Trigger>',
+    '                <Trigger Property="AlternationIndex" Value="1">',
+    '                    <Setter Property="Background" Value="#FFC5E5EC"/>',
+    '                </Trigger>',
+    '                <Trigger Property="AlternationIndex" Value="2">',
+    '                    <Setter Property="Background" Value="#FFFDE1DC"/>',
+    '                </Trigger>',
+    '            </Style.Triggers>',
+    '        </Style>',
+    '        <Style TargetType="DataGridColumnHeader">',
+    '            <Setter Property="FontSize"   Value="10"/>',
+    '            <Setter Property="FontWeight" Value="Medium"/>',
+    '            <Setter Property="Margin" Value="2"/>',
+    '            <Setter Property="Padding" Value="2"/>',
+    '        </Style>',
+    '        <Style TargetType="ComboBox">',
+    '            <Setter Property="Height" Value="24"/>',
+    '            <Setter Property="Margin" Value="5"/>',
+    '            <Setter Property="FontSize" Value="12"/>',
+    '            <Setter Property="FontWeight" Value="Normal"/>',
+    '        </Style>',
+    '        <Style x:Key="DropShadow">',
+    '            <Setter Property="TextBlock.Effect">',
+    '                <Setter.Value>',
+    '                    <DropShadowEffect ShadowDepth="1"/>',
+    '                </Setter.Value>',
+    '            </Setter>',
+    '        </Style>',
+    '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+    '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+    '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+    '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+    '            <Setter Property="Height" Value="24"/>',
+    '            <Setter Property="Margin" Value="4"/>',
+    '            <Setter Property="FontSize" Value="12"/>',
+    '            <Setter Property="Foreground" Value="#000000"/>',
+    '            <Setter Property="TextWrapping" Value="Wrap"/>',
+    '            <Style.Resources>',
+    '                <Style TargetType="Border">',
+    '                    <Setter Property="CornerRadius" Value="2"/>',
+    '                </Style>',
+    '            </Style.Resources>',
+    '        </Style>',
+    '        <Style TargetType="Label">',
+    '            <Setter Property="Margin" Value="5"/>',
+    '            <Setter Property="FontWeight" Value="Bold"/>',
+    '            <Setter Property="Background" Value="Black"/>',
+    '            <Setter Property="Foreground" Value="White"/>',
+    '            <Setter Property="BorderBrush" Value="Gray"/>',
+    '            <Setter Property="BorderThickness" Value="2"/>',
+    '            <Style.Resources>',
+    '                <Style TargetType="Border">',
+    '                    <Setter Property="CornerRadius" Value="5"/>',
+    '                </Style>',
+    '            </Style.Resources>',
+    '        </Style>',
+    '        <Style TargetType="TabItem">',
+    '            <Setter Property="Template">',
+    '                <Setter.Value>',
+    '                    <ControlTemplate TargetType="TabItem">',
+    '                        <Border Name="Border" BorderThickness="2" BorderBrush="Black" CornerRadius="2" Margin="2">',
+    '                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Right" ContentSource="Header" Margin="5"/>',
+    '                        </Border>',
+    '                        <ControlTemplate.Triggers>',
+    '                            <Trigger Property="IsSelected" Value="True">',
+    '                                <Setter TargetName="Border" Property="Background" Value="#4444FF"/>',
+    '                                <Setter Property="Foreground" Value="#FFFFFF"/>',
+    '                            </Trigger>',
+    '                            <Trigger Property="IsSelected" Value="False">',
+    '                                <Setter TargetName="Border" Property="Background" Value="#DFFFBA"/>',
+    '                                <Setter Property="Foreground" Value="#000000"/>',
+    '                            </Trigger>',
+    '                            <Trigger Property="IsEnabled" Value="False">',
+    '                                <Setter TargetName="Border" Property="Background" Value="#6F6F6F"/>',
+    '                                <Setter Property="Foreground" Value="#9F9F9F"/>',
+    '                            </Trigger>',
+    '                        </ControlTemplate.Triggers>',
+    '                    </ControlTemplate>',
+    '                </Setter.Value>',
+    '            </Setter>',
+    '        </Style>',
+    '    </Window.Resources>',
+    '    <Grid>',
+    '        <Grid.Background>',
+    '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
+    '        </Grid.Background>',
+    '        <GroupBox>',
+    '            <Grid>',
+    '                <Grid.RowDefinitions>',
+    '                    <RowDefinition Height="40"/>',
+    '                    <RowDefinition Height="40"/>',
+    '                    <RowDefinition Height="*"/>',
+    '                </Grid.RowDefinitions>',
+    '                <Grid Grid.Row="0">',
+    '                    <Grid.ColumnDefinitions>',
+    '                        <ColumnDefinition Width="100"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="100"/>',
+    '                    </Grid.ColumnDefinitions>',
+    '                    <Label Grid.Column="0" Content="[Selection]:"/>',
+    '                    <ComboBox Grid.Column="1" Name="ModeSelect" SelectedIndex="0">',
+    '                        <ComboBoxItem Content="(Get/View) event logs on this system"/>',
+    '                        <ComboBoxItem Content="Export event logs on this system, to a file"/>',
+    '                        <ComboBoxItem Content="Import event logs from a file"/>',
+    '                    </ComboBox>',
+    '                    <Button Grid.Column="2" Content="Continue" Name="Continue"/>',
+    '                </Grid>',
+    '                <Grid Grid.Row="1">',
+    '                    <Grid.ColumnDefinitions>',
+    '                        <ColumnDefinition Width="100"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="100"/>',
+    '                    </Grid.ColumnDefinitions>',
+    '                    <Label Grid.Column="0" Content="[File Path]:"/>',
+    '                    <TextBox Grid.Column="1" Name="FilePath"/>',
+    '                    <Button Grid.Column="2"  Name="FilePathBrowse" Content="Browse"/>',
+    '                </Grid>',
+    '                <Grid Grid.Row="2">',
+    '                    <Grid.RowDefinitions>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="*"/>',
+    '                    </Grid.RowDefinitions>',
+    '                    <Grid Grid.Row="0">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Button Grid.Column="0" Name="MainTab"   Content="Main"/>',
+    '                        <Button Grid.Column="1" Name="LogTab"    Content="Logs"/>',
+    '                        <Button Grid.Column="2" Name="OutputTab" Content="Output"/>',
+    '                        <Button Grid.Column="3" Name="ViewTab"   Content="View"/>',
+    '                    </Grid>',
+    '                    <Grid Grid.Row="1" Name="MainPanel" Visibility="Visible">',
+    '                            <Grid.RowDefinitions>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="*"/>',
+    '                            </Grid.RowDefinitions>',
+    '                            <Grid Grid.Row="0">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                    <ColumnDefinition Width="300"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label Grid.Column="0" Content="[Time]:"/>',
+    '                                <TextBox Grid.Column="1" Name="Time"/>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="1">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                    <ColumnDefinition Width="300"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label Grid.Column="0" Content="[Start]:"/>',
+    '                                <TextBox Grid.Column="1" Name="Start"/>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="2">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                    <ColumnDefinition Width="300"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label Grid.Column="0" Content="[Title]:"/>',
+    '                                <TextBox Grid.Column="1" Name="Title"/>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="3">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label Grid.Column="0" Content="[Destination]:"/>',
+    '                                <TextBox Grid.Column="1" Name="Destination"/>',
+    '                                <Button Grid.Column="2" Content="Export" Name="Export" IsEnabled="False"/>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="4">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                    <ColumnDefinition Width="380"/>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label Grid.Column="0" Content="[Providers]:"/>',
+    '                                <ComboBox Grid.Column="1" Name="Providers"/>',
+    '                                <Label Grid.Column="2" Content="[Count]:"/>',
+    '                                <TextBox Grid.Column="3" Name="ProviderCount"/>',
+    '                            </Grid>',
+    '                        </Grid>',
+    '                    <Grid Grid.Row="1" Name="LogPanel" Visibility="Collapsed">',
+    '                            <Grid.RowDefinitions>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="*"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="*"/>',
+    '                            </Grid.RowDefinitions>',
+    '                            <Grid Grid.Row="0">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="110"/>',
+    '                                    <ColumnDefinition Width="150"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label Grid.Column="0" Content="[Log Main]:"/>',
+    '                                <ComboBox Grid.Column="1" Name="LogMainProperty" SelectedIndex="1">',
+    '                                    <ComboBoxItem Content="Rank"/>',
+    '                                    <ComboBoxItem Content="Name"/>',
+    '                                    <ComboBoxItem Content="Type"/>',
+    '                                    <ComboBoxItem Content="Path"/>',
+    '                                </ComboBox>',
+    '                                <TextBox Grid.Column="2" Name="LogMainFilter"/>',
+    '                                <Button Grid.Column="3" Name="LogMainRefresh" Content="Refresh"/>',
+    '                            </Grid>',
+    '                            <DataGrid Grid.Row="1" Name="LogMainResult">',
+    '                                <DataGrid.Columns>',
+    '                                    <DataGridTextColumn Header="Rank"       Binding="{Binding Rank}"         Width="40"/>',
+    '                                    <DataGridTextColumn Header="Name"       Binding="{Binding LogName}"      Width="425"/>',
+    '                                    <DataGridTextColumn Header="Total"      Binding="{Binding Total}"        Width="100"/>',
+    '                                    <DataGridTextColumn Header="Type"       Binding="{Binding LogType}"      Width="100"/>',
+    '                                    <DataGridTextColumn Header="Isolation"  Binding="{Binding LogIsolation}" Width="100"/>',
+    '                                    <DataGridTextColumn Header="Enabled"    Binding="{Binding IsEnabled}"    Width="50"/>',
+    '                                    <DataGridTextColumn Header="Classic"    Binding="{Binding IsClassicLog}" Width="50"/>',
+    '                                </DataGrid.Columns>',
+    '                            </DataGrid>',
+    '                            <Grid Grid.Row="2">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="110"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="110"/>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label Grid.Column="0" Content="[Log Selected]:"/>',
+    '                                <TextBox Grid.Column="1" Name="LogSelected"/>',
+    '                                <Label Grid.Column="2" Content="[Log Total]:"/>',
+    '                                <TextBox Grid.Column="3" Name="LogTotal"/>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="3">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="110"/>',
+    '                                    <ColumnDefinition Width="150"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label Grid.Column="0" Content="[Log Output]:"/>',
+    '                                <ComboBox Grid.Column="1" Name="LogOutputProperty" SelectedIndex="1">',
+    '                                    <ComboBoxItem Content="Index"/>',
+    '                                    <ComboBoxItem Content="Date"/>',
+    '                                    <ComboBoxItem Content="Log"/>',
+    '                                    <ComboBoxItem Content="Rank"/>',
+    '                                    <ComboBoxItem Content="Provider"/>',
+    '                                    <ComboBoxItem Content="Id"/>',
+    '                                    <ComboBoxItem Content="Type"/>',
+    '                                    <ComboBoxItem Content="Message"/>',
+    '                                    <ComboBoxItem Content="Content"/>',
+    '                                </ComboBox>',
+    '                                <TextBox Grid.Column="2" Name="LogOutputFilter"/>',
+    '                                <Button Grid.Column="3" Name="LogOutputRefresh" Content="Refresh"/>',
+    '                            </Grid>',
+    '                            <DataGrid Grid.Row="4" Name="LogOutputResult">',
+    '                                <DataGrid.Columns>',
+    '                                    <DataGridTextColumn Header="Index"    Binding="{Binding Index}"    Width="50"/>',
+    '                                    <DataGridTextColumn Header="Date"     Binding="{Binding Date}"     Width="120"/>',
+    '                                    <DataGridTextColumn Header="Rank"     Binding="{Binding Rank}"     Width="50"/>',
+    '                                    <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="200"/>',
+    '                                    <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>',
+    '                                    <DataGridTextColumn Header="Type"     Binding="{Binding Type}"     Width="100"/>',
+    '                                    <DataGridTextColumn Header="Message"  Binding="{Binding Message}"  Width="500"/>',
+    '                                </DataGrid.Columns>',
+    '                            </DataGrid>',
+    '                        </Grid>',
+    '                    <Grid Grid.Row="1" Name="OutputPanel" Visibility="Collapsed">',
+    '                            <Grid.RowDefinitions>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="*"/>',
+    '                            </Grid.RowDefinitions>',
+    '                            <Grid Grid.Row="0">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="110"/>',
+    '                                    <ColumnDefinition Width="150"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label Grid.Column="0" Content="[Output]:"/>',
+    '                                <ComboBox Grid.Column="1" Name="OutputProperty" SelectedIndex="0">',
+    '                                    <ComboBoxItem Content="Index"/>',
+    '                                    <ComboBoxItem Content="Date"/>',
+    '                                    <ComboBoxItem Content="Log"/>',
+    '                                    <ComboBoxItem Content="Rank"/>',
+    '                                    <ComboBoxItem Content="Provider"/>',
+    '                                    <ComboBoxItem Content="Id"/>',
+    '                                    <ComboBoxItem Content="Type"/>',
+    '                                    <ComboBoxItem Content="Message"/>',
+    '                                </ComboBox>',
+    '                                <TextBox Grid.Column="2" Name="OutputFilter"/>',
+    '                                <Button Grid.Column="3" Name="OutputRefresh" Content="Refresh"/>',
+    '                            </Grid>',
+    '                            <DataGrid Grid.Row="1" Name="OutputResult">',
+    '                                <DataGrid.Columns>',
+    '                                    <DataGridTextColumn Header="Index"    Binding="{Binding Index}"    Width="50"/>',
+    '                                    <DataGridTextColumn Header="Date"     Binding="{Binding Date}"     Width="120"/>',
+    '                                    <DataGridTextColumn Header="Log"      Binding="{Binding Log}"      Width="50"/>',
+    '                                    <DataGridTextColumn Header="Rank"     Binding="{Binding Rank}"     Width="50"/>',
+    '                                    <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="200"/>',
+    '                                    <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>',
+    '                                    <DataGridTextColumn Header="Type"     Binding="{Binding Type}"     Width="100"/>',
+    '                                    <DataGridTextColumn Header="Message"  Binding="{Binding Message}"  Width="500"/>',
+    '                                </DataGrid.Columns>',
+    '                            </DataGrid>',
+    '                        </Grid>',
+    '                    <Grid Grid.Row="1" Name="ViewPanel" Visibility="Collapsed">',
+    '                            <Grid.RowDefinitions>',
+    '                                <RowDefinition Height="*"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                            </Grid.RowDefinitions>',
+    '                            <DataGrid Grid.Row="0" Name="ViewResult">',
+    '                                <DataGrid.Columns>',
+    '                                    <DataGridTextColumn Header="Name"     Binding="{Binding Name}"     Width="200"/>',
+    '                                    <DataGridTextColumn Header="Value"    Binding="{Binding Value}"    Width="*">',
+    '                                        <DataGridTextColumn.ElementStyle>',
+    '                                            <Style TargetType="TextBlock">',
+    '                                                <Setter Property="TextWrapping" Value="Wrap"/>',
+    '                                            </Style>',
+    '                                        </DataGridTextColumn.ElementStyle>',
+    '                                        <DataGridTextColumn.EditingElementStyle>',
+    '                                            <Style TargetType="TextBox">',
+    '                                                <Setter Property="TextWrapping" Value="Wrap"/>',
+    '                                                <Setter Property="AcceptsReturn" Value="True"/>',
+    '                                            </Style>',
+    '                                        </DataGridTextColumn.EditingElementStyle>',
+    '                                    </DataGridTextColumn>',
+    '                                </DataGrid.Columns>',
+    '                            </DataGrid>',
+    '                            <Grid Grid.Row="1">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Button Grid.Column="0" Name="ViewCopy"  Content="Copy to clipboard"/>',
+    '                                <Button Grid.Column="2" Name="ViewClear" Content="Clear"/>',
+    '                            </Grid>',
+    '                        </Grid>',
+    '                </Grid>',
+    '            </Grid>',
+    '        </GroupBox>',
+    '    </Grid>',
+    '</Window>' -join "`n")
+}
+
+# Controller class
 Class EventControl
 {
-    [Object] $Xaml
-    [Object] $Event
-    Hidden [String] $LogMainFilter
-    Hidden [Int32] $LogMainIndex   = -1
+    [Object]                   $Xaml
+    [Object]                  $Event
+    Hidden [UInt32]        $Selected
+    Hidden [String[]]         $Panel = "Main Log Output View" -Split " "
+    Hidden [String]   $LogMainFilter
+    Hidden [Int32]     $LogMainIndex = -1
     Hidden [String] $LogOutputFilter
-    Hidden [Int32] $LogOutputIndex = -1
-    Hidden [String] $OutputFilter
-    Hidden [Int32] $OutputIndex    = -1
-    Hidden [UInt32] $Toggle        = 0
+    Hidden [Int32]   $LogOutputIndex = -1
+    Hidden [String]    $OutputFilter
+    Hidden [Int32]      $OutputIndex = -1
+    Hidden [UInt32]          $Toggle = 0
     EventControl()
     {
-        $This.Xaml = [XamlWindow][EventLogsGUI]::Tab
+        $This.Xaml  = [XamlWindow][EventLogsGUI]::Tab
+    }
+    Main([UInt32]$Slot)
+    {
+        ForEach ($X in 0..($This.Panel.Count-1))
+        {
+            $Item                 = $This.Xaml.IO."$($This.Panel[$X])Tab"
+            $Item.Background      = "#DFFFBA"
+            $Item.Foreground      = "#000000"
+            $Item.BorderBrush     = "#000000"
+
+            If ($X -eq $Slot)
+            {
+                $Item.Background  = "#4444FF"
+                $Item.Foreground  = "#FFFFFF"
+                $Item.BorderBrush = "#111111"
+            }
+
+            $Item                 = $This.Xaml.IO."$($This.Panel[$X])Panel"
+            $Item.Visibility      = "Collapsed"
+
+            If ($X -eq $Slot)
+            {
+                $Item.Visibility  = "Visible"
+            }
+        }
+
+        $This.Selected = $Slot
     }
     Initialize()
     {
+        $This.Main(0)
         $This.Xaml.IO.Time.Text          = $This.Event.Time.Elapsed
         $This.Xaml.IO.Start.Text         = $This.Event.Start.ToString()
         $This.Xaml.IO.Title.Text         = $This.Event.Title
@@ -1166,8 +1207,8 @@ Class EventControl
     [Object] ViewCopy()
     {
         $Return = @( )
-        $Buffer = ($This.Xaml.IO.ViewerResult.Items | % Name | Sort-Object Length)[-1].Length
-        ForEach ($Item in $This.Xaml.IO.ViewerResult.Items)
+        $Buffer = ($This.Xaml.IO.ViewResult.Items | % Name | Sort-Object Length)[-1].Length
+        ForEach ($Item in $This.Xaml.IO.ViewResult.Items)
         {
             $Split  = $Item.Value -Split "`n"
             If ($Split.Count -eq 1)
@@ -1193,18 +1234,21 @@ Class EventControl
     }
     [Void] ViewClear()
     {
-        $This.Xaml.IO.ViewerResult.Items.Clear()
+        $This.Xaml.IO.ViewResult.Items.Clear()
     }
 }
 
-# $Event = [EventLogs]::New()
-# Event handlers often crash when they're written within the class itself.
+
+# Instantiation
 $Ctrl    = [EventControl]::New()
+# $Event = [EventLogs]::New()
 If ($Event)
 {
     $Ctrl.InsertEventLogs($Event)   
 }
 $Xaml    = $Ctrl.Xaml
+
+# Controls / Event handlers often crash when they're written within the class itself
 $Xaml.IO.ModeSelect.Add_SelectionChanged(
 {
     Switch ($Xaml.IO.ModeSelect.SelectedIndex)
@@ -1289,8 +1333,40 @@ $Xaml.IO.Continue.Add_Click(
     }
 })
 
+# Navigation Tabs
+$Xaml.IO.MainTab.Add_Click(
+{        
+    If ($Ctrl.Selected -ne 0)
+    {
+        $Ctrl.Main(0)
+    }
+})
+
+$Xaml.IO.LogTab.Add_Click(
+{
+    If ($Ctrl.Selected -ne 1)
+    {
+        $Ctrl.Main(1)
+    }
+})
+
+$Xaml.IO.OutputTab.Add_Click(
+{
+    If ($Ctrl.Selected -ne 2)
+    {
+        $Ctrl.Main(2)
+    }
+})
+
+$Xaml.IO.ViewTab.Add_Click(
+{
+    If ($Ctrl.Selected -ne 3)
+    {
+        $Ctrl.Main(3)
+    }
+})
+
 # <Log panel>
-#   [Log Main] 
 $Xaml.IO.LogMainFilter.Add_TextChanged(
 {
     $Ctrl.LogMainFilter = $Xaml.IO.LogMainFilter.Text
@@ -1341,13 +1417,11 @@ $Xaml.IO.LogMainResult.Add_MouseDoubleClick(
     $Ctrl.LogMainIndex = $Xaml.IO.LogMainResult.SelectedIndex
     If ($Ctrl.LogMainIndex -gt -1)
     {
-        $Ctrl.Reset($Xaml.IO.ViewerResult.Items,$Ctrl.ViewProperties($Ctrl.Event.Log[$Ctrl.LogMainIndex].Config()))
-        $Xaml.IO.TabControl.Items[-1].IsSelected = 1
-        $Xaml.IO.TabControl.UpdateLayout()
+        $Ctrl.Reset($Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Event.Log[$Ctrl.LogMainIndex].Config()))
+        $Ctrl.Main(3)
     }
 })
 
-#   [Log Output]
 $Xaml.IO.LogOutputFilter.Add_TextChanged(
 {
     If ($Ctrl.LogMainIndex -eq -1)
@@ -1399,15 +1473,12 @@ $Xaml.IO.LogOutputResult.Add_MouseDoubleClick(
     $Ctrl.LogOutputIndex = $Xaml.IO.LogOutputResult.SelectedIndex
     If ($Ctrl.LogOutputIndex -gt -1)
     {
-        $Ctrl.Reset($Xaml.IO.ViewerResult.Items,$Ctrl.ViewProperties($Ctrl.Event.Log[$Ctrl.LogMainIndex].Output[$Ctrl.LogOutputIndex].Config()))
-        $Xaml.IO.TabControl.Items[-1].IsSelected = 1
-        $Xaml.IO.TabControl.UpdateLayout()
+        $Ctrl.Reset($Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Event.Log[$Ctrl.LogMainIndex].Output[$Ctrl.LogOutputIndex].Config()))
+        $Ctrl.Main(3)
     }
 })
 
 # <Output panel>
-#   [Output]
-
 $Xaml.IO.OutputFilter.Add_TextChanged(
 {
     $Ctrl.OutputFilter = $Xaml.IO.OutputFilter.Text
@@ -1442,20 +1513,18 @@ $Xaml.IO.OutputResult.Add_MouseDoubleClick(
     $Ctrl.OutputIndex = $Xaml.IO.OutputResult.SelectedIndex
     If ($Ctrl.OutputIndex -gt 1)
     {
-        $Ctrl.Reset($Xaml.IO.ViewerResult.Items,$Ctrl.ViewProperties($Ctrl.Event.Output[$Ctrl.OutputIndex].Config()))
-        $Xaml.IO.TabControl.Items[-1].IsSelected = 1
-        $Xaml.IO.TabControl.UpdateLayout()
+        $Ctrl.Reset($Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Event.Output[$Ctrl.OutputIndex].Config()))
+        $Ctrl.Main(3)
     }
 })
 
-# Viewer Panel
-
-$Xaml.IO.ViewerCopy.Add_Click(
+# View Panel
+$Xaml.IO.ViewCopy.Add_Click(
 {
     $Ctrl.ViewCopy() | Set-Clipboard
 })
 
-$Xaml.IO.ViewerClear.Add_Click(
+$Xaml.IO.ViewClear.Add_Click(
 {
     $Ctrl.ViewClear()
 })
