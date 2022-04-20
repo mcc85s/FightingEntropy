@@ -551,8 +551,10 @@ Class Experiment
     [UInt32]      $Threads
     [String]         $Guid
     [String]         $Path
-    [Object[]]      $Files
-    [Object[]]     $Object
+    [Object]        $Files
+    [Object]       $Object
+    [Object]         $Logs
+    [Object]       $Output
     Experiment()
     {
         # Start timer, count threads / max runspace pool size
@@ -587,8 +589,10 @@ Class Experiment
         }
 
         # Create an individual file for each thread, to evenly distribute the workload among the max threads 
-        $This.Files   = 0..($This.Threads-1) | % { [ExperimentFile]::New($This.Path,"$_.txt") }
-        $This.Object = @( )
+        $This.Files      = 0..($This.Threads-1) | % { [ExperimentFile]::New($This.Path,"$_.txt") }
+        $This.Object     = @( )
+        $This.Logs       = @( )
+        $This.Output     = @( )
     }
     Load([Object[]]$Object)
     {
@@ -614,12 +618,15 @@ Class Experiment
         $This.Path        = $Null
         $This.Files       = $Null
         $This.Object      = $Null
+        $This.Logs        = $Null
+        $This.Output      = $Null
     }
     Master()
     {
         $Value  = @( )
         $Value += "[Start]: $($This.Start)"
         $Value += "[DisplayName]: $($This.DisplayName)"
+        $Value += "[Guid]: $($This.Guid)"
         $Depth  = ([String]$This.Object.Count).Length
         ForEach ($X in 0..($This.Object.Count-1))
         {
@@ -631,10 +638,6 @@ Class Experiment
             $Value += $SystemInfo[$X]
         }
         Set-Content "$($This.Path)\Master\Master.txt" -Value $Value -Force
-    }
-    Logs()
-    {
-
     }
 }
 
@@ -751,10 +754,11 @@ $Test.Master()
 # Declare functions to memory, for each runspace to have access to
 Function Get-EventLogConfigExtension
 {
-    [CmdLetBinding()]
+    [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
-        [Parameter(Mandatory)][UInt32]$Rank,
-        [Parameter(Mandatory)][String]$Name)
+        [Parameter(Mandatory,ParameterSetName=0)][UInt32]$Rank,
+        [Parameter(Mandatory,ParameterSetName=0)][String]$Name,
+        [Parameter(Mandatory,ParameterSetName=1)][Object]$Config)
 
     Class EventLogConfigExtension
     {
@@ -797,6 +801,30 @@ Function Get-EventLogConfigExtension
             $This.Maximum                        = "{0:n2} MB" -f ($Event.MaximumSizeInBytes/1MB) 
             $This.Current                        = If (!(Test-Path $This.LogFilePath)) { "0.00 MB" } Else { "{0:n2} MB" -f (Get-Item $This.LogFilePath | % { $_.Length/1MB }) }
             $This.LogMode                        = $Event.LogMode
+            $This.OwningProviderName             = $Event.OwningProviderName
+            $This.ProviderNames                  = $Event.ProviderNames 
+            $This.ProviderLevel                  = $Event.ProviderLevel 
+            $This.ProviderKeywords               = $Event.ProviderKeywords 
+            $This.ProviderBufferSize             = $Event.ProviderBufferSize 
+            $This.ProviderMinimumNumberOfBuffers = $Event.ProviderMinimumNumberOfBuffers 
+            $This.ProviderMaximumNumberOfBuffers = $Event.ProviderMaximumNumberOfBuffers 
+            $This.ProviderLatency                = $Event.ProviderLatency 
+            $This.ProviderControlGuid            = $Event.ProviderControlGuid
+        }
+        EventLogConfigExtension([Object]$Event)
+        {
+            $This.Rank                           = $Event.Rank
+            $This.Logname                        = $Event.LogName
+            $This.LogType                        = $This.GetLogType($Event.LogType)
+            $This.LogIsolation                   = $This.GetLogIsolation($Event.LogIsolation)
+            $This.IsEnabled                      = $Event.IsEnabled 
+            $This.IsClassicLog                   = $Event.IsClassicLog 
+            $This.SecurityDescriptor             = $Event.SecurityDescriptor
+            $This.LogFilePath                    = $Event.LogFilePath 
+            $This.MaximumSizeInBytes             = $Event.MaximumSizeInBytes
+            $This.Maximum                        = $Event.Maximum
+            $This.Current                        = $Event.Current
+            $This.LogMode                        = $This.GetLogMode($Event.LogMode)
             $This.OwningProviderName             = $Event.OwningProviderName
             $This.ProviderNames                  = $Event.ProviderNames 
             $This.ProviderLevel                  = $Event.ProviderLevel 
@@ -866,15 +894,20 @@ Function Get-EventLogConfigExtension
         }
     }
     
-    Return [EventLogConfigExtension]::New($Rank,$Name)
+    Switch ($PsCmdLet.ParameterSetName)
+    {
+        0 { [EventLogConfigExtension]::New($Rank,$Name) }
+        1 { [EventLogConfigExtension]::New($Config)     }
+    }
 }
 
-# Allows all event logs to be extracted and viewed externally, it also restores themselves from a zip archive
+# This function is used to export the event logs from the system
 Function Get-EventLogRecordExtension
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
         [Parameter(Mandatory,ParameterSetName=0)][Object]$Record,
+        [Parameter(Mandatory,ParameterSetName=1)][UInt32]$Index,
         [Parameter(Mandatory,ParameterSetName=1)][Object]$Entry)
 
     Class EventLogRecordExtension
@@ -912,40 +945,41 @@ Function Get-EventLogRecordExtension
         Hidden [Object] $TaskDisplayName
         Hidden [Object] $KeywordsDisplayNames
         Hidden [Object] $Properties
-        EventLogRecordExtension([Object]$Event)
+        EventLogRecordExtension([Object]$Record)
         {
-            $This.Index       = $Event.Index
-            $This.Name        = $Event.Name
-            $This.Rank        = $Event.Rank
-            $This.Provider    = $Event.ProviderName
-            $This.DateTime    = $Event.TimeCreated
-            $This.Date        = $Event.Date
-            $This.Log         = $Event.LogId
-            $This.Id          = $Event.Id
-            $This.Type        = $Event.LevelDisplayName
-            $This.InsertEvent($Event)
+            $This.Index       = $Record.Index
+            $This.Name        = $Record.Name
+            $This.Rank        = $Record.Rank
+            $This.Provider    = $Record.ProviderName
+            $This.DateTime    = $Record.TimeCreated
+            $This.Date        = $Record.Date
+            $This.Log         = $Record.LogId
+            $This.Id          = $Record.Id
+            $This.Type        = $Record.LevelDisplayName
+            $This.InsertEvent($Record)
         }
-        EventLogRecordExtension([Object]$Entry,[UInt32]$Option)
+        EventLogRecordExtension([UInt32]$Index,[Object]$Entry)
         {
             $Stream           = $Entry.Open()
             $Reader           = [System.IO.StreamReader]::New($Stream)
-            $Event            = $Reader.ReadToEnd() | ConvertFrom-Json
+            $RecordEntry      = $Reader.ReadToEnd() 
+            $Record           = $RecordEntry | ConvertFrom-Json
             $Reader.Close()
             $Stream.Close()
-            $This.Index       = $Event.Index
-            $This.Name        = $Event.Name
-            $This.DateTime    = [DateTime]$Event.DateTime
-            $This.Date        = $Event.Date
-            $This.Log         = $Event.Log
-            $This.Rank        = $Event.Rank
-            $This.Provider    = $Event.Provider
-            $This.Id          = $Event.Id
-            $This.Type        = $Event.Type
-            $This.InsertEvent($Event)
+            $This.Index       = $Record.Index
+            $This.Name        = $Record.Name
+            $This.DateTime    = [DateTime]$Record.DateTime
+            $This.Date        = $Record.Date
+            $This.Log         = $Record.Log
+            $This.Rank        = $Record.Rank
+            $This.Provider    = $Record.Provider
+            $This.Id          = $Record.Id
+            $This.Type        = $Record.Type
+            $This.InsertEvent($Record)
         }
-        InsertEvent([Object]$Event)
+        InsertEvent([Object]$Record)
         {
-            $FullMessage   = $Event.Message -Split "`n"
+            $FullMessage   = $Record.Message -Split "`n"
             Switch ($FullMessage.Count)
             {
                 {$_ -gt 1}
@@ -964,28 +998,28 @@ Function Get-EventLogRecordExtension
                     $This.Content  = "-"
                 }
             }
-            $This.Version              = $Event.Version
-            $This.Qualifiers           = $Event.Qualifiers
-            $This.Level                = $Event.Level
-            $This.Task                 = $Event.Task
-            $This.Opcode               = $Event.Opcode
-            $This.Keywords             = $Event.Keywords
-            $This.RecordId             = $Event.RecordId
-            $This.ProviderId           = $Event.ProviderId
-            $This.LogName              = $Event.LogName
-            $This.ProcessId            = $Event.ProcessId
-            $This.ThreadId             = $Event.ThreadId
-            $This.MachineName          = $Event.MachineName
-            $This.UserID               = $Event.UserId
-            $This.ActivityID           = $Event.ActivityId
-            $This.RelatedActivityID    = $Event.RelatedActivityID
-            $This.ContainerLog         = $Event.ContainerLog
-            $This.MatchedQueryIds      = @($Event.MatchedQueryIds)
-            $This.Bookmark             = $Event.Bookmark
-            $This.OpcodeDisplayName    = $Event.OpcodeDisplayName
-            $This.TaskDisplayName      = $Event.TaskDisplayName
-            $This.KeywordsDisplayNames = @($Event.KeywordsDisplayNames)
-            $This.Properties           = @($Event.Properties.Value)
+            $This.Version              = $Record.Version
+            $This.Qualifiers           = $Record.Qualifiers
+            $This.Level                = $Record.Level
+            $This.Task                 = $Record.Task
+            $This.Opcode               = $Record.Opcode
+            $This.Keywords             = $Record.Keywords
+            $This.RecordId             = $Record.RecordId
+            $This.ProviderId           = $Record.ProviderId
+            $This.LogName              = $Record.LogName
+            $This.ProcessId            = $Record.ProcessId
+            $This.ThreadId             = $Record.ThreadId
+            $This.MachineName          = $Record.MachineName
+            $This.UserID               = $Record.UserId
+            $This.ActivityID           = $Record.ActivityId
+            $This.RelatedActivityID    = $Record.RelatedActivityID
+            $This.ContainerLog         = $Record.ContainerLog
+            $This.MatchedQueryIds      = @($Record.MatchedQueryIds)
+            $This.Bookmark             = $Record.Bookmark
+            $This.OpcodeDisplayName    = $Record.OpcodeDisplayName
+            $This.TaskDisplayName      = $Record.TaskDisplayName
+            $This.KeywordsDisplayNames = @($Record.KeywordsDisplayNames)
+            $This.Properties           = @($Record.Properties.Value)
         }
         [Object] Export()
         {
@@ -1010,7 +1044,7 @@ Function Get-EventLogRecordExtension
     Switch ($PsCmdLet.ParameterSetName)
     {
         0 { [EventLogRecordExtension]::New($Record) }
-        1 { [EventLogRecordExtension]::New($Entry,0) }
+        1 { [EventLogRecordExtension]::New(0,$Entry) }
     }
 }
 
@@ -1070,43 +1104,45 @@ $List1.IsComplete()
 
 # (Sort -> Write) log config file
 Write-Host "Sorting [~] Logs: (Index/Rank), Elapsed: [$($Test.Timer.Elapsed)]"
-$Logs       = $List1.Threads.Data | Sort-Object Rank
-Set-Content "$($Test.Path)\Logs\Logs.txt" -Value ($Logs.Config() | ConvertTo-Json)
+$Test.Logs      = $List1.Threads.Data | Sort-Object Rank
+Set-Content "$($Test.Path)\Logs\Logs.txt" -Value ($Test.Logs.Config() | ConvertTo-Json)
 
-# Transfer objects from log output to swap file while sorting ALL records by timecreated
+# Now we have all of the log entries on the system 1) ranked, and also 2) sorted by TimeCreated
 Write-Host "Sorting (Events by TimeCreated) [~] (Logs/Output), Elapsed: [$($Test.Timer.Elapsed)]"
-$Swap       = $Logs.Output        | Sort-Object TimeCreated
-
-# Dispose the runspacepool, not sure it's necessary.
+$Test.Output   = $Test.Logs.Output | Sort-Object TimeCreated
 $RunspacePool.Dispose()
 
-
+# Almost time to index the files...
 Write-Host "Indexing [~] (Output), Elapsed: [$($Test.Timer.Elapsed)]"
-$Count          = $Swap.Count
+$Count          = $Test.Output.Count
 $Depth          = ([String]$Count).Length
+
+# Set up hashtable for threads and $T variable for threads (an error kept occurring) 
 $Load           = @{ }
 $T              = [Environment]::GetEnvironmentVariable("Number_of_processors")
 
-# Based on the thread count, this will create multiple hashtables
+# Autocalc the # of hashtables respective to cores available
 ForEach ($X in 0..($T-1))
 {
     $Load.Add($X,[Hashtable]@{ })
 }
 
-# This will index each file, add the index to the name, and add each entry to it's own hashtable
-ForEach ($X in 0..($Swap.Count-1))
+# Now perform indexing as well as dividing the workload to separate hashtables
+ForEach ($X in 0..($Test.Output.Count-1))
 {
-    $Item       = $Swap[$X]
+    $Item       = $Test.Output[$X]
     $Item.Index = $X
     $Item.Name  = "{0:d$Depth}-{1}" -f $X, $Item.Name
-    $Load[$X%$T].Add($Load[$X%$T].Count,$Swap[$X])
+
+    # The index ($X % $T) switches the corresponding hashtable per iteration
+    $Load[$X%$T].Add($Load[$X%$T].Count,$Test.Output[$X])
 }
 
 # Open the runspacepool
 $RunspacePool    = [RunspaceFactory]::CreateRunspacePool(1,$Test.Threads,$Session,$Host)
 $RunspacePool.Open()
 
-# Literally only converts the existing [EventLogRecord] to a custom version, and saves each entry to file
+# Scriptblock instructs each thread to get the event log record extension, then sets the content
 $ScriptBlock     = {
 
     Param ($Target,$Load,$Threads,$Step)
@@ -1117,7 +1153,7 @@ $ScriptBlock     = {
     }
 }
 
-# Declare the thread collection object
+# Declare new thread collection object
 $List2            = New-Object ThreadCollection
 
 # Initialize the threads, add the scriptblock, insert an argument for filepath
@@ -1142,5 +1178,206 @@ While ($List2.Query())
 Write-Host $List2
 $List2.IsComplete()
 
-# That's it so far. The GUI has been basically done, but this tool takes a very long time so I've been
-# looking for any way to make it more time efficient.
+# Dispose the runspace
+$RunspacePool.Dispose()
+
+# Get ready to archive the files
+Add-Type -Assembly System.IO.Compression.Filesystem
+
+$Phase       = [System.Diagnostics.Stopwatch]::StartNew()
+$Destination = "$($Test.Path)\$($Test.DisplayName).zip"
+$Zip         = [System.IO.Compression.ZipFile]::Open($Destination,"Create").Dispose()
+$Zip         = [System.IO.Compression.ZipFile]::Open($Destination,"Update")
+
+# Inject master file
+$MasterPath  = "$($Test.Path)\Master\Master.txt"
+[System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Zip,$MasterPath,"Master.txt",[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
+
+# Inject logs file
+$LogPath     = "$($Test.Path)\Logs\Logs.txt"
+[System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Zip,$LogPath,"Logs.txt",[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
+
+# Prepare event files
+$EventPath   = "$($Test.Path)\Events"
+$EventFiles  = Get-ChildItem $EventPath
+
+# Create progress loop
+$Complete   = @( )
+$Count      = $EventFiles.Count
+ForEach ($X in 0..($EventFiles.Count-1))
+{
+    $File    = $EventFiles[$X]
+    $Percent = [Math]::Round($X*100/$Count)
+    If ($Percent % 5 -eq 0 -and $Percent -notin $Complete)
+    {
+        $Complete += $Percent
+        If ($Percent -ne 0)
+        {
+            $Remain    = ($Phase.Elapsed.TotalSeconds / $Percent) * (100-$Percent) | % { [Timespan]::FromSeconds($_) }
+        }
+        
+        Write-Host "Exporting ($Percent.00%) [~] Elapsed: [$($Phase.Elapsed)], Remain: [$Remain]"
+    }
+    # Inject event files
+    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Zip,$File.Fullname,$File.Name,[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
+}
+
+# Archive creation just about complete
+Write-Host "Saving (100.00%) [~] Elapsed: $($Phase.Elapsed), (Please wait, the program is writing the file to disk)"
+$Zip.Dispose()
+
+# Get the zip file information
+$Zip = Get-Item $Destination
+Switch (!!$Zip)
+{
+    $True
+    {
+        Write-Host ("Saved (100.00%) [+] Elapsed [$($Test.Timer.Elapsed)], File: [$Destination], Size: [$("{0:n3}MB" -f ($Zip.Length/1MB))]")
+    }
+    $False
+    {
+        Write-Host ("Failed (100.00%) [!] Elapsed [$($Test.Timer.Elapsed)], File: [$Destination], the file does not exist.")
+    }
+}
+
+# At this point, deleting the makeshift directories/files might be a good idea outside of development
+
+
+# This is specifically for restoring an archive of another machine, or the current machine.
+Class RestoreArchive
+{
+    [Object] $Time
+    [Object] $Start
+    [Object] $System
+    [Object] $DisplayName
+    [UInt32] $Threads
+    [String] $Guid
+    [String] $Path
+    [Object] $Files
+    [Object] $Object
+    [Object] $Logs
+    [Object] $Output
+    Hidden [Object] $Zip
+    RestoreArchive([String]$ZipPath)
+    {
+        # Restore the zip file
+        If (!(Test-Path $ZipPath) -or $ZipPath.Split(".")[-1] -notmatch "zip")
+        {
+            Throw "Invalid Path"
+        }
+
+        $This.Time         = [System.Diagnostics.Stopwatch]::StartNew()
+
+        # Get zip content, pull master file
+        $This.Zip          = [System.IO.Compression.Zipfile]::Open($ZipPath,"Read")
+        $This.Path         = $ZipPath | Split-Path -Parent
+
+        # Extract Master file
+        $MasterEntry       = $This.Zip.GetEntry("Master.txt")
+        $MasterPath        = "$($This.Path)\Master.txt"
+        [System.IO.Compression.ZipFileExtensions]::ExtractToFile($MasterEntry,$MasterPath,$True)
+        $MasterFile        = Get-Content $MasterPath
+
+        # Extract Logs file
+        $LogEntry          = $This.Zip.GetEntry("Logs.txt")
+        $LogPath           = "$($This.Path)\Logs.txt"
+        [System.IO.Compression.ZipFileExtensions]::ExtractToFile($LogEntry,$LogPath,$True)
+        $LogFile           = Get-Content $LogPath | ConvertFrom-Json
+
+        # Parse Master.txt
+        $This.Start        = $MasterFile[0].Substring(9)
+        $This.DisplayName  = $MasterFile[1].Substring(15)
+        $Lines             = @( )
+        ForEach ($X in 0..($MasterFile.Count-1))
+        {
+            $Line = [Regex]::Matches($MasterFile[$X],"\[Provider \d+\].+").Value
+            If (!!$Line)
+            { 
+                $Lines    += $Line.Substring(16)
+            }
+        }
+        $This.Object       = $Lines
+        $This.System       = $MasterFile[($Lines.Count + 2)..($MasterFile.Count-1)]
+        $This.Threads      = ($This.System | ? { $_ -match "Threads" }).Substring(18)
+
+        # Parse Logs.txt
+        $This.Logs         = @( )
+        $Stash             = @{ }
+        ForEach ($X in 0..($LogFile.Count-1))
+        {
+            $Item          = $LogFile[$X]
+            $This.Logs    += Get-EventLogConfigExtension -Config $Item
+            $Stash.Add($Item.LogName,@{ })
+        }
+
+        $Hash              = @{ }
+        $Remain            = $Null
+
+        # Collect Files
+        $FileEntry            = $This.Zip.Entries | ? Name -notmatch "(Master|Logs).txt"
+
+        # Create progress loop
+        $Complete             = @( )
+        $Phase                = [System.Diagnostics.Stopwatch]::StartNew()
+        Write-Host "Importing (0.00%) [~] Files: ($($FileEntry.Count)) found."
+        ForEach ($X in 0..($FileEntry.Count-1))
+        {
+            $Item             = Get-EventLogRecordExtension -Index $X -Entry $FileEntry[$X]
+            $Hash.Add($X,$Item)
+
+            $Stash[$Item.LogName].Add($Stash[$Item.LogName].Count,$X)
+            
+            $Percent          = [Math]::Round($X*100/$FileEntry.Count)
+            If ($Percent % 5 -eq 0 -and $Percent -notin $Complete)
+            {
+                $Complete += $Percent
+                If ($Percent -ne 0)
+                {
+                    $Remain= ($Phase.Elapsed.TotalSeconds / $Percent) * (100-$Percent) | % { [Timespan]::FromSeconds($_) }
+                }
+                Write-Host "Importing ($Percent%) [~] Elapsed: [$($This.Time.Elapsed)], Remain: [$Remain]"
+            }
+        }
+        $Phase.Stop()
+        Write-Host "Imported (100.00%) [+] Files: ($($FileEntry.Count)) found."
+        $This.Output      = $Hash[0..($Hash.Count-1)]
+
+        # Sort the logs
+        $Complete          = @( )
+        $Phase.Reset()
+        Write-Host "Sorting (0.00%) [~] Logs: ($($This.Logs.Count)) found."
+        ForEach ($X in 0..($This.Logs.Count-1))
+        {
+            $Name = $This.Logs[$X].LogName
+            Switch ($Stash[$Name].Count)
+            {
+                0 
+                {  
+                    $This.Logs[$X].Output = @( )
+                }
+                1 
+                {  
+                    $This.Logs[$X].Output = @($This.Output[$Stash[$Name][0]])
+                }
+                Default
+                { 
+                    $This.Logs[$X].Output = @($This.Output[$Stash[$Name][0..($Stash[$Name].Count-1)]])
+                }
+            }
+            $This.Logs[$X].Total          = $This.Logs[$X].Output.Count
+
+            $Percent                      = [Math]::Round($X*100/$This.Logs.Count)
+            If ($Percent % 5 -eq 0 -and $Percent -notin $Complete)
+            {
+                $Complete += $Percent
+                If ($Percent -ne 0)
+                {
+                    $Remain = ($Phase.Elapsed.TotalSeconds / $Percent) * (100-$Percent) | % { [Timespan]::FromSeconds($_) }
+                }
+                Write-Host "Sorting ($Percent%) [~] Elapsed: [$($This.Time.Elapsed)], Remain: [$Remain]"
+            }
+        }
+        Write-Host "Sorted (100.00%) [+] Logs: ($($This.Logs.Count)) found."
+        $This.Time.Stop()
+    }
+}
