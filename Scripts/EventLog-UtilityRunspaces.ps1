@@ -718,27 +718,27 @@ Class ThreadCollection
 # All of these versions do the same thing. I wrote it several ways to show how they all achieve the same end result.
 # Version 1
 # $Objects    = Get-WinEvent -ListLog * | % LogName | Select-Object -Unique | Sort-Object
-# $Test       = [Experiment]::New()
-# $Test.Load($Objects)                                                                        # Reset the lab -> # $Test.Remove() 
+# $Ctrl       = [Experiment]::New()
+# $Ctrl.Load($Objects)                                                                        # Reset the lab -> # $Ctrl.Remove() 
 
 # Version 2
-# $Test       = [Experiment]::New()
-# $Test.Load((Get-WinEvent -ListLog * | % LogName | Select-Object -Unique | Sort-Object))     # Reset the lab -> # $Test.Remove()
+# $Ctrl       = [Experiment]::New()
+# $Ctrl.Load((Get-WinEvent -ListLog * | % LogName | Select-Object -Unique | Sort-Object))     # Reset the lab -> # $Ctrl.Remove()
 
 # Version 3
-# $Test       = New-Object Experiment
-# $Test | % Load (Get-WinEvent -ListLog * | % LogName | Select-Object -Unique | Sort-Object)  # Reset the lab -> # $Test.Remove()
+# $Ctrl       = New-Object Experiment
+# $Ctrl | % Load (Get-WinEvent -ListLog * | % LogName | Select-Object -Unique | Sort-Object)  # Reset the lab -> # $Ctrl.Remove()
 
 # Version 4
-New-Object Experiment -OutVariable Test | Out-Null
-Get-WinEvent -ListLog * | % LogName | Select-Object -Unique | Sort-Object -OutVariable Object | Out-Null
-$Test.Load($Object)
-$Test.Master()
+$Ctrl  = New-Object Experiment
+$Names = Get-WinEvent -ListLog * | % LogName | Select-Object -Unique | Sort-Object
+$Ctrl.Load($Names)
+$Ctrl.Master()
 
 # -------------------------------------
 # Output of the custom experiment class
 # -------------------------------------
-# PS C:\Users\admin> $Test
+# PS C:\Users\admin> $Ctrl
 # 
 # Time         : 00:08:06.8751525
 # Start        : 4/20/2022 06:48:05 AM
@@ -1058,7 +1058,7 @@ ForEach ($Item in "Get-EventLogConfigExtension","Get-EventLogRecordExtension")
 }
 
 # Open the runspacepool
-$RunspacePool    = [RunspaceFactory]::CreateRunspacePool(1,$Test.Threads,$Session,$Host)
+$RunspacePool    = [RunspaceFactory]::CreateRunspacePool(1,$Ctrl.Threads,$Session,$Host)
 $RunspacePool.Open()
 
 # Declare the scriptblock each runspace will run independently
@@ -1081,10 +1081,10 @@ $ScriptBlock     = {
 $List1            = New-Object ThreadCollection
 
 # Initialize the threads, add the scriptblock, insert an argument for filepath
-0..($Test.Threads-1) | % {
+0..($Ctrl.Threads-1) | % {
 
     $PowerShell = [PowerShell]::Create()
-    $PowerShell.AddScript($scriptblock).AddArgument($Test.Files[$_].Fullname) | Out-Null
+    $PowerShell.AddScript($scriptblock).AddArgument($Ctrl.Files[$_].Fullname) | Out-Null
     $PowerShell.RunspacePool = $RunspacePool
 
     $List1.AddThread($_,$PowerShell)
@@ -1103,18 +1103,18 @@ Write-Host $List1
 $List1.IsComplete()
 
 # (Sort -> Write) log config file
-Write-Host "Sorting [~] Logs: (Index/Rank), Elapsed: [$($Test.Timer.Elapsed)]"
-$Test.Logs      = $List1.Threads.Data | Sort-Object Rank
-Set-Content "$($Test.Path)\Logs\Logs.txt" -Value ($Test.Logs.Config() | ConvertTo-Json)
+Write-Host "Sorting [~] Logs: (Index/Rank), Elapsed: [$($Ctrl.Timer.Elapsed)]"
+$Ctrl.Logs      = $List1.Threads.Data | Sort-Object Rank
+Set-Content "$($Ctrl.Path)\Logs\Logs.txt" -Value ($Ctrl.Logs.Config() | ConvertTo-Json)
 
 # Now we have all of the log entries on the system 1) ranked, and also 2) sorted by TimeCreated
-Write-Host "Sorting (Events by TimeCreated) [~] (Logs/Output), Elapsed: [$($Test.Timer.Elapsed)]"
-$Test.Output   = $Test.Logs.Output | Sort-Object TimeCreated
+Write-Host "Sorting (Events by TimeCreated) [~] (Logs/Output), Elapsed: [$($Ctrl.Timer.Elapsed)]"
+$Ctrl.Output   = $Ctrl.Logs.Output | Sort-Object TimeCreated
 $RunspacePool.Dispose()
 
 # Almost time to index the files...
-Write-Host "Indexing [~] (Output), Elapsed: [$($Test.Timer.Elapsed)]"
-$Count          = $Test.Output.Count
+Write-Host "Indexing [~] (Output), Elapsed: [$($Ctrl.Timer.Elapsed)]"
+$Count          = $Ctrl.Output.Count
 $Depth          = ([String]$Count).Length
 
 # Set up hashtable for threads and $T variable for threads (an error kept occurring) 
@@ -1128,18 +1128,18 @@ ForEach ($X in 0..($T-1))
 }
 
 # Now perform indexing as well as dividing the workload to separate hashtables
-ForEach ($X in 0..($Test.Output.Count-1))
+ForEach ($X in 0..($Ctrl.Output.Count-1))
 {
-    $Item       = $Test.Output[$X]
+    $Item       = $Ctrl.Output[$X]
     $Item.Index = $X
     $Item.Name  = "{0:d$Depth}-{1}" -f $X, $Item.Name
 
     # The index ($X % $T) switches the corresponding hashtable per iteration
-    $Load[$X%$T].Add($Load[$X%$T].Count,$Test.Output[$X])
+    $Load[$X%$T].Add($Load[$X%$T].Count,$Ctrl.Output[$X])
 }
 
 # Open the runspacepool
-$RunspacePool    = [RunspaceFactory]::CreateRunspacePool(1,$Test.Threads,$Session,$Host)
+$RunspacePool    = [RunspaceFactory]::CreateRunspacePool(1,$Ctrl.Threads,$Session,$Host)
 $RunspacePool.Open()
 
 # Scriptblock instructs each thread to get the event log record extension, then sets the content
@@ -1157,10 +1157,10 @@ $ScriptBlock     = {
 $List2            = New-Object ThreadCollection
 
 # Initialize the threads, add the scriptblock, insert an argument for filepath
-0..($Test.Threads-1) | % {
+0..($Ctrl.Threads-1) | % {
 
     $PowerShell = [PowerShell]::Create()
-    $PowerShell.AddScript($scriptblock).AddArgument("$($Test.Path)\Events").AddArgument($Load[$_]).AddArgument($Test.Threads).AddArgument($_) | Out-Null
+    $PowerShell.AddScript($scriptblock).AddArgument("$($Ctrl.Path)\Events").AddArgument($Load[$_]).AddArgument($Ctrl.Threads).AddArgument($_) | Out-Null
     $PowerShell.RunspacePool = $RunspacePool
 
     $List2.AddThread($_,$PowerShell)
@@ -1185,20 +1185,20 @@ $RunspacePool.Dispose()
 Add-Type -Assembly System.IO.Compression.Filesystem
 
 $Phase       = [System.Diagnostics.Stopwatch]::StartNew()
-$Destination = "$($Test.Path)\$($Test.DisplayName).zip"
+$Destination = "$($Ctrl.Path)\$($Ctrl.DisplayName).zip"
 $Zip         = [System.IO.Compression.ZipFile]::Open($Destination,"Create").Dispose()
 $Zip         = [System.IO.Compression.ZipFile]::Open($Destination,"Update")
 
 # Inject master file
-$MasterPath  = "$($Test.Path)\Master\Master.txt"
+$MasterPath  = "$($Ctrl.Path)\Master\Master.txt"
 [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Zip,$MasterPath,"Master.txt",[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
 
 # Inject logs file
-$LogPath     = "$($Test.Path)\Logs\Logs.txt"
+$LogPath     = "$($Ctrl.Path)\Logs\Logs.txt"
 [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Zip,$LogPath,"Logs.txt",[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
 
 # Prepare event files
-$EventPath   = "$($Test.Path)\Events"
+$EventPath   = "$($Ctrl.Path)\Events"
 $EventFiles  = Get-ChildItem $EventPath
 
 # Create progress loop
@@ -1232,11 +1232,11 @@ Switch (!!$Zip)
 {
     $True
     {
-        Write-Host ("Saved (100.00%) [+] Elapsed [$($Test.Timer.Elapsed)], File: [$Destination], Size: [$("{0:n3}MB" -f ($Zip.Length/1MB))]")
+        Write-Host ("Saved (100.00%) [+] Elapsed [$($Ctrl.Timer.Elapsed)], File: [$Destination], Size: [$("{0:n3}MB" -f ($Zip.Length/1MB))]")
     }
     $False
     {
-        Write-Host ("Failed (100.00%) [!] Elapsed [$($Test.Timer.Elapsed)], File: [$Destination], the file does not exist.")
+        Write-Host ("Failed (100.00%) [!] Elapsed [$($Ctrl.Timer.Elapsed)], File: [$Destination], the file does not exist.")
     }
 }
 
