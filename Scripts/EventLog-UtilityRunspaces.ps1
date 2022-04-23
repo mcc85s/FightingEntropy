@@ -1,102 +1,1533 @@
-# Example classes to keep the lesson/experiment structured
+<#
+.SYNOPSIS
+        Allows for getting/viewing, exporting, or importing event viewer logs for a current
+        or target Windows system.
 
-# Get-SystemDetails gets a capture of the system running the utility
+.DESCRIPTION
+        After many years of wondering how I could extract everything from *every* event log,
+        this seems to do the trick. The utility takes a fair amount of time, but- it will
+        collect every record in the event logs, as well as provide a way to export the files
+        to an archive which can be loaded in far less time than it takes to build it.
+
+        It performs a full cycle of stuff, to export logs on one system, to see a system
+        snapshot on another system. I've been tweaking it over the last few weeks, and I do
+        have a graphical user interface for it too.
+
+        The newest feature writes out a very detailed master.txt file that can import all of
+        the information it wrote in the primary scan/export, and, the thing formats itself.
+
+        Not unlike Write-Theme.
+        
+        Still a work in progress.
+.LINK
+.NOTES
+          FileName: EventLogs-Utility.ps1
+          Solution: FightingEntropy Module
+          Purpose: For exporting all of a systems event logs
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2022-04-08
+          Modified: 2022-04-23
+          
+          Version - 2021.10.0 - () - Finalized functional version 1.
+          TODO:
+.Example
+#>
+
+Add-Type -Assembly System.IO.Compression, System.IO.Compression.Filesystem, System.Windows.Forms, PresentationFramework
+
+# UI classes
+Class DGList
+{
+    [String]$Name
+    [Object]$Value
+    DGList([String]$Name,[Object]$Value)
+    {
+        $This.Name  = $Name
+        $This.Value = Switch ($Value.Count) { 0 { "" } 1 { $Value } Default { $Value -join "`n" } }
+    }
+}
+
+Class XamlWindow
+{
+    Hidden [Object]        $Xaml
+    Hidden [Object]         $Xml
+    [String[]]            $Names
+    [Object[]]            $Types
+    [Object]               $Node
+    [Object]                 $IO
+    [Object]         $Dispatcher
+    [Object]          $Exception
+    [String] FormatXaml([String]$Xaml)
+    {
+        $StringWriter          = [System.IO.StringWriter]::New()
+        $XmlWriter             = [System.Xml.XmlTextWriter]::New($StringWriter)
+        $XmlWriter.Formatting  = "indented"
+        $XmlWriter.Indentation = 4
+        ([Xml]$Xaml).WriteContentTo($XmlWriter)
+        $XmlWriter.Flush()
+        $StringWriter.Flush()
+        Return $StringWriter.ToString()
+    }
+    [String[]] FindNames()
+    {
+        Return [Regex]::Matches($This.Xaml,"((\s*Name\s*=\s*)('|`")(\w+)('|`"))").Groups | ? Name -eq 4 | % Value | Select-Object -Unique
+    }
+    XamlWindow([String]$Xaml)
+    {
+        $This.Xaml               = $This.FormatXaml($Xaml)   
+        If (!$This.Xaml)
+        {
+            Throw "Invalid Xaml Input"
+        }
+        
+        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+        
+        $This.Xml                = [Xml]$Xaml
+        $This.Names              = $This.FindNames()
+        $This.Types              = @( )
+        $This.Node               = [System.Xml.XmlNodeReader]::New($This.Xml)
+        $This.IO                 = [System.Windows.Markup.XamlReader]::Load($This.Node)
+        $This.Dispatcher         = $This.IO.Dispatcher
+    }
+    ProcessNames()
+    {
+        ForEach ($I in 0..($This.Names.Count - 1))
+        {
+            $Name                = $This.Names[$I]
+            $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $This.IO.FindName($Name) -Force
+            If ($This.IO.$Name)
+            {
+                $This.Types     += [DGList]::New($Name,$This.IO.$Name.GetType().Name)
+            }
+        }
+    }
+    UpdateWindow([Object]$Control,[Object]$Property,[Object]$Value)
+    {
+        $Window = $This.IO
+        $Window.$Control.Dispatcher.Invoke([Windows.Threading.DispatcherPriority]::Background,
+        [Action]{$Window.$Control.$Property = $Value}, "Normal")
+    }
+    Invoke()
+    {
+        Try
+        {
+            $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
+        }
+        Catch
+        {
+            $This.Exception     = $PSItem
+        }
+        Finally
+        {
+
+        }
+    }
+}
+
+# Get-Content $Home\Desktop\EventLogs.xaml | % { "        '$_'," } | Set-Clipboard
+Class EventLogGUI
+{
+    Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Event Log Utility" Width="800" Height="650" HorizontalAlignment="Center" Topmost="False" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+    '    <Window.Resources>',
+    '        <Style TargetType="GroupBox">',
+    '            <Setter Property="Margin" Value="10"/>',
+    '            <Setter Property="Padding" Value="10"/>',
+    '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
+    '            <Setter Property="Template">',
+    '                <Setter.Value>',
+    '                    <ControlTemplate TargetType="GroupBox">',
+    '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
+    '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
+    '                        </Border>',
+    '                    </ControlTemplate>',
+    '                </Setter.Value>',
+    '            </Setter>',
+    '        </Style>',
+    '        <Style TargetType="Button">',
+    '            <Setter Property="Margin" Value="5"/>',
+    '            <Setter Property="Padding" Value="5"/>',
+    '            <Setter Property="Height" Value="30"/>',
+    '            <Setter Property="FontWeight" Value="Semibold"/>',
+    '            <Setter Property="FontSize" Value="12"/>',
+    '            <Setter Property="Foreground" Value="Black"/>',
+    '            <Setter Property="Background" Value="#DFFFBA"/>',
+    '            <Setter Property="BorderThickness" Value="2"/>',
+    '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+    '            <Style.Resources>',
+    '                <Style TargetType="Border">',
+    '                    <Setter Property="CornerRadius" Value="5"/>',
+    '                </Style>',
+    '            </Style.Resources>',
+    '        </Style>',
+    '        <Style TargetType="DataGridCell">',
+    '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
+    '        </Style>',
+    '        <Style TargetType="DataGrid">',
+    '            <Setter Property="Margin" Value="5"/>',
+    '            <Setter Property="AutoGenerateColumns" Value="False"/>',
+    '            <Setter Property="AlternationCount" Value="3"/>',
+    '            <Setter Property="HeadersVisibility" Value="Column"/>',
+    '            <Setter Property="CanUserResizeRows" Value="False"/>',
+    '            <Setter Property="CanUserAddRows" Value="False"/>',
+    '            <Setter Property="IsReadOnly" Value="True"/>',
+    '            <Setter Property="IsTabStop" Value="True"/>',
+    '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
+    '            <Setter Property="SelectionMode" Value="Extended"/>',
+    '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
+    '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
+    '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
+    '        </Style>',
+    '        <Style TargetType="DataGridRow">',
+    '            <Setter Property="BorderBrush" Value="Black"/>',
+    '            <Style.Triggers>',
+    '                <Trigger Property="AlternationIndex" Value="0">',
+    '                    <Setter Property="Background" Value="White"/>',
+    '                </Trigger>',
+    '                <Trigger Property="AlternationIndex" Value="1">',
+    '                    <Setter Property="Background" Value="#FFC5E5EC"/>',
+    '                </Trigger>',
+    '                <Trigger Property="AlternationIndex" Value="2">',
+    '                    <Setter Property="Background" Value="#FFFDE1DC"/>',
+    '                </Trigger>',
+    '            </Style.Triggers>',
+    '        </Style>',
+    '        <Style TargetType="DataGridColumnHeader">',
+    '            <Setter Property="FontSize"   Value="10"/>',
+    '            <Setter Property="FontWeight" Value="Medium"/>',
+    '            <Setter Property="Margin" Value="2"/>',
+    '            <Setter Property="Padding" Value="2"/>',
+    '        </Style>',
+    '        <Style TargetType="ComboBox">',
+    '            <Setter Property="Height" Value="24"/>',
+    '            <Setter Property="Margin" Value="5"/>',
+    '            <Setter Property="FontSize" Value="12"/>',
+    '            <Setter Property="FontWeight" Value="Normal"/>',
+    '        </Style>',
+    '        <Style TargetType="CheckBox">',
+    '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+    '            <Setter Property="HorizontalAlignment" Value="Center"/>',
+    '            <Setter Property="Height" Value="24"/>',
+    '            <Setter Property="Margin" Value="5"/>',
+    '        </Style>',
+    '        <Style x:Key="DropShadow">',
+    '            <Setter Property="TextBlock.Effect">',
+    '                <Setter.Value>',
+    '                    <DropShadowEffect ShadowDepth="1"/>',
+    '                </Setter.Value>',
+    '            </Setter>',
+    '        </Style>',
+    '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+    '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+    '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+    '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+    '            <Setter Property="Height" Value="24"/>',
+    '            <Setter Property="Margin" Value="4"/>',
+    '            <Setter Property="FontSize" Value="12"/>',
+    '            <Setter Property="Foreground" Value="#000000"/>',
+    '            <Setter Property="TextWrapping" Value="Wrap"/>',
+    '            <Setter Property="IsReadOnly" Value="True"/>',
+    '            <Style.Resources>',
+    '                <Style TargetType="Border">',
+    '                    <Setter Property="CornerRadius" Value="2"/>',
+    '                </Style>',
+    '            </Style.Resources>',
+    '        </Style>',
+    '        <Style TargetType="Label">',
+    '            <Setter Property="Margin" Value="5"/>',
+    '            <Setter Property="FontWeight" Value="Bold"/>',
+    '            <Setter Property="Background" Value="Black"/>',
+    '            <Setter Property="Foreground" Value="White"/>',
+    '            <Setter Property="BorderBrush" Value="Gray"/>',
+    '            <Setter Property="BorderThickness" Value="2"/>',
+    '            <Style.Resources>',
+    '                <Style TargetType="Border">',
+    '                    <Setter Property="CornerRadius" Value="5"/>',
+    '                </Style>',
+    '            </Style.Resources>',
+    '        </Style>',
+    '        <Style TargetType="TabItem">',
+    '            <Setter Property="Template">',
+    '                <Setter.Value>',
+    '                    <ControlTemplate TargetType="TabItem">',
+    '                        <Border Name="Border" BorderThickness="2" BorderBrush="Black" CornerRadius="2" Margin="2">',
+    '                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Right" ContentSource="Header" Margin="5"/>',
+    '                        </Border>',
+    '                        <ControlTemplate.Triggers>',
+    '                            <Trigger Property="IsSelected" Value="True">',
+    '                                <Setter TargetName="Border" Property="Background" Value="#4444FF"/>',
+    '                                <Setter Property="Foreground" Value="#FFFFFF"/>',
+    '                            </Trigger>',
+    '                            <Trigger Property="IsSelected" Value="False">',
+    '                                <Setter TargetName="Border" Property="Background" Value="#DFFFBA"/>',
+    '                                <Setter Property="Foreground" Value="#000000"/>',
+    '                            </Trigger>',
+    '                            <Trigger Property="IsEnabled" Value="False">',
+    '                                <Setter TargetName="Border" Property="Background" Value="#6F6F6F"/>',
+    '                                <Setter Property="Foreground" Value="#9F9F9F"/>',
+    '                            </Trigger>',
+    '                        </ControlTemplate.Triggers>',
+    '                    </ControlTemplate>',
+    '                </Setter.Value>',
+    '            </Setter>',
+    '        </Style>',
+    '    </Window.Resources>',
+    '    <Grid>',
+    '        <Grid.Background>',
+    '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\background.jpg"/>',
+    '        </Grid.Background>',
+    '        <GroupBox>',
+    '            <Grid>',
+    '                <Grid.RowDefinitions>',
+    '                    <RowDefinition Height="40"/>',
+    '                    <RowDefinition Height="*"/>',
+    '                </Grid.RowDefinitions>',
+    '                <Grid Grid.Row="0">',
+    '                    <Grid.ColumnDefinitions>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                        <ColumnDefinition Width="*"/>',
+    '                    </Grid.ColumnDefinitions>',
+    '                    <Button Grid.Column="0" Name="MainTab"   Content="Main"/>',
+    '                    <Button Grid.Column="1" Name="LogTab"    Content="Log(s)" IsEnabled="False"/>',
+    '                    <Button Grid.Column="2" Name="OutputTab" Content="Output" IsEnabled="False"/>',
+    '                    <Button Grid.Column="3" Name="ViewTab"   Content="View" IsEnabled="False"/>',
+    '                </Grid>',
+    '                <Grid Grid.Row="1" Name="MainPanel" Visibility="Visible">',
+    '                    <Grid.RowDefinitions>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="*"/>',
+    '                        <RowDefinition Height="80"/>',
+    '                        <RowDefinition Height="40"/>',
+    '                    </Grid.RowDefinitions>',
+    '                    <Grid Grid.Row="0">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="110"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="100"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0" Content="[Mode]:"/>',
+    '                        <ComboBox Grid.Column="1" Name="Mode" SelectedIndex="0">',
+    '                            <ComboBoxItem Content="(Get/View) Event logs on this system"/>',
+    '                            <ComboBoxItem Content="(Import/View) Event logs from an archive"/>',
+    '                        </ComboBox>',
+    '                        <Button Grid.Column="2" Content="Continue" Name="Continue"/>',
+    '                    </Grid>',
+    '                    <Grid Grid.Row="1">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="110"/>',
+    '                            <ColumnDefinition Width="300"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0" Content="[Time]:"/>',
+    '                        <TextBox Grid.Column="1" Name="Time" IsEnabled="False"/>',
+    '                    </Grid>',
+    '                    <Grid Grid.Row="2">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="110"/>',
+    '                            <ColumnDefinition Width="300"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0" Content="[Start]:"/>',
+    '                        <TextBox Grid.Column="1" Name="Start" IsEnabled="False"/>',
+    '                    </Grid>',
+    '                    <Grid Grid.Row="3">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="110"/>',
+    '                            <ColumnDefinition Width="300"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0" Content="[DisplayName]:"/>',
+    '                        <TextBox Grid.Column="1" Name="DisplayName" IsEnabled="False"/>',
+    '                    </Grid>',
+    '                    <Grid Grid.Row="4">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="110"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="100"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0" Content="[Destination]:"/>',
+    '                        <TextBox Grid.Column="1" Name="Destination" IsEnabled="False"/>',
+    '                        <Button Grid.Column="2" Content="Export" Name="Export" IsEnabled="False"/>',
+    '                    </Grid>',
+    '                    <Grid Grid.Row="5">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="110"/>',
+    '                            <ColumnDefinition Width="380"/>',
+    '                            <ColumnDefinition Width="80"/>',
+    '                            <ColumnDefinition Width="100"/>',
+    '                            <ColumnDefinition Width="100"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0" Content="[Providers]:"/>',
+    '                        <ComboBox Grid.Column="1" Name="Providers" IsEnabled="False"/>',
+    '                        <Label Grid.Column="2" Content="[Count]:"/>',
+    '                        <TextBox Grid.Column="3" Name="ProviderCount" IsEnabled="False"/>',
+    '                        <CheckBox Grid.Column="4" IsEnabled="False" Content="Console" IsChecked="True"/>',
+    '                    </Grid>',
+    '                    <TextBox Grid.Row="6" Margin="5" Height="Auto" Name="Console" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextAlignment="Left" VerticalContentAlignment="Top" FontFamily="Cascadia Code" FontSize="10"/>',
+    '                    <DataGrid Grid.Row="7" Name="Archive" IsEnabled="False">',
+    '                        <DataGrid.Columns>',
+    '                            <DataGridTextColumn Header="Mode"     Binding="{Binding Mode}"           Width="40"/>',
+    '                            <DataGridTextColumn Header="Modified" Binding="{Binding Modified}"       Width="150"/>',
+    '                            <DataGridTextColumn Header="Size"     Binding="{Binding Size}"           Width="75"/>',
+    '                            <DataGridTextColumn Header="Name"     Binding="{Binding Name}"           Width="225"/>',
+    '                            <DataGridTextColumn Header="Path"     Binding="{Binding Path}"           Width="600"/>',
+    '                        </DataGrid.Columns>',
+    '                    </DataGrid>',
+    '                    <Grid Grid.Row="8">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="110"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="100"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0" Content="[File Path]:"/>',
+    '                        <TextBox Grid.Column="1" Name="FilePath" IsReadOnly="False" IsEnabled="False"/>',
+    '                        <Button Grid.Column="2"  Name="FilePathBrowse" Content="Browse" IsEnabled="False"/>',
+    '                    </Grid>',
+    '                </Grid>',
+    '                <Grid Grid.Row="1" Name="LogPanel" Visibility="Collapsed">',
+    '                    <Grid.RowDefinitions>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="*"/>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="*"/>',
+    '                    </Grid.RowDefinitions>',
+    '                    <Grid Grid.Row="0">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="110"/>',
+    '                            <ColumnDefinition Width="150"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="70"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0" Content="[Log Main]:"/>',
+    '                        <ComboBox Grid.Column="1" Name="LogMainProperty" SelectedIndex="1">',
+    '                            <ComboBoxItem Content="Rank"/>',
+    '                            <ComboBoxItem Content="Name"/>',
+    '                            <ComboBoxItem Content="Type"/>',
+    '                            <ComboBoxItem Content="Path"/>',
+    '                        </ComboBox>',
+    '                        <TextBox Grid.Column="2" Name="LogMainFilter"/>',
+    '                        <Button Grid.Column="3" Name="LogMainRefresh" Content="Refresh"/>',
+    '                    </Grid>',
+    '                    <DataGrid Grid.Row="1" Name="LogMainResult">',
+    '                        <DataGrid.Columns>',
+    '                            <DataGridTextColumn Header="Rank"       Binding="{Binding Rank}"         Width="40"/>',
+    '                            <DataGridTextColumn Header="Name"       Binding="{Binding LogName}"      Width="500"/>',
+    '                            <DataGridTextColumn Header="Total"      Binding="{Binding Total}"        Width="100"/>',
+    '                            <DataGridTextColumn Header="Type"       Binding="{Binding LogType}"      Width="100"/>',
+    '                            <DataGridTextColumn Header="Isolation"  Binding="{Binding LogIsolation}" Width="100"/>',
+    '                            <DataGridTextColumn Header="Enabled"    Binding="{Binding IsEnabled}"    Width="50"/>',
+    '                            <DataGridTextColumn Header="Classic"    Binding="{Binding IsClassicLog}" Width="50"/>',
+    '                        </DataGrid.Columns>',
+    '                    </DataGrid>',
+    '                    <Grid Grid.Row="2">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="85"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="50"/>',
+    '                            <ColumnDefinition Width="50"/>',
+    '                            <ColumnDefinition Width="70"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label   Grid.Column="0" Content="[Selected]:"/>',
+    '                        <TextBox Grid.Column="1" Name="LogSelected"/>',
+    '                        <Label   Grid.Column="2" Content="[Ct]:"/>',
+    '                        <TextBox Grid.Column="3" Name="LogTotal"/>',
+    '                        <Button Grid.Column="4" Name="LogClear" Content="Clear"/>',
+    '                    </Grid>',
+    '                    <Grid Grid.Row="3">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="85"/>',
+    '                            <ColumnDefinition Width="150"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="70"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0" Content="[Output]:"/>',
+    '                        <ComboBox Grid.Column="1" Name="LogOutputProperty" SelectedIndex="1">',
+    '                            <ComboBoxItem Content="Index"/>',
+    '                            <ComboBoxItem Content="Date"/>',
+    '                            <ComboBoxItem Content="Log"/>',
+    '                            <ComboBoxItem Content="Rank"/>',
+    '                            <ComboBoxItem Content="Provider"/>',
+    '                            <ComboBoxItem Content="Id"/>',
+    '                            <ComboBoxItem Content="Type"/>',
+    '                            <ComboBoxItem Content="Message"/>',
+    '                            <ComboBoxItem Content="Content"/>',
+    '                        </ComboBox>',
+    '                        <TextBox Grid.Column="2" Name="LogOutputFilter"/>',
+    '                        <Button Grid.Column="3" Name="LogOutputRefresh" Content="Refresh"/>',
+    '                    </Grid>',
+    '                    <DataGrid Grid.Row="4" Name="LogOutputResult">',
+    '                        <DataGrid.Columns>',
+    '                            <DataGridTextColumn Header="Index"    Binding="{Binding Index}"    Width="50"/>',
+    '                            <DataGridTextColumn Header="Date"     Binding="{Binding Date}"     Width="120"/>',
+    '                            <DataGridTextColumn Header="Rank"     Binding="{Binding Rank}"     Width="50"/>',
+    '                            <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="350"/>',
+    '                            <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>',
+    '                            <DataGridTextColumn Header="Type"     Binding="{Binding Type}"     Width="100"/>',
+    '                            <DataGridTextColumn Header="Message"  Binding="{Binding Message}"  Width="500"/>',
+    '                        </DataGrid.Columns>',
+    '                    </DataGrid>',
+    '                </Grid>',
+    '                <Grid Grid.Row="1" Name="OutputPanel" Visibility="Collapsed">',
+    '                    <Grid.RowDefinitions>',
+    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="*"/>',
+    '                    </Grid.RowDefinitions>',
+    '                    <Grid Grid.Row="0">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="85"/>',
+    '                            <ColumnDefinition Width="150"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="80"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Label Grid.Column="0" Content="[Output]:"/>',
+    '                        <ComboBox Grid.Column="1" Name="OutputProperty" SelectedIndex="0">',
+    '                            <ComboBoxItem Content="Index"/>',
+    '                            <ComboBoxItem Content="Date"/>',
+    '                            <ComboBoxItem Content="Log"/>',
+    '                            <ComboBoxItem Content="Rank"/>',
+    '                            <ComboBoxItem Content="Provider"/>',
+    '                            <ComboBoxItem Content="Id"/>',
+    '                            <ComboBoxItem Content="Type"/>',
+    '                            <ComboBoxItem Content="Message"/>',
+    '                        </ComboBox>',
+    '                        <TextBox Grid.Column="2" Name="OutputFilter"/>',
+    '                        <Button Grid.Column="3" Name="OutputRefresh" Content="Refresh"/>',
+    '                    </Grid>',
+    '                    <DataGrid Grid.Row="1" Name="OutputResult">',
+    '                        <DataGrid.Columns>',
+    '                            <DataGridTextColumn Header="Index"    Binding="{Binding Index}"    Width="50"/>',
+    '                            <DataGridTextColumn Header="Date"     Binding="{Binding Date}"     Width="120"/>',
+    '                            <DataGridTextColumn Header="Log"      Binding="{Binding Log}"      Width="50"/>',
+    '                            <DataGridTextColumn Header="Rank"     Binding="{Binding Rank}"     Width="50"/>',
+    '                            <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="350"/>',
+    '                            <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>',
+    '                            <DataGridTextColumn Header="Type"     Binding="{Binding Type}"     Width="100"/>',
+    '                            <DataGridTextColumn Header="Message"  Binding="{Binding Message}"  Width="500"/>',
+    '                        </DataGrid.Columns>',
+    '                    </DataGrid>',
+    '                </Grid>',
+    '                <Grid Grid.Row="1" Name="ViewPanel" Visibility="Collapsed">',
+    '                    <Grid.RowDefinitions>',
+    '                        <RowDefinition Height="*"/>',
+    '                        <RowDefinition Height="40"/>',
+    '                    </Grid.RowDefinitions>',
+    '                    <DataGrid Grid.Row="0" Name="ViewResult">',
+    '                        <DataGrid.Columns>',
+    '                            <DataGridTextColumn Header="Name"     Binding="{Binding Name}"     Width="200"/>',
+    '                            <DataGridTextColumn Header="Value"    Binding="{Binding Value}"    Width="*">',
+    '                                <DataGridTextColumn.ElementStyle>',
+    '                                    <Style TargetType="TextBlock">',
+    '                                        <Setter Property="TextWrapping" Value="Wrap"/>',
+    '                                    </Style>',
+    '                                </DataGridTextColumn.ElementStyle>',
+    '                                <DataGridTextColumn.EditingElementStyle>',
+    '                                    <Style TargetType="TextBox">',
+    '                                        <Setter Property="TextWrapping" Value="Wrap"/>',
+    '                                        <Setter Property="AcceptsReturn" Value="True"/>',
+    '                                    </Style>',
+    '                                </DataGridTextColumn.EditingElementStyle>',
+    '                            </DataGridTextColumn>',
+    '                        </DataGrid.Columns>',
+    '                    </DataGrid>',
+    '                    <Grid Grid.Row="1">',
+    '                        <Grid.ColumnDefinitions>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                            <ColumnDefinition Width="*"/>',
+    '                        </Grid.ColumnDefinitions>',
+    '                        <Button Grid.Column="0" Name="ViewCopy"  Content="Copy to clipboard"/>',
+    '                        <Button Grid.Column="2" Name="ViewClear" Content="Clear"/>',
+    '                    </Grid>',
+    '                </Grid>',
+    '            </Grid>',
+    '        </GroupBox>',
+    '    </Grid>',
+    '</Window>' -join "`n")
+}
+
+Function Get-EventLogConfigExtension
+{
+    [CmdLetBinding(DefaultParameterSetName=0)]
+    Param(
+        [Parameter(Mandatory,ParameterSetName=0)][UInt32]$Rank,
+        [Parameter(Mandatory,ParameterSetName=0)][String]$Name,
+        [Parameter(Mandatory,ParameterSetName=1)][Object]$Config)
+
+    Class EventLogConfigExtension
+    {
+        [UInt32] $Rank
+        [String] $LogName
+        [Object] $LogType
+        [Object] $LogIsolation
+        [Boolean] $IsEnabled
+        [Boolean] $IsClassicLog
+        Hidden [String] $SecurityDescriptor
+        [String] $LogFilePath
+        Hidden [Int64] $MaximumSizeInBytes
+        [Object] $Maximum
+        [Object] $Current
+        [Object] $LogMode
+        Hidden [String] $OwningProviderName
+        [Object] $ProviderNames
+        Hidden [Object] $ProviderLevel
+        Hidden [Object] $ProviderKeywords
+        Hidden [Object] $ProviderBufferSize
+        Hidden [Object] $ProviderMinimumNumberOfBuffers
+        Hidden [Object] $ProviderMaximumNumberOfBuffers
+        Hidden [Object] $ProviderLatency
+        Hidden [Object] $ProviderControlGuid
+        Hidden [Object[]] $EventLogRecord
+        [Object[]] $Output
+        [UInt32] $Total
+        EventLogConfigExtension([UInt32]$Rank,[Object]$Name)
+        {
+            $This.Rank                           = $Rank
+            $Event                               = [System.Diagnostics.Eventing.Reader.EventLogConfiguration]::New($Name)
+            $This.LogName                        = $Event.LogName 
+            $This.LogType                        = $Event.LogType 
+            $This.LogIsolation                   = $Event.LogIsolation 
+            $This.IsEnabled                      = $Event.IsEnabled 
+            $This.IsClassicLog                   = $Event.IsClassicLog 
+            $This.SecurityDescriptor             = $Event.SecurityDescriptor
+            $This.LogFilePath                    = $Event.LogFilePath -Replace "%SystemRoot%", [Environment]::GetEnvironmentVariable("SystemRoot")
+            $This.MaximumSizeInBytes             = $Event.MaximumSizeInBytes
+            $This.Maximum                        = "{0:n2} MB" -f ($Event.MaximumSizeInBytes/1MB) 
+            $This.Current                        = If (!(Test-Path $This.LogFilePath)) { "0.00 MB" } Else { "{0:n2} MB" -f (Get-Item $This.LogFilePath | % { $_.Length/1MB }) }
+            $This.LogMode                        = $Event.LogMode
+            $This.OwningProviderName             = $Event.OwningProviderName
+            $This.ProviderNames                  = $Event.ProviderNames 
+            $This.ProviderLevel                  = $Event.ProviderLevel 
+            $This.ProviderKeywords               = $Event.ProviderKeywords 
+            $This.ProviderBufferSize             = $Event.ProviderBufferSize 
+            $This.ProviderMinimumNumberOfBuffers = $Event.ProviderMinimumNumberOfBuffers 
+            $This.ProviderMaximumNumberOfBuffers = $Event.ProviderMaximumNumberOfBuffers 
+            $This.ProviderLatency                = $Event.ProviderLatency 
+            $This.ProviderControlGuid            = $Event.ProviderControlGuid
+        }
+        EventLogConfigExtension([Object]$Event)
+        {
+            $This.Rank                           = $Event.Rank
+            $This.Logname                        = $Event.LogName
+            $This.LogType                        = $This.GetLogType($Event.LogType)
+            $This.LogIsolation                   = $This.GetLogIsolation($Event.LogIsolation)
+            $This.IsEnabled                      = $Event.IsEnabled 
+            $This.IsClassicLog                   = $Event.IsClassicLog 
+            $This.SecurityDescriptor             = $Event.SecurityDescriptor
+            $This.LogFilePath                    = $Event.LogFilePath 
+            $This.MaximumSizeInBytes             = $Event.MaximumSizeInBytes
+            $This.Maximum                        = $Event.Maximum
+            $This.Current                        = $Event.Current
+            $This.LogMode                        = $This.GetLogMode($Event.LogMode)
+            $This.OwningProviderName             = $Event.OwningProviderName
+            $This.ProviderNames                  = $Event.ProviderNames 
+            $This.ProviderLevel                  = $Event.ProviderLevel 
+            $This.ProviderKeywords               = $Event.ProviderKeywords 
+            $This.ProviderBufferSize             = $Event.ProviderBufferSize 
+            $This.ProviderMinimumNumberOfBuffers = $Event.ProviderMinimumNumberOfBuffers 
+            $This.ProviderMaximumNumberOfBuffers = $Event.ProviderMaximumNumberOfBuffers 
+            $This.ProviderLatency                = $Event.ProviderLatency 
+            $This.ProviderControlGuid            = $Event.ProviderControlGuid
+        }
+        GetEventLogRecord()
+        {
+            $This.Output = Get-WinEvent -Path $This.LogFilePath -EA 0 | Sort-Object TimeCreated
+            $This.Total  = $This.Output.Count
+            $Depth       = ([String]$This.Total.Count).Length
+            If ($This.Total -gt 0)
+            {
+                $C = 0
+                ForEach ($Record in $This.Output)
+                {
+                    Add-Member -InputObject $Record -MemberType NoteProperty -Name    Index -Value $Null
+                    Add-Member -InputObject $Record -MemberType NoteProperty -Name     Rank -Value $C 
+                    Add-Member -InputObject $Record -MemberType NoteProperty -Name    LogId -Value $This.Rank
+                    Add-Member -InputObject $Record -MemberType NoteProperty -Name DateTime -Value $Record.TimeCreated
+                    Add-Member -InputObject $Record -MemberType NoteProperty -Name     Date -Value $Record.TimeCreated.ToString("yyyy-MMdd-HHMMss")
+                    Add-Member -InputObject $Record -MemberType NoteProperty -Name     Name -Value ("$($Record.Date)-$($This.Rank)-{0:d$Depth}" -f $C)
+                    $C ++
+                }
+            }
+        }
+        [Object] GetLogType([UInt32]$Index)
+        {
+            $Return = Switch ($Index)
+            {
+                0 { [System.Diagnostics.Eventing.Reader.EventLogType]::Administrative }
+                1 { [System.Diagnostics.Eventing.Reader.EventLogType]::Operational }
+                2 { [System.Diagnostics.Eventing.Reader.EventLogType]::Analytical }
+                3 { [System.Diagnostics.Eventing.Reader.EventLogType]::Debug }  
+            }
+            Return $Return
+        }
+        [Object] GetLogIsolation([UInt32]$Index)
+        {
+            $Return = Switch ($Index)
+            {
+                0 { [System.Diagnostics.Eventing.Reader.EventLogIsolation]::Application }
+                1 { [System.Diagnostics.Eventing.Reader.EventLogIsolation]::System }
+                2 { [System.Diagnostics.Eventing.Reader.EventLogIsolation]::Custom }
+            }
+            Return $Return
+        }
+        [Object] GetLogMode([UInt32]$Index)
+        {
+            $Return = Switch ($Index)
+            {
+                0 { [System.Diagnostics.Eventing.Reader.EventLogMode]::Circular   }
+                1 { [System.Diagnostics.Eventing.Reader.EventLogMode]::AutoBackup }
+                2 { [System.Diagnostics.Eventing.Reader.EventLogMode]::Retain     }
+            }
+            Return $Return
+        }
+        [Object] Config()
+        {
+            Return $This | Select-Object Rank,LogName,LogType,LogIsolation,IsEnabled,IsClassicLog,SecurityDescriptor,LogFilePath,MaximumSizeInBytes,Maximum,Current,LogMode,
+            OwningProviderName,ProviderNames,ProviderLevel,ProviderKeywords,ProviderBufferSize,ProviderMinimumNumberOfBuffers,ProviderMaximumNumberOfBuffers,ProviderLatency,
+            ProviderControlGuid
+        }
+    }
+    
+    Switch ($PsCmdLet.ParameterSetName)
+    {
+        0 { [EventLogConfigExtension]::New($Rank,$Name) }
+        1 { [EventLogConfigExtension]::New($Config)     }
+    }
+}
+
+Function Get-EventLogRecordExtension
+{
+    [CmdLetBinding(DefaultParameterSetName=0)]
+    Param(
+        [Parameter(Mandatory,ParameterSetName=0)][Object]$Record,
+        [Parameter(Mandatory,ParameterSetName=1)][UInt32]$Index,
+        [Parameter(Mandatory,ParameterSetName=1)][Object]$Entry)
+
+    Class EventLogRecordExtension
+    {
+        [UInt32]   $Index
+        Hidden [String] $Name
+        Hidden [Object] $DateTime
+        [String]   $Date
+        [String]   $Log
+        [UInt32]   $Rank
+        [String]   $Provider
+        [UInt32]   $Id
+        [String]   $Type
+        [String]   $Message
+        Hidden [String[]] $Content
+        Hidden [Object] $Version
+        Hidden [Object] $Qualifiers
+        Hidden [Object] $Level
+        Hidden [Object] $Task
+        Hidden [Object] $Opcode
+        Hidden [Object] $Keywords
+        Hidden [Object] $RecordId
+        Hidden [Object] $ProviderId
+        Hidden [Object] $LogName
+        Hidden [Object] $ProcessId
+        Hidden [Object] $ThreadId
+        Hidden [Object] $MachineName
+        Hidden [Object] $UserID
+        Hidden [Object] $ActivityID
+        Hidden [Object] $RelatedActivityID
+        Hidden [Object] $ContainerLog
+        Hidden [Object] $MatchedQueryIds
+        Hidden [Object] $Bookmark
+        Hidden [Object] $OpcodeDisplayName
+        Hidden [Object] $TaskDisplayName
+        Hidden [Object] $KeywordsDisplayNames
+        Hidden [Object] $Properties
+        EventLogRecordExtension([Object]$Record)
+        {
+            $This.Index       = $Record.Index
+            $This.Name        = $Record.Name
+            $This.Rank        = $Record.Rank
+            $This.Provider    = $Record.ProviderName
+            $This.DateTime    = $Record.TimeCreated
+            $This.Date        = $Record.Date
+            $This.Log         = $Record.LogId
+            $This.Id          = $Record.Id
+            $This.Type        = $Record.LevelDisplayName
+            $This.InsertEvent($Record)
+        }
+        EventLogRecordExtension([UInt32]$Index,[Object]$Entry)
+        {
+            $Stream           = $Entry.Open()
+            $Reader           = [System.IO.StreamReader]::New($Stream)
+            $RecordEntry      = $Reader.ReadToEnd() 
+            $Record           = $RecordEntry | ConvertFrom-Json
+            $Reader.Close()
+            $Stream.Close()
+            $This.Index       = $Record.Index
+            $This.Name        = $Record.Name
+            $This.DateTime    = [DateTime]$Record.DateTime
+            $This.Date        = $Record.Date
+            $This.Log         = $Record.Log
+            $This.Rank        = $Record.Rank
+            $This.Provider    = $Record.Provider
+            $This.Id          = $Record.Id
+            $This.Type        = $Record.Type
+            $This.InsertEvent($Record)
+        }
+        InsertEvent([Object]$Record)
+        {
+            $FullMessage   = $Record.Message -Split "`n"
+            Switch ($FullMessage.Count)
+            {
+                {$_ -gt 1}
+                {
+                    $This.Message  = $FullMessage[0] -Replace [char]13,""
+                    $This.Content  = $FullMessage -Replace [char]13,""
+                }
+                {$_ -eq 1}
+                {
+                    $This.Message  = $FullMessage -Replace [char]13,""
+                    $This.Content  = $FullMessage -Replace [char]13,""
+                }
+                {$_ -eq 0}
+                {
+                    $This.Message  = "-"
+                    $This.Content  = "-"
+                }
+            }
+            $This.Version              = $Record.Version
+            $This.Qualifiers           = $Record.Qualifiers
+            $This.Level                = $Record.Level
+            $This.Task                 = $Record.Task
+            $This.Opcode               = $Record.Opcode
+            $This.Keywords             = $Record.Keywords
+            $This.RecordId             = $Record.RecordId
+            $This.ProviderId           = $Record.ProviderId
+            $This.LogName              = $Record.LogName
+            $This.ProcessId            = $Record.ProcessId
+            $This.ThreadId             = $Record.ThreadId
+            $This.MachineName          = $Record.MachineName
+            $This.UserID               = $Record.UserId
+            $This.ActivityID           = $Record.ActivityId
+            $This.RelatedActivityID    = $Record.RelatedActivityID
+            $This.ContainerLog         = $Record.ContainerLog
+            $This.MatchedQueryIds      = @($Record.MatchedQueryIds)
+            $This.Bookmark             = $Record.Bookmark
+            $This.OpcodeDisplayName    = $Record.OpcodeDisplayName
+            $This.TaskDisplayName      = $Record.TaskDisplayName
+            $This.KeywordsDisplayNames = @($Record.KeywordsDisplayNames)
+            $This.Properties           = @($Record.Properties.Value)
+        }
+        [Object] Export()
+        {
+            Return @( $This | ConvertTo-Json )
+        }
+        [Object] Config()
+        {
+            Return $This | Select-Object Index,Name,DateTime,Date,Log,Rank,Provider,Id,Type,Message,Content,
+            Version,Qualifiers,Level,Task,Opcode,Keywords,RecordId,ProviderId,LogName,ProcessId,ThreadId,MachineName,
+            UserID,ActivityID,RelatedActivityID,ContainerLog,MatchedQueryIds,Bookmark,OpcodeDisplayName,TaskDisplayName,
+            KeywordsDisplayNames,Properties
+        }
+        [Void] SetContent([String]$Path)
+        {
+            [System.IO.File]::WriteAllLines($Path,$This.Export())
+        }
+        [Object] ToString()
+        {
+            Return @( $This.Export() | ConvertFrom-Json )
+        }
+    }
+    Switch ($PsCmdLet.ParameterSetName)
+    {
+        0 { [EventLogRecordExtension]::New($Record) }
+        1 { [EventLogRecordExtension]::New(0,$Entry) }
+    }
+}
+
 Function Get-SystemDetails
 {
+    [CmdLetBinding(DefaultParameterSetName=0)]
+    Param(
+        [Parameter(ParameterSetName=1)][Object]$Result)
+
+    # Formatting classes
     Class DGList
     {
         [String] $Name
         [Object] $Value
+        Hidden [UInt32] $Buffer
         DGList([String]$Name,[Object]$Value)
         {
             $This.Name = $Name
             $This.Value = Switch ($Value.Count) { 0 { $Null } 1 { $Value } Default { $Value -join "`n" } }
         }
+        SetBuffer([UInt32]$MaxLength)
+        {
+            $This.Buffer = $MaxLength
+        }
         [String] ToString()
         {
-            Return $This.Name
+            If ($This.Buffer)
+            {
+                Return ("{0}{1} {2}" -f $This.Name, (" " * ($This.Buffer-$This.Name.Length) -join ""), $This.Value)
+            }
+            ElseIf (!$This.Buffer)
+            {
+                Return "{0} {1}" -f $This.Name, $This.Value
+            }
+            Else
+            {
+                Return $Null
+            }
         }
     }
 
-    Class Network
+    # Allows for group management of property/values
+    Class PropertyItem
     {
-        [String]$Name
-        [UInt32]$Index
-        [String]$IPAddress
-        [String]$SubnetMask
-        [String]$Gateway
-        [String[]] $DnsServer
-        [String] $DhcpServer
-        [String] $MacAddress
-        Network([Object]$If)
+        [UInt32] $Index
+        [String] $Name
+        [Object] $Value
+        Hidden [String] $Type
+        Hidden [UInt32] $Buffer
+        Hidden [UInt32] $Slot
+        PropertyItem([UInt32]$Index,[Object]$Property)
         {
-            $This.Name       = $IF.Description
-            $This.Index      = $IF.Index
-            $This.IPAddress  = $IF.IPAddress            | ? {$_ -match "(\d+\.){3}\d+"}
-            $This.SubnetMask = $IF.IPSubnet             | ? {$_ -match "(\d+\.){3}\d+"}
-            $This.Gateway    = $IF.DefaultIPGateway     | ? {$_ -match "(\d+\.){3}\d+"}
-            $This.DnsServer  = $IF.DnsServerSearchOrder | ? {$_ -match "(\d+\.){3}\d+"}
-            $This.DhcpServer = $IF.DhcpServer           | ? {$_ -match "(\d+\.){3}\d+"}
-            $This.MacAddress = $IF.MacAddress
+            $This.Index  = $Index
+            $This.Name   = $Property.Name
+            $This.Value  = $Property.Value
+            $This.Type   = $Property.TypeNameOfValue
+            $This.Buffer = $Property.Name.Length
+            $This.Slot   = 0
+        }
+        PropertyItem([UInt32]$Index,[Object]$Object,[Bool]$Flag)
+        {
+            $This.Index  = $Index
+            $This.Name   = $Object.Name
+            If ($Flag)
+            {
+                $This.Value = $Object.Value
+                $This.Type  = $Object.GetType().Name
+                $This.Slot  = 1
+            }
+            If (!$Flag)
+            {
+                $This.Value = $Null
+                $This.Type  = $Null
+                $This.Slot  = 2
+            }
+            
+            $This.Buffer = $This.Name.Length
+        }
+        SetBuffer([UInt32]$X)
+        {
+            If ($X -ge $This.Name.Length)
+            {
+                $This.Buffer = $X
+            }
+        }
+        [String] Buff()
+        {
+            Return (" " * ($This.Buffer - $This.Name.Length) -join '')
+        }
+        [String] ToString()
+        {
+            If ($This.Buffer -gt $This.Name.Length)
+            {
+                Return "{0}{1} {2}" -f $This.Name, $This.Buff(), $This.Value
+            }
+            Else
+            {
+                Return "{0} {1}" -f $This.Name, $This.Value
+            }
+        }
+    }
+
+    # Also allows for having multiple items within a particular index
+    Class PropertySlot
+    {
+        [UInt32] $Index
+        [UInt32] $Rank
+        [Object] $Content
+        [UInt32] $MaxLength
+        PropertySlot([UInt32]$Index,[UInt32]$Rank)
+        {
+            $This.Index   = $Index
+            $This.Rank    = $Rank
+            $This.Content = @( )
+        }
+        AddProperty([Object]$Property)
+        {
+            $This.Content += [PropertyItem]::New($This.Content.Count,$Property)
+        }
+        AddProperty([Object]$Object,[Bool]$Flag=$True)
+        {
+            $This.Content += [PropertyItem]::New($This.Content.Count,$Object,$Flag)
+        }
+        AddProperty([String]$Name,[String]$Value,[Bool]$Flag)
+        {
+            $This.Content += [PropertyItem]::New($This.Content.Count,$Name,$Value,$Flag)
+        }
+        GetMaxLength()
+        {
+            $This.MaxLength = ($This.Content.Name | Sort-Object Length)[-1].Length
+        }
+        SetBuffer([UInt32]$Width)
+        {
+            ForEach ($Item in $This.Content)
+            {
+                $Item.SetBuffer($Width)
+            }
+        }
+        [String[]] GetOutput()
+        {
+            Return @( $This.Content | % ToString )
+        }
+    }
+
+    # All in an effort...
+    Class PropertySet
+    {
+        [UInt32] $Index
+        [String] $Name
+        [Object] $Slot
+        [UInt32] $Quantity
+        [UInt32] $MaxLength
+        PropertySet([UInt32]$Index,[String]$Name,[Object]$Object)
+        {
+            $This.Index    = $Index
+            $This.Name     = $Name
+            $This.Slot     = @( )
+            $This.AddPropertySlot(0)
+            $This.AddObject(0,$Object)
+            $This.Quantity = 1
+        }
+        PropertySet([UInt32]$Index,[String]$Name,[Object[]]$Object)
+        {
+            $This.Index    = $Index
+            $This.Name     = $Name
+            $This.Slot     = @( )
+            ForEach ($X in 0..($Object.Count-1))
+            {
+                $This.AddPropertySlot($This.Slot.Count)
+                $This.AddObject($X,$Object[$X])
+            }
+            $This.Quantity = $Object.Count
+        }
+        PropertySet([UInt32]$Index,[String]$Name,[Object[]]$Object,[UInt32]$Array)
+        {
+            $This.Index    = $Index
+            $This.Name     = $Name
+            $This.Slot     = @( )
+            $This.AddPropertySlot(0)
+            $This.AddArray(0,$Object)
+            $This.Quantity = $Object.Count
+        }
+        AddPropertySlot([UInt32]$Rank)
+        {
+            $This.Slot += [PropertySlot]::New($This.Index,$Rank)
+        }
+        AddProperty([UInt32]$Rank,[Object]$Property)
+        {
+            $This.Slot[$Rank].AddProperty($Property)
+        }
+        AddProperty([UInt32]$Rank,[String]$Name,[Object]$Value,[Bool]$Flag=$False)
+        {
+            $Object        = $This.NewObject($Name,$Value)
+            $This.Slot[$Rank].AddProperty($Object,$Flag)
+        }
+        [Object] NewObject([String]$Name,[Object]$Value)
+        {
+            Return [PSCustomObject]@{ Name = $Name; Value = $Value }
+        }
+        AddArray([UInt32]$Rank,[Object[]]$Object)
+        {
+            ForEach ($Item in $Object)
+            {
+                $This.AddProperty($Rank,$Item)
+            }
+        }
+        AddObject([UInt32]$Rank,[Object]$Object)
+        {
+            ForEach ($Property in $Object.PSObject.Properties)
+            {
+                Switch -Regex ($Property.TypeNameOfValue)
+                {
+                    Default 
+                    { 
+                        $This.AddProperty($Rank,$Property) 
+                    }
+                    "\[\]"
+                    {   
+                        # Sets anchor for nested items
+                        $Parent = $Property.Name
+                        $Values = $Property.Value
+
+                        # Sets label for nested items
+                        $This.AddProperty($Rank,"$Parent`s",$Values.Count, 1)
+
+                        # Drills down into the sets of values
+                        ForEach ($X in 0..($Values.Count-1))
+                        {
+                            $This.AddProperty($Rank,$Parent + $X, $Null, 0)
+
+                            # Sets each item accoring to higher scope
+                            ForEach ($Item in $Values[$X].PSObject.Properties)
+                            {
+                                $This.AddProperty($Rank,$Parent + $X + $Item.Name, $Item.Value, 1)
+                            }
+                        }
+                    }
+                }
+            }
+            $This.GetMaxLength()
+            $This.SetBuffer($This.MaxLength)
+        }
+        GetMaxLength()
+        {
+            ForEach ($Item in $This.Slot)
+            {
+                $Item.GetMaxLength()
+            }
+
+            $This.MaxLength = ($This.Slot.MaxLength | Sort-Object)[-1]
+        }
+        SetBuffer([UInt32]$Width)
+        {
+            $This.GetMaxLength()
+
+            If ($Width -gt $This.MaxLength)
+            {
+                $This.Buffer = $Width
+                ForEach ($Item in $This.Slot)
+                {
+                    $Item.SetBuffer($Width)
+                }
+            }
+        }
+        [String] Frame([String]$String)
+        {
+            If ($String.Length -gt 1)
+            {
+                Throw "Only one character"
+            }
+            Return @($String) * 120 -join ''
+        }
+        [String] Sublabel([UInt32]$Count)
+        {
+            Return $This.Name -Replace "\(s\)", $Count
+        }
+        [String[]] GetOutput()
+        {
+            $Return  = @( )
+            $Return += $This.Frame("-")
+            $Return += $This.Name
+            $Return += $This.Frame("-")
+            $Return += $This.Frame(" ")
+            If ($This.Name -match "(^Processor\(s\)$|^Disk\(s\)$|^Network\(s\)$)")
+            {
+                $AltName = $This.Name -Replace "(\(|\))",""
+                $Return += ("{0}{1} {2}" -f $AltName, (" " * ($This.MaxLength-$AltName.Length) -join ""), $This.Quantity)
+                $Return += $This.Frame(" ")
+                $C       = 0
+                ForEach ($Slot in $This.Slot)
+                {
+                    $Return += $This.Sublabel($C)
+                    ForEach ($Line in $Slot.GetOutput())
+                    {
+                        $Return += $Line
+                    }
+                    $Return += $This.Frame(" ")
+                    $C ++
+                }
+            }
+            Else
+            {
+                If ($This.Name -match "(^Log Providers$)")
+                {
+                    $Alt     = "Logs"
+                    $Return += ("{0}{1} {2}" -f $Alt, (" " * ($This.MaxLength-$Alt.Length) -join ""), $This.Quantity)
+                    $Return += $This.Frame(" ")
+                }
+                ForEach ($Line in $This.Slot.GetOutput())
+                {
+                    $Return += $Line
+                }
+                $Return += $This.Frame(" ")
+            }
+            Return $Return
+        }
+    }
+
+    # To provide the cleanest format possible...
+    Class PropertyControl
+    {
+        [Object] $Content
+        [UInt32] $Count
+        [UInt32] $MaxLength
+        PropertyControl()
+        {
+            $This.Content   = @( )
+        }
+        Add([String]$Name,[Object[]]$Object)
+        {
+            $This.Content += [PropertySet]::New($This.Content.Count,$Name,$Object)
+            $This.Count    = $This.Content.Count
+            $This.GetMaxLength()
+            $This.SetBuffer($This.MaxLength)
+        }
+        Add([String]$Name,[Object]$Object)
+        {
+            $This.Content  += [PropertySet]::New($This.Content.Count,$Name,$Object)
+            $This.MaxLength = @( $This.Content.MaxLength | Sort-Object )[-1]
+            $This.Count     = $This.Content.Count
+            $This.GetMaxLength()
+            $This.SetBuffer($This.MaxLength)
+        }
+        Add([String]$Name,[Object]$Object,[UInt32]$Flag)
+        {
+            $This.Content += [PropertySet]::New($This.Content.Count,$Name,$Object,1)
+            $This.MaxLength = @( $This.Content.MaxLength | Sort-Object )[-1]
+            $This.Count     = $This.Content.Count
+            $This.GetMaxLength()
+            $This.SetBuffer($This.MaxLength)
+        }
+        GetMaxLength()
+        {
+            ForEach ($Content in $This.Content)
+            {
+                ForEach ($Slot in $Content.Slot)
+                {
+                    $Slot.GetMaxLength()
+                }
+            }
+
+            $This.MaxLength = @( $This.Content.Slot.MaxLength | Sort-Object )[-1]
+        }
+        SetBuffer([UInt32]$Width)
+        {
+            If ($This.MaxLength -ne 0 -and $Width -ge $This.MaxLength)
+            {
+                ForEach ($Item in $This.Content)
+                {
+                    $Item.MaxLength     = $Width
+                    ForEach ($Slot in $Item.Slot)
+                    {
+                        $Slot.MaxLength = $Width
+                        $Slot.SetBuffer($Width)
+                    }
+                }
+            }
+        }
+        [Object] GetOutput()
+        {
+            Return @( ForEach ($X in 0..($This.Content.Count-1))
+            {
+                $This.Content[$X].GetOutput()
+            })
+        }
+    }
+
+    # This takes a snapshot of the system with date/time, guid, etc.
+    Class Snapshot
+    {
+        [String] $Start
+        [String] $ComputerName
+        [String] $DisplayName
+        [String] $Guid
+        [UInt32] $Complete
+        [String] $Elapsed
+        Snapshot()
+        {
+            $Current           = [DateTime]::Now
+            $This.Start        = $Current
+            $This.ComputerName = [Environment]::MachineName
+            $This.DisplayName  = "{0}-{1}" -f $Current.ToString("yyyy-mmdd-HHMMss"), $This.ComputerName
+            $This.Guid         = [Guid]::NewGuid().ToString()
+        }
+        Snapshot([String[]]$S)
+        {
+            $This.Start        = $This.X("Start")
+            $This.ComputerName = $This.X("ComputerName")
+            $This.DisplayName  = $This.X("DisplayName")
+            $This.Guid         = $This.X("Guid")
+            $This.Complete     = $This.X("Complete")
+            $This.Elapsed      = $This.X("Elapsed")
+        }
+        Snapshot([Object[]]$Pairs)
+        {
+            ForEach ($Pair in $Pairs)
+            {
+                $This.$($Pair.Name) = $Pair.Value
+            }
+        }
+        MarkComplete()
+        {
+            $This.Complete     = 1 
+            $This.Elapsed      = [String][Timespan]([DateTime]::Now-[DateTime]$This.Start)
+        }
+        [Object] X([Object]$Stack,[String]$Label)
+        {
+            Return $Stack -match "^$Label" -Replace "$Label\s+",""
+        }
+        [Object] GetOutput([UInt32]$Index)
+        {
+            Return [PropertySet]::New($Index,"Snapshot",$This)
+        }
+    }
+
+    # Bios Information for the system this tool is run on
+    Class BiosInformation
+    {
+        [String] $Name
+        [String] $Manufacturer
+        [String] $SerialNumber
+        [String] $Version
+        [String] $ReleaseDate
+        [Bool]   $SmBiosPresent
+        [String] $SmBiosVersion
+        [String] $SmBiosMajor
+        [String] $SmBiosMinor
+        [String] $SystemBiosMajor
+        [String] $SystemBiosMinor
+        BiosInformation()
+        {
+            $Bios                 = Get-CimInstance Win32_Bios
+            $This.Name            = $Bios.Name
+            $This.Manufacturer    = $Bios.Manufacturer
+            $This.SerialNumber    = $Bios.SerialNumber
+            $This.Version         = $Bios.Version
+            $This.ReleaseDate     = $Bios.ReleaseDate
+            $This.SmBiosPresent   = $Bios.SmBiosPresent
+            $This.SmBiosVersion   = $Bios.SmBiosBiosVersion
+            $This.SmBiosMajor     = $Bios.SmBiosMajorVersion
+            $This.SmBiosMinor     = $Bios.SmBiosMinorVersion
+            $This.SystemBiosMajor = $Bios.SystemBiosMajorVersion
+            $This.SystemBIosMinor = $Bios.SystemBiosMinorVersion
+        }
+        BiosInformation([String[]]$S)
+        {
+            $This.Name            = $This.X($S,"Name")
+            $This.Manufacturer    = $This.X($S,"Manufacturer")
+            $This.SerialNumber    = $This.X($S,"SerialNumber")
+            $This.Version         = $This.X($S,"Version")
+            $This.ReleaseDate     = $This.X($S,"ReleaseDate")
+            $This.SmBiosPresent   = $This.X($S,"SmBiosPresent")
+            $This.SmBiosVersion   = $This.X($S,"SmBiosVersion")
+            $This.SmBiosMajor     = $This.X($S,"SmBiosMajor")
+            $This.SmBiosMinor     = $This.X($S,"SmBiosMinor")
+            $This.SystemBiosMajor = $This.X($S,"SystemBiosMajor")
+            $This.SystemBiosMinor = $This.X($S,"SystemBiosMinor")
+        }
+        BiosInformation([Object[]]$Pairs)
+        {
+            ForEach ($Pair in $Pairs)
+            {
+                $This.$($Pair.Name) = $Pair.Value
+            }
+        }
+        [Object] X([Object]$Stack,[String]$Label)
+        {
+            Return $Stack -match "^$Label" -Replace "$Label\s+",""
+        }
+        [Object] GetOutput([UInt32]$Index)
+        {
+            Return [PropertySet]::New($Index,"Bios Information",$This)
+        }
+    }
+
+    # Operating system information for the system this tool is run on
+    Class OperatingSystem
+    {
+        [String] $Caption
+        [String] $Version
+        [String] $Build
+        [String] $Serial
+        [UInt32] $Language
+        [UInt32] $Product
+        [UInt32] $Type
+        OperatingSystem()
+        {
+            $OS            = Get-WmiObject Win32_OperatingSystem
+            $This.Caption  = $OS.Caption
+            $This.Version  = $OS.Version
+            $This.Build    = $OS.BuildNumber
+            $This.Serial   = $OS.SerialNumber
+            $This.Language = $OS.OSLanguage
+            $This.Product  = $OS.OSProductSuite
+            $This.Type     = $OS.OSType
+        }
+        OperatingSystem([String[]]$S)
+        {
+            $This.Caption  = $This.X($S,"Caption")
+            $This.Version  = $This.X($S,"Version")
+            $This.Build    = $This.X($S,"Build")
+            $This.Serial   = $This.X($S,"Serial")
+            $This.Language = $This.X($S,"Language")
+            $This.Product  = $This.X($S,"Product")
+            $This.Type     = $This.X($S,"Type")
+        }
+        OperatingSystem([Object[]]$Pairs)
+        {
+            ForEach ($Pair in $Pairs)
+            {
+                $This.$($Pair.Name) = $Pair.Value
+            }
+        }
+        [String] X([Object]$Stack,[String]$Label)
+        {
+            Return $Stack -match "^$Label" -Replace "$Label\s+",""
+        }
+        [Object] GetOutput([UInt32]$Index)
+        {
+            Return [PropertySet]::New($Index,"Operating System",$This)
+        }
+    }
+
+    # Computer system information for the system this tool is run on
+    Class ComputerSystem
+    {
+        [String] $Manufacturer
+        [String] $Model
+        [String] $Product
+        [String] $Serial
+        [String] $Memory
+        [String] $Architecture
+        [String] $UUID
+        [String] $Chassis
+        [String] $BiosUefi
+        [Object] $AssetTag
+        ComputerSystem()
+        {
+            $Sys               = Get-WmiObject Win32_ComputerSystem 
+            $This.Manufacturer = $Sys.Manufacturer
+            $This.Model        = $Sys.Model
+            $This.Memory       = "{0} GB" -f ($Sys.TotalPhysicalMemory/1GB)
+            $This.UUID         = (Get-WmiObject Win32_ComputerSystemProduct).UUID 
+            
+            $Sys               = Get-WmiObject Win32_BaseBoard
+            $This.Product      = $Sys.Product
+            $This.Serial       = $Sys.SerialNumber -Replace "\.",""
+            
+            Try
+            {
+                Get-SecureBootUEFI -Name SetupMode | Out-Null 
+                $This.BiosUefi = "UEFI"
+            }
+            Catch
+            {
+                $This.BiosUefi = "BIOS"
+            }
+
+            $Sys               = Get-WmiObject Win32_SystemEnclosure
+            $This.AssetTag     = $Sys.SMBIOSAssetTag.Trim()
+            $This.Chassis      = Switch ([UInt32]$Sys.ChassisTypes[0])
+            {
+                {$_ -in 8..12+14,18,21} {"Laptop"}
+                {$_ -in 3..7+15,16}     {"Desktop"}
+                {$_ -in 23}             {"Server"}
+                {$_ -in 34..36}         {"Small Form Factor"}
+                {$_ -in 30..32+13}      {"Tablet"}
+            }
+
+            $This.Architecture = @{x86="x86";AMD64="x64"}[[Environment]::GetEnvironmentVariable("Processor_Architecture")]
+        }
+        ComputerSystem([String[]]$S)
+        {
+            $this.Manufacturer = $This.X($S,"Manufacturer")
+            $This.Model        = $This.X($S,"Model")
+            $This.Product      = $This.X($S,"Product")
+            $This.Serial       = $This.X($S,"Serial")
+            $This.Memory       = $This.X($S,"Memory")
+            $This.Architecture = $This.X($S,"Architecture")
+            $This.UUID         = $This.X($S,"UUID")
+            $This.Chassis      = $This.X($S,"Chassis")
+            $This.BiosUefi     = $This.X($S,"BiosUefi")
+            $This.AssetTag     = $This.X($S,"AssetTag")
+        }
+        ComputerSystem([Object[]]$Pairs)
+        {
+            ForEach ($Pair in $Pairs)
+            {
+                $This.$($Pair.Name) = $Pair.Value
+            }
+        }
+        [String] X([Object]$Stack,[String]$Label)
+        {
+            Return $Stack -match "^$Label" -Replace "$Label\s+",""
+        }
+        [Object] GetOutput([UInt32]$Index)
+        {
+            Return [PropertySet]::New($Index,"Computer System",$This)
+        }
+    }
+
+    # Processor information for the system this tool is run on
+    Class Processor
+    {
+        [String] $Manufacturer
+        [String] $Name
+        [String] $Caption
+        [UInt32] $Cores
+        [UInt32] $Used
+        [UInt32] $Logical
+        [UInt32] $Threads
+        [String] $ProcessorId
+        [String] $DeviceId
+        [UInt32] $Speed
+        Processor([Object]$CPU,[UInt32]$Mode)
+        {
+            $This.Manufacturer = Switch -Regex ($CPU.Manufacturer) { Intel { "Intel" } Amd { "AMD" } }
+            $This.Name         = $CPU.Name -Replace "\s+"," "
+            $This.Caption      = $CPU.Caption
+            $This.Cores        = $CPU.NumberOfCores
+            $This.Used         = $CPU.NumberOfEnabledCore
+            $This.Logical      = $CPU.NumberOfLogicalProcessors 
+            $This.Threads      = $CPU.ThreadCount
+            $This.ProcessorID  = $CPU.ProcessorId
+            $This.DeviceID     = $CPU.DeviceID
+            $This.Speed        = $CPU.MaxClockSpeed
+        }
+        Processor([String[]]$S)
+        {
+            $This.Manufacturer  = $This.X($S,"Manufacturer")
+            $This.Name          = $This.X($S,"Name")
+            $This.Caption       = $This.X($S,"Caption")
+            $This.Cores         = $This.X($S,"Cores")
+            $This.Used          = $This.X($S,"Used")
+            $This.Logical       = $This.X($S,"Logical")
+            $This.Threads       = $This.X($S,"Threads")
+            $This.ProcessorId   = $This.X($S,"ProcessorId")
+            $This.DeviceId      = $This.X($S,"DeviceId")
+            $This.Speed         = $This.X($S,"Speed")
+        }
+        Processor([Object[]]$Pairs)
+        {
+            ForEach ($Pair in $Pairs)
+            {
+                $This.$($Pair.Name) = $Pair.Value
+            }
+        }
+        [String] X([Object]$Stack,[String]$Label)
+        {
+            Return $Stack -match "^$Label" -Replace "$Label\s+",""
+        }
+        [Object] GetOutput([UInt32]$Index)
+        {
+            Return [PropertySet]::New($Index,"Processor(s)",$This)
         }
         [Object[]] ToString()
         {
-            Return @( $This.PSObject.Properties | % { [DGList]::New($_.Name,($_.Value -join ",")) })
+            Return @( $This.PSObject.Properties | % { [DGList]::New($_.Name,$_.Value) })
         }
     }
 
-    Class DiskDrive
-    {
-        [Object] $Disk
-        [Object] $Meta
-        [Object[]] $Partition
-        [Object]   $Drive
-        DiskDrive([Object]$Disk)
-        {
-            $This.Disk      = $Disk
-            $This.Meta      = Get-CimInstance -ClassName MSFT_Disk -Namespace Root/Microsoft/Windows/Storage | ? Number -eq $This.Disk.Index
-            $This.Partition = Get-CimAssociatedInstance -ResultClassName Win32_DiskPartition -InputObject $This.Disk
-            $This.Drive     = $This.Partition | % { Get-CimAssociatedInstance -ResultClassName Win32_LogicalDisk -InputObject $_ -EA 0 }
-        }
-    }
-
-    Class Partition
-    {
-        [String] $Type
-        [String] $Name
-        Hidden [BigInt] $SizeBytes
-        [String] $Size
-        [Bool] $Boot
-        [Bool] $Primary
-        [UInt32] $Disk
-        [UInt32] $Partition
-        Partition([Object]$Partition)
-        {
-            $This.Type       = $Partition.Type
-            $This.Name       = $Partition.Name
-            $This.SizeBytes  = $Partition.Size
-            $This.Size       = Switch ($Partition.Size)
-            {
-                {$_ -lt 1GB}
-                {
-                    "{0:n2} MB" -f ($Partition.Size/1MB)
-                }
-                {$_ -ge 1GB -and $_ -lt 1TB}
-                {
-                    "{0:n2} GB" -f ($Partition.Size/1GB)
-                }
-                {$_ -ge 1TB}
-                {
-                    "{0:n2} TB" -f ($Partition.Size/1TB)
-                }
-            }
-            $This.Boot       = $Partition.BootPartition
-            $This.Primary    = $Partition.PrimaryPartition
-            $This.Disk       = $Partition.DiskIndex
-            $This.Partition  = $Partition.Index
-        }
-    }
-
+    # Drive/file formatting information, for the system this tool is run on.
     Class Drive
     {
         [String] $Name
@@ -148,6 +1579,90 @@ Function Get-SystemDetails
         }
     }
 
+    # Drive/partition information for the system this tool is run on.
+    Class Partition
+    {
+        [String] $Type
+        [String] $Name
+        Hidden [BigInt] $SizeBytes
+        [String] $Size
+        [Bool] $Boot
+        [Bool] $Primary
+        [UInt32] $Disk
+        [UInt32] $Partition
+        Partition([Object]$Partition)
+        {
+            $This.Type       = $Partition.Type
+            $This.Name       = $Partition.Name
+            $This.SizeBytes  = $Partition.Size
+            $This.Size       = Switch ($Partition.Size)
+            {
+                {$_ -lt 1GB}
+                {
+                    "{0:n2} MB" -f ($Partition.Size/1MB)
+                }
+                {$_ -ge 1GB -and $_ -lt 1TB}
+                {
+                    "{0:n2} GB" -f ($Partition.Size/1GB)
+                }
+                {$_ -ge 1TB}
+                {
+                    "{0:n2} TB" -f ($Partition.Size/1TB)
+                }
+            }
+            $This.Boot       = $Partition.BootPartition
+            $This.Primary    = $Partition.PrimaryPartition
+            $This.Disk       = $Partition.DiskIndex
+            $This.Partition  = $Partition.Index
+        }
+        Partition([String[]]$S)
+        {
+            $This.Type       = $This.X($S,"Type")
+            $This.Name       = $This.X($S,"Name")
+            $This.Size       = $This.X($S,"Size")
+            $This.Boot       = $This.X($S,"Boot")
+            $This.Primary    = $This.X($S,"Primary")
+            $This.Disk       = $This.X($S,"Disk")
+            $This.Partition  = $This.X($S,"Partition")
+        }
+        Partition([Object[]]$Pairs,[UInt32]$Disk)
+        {
+            ForEach ($Pair in $Pairs)
+            {
+                $This.$($Pair.Name) = $Pair.Value
+            }
+        }
+        [String] X([Object]$Stack,[String]$Label)
+        {
+            Return $Stack -match "^$Label" -Replace "$Label\s+",""
+        }
+        [Object] GetOutput([UInt32]$Index)
+        {
+            Return [PropertySet]::New($Index,"Partitions",$This)
+        }
+        [Object[]] ToString()
+        {
+            Return @( $This.PSObject.Properties | % { [DGList]::New($_.Name,$_.Value) })
+        }
+    }
+
+    # Extended information for hard drives
+    Class DiskDrive
+    {
+        [Object] $Disk
+        [Object] $Meta
+        [Object[]] $Partition
+        [Object]   $Drive
+        DiskDrive([Object]$Disk)
+        {
+            $This.Disk      = $Disk
+            $This.Meta      = Get-CimInstance -ClassName MSFT_Disk -Namespace Root/Microsoft/Windows/Storage | ? Number -eq $This.Disk.Index
+            $This.Partition = Get-CimAssociatedInstance -ResultClassName Win32_DiskPartition -InputObject $This.Disk
+            $This.Drive     = $This.Partition | % { Get-CimAssociatedInstance -ResultClassName Win32_LogicalDisk -InputObject $_ -EA 0 }
+        }
+    }
+
+    # Hard drive information
     Class Disk
     {
         [UInt32] $Index
@@ -171,12 +1686,13 @@ Function Get-SystemDetails
         [String] $BusType
         [String] $UniqueId
         [String] $Location
+        [UInt32] $Partitions
         [Object[]] $Partition
         Hidden [Object] $Drive
-        Disk([Object]$DD)
+        Disk([DiskDrive]$DD)
         {
             $This.Index             = $DD.Disk.Index
-            $This.Drive             = $DD.Drive | % {[Drive]$_}
+            $This.Drive             = $DD.Drive | % { [Drive]$_ }
             $This.Name              = $This.Drive.Name
             $This.DriveLetter       = $This.Drive.DriveLetter
             $This.Description       = $This.Drive.Description
@@ -197,60 +1713,23 @@ Function Get-SystemDetails
             $This.BusType           = $DD.Meta.BusType
             $This.UniqueId          = $DD.Meta.UniqueId
             $This.Location          = $DD.Meta.Location
-            $This.Partition         = $DD.Partition | % { [Partition]$_ }
+            $This.Partitions        = $DD.Partition.Count
+            $This.Partition         = $DD.Partition
         }
-        [Object[]] ToString()
+        Disk([Object[]]$Pairs,[UInt32]$Slot)
         {
-            $Collect = @( )
-            ForEach ($Item in $This.PSObject.Properties)
+            ForEach ($Pair in $Pairs)
             {
-                Switch -Regex ($Item.Name)
-                {
-                    Default
-                    {
-                        $Collect += [DGList]::New($Item.Name,$Item.Value)
-                    }
-                    "(^Partition$)"
-                    {
-                        $Collect += [DGList]::New(" "," ")
-                        $Collect += [DGList]::New($Item.Name+"(s)"," ")
-                        $Collect += [DGList]::New(" "," ")
-                        ForEach ($Subitem in $Item.Value)
-                        {
-                            $SubItem.PSObject.Properties | % { $Collect += [DGList]::New($_.Name,$_.Value) }
-                            $Collect += [DGList]::New(" "," ")
-                        }
-                    }
-                }
+                $This.$($Pair.Name) = $Pair.Value
             }
-            Return $Collect
         }
-    }
-
-    Class Processor
-    {
-        [String] $Manufacturer
-        [String] $Name
-        [String] $Caption
-        [UInt32] $Cores
-        [UInt32] $Used
-        [UInt32] $Logical
-        [UInt32] $Threads
-        [String] $ProcessorId
-        [String] $DeviceId
-        [UInt32] $Speed
-        Processor([Object]$CPU)
+        [String] X([Object]$Stack,[String]$Label)
         {
-            $This.Manufacturer = Switch -Regex ($CPU.Manufacturer) { Intel { "Intel" } Amd { "AMD" } }
-            $This.Name         = $CPU.Name -Replace "\s+"," "
-            $This.Caption      = $CPU.Caption
-            $This.Cores        = $CPU.NumberOfCores
-            $This.Used         = $CPU.NumberOfEnabledCore
-            $This.Logical      = $CPU.NumberOfLogicalProcessors 
-            $This.Threads      = $CPU.ThreadCount
-            $This.ProcessorID  = $CPU.ProcessorId
-            $This.DeviceID     = $CPU.DeviceID
-            $This.Speed        = $CPU.MaxClockSpeed
+            Return $Stack -match "^$Label" -Replace "$Label\s+",""
+        }
+        [Object] GetOutput([UInt32]$Index)
+        {
+            Return [PropertySet]::New($Index,"Disk(s)",$This)
         }
         [Object[]] ToString()
         {
@@ -258,59 +1737,46 @@ Function Get-SystemDetails
         }
     }
 
-    Class Bios
+    # Connected/Online Network adapter information
+    Class Network
     {
         [String] $Name
-        [String] $Manufacturer
-        [String] $SerialNumber
-        [String] $Version
-        [String] $ReleaseDate
-        [Bool]   $SmBiosPresent
-        [String] $SmBiosVersion
-        [UInt32] $SmBiosMajor
-        [UInt32] $SmBiosMinor
-        [UInt32] $SystemBiosMajor
-        [UInt32] $SystemBiosMinor
-        Bios()
+        [UInt32] $Index
+        [String] $IPAddress
+        [String] $SubnetMask
+        [String] $Gateway
+        [String] $DnsServer
+        [String] $DhcpServer
+        [String] $MacAddress
+        Network([Object]$If)
         {
-            $Bios                = Get-CimInstance Win32_Bios
-            $This.Name            = $Bios.Name
-            $This.Manufacturer    = $Bios.Manufacturer
-            $This.SerialNumber    = $Bios.SerialNumber
-            $This.Version         = $Bios.Version
-            $This.ReleaseDate     = $Bios.ReleaseDate
-            $This.SmBiosPresent   = $Bios.SmBiosPresent
-            $This.SmBiosVersion   = $Bios.SmBiosBiosVersion
-            $This.SmBiosMajor     = $Bios.SmBiosMajorVersion
-            $This.SmBiosMinor     = $Bios.SmBiosMinorVersion
-            $This.SystemBiosMajor = $Bios.SystemBiosMajorVersion
-            $This.SystemBIosMinor = $Bios.SystemBiosMinorVersion
+            $This.Name       = $IF.Description
+            $This.Index      = $IF.Index
+            $This.IPAddress  = $IF.IPAddress            | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.SubnetMask = $IF.IPSubnet             | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.Gateway    = $IF.DefaultIPGateway     | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.DnsServer  = ($IF.DnsServerSearchOrder | ? {$_ -match "(\d+\.){3}\d+"}) -join ", "
+            $This.DhcpServer = $IF.DhcpServer           | ? {$_ -match "(\d+\.){3}\d+"}
+            $This.MacAddress = $IF.MacAddress
         }
-        [Object[]] ToString()
+        Network([String[]]$S)
         {
-            Return $This.PSObject.Properties | % { [DGList]::New($_.Name,$_.Value) }
+            $This.Name       = $This.X($S,"Name")
+            $This.Index      = $This.X($S,"Index")
+            $This.IPAddress  = $This.X($S,"IPAddress")
+            $This.SubnetMask = $This.X($S,"SubnetMask")
+            $This.Gateway    = $This.X($S,"Gateway")
+            $This.DnsServer  = $This.X($S,"DnsServer").Split(",")
+            $This.DhcpServer = $This.X($S,"DhcpServer")
+            $This.MacAddress = $This.X($S,"MacAddress")
         }
-    }
-
-    Class OS
-    {
-        [String] $Caption
-        [String] $Version
-        [String] $Build
-        [String] $Serial
-        [UInt32] $Language
-        [UInt32] $Product
-        [UInt32] $Type
-        OS()
+        [String] X([Object]$Stack,[String]$Label)
         {
-            $OS            = Get-WmiObject Win32_OperatingSystem
-            $This.Caption  = $OS.Caption
-            $This.Version  = $OS.Version
-            $This.Build    = $OS.BuildNumber
-            $This.Serial   = $OS.SerialNumber
-            $This.Language = $OS.OSLanguage
-            $This.Product  = $OS.OSProductSuite
-            $This.Type     = $OS.OSType
+            Return $Stack -match "^$Label" -Replace "$Label\s+",""
+        }
+        [Object] GetOutput([UInt32]$Index)
+        {
+            Return [PropertySet]::New($Index,"Network",$This)
         }
         [Object[]] ToString()
         {
@@ -318,203 +1784,620 @@ Function Get-SystemDetails
         }
     }
 
-    Class CS
+    # List of the event log providers
+    Class LogProviders
     {
-        [String] $Manufacturer
-        [String] $Model
-        [String] $Product
-        [String] $Serial
-        [String] $Memory
-        [String] $Architecture
-        [String] $UUID
-        [String] $Chassis
-        [String] $BiosUefi
-        [Object] $AssetTag
-        CS()
+        [String] $Name  = "Log Providers"
+        [Object] $Output
+        LogProviders()
         {
-            $Sys               = Get-WmiObject Win32_ComputerSystem 
-            $This.Manufacturer = $Sys.Manufacturer
-            $This.Model        = $Sys.Model
-            $This.Memory       = "{0} GB" -f ($Sys.TotalPhysicalMemory/1GB)
-            $This.UUID         = (Get-WmiObject Win32_ComputerSystemProduct).UUID 
+            $Logs        = Get-WinEvent -ListLog * | % Logname | Select-Object -Unique | Sort-Object
+            $Depth       = ([String]$Logs.Count).Length
+            $This.Output = @( )
             
-            $Sys               = Get-WmiObject Win32_BaseBoard
-            $This.Product      = $Sys.Product
-            $This.Serial       = $Sys.SerialNumber -Replace "\.",""
-            
-            Try
+            ForEach ($X in 0..($Logs.Count-1))
             {
-                Get-SecureBootUEFI -Name SetupMode | Out-Null 
-                $This.BiosUefi = "UEFI"
+                $This.Output += [DGList]::New(("Provider{0:d$Depth}" -f $X),$Logs[$X])
             }
-            Catch
-            {
-                $This.BiosUefi = "BIOS"
-            }
-
-            $Sys               = Get-WmiObject Win32_SystemEnclosure
-            $This.AssetTag     = $Sys.SMBIOSAssetTag.Trim()
-            $This.Chassis      = Switch ([UInt32]$Sys.ChassisTypes[0])
-            {
-                {$_ -in 8..12+14,18,21} {"Laptop"}
-                {$_ -in 3..7+15,16}     {"Desktop"}
-                {$_ -in 23}             {"Server"}
-                {$_ -in 34..36}         {"Small Form Factor"}
-                {$_ -in 30..32+13}      {"Tablet"}
-            }
-
-            $This.Architecture = @{x86="x86";AMD64="x64"}[[Environment]::GetEnvironmentVariable("Processor_Architecture")]
         }
-        [Object[]] ToString()
+        SetBuffer([UInt32]$Buffer)
         {
-            Return @( $This.PSObject.Properties | % { [DGList]::New($_.Name,$_.Value) })
+            $This.Output | % SetBuffer $Buffer
+        }
+        [Object] GetOutput([UInt32]$Index)
+        {
+            Return [PropertySet]::New($Index,"Log Providers",$This)
+        }
+        [String[]] ToString()
+        {
+            Return @( $This.Output | % ToString )
         }
     }
 
+    # System snapshot, the primary focus of the utility.
     Class System
     {
-        [Object] $Name
-        [Object] $Bios
-        [Object] $OS
-        [Object] $CS
+        [Object] $Snapshot
+        [Object] $BiosInformation
+        [Object] $OperatingSystem
+        [Object] $ComputerSystem
         [Object[]] $Processor
         [Object[]] $Disk
         [Object[]] $Network
+        [Object]  $LogProviders
+        Hidden [Object] $Output
         System()
         {
-            $This.Name             = [Environment]::MachineName
-            $This.Bios             = [Bios]::New()
-            $This.OS               = [OS]::New() 
-            $This.CS               = [CS]::New()
-            $This.Processor        = Get-WmiObject -Class Win32_Processor | % { [Processor]$_ }
-            $This.Disk             = Get-CimInstance Win32_DiskDrive | ? MediaType -match Fixed | % { [DiskDrive]$_ } | % { [Disk]$_ }
-            $This.Network          = Get-WmiObject -Class Win32_NetworkAdapterConfiguration -Filter "IPEnabled = 1" | ? DefaultIPGateway | % { [Network]$_ }
+            $This.Snapshot         = [Snapshot]::New()
+            $This.BiosInformation  = [BiosInformation]::New()
+            $This.OperatingSystem  = [OperatingSystem]::New() 
+            $This.ComputerSystem   = [ComputerSystem]::New()
+            $This.Processor        = @(Get-WmiObject Win32_Processor | % { [Processor]::New($_,0) })
+            $This.Disk             = @(Get-CimInstance Win32_DiskDrive | ? MediaType -match Fixed | % { [DiskDrive]::New($_) } | % { [Disk]::New($_) })
+            $This.Network          = @(Get-CimInstance Win32_NetworkAdapterConfiguration | ? IPEnabled | ? DefaultIPGateway | % { [Network]::New($_) })
         }
-        [Object[]] ToString()
+        System([Object]$System)
         {
-            $Collect = @( )
-            ForEach ($Item in $This.PSObject.Properties)
+            $This.Snapshot        = $System.Snapshot
+            $This.BiosInformation = $System.BiosInformation
+            $This.OperatingSystem = $System.OperatingSystem
+            $This.ComputerSystem  = $System.ComputerSystem
+            $This.Processor       = $System.Processor
+            $This.Disk            = $System.Disk
+            $This.Network         = $System.Network
+        }
+        System([Object]$Snapshot,[Object]$BiosInformation,[Object]$OperatingSystem,[Object]$ComputerSystem,[Object[]]$Processor,[Object[]]$Disk,[Object[]]$Network)
+        {
+            $This.Snapshot         = $Snapshot
+            $This.BiosInformation  = $BiosInformation
+            $This.OperatingSystem  = $OperatingSystem
+            $This.ComputerSystem   = $ComputerSystem
+            $This.Processor        = $Processor
+            $This.Disk             = $Disk
+            $This.Network          = $Network
+        }
+        LoadLogProviders([Object]$LogProviders)
+        {
+            $This.LogProviders     = $LogProviders
+        }
+        GetLogProviders()
+        {
+            $This.LogProviders     = [LogProviders]::New()
+        }
+        [Object[]] GetOutput()
+        {
+            If ($This.Snapshot.Complete -eq 0)
             {
-                Switch ($Item.Name)
-                {
-                    Name
-                    {
-                        $Collect += [DGList]::New(" "," ")
-                        $Collect += [DGList]::New("------------"," ")
-                        $Collect += [DGList]::New("ComputerName",$This.Name)
-                        $Collect += [DGList]::New("------------"," ")
-                        $Collect += [DGList]::New(" "," ")
-                        $Collect += $This.Bios.ToString()
-                    }
-                    OS
-                    {
-                        $Collect += [DGList]::New(" "," ")
-                        $Collect += [DGList]::New("----------------"," ")
-                        $Collect += [DGList]::New("Operating System"," ")
-                        $Collect += [DGList]::New("----------------"," ")
-                        $Collect += [DGList]::New(" "," ")
-                        $Collect += $This.OS.ToString()
-                    }
-                    CS
-                    {
-                        $Collect += [DGList]::New(" "," ")
-                        $Collect += [DGList]::New("---------------"," ")
-                        $Collect += [DGList]::New("Computer System"," ")
-                        $Collect += [DGList]::New("---------------"," ")
-                        $Collect += [DGList]::New(" "," ")
-                        $Collect += $This.CS.ToString()
-                    }
-                    Processor
-                    {
-                        $Collect += [DGList]::New(" "," ")
-                        $Collect += [DGList]::New("------------"," ")
-                        $Collect += [DGList]::New("Processor(s)"," ")
-                        $Collect += [DGList]::New("------------"," ")
-                        $Collect += [DGList]::New(" "," ")
-                        If ($This.Processor.Count -eq 1)
-                        {
-                            $Collect += $This.Processor[0].ToString() 
-                        }
-                        If ($This.Processor.Count -gt 1)
-                        {
-                            ForEach ($X in 0..($This.Processor.Count-1))
-                            {
-                                If ($X -ne 1)
-                                {
-                                    $Collect += [DGList]::New(" "," ")
-                                }
-                                $Collect += $This.Processor[$X].ToString()
-                            }
-                        }
-                    }
-                    Disk
-                    {
-                        $Collect += [DGList]::New(" "," ")
-                        $Collect += [DGList]::New("-------"," ")
-                        $Collect += [DGList]::New("Disk(s)"," ")
-                        $Collect += [DGList]::New("-------"," ")
-                        $Collect += [DGList]::New(" "," ")
-                        If ($This.Disk.Count -eq 1)
-                        { 
-                            $Collect += $This.Disk[0].ToString() 
-                        }
-                        If ($This.Disk.Count -gt 1)
-                        {
-                            ForEach ($X in 0..($This.Disk.Count-1))
-                            {
-                                If ($X -ne 1)
-                                {
-                                    $Collect += [DGList]::New(" "," ")
-                                }
-                                $Collect += $This.Disk[$X].ToString()
-                            }
-                        }
-                    }
-                    Network
-                    {
-                        $Collect += [DGList]::New(" "," ")
-                        $Collect += [DGList]::New("-------"," ")
-                        $Collect += [DGList]::New("Network"," ")
-                        $Collect += [DGList]::New("-------"," ")
-                        $Collect += [DGList]::New(" "," ")
-                        If ($This.Network.Count -eq 1)
-                        {
-                            $Collect += $This.Network[0].ToString() 
-                        }
-                        If ($This.Network.Count -gt 1)
-                        {
-                            ForEach ($X in 0..($This.Network.Count-1))
-                            {
-                                If ($X -ne 0)
-                                {
-                                    $Collect += [DGList]::New(" "," ")
-                                }
-                                $Collect += $This.Network[$X].ToString()
-                            }
-                        }
-                    }
-                }
+                $This.Snapshot.Elapsed = [String][Timespan]([DateTime]::Now-[DateTime]$This.Snapshot.Start)
             }
-            $Buffer      = ($Collect.Name | Sort-Object Length)[-1].Length
-            $Return      = @( )
-            $Return     += " "
-            ForEach ($X in 0..($Collect.Count-1))
+            $This.Output           = $Prop = [PropertyControl]::New()
+            $Prop.Add(           "Snapshot", $This.Snapshot)
+            $Prop.Add(   "Bios Information", $This.BiosInformation)
+            $Prop.Add(   "Operating System", $This.OperatingSystem)
+            $Prop.Add(    "Computer System", $This.ComputerSystem)
+            
+            Switch ($This.Processor.Count)
             {
-                $Item    = $Collect[$X]
-                If ($Item.Name -match "\-{4,}")
-                {
-                    $Return += ("-" * 120 -join '')
-                }
-                Else
-                {
-                    $Return += ("{0}{1} {2}" -f $Item.Name, (" " * ($Buffer-$Item.Name.Length) -join ""), $Item.Value)
-                }
+                1       { $Prop.Add(    "Processor(s)", $This.Processor[0]) }
+                Default { $Prop.Add(    "Processor(s)", $This.Processor)    }
             }
-            $Return     += " "
-            Return $Return
+            Switch ($This.Disk.Count)
+            {
+                1       { $Prop.Add(          "Disk(s)", $This.Disk[0]) }
+                Default { $Prop.Add(          "Disk(s)", $This.Disk)    }
+            }
+            Switch ($This.Network.Count)
+            {
+                1       { $Prop.Add(       "Network(s)", $This.Network[0]) }
+                Default { $Prop.Add(       "Network(s)", $This.Network)    }
+            }
+            
+            If ($This.LogProviders)
+            {
+                $Prop.Add( "Log Providers", $This.LogProviders.Output,0)
+            }
+
+            Return $Prop.GetOutput()
         }
     }
-    [System]::New()
+
+    <#
+    $System = [System]::New()
+    $System.GetLogProviders()
+    $System.Snapshot.Start = "04/23/2022 03:45:43"
+    Set-Content $Home\Desktop\SystemOutput.txt $System.GetOutput()
+    #>
+
+    # Parses the outputfile back into the system object above.
+    Class ParseSystem
+    {
+        [Object] $Snapshot
+        [Object] $BiosInformation
+        [Object] $OperatingSystem
+        [Object] $ComputerSystem
+        [Object[]] $Processor
+        [Object[]] $Disk
+        [Object[]] $Network
+        [Object[]] $LogProviders
+        ParseSystem()
+        {
+            $This.Processor    = @( )
+            $This.Disk         = @( )
+            $This.Network      = @( )
+            $This.LogProviders = @( )
+        }
+        AddSnapshot([Object]$Snapshot)
+        {
+            $This.Snapshot = [Snapshot]::New($Snapshot)
+        }
+        AddBiosInformation([Object]$BiosInformation)
+        {
+            $This.BiosInformation = [BiosInformation]::New($BiosInformation)
+        }   
+        AddOperatingSystem([Object]$OperatingSystem)
+        {
+            $This.OperatingSystem = [OperatingSystem]::New($OperatingSystem)
+        }
+        AddComputerSystem([Object]$ComputerSystem)
+        {
+            $This.ComputerSystem = [ComputerSystem]::New($ComputerSystem)
+        }
+        AddProcessor([Object]$Processor)
+        {
+            $This.Processor += [Processor]::New($Processor)
+        }
+        AddProcessor([Processor]$Processor)
+        {
+            If ($Processor.ID -in $This.Processor.Id)
+            {
+                Throw "Processor already exists"
+            }
+            Else
+            {
+                $This.Processor += $Processor
+            }
+        }
+        AddDisk([Object]$Disk)
+        {
+            $This.Disk += [Disk]::New($Disk)
+        }
+        AddNetwork([Object]$Network)
+        {
+            $This.Network += $Network
+        }
+        AddLogProviders([Object]$LogProviders)
+        {
+            $This.LogProviders = $LogProviders
+        }
+        AddObject([UInt32]$Rank,[Object]$Section)
+        {
+            Switch ($Rank)
+            {
+                0 { $This.AddSnapshot($Section)        }
+                1 { $This.AddBiosInformation($Section) }
+                2 { $This.AddOperatingSystem($Section) }
+                3 { $This.AddComputerSystem($Section)  }
+                4 { $This.AddProcessor($Section)       }
+                5 { $This.AddDisk($Section) }
+                6 { $This.AddNetwork($Section) }
+                7 { $This.AddLogProviders($Section)  }
+            }
+        }
+    }
+
+    # Parses each section of the outputfile
+    # Duplicate class, sometimes I keep the old versions
+    Class ParseSection2
+    {
+        Hidden [UInt32] $Mode
+        [UInt32] $Rank
+        [Object] $Title
+        [Object] $Content
+        [Object] $Names
+        [Object] $Values
+        [Object] $Output
+        Hidden [UInt32] $MaxKeyLength 
+        ParseSection2([UInt32]$Rank,[Object]$Title,[Object]$Object)
+        {
+            $This.Mode    = 0
+            $This.Rank    = $Rank
+            $This.Title   = $Title
+            $This.Content = $Object
+        }
+        ParseSection([UInt32]$Rank,[Object]$Title,[Object[]]$Content)
+        {
+            $This.Mode    = 1
+            $This.Rank    = $Rank
+            $This.Title   = $Title
+            $This.Content = $Content
+        }
+        SetBuffer([UInt32]$X)
+        {
+            $This.Content | % SetBuffer $X
+        }
+        GetMaxKeyLength()
+        {
+            $This.MaxKeyLength = ($This.Content.PSObject.Properties.Name | Sort-Object Length | Select-Object -Last 1).Length
+        }
+        GetOutput()
+        {
+            $This.Output = @($This.Frame();$This.Title;$This.Frame();"")
+        }
+        [String] Frame()
+        {
+            Return "-" * 120 -join ''
+        }
+    }
+
+    # Parses keys from the outputfile, might not be necessary
+    Class ParseKey
+    {
+        [UInt32] $Index
+        [UInt32] $Rank
+        Hidden [String] $Line
+        Hidden [UInt32] $Length
+        [String] $Name
+        [String] $Value
+        ParseKey([UInt32]$Index,[UInt32]$Rank,[Object]$Groups)
+        { 
+            $This.Rank      = $Rank
+            $This.Line      = $Groups.Groups[0].Value
+            $This.Length    = $Groups.Groups[1].Length
+            $This.Name      = $Groups.Groups[1].Value
+            $This.Value     = $Groups.Groups[2].Value
+        }
+    }
+
+    # Parses each individual line of the outputfile
+    Class ParseLine
+    {
+        [UInt32] $Index
+        [Int32] $Rank
+        Hidden [UInt32] $Total
+        [Int32] $Type
+        Hidden [String] $Slot
+        [String] $Line
+        ParseLine([UInt32]$Index,[UInt32]$Total,[String]$Line)
+        {
+            $This.Index = $Index
+            $This.Total = $Total
+            $This.Line  = $Line.TrimEnd(" ")
+
+            If ($This.Line.Length -eq 0 -or $This.Line -match "\-{20,}")
+            {
+                $This.Type  = 0
+                $This.Slot  = "Format"
+                Return
+            }
+
+            If ($Line -match "(^Snapshot$|^Bios Information$|^Operating System$|^Computer System$|^Processor\(s\)$|^Disk\(s\)$|^Network$|^Log Providers$)")
+            {
+                $This.Type  = 1
+                $This.Slot  = "Title"
+                Return
+            }
+
+            If ($Line -match "^(\w+|\d+)+[^\s]$")
+            {
+                $This.Type  = 2
+                $This.Slot  = "Label"
+                Return
+            }
+
+            If ($Line -match "^(\w+|\d+)+\s+(.+)$")
+            {
+                $This.Type  = 3
+                $This.Slot  = "Key"
+                Return
+            }
+        }
+        [String] ToString()
+        {
+            Return ("[{0:d$($This.Total)}] {1}" -f $This.Index, $This.Line)
+        }
+    }
+
+    # Parses keys from the log and sends them to system object
+    Class ParseSection
+    {
+        [UInt32] $Rank
+        [Object] $Title
+        Hidden [Object] $Names
+        Hidden [Object] $Values
+        [Object] $Output
+        ParseSection([UInt32]$Rank,[String]$Title)
+        {
+            $This.Rank    = $Rank
+            $This.Title   = $Title
+            $This.Names   = @( )
+            $This.Values  = @( )
+            $This.Output  = @( )
+        }
+        AddArray([Object[]]$Content)
+        {
+            ForEach ($X in 0..($Content.Count-1))
+            {
+                $Content[$X] -Match "(\w+|\d+)\s+(.+)"
+                $This.Names   += $Matches[1]
+                $This.Values  += $Matches[2]
+                $This.Output  += [DGList]::New($Matches[1],$Matches[2])
+            }
+        }
+        Clear()
+        {
+            $This.Names  = @( )
+            $THis.Values = @( )
+            $This.Output = @( )
+        }
+    }
+
+    # Basically does a lot of math.
+    Class ParseTable
+    {
+        Hidden [String[]]   $Input
+        [UInt32]     $Total
+        Hidden [Object] $Keys
+        Hidden [UInt32] $MaxKeyLength
+        [Object]   $Content
+        [Object]   $Section
+        ParseTable([String]$Path)
+        {
+            $This.Input   = (Get-Content $Path).TrimEnd(" ")
+            $This.Total   = $This.Input.Count
+            $This.Keys    = @( )
+            $This.Content = @( )
+            $This.Section = @( )
+            ForEach ($X in 0..($This.Input.Count-1))
+            {
+                $This.Content +=  $This.Line($This.Input[$X].TrimEnd(" "))
+            }
+            $This.RankSections()
+        }
+        [UInt32] X([String]$Match)
+        {
+            $Escape = [Regex]::Escape($Match)
+            Return 0..($This.Content.Line.Count-1) | ? { $This.Content.Line[$_] -match "^$Escape" } 
+        }
+        RankSections()
+        {
+            $C = -1
+            ForEach ($X in 0..($This.Content.Count-1))
+            {
+                $Item = $This.Content[$X]
+                If ($Item.Line -match "^Snapshot$|^Bios Information$|^Operating System$|^Computer System$|^Processor\(s\)$|^Disk\(s\)$|^Network\(s\)$|^Log Providers$")
+                {
+                    $C ++
+                    $This.Content[$X-1].Rank = $C
+                }
+                $Item.Rank = $C
+            }
+        }
+        ParseSections()
+        {
+            $Index                  = $This.Content | % Rank | Select-Object -Unique
+            $Body                   = [ParseSystem]::New()
+            #$Index                  = $Px.Content | % Rank | Select-Object -Unique 
+            $Disk                   = $Null
+            $Master                 = $Null
+            $Tag                    = $Null
+            $xContent               = $Null
+            $xLabel                 = $Null
+            $Slot                   = $Null
+            $Title                  = $Null
+            $Label                  = $Null
+            $Count                  = $Null
+            $Id                     = $Null
+            $Rank                   = 0
+            ForEach ($Rank in $Index)
+            {
+                 $Slot              = $This.Content | ? Rank -eq $Rank
+               # $Slot               = $Px.Content   | ? Rank -eq $Rank
+                $Title              = $Slot | ? Type -eq 1 | % Line
+                $Item               = [ParseSection]::New($Rank,$Title)
+                Switch -Regex ($Title)
+                {
+                    "(^Snapshot$|^Bios Information$|^Operating System$|^Computer System$)"
+                    {
+                        $xContent        = $Slot | ? Type -eq 3 | % Line
+                        $Item.AddArray($xContent)
+                        $Body.AddObject($Rank,$Item.Output)
+                        $Rank          ++
+                    }
+                    "(^Processor\(s\)$|^Disk\(s\)$|^Network\(s\)|^Log Providers$)"
+                    {
+                        $First          = $Slot | ? Type -eq 3 | Select-Object -First 1
+                        If ($First.Line -match "(\w+|\d+)\s+(\d+)")
+                        {
+                            $Count      = [UInt32]$Matches[2]
+                            $First.Type = 4
+                            $Id         = Switch -Regex ([String]$Matches[1])
+                            {
+                                Processor { "Processor" }
+                                Disk      {      "Disk" }
+                                Network   {   "Network" }
+                                Log       {      "Logs" }
+                            }
+                        }
+                        $Label                = $Slot | ? Type -eq 2 
+                        ForEach ($Object in  $Slot | ? Type -eq 2 )
+                        {
+                            If ($Object.Line -notmatch "(^\w+\d+$)")
+                            {
+                                $Object.Type  = 3
+                            }
+                        }
+                        $Label                = $Slot | ? Type -eq 2
+                        Switch -Regex ($Id)
+                        {
+                            Default
+                            {
+                                If ($Label.Count -eq 0)
+                                {
+                                    $xContent = ($Slot | ? Type -eq 3).Line
+                                    $Item.AddArray($xContent)
+                                    $Body.AddObject($Rank,$Item.Output)
+                                    $Item.Clear()
+                                    $Rank ++
+                                    Return
+                                }
+                                If ($Label.Count -eq 1)
+                                {
+                                    $X            = $Label.Index
+                                    $C            = @( )
+                                    Do
+                                    {
+                                        $X        ++
+                                        $C        += $Slot | ? Index -eq $X
+                                    }
+                                    Until ($C[-1].Type -eq 0 -or $X -eq $Slot[-1].Index)
+                                    $xContent       = $C[0..($C.Count-2)].Line
+                                    $Item.AddArray($xContent)
+                                    $Body.AddObject($Rank,$Item.Output)
+                                    $Item.Clear()
+                                    $Rank ++
+                                    Return
+                                }
+                                If ($Label.Count -gt 1)
+                                {
+                                    ForEach ($L in 0..($Label.Count-1)) 
+                                    {
+                                        $X       = $Label[$L].Index
+                                        $C       = @( )
+                                        Do
+                                        {
+                                            $X     ++
+                                            $C     += $Slot | ? Index -eq $X
+                                        }
+                                        Until ($C[-1].Type -eq 0 -or $X -eq $Slot[-1].Index)
+                                        $xContent       = $C[0..($C.Count-2)].Line
+                                        $Item.AddArray($xContent)
+                                        $Body.AddObject($Rank,$Item.Output)
+                                    }
+                                    $Rank         ++
+                                    Return
+                                }
+                            }
+                            Disk
+                            {
+                                ForEach ($L in 0..($Label.Count-1))
+                                {
+                                    If ($Label[$L].Line -match "Disk\d+")
+                                    {
+                                        $Master = $Label[$L].Line
+                                        $Tag    = [UInt32]($Master -Replace "\D+","")
+                                    }
+                                    $Z          = 0
+                                    $X          = $Label[$L].Index
+                                    $C          = @( )
+                                    Do
+                                    {
+                                        $X     ++
+                                        $C     += $Slot | ? Index -eq $X
+                                        If ($X -eq $Slot[-1].Index)
+                                        {
+                                            $Z  = 1
+                                        }
+                                    }
+                                    Until ($C[-1].Type -eq 2 -or $Z -eq 1)
+                                    $xContent = $C[0..($C.Count-2)].Line
+                                    If ($Label[$L].Line -match "Partition")
+                                    {
+                                        $Key       = [Regex]::Matches($xContent,"^(\w+)+(\s+)+(\w+)+").Groups
+                                        $KeyLength = $Key.Groups[1].Length + $Key.Groups[2].Length
+                                        $Sub       = $Label[$L].Line.Length
+                                        $Space     = " " * $Sub -join ""
+                                        ForEach ($X in 0..($xContent.Count-1))
+                                        {
+                                            $Line  = $xContent[$X]
+                                            $Line -match "^(\w+)" | Out-Null
+                                            $Key   = $Matches[1] -Replace $Label[$L].Line ,""
+                                            $Line -match "^(\w+)+(\s+)+(.+)+" | Out-Null
+                                            $xContent[$X] = $Key + $Space + $Matches[2] + $Matches[3]
+                                        }
+                                        $xContent += "SizeBytes" + (" " * ($KeyLength - 9) -join '') + [Float][Regex]::Matches($xContent,"(\d+\.\d+\w+)").Value*1MB
+                                    }
+                                    $Item.AddArray($xContent)
+                                    Switch -Regex ($Label[$L].Line)
+                                    {
+                                        $Master
+                                        {
+                                            $Disk = [Disk]::New($Item.Output,$Tag)
+                                        }
+                                        Default
+                                        {
+                                            $Partition = [Partition]::New($Item.Output,$Tag)
+                                            $Disk.Partition += $Partition
+                                        }
+                                    }
+                                    If ($Z -eq 1)
+                                    {
+
+                                        $Body.AddDisk($Disk)
+                                    }
+                                    $Item.Clear()
+                                }
+
+                                $Rank ++
+                                Return
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        [Object] Line([String]$Line)
+        {
+            Return [ParseLine]::New($This.Content.Count,$This.Total,$Line)
+        }
+    }
+
+    $Result = "$Home\Desktop\SystemOutput.txt"
+    $Px     = [ParseTable]::New($Result)
+}
+
+Function Get-EventLogArchive
+{
+    [CmdLetBinding(DefaultParameterSetName=0)]
+    Param(
+        [Parameter(Mandatory,ParameterSetName=0)][ValidateScript({Test-Path $_})][String]$Path,
+        [Parameter(Mandatory,ParameterSetName=1)][Switch]$New
+    )
+
+    Class EventLogArchive
+    {
+        [String]     $Mode
+        [String] $Modified
+        [UInt32]   $Length
+        [String]     $Size 
+        [String]     $Name
+        [String]     $Path
+        EventLogArchive([String]$Fullname)
+        {
+            $File          = Get-Item $Fullname
+            $This.Mode     = $File.Mode
+            $This.Modified = $File.LastWriteTime.ToString()
+            $This.Length   = $File.Length
+            $This.Size     = "{0:n2} MB" -f ($File.Length/1MB)
+            $This.Name     = $File.Name
+            $This.Path     = $File.Fullname
+        }
+        EventLogArchive()
+        {
+            $This.Mode     = "-"
+            $This.Modified = "-"
+            $This.Length   = 0
+            $This.Size     = "0.00 MB"
+            $This.Name     = "-"
+            $This.Path     = "-"
+        }
+    }
+
+    Switch ($PsCmdLet.ParameterSetName)
+    {
+        0 { [EventLogArchive]::New($Path) }
+        1 { [EventLogArchive]::New()      }
+    }
+
 }
 
 # Sample file for the experiment
