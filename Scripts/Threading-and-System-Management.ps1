@@ -2027,13 +2027,17 @@ Class ProjectFile
 
 Class ProjectFolder
 {
-    [UInt32]     $Rank
-    [String]     $Name
-    [String] $Fullname
-    [String]   $Parent
-    [Bool]     $Exists
-    [UInt32]    $Count
-    [Object] $Children = @( )
+    [UInt32]             $Rank
+    [String]             $Name
+    [String]         $Fullname
+    [String]           $Parent
+    [Bool]             $Exists
+    [UInt32]            $Count
+    Hidden [Double] $SizeBytes
+    [String]             $Size
+    Hidden [Hashtable]  $Index = @{ }
+    Hidden [Hashtable]   $Hash = @{ }
+    [Object]         $Children = @( )
     ProjectFolder([UInt32]$Rank,[Object]$Folder)
     {
         $This.Rank     = $Rank
@@ -2044,34 +2048,127 @@ Class ProjectFolder
     }
     [Void] Update()
     {
-        $This.Exists   = [System.IO.Directory]::Exists($This.Fullname)
+        $This.Exists        = [System.IO.Directory]::Exists($This.Fullname)
+        $This.SizeBytes     = 0
+        $This.Size          = "0.00 KB"
+        $This.Hash          = @{ }
+        $This.Index         = @{ }
         If ($This.Exists)
         {
-            $This.Children = @( )
-            $This.Count    = 0
-            ForEach ($File in [System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos())
+            $This.Children  = @([System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos()) | Sort-Object Name
+            $This.Count     = $This.Children.Count
+            If ($This.Count -gt 0)
             {
-                $This.Children += [ProjectFile]::New($This.Count,$File)
-                $This.Count    ++
+                $C = 0
+                $X = 0
+                Do
+                {
+                    $This.Hash.Add($This.Children[$C].Name,$This.Children[$C])
+                    $This.Index.Add($This.Children[$C],$C)
+                    $X = $X + $This.Children[$C].Length
+                    $C ++
+                }
+                Until ($C -eq $This.Count)
+                $This.SizeBytes = [Double]$X
             }
+            $This.Size      = $This.GetSize($This.SizeBytes)
         }
     }
-    [Object] Create([String]$Name)
+    [String] GetSize([Double]$Size)
+    {
+        Return @( Switch ($Size)
+        {
+            {$_ -eq   0 } { "0.00 KB" }
+            {$_ -gt   0 -and $_ -lt 800kb}   { "{0:n2} KB" -f ($_/1KB) }
+            {$_ -ge 800kb -and $_ -lt 800mb} { "{0:n2} MB" -f ($_/1MB) }
+            {$_ -ge 800mb -and $_ -lt 800gb} { "{0:n2} GB" -f ($_/1GB) }
+            {$_ -ge 800gb }                  { "{0:n2} TB" -f ($_/1TB) }
+        })
+    }
+    Create([String]$Name)
     {
         $Path           = $This.Fullname, $Name -join '\'
-        $Item           = [System.IO.File]::Create($Path).Dispose()
+        If (![System.IO.File]::Exists($Path))
+        {
+            [System.IO.File]::Create($Path).Dispose()
+            [Console]::WriteLine("Created [+] ($($Name.Count)) item(s).")
+        }
+        Else
+        {
+            [Console]::WriteLine("Exception [!] ($($Name.Count)) exists.")
+        }
         $This.Update()
-        Return $This.File($Name)
+    }
+    Create([Object[]]$Name)
+    {
+        If ($Name.Count -gt 1)
+        {
+            $Work    = @(ForEach ($X in 0..($Name.Count-1)) { $This.Fullname, $Name[$X] -join "\" })
+            $Segment = [Math]::Round($Work.Count/100)
+            $Slot    = 0..($Work.Count-1) | ? { $_ % $Segment -eq 0 }
+            ForEach ($X in 0..($Work.Count-1))
+            {
+                [System.IO.File]::Create($Work[$X]).Dispose()
+                If ($X -in $Slot)
+                {
+                    $Percent = ($X*100/$Work.Count)
+                    $String  = "({0:n2}%) ({1}/{2})" -f $Percent, $X, $Work.Count
+                    [Console]::WriteLine("Creating [~] $String")
+                }
+            }
+        }
+        Else
+        {
+            [System.IO.File]::Create("$($This.Fullname)\$Name").Dispose()
+        }
+        $This.Update()
+        [Console]::WriteLine("Created [+] ($($Name.Count)) item(s).")
     }
     Delete([String]$Name)
     {
         $Item = $This.File($Name)
         $Item.Delete()
         $This.Update()
+        [Console]::WriteLine("Deleted [$Name]")
     }
     [Object] File([String]$Name)
     {
-        Return $This.Children | ? Name -eq $Name
+        $File = $This.Hash[$Name]
+        If (!$File)
+        {
+            Throw "Invalid file"
+        }
+
+        Return [ProjectFile]::New($This.Index[$Name],$File)
+    }
+    Flush()
+    {
+        If ($This.Exists)
+        {
+            [Console]::WriteLine("Enumerating [~] files")
+            $Work = @([System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos()) | Sort-Object LastWriteTime
+            If ($Work.Count -gt 1)
+            {
+                $Segment = [Math]::Round($Work.Count/100)
+                $Slot    = 0..($Work.Count-1) | ? { $_ % $Segment -eq 0 }
+                ForEach ($X in 0..($Work.Count-1))
+                {
+                    $Work[$X].Delete()
+                    If ($X -in $Slot)
+                    {
+                        $Percent = ($X*100/$Work.Count)
+                        $String  = "({0:n2}%) ({1}/{2})" -f $Percent, $X, $Work.Count
+                        [Console]::WriteLine("Deleting [~] $String")
+                    }
+                }
+            }
+            Else
+            {
+                $Work.Delete()
+            }
+            [Console]::WriteLine("All files deleted")
+        }
+        $This.Update()
     }
     [String] ToString()
     {
@@ -2105,7 +2202,7 @@ Class ProjectBase
 
         ForEach ($Entry in "Master","Logs","Events","Threads")
         {
-            $Item               = [System.IO.Directory]::CreateDirectory("$($This.Fullname)\$Entry")
+            [System.IO.Directory]::CreateDirectory("$($This.Fullname)\$Entry")
         }
 
         $This.Update()
@@ -2120,18 +2217,13 @@ Class ProjectBase
         $This.Date              = [System.IO.Directory]::GetCreationTime($This.Fullname)
         If ($This.Exists)
         {
-            $This.Folders       = @( )
-            $This.Count         = 0
-            ForEach ($Folder in [System.IO.DirectoryInfo]::new($This.Fullname).EnumerateDirectories())
-            {
-                $This.Folders  += [ProjectFolder]::New($This.Count,$Folder)
-                $This.Count    ++
-            }
+            $Directories        = @([System.IO.DirectoryInfo]::new($This.Fullname).EnumerateDirectories())
+            $This.Count         = $Directories.Count
             If ($This.Count -gt 0)
             {
-                ForEach ($Folder in $This.Folders)
+                ForEach ($Folder in $Directories)
                 {
-                    $Folder.Update()
+                    $This.Folders += [ProjectFolder]::New($This.Folders.Count,$Folder)
                 }
             }
         }
@@ -2140,25 +2232,23 @@ Class ProjectBase
     {
         Return $This.Folders | ? Name -eq $Slot
     }
-    [Object] Create([String]$Slot,[String]$Name)
-    {
-        $Item = $This.Slot($Slot)
-        $This.Test($Name,$Item)
-
-        If ($Name -in $Item.Children.Name)
-        {
-            Throw "Item already exists"
-        }
-        Else
-        {
-            Return $Item.Create($Name)
-        }
-    }
     [String] ToString()
     {
         Return $This.Fullname
     }
 }
+
+<#
+    $Date   = [DateTime]::Now.ToString("yyyy-MMdd")
+    $Root   = "$Home\Desktop\testing-$Date"
+    $Base   = [ProjectBase]::New($Root)
+    $Events = $Base.Slot("Events")
+    $Range  = 0..65535 
+    $Depth  = ([String]$Range.Count).Length
+    $List   = $Range | % { "{0:d$Depth}.txt" -f $_ }
+    $Events.Create($List)
+    #
+#>
 
 Class ProjectConsole
 {
@@ -2190,6 +2280,10 @@ Class ProjectConsole
     {
         $This.Add($This.Current())
         Return $This.ToString()
+    }
+    [Object[]] GetConsole()
+    {
+        Return @( $This.Output[0..($This.Output.Count-1)] )
     }
     [Object] ToString()
     {
@@ -2238,18 +2332,25 @@ Class Project
     {
         Return [ProjectBase]::New("$Base\$Name")
     }
+    [String[]] Itemize([Object[]]$ItemList,[String]$Extension)
+    {
+        $Range = 0..($ItemList.Count-1)
+        $Depth = ([String]$Range.Count).Length
+        Return @( $Range | % { "{0:d$Depth}.$Extension" -f $_ })
+    }
     Providers()
     {
         # Loads the provider names
         $Providers        = $This.System.LogProviders.Output
+        $Slot             = $This.Slot("Threads")
+        $Names            = $This.Itemize(@(0..($This.Threads-1)),"txt")
+        $Slot.Create($Names)
         ForEach ($X in 0..($This.Threads-1))
         {
+            $File         = $Slot.File($Names[$X])
             $Value        = 0..($Providers.Count-1) | ? { $_ % $This.Threads -eq $X } | % { $_,$Providers[$_].Value -join ',' }
-            $Value        = 0..($Providers.Count-1) | ? { $_ % 8 -eq $X } | % { $_,$Providers[$_].Value -join ',' }
-            $Slot         = $This.Slot("Threads")
-            $File         = $Slot.Create("$X.txt")
             $File.Write($Value -join "`n")
-            $File | Format-Table
+            $Slot.Update()
         }
         $This.Update("Prepared","Event log collection split between threads")
     }
@@ -2269,9 +2370,10 @@ Class Project
     {
         $Value        = $This.System.GetOutput()
         $Slot         = $This.Slot("Master")
-        $File         = $Slot.Create("Master.txt")
+        $Slot.Create("Master.txt")
+        $File         = $Slot.File("Master.txt")
         $File.Write($Value -join "`n")
-        $This.Update("Success","Master file written to disk: [$File/$($File.Size)]")
+        $This.Update("Success","Master file: [$File], Size: [$($File.Size)]")
     }
     SaveLogs()
     {
@@ -2279,9 +2381,10 @@ Class Project
         MaximumSizeInBytes,Maximum,Current,LogMode,OwningProviderName,ProviderNames,ProviderLevel,ProviderKeywords,ProviderBufferSize,
         ProviderMinimumNumberOfBuffers,ProviderMaximumNumberOfBuffers,ProviderLatency,ProviderControlGuid | ConvertTo-Json
         $Slot          = $This.Slot("Logs")
-        $File          = $Slot.Create("Logs.txt")
+        $Slot.Create("Logs.txt")
+        $File          = $Slot.File("Logs.txt")
         $File.Write($Value)
-        $This.Update("Success","Log config file written to disk: [$File/$($File.Size)]")
+        $This.Update("Success","Log config file: [$File], Size: [$($File.Size)]")
     }
     Delete()
     {
@@ -2297,6 +2400,10 @@ Class Project
         $This.Base          = $Null
         $This.Logs          = $Null
         $This.Output        = $Null
+    }
+    [Object[]] GetConsole()
+    {
+        Return $This.Console.Output[0..($This.Console.Output.Count-1)]
     }
     [Object] ToString()
     {
@@ -2749,7 +2856,7 @@ $TC.LoadSessionObject("Function","Get-EventLogConfigExtension")
 $TC.LoadSessionObject("Function","Get-EventLogRecordExtension")
 
 # Create runspace pool, and open it
-$TC.RunspacePool = [RunspaceFactory]::CreateRunspacePool(1,$Ctrl.Threads,$TC.Session,$Host)
+$TC.RunspacePool = [RunspaceFactory]::CreateRunspacePool(1,$TC.Throttle,$TC.Session,$Host)
 $TC.RunspacePool.Open()
 
 # Declare the FIRST thread collection object
@@ -2780,7 +2887,7 @@ $ScriptBlock     = {
 0..($Ctrl.Threads-1) | % {
 
     $PowerShell = [PowerShell]::Create()
-    $PowerShell.AddScript($Scriptblock).AddArgument($Threads.Children[$_]).AddArgument($Logs) | Out-Null
+    $PowerShell.AddScript($Scriptblock).AddArgument($Threads.Children[$_].Fullname).AddArgument($Logs) | Out-Null
 
     $PowerShell.RunspacePool = $TC.RunspacePool
 
@@ -2823,17 +2930,17 @@ $Ctrl.SaveLogs()
 $Ctrl.Update("Sorting","(Logs/Output)")
 $Ctrl.Output           = $Ctrl.Logs.Output | Sort-Object TimeCreated
 
-
-
 # Now they're ranked, as well as sorted in chronological order
 $Ctrl.Update("Disposing","First runspace pool")
 $TC.RunspacePool.Dispose()
 
 # This will split the workload among the number of threads, and preallocate files
-$List = [DivisionList]::New($Ctrl.Output.Count,$Ctrl.Threads,1000)
+$List  = [DivisionList]::New($Ctrl.Output.Count,$Ctrl.Threads,1000)
 $List.GetOutput()
-$List.Create($Events)
-$Work = $List.Work()
+$Files = $List.Output | % { "{0}.txt" -f $_.Rank }
+$Events.Create($Files)
+
+$Work  = $List.Work()
 
 # Almost time to index the files...
 $Ctrl.Update("Indexing","(Output)")
@@ -2919,7 +3026,7 @@ Class ThreadProgression
     }
     [String] ToString()
     {
-        Return "[{0}] : ({1}%) ({1}/{2})" -f $This.Index, $This.Percent, $This.Current, $This.Total
+        Return "[{0}] : ({1}%) ({2}/{3})" -f $This.Index, $This.Percent, $This.Current, $This.Total
     }
 }
 
@@ -2957,7 +3064,7 @@ Class ThreadProgressionList
             $Item.Update()
         }
         $TotalPercent = ( $This.Output.Percent -join "+" ) | Invoke-Expression
-        $This.Percent = [Math]::Round($TotalPercent/($This.Output.Count*100),2)
+        $This.Percent = [Math]::Round($TotalPercent/$This.Output.Count,2)
         $This.Time    = $This.Timer.Elapsed.ToString()
         Return @( 
             $This;
@@ -2970,7 +3077,8 @@ Class ThreadProgressionList
 $Progress         = [ThreadProgressionList]::New()
 ForEach ($X in 0..($Ctrl.Threads-1))
 {
-    $File         = $Threads.Create("$X.txt")
+    $Threads.Create("$X.txt")
+    $File         = $Threads.File("$X.txt")
     $Progress.Load($X,$Events,$Load[$X],$File)
 }
 
@@ -3014,6 +3122,7 @@ $ScriptBlock = {
 }
 
 $TC.Collection.BeginInvoke()
+
 $Progress.Start()
 
 # Code to run while waiting for threads to finish
@@ -3040,8 +3149,7 @@ $TC.Collection.IsComplete()
 # Dispose the runspace
 $TC.Collection.Dispose()
 
-# Get ready to archive the files
-Add-Type -Assembly System.IO.Compression.Filesystem
+<#
 
 $Phase       = [System.Diagnostics.Stopwatch]::StartNew()
 $Destination = "$($Ctrl.Path)\$($Ctrl.DisplayName).zip"
@@ -3354,3 +3462,4 @@ ForEach ($X in 0..($Logs.Count-1))
 }
 Write-Host "Sorted (100.00%) [+] Logs: ($($Logs.Count)) found."
 $Time.Stop()
+#>
