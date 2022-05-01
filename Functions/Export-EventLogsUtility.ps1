@@ -3245,7 +3245,7 @@ Function Export-EventLogsUtility
     $C = 0
     ForEach ($Item in $TC.Collection.Threads | Sort-Object Time)
     {
-        $Ctrl.Update("(1.0) Thread Report",1,"Thread: ($($Item.ID)), completed: ($($Item.Time)) in position: ($C)")
+        $Ctrl.Update("(1.0) Thread Report",1,"Thread: $($Item.ID), Rank: $C, Time: $($Item.Time).")
         $C ++
     }
 
@@ -3433,7 +3433,7 @@ Function Export-EventLogsUtility
     $C = 0
     ForEach ($Item in $TC.Collection.Threads | Sort-Object Time)
     {
-        $Ctrl.Update("(2.0) Thread Report",1,"Thread: ($($Item.ID)), completed: ($($Item.Time)) in position: ($C)")
+        $Ctrl.Update("(2.0) Thread Report",1,"Thread: $($Item.ID), Rank: $C, Time: $($Item.Time).")
         $C ++
     }
 
@@ -3471,23 +3471,36 @@ Function Export-EventLogsUtility
     $Ctrl.Update("(2.5) Injected",1,"Logs.txt file")
 
     # Prepare event files
-    $Id              = [ProjectProgress]::New($Events)
-    $Ctrl.Update("(3.0) Injecting",0,"(0.00%) [~] Events: ($($Id.Total)).")
+    $Phase               = [DateTime]::Now
+    $Total               = $Events.SizeBytes
+    $Segment             = [Math]::Round($Total/100)
+    $Slot                = 0..100 | % { $_ * $Segment }
+    $C                   = 0
+    $Size                = 0
+    $Ctrl.Update("(3.0) Injecting",0,"(0.00%) [~] Events: ($Total), Size: ($($Total/1MB) MB)")
     ForEach ($X in 0..($Events.Children.Count-1))
     {
-        $File    = $Events.Children[$X]
-        If ($X -in $Id.Index.Slot)
+        $File            = $Events.Children[$X]
+        $Size            = $Size + $File.Length
+        If ($Size -ge $Slot[$C])
         {
-            $Ctrl.Update("(3.0) Injecting",0,$Id.Slot($X).Line())
-        }
-        If ($X -eq $Id.Total)
-        {
-            $Ctrl.Update("(3.0) Injecting",0,$Id.Index[-1].Line())
+            $Percent     = [Math]::Round($Slot[$C]*100/$Total,2)
+            $Elapsed     = [Timespan]([DateTime]::Now-[DateTime]$Phase)
+            If ($Percent -eq 0)
+            {
+                $Remain  = [Timespan]::FromTicks(1)
+            }
+            Else
+            {
+                $Remain  = ($Elapsed.TotalSeconds / $Percent) * (100-$Percent) | % { [Timespan]::FromSeconds($_) } 
+            }
+            $Ctrl.Update("(3.0) Injecting",0,"($Percent%) ($($Slot[$C]/1MB) MB/$($Total/1MB) MB) Elapsed: [$Elapsed], Remain: [$Remain]")
+            $C ++
         }
         # Inject event files
         [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Zip,$File.Fullname,$File.Name,[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
     }
-    $Ctrl.Update("(3.0) Injected",1,"(100.00%) [+] Events: ($($Id.Total)).")
+    $Ctrl.Update("(3.0) Injected",1,"(100.00%) [+] Events: ($($Events.Count)).")
 
     # Archive creation just about complete
     $Ctrl.Update("(3.1) Saving",0,"Please wait, the program is writing the file to disk")
@@ -3510,5 +3523,5 @@ Function Export-EventLogsUtility
     $Ctrl.Delete()
 
     # Save the log file to the same path as the zip file, with a different file extension 
-    [System.IO.File]::WriteAllLines($Destination.Replace(".zip",".log"),$Ctrl.Output.GetOutput())
+    [System.IO.File]::WriteAllLines($Destination.Replace(".zip",".log"),$Ctrl.Console.GetOutput())
 }
