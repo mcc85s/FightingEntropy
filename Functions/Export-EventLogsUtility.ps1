@@ -3471,13 +3471,14 @@ Function Export-EventLogsUtility
     $Ctrl.Update("(2.5) Injected",1,"Logs.txt file")
 
     # Prepare event files
+    $Events.Update()
     $Phase               = [DateTime]::Now
     $Total               = $Events.SizeBytes
     $Segment             = [Math]::Round($Total/100)
     $Slot                = 0..100 | % { $_ * $Segment }
     $C                   = 0
     $Size                = 0
-    $Ctrl.Update("(3.0) Injecting",0,"(0.00%) [~] Events: ($Total), Size: ({0:n3}MB)" -f ($Total/1MB))
+    $Ctrl.Update("(3.0) Injecting",0,("(0.00%) [~] Events: ({0}), Size: ({1:n2} MB)" -f $Events.Count,($Total/1MB)))
     ForEach ($X in 0..($Events.Children.Count-1))
     {
         $File            = $Events.Children[$X]
@@ -3490,11 +3491,11 @@ Function Export-EventLogsUtility
             {
                 $Remain  = [Timespan]::FromTicks(1)
             }
-            Else
+            If ($Percent -ne 0)
             {
                 $Remain  = ($Elapsed.TotalSeconds / $Percent) * (100-$Percent) | % { [Timespan]::FromSeconds($_) } 
             }
-            $Ctrl.Update("(3.0) Injecting",0,("($Percent%) ({0:n3}MB/{1:n3}MB) Elapsed: [$Elapsed], Remain: [$Remain]" -f $Slot[$C]/1MB,$Total/1MB ))
+            $Ctrl.Update("(3.0) Injecting",0,("($Percent%) ({0:n2} MB/{1:n2} MB) Elapsed: [$Elapsed], Remain: [$Remain]" -f ($Slot[$C]/1MB),($Total/1MB) ))
             $C ++
         }
         # Inject event files
