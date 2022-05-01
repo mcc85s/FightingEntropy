@@ -3477,7 +3477,7 @@ Function Export-EventLogsUtility
     $Slot                = 0..100 | % { $_ * $Segment }
     $C                   = 0
     $Size                = 0
-    $Ctrl.Update("(3.0) Injecting",0,"(0.00%) [~] Events: ($Total), Size: ($($Total/1MB) MB)")
+    $Ctrl.Update("(3.0) Injecting",0,"(0.00%) [~] Events: ($Total), Size: ({0:n3}MB)" -f ($Total/1MB))
     ForEach ($X in 0..($Events.Children.Count-1))
     {
         $File            = $Events.Children[$X]
@@ -3494,7 +3494,7 @@ Function Export-EventLogsUtility
             {
                 $Remain  = ($Elapsed.TotalSeconds / $Percent) * (100-$Percent) | % { [Timespan]::FromSeconds($_) } 
             }
-            $Ctrl.Update("(3.0) Injecting",0,"($Percent%) ($($Slot[$C]/1MB) MB/$($Total/1MB) MB) Elapsed: [$Elapsed], Remain: [$Remain]")
+            $Ctrl.Update("(3.0) Injecting",0,("($Percent%) ({0:n3}MB/{1:n3}MB) Elapsed: [$Elapsed], Remain: [$Remain]" -f $Slot[$C]/1MB,$Total/1MB ))
             $C ++
         }
         # Inject event files
