@@ -26,8 +26,21 @@
 .Example
 #>
 
+# Check if the user is an administrator
+If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole("Administrators"))
+{
+    Throw "Must run as administrator"
+}
+# Check if the version of PowerShell is version 5.1 (Preferrably)
+If ($PSVersionTable.PSVersion.Major -gt 5)
+{
+    Throw "Run in PowerShell 5.1"
+}
+
+# Add assembly types
 Add-Type -Assembly System.IO.Compression, System.IO.Compression.Filesystem, System.Windows.Forms, PresentationFramework
 
+# Retrieves the custom class for the event log configuration files
 Function Get-EventLogConfigExtension
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
@@ -181,6 +194,7 @@ Function Get-EventLogConfigExtension
     }
 }
 
+# Retrieves the custom class for the event logs themselves
 Function Get-EventLogRecordExtension
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
@@ -327,6 +341,52 @@ Function Get-EventLogRecordExtension
     }
 }
 
+# This is a template class for the event log archive object for the graphical user interface
+Function Get-EventLogArchive
+{
+    [CmdLetBinding(DefaultParameterSetName=0)]
+    Param(
+        [Parameter(Mandatory,ParameterSetName=0)][ValidateScript({Test-Path $_})][String]$Path,
+        [Parameter(Mandatory,ParameterSetName=1)][Switch]$New
+    )
+
+    Class EventLogArchive
+    {
+        [String]     $Mode
+        [String] $Modified
+        [UInt32]   $Length
+        [String]     $Size 
+        [String]     $Name
+        [String]     $Path
+        EventLogArchive([String]$Fullname)
+        {
+            $File          = Get-Item $Fullname
+            $This.Mode     = $File.Mode
+            $This.Modified = $File.LastWriteTime.ToString()
+            $This.Length   = $File.Length
+            $This.Size     = "{0:n2} MB" -f ($File.Length/1MB)
+            $This.Name     = $File.Name
+            $This.Path     = $File.Fullname
+        }
+        EventLogArchive()
+        {
+            $This.Mode     = "-"
+            $This.Modified = "-"
+            $This.Length   = 0
+            $This.Size     = "0.00 MB"
+            $This.Name     = "-"
+            $This.Path     = "-"
+        }
+    }
+
+    Switch ($PsCmdLet.ParameterSetName)
+    {
+        0 { [EventLogArchive]::New($Path) }
+        1 { [EventLogArchive]::New()      }
+    }
+}
+
+# Retrieves a lot of useful data about the current system such as: BIOS, Operating System, processors, disks, network(s) 
 Function Get-SystemDetails
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
@@ -1888,52 +1948,49 @@ Function Get-SystemDetails
     }
 }
 
-Function Get-EventLogArchive
-{
-    [CmdLetBinding(DefaultParameterSetName=0)]
-    Param(
-        [Parameter(Mandatory,ParameterSetName=0)][ValidateScript({Test-Path $_})][String]$Path,
-        [Parameter(Mandatory,ParameterSetName=1)][Switch]$New
-    )
-
-    Class EventLogArchive
-    {
-        [String]     $Mode
-        [String] $Modified
-        [UInt32]   $Length
-        [String]     $Size 
-        [String]     $Name
-        [String]     $Path
-        EventLogArchive([String]$Fullname)
-        {
-            $File          = Get-Item $Fullname
-            $This.Mode     = $File.Mode
-            $This.Modified = $File.LastWriteTime.ToString()
-            $This.Length   = $File.Length
-            $This.Size     = "{0:n2} MB" -f ($File.Length/1MB)
-            $This.Name     = $File.Name
-            $This.Path     = $File.Fullname
-        }
-        EventLogArchive()
-        {
-            $This.Mode     = "-"
-            $This.Modified = "-"
-            $This.Length   = 0
-            $This.Size     = "0.00 MB"
-            $This.Name     = "-"
-            $This.Path     = "-"
-        }
-    }
-
-    Switch ($PsCmdLet.ParameterSetName)
-    {
-        0 { [EventLogArchive]::New($Path) }
-        1 { [EventLogArchive]::New()      }
-    }
-}
-
+# The main aspect of this utility, for exporting system information, event logs, and providers
 Function Export-EventLogsUtility
 {
+    [CmdLetBinding()]
+    Param([Parameter(HelpMessage="Use a decimal above 0.00 and below 1.00 to throttle the multithread count")][ValidateScript({$_ -gt 0.00 -and $_ -le 1.00})][Decimal]$Throttle)
+
+    # Helps find the closest number of threads based on throttle input 
+    Class Diff
+    {
+        [UInt32] $Index
+        [Decimal] $Value
+        [Decimal] $Diff
+        Diff([Uint32]$Index,[Decimal]$Value,[Decimal]$Diff)
+        {
+            $This.Index = $Index
+            $This.Value = $Value
+            $This.Diff  = $Diff
+        }
+    }
+
+    # Determines the closest allowable thread count based on throttle input
+    If ($Throttle)
+    {
+        $MaxThreads = [Environment]::GetEnvironmentVariable("Number_Of_Processors")
+        $Segment    = (100/$MaxThreads)/100
+        $Slot       = 1..($MaxThreads) | % { $_ * $Segment }
+        $Percent    = [Math]::Round($Throttle,3)
+        $Diff       = @( )
+        ForEach ($X in 0..($Slot.Count-1))
+        {
+            If ($Throttle -ge $Slot[$X])
+            {
+                $Diff += [Diff]::New($X,$Slot[$X],$Throttle - $Slot[$X])
+            }
+            Else
+            {
+                $Diff += [Diff]::New($X,$Slot[$X],$Slot[$X] - $Throttle)
+            }
+        }
+        $Select    = [UInt32]([Uint32]$MaxThreads * (($Diff | Sort-Object Diff)[0].Value))
+    }
+
+    # Meant to streamline the properties and variables used to calculate each individual loop iteration
     Class ProjectProgressIndex
     {
         [UInt32]  $Index
@@ -1970,6 +2027,7 @@ Function Export-EventLogsUtility
         }
     }
 
+    # Container class meant to contain a collection of the above class
     Class ProjectProgress
     {
         [DateTime]  $Phase
@@ -2020,6 +2078,7 @@ Function Export-EventLogsUtility
         }
     }
 
+    # Provides a bit of flexibility for automating content in console log entries
     Class ProjectConsoleLine
     {
         [UInt32] $Index
@@ -2045,6 +2104,7 @@ Function Export-EventLogsUtility
         }
     }
 
+    # Meant to track everything meant to be sent to the console, and log output
     Class ProjectConsole
     {
         [Object]    $Time
@@ -2094,24 +2154,29 @@ Function Export-EventLogsUtility
         }
         [Object[]] GetOutput()
         {
-            $Console  = $This.Console.Output
-            $Index   = ([String]$Console.Index[-1]).Length
-            $Phase   = ($Console.Phase | Sort-Object Length)[-1].Length
-            $Type    = 3
-            $Time    = 16
-            $Message = ($Console.Message | Sort-Object Length )[-1].Length
+            $Object     = @($This.Output)
+            $Console    = @{
 
-            $Output  = @( )
-            ForEach ($Item in $Console)
+                Index   = ([String]$Object.Index[-1]).Length
+                Phase   = ($Object.Phase | Sort-Object Length)[-1].Length
+                Type    = 3
+                Time    = 16
+                Message = ($Object.Message | Sort-Object Length )[-1].Length
+                Output  = @( )
+            }
+
+            ForEach ($Item in $Object)
             {
                 $Line  = @( )
-                $Line += ("{0:d$Index}" -f $Item.Index)
-                $Line += ("{0}{1}" -f $Item.Phase,(" " * ($Phase-$Item.Phase.Length) -join ''))
-                $Line += ("{0}{1}" -f $Item.Type,(" " * ($Type-$Item.Type.Length) -join ''))
-                $Line += ("{0}{1}" -f $Item.Time,(" " * ($Time-$Item.Time.Length) -join ''))
-                $Line += ("{0}{1}" -f $Item.Message,(" " * ($Message-$Item.Message.Length) -join ''))
-                $Output += ($Line -join " " )
+                $Line += ("{0:d$($Console.Index)}" -f $Item.Index)
+                $Line += ("{0}{1}" -f $Item.Phase,(" " * ($Console.Phase-$Item.Phase.Length) -join ''))
+                $Line += ("{0}{1}" -f $Item.Type,(" " * ($Console.Type-$Item.Type.Length) -join ''))
+                $Line += ("{0}{1}" -f $Item.Time,(" " * ($Console.Time-$Item.Time.Length) -join ''))
+                $Line += ("{0}{1}" -f $Item.Message,(" " * ($Console.Message-$Item.Message.Length) -join ''))
+                $Console.Output += ($Line -join " ")
             }
+
+            Return $Console.Output
         }
         [Object[]] ToString()
         {
@@ -2119,6 +2184,7 @@ Function Export-EventLogsUtility
         }
     }
 
+    # Meant to provide more granular control over files in the project base directory
     Class ProjectFile
     {
         [UInt32]         $Index
@@ -2202,6 +2268,7 @@ Function Export-EventLogsUtility
         }
     }
 
+    # Meant to provide more granular control over directories in the project base directory 
     Class ProjectFolder
     {
         [UInt32]             $Rank
@@ -2353,6 +2420,7 @@ Function Export-EventLogsUtility
         }
     }
 
+    # Provides granular control over a temporary directory so that an archive can be compiled
     Class ProjectBase
     {
         [String]       $Name
@@ -2424,6 +2492,7 @@ Function Export-EventLogsUtility
         }
     }
 
+    # Combines multiple aspects of the classes above, as well as the system snapshot function
     Class Project
     {
         [Object]        $Console
@@ -2436,28 +2505,40 @@ Function Export-EventLogsUtility
         [ProjectBase]      $Base
         [Object]           $Logs = @( )
         [Object]         $Output = @( )
+        Project([UInt32]$Throttle)
+        {
+            $This.Threads = $Throttle
+            $This.Init()
+        }
         Project()
+        {
+            $This.Init()
+        }
+        Init()
         {
             # Start system snapshot, count threads / max runspace pool size
             $This.Time          = [System.Diagnostics.Stopwatch]::StartNew()
             $This.Console       = [ProjectConsole]::New($This.Time)
             
-            $This.Update("0.0 Loading",0,"System snapshot details")
+            $This.Update("(0.0) Loading",0,"System snapshot details")
             $This.System        = Get-SystemDetails
             $This.Start         = $This.System.Snapshot.Start        
-            $This.DisplayName   = $This.System.Snapshot.DisplayName 
-            $This.Threads       = $This.System.Processor.Output.Threads | Measure-Object -Sum | % Sum
+            $This.DisplayName   = $This.System.Snapshot.DisplayName
+            If (!$This.Threads)
+            {
+                $This.Threads   = $This.System.Processor.Output.Threads | Measure-Object -Sum | % Sum
+            }
 
             If ($This.Threads -lt 2)
             {
-                Throw "CPU only has (1) thread"
+                $This.Error("CPU only has (1) thread (selected/available)")
             }
 
             # System snapshot has already created a Guid, to create a new folder for the threads
             $This.Guid          = $This.System.Snapshot.Guid
             $This.Base          = $This.Establish([Environment]::GetEnvironmentVariable("temp"),$This.Guid)
 
-            $This.Update("0.1 Created",1,"Base directory")
+            $This.Update("(0.1) Created",1,"Base directory")
             $This.Providers()
         }
         [Object] Establish([String]$Base,[String]$Name)
@@ -2484,7 +2565,7 @@ Function Export-EventLogsUtility
                 $File.Write($Value -join "`n")
                 $Slot.Update()
             }
-            $This.Update("0.2 Prepared",1,"Event log collection split between threads")
+            $This.Update("(0.2) Prepared",1,"Event log collection split between threads")
         }
         [Object] Slot([String]$Slot)
         {
@@ -2534,7 +2615,7 @@ Function Export-EventLogsUtility
         }
         Delete()
         {
-            $This.Update("Terminating","Process was instructed to be deleted")
+            $This.Update("Terminating",2,"Process was instructed to be deleted")
             $This.Base.Flush()
             $This.Start         = [DateTime]::FromOADate(1)
             $This.System        = $Null
@@ -2549,7 +2630,7 @@ Function Export-EventLogsUtility
         }
         [Object[]] GetConsole()
         {
-            Return $This.Console.Output[0..($This.Console.Output.Count-1)]
+            Return @( $This.Console.GetOutput() )
         }
         [Object] ToString()
         {
@@ -2557,6 +2638,7 @@ Function Export-EventLogsUtility
         }
     }
 
+    # Used to help calculate an index of possible chunks, could be eliminated
     Class DivisionItem
     {
         [UInt32] $Index
@@ -2576,6 +2658,7 @@ Function Export-EventLogsUtility
         }
     }
 
+    # Used to divide the total number of items and threads accordingly, for efficiency
     Class DivisionList
     {
         [Double] $Total
@@ -2704,6 +2787,7 @@ Function Export-EventLogsUtility
         }
     }
 
+    # Class to contain the back and forth action between the runspaces, and the controller class
     Class ThreadProgressionList
     {
         Hidden [Object]  $Timer = [System.Diagnostics.Stopwatch]::New()
@@ -3073,30 +3157,32 @@ Function Export-EventLogsUtility
     $Threads = $Ctrl.Slot("Threads")
 
     # Open the Thread Control object to administer runspaces
-    $Ctrl.Update("0.3 Creating",0,"[ThreadControl] object")
-    $TC      = [ThreadControl]::New("RunspacePool",8)
+    $Ctrl.Update("(0.3) Creating",0,"[ThreadControl] object")
+    $TC      = [ThreadControl]::New("RunspacePool",$Ctrl.Threads)
 
     # Create initial session state object, function above is immediately available to any thread in the runspace pool
-    $Ctrl.Update("0.4 Creating",0,"Initial session state object")
+    $Ctrl.Update("(0.4) Creating",0,"Initial session state object")
     $TC.CreateInitial()
 
-    $Ctrl.Update("0.5 Creating",0,"Function Entry object: Get-EventLogConfigExtension")
+    # Function Entry #1
+    $Ctrl.Update("(0.5) Creating",0,"Function Entry object: Get-EventLogConfigExtension")
     $TC.LoadSessionObject("Function","Get-EventLogConfigExtension")
 
-    $Ctrl.Update("0.5 Creating",0,"Function Entry object: Get-EventLogRecordExtension")
+    # Function Entry #2
+    $Ctrl.Update("(0.5) Creating",0,"Function Entry object: Get-EventLogRecordExtension")
     $TC.LoadSessionObject("Function","Get-EventLogRecordExtension")
 
     # Create runspace pool, and open it
-    $Ctrl.Update("0.6 Creating",0,"Runspace Pool, Throttle: [$($TC.Throttle)]")
+    $Ctrl.Update("(0.6) Creating",0,"Runspace Pool, Throttle: [$($TC.Throttle)]")
     $TC.RunspacePool = [RunspaceFactory]::CreateRunspacePool(1,$TC.Throttle,$TC.Session,$Host)
     $TC.RunspacePool.Open()
 
     # Declare the FIRST thread collection object
-    $Ctrl.Update("0.7 Opening",0,"[ThreadCollection] object to track runspace progress")
+    $Ctrl.Update("(0.7) Opening",0,"[ThreadCollection] object to track runspace progress")
     $TC.SetCollection("Event Log Configuration Collection")
 
     # Declare the scriptblock each runspace will run independently
-    $Ctrl.Update("0.8 Adding",0,"Scriptblock[1] for each runspace to process")
+    $Ctrl.Update("(0.8) Adding",0,"Scriptblock[1] for each runspace to process")
     $ScriptBlock     = {
         Param ($File,$LogPath)
         $List        = Get-Content -Path $File
@@ -3113,10 +3199,10 @@ Function Export-EventLogsUtility
         }
         Return $Return
     }
-    $Ctrl.Update("0.8 Added",1,"Scriptblock[1] for each runspace to process")
+    $Ctrl.Update("(0.8) Added",1,"Scriptblock[1] for each runspace to process")
 
     # Initialize the threads, add the scriptblock, insert an argument for filepath
-    $Ctrl.Update("0.9 Adding",0,"Invocationblock[1] for PowerShell/Runspace threads")
+    $Ctrl.Update("(0.9) Adding",0,"Invocationblock[1] for PowerShell/Runspace threads")
     0..($Ctrl.Threads-1) | % {
 
         $PowerShell = [PowerShell]::Create()
@@ -3124,21 +3210,22 @@ Function Export-EventLogsUtility
         $PowerShell.RunspacePool = $TC.RunspacePool
         $TC.Collection.AddThread($_,$PowerShell)
     }
-
-    $Ctrl.Update("0.9 Added",1,"Invocationblock[1] for PowerShell/Runspace threads, invoking...")
+    $Ctrl.Update("(0.9) Added",1,"Invocationblock[1] for PowerShell/Runspace threads, invoking...")
     $TC.Collection.BeginInvoke()
 
     # Code to run while waiting for threads to finish
     $Total            = $Ctrl.System.LogProviders.Count
-    $Ctrl.Update("1.0 Collecting",0,"Actionblock[1], Event log provider configurations (0/$Total)")
+    $Ctrl.Update("(1.0) Collecting",0,"Actionblock[1], Event log provider configurations (0/$Total)")
     While ($TC.Collection.Query())
     {
         $TC.Collection.Threads | Format-Table
+        
+        # Checks for temp files to determine progress
         $Logs.Update()
         If (!$Last -or $Logs.Count -ne $Last)
         {
             $Percent = [Math]::Round($Logs.Count*100/$Total,2)
-            $Ctrl.Update("1.0 Collecting",0,"($Percent%) Event log provider configurations ($($Logs.Count)/$Total)")
+            $Ctrl.Update("(1.0) Collecting",0,"($Percent%) Event log provider configurations ($($Logs.Count)/$Total)")
         }
         Else
         {
@@ -3149,51 +3236,67 @@ Function Export-EventLogsUtility
         Clear-Host
         $TC.Collection.IsComplete()
     }
-    $Ctrl.Update("1.0 Collected",1,"Actionblock[1], Event log provider configurations")
+    # First thread block complete
+    $Ctrl.Update("(1.0) Collected",1,"Actionblock[1], Event log provider configurations")
     $TC.Collection.IsComplete()
 
-    $Ctrl.Update("1.1 Removing",0,"Temporary files in [Logs/Threads] project folders")
+    # Thread report to (console/output)
+    $Ctrl.Update("(1.0) Thread Report",1,"($($TC.Throttle)) threads took a total of ($($TC.Collection.Time.Elapsed)) to complete.")
+    $C = 0
+    ForEach ($Item in $TC.Collection.Threads | Sort-Object Time)
+    {
+        $Ctrl.Update("(1.0) Thread Report",1,"Thread: ($($Item.ID)), completed: ($($Item.Time)) in position: ($C)")
+        $C ++
+    }
+
+    # Removing temporary files
+    $Ctrl.Update("(1.1) Removing",0,"Temporary files in [Logs/Threads] project folders")
     Get-ChildItem $Logs    | Remove-Item
     Get-ChildItem $Threads | Remove-Item
-    $Ctrl.Update("1.1 Removed",1,"Temporary files")
+    $Ctrl.Update("(1.1) Removed",1,"Temporary files")
 
-    $Ctrl.Update("1.1 Updating",0,"Base project folder")
+    # Updating the base project folder as well as recursive file entries
+    $Ctrl.Update("(1.1) Updating",0,"Base project folder")
     $Base.Update()
 
-    $Ctrl.Update("1.1 Extracting 8",0,"Event log provider configurations from thread collection")
+    # Extracting the individual logs from the thread collection
+    $Ctrl.Update("(1.1) Extracting",0,"Event log provider configurations from thread collection")
     $Ctrl.Logs             = $TC.Collection.Threads.Data | Sort-Object Rank
 
-    $Ctrl.Update("1.1 Exporting",0,"Event log provider configurations to export")
+    # Exporting logs to JSON file to reconstitute the provider logs from the archive
+    $Ctrl.Update("(1.1) Exporting",0,"Event log provider configurations to export")
     $Value                 = $Ctrl.Logs | Select-Object Rank,LogName,LogType,LogIsolation,IsEnabled,IsClassicLog,SecurityDescriptor,LogFilePath,
                             MaximumSizeInBytes,Maximum,Current,LogMode,OwningProviderName,ProviderNames,ProviderLevel,ProviderKeywords,ProviderBufferSize,
                             ProviderMinimumNumberOfBuffers,ProviderMaximumNumberOfBuffers,ProviderLatency,ProviderControlGuid | ConvertTo-Json
+    
+    # Create the logs.txt file and save the content
     $Logs.Create("Logs.txt")
-    $File          = $Logs.File("Logs.txt")
+    $File                  = $Logs.File("Logs.txt")
     $File.Write($Value)
-    $Ctrl.Update("1.1 Exported",1,"Event log provider configurations exported")
+    $Ctrl.Update("(1.1) Exported",1,"Event log provider configurations exported")
 
     # Now we have all of the log entries on the system for each individual log
-    $Ctrl.Update("1.2 Sorting",0,"Event log provider configurations with ALL individual events")
+    $Ctrl.Update("(1.2) Sorting",0,"Event log provider configurations with ALL individual events")
     $Ctrl.Output           = $Ctrl.Logs.Output | Sort-Object TimeCreated
-    $Ctrl.Update("1.2 Sorted",1,"Event log provider configurations with ALL individual events")
+    $Ctrl.Update("(1.2) Sorted",1,"Event log provider configurations with ALL individual events")
 
     # Now they're ranked, as well as sorted in chronological order
-    $Ctrl.Update("1.3 Disposing",0,"First thread collection object")
+    $Ctrl.Update("(1.3) Disposing",0,"First thread collection object")
     $TC.RunspacePool.Dispose()
 
     # This will split the workload among the number of threads, and preallocate files
-    $Ctrl.Update("1.4 Preallocating",0,"Target files for ALL individual event logs")
+    $Ctrl.Update("(1.4) Preallocating",0,"Target files for ALL individual event logs")
     $List                  = [DivisionList]::New($Ctrl.Output.Count,$Ctrl.Threads,1000)
     $List.GetOutput()
     $Files                 = $List.Output | % { "{0}.txt" -f $_.Rank }
 
     # This creates all of the files needed for each individual event
-    $Ctrl.Update("1.4 Creating",0,"($($Files.Count)) files in file system")
+    $Ctrl.Update("(1.4) Creating",0,"($($Files.Count)) files in file system")
     $Events.Create($Files)
-    $Ctrl.Update("1.4 Created",1,"($($Files.Count)) files in file system")
+    $Ctrl.Update("(1.4) Created",1,"($($Files.Count)) files in file system")
 
     # Almost time to index the files...
-    $Ctrl.Update("1.4 Preparing",0,"Split workload for ($($Ctrl.Threads)) threads to process (Lower throttle if needed)")
+    $Ctrl.Update("(1.4) Preparing",0,"Split workload for ($($Ctrl.Threads)) threads to process (Lower throttle if needed)")
     $Work                  = $List.Work()
     $Count                 = $Ctrl.Output.Count
     $Depth                 = ([String]$Count).Length
@@ -3206,6 +3309,7 @@ Function Export-EventLogsUtility
         $Load.Add($X,[Hashtable]@{ })
     }
 
+    # Doing work with hashtables, remainder switches, and telling a funny story
     ForEach ($X in 0..($Ctrl.Output.Count-1))
     {
         # (Name/Index applied)
@@ -3213,7 +3317,7 @@ Function Export-EventLogsUtility
         $Item.Index        = $X
         $Item.Name         = "{0:d$Depth}-{1}" -f $X, $Item.Name
 
-        # The remainder function ($X % $T) denotes:
+        # The remainder function $Load[$X % $T] denotes:
         # Hashtable Prime: You know what...? For each iteration of the loop... 
         # ...I'm gonna automatically switch the bracketed index...
         # ...to populate the corresponding hashtable based on the remainder...
@@ -3224,21 +3328,21 @@ Function Export-EventLogsUtility
         # Hashtable Clone[1]: Oh. Man. It's a cool idea though... 
         $Load[$X%$T].Add($Load[$X%$T].Count,$Ctrl.Output[$X])
     }
-    $Ctrl.Update("1.4 Prepared",1,"Split workload among separate (hashtables/threads)")
+    $Ctrl.Update("(1.4) Prepared",1,"Split workload among separate (hashtables/threads)")
 
-    # Open the runspacepool
-    $Ctrl.Update("1.5 Opening",0,"Second Runspace Pool")
+    # Open the runspacepool [Might actually be able to reuse the first one just fine]
+    $Ctrl.Update("(1.5) Opening",0,"Second Runspace Pool")
     $TC.RunspacePool = [RunspaceFactory]::CreateRunspacePool(1,$TC.Throttle,$TC.Session,$Host)
     $TC.RunspacePool.Open()
-    $Ctrl.Update("1.5 Opened",1,"Second Runspace Pool")
+    $Ctrl.Update("(1.5) Opened",1,"Second Runspace Pool")
 
     # Declare new thread collection object
-    $Ctrl.Update("1.6 Creating",0,"[ThreadCollection] object for event log exfiltration")
+    $Ctrl.Update("(1.6) Creating",0,"[ThreadCollection] object for event log exfiltration")
     $TC.SetCollection("Event log exfiltration")
-    $Ctrl.Update("1.6 Created",1,"[ThreadCollection]")
+    $Ctrl.Update("(1.6) Created",1,"[ThreadCollection]")
 
-    # Manage Progress
-    $Ctrl.Update("1.7 Creating",0,"[ThreadProgression] object to collect extended information from Runspaces")
+    # Manage progress - the object below provides more (insight into/control over) the progress of these threads
+    $Ctrl.Update("(1.7) Creating",0,"[ThreadProgression] object to collect extended information from Runspaces")
     $Progress         = [ThreadProgressionList]::New()
     ForEach ($X in 0..($Ctrl.Threads-1))
     {
@@ -3246,12 +3350,11 @@ Function Export-EventLogsUtility
         $File         = $Threads.File("$X.txt")
         $Progress.Load($X,$Events,$Load[$X],$File)
     }
-    $Ctrl.Update("1.7 Created",1,"[ThreadProgression] object")
+    $Ctrl.Update("(1.7) Created",1,"[ThreadProgression] object")
 
     # Add Scriptblock
-    $Ctrl.Update("1.8 Adding",0,"Scriptblock[2] for each runspace to process")
+    $Ctrl.Update("(1.8) Adding",0,"Scriptblock[2] for each runspace to process")
     $ScriptBlock = {
-
         Param ($Target,$Work,$Load,$File)
 
         $Segment = [Math]::Round($Work.Count/100)
@@ -3279,10 +3382,10 @@ Function Export-EventLogsUtility
         $Item.Write($Bytes,0,$Bytes.Length)
         $Item.Dispose()
     }
-    $Ctrl.Update("1.8 Added",1,"Scriptblock[2] for each runspace to process")
+    $Ctrl.Update("(1.8) Added",1,"Scriptblock[2] for each runspace to process")
 
     # Initialize the threads, add the scriptblock, insert an argument for filepath
-    $Ctrl.Update("1.9 Adding",0,"Invocationblock[2] for PowerShell/Runspace threads")
+    $Ctrl.Update("(1.9) Adding",0,"Invocationblock[2] for PowerShell/Runspace threads")
     0..($Ctrl.Threads-1) | % {  
 
         $PowerShell = [PowerShell]::Create()
@@ -3295,21 +3398,22 @@ Function Export-EventLogsUtility
 
         $TC.Collection.AddThread($_,$PowerShell)
     }
-    $Ctrl.Update("1.9 Added",1,"Invocationblock[2] for PowerShell/Runspace threads, invoking...")
+    $Ctrl.Update("(1.9) Added",1,"Invocationblock[2] for PowerShell/Runspace threads, invoking...")
     $TC.Collection.BeginInvoke()
-
+    
+    # Kickstart the extra progress indicators
     $Progress.Start()
     $Total = $Ctrl.Output.Count
 
     # Code to run while waiting for threads to finish
-    $Ctrl.Update("2.0 Exporting",0,"Actionblock[2] all individual event logs saved to disk (0/$Total)")
+    $Ctrl.Update("(2.0) Exporting",0,"Actionblock[2] all individual event logs saved to disk (0/$Total)")
     While ($TC.Collection.Query())
     {
         $TC.Collection.Threads | Format-Table
         $Progress.Update()
         If (!$Last -or $Progress.Percent -ne $Last)
         {
-            $Ctrl.Update("2.0 $($Progress.Status)","($($Progress.Percent)%)")
+            $Ctrl.Update("(2.0) Exporting",0,"($($Progress.Percent)%)")
         }
         Else
         {
@@ -3321,62 +3425,72 @@ Function Export-EventLogsUtility
         $TC.Collection.IsComplete()
     }
     # Dispose the runspace
-    $Ctrl.Update("2.0 Exported",1,"Actionblock[2] all individual event logs saved to disk")
+    $Ctrl.Update("(2.0) Exported",1,"Actionblock[2] all individual event logs saved to disk ($Total/$Total)")
     $TC.Collection.IsComplete()
 
-    $Ctrl.Update("2.1 Completed",1,"Disposing runspaces")
+    # Thread report to (console/output)
+    $Ctrl.Update("(2.0) Thread Report",1,"($($TC.Throttle)) threads took a total of ($($TC.Collection.Time.Elapsed)) to complete.")
+    $C = 0
+    ForEach ($Item in $TC.Collection.Threads | Sort-Object Time)
+    {
+        $Ctrl.Update("(2.0) Thread Report",1,"Thread: ($($Item.ID)), completed: ($($Item.Time)) in position: ($C)")
+        $C ++
+    }
+
+    # Dispose of the thread collection
+    $Ctrl.Update("(2.1) Completed",1,"Disposing runspaces")
     $TC.Collection.Dispose()
 
-    # Updating events folder
-    $Ctrl.Update("2.2 Updating",0,"Events folder")
+    # Update the base folder
+    $Ctrl.Update("(2.2) Updating",0,"Events folder")
     $Base.Update()
 
     # Update Master.txt
-    $Ctrl.Update("2.3 Exporting",0,"Master.txt file")
+    $Ctrl.Update("(2.3) Exporting",0,"Master.txt file")
     $Ctrl.System.Snapshot.MarkComplete()
     $Ctrl.SaveMaster()
     $Master.Update()
-    $Ctrl.Update("2.3 Exported",1,"Master.txt file")
+    $Ctrl.Update("(2.3) Exported",1,"Master.txt file")
 
     # Getting ready to (compile/compress) the archive
-    $Ctrl.Update("2.4 Creating",0,"Archive")
+    $Ctrl.Update("(2.4) Creating",0,"Archive")
     $Destination = $Ctrl.Destination()
     $Zip         = [System.IO.Compression.ZipFile]::Open($Destination,"Create").Dispose()
     $Zip         = [System.IO.Compression.ZipFile]::Open($Destination,"Update")
 
     # Inject master file
-    $Ctrl.Update("2.4 Injecting",0,"Master.txt file")
+    $Ctrl.Update("(2.4) Injecting",0,"Master.txt file")
     $File        = $Master.File("Master.txt")
     [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Zip,$File,$File.Name,[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
-    $Ctrl.Update("2.4 Injected",1,"Master.txt file")
+    $Ctrl.Update("(2.4) Injected",1,"Master.txt file")
 
     # Inject logs file
-    $Ctrl.Update("2.5 Injecting",0,"Logs.txt file")
+    $Ctrl.Update("(2.5) Injecting",0,"Logs.txt file")
     $File        = $Logs.File("Logs.txt")
     [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Zip,$File,$File.Name,[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
-    $Ctrl.Update("2.5 Injected",1,"Logs.txt file")
+    $Ctrl.Update("(2.5) Injected",1,"Logs.txt file")
 
     # Prepare event files
     $Id              = [ProjectProgress]::New($Events)
-    $Ctrl.Update("3.0 Injecting",0,"(0.00%) [~] Events: ($($Id.Total)).")
+    $Ctrl.Update("(3.0) Injecting",0,"(0.00%) [~] Events: ($($Id.Total)).")
     ForEach ($X in 0..($Events.Children.Count-1))
     {
         $File    = $Events.Children[$X]
         If ($X -in $Id.Index.Slot)
         {
-            $Ctrl.Update("3.0 Injecting",0,$Id.Slot($X).Line())
+            $Ctrl.Update("(3.0) Injecting",0,$Id.Slot($X).Line())
         }
         If ($X -eq $Id.Total)
         {
-            $Ctrl.Update("3.0 Injecting",0,$Id.Index[-1].Line())
+            $Ctrl.Update("(3.0) Injecting",0,$Id.Index[-1].Line())
         }
         # Inject event files
         [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Zip,$File.Fullname,$File.Name,[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
     }
-    $Ctrl.Update("3.0 Injected",1,"(100.00%) [+] Events: ($($Id.Total)).")
+    $Ctrl.Update("(3.0) Injected",1,"(100.00%) [+] Events: ($($Id.Total)).")
 
     # Archive creation just about complete
-    $Ctrl.Update("3.1 Saving",0,"Please wait, the program is writing the file to disk")
+    $Ctrl.Update("(3.1) Saving",0,"Please wait, the program is writing the file to disk")
     $Zip.Dispose()
 
     # Get the zip file information
@@ -3385,15 +3499,16 @@ Function Export-EventLogsUtility
     {
         $True
         {
-            $Ctrl.Update("3.1 Saved",1,"File: [$Destination], Size: [$("{0:n3}MB" -f ($Zip.Length/1MB))]")
+            $Ctrl.Update("(3.1) Saved",1,"File: [$Destination], Size: [$("{0:n3}MB" -f ($Zip.Length/1MB))]")
         }
         $False
         {
-            $Ctrl.Update("3.1 Failed",2,"File: [$Destination], the file does not exist.")
+            $Ctrl.Update("(3.1) Failed",2,"File: [$Destination], the file does not exist.")
         }
     }
-    # At this point, deleting the makeshift directories/files might be a good idea outside of development
-    Set-Content -Path $Destination.Replace(".zip",".log") -Value $Ctrl.Output.GetOutput()
-    $Ctrl.Base.Flush()
+    # At this point, delete the project base directory tree and all files - except the archive
     $Ctrl.Delete()
+
+    # Save the log file to the same path as the zip file, with a different file extension 
+    [System.IO.File]::WriteAllLines($Destination.Replace(".zip",".log"),$Ctrl.Output.GetOutput())
 }
