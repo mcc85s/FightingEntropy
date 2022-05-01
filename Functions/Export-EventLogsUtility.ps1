@@ -3523,5 +3523,7 @@ Function Export-EventLogsUtility
     $Ctrl.Delete()
 
     # Save the log file to the same path as the zip file, with a different file extension 
-    [System.IO.File]::WriteAllLines($Destination.Replace(".zip",".log"),$Ctrl.Console.GetOutput())
+    $ConsoleOutputPath = $Destination.Replace(".zip",".log")
+    $Ctrl.Update("(3.2) Writing",2,"Console log file: [$ConsoleOutputPath].")
+    [System.IO.File]::WriteAllLines($ConsoleOutputPath,$Ctrl.Console.GetOutput())
 }
