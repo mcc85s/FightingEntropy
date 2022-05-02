@@ -29,6 +29,15 @@
 .Example
 #>
 
+If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole("Administrators"))
+{
+    Throw "Must run as administrator"
+}
+If ($PSVersionTable.PSVersion.Major -gt 5)
+{
+    Throw "Run in PowerShell 5.1"
+}
+
 Add-Type -Assembly System.IO.Compression, System.IO.Compression.Filesystem, System.Windows.Forms, PresentationFramework
 
 Function Get-EventLogConfigExtension
@@ -1939,6 +1948,7 @@ Function Import-EventLogsUtility
 {
     [CmdLetBinding()]
     Param([Parameter(Mandatory,HelpMessage="Path to previously saved system snapshot archive")][ValidateScript({Test-Path $_})][String]$Archive)
+    
     Class ProjectProgressIndex
     {
         [UInt32]  $Index
@@ -2144,7 +2154,7 @@ Function Import-EventLogsUtility
             $This.Base       = $ZipPath -Replace ".zip",""
 
             # Restore the zip file
-            $This.Update("Testing",0,"Zip file path input")
+            $This.Update("(0.0) Testing",0,"Zip file path input")
             Switch ($ZipPath)
             {
                 {![System.IO.File]::Exists($_)}
@@ -2156,10 +2166,10 @@ Function Import-EventLogsUtility
                     $This.Error("Invalid zip file path input")
                 }
             }
-            $This.Update("Tested",1,"Zip file path input is valid")
+            $This.Update("(0.0) Tested",1,"Zip file path input is valid")
 
             # Zip path exists, is it a zip file?
-            $This.Update("Opening",0,"Zip file")
+            $This.Update("(0.1) Opening",0,"Zip file")
             $This.Zip        = [System.IO.Compression.Zipfile]::Open($ZipPath,"Read")
             Switch ([UInt32]($This.Zip -is [System.IO.Compression.ZipArchive]))
             {
@@ -2176,30 +2186,30 @@ Function Import-EventLogsUtility
                     [System.IO.Directory]::CreateDirectory($This.Base)
                 }
             }
-            $This.Update("Opened",1,"Extraction path created")
+            $This.Update("(0.1) Opened",1,"Extraction path created")
 
             # Extract Master.txt
-            $This.Update("Extracting",0,"Master.txt")
+            $This.Update("(0.2) Extracting",0,"Master.txt")
             $MasterFile           = [ProjectFileEntry]::New("Master.txt",$This.Zip,$This.Base)
             If (!$MasterFile)
             {
                 $This.Error("Failed to extract Master.txt file")
             }
             $MasterFile.Extract()
-            $This.Update("Extracted",1,"Master.txt")
+            $This.Update("(0.2) Extracted",1,"Master.txt")
 
             # Extract Logs.txt
-            $This.Update("Extracting",0,"Logs.txt")
+            $This.Update("(0.3) Extracting",0,"Logs.txt")
             $LogsFile             = [ProjectFileEntry]::New("Logs.txt",$This.Zip,$This.Base)
             If (!$LogsFile)
             {
                 $This.Error("Failed to extract Logs.txt file")
             }
             $LogsFile.Extract()
-            $This.Update("Extracted",1,"Logs.txt")
+            $This.Update("(0.3) Extracted",1,"Logs.txt")
 
             # Restore captured system details
-            $This.Update("Restoring",0,"(Captured) system details")
+            $This.Update("(0.4) Restoring",0,"(Captured) system details")
             $This.System          = Get-SystemDetails -Path $MasterFile.Path
             If (!$This.System)
             {
@@ -2209,10 +2219,10 @@ Function Import-EventLogsUtility
             $This.DisplayName     = $This.System.Snapshot.DisplayName
             $This.Threads         = $This.System.Processor.Output.Threads
             $This.Guid            = $This.System.Snapshot.Guid
-            $This.Update("Restored",1,"System details")
+            $This.Update("(0.4) Restored",1,"System details")
 
             # Process the logs
-            $This.Update("Restoring",0,"(Captured) Event log providers")
+            $This.Update("(0.5) Restoring",0,"(Captured) Event log providers")
             $RawLogs              = Get-Content $LogsFile.Path | ConvertFrom-Json   
             $This.Logs            = @( )
             $Stash                = @{ }
@@ -2228,14 +2238,14 @@ Function Import-EventLogsUtility
                 $This.Logs       += $Item
                 $Stash.Add($Item.LogName,@{ })
             }
-            $This.Update("Restored","Event log providers")
+            $This.Update("(0.5) Restored",1,"Event log providers")
 
             # Process the events
-            $This.Update("Importing",0,"(Captured) Events")
+            $This.Update("(0.6) Importing",0,"(Captured) Events")
             $Events               = $This.Zip.Entries | ? Name -notmatch "(Master|Logs).txt"
 
             $Id                   = [ProjectProgress]::New($Events)
-            $This.Update("Importing",0,"(0.00%) Events: ($($Id.Total)) found.")
+            $This.Update("(1.0) Importing",0,"(0.00%) Events: ($($Id.Total)) found.")
             ForEach ($X in 0..($Id.Total-1))
             {
                 $Item             = Get-EventLogRecordExtension -Index $X -Entry $Events[$X]
@@ -2243,24 +2253,24 @@ Function Import-EventLogsUtility
                 $Stash[$Item.LogName].Add($Stash[$Item.LogName].Count,$X)
                 If ($X -in $Id.Index.Slot)
                 {
-                    $This.Update("Importing",0,$Id.Slot($X).Line())
+                    $This.Update("(1.0) Importing",0,$Id.Slot($X).Line())
                 }
                 If ($X -eq $Id.Total)
                 {
-                    $This.Update("Importing",0,$Id.Index[-1].Line())
+                    $This.Update("(1.0) Importing",0,$Id.Index[-1].Line())
                 }
             }
-            $This.Update("Imported",1,"(100.00%) [+] Events: ($($Id.Total)) found.")
+            $This.Update("(1.0) Imported",1,"(100.00%) [+] Events: ($($Id.Total)) found.")
             $This.Output          = $Hash[0..($Hash.Count-1)]
 
             # Dispose the zip file
             $This.Zip.Dispose()
 
             # Sort the logs
-            $This.Update("Restoring",0,"Events for each log provider")
+            $This.Update("(1.1) Restoring",0,"Events for each log provider")
 
             $Id                   = [ProjectProgress]::New($This.Logs)
-            $This.Update("Restoring",0,"(0.00%) [~] Logs: ($($Id.Total)) found.")
+            $This.Update("(1.1) Sorting",0,"(0.00%) [~] Logs: ($($Id.Total)) found.")
             ForEach ($X in 0..($Id.Total-1))
             {
                 $Name             = $This.Logs[$X].LogName
@@ -2271,14 +2281,14 @@ Function Import-EventLogsUtility
                 $This.Logs[$X].Total   = $This.Logs[$X].Output.Count
                 If ($X -in $Id.Index.Slot)
                 {
-                    $This.Update("Sorting",0,$Id.Slot($X).Line())
+                    $This.Update("(1.1) Sorting",0,$Id.Slot($X).Line())
                 }
                 If ($X -eq $Id.Total)
                 {
-                    $This.Update("Sorting",0,$Id.Index[-1].Line())
+                    $This.Update("(1.1) Sorting",0,$Id.Index[-1].Line())
                 }
             }
-            $This.Update("Sorted",1,"(100.00%) [+] Logs: ($($Id.Total)) found.")
+            $This.Update("(1.1) Sorted",1,"(100.00%) [+] Logs: ($($Id.Total)) found.")
             $This.Time.Stop()
         }
         Current()
