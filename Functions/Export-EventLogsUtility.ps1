@@ -386,7 +386,7 @@ Function Get-EventLogArchive
     }
 }
 
-# Retrieves a lot of useful data about the current system such as: BIOS, Operating System, processors, disks, network(s) 
+# Retrieves a lot of useful data about the current system such as: BIOS, Operating System, processors, disks, network(s)
 Function Get-SystemDetails
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
@@ -2077,6 +2077,7 @@ Function Export-EventLogsUtility
             Return $Item
         }
     }
+    # $Id = [ProjectProgress]::New($Work)
 
     # Provides a bit of flexibility for automating content in console log entries
     Class ProjectConsoleLine
@@ -2184,7 +2185,7 @@ Function Export-EventLogsUtility
         }
     }
 
-    # Meant to provide more granular control over files in the project base directory
+    # File system class 1 / Granular control over files nested in the project subfolders
     Class ProjectFile
     {
         [UInt32]         $Index
@@ -2268,7 +2269,7 @@ Function Export-EventLogsUtility
         }
     }
 
-    # Meant to provide more granular control over directories in the project base directory 
+    # File system class 2 / Granular control over project subfolders
     Class ProjectFolder
     {
         [UInt32]             $Rank
@@ -2420,7 +2421,7 @@ Function Export-EventLogsUtility
         }
     }
 
-    # Provides granular control over a temporary directory so that an archive can be compiled
+    # File system class 3 / Granular control over the project base folder for temporary files
     Class ProjectBase
     {
         [String]       $Name
@@ -2492,7 +2493,7 @@ Function Export-EventLogsUtility
         }
     }
 
-    # Combines multiple aspects of the classes above, as well as the system snapshot function
+    # Main project class - Combines ALL of the (classes/functions) above
     Class Project
     {
         [Object]        $Console
