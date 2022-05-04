@@ -24,14 +24,14 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2022-04-08
-          Modified: 2022-05-01
+          Modified: 2022-05-04
           
           Version - 2021.10.0 - () - Finalized functional version 1.
           TODO:
 .Example
 #>
 
-Add-Type -Assembly System.IO.Compression.Filesystem, System.Windows.Forms, PresentationFramework
+Add-Type -Assembly System.IO.Compression, System.IO.Compression.Filesystem, System.Windows.Forms, PresentationFramework
 
 # ______________________________________________________________________________________________
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\__[ <Functions> ]__/
@@ -1930,7 +1930,11 @@ Function Get-EventLogArchive                        #\_[ Model for the GUI to ex
             $This.Length   = 0
             $This.Size     = "0.00 MB"
             $This.Name     = "-"
-            $This.Path     = "-"
+            $This.Path     = "<New>"
+        }
+        [String] ToString()
+        {
+            Return $This.Path
         }
     }
 
@@ -1948,6 +1952,160 @@ Function Get-EventLogArchive                        #\_[ Model for the GUI to ex
 # ______________________________________________________________________________________________
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\__[ <UI Classes> ]__/
 #                                                                          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+Class ThrottleIndexItem
+{
+    [UInt32]          $Index
+    [UInt32]          $Cores
+    [Float]           $Value
+    Hidden [Float]    $Avail
+    Hidden [Float]     $Load
+    Hidden [UInt32]    $Axis
+    Hidden [Float]   $Result
+    [String]          $Label
+    ThrottleIndexItem([UInt32]$Index,[UInt32]$Cores,[Double]$Value)
+    {
+        $This.Index      = $Index
+        $This.Cores      = $Cores
+        $This.Value      = $Value
+        $This.Label      = $This.ToString()
+    }
+    SetLoad([Double]$Load)
+    {
+        $This.Avail      = 1 - $Load
+        $This.Load       = $Load
+        If ($This.Value -ge $Load)
+        {
+            $This.Axis   = 0
+        }    
+        If ($This.Value -lt $Load)
+        {
+            $This.Axis   = 1
+        }
+        $This.Result     = [Math]::Round($This.Value - $Load,3)
+    }
+    SetAvail([Double]$Load)
+    {
+        $This.Avail      = 1 - $Load
+        $This.Load       = $Load
+        If ($This.Avail -ge $This.Value)
+        {
+            $This.Axis   = 1
+        }    
+        If ($This.Avail -lt $This.Value)
+        {
+            $This.Axis   = 0
+        }
+        $This.Result     = [Math]::Round($This.Value - $Load,3)
+    }
+    [String] ToString()
+    {
+        Return "({0}) {1:n2}%" -f $This.Cores, ($This.Value*100)
+    }
+}
+
+Class ThrottleIndex
+{
+    [Decimal]  $Current
+    [UInt32]     $Count
+    [Object]   $Segment
+    [Object]   $Maximum
+    [Object]   $Minimum
+    [Object]    $Output = @( )
+    ThrottleIndex([Decimal]$Throttle)
+    {
+        $This.Current     = $Throttle
+        $This.Init()
+    }
+    ThrottleIndex()
+    {
+        If (!$This.Current)
+        {
+            $This.Current = 1.00
+        }
+        $This.Init()
+    }
+    Init()
+    {   
+        $This.Count       = $This.GetCount()
+        $This.Stage()
+        $This.Maximum     = $This.Output[0]
+        $This.Minimum     = $This.Output[-1]
+    }
+    Stage()
+    {
+        $This.Output      = @( )
+        $This.Segment     = (100/$This.Count)/100
+        ForEach ($X in $This.Count..1)
+        {
+            $This.Add($X,$X*$This.Segment)
+        }
+    }
+    Add([UInt32]$Cores,[Double]$Value)
+    {
+        $This.Output     += [ThrottleIndexItem]::New($This.Output.Count,$Cores,$Value)
+    }
+    AutoThrottle()
+    {
+        $Load             = $This.GetLoad()
+        $Tally            = 0
+        $C                = 0
+        Do
+        {
+            If ($Load -ge $C * $This.Segment)
+            {
+                $Tally = $Tally + $This.Segment
+            }
+            $C ++
+        }
+        Until ($Tally -gt $Load)
+
+        $This.Current = $This.Output[$C].Value
+    }
+    SetThrottle([UInt32]$C)
+    {
+        $This.Current = $This.Output[$C].Value
+    }
+    SetLoad([Float]$Load)
+    {
+        ForEach ($X in 0..($This.Output.Count-1))
+        {
+            $This.Output[$X].SetLoad($Load)
+        }
+    }
+    SetLoad()
+    {
+        $Load         = $This.GetLoad()
+
+        ForEach ($X in 0..($This.Output.Count-1))
+        {
+            $This.Output[$X].SetLoad($Load)
+        }
+    }
+    SetAvail([Float]$Load)
+    {
+        ForEach ($X in 0..($This.Output.Count-1))
+        {
+            $This.Output[$X].SetAvail($Load)
+        }
+    }
+    SetAvail()
+    {
+        $Load         = $This.GetLoad()
+
+        ForEach ($X in 0..($This.Output.Count-1))
+        {
+            $This.Output[$X].SetAvail($Load)
+        }
+    }
+    [Double] GetLoad()
+    {
+        Return (Get-CimInstance Win32_Processor | % LoadPercentage)/100
+    }
+    [UInt32] GetCount()
+    {
+        Return [Environment]::GetEnvironmentVariable("Number_Of_Processors")
+    }
+}
 #\________________                                                 _____________________________
 Class PropertyItem                                                #\_[ Property Names/Values ]_/
 {
@@ -1957,6 +2115,129 @@ Class PropertyItem                                                #\_[ Property 
     {
         $This.Name  = $Name
         $This.Value = Switch ($Value.Count) { 0 { "" } 1 { $Value } Default { $Value -join "`n" } }
+    }
+}
+#\________________
+Class PropertySlot
+{
+    Hidden [Object] $Control
+    [UInt32] $Rank
+    [UInt32] $Slot
+    [Object] $Content = @( )
+    [UInt32] $MaxLength
+    PropertySlot([Object]$Control,[UInt32]$Rank,[UInt32]$Slot)
+    {
+        $This.Control = $Control
+        $This.Rank    = $Rank
+        $This.Slot    = $Slot
+    }
+    PropertySlot([UInt32]$Rank,[UInt32]$Slot)
+    {
+        $This.Control = @{ Count = $Null; MaxLength = 0}
+        $This.Rank    = $Rank
+        $This.Slot    = $Slot
+    }
+    PropertySlot()
+    {
+        $This.Control = @{ Count = $Null; MaxLength = 0}
+    }
+    AddItem([Object]$Property)
+    {
+        $This.Content += [PropertyItem]::New($This.Content.Count,$Property.Name,$Property.Value)
+        $This.NameLength($Property.Name.Length)
+    }
+    AddItem([String]$Name,[Object]$Value)
+    {
+        $This.Content += [PropertyItem]::New($This.Content.Count,$Name,$Value)
+        $This.NameLength($Name.Length)
+    }
+    [Void] NameLength([UInt32]$Length)
+    {
+        If ($Length -gt $This.MaxLength)
+        {
+            $This.MaxLength = $Length
+        }
+        If ($This.MaxLength -gt $This.Control.MaxLength)
+        {
+            $This.Control.MaxLength = $This.MaxLength
+        }
+    }
+    [Void] SetBuffer([UInt32]$Length=$Null)
+    {
+        Switch (!!$Length)
+        {
+            $True
+            { 
+                $This.Content.SetBuffer($Length)
+                $This.MaxLength = $Length
+            }
+            $False 
+            { 
+                $This.Content.SetBuffer($This.Control.MaxLength)
+                $This.MaxLength = $This.Control.MaxLength
+            }
+        }            
+    }
+    [Object[]] GetOutput()
+    {
+        Return @( $This.Content | % ToString )
+    }
+    [String] ToString()
+    {
+        Return $This.Slot
+    }
+}
+#\__________________
+Class PropertyObject
+{
+    [UInt32] $Rank
+    [String] $Title
+    [String] $Mode
+    [UInt32] $Count
+    [Object] $Slot
+    PropertyObject([Object]$Section)
+    {
+        $This.Rank  = $Section.Rank
+        $This.Title = $Section.Title
+        $This.Mode  = $Section.Mode
+        $This.Count = $Section.Quantity + 1
+        $This.Slot  = @{ }
+        $X = 0
+        Do
+        {
+            If ($Section.Slot[$X])
+            {
+                $Item = $Section.Slot[$X].Content
+                $This.Slot.Add($This.Slot.Count,$This.GetObject($Item,1))
+            }
+            $X ++
+        }
+        Until (!$Section.Slot[$X])
+    }
+    [Object] GetObject([Object]$Object,[UInt32]$Flag)
+    {
+        If ($Flag -eq 0)
+        {
+            Return @( ForEach ($Item in $Object.PSObject.Properties)
+            {
+                $This.GetProperty($Item.Name,$Item.Value)  
+            })
+        }
+        Else
+        {
+            Return @( ForEach ($X in 0..($Object.Count-1))
+            {
+                $Object[$X]
+            })
+        }
+    }
+    [Object] GetProperty([String]$Name,[Object]$Value)
+    {
+        Return [PropertyItem]::New($Name,$Value)
+    }
+    [String] ToString()
+    {
+        Return "{0}[{1}]" -f $This.Title, $This.Rank
     }
 }
 #\______________                                            ____________________________________
@@ -2023,11 +2304,15 @@ Class XamlWindow                                           #\_[ Instantiates a c
             $This.Exception     = $PSItem
         }
     }
+    [String] ToString()
+    {
+        Return $This.Xaml.IO.Title
+    }
 }
-#\_______________                                          _____________________________________
-Class EventLogGUI                                         #\_[ XAML/Graphical user interface ]_/
+#\_______________                                                _______________________________
+Class EventLogGui                                               #\_[ Xaml/GUI User Interface ]_/ Get-Content $Home\Desktop\EventLogs.xaml | % { "        '$_'," } | Set-Clipboard
 {
-    Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Event Log Utility" Width="800" Height="650" HorizontalAlignment="Center" Topmost="False" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+    Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Event Log Utility" Width="1100" Height="650" HorizontalAlignment="Center" Topmost="False" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
     '    <Window.Resources>',
     '        <Style TargetType="GroupBox">',
     '            <Setter Property="Margin" Value="10"/>',
@@ -2059,6 +2344,11 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
     '                </Style>',
     '            </Style.Resources>',
     '        </Style>',
+    '        <Style TargetType="CheckBox">',
+    '            <Setter Property="Margin" Value="5"/>',
+    '            <Setter Property="FontSize" Value="12"/>',
+    '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+    '        </Style>',
     '        <Style TargetType="DataGridCell">',
     '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
     '        </Style>',
@@ -2069,8 +2359,8 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
     '            <Setter Property="HeadersVisibility" Value="Column"/>',
     '            <Setter Property="CanUserResizeRows" Value="False"/>',
     '            <Setter Property="CanUserAddRows" Value="False"/>',
-    '            <Setter Property="IsTabStop" Value="True"/>',
     '            <Setter Property="IsReadOnly" Value="True"/>',
+    '            <Setter Property="IsTabStop" Value="True"/>',
     '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
     '            <Setter Property="SelectionMode" Value="Extended"/>',
     '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
@@ -2103,12 +2393,6 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
     '            <Setter Property="FontSize" Value="12"/>',
     '            <Setter Property="FontWeight" Value="Normal"/>',
     '        </Style>',
-    '        <Style TargetType="CheckBox">',
-    '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-    '            <Setter Property="HorizontalAlignment" Value="Center"/>',
-    '            <Setter Property="Height" Value="24"/>',
-    '            <Setter Property="Margin" Value="5"/>',
-    '        </Style>',
     '        <Style x:Key="DropShadow">',
     '            <Setter Property="TextBlock.Effect">',
     '                <Setter.Value>',
@@ -2133,11 +2417,12 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
     '        </Style>',
     '        <Style TargetType="Label">',
     '            <Setter Property="Margin" Value="5"/>',
-    '            <Setter Property="FontWeight" Value="Bold"/>',
+    '            <Setter Property="FontWeight" Value="SemiBold"/>',
     '            <Setter Property="Background" Value="Black"/>',
     '            <Setter Property="Foreground" Value="White"/>',
     '            <Setter Property="BorderBrush" Value="Gray"/>',
     '            <Setter Property="BorderThickness" Value="2"/>',
+    '            <Setter Property="HorizontalContentAlignment" Value="Right"/> ',
     '            <Style.Resources>',
     '                <Style TargetType="Border">',
     '                    <Setter Property="CornerRadius" Value="5"/>',
@@ -2188,108 +2473,195 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
     '                        <ColumnDefinition Width="*"/>',
     '                    </Grid.ColumnDefinitions>',
     '                    <Button Grid.Column="0" Name="MainTab"   Content="Main"/>',
-    '                    <Button Grid.Column="1" Name="LogTab"    Content="Log(s)" IsEnabled="False"/>',
-    '                    <Button Grid.Column="2" Name="OutputTab" Content="Output" IsEnabled="False"/>',
-    '                    <Button Grid.Column="3" Name="ViewTab"   Content="View" IsEnabled="False"/>',
+    '                    <Button Grid.Column="1" Name="LogTab"    Content="Logs"/>',
+    '                    <Button Grid.Column="2" Name="OutputTab" Content="Output"/>',
+    '                    <Button Grid.Column="3" Name="ViewTab"   Content="View"/>',
     '                </Grid>',
-    '                <Grid Grid.Row="1" Name="MainPanel" Visibility="Visible">',
+    '                <Grid Grid.Row="1" Name="MainPanel" Visibility="Collapsed">',
     '                    <Grid.RowDefinitions>',
-    '                        <RowDefinition Height="40"/>',
-    '                        <RowDefinition Height="40"/>',
-    '                        <RowDefinition Height="40"/>',
-    '                        <RowDefinition Height="40"/>',
-    '                        <RowDefinition Height="40"/>',
-    '                        <RowDefinition Height="40"/>',
+    '                        <RowDefinition Height="280"/>',
     '                        <RowDefinition Height="*"/>',
-    '                        <RowDefinition Height="80"/>',
-    '                        <RowDefinition Height="40"/>',
     '                    </Grid.RowDefinitions>',
     '                    <Grid Grid.Row="0">',
     '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="110"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="100"/>',
-    '                        </Grid.ColumnDefinitions>',
-    '                        <Label Grid.Column="0" Content="[Mode]:"/>',
-    '                        <ComboBox Grid.Column="1" Name="Mode" SelectedIndex="0">',
-    '                            <ComboBoxItem Content="(Get/View) Event logs on this system"/>',
-    '                            <ComboBoxItem Content="(Import/View) Event logs from an archive"/>',
-    '                        </ComboBox>',
-    '                        <Button Grid.Column="2" Content="Continue" Name="Continue"/>',
-    '                    </Grid>',
-    '                    <Grid Grid.Row="1">',
-    '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="110"/>',
-    '                            <ColumnDefinition Width="300"/>',
+    '                            <ColumnDefinition Width="400"/>',
     '                            <ColumnDefinition Width="*"/>',
     '                        </Grid.ColumnDefinitions>',
-    '                        <Label Grid.Column="0" Content="[Time]:"/>',
-    '                        <TextBox Grid.Column="1" Name="Time" IsEnabled="False"/>',
+    '                        <Grid Grid.Column="0">',
+    '                            <Grid.RowDefinitions>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="40"/>',
+    '                            </Grid.RowDefinitions>',
+    '                            <Grid Grid.Row="0">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="320"/>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label    Grid.Column="0" Content="[Mode]:"/>',
+    '                                <ComboBox Grid.Column="1" Name="Mode" SelectedIndex="0">',
+    '                                    <ComboBoxItem Content="(Get/View) event logs on this system"/>',
+    '                                    <ComboBoxItem Content="Import event logs from a file"/>',
+    '                                </ComboBox>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="1">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="320"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label   Grid.Column="0" Content="[Time]:"/>',
+    '                                <TextBox Grid.Column="1"    Name="Time"/>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="2">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="320"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label   Grid.Column="0" Content="[Start]:"/>',
+    '                                <TextBox Grid.Column="1"    Name="Start"/>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="3">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="60"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label    Grid.Column="0" Content="[System]:" />',
+    '                                <ComboBox Grid.Column="1"    Name="Section" SelectedIndex="0">',
+    '                                    <ComboBoxItem Content="Snapshot"/>',
+    '                                    <ComboBoxItem Content="Bios Information"/>',
+    '                                    <ComboBoxItem Content="Operating System"/>',
+    '                                    <ComboBoxItem Content="Computer System"/>',
+    '                                    <ComboBoxItem Content="Processor(s)"/>',
+    '                                    <ComboBoxItem Content="Disks(s)"/>',
+    '                                    <ComboBoxItem Content="Network(s)"/>',
+    '                                    <ComboBoxItem Content="Log Providers"/>',
+    '                                </ComboBox>',
+    '                                <ComboBox Grid.Column="2"    Name="Slot"/>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="4">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="320"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label Grid.Column="0" Content="[Name]:"/>',
+    '                                <TextBox Grid.Column="1" Name="DisplayName"/>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="5">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="320"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label    Grid.Column="0" Content="[Guid]:"/>',
+    '                                <TextBox Grid.Column="1" Name="Guid"/>',
+    '                            </Grid>',
+    '                            <Grid Grid.Row="6">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="60"/>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="60"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label    Grid.Column="0" Content="[Throttle]:"/>',
+    '                                <ComboBox Grid.Column="1" Name="Throttle">',
+    '                                    <DataTemplate>',
+    '                                        <ComboBoxItem Content="{Binding Output.Label}"/>',
+    '                                    </DataTemplate>',
+    '                                </ComboBox>',
+    '                                <CheckBox Grid.Column="2" Name="AutoThrottle" Content="Auto"/>',
+    '                                <Label    Grid.Column="3" Content="[Threads]:"/>',
+    '                                <ComboBox Grid.Column="4" Name="Threads"/>',
+    '                            </Grid>',
+    '                        </Grid>',
+    '                        <DataGrid Grid.Column="1" Name="System">',
+    '                            <DataGrid.Columns>',
+    '                                <DataGridTextColumn Header="Name"     Binding="{Binding Name}"     Width="100"/>',
+    '                                <DataGridTextColumn Header="Value"    Binding="{Binding Value}"    Width="*"/>',
+    '                            </DataGrid.Columns>',
+    '                        </DataGrid>',
     '                    </Grid>',
     '                    <Grid Grid.Row="2">',
-    '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="110"/>',
-    '                            <ColumnDefinition Width="300"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                        </Grid.ColumnDefinitions>',
-    '                        <Label Grid.Column="0" Content="[Start]:"/>',
-    '                        <TextBox Grid.Column="1" Name="Start" IsEnabled="False"/>',
-    '                    </Grid>',
-    '                    <Grid Grid.Row="3">',
-    '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="110"/>',
-    '                            <ColumnDefinition Width="300"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                        </Grid.ColumnDefinitions>',
-    '                        <Label Grid.Column="0" Content="[DisplayName]:"/>',
-    '                        <TextBox Grid.Column="1" Name="DisplayName" IsEnabled="False"/>',
-    '                    </Grid>',
-    '                    <Grid Grid.Row="4">',
-    '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="110"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="100"/>',
-    '                        </Grid.ColumnDefinitions>',
-    '                        <Label Grid.Column="0" Content="[Destination]:"/>',
-    '                        <TextBox Grid.Column="1" Name="Destination" IsEnabled="False"/>',
-    '                        <Button Grid.Column="2" Content="Export" Name="Export" IsEnabled="False"/>',
-    '                    </Grid>',
-    '                    <Grid Grid.Row="5">',
-    '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="110"/>',
-    '                            <ColumnDefinition Width="380"/>',
-    '                            <ColumnDefinition Width="80"/>',
-    '                            <ColumnDefinition Width="100"/>',
-    '                            <ColumnDefinition Width="100"/>',
-    '                        </Grid.ColumnDefinitions>',
-    '                        <Label Grid.Column="0" Content="[Providers]:"/>',
-    '                        <ComboBox Grid.Column="1" Name="Providers" IsEnabled="False"/>',
-    '                        <Label Grid.Column="2" Content="[Count]:"/>',
-    '                        <TextBox Grid.Column="3" Name="ProviderCount" IsEnabled="False"/>',
-    '                        <CheckBox Grid.Column="4" IsEnabled="False" Content="Console" IsChecked="True"/>',
-    '                    </Grid>',
-    '                    <TextBox Grid.Row="6" Margin="5" Height="Auto" Name="Console" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextAlignment="Left" VerticalContentAlignment="Top" FontFamily="Cascadia Code" FontSize="10"/>',
-    '                    <DataGrid Grid.Row="7" Name="Archive" IsEnabled="False">',
-    '                        <DataGrid.Columns>',
-    '                            <DataGridTextColumn Header="Mode"     Binding="{Binding Mode}"           Width="40"/>',
-    '                            <DataGridTextColumn Header="Modified" Binding="{Binding Modified}"       Width="150"/>',
-    '                            <DataGridTextColumn Header="Size"     Binding="{Binding Size}"           Width="75"/>',
-    '                            <DataGridTextColumn Header="Name"     Binding="{Binding Name}"           Width="225"/>',
-    '                            <DataGridTextColumn Header="Path"     Binding="{Binding Path}"           Width="600"/>',
-    '                        </DataGrid.Columns>',
-    '                    </DataGrid>',
-    '                    <Grid Grid.Row="8">',
-    '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="110"/>',
-    '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="100"/>',
-    '                        </Grid.ColumnDefinitions>',
-    '                        <Label Grid.Column="0" Content="[File Path]:"/>',
-    '                        <TextBox Grid.Column="1" Name="FilePath" IsEnabled="False"/>',
-    '                        <Button Grid.Column="2"  Name="FilePathBrowse" Content="Browse" IsEnabled="False"/>',
-    '                    </Grid>',
+    '                        <Grid.RowDefinitions>',
+    '                            <RowDefinition Height="*"/>',
+    '                            <RowDefinition Height="40"/>',
+    '                        </Grid.RowDefinitions>',
+    '                        <Grid Grid.Row="0" Name="ArchiveSlot" Visibility="Visible">',
+    '                            <Grid.RowDefinitions>',
+    '                                <RowDefinition Height="40"/>',
+    '                                <RowDefinition Height="*"/>',
+    '                            </Grid.RowDefinitions>',
+    '                            <Grid Grid.Row="0">',
+    '                                <Grid.ColumnDefinitions>',
+    '                                    <ColumnDefinition Width="80"/>',
+    '                                    <ColumnDefinition Width="*"/>',
+    '                                    <ColumnDefinition Width="100"/>',
+    '                                </Grid.ColumnDefinitions>',
+    '                                <Label   Grid.Column="0" Content="[Base]:"/>',
+    '                                <TextBox Grid.Column="1" Name="Base"/>',
+    '                                <Button  Grid.Column="2" Name="Browse" Content="Browse" Visibility="Hidden"/>',
+    '                                <Button  Grid.Column="2" Name="Export" Content="Export" Visibility="Visible" IsEnabled="False"/>',
+    '                            </Grid>',
+    '                            <DataGrid Grid.Row="1" Name="Archive" IsEnabled="False">',
+    '                                <DataGrid.Columns>',
+    '                                    <DataGridTextColumn Header="Mode"     Binding="{Binding Mode}"           Width="40"/>',
+    '                                    <DataGridTextColumn Header="Modified" Binding="{Binding Modified}"       Width="150"/>',
+    '                                    <DataGridTextColumn Header="Size"     Binding="{Binding Size}"           Width="75"/>',
+    '                                    <DataGridTextColumn Header="Name"     Binding="{Binding Name}"           Width="250"/>',
+    '                                    <DataGridTextColumn Header="Path"     Binding="{Binding Path}"           Width="600"/>',
+    '                                </DataGrid.Columns>',
+    '                            </DataGrid>',
+    '                        </Grid>',
+    '                        <Grid Grid.Row="0" Name="ConsoleSlot" Visibility="Collapsed">',
+    '                            <Grid.RowDefinitions>',
+    '                                <RowDefinition Height="*"/>',
+    '                            </Grid.RowDefinitions>',
+    '                            <TextBox Margin="5" Height="Auto" Name="Console" TextWrapping="NoWrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" TextAlignment="Left" VerticalContentAlignment="Top" FontFamily="Cascadia Code" FontSize="10"/>',
+    '                        </Grid>',
+    '                        <Grid Grid.Row="0" Name="TableSlot" Visibility="Collapsed">',
+    '                            <Grid.RowDefinitions>',
+    '                                <RowDefinition Height="*"/>',
+    '                            </Grid.RowDefinitions>',
+    '                            <DataGrid Name="Table">',
+    '                                <DataGrid.Columns>',
+    '                                    <DataGridTextColumn Header="Index"   Binding="{Binding Index}"   Width="40"/>',
+    '                                    <DataGridTextColumn Header="Phase"   Binding="{Binding Phase}"   Width="175"/>',
+    '                                    <DataGridTextColumn Header="Type"    Binding="{Binding Type}"    Width="40"/>',
+    '                                    <DataGridTextColumn Header="Time"    Binding="{Binding Time}"    Width="175"/>',
+    '                                    <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>',
+    '                                </DataGrid.Columns>',
+    '                            </DataGrid>',
+    '                        </Grid>',
+    '                        <Grid Grid.Row="1">',
+    '                            <Grid.ColumnDefinitions>',
+    '                                <ColumnDefinition Width="150"/>',
+    '                                <ColumnDefinition Width="150"/>',
+    '                                <ColumnDefinition Width="150"/>',
+    '                                <ColumnDefinition Width="80"/>',
+    '                                <ColumnDefinition Width="*"/>',
+    '                                <ColumnDefinition Width="150"/>',
+    '                            </Grid.ColumnDefinitions>',
+    '                            <Button  Grid.Column="0" Name="ConsoleSet" Content="Console"/>',
+    '                            <Button  Grid.Column="1" Name="TableSet"   Content="Table"/>',
+    '                            <Button  Grid.Column="2" Name="ArchiveSet" Content="Archive"/>',
+    '                            <Label   Grid.Column="3" Content="[File]:"/>',
+    '                            <TextBox Grid.Column="4" Name="Filename" IsEnabled="False"/>',
+    '                            <Button  Grid.Column="5" Content="Continue" Name="Continue"/>',
+    '                        </Grid>',
+    '                    </Grid>                    ',
     '                </Grid>',
-    '                <Grid Grid.Row="1" Name="LogPanel" Visibility="Collapsed">',
+    '                <Grid Grid.Row="1" Name="LogPanel" Visibility="Visible">',
     '                    <Grid.RowDefinitions>',
     '                        <RowDefinition Height="40"/>',
     '                        <RowDefinition Height="*"/>',
@@ -2299,25 +2671,25 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
     '                    </Grid.RowDefinitions>',
     '                    <Grid Grid.Row="0">',
     '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="110"/>',
+    '                            <ColumnDefinition Width="80"/>',
     '                            <ColumnDefinition Width="150"/>',
     '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="70"/>',
+    '                            <ColumnDefinition Width="100"/>',
     '                        </Grid.ColumnDefinitions>',
-    '                        <Label Grid.Column="0" Content="[Log Main]:"/>',
+    '                        <Label    Grid.Column="0" Content="[Main]:"/>',
     '                        <ComboBox Grid.Column="1" Name="LogMainProperty" SelectedIndex="1">',
     '                            <ComboBoxItem Content="Rank"/>',
     '                            <ComboBoxItem Content="Name"/>',
     '                            <ComboBoxItem Content="Type"/>',
     '                            <ComboBoxItem Content="Path"/>',
     '                        </ComboBox>',
-    '                        <TextBox Grid.Column="2" Name="LogMainFilter"/>',
-    '                        <Button Grid.Column="3" Name="LogMainRefresh" Content="Refresh"/>',
+    '                        <TextBox  Grid.Column="2" Name="LogMainFilter"/>',
+    '                        <Button   Grid.Column="3" Name="LogMainRefresh" Content="Refresh"/>',
     '                    </Grid>',
     '                    <DataGrid Grid.Row="1" Name="LogMainResult">',
     '                        <DataGrid.Columns>',
     '                            <DataGridTextColumn Header="Rank"       Binding="{Binding Rank}"         Width="40"/>',
-    '                            <DataGridTextColumn Header="Name"       Binding="{Binding LogName}"      Width="500"/>',
+    '                            <DataGridTextColumn Header="Name"       Binding="{Binding LogName}"      Width="425"/>',
     '                            <DataGridTextColumn Header="Total"      Binding="{Binding Total}"        Width="100"/>',
     '                            <DataGridTextColumn Header="Type"       Binding="{Binding LogType}"      Width="100"/>',
     '                            <DataGridTextColumn Header="Isolation"  Binding="{Binding LogIsolation}" Width="100"/>',
@@ -2327,24 +2699,24 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
     '                    </DataGrid>',
     '                    <Grid Grid.Row="2">',
     '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="85"/>',
+    '                            <ColumnDefinition Width="80"/>',
     '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="50"/>',
-    '                            <ColumnDefinition Width="50"/>',
-    '                            <ColumnDefinition Width="70"/>',
+    '                            <ColumnDefinition Width="65"/>',
+    '                            <ColumnDefinition Width="100"/>',
+    '                            <ColumnDefinition Width="100"/>',
     '                        </Grid.ColumnDefinitions>',
     '                        <Label   Grid.Column="0" Content="[Selected]:"/>',
-    '                        <TextBox Grid.Column="1" Name="LogSelected"/>',
-    '                        <Label   Grid.Column="2" Content="[Ct]:"/>',
-    '                        <TextBox Grid.Column="3" Name="LogTotal"/>',
-    '                        <Button Grid.Column="4" Name="LogClear" Content="Clear"/>',
+    '                        <TextBox Grid.Column="1"    Name="LogSelected"/>',
+    '                        <Label   Grid.Column="2" Content="[Total]:"/>',
+    '                        <TextBox Grid.Column="3"    Name="LogTotal"/>',
+    '                        <Button  Grid.Column="4"    Name="LogClear" Content="Clear"/>',
     '                    </Grid>',
     '                    <Grid Grid.Row="3">',
     '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="85"/>',
+    '                            <ColumnDefinition Width="80"/>',
     '                            <ColumnDefinition Width="150"/>',
     '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="70"/>',
+    '                            <ColumnDefinition Width="100"/>',
     '                        </Grid.ColumnDefinitions>',
     '                        <Label Grid.Column="0" Content="[Output]:"/>',
     '                        <ComboBox Grid.Column="1" Name="LogOutputProperty" SelectedIndex="1">',
@@ -2366,7 +2738,7 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
     '                            <DataGridTextColumn Header="Index"    Binding="{Binding Index}"    Width="50"/>',
     '                            <DataGridTextColumn Header="Date"     Binding="{Binding Date}"     Width="120"/>',
     '                            <DataGridTextColumn Header="Rank"     Binding="{Binding Rank}"     Width="50"/>',
-    '                            <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="350"/>',
+    '                            <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="200"/>',
     '                            <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>',
     '                            <DataGridTextColumn Header="Type"     Binding="{Binding Type}"     Width="100"/>',
     '                            <DataGridTextColumn Header="Message"  Binding="{Binding Message}"  Width="500"/>',
@@ -2380,10 +2752,10 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
     '                    </Grid.RowDefinitions>',
     '                    <Grid Grid.Row="0">',
     '                        <Grid.ColumnDefinitions>',
-    '                            <ColumnDefinition Width="85"/>',
+    '                            <ColumnDefinition Width="110"/>',
     '                            <ColumnDefinition Width="150"/>',
     '                            <ColumnDefinition Width="*"/>',
-    '                            <ColumnDefinition Width="80"/>',
+    '                            <ColumnDefinition Width="100"/>',
     '                        </Grid.ColumnDefinitions>',
     '                        <Label Grid.Column="0" Content="[Output]:"/>',
     '                        <ComboBox Grid.Column="1" Name="OutputProperty" SelectedIndex="0">',
@@ -2405,7 +2777,7 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
     '                            <DataGridTextColumn Header="Date"     Binding="{Binding Date}"     Width="120"/>',
     '                            <DataGridTextColumn Header="Log"      Binding="{Binding Log}"      Width="50"/>',
     '                            <DataGridTextColumn Header="Rank"     Binding="{Binding Rank}"     Width="50"/>',
-    '                            <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="350"/>',
+    '                            <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="200"/>',
     '                            <DataGridTextColumn Header="Id"       Binding="{Binding Id}"       Width="50"/>',
     '                            <DataGridTextColumn Header="Type"     Binding="{Binding Type}"     Width="100"/>',
     '                            <DataGridTextColumn Header="Message"  Binding="{Binding Message}"  Width="500"/>',
@@ -2453,540 +2825,6 @@ Class EventLogGUI                                         #\_[ XAML/Graphical us
 #                                                                        _______________________
 #\_______________________________________________________________________\__[ </UI Classes> ]__/
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# ______________________________________________________________________________________________
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\__[ <Project Classes> ]__/
-#                                                                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-#\______________________                          ______________________________________________
-Class ProjectConsoleLine                         #\_[ Flexibility for [Console]::WriteLine() ]_/
-{
-    [UInt32] $Index
-    [String] $Phase
-    [String] $Type
-    [String] $Time
-    [String] $Message
-    ProjectConsoleLine([UInt32]$Index,[String]$Phase,[UInt32]$Type,[String]$Time,[String]$Message)
-    {
-        $This.Index   = $Index
-        $This.Phase   = $Phase
-        $This.Type    = Switch ($Type) { 0 { "[~]" } 1 { "[+]" } 2 { "[!]" } }
-        $This.Time    = $Time
-        $This.Message = $Message
-    }
-    [String] ToString()
-    {
-        Return @( Switch (!!$This.Message)
-        {
-            $True  { "{0} {1} {2}" -f $This.Phase, $This.Type, $This.Message }
-            $False { "{0} {1} Elapsed: [{2}]" -f $This.Phase, $This.Type, $This.Time }
-        })
-    }
-}
-#\__________________                                ____________________________________________
-Class ProjectConsole                               #\_[ Pseudo console for logging/debugging ]_/
-{
-    [Object]    $Time
-    [String]   $Phase
-    [UInt32]    $Type
-    [String] $Message
-    [UInt32]   $Count
-    [Object]  $Output
-    ProjectConsole([Object]$Time)
-    {
-        $This.Time    = $Time
-        $This.Phase   = "Starting"
-        $This.Type    = 0
-        $This.Message = $Null
-        $This.Count   = 0
-        $This.Output  = @( )
-        $This.Status()
-    }
-    AddLine([String]$Line)
-    {
-        $This.Output += [ProjectConsoleLine]::New($This.Output.Count,$This.Phase,$This.Type,$This.Time.Elapsed,$Line)
-        $This.Count  ++
-    }
-    [String] Status()
-    {
-        $This.AddLine($Null)
-        Return $This.Last()
-    }
-    [String] Update([String]$Phase,[String]$Message)
-    {
-        $This.Phase   = $Phase
-        $This.Message = $Message
-        $This.AddLine($Message)
-        Return $This.Last()
-    }
-    [String] Update([String]$Phase,[UInt32]$Type,[String]$Message)
-    {
-        $This.Phase   = $Phase
-        $This.Type    = $Type
-        $This.Message = $Message
-        $This.AddLine($Message)
-        Return $This.Last()
-    }
-    [Object] Last()
-    {
-        Return $This.Output[$This.Count-1]
-    }
-    [Object[]] ToString()
-    {
-        Return @( $This.Output[0..($This.Count-1)] )
-    }
-}
-#\_______________                            ___________________________________________________
-Class ProjectFile                           #\_[ Adds more granular control over file system ]_/
-{
-    [UInt32]         $Index
-    [String]          $Name
-    [String]      $Fullname
-    Hidden [String] $Parent
-    [Bool]          $Exists
-    [Double]        $Length
-    [String]          $Size
-    ProjectFile([UInt32]$Index,[Object]$File)
-    {
-        $This.Index    = $Index
-        $This.Fullname = $File.Fullname
-        $This.Name     = $File.Name
-        $This.Parent   = $File.Fullname | Split-Path -Parent
-        $This.Exists   = $File.Exists
-        $This.Length   = $File.Length
-        $This.Update()
-    }
-    Write([String[]]$In)
-    {
-        $Out     = $In -join "`n"
-        $Bytes   = [Byte[]]([Char[]]$Out)
-        $Item    = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Append)
-        $Item.Write($Bytes,0,$Bytes.Count)
-        $Item.Dispose()
-        $This.Update()
-    }
-    Write([String]$In)
-    {
-        $Out   = $In -join "`n"
-        $Bytes = [Byte[]]@([Char[]]$Out)
-        $Item  = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Append)
-        $Item.Write($Bytes,0,$Bytes.Count)
-        $Item.Dispose()
-        $This.Update()
-    }
-    Clear()
-    {
-        $Item = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Truncate)
-        $Item.Write(0,0,0)
-        $Item.Dispose()
-        $This.Update()
-    }
-    [Object] Get()
-    {
-        $Item = [System.IO.File]::ReadAllLines($This.Fullname)
-        $This.Update()
-        Return $Item
-    }
-    [Void] Delete()
-    {
-        $Item = [System.IO.File]::Delete($This.Fullname)
-        $Item.Dispose()
-        $This.Update()
-    }
-    [Void] Update()
-    {
-        $This.Exists   = [System.IO.File]::Exists($This.Fullname)
-        If (!$This.Exists)
-        {
-            $This.Length   = 0
-            $This.Size     = "0.00 KB"
-        }
-        If ($This.Exists)
-        {
-            $This.Length   = [System.IO.File]::ReadAllBytes($This.Fullname).Count
-            $This.Size     = Switch ($This.Length)
-            {
-                {$_ -eq   0 } { "0.00 KB" }
-                {$_ -gt   0 -and $_ -lt 800kb}   { "{0:n2} KB" -f ($This.Length/1KB) }
-                {$_ -ge 800kb -and $_ -lt 800mb} { "{0:n2} MB" -f ($This.Length/1MB) }
-                {$_ -ge 800mb -and $_ -lt 800gb} { "{0:n2} GB" -f ($This.Length/1GB) }
-                {$_ -ge 800gb }                  { "{0:n2} TB" -f ($This.Length/1TB) }
-            }
-        }
-    }
-    [String] ToString()
-    {
-        Return $This.FullName
-    }
-}                                        
-#\_________________               ______________________________________________________________
-Class ProjectFolder              #\_[ Adds more granular control over project subdirectories ]_/
-{
-    [UInt32]             $Rank
-    [String]             $Name
-    [String]         $Fullname
-    [String]           $Parent
-    [Bool]             $Exists
-    [UInt32]            $Count
-    Hidden [Double] $SizeBytes
-    [String]             $Size
-    Hidden [Hashtable]  $Index = @{ }
-    Hidden [Hashtable]   $Hash = @{ }
-    [Object]         $Children = @( )
-    ProjectFolder([UInt32]$Rank,[Object]$Folder)
-    {
-        $This.Rank     = $Rank
-        $This.Name     = $Folder.Name
-        $This.Fullname = $Folder.Fullname
-        $This.Parent   = $Folder.Parent.Fullname
-        $This.Update()
-    }
-    [Void] Update()
-    {
-        $This.Exists        = [System.IO.Directory]::Exists($This.Fullname)
-        $This.SizeBytes     = 0
-        $This.Size          = "0.00 KB"
-        $This.Hash          = @{ }
-        $This.Index         = @{ }
-        If ($This.Exists)
-        {
-            $This.Children  = @([System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos()) | Sort-Object Name
-            $This.Count     = $This.Children.Count
-            If ($This.Count -gt 0)
-            {
-                $C = 0
-                $X = 0
-                Do
-                {
-                    $This.Hash.Add($This.Children[$C].Name,$This.Children[$C])
-                    $This.Index.Add($This.Children[$C],$C)
-                    $X = $X + $This.Children[$C].Length
-                    $C ++
-                }
-                Until ($C -eq $This.Count)
-                $This.SizeBytes = [Double]$X
-            }
-            $This.Size      = $This.GetSize($This.SizeBytes)
-        }
-    }
-    [String] GetSize([Double]$Size)
-    {
-        Return @( Switch ($Size)
-        {
-            {$_ -eq   0 } { "0.00 KB" }
-            {$_ -gt   0 -and $_ -lt 800kb}   { "{0:n2} KB" -f ($_/1KB) }
-            {$_ -ge 800kb -and $_ -lt 800mb} { "{0:n2} MB" -f ($_/1MB) }
-            {$_ -ge 800mb -and $_ -lt 800gb} { "{0:n2} GB" -f ($_/1GB) }
-            {$_ -ge 800gb }                  { "{0:n2} TB" -f ($_/1TB) }
-        })
-    }
-    Create([String]$Name)
-    {
-        $Path           = $This.Fullname, $Name -join '\'
-        If (![System.IO.File]::Exists($Path))
-        {
-            [System.IO.File]::Create($Path).Dispose()
-            [Console]::WriteLine("Created [+] ($($Name.Count)) item(s).")
-        }
-        Else
-        {
-            [Console]::WriteLine("Exception [!] ($($Name.Count)) exists.")
-        }
-        $This.Update()
-    }
-    Create([Object[]]$Name)
-    {
-        If ($Name.Count -gt 1)
-        {
-            $Work    = @(ForEach ($X in 0..($Name.Count-1)) { $This.Fullname, $Name[$X] -join "\" })
-            $Segment = [Math]::Round($Work.Count/100)
-            $Slot    = 0..($Work.Count-1) | ? { $_ % $Segment -eq 0 }
-            ForEach ($X in 0..($Work.Count-1))
-            {
-                [System.IO.File]::Create($Work[$X]).Dispose()
-                If ($X -in $Slot)
-                {
-                    $Percent = ($X*100/$Work.Count)
-                    $String  = "({0:n2}%) ({1}/{2})" -f $Percent, $X, $Work.Count
-                    [Console]::WriteLine("Creating [~] $String")
-                }
-            }
-        }
-        Else
-        {
-            [System.IO.File]::Create("$($This.Fullname)\$Name").Dispose()
-        }
-        $This.Update()
-        [Console]::WriteLine("Created [+] ($($Name.Count)) item(s).")
-    }
-    Delete([String]$Name)
-    {
-        $Item = $This.File($Name)
-        $Item.Delete()
-        $This.Update()
-        [Console]::WriteLine("Deleted [$Name]")
-    }
-    [Object] File([String]$Name)
-    {
-        $File = $This.Hash[$Name]
-        If (!$File)
-        {
-            Throw "Invalid file"
-        }
-        Return [ProjectFile]::New($This.Index[$Name],$File)
-    }
-    Flush()
-    {
-        If ($This.Exists)
-        {
-            [Console]::WriteLine("Enumerating [~] files")
-            $Work = @([System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos()) | Sort-Object LastWriteTime
-            If ($Work.Count -gt 1)
-            {
-                $Segment = [Math]::Round($Work.Count/100)
-                $Slot    = 0..($Work.Count-1) | ? { $_ % $Segment -eq 0 }
-                ForEach ($X in 0..($Work.Count-1))
-                {
-                    $Work[$X].Delete()
-                    If ($X -in $Slot)
-                    {
-                        $Percent = ($X*100/$Work.Count)
-                        $String  = "({0:n2}%) ({1}/{2})" -f $Percent, $X, $Work.Count
-                        [Console]::WriteLine("Deleting [~] $String")
-                    }
-                }
-            }
-            Else
-            {
-                $Work.Delete()
-            }
-            [Console]::WriteLine("All files deleted")
-        }
-        $This.Update()
-    }
-    [String] ToString()
-    {
-        Return $This.Fullname
-    }
-}
-#\_______________                        _______________________________________________________
-Class ProjectBase                       #\_[ Adds more control over temporary base directory ]_/
-{
-    [String]       $Name
-    [String]   $Fullname
-    [String]     $Parent
-    [Bool]       $Exists
-    [UInt32]      $Count
-    [DateTime]     $Date
-    [Object]    $Folders = @( )
-    ProjectBase([String]$Path)
-    {
-        $This.Parent            = $Path | Split-Path -Parent
-        If (![System.IO.Directory]::Exists($This.Parent))
-        {
-            Throw "Invalid path"
-            $This.Parent        = $Null
-        }
-        $This.Name              = $Path | Split-Path -Leaf
-        $This.FullName          = $Path
-        If ([System.IO.Directory]::Exists($Path))
-        {
-            Throw "This path already exists"
-        }
-        ForEach ($Entry in "Master","Logs","Events","Threads")
-        {
-            [System.IO.Directory]::CreateDirectory("$($This.Fullname)\$Entry")
-        }
-        $This.Update()
-    }
-    Static [String[]] Subfolders()
-    {
-        Return "Master","Logs","Events","Threads"
-    }
-    [Void] Update()
-    {
-        $This.Exists            = [System.IO.Directory]::Exists($This.Fullname)
-        $This.Date              = [System.IO.Directory]::GetCreationTime($This.Fullname)
-        $This.Folders           = @( )
-        If ($This.Exists)
-        {
-            $Directories        = @([System.IO.DirectoryInfo]::new($This.Fullname).EnumerateDirectories())
-            $This.Count         = $Directories.Count
-            If ($This.Count -gt 0)
-            {
-                ForEach ($Folder in $Directories)
-                {
-                    $This.Folders += [ProjectFolder]::New($This.Folders.Count,$Folder)
-                }
-            }
-        }
-    }
-    [Object] Slot([String]$Slot)
-    {
-        Return $This.Folders | ? Name -eq $Slot
-    }
-    Flush()
-    {
-        $This.Update()
-        ForEach ($Folder in $This.Folders)
-        {
-            $Folder.Flush()
-        }
-    }
-    [String] ToString()
-    {
-        Return $This.Fullname
-    }
-}
-#\___________                          _________________________________________________________
-Class Project                         #\_[ Orchestrates all of the (classes/functions) above ]_/
-{
-    [Object]        $Console
-    [Object]           $Time
-    [DateTime]        $Start
-    [Object]         $System
-    [String]    $DisplayName
-    [UInt32]        $Threads
-    [Guid]             $Guid
-    [ProjectBase]      $Base
-    [Object]           $Logs = @( )
-    [Object]         $Output = @( )
-    Project([UInt32]$Throttle)
-    {
-        $This.Threads = $Throttle
-        $This.Init()
-    }
-    Project()
-    {
-        $This.Init()
-    }
-    Init()
-    {
-        # Start system snapshot, count threads / max runspace pool size
-        $This.Time          = [System.Diagnostics.Stopwatch]::StartNew()
-        $This.Console       = [ProjectConsole]::New($This.Time)
-        
-        $This.Update("(0.0) Loading",0,"System snapshot details")
-        $This.System        = Get-SystemDetails
-        $This.Start         = $This.System.Snapshot.Start        
-        $This.DisplayName   = $This.System.Snapshot.DisplayName
-        If (!$This.Threads)
-        {
-            $This.Threads   = $This.System.Processor.Output.Threads | Measure-Object -Sum | % Sum
-        }
-
-        If ($This.Threads -lt 2)
-        {
-            $This.Error("CPU only has (1) thread (selected/available)")
-        }
-
-        # System snapshot has already created a Guid, to create a new folder for the threads
-        $This.Guid          = $This.System.Snapshot.Guid
-        $This.Base          = $This.Establish([Environment]::GetEnvironmentVariable("temp"),$This.Guid)
-
-        $This.Update("(0.1) Created",1,"Base directory")
-        $This.Providers()
-    }
-    [Object] Establish([String]$Base,[String]$Name)
-    {
-        Return [ProjectBase]::New("$Base\$Name")
-    }
-    [String[]] Itemize([Object[]]$ItemList,[String]$Extension)
-    {
-        $Range = 0..($ItemList.Count-1)
-        $Depth = ([String]$Range.Count).Length
-        Return @( $Range | % { "{0:d$Depth}.$Extension" -f $_ })
-    }
-    Providers()
-    {
-        # Loads the provider names
-        $Providers        = $This.System.LogProviders.Output
-        $Slot             = $This.Slot("Threads")
-        $Names            = $This.Itemize(@(0..($This.Threads-1)),"txt")
-        $Slot.Create($Names)
-        ForEach ($X in 0..($This.Threads-1))
-        {
-            $File         = $Slot.File($Names[$X])
-            $Value        = 0..($Providers.Count-1) | ? { $_ % $This.Threads -eq $X } | % { $_,$Providers[$_].Value -join ',' }
-            $File.Write($Value -join "`n")
-            $Slot.Update()
-        }
-        $This.Update("(0.2) Prepared",1,"Event log collection split between threads")
-    }
-    [Object] Slot([String]$Slot)
-    {
-        Return $This.Base.Folders | ? Name -eq $Slot
-    }
-    Current()
-    {
-        [Console]::WriteLine($This.Console.Status())
-    }
-    Update([String]$Phase,[String]$Message)
-    {
-        [Console]::WriteLine($This.Console.Update($Phase,$Message))
-    }
-    Update([String]$Phase,[UInt32]$Type,[String]$Message)
-    {
-        [Console]::WriteLine($This.Console.Update($Phase,$Type,$Message))
-    }
-    [Void] Error([String]$Message)
-    {
-        $This.Update("Exception",2,$Message)
-        Throw $This.Console.ToString()
-    }
-    SaveMaster()
-    {
-        $Value        = $This.System.GetOutput()
-        $Slot         = $This.Slot("Master")
-        $Slot.Create("Master.txt")
-        $File         = $Slot.File("Master.txt")
-        $File.Write($Value -join "`n")
-        $This.Update("Success",1,"Master file: [$File], Size: [$($File.Size)]")
-    }
-    SaveLogs()
-    {
-        $Value         = $This.Logs | Select-Object Rank,LogName,LogType,LogIsolation,IsEnabled,IsClassicLog,SecurityDescriptor,LogFilePath,
-        MaximumSizeInBytes,Maximum,Current,LogMode,OwningProviderName,ProviderNames,ProviderLevel,ProviderKeywords,ProviderBufferSize,
-        ProviderMinimumNumberOfBuffers,ProviderMaximumNumberOfBuffers,ProviderLatency,ProviderControlGuid | ConvertTo-Json
-        
-        $Slot          = $This.Slot("Logs")
-        $Slot.Create("Logs.txt")
-        $File          = $Slot.File("Logs.txt")
-        $File.Write($Value)
-        $This.Update("Success",1,"Log config file: [$File], Size: [$($File.Size)]")
-    }
-    [String] Destination()
-    {
-        Return "{0}\{1}.zip" -f ($This.Base | Split-Path -Parent), $This.DisplayName
-    }
-    Delete()
-    {
-        $This.Update("Terminating",2,"Process was instructed to be deleted")
-        $This.Base.Flush()
-        $This.Start         = [DateTime]::FromOADate(1)
-        $This.System        = $Null
-        $This.DisplayName   = $Null
-        $This.Guid          = [Guid]::Empty
-        $This.Time          = $Null
-        $This.Threads       = $Null
-        $This.Base          = $Null
-        $This.Logs          = $Null
-        $This.Output        = $Null
-        $This.GetConsole()
-    }
-    [Object[]] GetConsole()
-    {
-        Return @( $This.Console.GetOutput() )
-    }
-    [Object] ToString()
-    {
-        Return $This
-    }
-}
-#                                                                     __________________________
-#\____________________________________________________________________\_[ </Project Classes> ]_/
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
-
-
 
 # ______________________________________________________________________________________________
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\_[ <Thread Classes> ]_/
@@ -3400,24 +3238,1025 @@ Class ThreadControl                    #\_[ Interfaces with runspace/pool/factor
 #\_____________________________________________________________________\_[ </Thread Classes> ]_/
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
 
+# ______________________________________________________________________________________________
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\__[ <Project Classes> ]__/
+#                                                                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+#\________________________                        ______________________________________________
+Class ProjectProgressIndex                       #\_[ ]
+{
+    [UInt32]  $Index
+    [UInt32]   $Slot
+    [Float] $Percent
+    [String] $String
+    [Object]   $Time
+    [Object] $Remain
+    ProjectProgressIndex([UInt32]$Index,[UInt32]$Segment,[UInt32]$Total)
+    {
+        $This.Index   = $Index
+        $This.Slot    = $Index * $Segment
+        $This.Percent = [Math]::Round($This.Slot*100/$Total,2)
+        $This.String  = $This.GetString($Total)
+    }
+    ProjectProgressIndex([Switch]$Last,[UInt32]$Total)
+    {
+        $This.Index   = 101
+        $This.Slot    = $Total
+        $This.Percent = 100.00
+        $This.String  = $This.GetString($Total)
+    }
+    [String] GetString([UInt32]$Total)
+    {
+        Return "({0:n2}%) ({1}/{2})" -f $This.Percent, $This.Slot, $Total
+    }
+    [String] ToString()
+    {
+        Return $This.Slot
+    }
+    [String] Line()
+    {
+        Return "{0} Elapsed: [{1}], Remain: [{2}]" -f $This.String, $This.Time, $This.Remain
+    }
+}
+#\___________________                             ______________________________________________
+Class ProjectProgress                             #\_[ ]
+{
+    [DateTime]  $Phase
+    [UInt32]    $Total
+    [UInt32]  $Segment
+    [Object]    $Index = @( )
+    ProjectProgress([Object]$Work)
+    {
+        $This.Phase      = [DateTime]::Now
+        $This.Total      = $Work.Count
+        $This.Segment    = [Math]::Round($This.Total/100)
+        0..100           | % { $This.AddIndex($_,$This.Segment,$This.Total) }
+        $This.AddLast($This.Total)
+    }
+    AddIndex([UInt32]$Index,[UInt32]$Segment,[UInt32]$Total)
+    {
+        $This.Index     += [ProjectProgressIndex]::New($Index,$This.Segment,$This.Total)    
+    }
+    AddLast([UInt32]$Total)
+    {
+        [Switch]$Last    = $True
+        $Item            = [ProjectProgressIndex]::New($Last,$This.Total)
+        $Item.Index      = 101
+        $Item.Slot       = $This.Total
+        $Item.Percent    = 100.00
+        $Item.Time       = $This.Time()
+        $Item.Remain     = [Timespan]::FromTicks(1)
+        $This.Index     += $Item
+    }
+    [Object] Time()
+    {
+        Return [TimeSpan]([DateTime]::Now-$This.Phase)
+    }
+    [Object] Slot([UInt32]$Token)
+    {
+        $Item            = $This.Index[$Token/$This.Segment]
+        $Item.Time       = $This.Time()
+        If ($Item.Slot -eq 0)
+        {
+            $Item.Remain = [Timespan]::FromTicks(1)
+        }
+        If ($Item.Slot -ne 0) 
+        { 
+            $Item.Remain = ($Item.Time.TotalSeconds / $Item.Percent) * (100-$Item.Percent) | % { [Timespan]::FromSeconds($_) } 
+        }
+
+        Return $Item
+    }
+}
+#\____________________                           _______________________________________________
+Class ProjectFileEntry
+{
+    [String] $Name
+    [Object] $Entry
+    [String] $Path
+    ProjectFileEntry([String]$Name,[Object]$Archive,[String]$Path)
+    {
+        $This.Name  = $Name
+        $This.Entry = $Archive.GetEntry($Name)
+        $This.Path  = "$Path\$Name"
+    }
+    Extract()
+    {
+        [System.IO.Compression.ZipFileExtensions]::ExtractToFile($This.Entry,$This.Path,$True)
+    }
+    [String] ToString()
+    {
+        Return $This.Path
+    }
+}
+#\______________________                          ______________________________________________
+Class ProjectConsoleLine                         #\_[ Flexibility for [Console]::WriteLine() ]_/
+{
+    [UInt32] $Index
+    [String] $Phase
+    [String] $Type
+    [String] $Time
+    [String] $Message
+    ProjectConsoleLine([UInt32]$Index,[String]$Phase,[UInt32]$Type,[String]$Time,[String]$Message)
+    {
+        $This.Index   = $Index
+        $This.Phase   = $Phase
+        $This.Type    = Switch ($Type) { 0 { "[~]" } 1 { "[+]" } 2 { "[!]" } }
+        $This.Time    = $Time
+        $This.Message = $Message
+    }
+    [String] ToString()
+    {
+        Return @( Switch (!!$This.Message)
+        {
+            $True  { "{0} {1} {2}" -f $This.Phase, $This.Type, $This.Message }
+            $False { "{0} {1} Elapsed: [{2}]" -f $This.Phase, $This.Type, $This.Time }
+        })
+    }
+}
+#\__________________                                ____________________________________________
+Class ProjectConsole                               #\_[ Pseudo console for logging/debugging ]_/
+{
+    [Object]    $Time
+    [String]   $Phase
+    [UInt32]    $Type
+    [String] $Message
+    [UInt32]   $Count
+    [Object]  $Output
+    ProjectConsole([Object]$Time)
+    {
+        $This.Time    = $Time
+        $This.Phase   = "Starting"
+        $This.Type    = 0
+        $This.Message = $Null
+        $This.Count   = 0
+        $This.Output  = @( )
+        $This.Status()
+    }
+    AddLine([String]$Line)
+    {
+        $This.Output += [ProjectConsoleLine]::New($This.Output.Count,$This.Phase,$This.Type,$This.Time.Elapsed,$Line)
+        $This.Count  ++
+    }
+    [String] Status()
+    {
+        $This.AddLine($Null)
+        Return $This.Last()
+    }
+    [String] Update([String]$Phase,[String]$Message)
+    {
+        $This.Phase   = $Phase
+        $This.Message = $Message
+        $This.AddLine($Message)
+        Return $This.Last()
+    }
+    [String] Update([String]$Phase,[UInt32]$Type,[String]$Message)
+    {
+        $This.Phase   = $Phase
+        $This.Type    = $Type
+        $This.Message = $Message
+        $This.AddLine($Message)
+        Return $This.Last()
+    }
+    [Object] Last()
+    {
+        Return $This.Output[$This.Count-1]
+    }
+    [Object[]] ToString()
+    {
+        Return @( $This.Output[0..($This.Count-1)] )
+    }
+}
+#\_______________                            ___________________________________________________
+Class ProjectFile                           #\_[ Adds more granular control over file system ]_/
+{
+    [UInt32]         $Index
+    [String]          $Name
+    [String]      $Fullname
+    Hidden [String] $Parent
+    [Bool]          $Exists
+    [Double]        $Length
+    [String]          $Size
+    ProjectFile([UInt32]$Index,[Object]$File)
+    {
+        $This.Index    = $Index
+        $This.Fullname = $File.Fullname
+        $This.Name     = $File.Name
+        $This.Parent   = $File.Fullname | Split-Path -Parent
+        $This.Exists   = $File.Exists
+        $This.Length   = $File.Length
+        $This.Update()
+    }
+    Write([String[]]$In)
+    {
+        $Out     = $In -join "`n"
+        $Bytes   = [Byte[]]([Char[]]$Out)
+        $Item    = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Append)
+        $Item.Write($Bytes,0,$Bytes.Count)
+        $Item.Dispose()
+        $This.Update()
+    }
+    Write([String]$In)
+    {
+        $Out   = $In -join "`n"
+        $Bytes = [Byte[]]@([Char[]]$Out)
+        $Item  = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Append)
+        $Item.Write($Bytes,0,$Bytes.Count)
+        $Item.Dispose()
+        $This.Update()
+    }
+    Clear()
+    {
+        $Item = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Truncate)
+        $Item.Write(0,0,0)
+        $Item.Dispose()
+        $This.Update()
+    }
+    [Object] Get()
+    {
+        $Item = [System.IO.File]::ReadAllLines($This.Fullname)
+        $This.Update()
+        Return $Item
+    }
+    [Void] Delete()
+    {
+        $Item = [System.IO.File]::Delete($This.Fullname)
+        $Item.Dispose()
+        $This.Update()
+    }
+    [Void] Update()
+    {
+        $This.Exists   = [System.IO.File]::Exists($This.Fullname)
+        If (!$This.Exists)
+        {
+            $This.Length   = 0
+            $This.Size     = "0.00 KB"
+        }
+        If ($This.Exists)
+        {
+            $This.Length   = [System.IO.File]::ReadAllBytes($This.Fullname).Count
+            $This.Size     = Switch ($This.Length)
+            {
+                {$_ -eq   0 } { "0.00 KB" }
+                {$_ -gt   0 -and $_ -lt 800kb}   { "{0:n2} KB" -f ($This.Length/1KB) }
+                {$_ -ge 800kb -and $_ -lt 800mb} { "{0:n2} MB" -f ($This.Length/1MB) }
+                {$_ -ge 800mb -and $_ -lt 800gb} { "{0:n2} GB" -f ($This.Length/1GB) }
+                {$_ -ge 800gb }                  { "{0:n2} TB" -f ($This.Length/1TB) }
+            }
+        }
+    }
+    [String] ToString()
+    {
+        Return $This.FullName
+    }
+}                                        
+#\_________________               ______________________________________________________________
+Class ProjectFolder              #\_[ Adds more granular control over project subdirectories ]_/
+{
+    [UInt32]             $Rank
+    [String]             $Name
+    [String]         $Fullname
+    [String]           $Parent
+    [Bool]             $Exists
+    [UInt32]            $Count
+    Hidden [Double] $SizeBytes
+    [String]             $Size
+    Hidden [Hashtable]  $Index = @{ }
+    Hidden [Hashtable]   $Hash = @{ }
+    [Object]         $Children = @( )
+    ProjectFolder([UInt32]$Rank,[Object]$Folder)
+    {
+        $This.Rank     = $Rank
+        $This.Name     = $Folder.Name
+        $This.Fullname = $Folder.Fullname
+        $This.Parent   = $Folder.Parent.Fullname
+        $This.Update()
+    }
+    [Void] Update()
+    {
+        $This.Exists        = [System.IO.Directory]::Exists($This.Fullname)
+        $This.SizeBytes     = 0
+        $This.Size          = "0.00 KB"
+        $This.Hash          = @{ }
+        $This.Index         = @{ }
+        If ($This.Exists)
+        {
+            $This.Children  = @([System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos()) | Sort-Object Name
+            $This.Count     = $This.Children.Count
+            If ($This.Count -gt 0)
+            {
+                $C = 0
+                $X = 0
+                Do
+                {
+                    $This.Hash.Add($This.Children[$C].Name,$This.Children[$C])
+                    $This.Index.Add($This.Children[$C],$C)
+                    $X = $X + $This.Children[$C].Length
+                    $C ++
+                }
+                Until ($C -eq $This.Count)
+                $This.SizeBytes = [Double]$X
+            }
+            $This.Size      = $This.GetSize($This.SizeBytes)
+        }
+    }
+    [String] GetSize([Double]$Size)
+    {
+        Return @( Switch ($Size)
+        {
+            {$_ -eq   0 } { "0.00 KB" }
+            {$_ -gt   0 -and $_ -lt 800kb}   { "{0:n2} KB" -f ($_/1KB) }
+            {$_ -ge 800kb -and $_ -lt 800mb} { "{0:n2} MB" -f ($_/1MB) }
+            {$_ -ge 800mb -and $_ -lt 800gb} { "{0:n2} GB" -f ($_/1GB) }
+            {$_ -ge 800gb }                  { "{0:n2} TB" -f ($_/1TB) }
+        })
+    }
+    Create([String]$Name)
+    {
+        $Path           = $This.Fullname, $Name -join '\'
+        If (![System.IO.File]::Exists($Path))
+        {
+            [System.IO.File]::Create($Path).Dispose()
+            [Console]::WriteLine("Created [+] ($($Name.Count)) item(s).")
+        }
+        Else
+        {
+            [Console]::WriteLine("Exception [!] ($($Name.Count)) exists.")
+        }
+        $This.Update()
+    }
+    Create([Object[]]$Name)
+    {
+        If ($Name.Count -gt 1)
+        {
+            $Work    = @(ForEach ($X in 0..($Name.Count-1)) { $This.Fullname, $Name[$X] -join "\" })
+            $Segment = [Math]::Round($Work.Count/100)
+            $Slot    = 0..($Work.Count-1) | ? { $_ % $Segment -eq 0 }
+            ForEach ($X in 0..($Work.Count-1))
+            {
+                [System.IO.File]::Create($Work[$X]).Dispose()
+                If ($X -in $Slot)
+                {
+                    $Percent = ($X*100/$Work.Count)
+                    $String  = "({0:n2}%) ({1}/{2})" -f $Percent, $X, $Work.Count
+                    [Console]::WriteLine("Creating [~] $String")
+                }
+            }
+        }
+        Else
+        {
+            [System.IO.File]::Create("$($This.Fullname)\$Name").Dispose()
+        }
+        $This.Update()
+        [Console]::WriteLine("Created [+] ($($Name.Count)) item(s).")
+    }
+    Delete([String]$Name)
+    {
+        $Item = $This.File($Name)
+        $Item.Delete()
+        $This.Update()
+        [Console]::WriteLine("Deleted [$Name]")
+    }
+    [Object] File([String]$Name)
+    {
+        $File = $This.Hash[$Name]
+        If (!$File)
+        {
+            Throw "Invalid file"
+        }
+        Return [ProjectFile]::New($This.Index[$Name],$File)
+    }
+    Flush()
+    {
+        If ($This.Exists)
+        {
+            [Console]::WriteLine("Enumerating [~] files")
+            $Work = @([System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos()) | Sort-Object LastWriteTime
+            If ($Work.Count -gt 1)
+            {
+                $Segment = [Math]::Round($Work.Count/100)
+                $Slot    = 0..($Work.Count-1) | ? { $_ % $Segment -eq 0 }
+                ForEach ($X in 0..($Work.Count-1))
+                {
+                    $Work[$X].Delete()
+                    If ($X -in $Slot)
+                    {
+                        $Percent = ($X*100/$Work.Count)
+                        $String  = "({0:n2}%) ({1}/{2})" -f $Percent, $X, $Work.Count
+                        [Console]::WriteLine("Deleting [~] $String")
+                    }
+                }
+            }
+            Else
+            {
+                $Work.Delete()
+            }
+            [Console]::WriteLine("All files deleted")
+        }
+        $This.Update()
+    }
+    [String] ToString()
+    {
+        Return $This.Fullname
+    }
+}
+#\_______________                        _______________________________________________________
+Class ProjectBase                       #\_[ Adds more control over temporary base directory ]_/
+{
+    [String]       $Name
+    [String]   $Fullname
+    [String]     $Parent
+    [Bool]       $Exists
+    [UInt32]      $Count
+    [DateTime]     $Date
+    [Object]    $Folders = @( )
+    ProjectBase([String]$Path)
+    {
+        $This.Parent            = $Path | Split-Path -Parent
+        If (![System.IO.Directory]::Exists($This.Parent))
+        {
+            Throw "Invalid path"
+            $This.Parent        = $Null
+        }
+        $This.Name              = $Path | Split-Path -Leaf
+        $This.FullName          = $Path
+        If ([System.IO.Directory]::Exists($Path))
+        {
+            Throw "This path already exists"
+        }
+        ForEach ($Entry in "Master","Logs","Events","Threads")
+        {
+            [System.IO.Directory]::CreateDirectory("$($This.Fullname)\$Entry")
+        }
+        $This.Update()
+    }
+    Static [String[]] Subfolders()
+    {
+        Return "Master","Logs","Events","Threads"
+    }
+    [Void] Update()
+    {
+        $This.Exists            = [System.IO.Directory]::Exists($This.Fullname)
+        $This.Date              = [System.IO.Directory]::GetCreationTime($This.Fullname)
+        $This.Folders           = @( )
+        If ($This.Exists)
+        {
+            $Directories        = @([System.IO.DirectoryInfo]::new($This.Fullname).EnumerateDirectories())
+            $This.Count         = $Directories.Count
+            If ($This.Count -gt 0)
+            {
+                ForEach ($Folder in $Directories)
+                {
+                    $This.Folders += [ProjectFolder]::New($This.Folders.Count,$Folder)
+                }
+            }
+        }
+    }
+    [Object] Slot([String]$Slot)
+    {
+        Return $This.Folders | ? Name -eq $Slot
+    }
+    Flush()
+    {
+        $This.Update()
+        ForEach ($Folder in $This.Folders)
+        {
+            $Folder.Flush()
+        }
+    }
+    [String] ToString()
+    {
+        Return $This.Fullname
+    }
+}
+#\__________________                         ___________________________________________________
+Class ProjectRestore                        #\_[ Restores a project from an existing archive ]_/
+{
+    [Object]        $Console
+    [Object]           $Time
+    [Object]          $Start
+    [Object]         $System
+    [Object]    $DisplayName
+    [UInt32]        $Threads
+    [String]           $Guid
+    [String]           $Base
+    [Object]           $Logs
+    [Object]         $Output
+    Hidden [Object]     $Zip
+    ProjectRestore([String]$ZipPath)
+    {
+        $This.Time       = [System.Diagnostics.Stopwatch]::StartNew()
+        $This.Console    = [ProjectConsole]::New($This.Time)
+        $This.Base       = $ZipPath -Replace ".zip",""
+
+        # Restore the zip file
+        $This.Update("(0.0) Testing",0,"Zip file path input")
+        Switch ($ZipPath)
+        {
+            {![System.IO.File]::Exists($_)}
+            {
+                $This.Error("Invalid zip file path input")
+            }
+            {[System.IO.FileInfo]::New($_).Extension -ne ".zip"}
+            {
+                $This.Error("Invalid zip file path input")
+            }
+        }
+        $This.Update("(0.0) Tested",1,"Zip file path input is valid")
+
+        # Zip path exists, is it a zip file?
+        $This.Update("(0.1) Opening",0,"Zip file")
+        $This.Zip        = [System.IO.Compression.Zipfile]::Open($ZipPath,"Read")
+        Switch ([UInt32]($This.Zip -is [System.IO.Compression.ZipArchive]))
+        {
+            0
+            { 
+                $This.Error("Invalid file")
+            }
+            1  
+            { 
+                If ([System.IO.Directory]::Exists($This.Base))
+                {
+                    $This.Error("Extraction path exists, manually move or delete first")
+                }
+                [System.IO.Directory]::CreateDirectory($This.Base)
+            }
+        }
+        $This.Update("(0.1) Opened",1,"Extraction path created")
+
+        # Extract Master.txt
+        $This.Update("(0.2) Extracting",0,"Master.txt")
+        $MasterFile           = [ProjectFileEntry]::New("Master.txt",$This.Zip,$This.Base)
+        If (!$MasterFile)
+        {
+            $This.Error("Failed to extract Master.txt file")
+        }
+        $MasterFile.Extract()
+        $This.Update("(0.2) Extracted",1,"Master.txt")
+
+        # Extract Logs.txt
+        $This.Update("(0.3) Extracting",0,"Logs.txt")
+        $LogsFile             = [ProjectFileEntry]::New("Logs.txt",$This.Zip,$This.Base)
+        If (!$LogsFile)
+        {
+            $This.Error("Failed to extract Logs.txt file")
+        }
+        $LogsFile.Extract()
+        $This.Update("(0.3) Extracted",1,"Logs.txt")
+
+        # Restore captured system details
+        $This.Update("(0.4) Restoring",0,"(Captured) system details")
+        $This.System          = Get-SystemDetails -Path $MasterFile.Path
+        If (!$This.System)
+        {
+            $This.Error("Failed to restore captured system details")
+        }
+        $This.Start           = $This.System.Snapshot.Start
+        $This.DisplayName     = $This.System.Snapshot.DisplayName
+        $This.Threads         = $This.System.Processor.Output.Threads
+        $This.Guid            = $This.System.Snapshot.Guid
+        $This.Update("(0.4) Restored",1,"System details")
+
+        # Process the logs
+        $This.Update("(0.5) Restoring",0,"(Captured) Event log providers")
+        $RawLogs              = Get-Content $LogsFile.Path | ConvertFrom-Json   
+        $This.Logs            = @( )
+        $Stash                = @{ }
+        $Hash                 = @{ }
+        ForEach ($X in 0..($RawLogs.Count-1))
+        {
+            $Item             = Get-EventLogConfigExtension -Config $RawLogs[$X]
+            If (!$Item)
+            {
+                $This.Error("Unable to retrieve log configuration extension for Logs.txt[$X]")
+            }
+            $Item.Output      = @( )
+            $This.Logs       += $Item
+            $Stash.Add($Item.LogName,@{ })
+        }
+        $This.Update("(0.5) Restored",1,"Event log providers")
+
+        # Process the events
+        $This.Update("(0.6) Importing",0,"(Captured) Events")
+        $Events               = $This.Zip.Entries | ? Name -notmatch "(Master|Logs).txt"
+
+        $Id                   = [ProjectProgress]::New($Events)
+        $This.Update("(1.0) Importing",0,"(0.00%) Events: ($($Id.Total)) found.")
+        ForEach ($X in 0..($Id.Total-1))
+        {
+            $Item             = Get-EventLogRecordExtension -Index $X -Entry $Events[$X]
+            $Hash.Add($X,$Item)
+            $Stash[$Item.LogName].Add($Stash[$Item.LogName].Count,$X)
+            If ($X -in $Id.Index.Slot)
+            {
+                $This.Update("(1.0) Importing",0,$Id.Slot($X).Line())
+            }
+            If ($X -eq $Id.Total)
+            {
+                $This.Update("(1.0) Importing",0,$Id.Index[-1].Line())
+            }
+        }
+        $This.Update("(1.0) Imported",1,"(100.00%) [+] Events: ($($Id.Total)) found.")
+        $This.Output          = $Hash[0..($Hash.Count-1)]
+
+        # Dispose the zip file
+        $This.Zip.Dispose()
+
+        # Sort the logs
+        $This.Update("(1.1) Restoring",0,"Events for each log provider")
+
+        $Id                   = [ProjectProgress]::New($This.Logs)
+        $This.Update("(1.1) Sorting",0,"(0.00%) [~] Logs: ($($Id.Total)) found.")
+        ForEach ($X in 0..($Id.Total-1))
+        {
+            $Name             = $This.Logs[$X].LogName
+            $This.Logs[$X].Output  = Switch ($Stash[$Name].Count)
+            {
+                0 { @( ) } 1 { @($This.Output[$Stash[$Name][0]]) } Default { @($This.Output[$Stash[$Name][0..($Stash[$Name].Count-1)]]) }
+            }
+            $This.Logs[$X].Total   = $This.Logs[$X].Output.Count
+            If ($X -in $Id.Index.Slot)
+            {
+                $This.Update("(1.1) Sorting",0,$Id.Slot($X).Line())
+            }
+            If ($X -eq $Id.Total)
+            {
+                $This.Update("(1.1) Sorting",0,$Id.Index[-1].Line())
+            }
+        }
+        $This.Update("(1.1) Sorted",1,"(100.00%) [+] Logs: ($($Id.Total)) found.")
+        $This.Time.Stop()
+    }
+    Current()
+    {
+        [Console]::WriteLine($This.Console.Status())
+    }
+    Update([String]$Phase,[String]$Message)
+    {
+        [Console]::WriteLine($This.Console.Update($Phase,$Message))
+    }
+    Update([String]$Phase,[UInt32]$Type,[String]$Message)
+    {
+        [Console]::WriteLine($This.Console.Update($Phase,$Type,$Message))
+    }
+    [Void] Error([String]$Message)
+    {
+        $This.Update("Exception",2,$Message)
+        Throw $This.Console.ToString()
+    }
+    [Object[]] GetConsole()
+    {
+        Return $This.Console.Output[0..($This.Console.Output.Count-1)]
+    }
+}
+#\___________                          _________________________________________________________
+Class Project                         #\_[ Orchestrates all of the (classes/functions) above ]_/
+{
+    [Object]        $Console
+    [Object]           $Time
+    [DateTime]        $Start
+    [Object]         $System
+    [String]    $DisplayName
+    [UInt32]        $Threads
+    [Guid]             $Guid
+    [ProjectBase]      $Base
+    [Object]           $Logs = @( )
+    [Object]         $Output = @( )
+    Project([UInt32]$Throttle)
+    {
+        $This.Threads = $Throttle
+        $This.Init()
+    }
+    Project()
+    {
+        $This.Init()
+    }
+    Init()
+    {
+        # Start system snapshot, count threads / max runspace pool size
+        $This.Time          = [System.Diagnostics.Stopwatch]::StartNew()
+        $This.Console       = [ProjectConsole]::New($This.Time)
+        
+        $This.Update("(0.0) Loading",0,"System snapshot details")
+        $This.System        = Get-SystemDetails
+        $This.Start         = $This.System.Snapshot.Start        
+        $This.DisplayName   = $This.System.Snapshot.DisplayName
+        If (!$This.Threads)
+        {
+            $This.Threads   = $This.System.Processor.Output.Threads | Measure-Object -Sum | % Sum
+        }
+
+        If ($This.Threads -lt 2)
+        {
+            $This.Error("CPU only has (1) thread (selected/available)")
+        }
+
+        # System snapshot has already created a Guid, to create a new folder for the threads
+        $This.Guid          = $This.System.Snapshot.Guid
+        $This.Base          = $This.Establish([Environment]::GetEnvironmentVariable("temp"),$This.Guid)
+
+        $This.Update("(0.1) Created",1,"Base directory")
+        $This.Providers()
+    }
+    [Object] Establish([String]$Base,[String]$Name)
+    {
+        Return [ProjectBase]::New("$Base\$Name")
+    }
+    [String[]] Itemize([Object[]]$ItemList,[String]$Extension)
+    {
+        $Range = 0..($ItemList.Count-1)
+        $Depth = ([String]$Range.Count).Length
+        Return @( $Range | % { "{0:d$Depth}.$Extension" -f $_ })
+    }
+    Providers()
+    {
+        # Loads the provider names
+        $Providers        = $This.System.LogProviders.Output
+        $Slot             = $This.Slot("Threads")
+        $Names            = $This.Itemize(@(0..($This.Threads-1)),"txt")
+        $Slot.Create($Names)
+        ForEach ($X in 0..($This.Threads-1))
+        {
+            $File         = $Slot.File($Names[$X])
+            $Value        = 0..($Providers.Count-1) | ? { $_ % $This.Threads -eq $X } | % { $_,$Providers[$_].Value -join ',' }
+            $File.Write($Value -join "`n")
+            $Slot.Update()
+        }
+        $This.Update("(0.2) Prepared",1,"Event log collection split between threads")
+    }
+    [Object] Slot([String]$Slot)
+    {
+        Return $This.Base.Folders | ? Name -eq $Slot
+    }
+    Current()
+    {
+        [Console]::WriteLine($This.Console.Status())
+    }
+    Update([String]$Phase,[String]$Message)
+    {
+        [Console]::WriteLine($This.Console.Update($Phase,$Message))
+    }
+    Update([String]$Phase,[UInt32]$Type,[String]$Message)
+    {
+        [Console]::WriteLine($This.Console.Update($Phase,$Type,$Message))
+    }
+    [Void] Error([String]$Message)
+    {
+        $This.Update("Exception",2,$Message)
+        Throw $This.Console.ToString()
+    }
+    SaveMaster()
+    {
+        $Value        = $This.System.GetOutput()
+        $Slot         = $This.Slot("Master")
+        $Slot.Create("Master.txt")
+        $File         = $Slot.File("Master.txt")
+        $File.Write($Value -join "`n")
+        $This.Update("Success",1,"Master file: [$File], Size: [$($File.Size)]")
+    }
+    SaveLogs()
+    {
+        $Value         = $This.Logs | Select-Object Rank,LogName,LogType,LogIsolation,IsEnabled,IsClassicLog,SecurityDescriptor,LogFilePath,
+        MaximumSizeInBytes,Maximum,Current,LogMode,OwningProviderName,ProviderNames,ProviderLevel,ProviderKeywords,ProviderBufferSize,
+        ProviderMinimumNumberOfBuffers,ProviderMaximumNumberOfBuffers,ProviderLatency,ProviderControlGuid | ConvertTo-Json
+        
+        $Slot          = $This.Slot("Logs")
+        $Slot.Create("Logs.txt")
+        $File          = $Slot.File("Logs.txt")
+        $File.Write($Value)
+        $This.Update("Success",1,"Log config file: [$File], Size: [$($File.Size)]")
+    }
+    [String] Destination()
+    {
+        Return "{0}\{1}.zip" -f ($This.Base | Split-Path -Parent), $This.DisplayName
+    }
+    Delete()
+    {
+        $This.Update("Terminating",2,"Process was instructed to be deleted")
+        $This.Base.Flush()
+        $This.Start         = [DateTime]::FromOADate(1)
+        $This.System        = $Null
+        $This.DisplayName   = $Null
+        $This.Guid          = [Guid]::Empty
+        $This.Time          = $Null
+        $This.Threads       = $Null
+        $This.Base          = $Null
+        $This.Logs          = $Null
+        $This.Output        = $Null
+        $This.GetConsole()
+    }
+    [Object[]] GetConsole()
+    {
+        Return @( $This.Console.GetOutput() )
+    }
+    [Object] ToString()
+    {
+        Return $This
+    }
+}
+#                                                                     __________________________
+#\____________________________________________________________________\_[ </Project Classes> ]_/
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+
 
 # ______________________________________________________________________________________________
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\_[ <Controller Classes> ]_/
-#                                                                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\_[ <Controller Class> ]_/
+#                                                                      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+#\____________________________                                         _________________________
+Class ProjectEventSlot
+{
+    [String] $Type
+    [Int32]  $Index    = -1
+    [Object] $Property
+    [Object] $Filter   
+    [Object] $Hash     = @{ }
+    [Object] $Result   = @( )
+    ProjectEventSlot([String]$Type)
+    {
+        $This.Type     = $Type
+    }
+    SetIndex([UInt32]$Index)
+    {
+        $This.Index    = $Index
+    }
+    [String] ToString()
+    {
+        Return $This.Type
+    }
+}
+
+Class ProjectEventTree
+{
+    [Object] $LogMain
+    [Object] $LogOutput
+    [Object] $Output
+    ProjectEventTree()
+    {
+        $This.LogMain   = $This.Add("LogMain")
+        $This.LogOutput = $This.Add("LogOutput")
+        $This.Output    = $This.Add("Output")
+    }
+    [Object] Add([String]$Type)
+    {
+        Return [ProjectEventSlot]::New($Type)
+    }
+}
+
+Class ProjectCommand
+{
+    [Object]  $Window
+    [Object] $Control
+    [Object] $Console
+    [Object]  $Output
+    [Object]    $Text
+    ProjectCommand([Object]$Window)
+    {
+        $This.Window  = $Window
+        $This.Control = $Window.Console
+        $This.Text    = ""
+        $This.Output  = @( )
+    }
+    SetConsole([Object]$Console)
+    {
+        $This.Console = $Console
+    }
+    Current()
+    {
+        $This.Write($This.Console.Status())
+    }
+    Update([String]$Phase,[String]$Message)
+    {
+        $This.Write($This.Console.Update($Phase,$Message))
+    }
+    Update([String]$Phase,[UInt32]$Type,[String]$Message)
+    {
+        $This.Write($This.Console.Update($Phase,$Type,$Message))
+    }
+    [Void] Write([Object]$Line)
+    {
+        $This.Output += $Line
+        $Object       = $This.Control
+        $This.Window.Dispatcher.Invoke([Action]{$Object.Control.AppendText($Line + "`n")}, $True)
+        $Object.Control.ScrollToEnd()
+    }
+}
 #\_____________________                                            _____________________________
 Class ProjectController                                           #\_[ Main controller class ]_/
 {
-    [Hashtable]        $Sync
-    [Object]           $Xaml
-    [Object]  $ThreadControl = [ThreadControl]::New("RunspacePool")
-    [Object]        $Project
+    [Object]                  $Xaml
+    Hidden [Object]        $Command
+    [Object]               $Console
+    Hidden [Object]  $ThrottleIndex
+    [UInt32]              $Throttle
+    [Object]         $ThreadControl
+    Hidden [String]          $Begin
+    [UInt32]                  $Mode
+    Hidden [Bool]          $Started
+    [Object]               $Project
+    [Object]                $System
+    [Object]               $Archive
+    Hidden [UInt32]           $Rank
+    Hidden [Object]        $Section
+    Hidden [UInt32]           $Slot
+    Hidden [Object]          $Event
+    [UInt32]                  $Menu
+    [UInt32]                $Subset
+    [String[]]               $Panel = "Main","Log","Output","View"
     ProjectController()
     {
-        $This.Sync    = [Hashtable]::Synchronized(@{})
-        $This.Xaml    = [XamlWindow][EventLogGUI]::Tab
+        # Defaults
+        $This.Begin          = $This.SetBegin()
+        $This.Xaml           = $This.SetXaml()
+        $This.Command        = $This.SetCommand($This.Xaml.IO)
+        $This.ThrottleIndex  = $This.SetThrottleIndex()
+        $This.AutoThrottle()
+        $This.ThreadControl  = $This.SetThreadControl("RunspacePool")
+        $This.Event          = $This.SetEvent()
+
+        # Initial (Menu/GUI) settings
         $This.Main(0)
+        $This.Reset($This.Xaml.IO.Threads.Items,$This.ThrottleIndex.Count)
+        $This.Reset($This.Xaml.IO.Throttle.Items,$This.ThrottleIndex.Output)
+        $This.Xaml.IO.Throttle.SelectedIndex = $This.ThrottleIndex.Output | ? Cores -eq $This.Throttle | % Index
+        $This.ClearArchive()
     }
-    Main([UInt32]$Slot)
+    [String] SetBegin()
+    {
+        If ($This.Begin)
+        {
+            Throw "Begin already set"
+        }
+
+        Return "{0}-{1}" -f [DateTime]::Now.ToString("yyyy-MMdd-HHmmss"), [Environment]::MachineName
+    }
+    [Object] SetXaml()
+    {
+        If ($This.Xaml)
+        {
+            Throw "Xaml object already set"
+        }
+
+        Return [XamlWindow][EventLogGui]::Tab
+    }
+    [Object] SetCommand([Object]$Window)
+    {
+        If ($This.Command)
+        {
+            Throw "Command property already set"
+        }
+
+        Return [ProjectCommand]::New($Window)
+    }
+    [Object] SetThrottleIndex()
+    {
+        If ($This.ThrottleIndex)
+        {
+            Throw "Throttle index has already been set"
+        }
+        Return [ThrottleIndex]::New()
+    }
+    [Void] SetThrottle([Object]$Object)
+    {
+        $This.Throttle                      = $Object.Cores
+        $This.Xaml.IO.Throttle.SelectedItem = $This.Xaml.IO.Throttle.Items | ? Cores -eq $This.Throttle
+    }
+    [Void] SetThrottle([UInt32]$Count)
+    {
+        $This.Throttle                      = $Count
+        $This.Xaml.IO.Throttle.SelectedItem = $This.Xaml.IO.Throttle.Items | ? Cores -eq $This.Throttle
+    }
+    [Void] AutoThrottle()
+    {
+        $This.ThrottleIndex.AutoThrottle()
+        $This.SetThrottle(($This.ThrottleIndex.Current * $This.ThrottleIndex.Count))
+    }
+    [Object] SetThreadControl([String]$Type)
+    {
+        If ($This.Thread)
+        {
+            Throw "Thread control already set"
+        }
+
+        Return [ThreadControl]::New($Type,$This.Throttle)
+    }
+    [Object] SetThreadControl([String]$Type,[UInt32]$Throttle)
+    {
+        If ($This.Thread)
+        {
+            Throw "Thread control already set"
+        }
+
+        Return [ThreadControl]::New($Type,$Throttle)
+    }
+    [Object] SetEvent()
+    {
+        If ($This.Event)
+        {
+            Throw "Event tree has already been set"
+        }
+
+        Return [ProjectEventTree]::New()
+    }
+    [Void] Main([UInt32]$Slot)
     {
         ForEach ($X in 0..($This.Panel.Count-1))
         {
@@ -3441,75 +4280,144 @@ Class ProjectController                                           #\_[ Main cont
                 $Item.Visibility  = "Visible"
             }
         }
-
         $This.Menu = $Slot
     }
-    GetLogOutput()
+    [Void] SubMain([UInt32]$Slot)
     {
-        $Flag                                     = @(0,1)[$This.Xaml.IO.LogTotal.Text -gt 0]
-        $This.Reset($This.Xaml.IO.LogOutputResult.Items,$This.Event.Log[$This.LogMainIndex].Output)
-        $This.Xaml.IO.LogOutputProperty.IsEnabled = $Flag
-        $This.Xaml.IO.LogOutputFilter.Text        = ""
-        $This.Xaml.IO.LogOutputFilter.IsEnabled   = $Flag
-        $This.Xaml.IO.LogOutputRefresh.IsEnabled  = $Flag
-        $This.Xaml.IO.LogOutputResult.IsEnabled   = $Flag
+        $Names = "Console","Table","Archive"
+        ForEach ($X in 0..($Names.Count-1))
+        {
+            $Item                 = $This.Xaml.IO."$($Names[$X])Set"
+            $Item.Background      = "#DFFFBA"
+            $Item.Foreground      = "#000000"
+            $Item.BorderBrush     = "#000000"
+
+            If ($X -eq $Slot)
+            {
+                $Item.Background  = "#4444FF"
+                $Item.Foreground  = "#FFFFFF"
+                $Item.BorderBrush = "#111111"
+            }
+
+            $Item                 = $This.Xaml.IO."$($Names[$X])Slot"
+            $Item.Visibility      = "Collapsed"
+
+            If ($X -eq $Slot)
+            {
+                $Item.Visibility  = "Visible"
+            }
+        }
+        $This.Subset = $Slot
     }
-    Initialize()
+    [Void] SetMode([UInt32]$Mode)
+    {
+        If ($This.Started)
+        {
+            Throw "Process has already been started"
+        }
+
+        $This.Mode = $Mode
+    }
+    [Void] Initialize()
     {
         $This.Main(0)
+        $This.Xaml.IO.Mode.IsEnabled     = 0
+        $This.Xaml.IO.Continue.IsEnabled = 0
+        $This.Xaml.IO.Base.IsEnabled     = 0
 
-        $This.Xaml.IO.Time.Text          = $This.Event.Time.Elapsed
-        $This.Xaml.IO.Start.Text         = $This.Event.Start.ToString()
-        $This.Xaml.IO.Title.Text         = $This.Event.Title
-        $This.Xaml.IO.Destination.Text   = $This.Event.Destination
-        $This.Reset($This.Xaml.IO.Providers.Items,$This.Event.Providers)
-        $This.Xaml.IO.ProviderCount.Text = $This.Event.Providers.Count
-        If ($This.Event.Providers.Count -gt 0)
-        {
-            $This.Xaml.IO.Providers.SelectedIndex = 0
-        }
+        $This.Xaml.IO.Time.Text          = $This.Project.Time.Elapsed
+        $This.Xaml.IO.Start.Text         = $This.Project.Start.ToString()
 
-        $This.Reset($This.Xaml.IO.LogMainResult.Items,$This.Event.Log)
-        $This.Reset($This.Xaml.IO.OutputResult.Items,$This.Event.Output)
-        ForEach ($Item in $This.Event.Output)
-        {
-            $This.Hash.Add($This.Hash.Count,$Item)
-        }
+        $This.Project.System.GetOutput() | Out-Null
+        $This.System                     = @([PropertyObject[]]$This.Project.System.Output.Content)
+
+        $This.Xaml.IO.DisplayName.Text   = $This.Project.DisplayName
+        $This.Xaml.IO.Guid.Text          = $This.Project.Guid
+        $This.Xaml.IO.Base.Text          = $This.Project.Base.ToString()
+
+        $This.Reset($This.Xaml.IO.Archive.Items,$This.Archive)
+        $This.Reset($This.Xaml.IO.LogMainResult.Items,$This.Project.Logs)
+        $This.Reset($This.Xaml.IO.OutputResult.Items,$This.Project.Output)
+
+        $This.SetRank(0)
     }
-    InsertEventLogs([Object]$EventLogObject)
+    SetRank([UInt32]$Rank)
     {
-        $This.EventInsertEventLogs($EventLogObject)
-        $This.Xaml.IO.ModeSelect.SelectedIndex = 0
+        $This.Rank    = $Rank
+        $This.Section = $This.System[$This.Rank]
+        $This.Xaml.IO.Slot.Items.Clear()
+        $X            = 0
+        Do
+        {
+            If ($This.Section.Slot[$X])
+            {
+                $This.Xaml.IO.Slot.Items.Add($X)
+            }
+            $X ++
+        }
+        Until (!$This.Section.Slot[$X])
+
+        $This.Xaml.IO.Slot.SelectedIndex = 0
+        $This.SetSlot()
+    }
+    SetSlot()
+    {
+        $This.Reset($This.Xaml.IO.System.Items,$This.Section.Slot[$This.Xaml.IO.Slot.SelectedIndex])
+    }
+    [Object] PropertyItem([String]$Name,[Object]$Value)
+    {
+        Return [PropertyItem]::New($Name,$Value)
+    }
+    [Object[]] PropertyObject([Object]$Object)
+    {
+        Return @( ForEach ($Item in $Object.PSObject.Properties)
+        {
+            [PropertyItem]::New($Item.Name,$Item.Value)
+        })
+    }
+    ClearArchive()
+    {
+        $This.Archive = Get-EventLogArchive -New
+        $This.Reset($This.Xaml.IO.Archive.Items,$This.Archive)
+    }
+    SetArchive([String]$Path)
+    {
+        If (![System.IO.File]::Exists($Path))
+        {
+            Throw "Invalid path specified"
+        }
+        
+        $This.Archive = Get-EventLogArchive -Path $Path
+        $This.Reset($This.Xaml.IO.Archive.Items,$This.Archive)
+    }
+    SetConsole()
+    {
+        If ($This.Console)
+        {
+            Throw "Console has already been set"
+        }
+        
+        $This.Command.SetConsole($This.Project.Console)
+        $This.Console = $This.Command.Console
+    }
+    NewProject()
+    {
+        If (!$This.Throttle)
+        {
+            Throw "Set the throttle first"
+        }
+        
+        $This.ClearArchive()
+        $This.Project = [Project]::New($This.Throttle)
+        $This.SetConsole()
         $This.Initialize()
     }
-    GetEventLogs()
+    LoadProject([String]$Path)
     {
-        $This.Event.Start()
-        $This.Xaml.IO.ModeSelect.SelectedIndex = 1
+        $This.SetArchive($Path)
+        $This.Project = [ProjectRestore]::New($Path)
+        $This.SetConsole()
         $This.Initialize()
-    }
-    ImportEventLogs([String]$Path)
-    {
-        If (!(Test-Path $Path))
-        {
-            Throw "Invalid path"
-        }
-        $This.Event.Start($Path)
-        $This.Xaml.IO.ModeSelect.SelectedIndex = 2
-        $This.Initialize()
-    }
-    ExportEventLogs()
-    {
-        $This.Event.Export()
-    }
-    ExportEventLogs([String]$Path)
-    {
-        If (!(Test-Path $Path))
-        {
-            Throw "Invalid path"
-        }
-        $This.Event.Destination = "$Path\$($This.Title)"
-        $This.Event.Export()
     }
     Reset([Object]$Sender,[Object[]]$Content)
     {
@@ -3519,9 +4427,19 @@ Class ProjectController                                           #\_[ Main cont
             $Sender.Add($Item)
         }
     }
+    GetLogOutput()
+    {
+        $Flag                                     = @(0,1)[$This.Xaml.IO.LogTotal.Text -gt 0]
+        $This.Reset($This.Xaml.IO.LogOutputResult.Items,$This.Event.Log[$This.Event.LogMain.Index].Output)
+        $This.Xaml.IO.LogOutputProperty.IsEnabled = $Flag
+        $This.Xaml.IO.LogOutputFilter.Text        = ""
+        $This.Xaml.IO.LogOutputFilter.IsEnabled   = $Flag
+        $This.Xaml.IO.LogOutputRefresh.IsEnabled  = $Flag
+        $This.Xaml.IO.LogOutputResult.IsEnabled   = $Flag
+    }
     [Object[]] ViewProperties([Object]$Object)
     {
-        Return @( $Object.PSObject.Properties | % { [DGList]::New($_.Name,$_.Value) } )
+        Return @( $Object.PSObject.Properties | % { [PropertyItem]::New($_.Name,$_.Value) } )
     }
     [String] CleanString([String]$String)
     {
@@ -3568,22 +4486,428 @@ Class ProjectController                                           #\_[ Main cont
     }
     Current()
     {
-        [Console]::WriteLine($This.Console.Status())
+        $This.Console.Status()
     }
     Update([String]$Phase,[String]$Message)
     {
-        [Console]::WriteLine($This.Console.Update($Phase,$Message))
+        $This.Console.Update($Phase,$Message)
     }
     Update([String]$Phase,[UInt32]$Type,[String]$Message)
     {
-        [Console]::WriteLine($This.Console.Update($Phase,$Type,$Message))
+        $This.Console.Update($Phase,$Type,$Message)
     }
     [Void] Error([String]$Message)
     {
         $This.Update("Exception",2,$Message)
-        Throw $This.Console.ToString()
+        [System.Windows.MessageBox]::Show($This.Console.ToString())
+    }
+    Invoke()
+    {
+        $This.Xaml.Invoke()
     }
 }
+#                                                                    ___________________________
+#\___________________________________________________________________\_[ </Controller Class> ]_/
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+
+$Ctrl = [ProjectController]::New()
+
+# ______________________________________________________________________________________________ 
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+# [0.0]: Menu (Event Handling)
+#\______________________________________________________________________________________________/
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+    
+# (0.1) MainTab ________________
+$Ctrl.Xaml.IO.MainTab.Add_Click(
+{
+    If ($Ctrl.Menu -ne 0)
+    {
+        $Ctrl.Main(0)
+    }
+})
+
+# (0.2) LogTab ________________
+$Ctrl.Xaml.IO.LogTab.Add_Click(
+{
+    If ($Ctrl.Menu -ne 1)
+    {
+        $Ctrl.Main(1)
+    }
+})
+
+# (0.3) OutputTab ________________
+$Ctrl.Xaml.IO.OutputTab.Add_Click(
+{
+    If ($Ctrl.Menu -ne 2)
+    {
+        $Ctrl.Main(2)
+    }
+})
+
+# (0.4) ViewTab ________________
+$Ctrl.Xaml.IO.ViewTab.Add_Click(
+{
+    If ($Ctrl.Menu -ne 3)
+    {
+        $Ctrl.Main(3)
+    }
+})
+
+# ______________________________________________________________________________________________  
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
+# [1.0]: MainTab/MainPanel (Event Handling)                                                       
+#\______________________________________________________________________________________________/ 
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
+
+# (1.01) Mode __________________________
+$Ctrl.Xaml.IO.Mode.Add_SelectionChanged(
+{
+        $Index                          = $Ctrl.Xaml.IO.Mode.SelectedIndex
+        $Ctrl.Xaml.IO.Base.Text         = ""
+        $Ctrl.Xaml.IO.Browse.Visibility = @(1,0)[$Index]
+        $Ctrl.Xaml.IO.Browse.IsEnabled  = 1
+        $Ctrl.Xaml.IO.Export.Visibility = @(0,1)[$Index]
+        $Ctrl.Xaml.IO.Export.IsEnabled  = 1
+        If ($Ctrl.Archive)
+        {
+            $Ctrl.ClearArchive()
+        }
+})
+
+# (1.02) Continue _______________
+$Ctrl.Xaml.IO.Continue.Add_Click(
+{
+    $Index                                   = $Ctrl.Xaml.IO.Mode.SelectedIndex
+    Switch ($Index)
+    {
+        0 
+        {
+            $Ctrl.Xaml.IO.Filename.Text      = $Ctrl.Archive.Path
+            $Ctrl.Submain(1)
+            $Ctrl.NewProject()
+            $Ctrl.SetMode($Index)
+        }
+        1 
+        {
+            If (![System.IO.File]::Exists($Ctrl.Xaml.IO.Base.Text))
+            {
+                Throw "Invalid file path"
+            }
+            $Ctrl.Xaml.IO.Filename.Text      = $Ctrl.Archive.Path
+            $Ctrl.Submain(1)
+            $Ctrl.LoadProject($Ctrl.Xaml.IO.Base.Text)
+            $Ctrl.Xaml.IO.Browse.IsEnabled   = 0
+            $Ctrl.SetMode($Index)
+        }
+    }
+
+    If ($Ctrl.Project)
+    {
+        $Ctrl.Xaml.IO.Throttle.IsEnabled     = 0
+        $Ctrl.Xaml.IO.AutoThrottle.IsEnabled = 0
+        $Ctrl.Xaml.IO.Threads.IsEnabled      = 0
+    }
+})
+
+# (1.05) Section __________________________
+$Ctrl.Xaml.IO.Section.Add_SelectionChanged(
+{
+    $Index = $Ctrl.Xaml.IO.Section.SelectedIndex
+    If ($Ctrl.System -and $Index -gt -1)
+    {
+        $Ctrl.SetRank($Index)
+    }
+})
+
+# (1.06) Slot __________________________
+$Ctrl.Xaml.IO.Slot.Add_SelectionChanged(
+{
+    $Index = $Ctrl.Xaml.IO.Slot.SelectedIndex 
+    If ($Ctrl.System -and $Index -gt -1)
+    {
+        $Ctrl.SetSlot($Index)
+    }
+})
+
+# (1.11) AutoThrottle _________________
+$Ctrl.Xaml.IO.AutoThrottle.Add_Checked(
+{
+    $Ctrl.Xaml.IO.Throttle.IsEnabled = 0
+    $Ctrl.AutoThrottle()
+})
+
+# (1.12) AutoThrottle ___________________
+$Ctrl.Xaml.IO.AutoThrottle.Add_Unchecked(
+{
+    $Ctrl.Xaml.IO.Throttle.IsEnabled = 1
+})
+
+# (1.0A) Throttle __________________________
+$Ctrl.Xaml.IO.Throttle.Add_SelectionChanged(
+{
+    $Item = $Ctrl.Xaml.IO.Throttle.SelectedItem
+    If ($Item.Cores -ne $Ctrl.Throttle)
+    {
+        $Ctrl.SetThrottle($Item)
+    }
+})
+
+# (1.0F) Browse _______________
+$Ctrl.Xaml.IO.Browse.Add_Click(
+{
+    $Item                           = [System.Windows.Forms.OpenFileDialog]::New()
+    $Item.Title                     = "Select an existing archive made by this utility"
+    $Item.InitialDirectory          = [Environment]::GetEnvironmentVariable("temp")
+    $Item.Filter                    = "zip files (*.zip)|*.zip"
+    $Item.ShowDialog()
+        
+    If ($Item.FileName -ne "" -and ![System.IO.File]::Exists($Item.Filename))
+    {
+        Throw "File does not exist"
+    }
+    ElseIf ($Item.FileName -eq "")
+    {
+        $Ctrl.Xaml.IO.Base.Text     = ""
+        $Ctrl.SetArchive()
+    }
+    $Ctrl.Xaml.IO.Base.Text     = $Item.Filename
+    $Ctrl.SetArchive($Item.Filename)
+})
+
+# (1.10) Export _______________
+$Ctrl.Xaml.IO.Export.Add_Click(
+{
+    $Item                           = [System.Windows.Forms.SaveFileDialog]::New()
+    $Item.Title                     = "Save the information collected with this utility"
+    $Item.InitialDirectory          = [Environment]::GetEnvironmentVariable("temp")
+    $Item.Filter                    = "zip files (*.zip)|*.zip"
+    $Item.FileName                  = $Ctrl.Begin
+    $Item.ShowDialog()
+        
+    If (!$Item.FileName)
+    {
+        $Ctrl.Xaml.IO.Base.Text     = ""
+    }
+    Else
+    {
+        $Ctrl.Xaml.IO.Base.Text      = $Item.SelectedPath
+    }
+})
+
+# (1.11) ConsoleSet _______________
+$Ctrl.Xaml.IO.ConsoleSet.Add_Click(
+{
+    If ($Ctrl.Subset -ne 0)
+    {
+        $Ctrl.SubMain(0)
+    }
+})
+
+# (1.12) TableSet _______________
+$Ctrl.Xaml.IO.TableSet.Add_Click(
+{
+    If ($Ctrl.Subset -ne 1)
+    {
+        $Ctrl.SubMain(1)
+    }
+})
+
+# (1.13) ArchiveSet _______________
+$Ctrl.Xaml.IO.ArchiveSet.Add_Click(
+{
+    If ($Ctrl.Subset -ne 2)
+    {
+        $Ctrl.SubMain(2)
+    }
+})
+
+# ______________________________________________________________________________________________  
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
+# [2.0]: LogTab/LogPanel (Event Handling)                                                         
+#\______________________________________________________________________________________________/ 
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
+
+# (2.2) LogMainFilter _________________
+$Ctrl.Xaml.IO.LogMainFilter.Add_TextChanged( 
+{
+    Start-Sleep -Milliseconds 50
+    $Ctrl.Event.LogMain.Filter = $Ctrl.Xaml.IO.LogMainFilter.Text
+    If ($Ctrl.Project.Logs.Count -gt 0 -and $Ctrl.Event.LogMain.Filter -ne "")
+    {
+        $Result = @( $Ctrl.Project.Logs | ? $Ctrl.LogProperty($Ctrl.Xaml.IO.LogMainProperty.Text) -match $Ctrl.CleanString($Ctrl.Event.LogMain.Filter) )
+        If ($Result)
+        {
+            $Ctrl.Reset($Ctrl.Xaml.IO.LogMainResult.Items,$Result)
+        }
+        Else
+        {
+            $Ctrl.Xaml.IO.LogMainResult.Items.Clear()
+        }
+    }
+    Else
+    {
+        If ($Ctrl.Project.Logs.Count -notmatch $Ctrl.Xaml.IO.LogMainResult.Items.Count)
+        {
+            $Ctrl.Reset($Ctrl.Xaml.IO.LogMainResult.Items,$Ctrl.Project.Logs)
+        }
+    }
+})
+
+# (2.3) LogMainRefresh ___________
+$Ctrl.Xaml.IO.LogMainRefresh.Add_Click(
+{
+    $Ctrl.Reset($Ctrl.Xaml.IO.LogMainResult.Items,$Ctrl.Project.Logs)
+})
+
+# (2.4) LogMainResult ______________________
+$Ctrl.Xaml.IO.LogMainResult.Add_SelectionChanged(
+{
+    If ($Ctrl.Xaml.IO.LogMainResult.SelectedIndex -gt -1)
+    {
+        $Ctrl.Event.LogMain.Index            = $Ctrl.Xaml.IO.LogMainResult.SelectedItem.Rank
+        $Ctrl.Xaml.IO.LogSelected.Text       = $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].LogName
+        $Ctrl.Xaml.IO.LogTotal.Text          = $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Total
+        $Ctrl.GetLogOutput()
+    }
+})
+
+# (2.4) LogMainResult ______________________
+$Ctrl.Xaml.IO.LogMainResult.Add_MouseDoubleClick(
+{
+    $Ctrl.Event.LogMain.Index                = $Ctrl.Xaml.IO.LogMainResult.SelectedItem.Rank
+    If ($Ctrl.Event.LogMain.Index -gt -1)
+    {
+        $Ctrl.Reset($Ctrl.Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Property.Event.Logs[$Ctrl.Event.LogMain.Index].Config()))
+        $Ctrl.Main(3)
+    }
+})
+
+# (2.5) LogClear ________________
+$Ctrl.Xaml.IO.LogClear.Add_Click(
+{
+    $Ctrl.Event.LogMain.Index            = -1
+    $Xaml.IO.LogOutputResult.Items.Clear()
+    $Xaml.IO.LogSelected.Text            = ""
+    $Xaml.IO.LogTotal.Text               = 0
+    $Xaml.IO.LogOutputProperty.IsEnabled = 0
+    $Xaml.IO.LogOutputFilter.Text        = ""
+    $Xaml.IO.LogOutputFilter.IsEnabled   = 0
+    $Xaml.IO.LogOutputRefresh.IsEnabled  = 0
+    $Xaml.IO.LogOutputResult.IsEnabled   = 0
+})
+
+# (2.8) LogOutputFilter _________________
+$Ctrl.Xaml.IO.LogOutputFilter.Add_TextChanged(
+{
+    Start-Sleep -Milliseconds 50
+    $Ctrl.Event.LogOutput.Filter = $Ctrl.Xaml.IO.LogOutputFilter.Text
+    $Anchor                      = $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Output
+    If ($Anchor.Count -gt 0 -and $Ctrl.LogOutputFilter -ne "")
+    {
+        $Result = @( $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Output | ? $Ctrl.Xaml.IO.LogOutputProperty.Text -match $Ctrl.CleanString($Ctrl.Event.LogOutput.Filter) )
+        If ($Result)
+        {
+            $Ctrl.Reset($Ctrl.Xaml.IO.LogOutputResult.Items,$Result)
+        }
+        Else
+        {
+            $Ctrl.Xaml.IO.LogOutputResult.Items.Clear()
+        }
+    }
+    Else
+    {
+        If ($Anchor.Count -notmatch $Ctrl.Xaml.IO.LogOutputResult.Items.Count)
+        {
+            $Ctrl.Reset($Ctrl.Xaml.IO.LogOutputResult.Items,$Anchor)
+        }
+    }
+})
+
+# (2.9) LogOutputRefresh ___________
+$Ctrl.Xaml.IO.LogOutputRefresh.Add_Click(
+{
+    $Ctrl.Reset($Ctrl.Xaml.IO.LogOutputResult.Items,($Ctrl.Project.Logs | ? LogName -eq $Ctrl.Xaml.IO.LogSelected.Text | % Output))
+})
+
+# (2.A) LogOutputResult ______________________
+$Ctrl.Xaml.IO.LogOutputResult.Add_MouseDoubleClick(
+{
+    $Ctrl.Event.LogOutput.Index = $Ctrl.Xaml.IO.LogOutputResult.SelectedItem.Index
+    If ($Ctrl.Event.LogOutput.Index -gt -1)
+    {
+        $Ctrl.Reset($Ctrl.Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Event.Logs[$Ctrl.Event.LogMain.Index].Output[$Ctrl.Event.LogOutput.Index].Config()))
+        $Ctrl.Main(3)
+    }
+})
+
+# ______________________________________________________________________________________________  
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
+# [3.0]: OutputTab/OutputPanel (Event Handling)                                                   
+#\______________________________________________________________________________________________/ 
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
+
+# (3.0) OutputFilter ______________________
+$Ctrl.Xaml.IO.OutputFilter.Add_TextChanged(
+{
+    Start-Sleep -Milliseconds 50
+    $Ctrl.Event.Output.Filter = $Ctrl.Xaml.IO.OutputFilter.Text
+    If ($Ctrl.Project.Output.Count -gt 0 -and $Ctrl.Event.Output.Filter -ne "")
+    {
+        $Result = @( $Ctrl.Event.Output.Hash[0..($Ctrl.Event.Output.Hash.Count-1)] | ? $Ctrl.Xaml.IO.OutputProperty.Text -match $Ctrl.CleanString($Ctrl.Event.Output.Filter) )
+        If ($Result)
+        {
+            $Ctrl.Reset($Ctrl.Xaml.IO.OutputResult.Items,$Result)
+        }
+        Else
+        {
+            $Ctrl.Xaml.IO.OutputResult.Items.Clear()
+        }
+    }
+    Else
+    {
+        If ($Ctrl.Event.Output.Count -notmatch $Ctrl.Xaml.IO.OutputResult.Items.Count)
+        {
+            $Ctrl.Reset($Ctrl.Xaml.IO.OutputResult.Items,$Ctrl.Event.Output)
+        }
+    }
+})
+
+# (3.0) OutputRefresh ________________
+$Ctrl.Xaml.IO.OutputRefresh.Add_Click(
+{
+    $Ctrl.Reset($Ctrl.Xaml.IO.OutputResult.Items,$Ctrl.Event.Output)
+})
+
+# (3.0) OutputResult ___________________________
+$Ctrl.Xaml.IO.OutputResult.Add_MouseDoubleClick(
+{
+    $Ctrl.Event.Output.Index = $Ctrl.Xaml.IO.OutputResult.SelectedIndex
+    If ($Ctrl.OutputIndex -gt -1)
+    {
+        $Ctrl.Reset($Ctrl.Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Project.Output[$Ctrl.Event.Output.Index].Config()))
+        $Ctrl.Main(3)
+    }
+})
+
+# ______________________________________________________________________________________________  
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
+# [4.0]: ViewTab/ViewPanel (Event Handling)                                                         
+#\______________________________________________________________________________________________/ 
+#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
+
+# (4.0) ViewCopy ________________
+$Ctrl.Xaml.IO.ViewCopy.Add_Click(
+{
+    $Ctrl.ViewCopy() | Set-Clipboard
+})
+
+# (4.0) ViewClear ________________
+$Ctrl.Xaml.IO.ViewClear.Add_Click(
+{
+    $Ctrl.ViewClear()
+})
+
 
 # Begin
-$Ctrl = [ProjectController]::New()
+$Ctrl.Invoke()
