@@ -24,7 +24,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2022-04-08
-          Modified: 2022-05-05
+          Modified: 2022-05-07
           
           Version - 2021.10.0 - () - Finalized functional version 1.
           TODO:
@@ -36,8 +36,8 @@ Add-Type -Assembly System.IO.Compression, System.IO.Compression.Filesystem, Syst
 # ______________________________________________________________________________________________
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\__[ <Functions> ]__/
 #                                                                           ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
-#\__________________________________              ______________________________________________
-Function Get-EventLogConfigExtension             #\_[ Extracts event log configuration files ]_/
+#\__________________________________
+Function Get-EventLogConfigExtension
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
@@ -189,12 +189,13 @@ Function Get-EventLogConfigExtension             #\_[ Extracts event log configu
         1 { [EventLogConfigExtension]::New($Config)     }
     }
 }
-#\__________________________________                          __________________________________
-Function Get-EventLogRecordExtension                         #\_[ Extracts event log records ]_/
+#\__________________________________
+Function Get-EventLogRecordExtension
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
-        [Parameter(Mandatory,ParameterSetName=0)][Object]$Record,
+        [Parameter(Mandatory,ValueFromPipeline,ParameterSetName=0)][Object]$Record,
+        [Parameter(ParameterSetName=0)][Switch]$Full,
         [Parameter(Mandatory,ParameterSetName=1)][UInt32]$Index,
         [Parameter(Mandatory,ParameterSetName=1)][Object]$Entry)
 
@@ -331,17 +332,28 @@ Function Get-EventLogRecordExtension                         #\_[ Extracts event
     }
     Switch ($PsCmdLet.ParameterSetName)
     {
-        0 { [EventLogRecordExtension]::New($Record) }
+        0 
+        { 
+            $Item = [EventLogRecordExtension]::New($Record) 
+            If ($Full)
+            {
+                $Item.Config()
+            }
+            Else
+            {
+                $Item
+            }
+        }
         1 { [EventLogRecordExtension]::New(0,$Entry) }
     }
 }
-#\________________________                      ________________________________________________
+#\________________________
 Function Get-SystemDetails
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
         [Parameter(ParameterSetName=1)][String]$Path,
-        [Parameter(ParameterSetName=2)][Object]$InputObject) 
+        [Parameter(ValueFromPipeline,ParameterSetName=2)][Object]$InputObject) 
 
     # Formatting classes
     Class PropertyItem
@@ -1920,8 +1932,8 @@ Function Get-SystemDetails
         }
     }
 }
-#\__________________________                         ___________________________________________
-Function Get-EventLogArchive                        #\_[ Model for the GUI to expand archive ]_/
+#\__________________________
+Function Get-EventLogArchive
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
@@ -1929,14 +1941,20 @@ Function Get-EventLogArchive                        #\_[ Model for the GUI to ex
         [Parameter(Mandatory,ParameterSetName=1)][Switch]$New
     )
 
+    Add-Type -Assembly System.IO.Compression, System.IO.Compression.Filesystem
+
     Class EventLogArchive
     {
-        [String]     $Mode
-        [String] $Modified
-        [UInt32]   $Length
-        [String]     $Size 
-        [String]     $Name
-        [String]     $Path
+        [String]           $Mode
+        [String]       $Modified
+        [UInt32]         $Length
+        [String]           $Size 
+        [String]           $Name
+        [String]           $Path
+        Hidden [Int32]    $State
+        Hidden [String]  $Status
+        Hidden [Object]     $Zip
+        Hidden [Hashtable] $Hash
         EventLogArchive([String]$Fullname)
         {
             $File          = Get-Item $Fullname
@@ -1946,6 +1964,7 @@ Function Get-EventLogArchive                        #\_[ Model for the GUI to ex
             $This.Size     = "{0:n2} MB" -f ($File.Length/1MB)
             $This.Name     = $File.Name
             $This.Path     = $File.Fullname
+            $This.TestPath() | Out-Null
         }
         EventLogArchive()
         {
@@ -1955,6 +1974,150 @@ Function Get-EventLogArchive                        #\_[ Model for the GUI to ex
             $This.Size     = "0.00 MB"
             $This.Name     = "-"
             $This.Path     = "<New>"
+            $This.State    = -1
+            $This.Status   = "Template archive"
+        }
+        [String] Success([String]$Result)
+        {
+            Return "Success [+] $Result"
+        }
+        [String] Error([String]$Result)
+        {
+            Return "Exception [!] $Result"
+        }
+        [Void] Open()
+        {
+            Try 
+            {
+                $This.Zip    = [System.IO.Compression.ZipFile]::Open($This.Path,"Read")
+                $This.State  = 1
+                $This.Status = $This.Success("File: [$($This.Path)] - Opened, and can extract existing entries")
+            } 
+            Catch 
+            {
+                $This.Zip     = $Null
+                $This.State   = -1
+                $This.Status  = $This.Error("File: [$($This.Path)] - Invalid zip file")
+            }
+        }
+        [Void] Create()
+        {
+            Try
+            {
+                $This.Zip     = [System.IO.Compression.ZipFile]::Open($This.Path,"Create")
+                $This.Zip.Dispose()
+                $This.State   = 0
+                $This.Status  = $This.Success("File: [$($This.Path)] - Created, and was properly disposed")
+            }
+            Catch
+            {
+                $This.Zip     = $Null
+                $This.State   = -1
+                $This.Status  = $This.Error($PSItem)
+            }
+        }
+        [Void] Update()
+        {
+            Try
+            {
+                $This.Zip     = [System.IO.Compression.ZipFile]::Open($This.Path,"Update")
+                $This.State   = 2
+                $This.Status  = $This.Success("File: [$($This.Path)] - Opened, and can now be updated")
+                $This.Hash    = @{ }
+            }
+            Catch
+            {
+                $This.Zip     = $Null
+                $This.State   = -1
+                $This.Status  = $This.Error($PSItem)
+            }
+        }
+        [Void] Write([Object]$File)
+        {
+            If ($This.State -eq 2 -and !$This.Hash["$($File.Name)"])
+            {
+                $Item = [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($This.Zip,$File.Fullname,$File.Name,[System.IO.Compression.CompressionLevel]::Fastest)
+                $This.Hash.Add($File.Name,$Item)
+            }
+            Else
+            {
+                $This.Status  = $This.Error("File: [$($This.Path)] - Not yet available for updating")
+            }
+        }
+        [Void] GetEntries()
+        {
+            If ($This.State -ne 1)
+            {
+                $This.Open()
+                If ($This.State -eq 1)
+                {
+                    $This.PopulateEntryTable()
+                }
+            }
+            If ($This.State -eq 1)
+            {
+                $This.PopulateEntryTable()
+            }
+        }
+        [Void] PopulateEntryTable()
+        {
+            $This.Hash    = @{ }
+            ForEach ($X in 0..($This.Zip.Entries.Count-1))
+            {
+                $This.Hash.Add($This.Zip.Entries[$X].Name,$This.Zip.Entries[$X])
+            }
+        }
+        [Object] File([String]$Name)
+        {
+            Return $This.Hash["$Name"]
+        }
+        TestPath()
+        {
+            If ($This.Path -eq "<New>")
+            {
+                $This.State  = -1
+                $This.Status = $This.Error("File: [$($This.Path)] - Template zip file, archive needs to be populated with (base directory/files)")
+            }
+            ElseIf (![System.IO.File]::Exists($This.Path))
+            {
+                $This.State  = -1
+                $This.Status = $This.Error("File: [$($This.Path)] - Invalid file path")
+            }
+            ElseIf ([System.IO.FileInfo]::New($This.Path).Extension -ne ".zip")
+            {
+                $This.State  = -1
+                $This.Status = $This.Error("File: [$($This.Path)] - Invalid (*.zip) file entry")
+            }
+            Else
+            {
+                $This.State  = 0
+                $This.Status = $This.Success("File: [$($This.Path)] - Successfully validated")
+            }
+        }
+        SetPath([String]$Path)
+        {
+            $Parent          = $Path | Split-Path -Parent
+            If (![System.IO.Directory]::Exists($Parent))
+            {
+                $This.State  = -1
+                $This.Status = $This.Error("Invalid path provided")
+            }
+            ElseIf ([System.IO.File]::Exists($Path))
+            {
+                $This.State  = -1
+                $This.Status = $This.Error("File already exists")
+            }
+            Else
+            {
+                $This.State  = 0
+                $This.Path   = $Path
+                $This.Status = $This.Success("File: [$($This.Path)] - Path validated, and set to allow file creation")
+            }
+        }
+        [Void] GetState()
+        {
+            $This.TestPath()
+
         }
         [String] ToString()
         {
@@ -1968,6 +2131,909 @@ Function Get-EventLogArchive                        #\_[ Model for the GUI to ex
         1 { [EventLogArchive]::New()      }
     }
 }
+#\_______________________
+Function Get-AssemblyList
+{
+    Class AssemblyEntry
+    {
+        [String]                 $Name
+        [Version]             $Version
+        [String]             $Fullname
+        [String]             $CodeBase
+        [String[]]   $CustomAttributes
+        [Object[]]       $DefinedTypes
+        [Object]           $EntryPoint
+        [String]      $EscapedCodeBase
+        [Object]             $Evidence
+        [Type[]]        $ExportedTypes
+        [Boolean] $GlobalAssemblyCache
+        [Int64]           $HostContext
+        [String]  $ImageRuntimeVersion
+        [Bool]              $IsDynamic
+        [Bool]         $IsFullyTrusted
+        [String]             $Location
+        [Object]       $ManifestModule
+        [Object[]]            $Modules
+        [Object]        $PermissionSet
+        [Bool]         $ReflectionOnly
+        [Object]      $SecurityRuleSet
+        AssemblyEntry([Object]$Assembly)
+        {
+            $Split                    = $Assembly.Fullname.Split(",")
+            $This.Name                = $Split[0]
+            #$This.Version             = $Split[1]
+            $This.CodeBase            = $Assembly.CodeBase 
+            $This.CustomAttributes    = $Assembly.CustomAttributes 
+            $This.DefinedTypes        = $Assembly.DefinedTypes 
+            $This.EntryPoint          = $Assembly.EntryPoint 
+            $This.EscapedCodeBase     = $Assembly.EscapedCodeBase 
+            $This.Evidence            = $Assembly.Evidence 
+            $This.ExportedTypes       = $Assembly.ExportedTypes 
+            $This.FullName            = $Assembly.FullName 
+            $This.GlobalAssemblyCache = $Assembly.GlobalAssemblyCache 
+            $This.HostContext         = $Assembly.HostContext 
+            $This.ImageRuntimeVersion = $Assembly.ImageRuntimeVersion 
+            $This.IsDynamic           = $Assembly.IsDynamic 
+            $This.IsFullyTrusted      = $Assembly.IsFullyTrusted 
+            $This.Location            = $Assembly.Location 
+            $This.ManifestModule      = $Assembly.ManifestModule 
+            $This.Modules             = $Assembly.Modules 
+            $This.PermissionSet       = $Assembly.PermissionSet 
+            $This.ReflectionOnly      = $Assembly.ReflectionOnly 
+            $This.SecurityRuleSet     = $Assembly.SecurityRuleSet 
+        }
+    }
+    Class AssemblyList
+    {
+        [Object] $Output
+        AssemblyList()
+        {
+            $This.Output = @( )
+            
+            ForEach ($Assembly in [System.AppDomain]::CurrentDomain.GetAssemblies())
+            {
+                $This.Add($Assembly)
+            }
+
+            $This.Output = $This.Output | Sort-Object Name
+        }
+        Add([Object]$Assembly)
+        {
+            $This.Output += [AssemblyEntry]::New($Assembly)
+        }
+    }
+    [AssemblyList]::New().Output
+}
+#\__________________________
+Function Get-EventLogProject
+{
+    [CmdLetBinding()]
+    Param(
+        [Parameter(ParameterSetName=0,Mandatory)][Object]$New,
+        [Parameter(ParameterSetName=1,Mandatory)][Object]$Restore
+    )
+
+    Class ProjectProgressIndex
+    {
+        [UInt32]  $Index
+        [UInt32]   $Slot
+        [Float] $Percent
+        [String] $String
+        [Object]   $Time
+        [Object] $Remain
+        ProjectProgressIndex([UInt32]$Index,[UInt32]$Segment,[UInt32]$Total)
+        {
+            $This.Index   = $Index
+            $This.Slot    = $Index * $Segment
+            If ($This.Slot -gt 0)
+            {
+                $This.Percent = [Math]::Round($This.Slot*100/$Total,2)
+            }
+            Else
+            {
+                $This.Percent = 0
+            }
+            $This.String  = $This.GetString($Total)
+        }
+        ProjectProgressIndex([Switch]$Last,[UInt32]$Total)
+        {
+            $This.Index   = 101
+            $This.Slot    = $Total
+            $This.Percent = 100.00
+            $This.String  = $This.GetString($Total)
+        }
+        [String] GetString([UInt32]$Total)
+        {
+            Return "({0:n2}%) ({1}/{2})" -f $This.Percent, $This.Slot, $Total
+        }
+        [String] ToString()
+        {
+            Return $This.Slot
+        }
+        [String] Line()
+        {
+            Return "{0} Elapsed: [{1}], Remain: [{2}]" -f $This.String, $This.Time, $This.Remain
+        }
+    }
+    #\___________________
+    Class ProjectProgress
+    {
+        [DateTime]  $Phase
+        [UInt32]    $Total
+        [UInt32]  $Segment
+        [Object]    $Index = @( )
+        ProjectProgress([Object]$Work)
+        {
+            $This.Phase      = [DateTime]::Now
+            $This.Total      = $Work.Count
+            $This.Segment    = [Math]::Round($This.Total/100)
+            0..100           | % { $This.AddIndex($_,$This.Segment,$This.Total) }
+            $This.AddLast($This.Total)
+        }
+        AddIndex([UInt32]$Index,[UInt32]$Segment,[UInt32]$Total)
+        {
+            $This.Index     += [ProjectProgressIndex]::New($Index,$This.Segment,$This.Total)    
+        }
+        AddLast([UInt32]$Total)
+        {
+            [Switch]$Last    = $True
+            $Item            = [ProjectProgressIndex]::New($Last,$This.Total)
+            $Item.Index      = 101
+            $Item.Slot       = $This.Total
+            $Item.Percent    = 100.00
+            $Item.Time       = $This.Time()
+            $Item.Remain     = [Timespan]::FromTicks(1)
+            $This.Index     += $Item
+        }
+        [Object] Time()
+        {
+            Return [TimeSpan]([DateTime]::Now-$This.Phase)
+        }
+        [Object] Slot([UInt32]$Token)
+        {
+            $Item            = $This.Index[$Token/$This.Segment]
+            $Item.Time       = $This.Time()
+            If ($Item.Slot -eq 0)
+            {
+                $Item.Remain = [Timespan]::FromTicks(1)
+            }
+            If ($Item.Slot -ne 0) 
+            { 
+                $Item.Remain = ($Item.Time.TotalSeconds / $Item.Percent) * (100-$Item.Percent) | % { [Timespan]::FromSeconds($_) } 
+            }
+    
+            Return $Item
+        }
+    }
+    #\____________________
+    Class ProjectFileEntry
+    {
+        [String] $Name
+        [Object] $Entry
+        [String] $Path
+        ProjectFileEntry([String]$Name,[Object]$Archive,[String]$Path)
+        {
+            $This.Name  = $Name
+            $This.Entry = $Archive.GetEntry($Name)
+            $This.Path  = "$Path\$Name"
+        }
+        Extract()
+        {
+            [System.IO.Compression.ZipFileExtensions]::ExtractToFile($This.Entry,$This.Path,$True)
+        }
+        [String] ToString()
+        {
+            Return $This.Path
+        }
+    }
+    #\______________________
+    Class ProjectConsoleLine
+    {
+        [UInt32] $Index
+        [String] $Phase
+        [String] $Type
+        [String] $Time
+        [String] $Message
+        ProjectConsoleLine([UInt32]$Index,[String]$Phase,[UInt32]$Type,[String]$Time,[String]$Message)
+        {
+            $This.Index   = $Index
+            $This.Phase   = $Phase
+            $This.Type    = Switch ($Type) { 0 { "[~]" } 1 { "[+]" } 2 { "[!]" } }
+            $This.Time    = $Time
+            $This.Message = $Message
+        }
+        [String] ToString()
+        {
+            Return @( Switch (!!$This.Message)
+            {
+                $True  { "{0} {1} {2}" -f $This.Phase, $This.Type, $This.Message }
+                $False { "{0} {1} Elapsed: [{2}]" -f $This.Phase, $This.Type, $This.Time }
+            })
+        }
+    }
+    #\__________________
+    Class ProjectConsole
+    {
+        [Object]    $Time
+        [String]   $Phase
+        [UInt32]    $Type
+        [String] $Message
+        [UInt32]   $Count
+        [Object]  $Output
+        ProjectConsole([Object]$Time)
+        {
+            $This.Time    = $Time
+            $This.Phase   = "Starting"
+            $This.Type    = 0
+            $This.Message = $Null
+            $This.Count   = 0
+            $This.Output  = @( )
+    
+            $This.Status()
+        }
+        AddLine([String]$Line)
+        {
+            $This.Output += [ProjectConsoleLine]::New($This.Output.Count,$This.Phase,$This.Type,$This.Time.Elapsed,$Line)
+            $This.Count  ++
+    
+            New-Event -SourceIdentifier Console_Updated -Sender $This -EventArguments ([PSObject]@{ Object = $This.Last() }) -MessageData $This.Last().ToString()
+        }
+        [String] Status()
+        {
+            $This.AddLine($Null)
+            Return $This.Last()
+        }
+        [String] Update([String]$Phase,[String]$Message)
+        {
+            $This.Phase   = $Phase
+            $This.Message = $Message
+            $This.AddLine($Message)
+            Return $This.Last()
+        }
+        [String] Update([String]$Phase,[UInt32]$Type,[String]$Message)
+        {
+            $This.Phase   = $Phase
+            $This.Type    = $Type
+            $This.Message = $Message
+            $This.AddLine($Message)
+            Return $This.Last()
+        }
+        [Object] Last()
+        {
+            Return $This.Output[$This.Count-1]
+        }
+        [Object[]] ToString()
+        {
+            Return @( $This.Output[0..($This.Count-1)] )
+        }
+    }
+    #\_______________
+    Class ProjectFile
+    {
+        [UInt32]         $Index
+        [String]          $Name
+        [String]      $Fullname
+        Hidden [String] $Parent
+        [Bool]          $Exists
+        [Double]        $Length
+        [String]          $Size
+        ProjectFile([UInt32]$Index,[Object]$File)
+        {
+            $This.Index    = $Index
+            $This.Fullname = $File.Fullname
+            $This.Name     = $File.Name
+            $This.Parent   = $File.Fullname | Split-Path -Parent
+            $This.Exists   = $File.Exists
+            $This.Length   = $File.Length
+            $This.Update()
+        }
+        Write([String[]]$In)
+        {
+            $Out     = $In -join "`n"
+            $Bytes   = [Byte[]]([Char[]]$Out)
+            $Item    = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Append)
+            $Item.Write($Bytes,0,$Bytes.Count)
+            $Item.Dispose()
+            $This.Update()
+        }
+        Write([String]$In)
+        {
+            $Out   = $In -join "`n"
+            $Bytes = [Byte[]]@([Char[]]$Out)
+            $Item  = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Append)
+            $Item.Write($Bytes,0,$Bytes.Count)
+            $Item.Dispose()
+            $This.Update()
+        }
+        Clear()
+        {
+            $Item = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Truncate)
+            $Item.Write(0,0,0)
+            $Item.Dispose()
+            $This.Update()
+        }
+        [Object] Get()
+        {
+            $Item = [System.IO.File]::ReadAllLines($This.Fullname)
+            $This.Update()
+            Return $Item
+        }
+        [Void] Delete()
+        {
+            $Item = [System.IO.File]::Delete($This.Fullname)
+            $Item.Dispose()
+            $This.Update()
+        }
+        [Void] Update()
+        {
+            $This.Exists   = [System.IO.File]::Exists($This.Fullname)
+            If (!$This.Exists)
+            {
+                $This.Length   = 0
+                $This.Size     = "0.00 KB"
+            }
+            If ($This.Exists)
+            {
+                $This.Length   = [System.IO.File]::ReadAllBytes($This.Fullname).Count
+                $This.Size     = Switch ($This.Length)
+                {
+                    {$_ -eq   0 } { "0.00 KB" }
+                    {$_ -gt   0 -and $_ -lt 800kb}   { "{0:n2} KB" -f ($This.Length/1KB) }
+                    {$_ -ge 800kb -and $_ -lt 800mb} { "{0:n2} MB" -f ($This.Length/1MB) }
+                    {$_ -ge 800mb -and $_ -lt 800gb} { "{0:n2} GB" -f ($This.Length/1GB) }
+                    {$_ -ge 800gb }                  { "{0:n2} TB" -f ($This.Length/1TB) }
+                }
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.FullName
+        }
+    }
+    #\_________________
+    Class ProjectFolder
+    {
+        [UInt32]             $Rank
+        [String]             $Name
+        [String]         $Fullname
+        [String]           $Parent
+        [Bool]             $Exists
+        [UInt32]            $Count
+        Hidden [Double] $SizeBytes
+        [String]             $Size
+        Hidden [Hashtable]  $Index = @{ }
+        Hidden [Hashtable]   $Hash = @{ }
+        [Object]         $Children = @( )
+        ProjectFolder([UInt32]$Rank,[Object]$Folder)
+        {
+            $This.Rank     = $Rank
+            $This.Name     = $Folder.Name
+            $This.Fullname = $Folder.Fullname
+            $This.Parent   = $Folder.Parent.Fullname
+            $This.Update()
+        }
+        [Void] Update()
+        {
+            $This.Exists        = [System.IO.Directory]::Exists($This.Fullname)
+            $This.SizeBytes     = 0
+            $This.Size          = "0.00 KB"
+            $This.Hash          = @{ }
+            $This.Index         = @{ }
+            If ($This.Exists)
+            {
+                $This.Children  = @([System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos()) | Sort-Object Name
+                $This.Count     = $This.Children.Count
+                If ($This.Count -gt 0)
+                {
+                    $C = 0
+                    $X = 0
+                    Do
+                    {
+                        $This.Hash.Add($This.Children[$C].Name,$This.Children[$C])
+                        $This.Index.Add($This.Children[$C],$C)
+                        $X = $X + $This.Children[$C].Length
+                        $C ++
+                    }
+                    Until ($C -eq $This.Count)
+                    $This.SizeBytes = [Double]$X
+                }
+                $This.Size      = $This.GetSize($This.SizeBytes)
+            }
+        }
+        [String] GetSize([Double]$Size)
+        {
+            Return @( Switch ($Size)
+            {
+                {$_ -eq   0 } { "0.00 KB" }
+                {$_ -gt   0 -and $_ -lt 800kb}   { "{0:n2} KB" -f ($_/1KB) }
+                {$_ -ge 800kb -and $_ -lt 800mb} { "{0:n2} MB" -f ($_/1MB) }
+                {$_ -ge 800mb -and $_ -lt 800gb} { "{0:n2} GB" -f ($_/1GB) }
+                {$_ -ge 800gb }                  { "{0:n2} TB" -f ($_/1TB) }
+            })
+        }
+        Create([String]$Name)
+        {
+            $Path           = $This.Fullname, $Name -join '\'
+            If (![System.IO.File]::Exists($Path))
+            {
+                [System.IO.File]::Create($Path).Dispose()
+                [Console]::WriteLine("Created [+] ($($Name.Count)) item(s).")
+            }
+            Else
+            {
+                [Console]::WriteLine("Exception [!] ($($Name.Count)) exists.")
+            }
+            $This.Update()
+        }
+        Create([Object[]]$Name)
+        {
+            If ($Name.Count -gt 1)
+            {
+                $Work    = @(ForEach ($X in 0..($Name.Count-1)) { $This.Fullname, $Name[$X] -join "\" })
+                $Segment = [Math]::Round($Work.Count/100)
+                $Slot    = 0..($Work.Count-1) | ? { $_ % $Segment -eq 0 }
+                ForEach ($X in 0..($Work.Count-1))
+                {
+                    [System.IO.File]::Create($Work[$X]).Dispose()
+                    If ($X -in $Slot)
+                    {
+                        $Percent = ($X*100/$Work.Count)
+                        $String  = "({0:n2}%) ({1}/{2})" -f $Percent, $X, $Work.Count
+                        [Console]::WriteLine("Creating [~] $String")
+                    }
+                }
+            }
+            Else
+            {
+                [System.IO.File]::Create("$($This.Fullname)\$Name").Dispose()
+            }
+            $This.Update()
+            [Console]::WriteLine("Created [+] ($($Name.Count)) item(s).")
+        }
+        Delete([String]$Name)
+        {
+            $Item = $This.File($Name)
+            $Item.Delete()
+            $This.Update()
+            [Console]::WriteLine("Deleted [$Name]")
+        }
+        [Object] File([String]$Name)
+        {
+            $File = $This.Hash[$Name]
+            If (!$File)
+            {
+                Throw "Invalid file"
+            }
+            Return [ProjectFile]::New($This.Index[$Name],$File)
+        }
+        Flush()
+        {
+            If ($This.Exists)
+            {
+                [Console]::WriteLine("Enumerating [~] files")
+                $Work = @([System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos()) | Sort-Object LastWriteTime
+                If ($Work.Count -gt 1)
+                {
+                    $Segment = [Math]::Round($Work.Count/100)
+                    $Slot    = 0..($Work.Count-1) | ? { $_ % $Segment -eq 0 }
+                    ForEach ($X in 0..($Work.Count-1))
+                    {
+                        $Work[$X].Delete()
+                        If ($X -in $Slot)
+                        {
+                            $Percent = ($X*100/$Work.Count)
+                            $String  = "({0:n2}%) ({1}/{2})" -f $Percent, $X, $Work.Count
+                            [Console]::WriteLine("Deleting [~] $String")
+                        }
+                    }
+                }
+                Else
+                {
+                    $Work.Delete()
+                }
+                [Console]::WriteLine("All files deleted")
+            }
+            $This.Update()
+        }
+        [String] ToString()
+        {
+            Return $This.Fullname
+        }
+    }
+    #\_______________
+    Class ProjectBase
+    {
+        [String]       $Name
+        [String]   $Fullname
+        [String]     $Parent
+        [Bool]       $Exists
+        [UInt32]      $Count
+        [DateTime]     $Date
+        [Object]    $Folders = @( )
+        ProjectBase([String]$Path)
+        {
+            $This.Parent            = $Path | Split-Path -Parent
+            If (![System.IO.Directory]::Exists($This.Parent))
+            {
+                Throw "Invalid path"
+                $This.Parent        = $Null
+            }
+            $This.Name              = $Path | Split-Path -Leaf
+            $This.FullName          = $Path
+            If ([System.IO.Directory]::Exists($Path))
+            {
+                Throw "This path already exists"
+            }
+            ForEach ($Entry in "Master","Logs","Events","Threads")
+            {
+                [System.IO.Directory]::CreateDirectory("$($This.Fullname)\$Entry")
+            }
+            $This.Update()
+        }
+        Static [String[]] Subfolders()
+        {
+            Return "Master","Logs","Events","Threads"
+        }
+        [Void] Update()
+        {
+            $This.Exists            = [System.IO.Directory]::Exists($This.Fullname)
+            $This.Date              = [System.IO.Directory]::GetCreationTime($This.Fullname)
+            $This.Folders           = @( )
+            If ($This.Exists)
+            {
+                $Directories        = @([System.IO.DirectoryInfo]::new($This.Fullname).EnumerateDirectories())
+                $This.Count         = $Directories.Count
+                If ($This.Count -gt 0)
+                {
+                    ForEach ($Folder in $Directories)
+                    {
+                        $This.Folders += [ProjectFolder]::New($This.Folders.Count,$Folder)
+                    }
+                }
+            }
+        }
+        [Object] Slot([String]$Slot)
+        {
+            Return $This.Folders | ? Name -eq $Slot
+        }
+        Flush()
+        {
+            $This.Update()
+            ForEach ($Folder in $This.Folders)
+            {
+                $Folder.Flush()
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.Fullname
+        }
+    }
+    #\__________________
+    Class ProjectRestore
+    {
+        [Object]        $Console
+        [Object]           $Time
+        [Object]          $Start
+        [Object]         $System
+        [Object]    $DisplayName
+        [UInt32]        $Threads
+        [String]           $Guid
+        [String]           $Base
+        [Object]           $Logs
+        [Object]         $Output
+        Hidden [Object] $Archive
+        Hidden [Object]     $Zip
+        ProjectRestore([Object]$Archive)
+        {
+            $This.Time       = [System.Diagnostics.Stopwatch]::New()
+            $This.Console    = [ProjectConsole]::New($This.Time)
+            $This.Archive    = $Archive
+        }
+        Init()
+        {
+            $This.Time.Start()
+    
+            # Restore the zip file
+            # --------------------
+            $This.Update("(0.0) Testing",0,"Zip file path input")
+            If ($This.Archive.State -ne 0)
+            {
+                Throw [System.Windows.MessageBox]::Show($This.Archive.Status)
+            }
+            $This.Base       = $This.Archive.Path -Replace ".zip",""
+            $This.Update("(0.0) Tested",1,$This.Archive.Status)
+    
+            # Zip path exists, is it a zip file?
+            # ----------------------------------
+            $This.Update("(0.1) Opening",0,"Zip file")
+            $This.Archive.Open()
+            If ($This.Archive.State -ne 1)
+            {
+                Throw [System.Windows.MessageBox]::Show($This.Archive.Status)
+            }
+            $This.Update("(0.1) Opened",1,$This.Archive.Status)
+    
+            # Get Entries
+            # -----------
+            $This.Archive.GetEntries()
+            
+            # Master file
+            # -----------
+            $This.Update("(0.2) Extracting",0,"Master.txt")
+            $File                = $This.Archive.Hash["Master.txt"]
+            $Stream              = $File.Open()
+            $Reader              = [System.IO.StreamReader]::New($Stream)
+            $Master              = $Reader.ReadToEnd()
+            $Reader.Close()
+            $Stream.Close()
+            $This.Update("(0.2) Extracted",1,"Master.txt")
+            
+            # Restore system details
+            # ----------------------
+            $This.Update("(0.3) Restoring",0,"(Captured) system details")
+            If ($Master)
+            {
+                $This.System      = $Master | Get-SystemDetails
+                If (!$This.System)
+                {
+                    Throw [System.Windows.MessageBox]::Show($This.Error("Failed to restore captured system details"))
+                }
+                $This.Start       = $This.System.Snapshot.Start
+                $This.DisplayName = $This.System.Snapshot.DisplayName
+                $This.Threads     = $This.System.Processor.Output.Threads
+                $This.Guid        = $This.System.Snapshot.Guid
+            }
+            $This.Update("(0.3) Restored",1,"System details")
+    
+            # Extract Logs.txt/Provider Configurations
+            # ----------------------------------------
+            $This.Update("(0.4) Extracting",0,"Logs.txt")
+            $File                 = $This.Archive.Hash["Logs.txt"]
+            $Stream               = $File.Open()
+            $Reader               = [System.IO.StreamReader]::New($Stream)
+            $LogsFile             = $Reader.ReadToEnd() | ConvertFrom-Json
+            $Reader.Close()
+            $Stream.Close()
+            $This.Update("(0.4) Extracted",1,"Logs.txt")
+    
+            # Process the log files
+            # ---------------------
+            $This.Update("(0.5) Restoring",0,"(Captured) Event log providers")
+            $This.Logs            = @( )
+            $Stash                = @{ }
+            $Hash                 = @{ }
+            ForEach ($X in 0..($LogsFile.Count-1))
+            {
+                $Item             = Get-EventLogConfigExtension -Config $LogsFile[$X]
+                If (!$Item)
+                {
+                    $This.Error("Unable to retrieve log configuration extension for Logs.txt[$X]")
+                }
+                $Item.Output      = @( )
+                $Stash.Add($Item.LogName,@{ })
+                $This.Logs       += $Item
+            }
+            $This.Update("(0.5) Restored",1,"Event log providers")
+    
+            # Process the events
+            # ------------------
+            $This.Update("(0.6) Importing",0,"(Captured) Events")
+            $Events               = $This.Archive.Zip.Entries | ? Name -notmatch "(Master|Logs).txt"
+            $Id                   = [ProjectProgress]::New($Events)
+            $This.Update("(1.0) Importing",0,"(0.00%) Events: ($($Id.Total)) found.")
+            ForEach ($X in 0..($Id.Total-1))
+            {
+                $Item             = Get-EventLogRecordExtension -Index $X -Entry $Events[$X]
+                $Hash.Add($X,$Item)
+                $Stash[$Item.LogName].Add($Stash[$Item.LogName].Count,$X)
+                If ($X -in $Id.Index.Slot)
+                {
+                    $This.Update("(1.0) Importing",0,$Id.Slot($X).Line())
+                }
+                If ($X -eq $Id.Total)
+                {
+                    $This.Update("(1.0) Importing",0,$Id.Index[-1].Line())
+                }
+            }
+            $This.Update("(1.0) Imported",1,"(100.00%) [+] Events: ($($Id.Total)) found.")
+            $This.Output          = $Hash[0..($Hash.Count-1)]
+    
+            # Dispose the zip file
+            $This.Archive.Zip.Dispose()
+    
+            # Sort the logs
+            $This.Update("(1.1) Restoring",0,"Events for each log provider")
+    
+            $Id                   = [ProjectProgress]::New($This.Logs)
+            $This.Update("(1.1) Sorting",0,"(0.00%) [~] Logs: ($($Id.Total)) found.")
+            ForEach ($X in 0..($Id.Total-1))
+            {
+                $Name             = $This.Logs[$X].LogName
+                $This.Logs[$X].Output  = Switch ($Stash[$Name].Count)
+                {
+                    0 { @( ) } 1 { @($This.Output[$Stash[$Name][0]]) } Default { @($This.Output[$Stash[$Name][0..($Stash[$Name].Count-1)]]) }
+                }
+                $This.Logs[$X].Total   = $This.Logs[$X].Output.Count
+                If ($X -in $Id.Index.Slot)
+                {
+                    $This.Update("(1.1) Sorting",0,$Id.Slot($X).Line())
+                }
+                If ($X -eq $Id.Total)
+                {
+                    $This.Update("(1.1) Sorting",0,$Id.Index[-1].Line())
+                }
+            }
+            $This.Update("(1.1) Sorted",1,"(100.00%) [+] Logs: ($($Id.Total)) found.")
+            $This.Time.Stop()
+        }
+        Current()
+        {
+            $This.Console.Status()
+        }
+        Update([String]$Phase,[String]$Message)
+        {
+            $This.Console.Update($Phase,$Message)
+        }
+        Update([String]$Phase,[UInt32]$Type,[String]$Message)
+        {
+            $This.Console.Update($Phase,$Type,$Message)
+        }
+        [Void] Error([String]$Message)
+        {
+            $This.Update("Exception",2,$Message)
+            $This.Console.ToString()
+        }
+        [Object[]] GetConsole()
+        {
+            Return $This.Console.Output[0..($This.Console.Output.Count-1)]
+        }
+    }
+    #\___________
+    Class Project
+    {
+        [Object]        $Console
+        [Object]           $Time
+        [DateTime]        $Start
+        [Object]         $System
+        [String]    $DisplayName
+        [UInt32]        $Threads
+        [Guid]             $Guid
+        [ProjectBase]      $Base
+        [Object]           $Logs = @( )
+        [Object]         $Output = @( )
+        Hidden [Object] $Archive
+        Hidden [Object]     $Zip
+        Project([Object]$Archive)
+        {
+            # Start system snapshot, count threads / max runspace pool size
+            $This.Time           = [System.Diagnostics.Stopwatch]::New()
+            $This.Console        = [ProjectConsole]::New($This.Time)
+            $This.Archive        = $Archive
+        }
+        Init()
+        {
+            $This.Time.Start()
+    
+            $This.Update("(0.0) Loading",0,"System snapshot details")
+            $This.System        = Get-SystemDetails
+            $This.Start         = $This.System.Snapshot.Start
+            $This.DisplayName   = $This.System.Snapshot.DisplayName
+            If (!$This.Threads)
+            {
+                $This.Threads   = $This.System.Processor.Output.Threads | Measure-Object -Sum | % Sum
+            }
+    
+            If ($This.Threads -lt 2)
+            {
+                $This.Error("CPU only has (1) thread (selected/available)")
+            }
+    
+            # System snapshot has already created a Guid, to create a new folder for the threads
+            $This.Guid          = $This.System.Snapshot.Guid
+            $This.Base          = $This.Establish([Environment]::GetEnvironmentVariable("temp"),$This.Guid)
+    
+            $This.Update("(0.1) Created",1,"Base directory")
+            $This.Providers()
+        }
+        [Object] Establish([String]$Base,[String]$Name)
+        {
+            Return [ProjectBase]::New("$Base\$Name")
+        }
+        Providers()
+        {
+            # Loads the provider names
+            $Providers        = $This.System.LogProviders.Output
+            $Slot             = $This.Slot("Threads")
+            $Depth            = ([String]$This.Threads).Length
+            $Names            = 0..($This.Threads-1) | % { "{0:d$Depth}.txt" -f $_ }
+            $Slot.Create($Names)
+            ForEach ($X in 0..($This.Threads-1))
+            {
+                $File         = $Slot.File($Names[$X])
+                $Value        = 0..($Providers.Count-1) | ? { $_ % $This.Threads -eq $X } | % { $_,$Providers[$_].Value -join ',' }
+                $File.Write($Value -join "`n")
+                $Slot.Update()
+            }
+            $This.Update("(0.2) Prepared",1,"Event log collection split between threads")
+        }
+        [Object] Slot([String]$Slot)
+        {
+            Return $This.Base.Folders | ? Name -eq $Slot
+        }
+        Current()
+        {
+            $This.Console.Status()
+        }
+        Update([String]$Phase,[String]$Message)
+        {
+            $This.Console.Update($Phase,$Message)
+        }
+        Update([String]$Phase,[UInt32]$Type,[String]$Message)
+        {
+            $This.Console.Update($Phase,$Type,$Message)
+        }
+        [Void] Error([String]$Message)
+        {
+            $This.Update("Exception",2,$Message)
+            Throw $This.Console.ToString()
+        }
+        SaveMaster()
+        {
+            $Value        = $This.System.GetOutput()
+            $Slot         = $This.Slot("Master")
+            $Slot.Create("Master.txt")
+            $File         = $Slot.File("Master.txt")
+            $File.Write($Value -join "`n")
+            $This.Update("Success",1,"Master file: [$File], Size: [$($File.Size)]")
+        }
+        SaveLogs()
+        {
+            $Value         = $This.Logs | Select-Object Rank,LogName,LogType,LogIsolation,IsEnabled,IsClassicLog,SecurityDescriptor,LogFilePath,
+            MaximumSizeInBytes,Maximum,Current,LogMode,OwningProviderName,ProviderNames,ProviderLevel,ProviderKeywords,ProviderBufferSize,
+            ProviderMinimumNumberOfBuffers,ProviderMaximumNumberOfBuffers,ProviderLatency,ProviderControlGuid | ConvertTo-Json
+            
+            $Slot          = $This.Slot("Logs")
+            $Slot.Create("Logs.txt")
+            $File          = $Slot.File("Logs.txt")
+            $File.Write($Value)
+            $This.Update("Success",1,"Log config file: [$File], Size: [$($File.Size)]")
+        }
+        [String] Destination()
+        {
+            Return "{0}\{1}.zip" -f ($This.Base | Split-Path -Parent), $This.DisplayName
+        }
+        Delete()
+        {
+            $This.Update("Terminating",2,"Process was instructed to be deleted")
+            $This.Base.Flush()
+            $This.Start         = [DateTime]::FromOADate(1)
+            $This.System        = $Null
+            $This.DisplayName   = $Null
+            $This.Guid          = [Guid]::Empty
+            $This.Time          = $Null
+            $This.Threads       = $Null
+            $This.Base          = $Null
+            $This.Logs          = $Null
+            $This.Output        = $Null
+            $This.GetConsole()
+        }
+        [Object[]] GetConsole()
+        {
+            Return @( $This.Console.GetOutput() )
+        }
+        [Object] ToString()
+        {
+            Return $This
+        }
+    }
+
+    Switch ($Pscmdlet.ParameterSetName)
+    {
+        0 { [Project]::New($New)            }
+        1 { [ProjectRestore]::New($Restore) }
+    }
+}
 #                                                                         ______________________
 #\________________________________________________________________________\__[ </Functions> ]__/
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
@@ -1976,165 +3042,6 @@ Function Get-EventLogArchive                        #\_[ Model for the GUI to ex
 # ______________________________________________________________________________________________
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\__[ <UI Classes> ]__/
 #                                                                          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
-#\_____________________
-Class ThrottleIndexItem
-{
-    [UInt32]          $Index
-    [UInt32]          $Cores
-    [Float]           $Value
-    Hidden [Float]    $Avail
-    Hidden [Float]     $Load
-    Hidden [UInt32]    $Axis
-    Hidden [Float]   $Result
-    [String]          $Label
-    ThrottleIndexItem([UInt32]$Index,[UInt32]$Cores,[Double]$Value)
-    {
-        $This.Index      = $Index
-        $This.Cores      = $Cores
-        $This.Value      = $Value
-        $This.Label      = $This.ToString()
-    }
-    SetLoad([Double]$Load)
-    {
-        $This.Avail      = 1 - $Load
-        $This.Load       = $Load
-        If ($This.Value -ge $Load)
-        {
-            $This.Axis   = 0
-        }    
-        If ($This.Value -lt $Load)
-        {
-            $This.Axis   = 1
-        }
-        $This.Result     = [Math]::Round($This.Value - $Load,3)
-    }
-    SetAvail([Double]$Load)
-    {
-        $This.Avail      = 1 - $Load
-        $This.Load       = $Load
-        If ($This.Avail -ge $This.Value)
-        {
-            $This.Axis   = 1
-        }    
-        If ($This.Avail -lt $This.Value)
-        {
-            $This.Axis   = 0
-        }
-        $This.Result     = [Math]::Round($This.Value - $Load,3)
-    }
-    [String] ToString()
-    {
-        Return "({0}) {1:n2}%" -f $This.Cores, ($This.Value*100)
-    }
-}
-#\_________________
-Class ThrottleIndex
-{
-    [Decimal]  $Current
-    [UInt32]     $Count
-    [Object]   $Segment
-    [Object]   $Maximum
-    [Object]   $Minimum
-    [Object]    $Output = @( )
-    ThrottleIndex([Decimal]$Throttle)
-    {
-        $This.Current     = $Throttle
-        $This.Init()
-    }
-    ThrottleIndex()
-    {
-        If (!$This.Current)
-        {
-            $This.Current = 1.00
-        }
-        $This.Init()
-    }
-    Init()
-    {   
-        $This.Count       = $This.GetCount()
-        $This.Stage()
-        $This.Maximum     = $This.Output[0]
-        $This.Minimum     = $This.Output[-1]
-    }
-    Stage()
-    {
-        $This.Output      = @( )
-        $This.Segment     = (100/$This.Count)/100
-        ForEach ($X in $This.Count..1)
-        {
-            $This.Add($X,$X*$This.Segment)
-        }
-    }
-    Add([UInt32]$Cores,[Double]$Value)
-    {
-        $This.Output     += [ThrottleIndexItem]::New($This.Output.Count,$Cores,$Value)
-    }
-    AutoThrottle()
-    {
-        $Load             = $This.GetLoad()
-        $Tally            = 0
-        $C                = 0
-        Do
-        {
-            If ($Load -ge $C * $This.Segment)
-            {
-                $Tally = $Tally + $This.Segment
-            }
-            $C ++
-        }
-        Until ($Tally -gt $Load)
-
-        $This.Current = $This.Output[$C].Value
-    }
-    SetThrottle([UInt32]$C)
-    {
-        $This.Current = $This.Output[$C].Value
-    }
-    SetLoad([Float]$Load)
-    {
-        ForEach ($X in 0..($This.Output.Count-1))
-        {
-            $This.Output[$X].SetLoad($Load)
-        }
-    }
-    SetLoad()
-    {
-        $Load         = $This.GetLoad()
-
-        ForEach ($X in 0..($This.Output.Count-1))
-        {
-            $This.Output[$X].SetLoad($Load)
-        }
-    }
-    SetAvail([Float]$Load)
-    {
-        ForEach ($X in 0..($This.Output.Count-1))
-        {
-            $This.Output[$X].SetAvail($Load)
-        }
-    }
-    SetAvail()
-    {
-        $Load         = $This.GetLoad()
-
-        ForEach ($X in 0..($This.Output.Count-1))
-        {
-            $This.Output[$X].SetAvail($Load)
-        }
-    }
-    [UInt32] GetCurrentCount()
-    {
-        Return $This.Current * $This.Count
-    }
-    [Double] GetLoad()
-    {
-        Return (Get-CimInstance Win32_Processor | % LoadPercentage)/100
-    }
-    [UInt32] GetCount()
-    {
-        Return [Environment]::GetEnvironmentVariable("Number_Of_Processors")
-    }
-}
 #\________________
 Class PropertyItem
 {
@@ -2269,8 +3176,8 @@ Class PropertyObject
         Return "{0}[{1}]" -f $This.Title, $This.Rank
     }
 }
-#\______________
-Class XamlWindow
+#\________________
+Class RSXamlWindow
 {
     Hidden [Object]        $Xaml
     Hidden [Object]         $Xml
@@ -2282,45 +3189,47 @@ Class XamlWindow
     [Object]          $Exception
     [String] FormatXaml([String]$Xaml)
     {
-        $StringWriter          = [System.IO.StringWriter]::New()
-        $XmlWriter             = [System.Xml.XmlTextWriter]::New($StringWriter)
-        $XmlWriter.Formatting  = "indented"
-        $XmlWriter.Indentation = 4
-        ([Xml]$Xaml).WriteContentTo($XmlWriter)
-        $XmlWriter.Flush()
-        $StringWriter.Flush()
-        Return $StringWriter.ToString()
+        $Str1             = [System.IO.StringWriter]::New()
+        $Xml1             = [System.Xml.XmlTextWriter]::New($Str1)
+        $Xml1.Formatting  = "Indented"
+        $Xml1.Indentation = 4
+        ([Xml]$Xaml).WriteContentTo($Xml1)
+        $Xml1.Flush()
+        $Str1.Flush()
+        Return $Str1.ToString()
     }
     [String[]] FindNames()
     {
         Return [Regex]::Matches($This.Xaml,"((\s*Name\s*=\s*)('|`")(\w+)('|`"))").Groups | ? Name -eq 4 | % Value | Select-Object -Unique
     }
-    XamlWindow([String]$Xaml)
+    RSXamlWindow([Object]$Sync,[String]$Xaml)
     {
         $This.Xaml               = $This.FormatXaml($Xaml)   
         If (!$This.Xaml)
         {
             Throw "Invalid Xaml Input"
         }
-        
+
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
         
         $This.Xml                = [Xml]$Xaml
         $This.Names              = $This.FindNames()
         $This.Types              = @( )
         $This.Node               = [System.Xml.XmlNodeReader]::New($This.Xml)
-        $This.IO                 = [System.Windows.Markup.XamlReader]::Load($This.Node)
-        $This.Dispatcher         = $This.IO.Dispatcher
+        $Sync.IO                 = [System.Windows.Markup.XamlReader]::Load($This.Node)
+        $This.Dispatcher         = $Sync.IO.Dispatcher
 
         ForEach ($I in 0..($This.Names.Count - 1))
         {
             $Name                = $This.Names[$I]
-            $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $This.IO.FindName($Name) -Force
-            If ($This.IO.$Name)
+            $Sync.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $Sync.IO.FindName($Name) -Force
+            If ($Sync.IO.$Name)
             {
-                $This.Types     += [PropertyItem]::New($Name,$This.IO.$Name.GetType().Name)
+                $This.Types     += [PropertyItem]::New($Name,$Sync.IO.$Name.GetType().Name)
             }
         }
+
+        $This.IO                 = $Sync.IO
     }
     Invoke()
     {
@@ -2335,11 +3244,11 @@ Class XamlWindow
     }
     [String] ToString()
     {
-        Return $This.Xaml.IO.Title
+        Return $This.IO.Title
     }
 }
 #\_______________ 
-Class EventLogGui   # GC $Home\Desktop\EventLogs.xaml | % { "        '$_'," } | Set-Clipboard
+Class EventLogGui
 {
     Static [String] $Tab = @(        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Event Log Utility" Width="1100" Height="650" HorizontalAlignment="Center" Topmost="False" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
     '    <Window.Resources>',
@@ -2587,10 +3496,10 @@ Class EventLogGui   # GC $Home\Desktop\EventLogs.xaml | % { "        '$_'," } | 
     '                                    <RowDefinition Height="*"/>',
     '                                    <RowDefinition Height="40"/>',
     '                                </Grid.RowDefinitions>',
-    '                                <DataGrid Grid.Row="0" Name="Archive" ScrollViewer.HorizontalScrollBarVisibility="Visible">',
+    '                                <DataGrid Grid.Row="0" Name="Archive" ScrollViewer.HorizontalScrollBarVisibility="Visible" >',
     '                                    <DataGrid.Columns>',
-    '                                        <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="100"/>',
-    '                                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+    '                                        <DataGridTextColumn Binding="{Binding Name}"  Width="100"/>',
+    '                                        <DataGridTextColumn Binding="{Binding Value}" Width="*"/>',
     '                                    </DataGrid.Columns>',
     '                                </DataGrid>',
     '                                <Grid Grid.Row="1">',
@@ -2599,17 +3508,17 @@ Class EventLogGui   # GC $Home\Desktop\EventLogs.xaml | % { "        '$_'," } | 
     '                                        <ColumnDefinition Width="*"/>',
     '                                        <ColumnDefinition Width="80"/>',
     '                                    </Grid.ColumnDefinitions>',
-    '                                    <Label   Grid.Column="0" Content="[Base]:"/>',
+    '                                    <Label    Grid.Column="0" Content="[Base]:"/>',
     '                                    <ComboBox Grid.Column="1" Name="Base"/>',
-    '                                    <Button  Grid.Column="2" Name="Browse" Content="Browse" Visibility="Hidden"/>',
-    '                                    <Button  Grid.Column="2" Name="Export" Content="Export" Visibility="Visible" IsEnabled="False"/>',
+    '                                    <Button   Grid.Column="2" Name="Browse" Content="Browse"/>',
+    '                                    <Button   Grid.Column="2" Name="Export" Content="Export"/>',
     '                                </Grid>',
     '                            </Grid>',
     '                        </Grid>',
     '                        <DataGrid Grid.Column="2" Name="System">',
     '                            <DataGrid.Columns>',
-    '                                <DataGridTextColumn Header="Name"     Binding="{Binding Name}"     Width="100"/>',
-    '                                <DataGridTextColumn Header="Value"    Binding="{Binding Value}"    Width="*"/>',
+    '                                <DataGridTextColumn Binding="{Binding Name}"  Width="100"/>',
+    '                                <DataGridTextColumn Binding="{Binding Value}" Width="*"/>',
     '                            </DataGrid.Columns>',
     '                        </DataGrid>',
     '                    </Grid>',
@@ -3040,184 +3949,148 @@ Class ThreadCollection
 #\_________________
 Class ThreadControl
 {
-    [System.Management.Automation.Runspaces.RunspaceFactory] $RunspaceFactory
-    [System.Management.Automation.Runspaces.RunspacePool]       $RunspacePool
-    [System.Management.Automation.Runspaces.Runspace]               $Runspace
     [Object]             $Slot
     [Object]         $Throttle
-    [Object]          $Session
-    [Object]        $Functions = @( )
-    [Object]        $Arguments = @( )
-    [Object]          $Command = @( )
-    [Object]         $Assembly = @( )
-    [Object]         $Variable = @( )
     [Object]       $Collection
+    [Object]  $RunspaceFactory
+    [Object]          $Session
+    [Object]   $ApartmentState
+    [Object]         $Assembly = @( )
+    [Object]         $Function = @( )
+    [Object]         $Variable = @( )
+    [Object]         $Argument = @( )
+    [Object]          $Command = @( )
     [Object]      $ScriptBlock
     [Object]      $ActionBlock
     Hidden [Bool]  $IsDisposed
-    Hidden [Uint32] $MinThread
+    Hidden [UInt32] $MinThread
     Hidden [UInt32] $MaxThread
     ThreadControl([String]$Slot,[UInt32]$Throttle)
     {
+        $This.MaxThread = [Environment]::GetEnvironmentVariable("Number_Of_Processors")
         If ($Slot -notin "Runspace","RunspacePool")
         {
             Throw "Invalid entry, (Runspace/RunspacePool)"
         }
-        If ($Throttle -gt [Environment]::GetEnvironmentVariable("Number_Of_Processors"))
+        If (($This.Maxthread -eq 1 -and $Throttle -gt 1) -or $Throttle -gt $This.MaxThread)
         {
-            Throw "Invalid entry, not enough (cores/processors)" 
+            Throw "Invalid entry, not enough (cores/processors)"
         }
         $This.Slot      = $Slot
         $This.Throttle  = $Throttle
-        $This.MaxThread = $Throttle
     }
     CreateInitial()
     {
-        $This.Session = $This.SessionState()
+        $This.Session                = $This.SessionState()
+        $This.Session.ApartmentState = $This.ApartmentState = [Threading.ApartmentState]::STA
     }
     [Object] SessionState()
     {
         Return [System.Management.Automation.Runspaces.InitialSessionState]::CreateDefault()
     }
-    LoadSessionObject([String]$Slot,[Object]$Name)
+    AddAssembly([String]$Name)
     {
-        Switch ($Slot)
+        If (!$This.Session)
         {
-            Function 
-            {
-                If ($Name -in (Get-ChildItem Function:\).Name)
-                {
-                    $Content    = Get-Content Function:\$Name -ErrorAction Stop
-                    $Object     = [System.Management.Automation.Runspaces.SessionStateFunctionEntry]::New($Name,$Content)
-                    $This.Session.Commands.Add($Object)
-                    $This.Functions += $Object
-                }
-            }
-            Argument { }
-            Command  { }
-            Assembly { }
-            Variable { }
+            $This.CreateInitial()
+        }
+
+        If ($Name -in (Get-AssemblyList).Name)
+        {
+            $Object          = [System.Management.Automation.Runspaces.SessionStateAssemblyEntry]::New($Name)
+            $This.Session.Assemblies.Add($Object)
+            $This.Assembly  += $Object
+        }
+    }
+    AddFunction([String]$Name)
+    {
+        If (!$This.Session)
+        {
+            $This.CreateInitial()
+        }
+
+        If ($Name -in (Get-ChildItem Function:).Name)
+        {
+            $Content         = Get-Content Function:\$Name -ErrorAction Stop
+            $Object          = [System.Management.Automation.Runspaces.SessionStateFunctionEntry]::New($Name,$Content)
+            $This.Session.Commands.Add($Object)
+            $This.Function  += $Object
+        }
+    }
+    AddVariable([String]$Name,[Object]$Value,[String]$Description)
+    {
+        If ($Name -in (Get-ChildItem Variable:).Name)
+        {
+            $Object          = [System.Management.Automation.Runspaces.SessionStateVariableEntry]::New($Name,$Value,$Description)
+            $This.Session.Variables.Add($Object)
+            $This.Variable  += $Object
         }
     }
     CreateRunspacePool()
     {
-        $This.CheckRunspacePool()
-        $This.SetRunspacePool()
-    }
-    CreateRunspacePool([UInt32]$MinRunspaces,[UInt32]$MaxRunspaces)
-    {
-        $This.CheckRunspacePool()
-        $This.CheckMinMaxRunspaces($MinRunspaces,$MaxRunspaces)
-        $This.SetRunspacePool()
-    }
-    CreateRunspacePool([System.Management.Automation.Runspaces.InitialSessionState]$InitialSessionState)
-    {
-        If (!$InitialSessionState) { $This.CreateInitial() }
-    }
-    CreateRunspacePool([UInt32]$MinRunspaces,[UInt32]$MaxRunspaces,[System.Management.Automation.Host.PSHost]$host)
-    {
-        $This.CheckRunspacePool()
-        $This.CheckMinMaxRunspaces($MinRunspaces,$MaxRunspaces)
-        $This.SetRunspacePool()
-    }
-    CreateRunspacePool([UInt32]$minRunspaces,[UInt32]$maxRunspaces,[System.Management.Automation.Runspaces.Initialsessionstate]$initialSessionState,[System.Management.Automation.Host.PSHost]$host)
-    {
-        If (!$InitialSessionState) { $This.CreateInitial() }
-        $This.CheckRunspacePool()
-        $This.CheckMinMaxRunspaces($MinRunspaces,$MaxRunspaces)
-        $This.SetRunspacePool()
-    }
-    [Bool] CheckMinMaxRunspaces([UInt32]$MinRunspaces,[UInt32]$MaxRunspaces)
-    {
-        If ($MinRunspaces -lt 1 -or $MaxRunSpaces -gt [Environment]::GetEnvironmentVariable("Number_Of_Processors"))
-        {
-            Throw "Invalid (minimum/maximum) runspaces set"
+        If ($This.Slot -ne "RunspacePool")
+        { 
+            Throw "Invalid option, the object is a RunspacePool"
         }
-        Else
-        {
-            Return $True
-        }
-    }
-    [Bool] CheckRunspacePool()
-    {
-        If ($This.Slot -eq "RunspacePool") { Return $True } Else { Throw "Invalid type selection" }
-    }
-    SetRunspacePool()
-    {
-        $This.RunspacePool = [System.Management.Automation.Runspaces.RunspaceFactory]::New()
 
-        If ($This.RunspacePool)
+        If (!$This.Session)
         {
-            $This.Runspace    = "-"; $This.IsDisposed = 0
+            $This.CreateInitial()
+        }
+
+        $This.RunspaceFactory = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspacePool($This.Session)
+
+        If ($This.RunspaceFactory)
+        {
+            $This.RunspaceFactory.SetMinRunspaces(1) | Out-Null
+            $This.RunspaceFactory.SetMaxRunspaces($This.Throttle) | Out-Null
+            $This.IsDisposed  = 0
         }
     }
     CreateRunspace()
     {
+        If ($This.Slot -ne "Runspace") 
+        { 
+            Throw "Invalid type selection"
+        }
 
-    }
-    CreateRunspace([System.Management.Automation.Host.PSHost]$host)
-    {
-        
-    }
-    CreateRunspace([System.Management.Automation.Runspaces.RunspaceConfiguration]$runspaceConfiguration)
-    {
-        $This.CheckRunspaceConfiguration($runspaceConfiguration)
-    }
-    CreateRunspace([System.Management.Automation.Host.PSHost]$host,[System.Management.Automation.Runspaces.RunspaceConfiguration]$runspaceConfiguration)
-    {
-        $This.CheckRunspaceConfiguration($runspaceConfiguration)
-    }
-    CreateRunspace([System.Management.Automation.Runspaces.initialsessionstate]$initialSessionState)
-    {
-        If (!$InitialSessionState) { $This.CreateInitial() }
-    }
-    CreateRunspace([System.Management.Automation.Host.PSHost]$host,[System.Management.Automation.Runspaces.initialsessionstate]$initialSessionState)
-    {
-        If (!$InitialSessionState) { $This.CreateInitial() }
-    }
-    [Bool] CheckRunspace()
-    {
-        If ($This.Slot -eq "Runspace") { Return $True } Else { Throw "Invalid type selection" }
-    }
-    SetRunspace()
-    {
-        $This.Runspace = [System.Management.Automation.Runspaces.RunspaceFactory]::New()
-
-        If ($This.Runspace)
+        If (!$This.Session)
         {
-            $This.RunspacePool = "-"; $This.IsDisposed   = 0
+            $This.CreateInitial()
+        }
+
+        $This.RunspaceFactory = [System.Management.Automation.Runspaces.RunspaceFactory]::CreateRunspace($This.Session)
+
+        If ($This.RunspaceFactory)
+        {
+            $This.IsDisposed  = 0
         }
     }
     Dispose()
     {
-        Switch ($This.Slot)
+        If ($This.RunspaceFactory)
         {
-            Runspace     
-            { 
-                $This.Runspace.Dispose()
-
-                If ($This.Runspace.IsDisposed)
-                {
-                    $This.Runspace    = $Null; $This.IsDisposed  = 1
-                }
-            }
-            RunspacePool
-            { 
-                $This.RunspacePool.Dispose()
-
-                If ($This.RunspacePool.IsDisposed)
-                {
-                    $This.RunspacePool = $Null; $This.IsDisposed   = 1 
-                }
+            $This.RunspaceFactory.Dispose()
+            If ($This.RunspaceFactory.IsDisposed)
+            {
+                $This.RunspaceFactory = $Null
+                $This.IsDisposed      = 1
             }
         }
-    }
-    Config()
-    {
-        Switch ($This.Slot)
+        Else
         {
-            Runspace     { $This.ShowProperties($This.Runspace) }
-            RunspacePool { $This.ShowProperties($This.RunspacePool)  }
+            Throw "Runspace factory not yet created"
+        }
+    }
+    [Object[]] Config()
+    {
+        If (!$This.RunspaceFactory)
+        {
+            Throw "Runspace factory not yet created, or has been disposed"
+        }
+        Else
+        {
+            Return $This.ShowProperties($This.RunspaceFactory)
         }
     }
     [Object[]] ShowProperties([Object]$Object)
@@ -3236,807 +4109,169 @@ Class ThreadControl
 #\_____________________________________________________________________\_[ </Thread Classes> ]_/
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
 
-# ______________________________________________________________________________________________
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\__[ <Project Classes> ]__/
-#                                                                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-#\________________________ 
-Class ProjectProgressIndex
-{
-    [UInt32]  $Index
-    [UInt32]   $Slot
-    [Float] $Percent
-    [String] $String
-    [Object]   $Time
-    [Object] $Remain
-    ProjectProgressIndex([UInt32]$Index,[UInt32]$Segment,[UInt32]$Total)
-    {
-        $This.Index   = $Index
-        $This.Slot    = $Index * $Segment
-        $This.Percent = [Math]::Round($This.Slot*100/$Total,2)
-        $This.String  = $This.GetString($Total)
-    }
-    ProjectProgressIndex([Switch]$Last,[UInt32]$Total)
-    {
-        $This.Index   = 101
-        $This.Slot    = $Total
-        $This.Percent = 100.00
-        $This.String  = $This.GetString($Total)
-    }
-    [String] GetString([UInt32]$Total)
-    {
-        Return "({0:n2}%) ({1}/{2})" -f $This.Percent, $This.Slot, $Total
-    }
-    [String] ToString()
-    {
-        Return $This.Slot
-    }
-    [String] Line()
-    {
-        Return "{0} Elapsed: [{1}], Remain: [{2}]" -f $This.String, $This.Time, $This.Remain
-    }
-}
-#\___________________
-Class ProjectProgress
-{
-    [DateTime]  $Phase
-    [UInt32]    $Total
-    [UInt32]  $Segment
-    [Object]    $Index = @( )
-    ProjectProgress([Object]$Work)
-    {
-        $This.Phase      = [DateTime]::Now
-        $This.Total      = $Work.Count
-        $This.Segment    = [Math]::Round($This.Total/100)
-        0..100           | % { $This.AddIndex($_,$This.Segment,$This.Total) }
-        $This.AddLast($This.Total)
-    }
-    AddIndex([UInt32]$Index,[UInt32]$Segment,[UInt32]$Total)
-    {
-        $This.Index     += [ProjectProgressIndex]::New($Index,$This.Segment,$This.Total)    
-    }
-    AddLast([UInt32]$Total)
-    {
-        [Switch]$Last    = $True
-        $Item            = [ProjectProgressIndex]::New($Last,$This.Total)
-        $Item.Index      = 101
-        $Item.Slot       = $This.Total
-        $Item.Percent    = 100.00
-        $Item.Time       = $This.Time()
-        $Item.Remain     = [Timespan]::FromTicks(1)
-        $This.Index     += $Item
-    }
-    [Object] Time()
-    {
-        Return [TimeSpan]([DateTime]::Now-$This.Phase)
-    }
-    [Object] Slot([UInt32]$Token)
-    {
-        $Item            = $This.Index[$Token/$This.Segment]
-        $Item.Time       = $This.Time()
-        If ($Item.Slot -eq 0)
-        {
-            $Item.Remain = [Timespan]::FromTicks(1)
-        }
-        If ($Item.Slot -ne 0) 
-        { 
-            $Item.Remain = ($Item.Time.TotalSeconds / $Item.Percent) * (100-$Item.Percent) | % { [Timespan]::FromSeconds($_) } 
-        }
-
-        Return $Item
-    }
-}
-#\____________________
-Class ProjectFileEntry
-{
-    [String] $Name
-    [Object] $Entry
-    [String] $Path
-    ProjectFileEntry([String]$Name,[Object]$Archive,[String]$Path)
-    {
-        $This.Name  = $Name
-        $This.Entry = $Archive.GetEntry($Name)
-        $This.Path  = "$Path\$Name"
-    }
-    Extract()
-    {
-        [System.IO.Compression.ZipFileExtensions]::ExtractToFile($This.Entry,$This.Path,$True)
-    }
-    [String] ToString()
-    {
-        Return $This.Path
-    }
-}
-#\______________________
-Class ProjectConsoleLine
-{
-    [UInt32] $Index
-    [String] $Phase
-    [String] $Type
-    [String] $Time
-    [String] $Message
-    ProjectConsoleLine([UInt32]$Index,[String]$Phase,[UInt32]$Type,[String]$Time,[String]$Message)
-    {
-        $This.Index   = $Index
-        $This.Phase   = $Phase
-        $This.Type    = Switch ($Type) { 0 { "[~]" } 1 { "[+]" } 2 { "[!]" } }
-        $This.Time    = $Time
-        $This.Message = $Message
-    }
-    [String] ToString()
-    {
-        Return @( Switch (!!$This.Message)
-        {
-            $True  { "{0} {1} {2}" -f $This.Phase, $This.Type, $This.Message }
-            $False { "{0} {1} Elapsed: [{2}]" -f $This.Phase, $This.Type, $This.Time }
-        })
-    }
-}
-#\__________________
-Class ProjectConsole
-{
-    [Object]    $Time
-    [String]   $Phase
-    [UInt32]    $Type
-    [String] $Message
-    [UInt32]   $Count
-    [Object]  $Output
-    ProjectConsole([Object]$Time)
-    {
-        $This.Time    = $Time
-        $This.Phase   = "Starting"
-        $This.Type    = 0
-        $This.Message = $Null
-        $This.Count   = 0
-        $This.Output  = @( )
-        $This.Status()
-    }
-    AddLine([String]$Line)
-    {
-        $This.Output += [ProjectConsoleLine]::New($This.Output.Count,$This.Phase,$This.Type,$This.Time.Elapsed,$Line)
-        $This.Count  ++
-    }
-    [String] Status()
-    {
-        $This.AddLine($Null)
-        Return $This.Last()
-    }
-    [String] Update([String]$Phase,[String]$Message)
-    {
-        $This.Phase   = $Phase
-        $This.Message = $Message
-        $This.AddLine($Message)
-        Return $This.Last()
-    }
-    [String] Update([String]$Phase,[UInt32]$Type,[String]$Message)
-    {
-        $This.Phase   = $Phase
-        $This.Type    = $Type
-        $This.Message = $Message
-        $This.AddLine($Message)
-        Return $This.Last()
-    }
-    [Object] Last()
-    {
-        Return $This.Output[$This.Count-1]
-    }
-    [Object[]] ToString()
-    {
-        Return @( $This.Output[0..($This.Count-1)] )
-    }
-}
-#\_______________
-Class ProjectFile
-{
-    [UInt32]         $Index
-    [String]          $Name
-    [String]      $Fullname
-    Hidden [String] $Parent
-    [Bool]          $Exists
-    [Double]        $Length
-    [String]          $Size
-    ProjectFile([UInt32]$Index,[Object]$File)
-    {
-        $This.Index    = $Index
-        $This.Fullname = $File.Fullname
-        $This.Name     = $File.Name
-        $This.Parent   = $File.Fullname | Split-Path -Parent
-        $This.Exists   = $File.Exists
-        $This.Length   = $File.Length
-        $This.Update()
-    }
-    Write([String[]]$In)
-    {
-        $Out     = $In -join "`n"
-        $Bytes   = [Byte[]]([Char[]]$Out)
-        $Item    = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Append)
-        $Item.Write($Bytes,0,$Bytes.Count)
-        $Item.Dispose()
-        $This.Update()
-    }
-    Write([String]$In)
-    {
-        $Out   = $In -join "`n"
-        $Bytes = [Byte[]]@([Char[]]$Out)
-        $Item  = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Append)
-        $Item.Write($Bytes,0,$Bytes.Count)
-        $Item.Dispose()
-        $This.Update()
-    }
-    Clear()
-    {
-        $Item = [System.IO.Filestream]::new($This.Fullname,[System.IO.FileMode]::Truncate)
-        $Item.Write(0,0,0)
-        $Item.Dispose()
-        $This.Update()
-    }
-    [Object] Get()
-    {
-        $Item = [System.IO.File]::ReadAllLines($This.Fullname)
-        $This.Update()
-        Return $Item
-    }
-    [Void] Delete()
-    {
-        $Item = [System.IO.File]::Delete($This.Fullname)
-        $Item.Dispose()
-        $This.Update()
-    }
-    [Void] Update()
-    {
-        $This.Exists   = [System.IO.File]::Exists($This.Fullname)
-        If (!$This.Exists)
-        {
-            $This.Length   = 0
-            $This.Size     = "0.00 KB"
-        }
-        If ($This.Exists)
-        {
-            $This.Length   = [System.IO.File]::ReadAllBytes($This.Fullname).Count
-            $This.Size     = Switch ($This.Length)
-            {
-                {$_ -eq   0 } { "0.00 KB" }
-                {$_ -gt   0 -and $_ -lt 800kb}   { "{0:n2} KB" -f ($This.Length/1KB) }
-                {$_ -ge 800kb -and $_ -lt 800mb} { "{0:n2} MB" -f ($This.Length/1MB) }
-                {$_ -ge 800mb -and $_ -lt 800gb} { "{0:n2} GB" -f ($This.Length/1GB) }
-                {$_ -ge 800gb }                  { "{0:n2} TB" -f ($This.Length/1TB) }
-            }
-        }
-    }
-    [String] ToString()
-    {
-        Return $This.FullName
-    }
-}
-#\_________________
-Class ProjectFolder
-{
-    [UInt32]             $Rank
-    [String]             $Name
-    [String]         $Fullname
-    [String]           $Parent
-    [Bool]             $Exists
-    [UInt32]            $Count
-    Hidden [Double] $SizeBytes
-    [String]             $Size
-    Hidden [Hashtable]  $Index = @{ }
-    Hidden [Hashtable]   $Hash = @{ }
-    [Object]         $Children = @( )
-    ProjectFolder([UInt32]$Rank,[Object]$Folder)
-    {
-        $This.Rank     = $Rank
-        $This.Name     = $Folder.Name
-        $This.Fullname = $Folder.Fullname
-        $This.Parent   = $Folder.Parent.Fullname
-        $This.Update()
-    }
-    [Void] Update()
-    {
-        $This.Exists        = [System.IO.Directory]::Exists($This.Fullname)
-        $This.SizeBytes     = 0
-        $This.Size          = "0.00 KB"
-        $This.Hash          = @{ }
-        $This.Index         = @{ }
-        If ($This.Exists)
-        {
-            $This.Children  = @([System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos()) | Sort-Object Name
-            $This.Count     = $This.Children.Count
-            If ($This.Count -gt 0)
-            {
-                $C = 0
-                $X = 0
-                Do
-                {
-                    $This.Hash.Add($This.Children[$C].Name,$This.Children[$C])
-                    $This.Index.Add($This.Children[$C],$C)
-                    $X = $X + $This.Children[$C].Length
-                    $C ++
-                }
-                Until ($C -eq $This.Count)
-                $This.SizeBytes = [Double]$X
-            }
-            $This.Size      = $This.GetSize($This.SizeBytes)
-        }
-    }
-    [String] GetSize([Double]$Size)
-    {
-        Return @( Switch ($Size)
-        {
-            {$_ -eq   0 } { "0.00 KB" }
-            {$_ -gt   0 -and $_ -lt 800kb}   { "{0:n2} KB" -f ($_/1KB) }
-            {$_ -ge 800kb -and $_ -lt 800mb} { "{0:n2} MB" -f ($_/1MB) }
-            {$_ -ge 800mb -and $_ -lt 800gb} { "{0:n2} GB" -f ($_/1GB) }
-            {$_ -ge 800gb }                  { "{0:n2} TB" -f ($_/1TB) }
-        })
-    }
-    Create([String]$Name)
-    {
-        $Path           = $This.Fullname, $Name -join '\'
-        If (![System.IO.File]::Exists($Path))
-        {
-            [System.IO.File]::Create($Path).Dispose()
-            [Console]::WriteLine("Created [+] ($($Name.Count)) item(s).")
-        }
-        Else
-        {
-            [Console]::WriteLine("Exception [!] ($($Name.Count)) exists.")
-        }
-        $This.Update()
-    }
-    Create([Object[]]$Name)
-    {
-        If ($Name.Count -gt 1)
-        {
-            $Work    = @(ForEach ($X in 0..($Name.Count-1)) { $This.Fullname, $Name[$X] -join "\" })
-            $Segment = [Math]::Round($Work.Count/100)
-            $Slot    = 0..($Work.Count-1) | ? { $_ % $Segment -eq 0 }
-            ForEach ($X in 0..($Work.Count-1))
-            {
-                [System.IO.File]::Create($Work[$X]).Dispose()
-                If ($X -in $Slot)
-                {
-                    $Percent = ($X*100/$Work.Count)
-                    $String  = "({0:n2}%) ({1}/{2})" -f $Percent, $X, $Work.Count
-                    [Console]::WriteLine("Creating [~] $String")
-                }
-            }
-        }
-        Else
-        {
-            [System.IO.File]::Create("$($This.Fullname)\$Name").Dispose()
-        }
-        $This.Update()
-        [Console]::WriteLine("Created [+] ($($Name.Count)) item(s).")
-    }
-    Delete([String]$Name)
-    {
-        $Item = $This.File($Name)
-        $Item.Delete()
-        $This.Update()
-        [Console]::WriteLine("Deleted [$Name]")
-    }
-    [Object] File([String]$Name)
-    {
-        $File = $This.Hash[$Name]
-        If (!$File)
-        {
-            Throw "Invalid file"
-        }
-        Return [ProjectFile]::New($This.Index[$Name],$File)
-    }
-    Flush()
-    {
-        If ($This.Exists)
-        {
-            [Console]::WriteLine("Enumerating [~] files")
-            $Work = @([System.IO.DirectoryInfo]::new($This.FullName).EnumerateFileSystemInfos()) | Sort-Object LastWriteTime
-            If ($Work.Count -gt 1)
-            {
-                $Segment = [Math]::Round($Work.Count/100)
-                $Slot    = 0..($Work.Count-1) | ? { $_ % $Segment -eq 0 }
-                ForEach ($X in 0..($Work.Count-1))
-                {
-                    $Work[$X].Delete()
-                    If ($X -in $Slot)
-                    {
-                        $Percent = ($X*100/$Work.Count)
-                        $String  = "({0:n2}%) ({1}/{2})" -f $Percent, $X, $Work.Count
-                        [Console]::WriteLine("Deleting [~] $String")
-                    }
-                }
-            }
-            Else
-            {
-                $Work.Delete()
-            }
-            [Console]::WriteLine("All files deleted")
-        }
-        $This.Update()
-    }
-    [String] ToString()
-    {
-        Return $This.Fullname
-    }
-}
-#\_______________
-Class ProjectBase
-{
-    [String]       $Name
-    [String]   $Fullname
-    [String]     $Parent
-    [Bool]       $Exists
-    [UInt32]      $Count
-    [DateTime]     $Date
-    [Object]    $Folders = @( )
-    ProjectBase([String]$Path)
-    {
-        $This.Parent            = $Path | Split-Path -Parent
-        If (![System.IO.Directory]::Exists($This.Parent))
-        {
-            Throw "Invalid path"
-            $This.Parent        = $Null
-        }
-        $This.Name              = $Path | Split-Path -Leaf
-        $This.FullName          = $Path
-        If ([System.IO.Directory]::Exists($Path))
-        {
-            Throw "This path already exists"
-        }
-        ForEach ($Entry in "Master","Logs","Events","Threads")
-        {
-            [System.IO.Directory]::CreateDirectory("$($This.Fullname)\$Entry")
-        }
-        $This.Update()
-    }
-    Static [String[]] Subfolders()
-    {
-        Return "Master","Logs","Events","Threads"
-    }
-    [Void] Update()
-    {
-        $This.Exists            = [System.IO.Directory]::Exists($This.Fullname)
-        $This.Date              = [System.IO.Directory]::GetCreationTime($This.Fullname)
-        $This.Folders           = @( )
-        If ($This.Exists)
-        {
-            $Directories        = @([System.IO.DirectoryInfo]::new($This.Fullname).EnumerateDirectories())
-            $This.Count         = $Directories.Count
-            If ($This.Count -gt 0)
-            {
-                ForEach ($Folder in $Directories)
-                {
-                    $This.Folders += [ProjectFolder]::New($This.Folders.Count,$Folder)
-                }
-            }
-        }
-    }
-    [Object] Slot([String]$Slot)
-    {
-        Return $This.Folders | ? Name -eq $Slot
-    }
-    Flush()
-    {
-        $This.Update()
-        ForEach ($Folder in $This.Folders)
-        {
-            $Folder.Flush()
-        }
-    }
-    [String] ToString()
-    {
-        Return $This.Fullname
-    }
-}
-#\__________________
-Class ProjectRestore
-{
-    [Object]        $Console
-    [Object]           $Time
-    [Object]          $Start
-    [Object]         $System
-    [Object]    $DisplayName
-    [UInt32]        $Threads
-    [String]           $Guid
-    [String]           $Base
-    [Object]           $Logs
-    [Object]         $Output
-    Hidden [Object]     $Zip
-    ProjectRestore([String]$ZipPath)
-    {
-        $This.Time       = [System.Diagnostics.Stopwatch]::StartNew()
-        $This.Console    = [ProjectConsole]::New($This.Time)
-        $This.Base       = $ZipPath -Replace ".zip",""
-
-        # Restore the zip file
-        $This.Update("(0.0) Testing",0,"Zip file path input")
-        Switch ($ZipPath)
-        {
-            {![System.IO.File]::Exists($_)}
-            {
-                $This.Error("Invalid zip file path input")
-            }
-            {[System.IO.FileInfo]::New($_).Extension -ne ".zip"}
-            {
-                $This.Error("Invalid zip file path input")
-            }
-        }
-        $This.Update("(0.0) Tested",1,"Zip file path input is valid")
-
-        # Zip path exists, is it a zip file?
-        $This.Update("(0.1) Opening",0,"Zip file")
-        $This.Zip        = [System.IO.Compression.Zipfile]::Open($ZipPath,"Read")
-        If (!($This.Zip -is [System.IO.Compression.ZipArchive]))
-        { 
-            $This.Error("Invalid file")
-        }
-        $This.Update("(0.1) Opened",1,"Extraction path created")
-
-        $Files            = $This.Zip.Entries
-
-        # Master file
-        $This.Update("(0.2) Extracting",0,"Master.txt")
-        $Item             = $Files[0]
-        $Stream           = $Item.Open()
-        $Reader           = [System.IO.StreamReader]::New($Stream)
-        $Master           = $Reader.ReadToEnd()
-        $Reader.Close()
-        $Stream.Close()
-        $This.Update("(0.2) Extracted",1,"Master.txt")
-
-        # Extract Logs.txt
-        $This.Update("(0.3) Extracting",0,"Logs.txt")
-        $Item             = $Files[1]
-        $Stream           = $Item.Open()
-        $Reader           = [System.IO.StreamReader]::New($Stream)
-        $LogsFile         = $Reader.ReadToEnd() | ConvertFrom-Json
-        $Reader.Close()
-        $Stream.Close()
-        $This.Update("(0.3) Extracted",1,"Logs.txt")
-
-        # Restore captured system details
-        $This.Update("(0.4) Restoring",0,"(Captured) system details")
-        $This.System          = Get-SystemDetails -InputObject $Master
-        If (!$This.System)
-        {
-            $This.Error("Failed to restore captured system details")
-        }
-        $This.Start           = $This.System.Snapshot.Start
-        $This.DisplayName     = $This.System.Snapshot.DisplayName
-        $This.Threads         = $This.System.Processor.Output.Threads
-        $This.Guid            = $This.System.Snapshot.Guid
-        $This.Update("(0.4) Restored",1,"System details")
-
-        # Process the logs
-        $This.Update("(0.5) Restoring",0,"(Captured) Event log providers")
-        $This.Logs            = @( )
-        $Stash                = @{ }
-        $Hash                 = @{ }
-        ForEach ($X in 0..($LogsFile.Count-1))
-        {
-            $Item             = Get-EventLogConfigExtension -Config $LogsFile[$X]
-            If (!$Item)
-            {
-                $This.Error("Unable to retrieve log configuration extension for Logs.txt[$X]")
-            }
-            $Item.Output      = @( )
-            $Stash.Add($Item.LogName,@{ })
-            $This.Logs       += $Item
-        }
-        $This.Update("(0.5) Restored",1,"Event log providers")
-
-        # Process the events
-        $This.Update("(0.6) Importing",0,"(Captured) Events")
-        $Events               = $This.Zip.Entries | ? Name -notmatch "(Master|Logs).txt"
-
-        $Id                   = [ProjectProgress]::New($Events)
-        $This.Update("(1.0) Importing",0,"(0.00%) Events: ($($Id.Total)) found.")
-        ForEach ($X in 0..($Id.Total-1))
-        {
-            $Item             = Get-EventLogRecordExtension -Index $X -Entry $Events[$X]
-            $Hash.Add($X,$Item)
-            $Stash[$Item.LogName].Add($Stash[$Item.LogName].Count,$X)
-            If ($X -in $Id.Index.Slot)
-            {
-                $This.Update("(1.0) Importing",0,$Id.Slot($X).Line())
-            }
-            If ($X -eq $Id.Total)
-            {
-                $This.Update("(1.0) Importing",0,$Id.Index[-1].Line())
-            }
-        }
-        $This.Update("(1.0) Imported",1,"(100.00%) [+] Events: ($($Id.Total)) found.")
-        $This.Output          = $Hash[0..($Hash.Count-1)]
-
-        # Dispose the zip file
-        $This.Zip.Dispose()
-
-        # Sort the logs
-        $This.Update("(1.1) Restoring",0,"Events for each log provider")
-
-        $Id                   = [ProjectProgress]::New($This.Logs)
-        $This.Update("(1.1) Sorting",0,"(0.00%) [~] Logs: ($($Id.Total)) found.")
-        ForEach ($X in 0..($Id.Total-1))
-        {
-            $Name             = $This.Logs[$X].LogName
-            $This.Logs[$X].Output  = Switch ($Stash[$Name].Count)
-            {
-                0 { @( ) } 1 { @($This.Output[$Stash[$Name][0]]) } Default { @($This.Output[$Stash[$Name][0..($Stash[$Name].Count-1)]]) }
-            }
-            $This.Logs[$X].Total   = $This.Logs[$X].Output.Count
-            If ($X -in $Id.Index.Slot)
-            {
-                $This.Update("(1.1) Sorting",0,$Id.Slot($X).Line())
-            }
-            If ($X -eq $Id.Total)
-            {
-                $This.Update("(1.1) Sorting",0,$Id.Index[-1].Line())
-            }
-        }
-        $This.Update("(1.1) Sorted",1,"(100.00%) [+] Logs: ($($Id.Total)) found.")
-        $This.Time.Stop()
-    }
-    Current()
-    {
-        $This.Console.Status()
-    }
-    Update([String]$Phase,[String]$Message)
-    {
-        $This.Console.Update($Phase,$Message)
-    }
-    Update([String]$Phase,[UInt32]$Type,[String]$Message)
-    {
-        $This.Console.Update($Phase,$Type,$Message)
-    }
-    [Void] Error([String]$Message)
-    {
-        $This.Update("Exception",2,$Message)
-        Throw $This.Console.ToString()
-    }
-    [Object[]] GetConsole()
-    {
-        Return $This.Console.Output[0..($This.Console.Output.Count-1)]
-    }
-}
-#\___________
-Class Project
-{
-    [Object]        $Console
-    [Object]           $Time
-    [DateTime]        $Start
-    [Object]         $System
-    [String]    $DisplayName
-    [UInt32]        $Threads
-    [Guid]             $Guid
-    [ProjectBase]      $Base
-    [Object]           $Logs = @( )
-    [Object]         $Output = @( )
-    Project()
-    {
-        # Start system snapshot, count threads / max runspace pool size
-        $This.Time           = [System.Diagnostics.Stopwatch]::New()
-        $This.Console        = [ProjectConsole]::New($This.Time)
-    }
-    Init()
-    {
-        $This.Update("(0.0) Loading",0,"System snapshot details")
-        $This.System        = Get-SystemDetails
-        $This.Start         = $This.System.Snapshot.Start
-        $This.DisplayName   = $This.System.Snapshot.DisplayName
-        If (!$This.Threads)
-        {
-            $This.Threads   = $This.System.Processor.Output.Threads | Measure-Object -Sum | % Sum
-        }
-
-        If ($This.Threads -lt 2)
-        {
-            $This.Error("CPU only has (1) thread (selected/available)")
-        }
-
-        # System snapshot has already created a Guid, to create a new folder for the threads
-        $This.Guid          = $This.System.Snapshot.Guid
-        $This.Base          = $This.Establish([Environment]::GetEnvironmentVariable("temp"),$This.Guid)
-
-        $This.Update("(0.1) Created",1,"Base directory")
-        $This.Providers()
-    }
-    [Object] Establish([String]$Base,[String]$Name)
-    {
-        Return [ProjectBase]::New("$Base\$Name")
-    }
-    Providers()
-    {
-        # Loads the provider names
-        $Providers        = $This.System.LogProviders.Output
-        $Slot             = $This.Slot("Threads")
-        $Depth            = ([String]$This.Threads).Length
-        $Names            = 0..($This.Threads-1) | % { "{0:d$Depth}.txt" -f $_ }
-        $Slot.Create($Names)
-        ForEach ($X in 0..($This.Threads-1))
-        {
-            $File         = $Slot.File($Names[$X])
-            $Value        = 0..($Providers.Count-1) | ? { $_ % $This.Threads -eq $X } | % { $_,$Providers[$_].Value -join ',' }
-            $File.Write($Value -join "`n")
-            $Slot.Update()
-        }
-        $This.Update("(0.2) Prepared",1,"Event log collection split between threads")
-    }
-    [Object] Slot([String]$Slot)
-    {
-        Return $This.Base.Folders | ? Name -eq $Slot
-    }
-    Current()
-    {
-        $This.Console.Status()
-    }
-    Update([String]$Phase,[String]$Message)
-    {
-        $This.Console.Update($Phase,$Message)
-    }
-    Update([String]$Phase,[UInt32]$Type,[String]$Message)
-    {
-        $This.Console.Update($Phase,$Type,$Message)
-    }
-    [Void] Error([String]$Message)
-    {
-        $This.Update("Exception",2,$Message)
-        Throw $This.Console.ToString()
-    }
-    SaveMaster()
-    {
-        $Value        = $This.System.GetOutput()
-        $Slot         = $This.Slot("Master")
-        $Slot.Create("Master.txt")
-        $File         = $Slot.File("Master.txt")
-        $File.Write($Value -join "`n")
-        $This.Update("Success",1,"Master file: [$File], Size: [$($File.Size)]")
-    }
-    SaveLogs()
-    {
-        $Value         = $This.Logs | Select-Object Rank,LogName,LogType,LogIsolation,IsEnabled,IsClassicLog,SecurityDescriptor,LogFilePath,
-        MaximumSizeInBytes,Maximum,Current,LogMode,OwningProviderName,ProviderNames,ProviderLevel,ProviderKeywords,ProviderBufferSize,
-        ProviderMinimumNumberOfBuffers,ProviderMaximumNumberOfBuffers,ProviderLatency,ProviderControlGuid | ConvertTo-Json
-        
-        $Slot          = $This.Slot("Logs")
-        $Slot.Create("Logs.txt")
-        $File          = $Slot.File("Logs.txt")
-        $File.Write($Value)
-        $This.Update("Success",1,"Log config file: [$File], Size: [$($File.Size)]")
-    }
-    [String] Destination()
-    {
-        Return "{0}\{1}.zip" -f ($This.Base | Split-Path -Parent), $This.DisplayName
-    }
-    Delete()
-    {
-        $This.Update("Terminating",2,"Process was instructed to be deleted")
-        $This.Base.Flush()
-        $This.Start         = [DateTime]::FromOADate(1)
-        $This.System        = $Null
-        $This.DisplayName   = $Null
-        $This.Guid          = [Guid]::Empty
-        $This.Time          = $Null
-        $This.Threads       = $Null
-        $This.Base          = $Null
-        $This.Logs          = $Null
-        $This.Output        = $Null
-        $This.GetConsole()
-    }
-    [Object[]] GetConsole()
-    {
-        Return @( $This.Console.GetOutput() )
-    }
-    [Object] ToString()
-    {
-        Return $This
-    }
-}
-#                                                                     __________________________
-#\____________________________________________________________________\_[ </Project Classes> ]_/
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
-
 
 # ______________________________________________________________________________________________
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\_[ <Controller Class> ]_/
 #                                                                      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+#\_____________________
+Class ThrottleIndexItem
+{
+    [UInt32]          $Index
+    [UInt32]          $Cores
+    [Float]           $Value
+    Hidden [Float]    $Avail
+    Hidden [Float]     $Load
+    Hidden [UInt32]    $Axis
+    Hidden [Float]   $Result
+    [String]          $Label
+    ThrottleIndexItem([UInt32]$Index,[UInt32]$Cores,[Double]$Value)
+    {
+        $This.Index      = $Index
+        $This.Cores      = $Cores
+        $This.Value      = $Value
+        $This.Label      = $This.ToString()
+    }
+    SetLoad([Double]$Load)
+    {
+        $This.Avail      = 1 - $Load
+        $This.Load       = $Load
+        If ($This.Value -ge $Load)
+        {
+            $This.Axis   = 0
+        }    
+        If ($This.Value -lt $Load)
+        {
+            $This.Axis   = 1
+        }
+        $This.Result     = [Math]::Round($This.Value - $Load,3)
+    }
+    SetAvail([Double]$Load)
+    {
+        $This.Avail      = 1 - $Load
+        $This.Load       = $Load
+        If ($This.Avail -ge $This.Value)
+        {
+            $This.Axis   = 1
+        }    
+        If ($This.Avail -lt $This.Value)
+        {
+            $This.Axis   = 0
+        }
+        $This.Result     = [Math]::Round($This.Value - $Load,3)
+    }
+    [String] ToString()
+    {
+        Return "({0}) {1:n2}%" -f $This.Cores, ($This.Value*100)
+    }
+}
+#\_________________
+Class ThrottleIndex
+{
+    [Decimal]  $Current
+    [UInt32]     $Count
+    [Object]   $Segment
+    [Object]   $Maximum
+    [Object]   $Minimum
+    [Object]    $Output = @( )
+    ThrottleIndex([Decimal]$Throttle)
+    {
+        $This.Current     = $Throttle
+        $This.Init()
+    }
+    ThrottleIndex()
+    {
+        If (!$This.Current)
+        {
+            $This.Current = 1.00
+        }
+        $This.Init()
+    }
+    Init()
+    {   
+        $This.Count       = $This.GetCount()
+        $This.Stage()
+        $This.Maximum     = $This.Output[0]
+        $This.Minimum     = $This.Output[-1]
+    }
+    Stage()
+    {
+        $This.Output      = @( )
+        $This.Segment     = (100/$This.Count)/100
+        ForEach ($X in $This.Count..1)
+        {
+            $This.Add($X,$X*$This.Segment)
+        }
+    }
+    Add([UInt32]$Cores,[Double]$Value)
+    {
+        $This.Output     += [ThrottleIndexItem]::New($This.Output.Count,$Cores,$Value)
+    }
+    AutoThrottle()
+    {
+        $Load             = $This.GetLoad()
+        $Tally            = 0
+        $C                = 0
+        Do
+        {
+            If ($Load -ge $C * $This.Segment)
+            {
+                $Tally = $Tally + $This.Segment
+            }
+            $C ++
+        }
+        Until ($Tally -gt $Load)
+
+        $This.Current = $This.Output[$C].Value
+    }
+    SetThrottle([UInt32]$C)
+    {
+        $This.Current = $This.Output[$C].Value
+    }
+    SetLoad([Float]$Load)
+    {
+        ForEach ($X in 0..($This.Output.Count-1))
+        {
+            $This.Output[$X].SetLoad($Load)
+        }
+    }
+    SetLoad()
+    {
+        $Load         = $This.GetLoad()
+
+        ForEach ($X in 0..($This.Output.Count-1))
+        {
+            $This.Output[$X].SetLoad($Load)
+        }
+    }
+    SetAvail([Float]$Load)
+    {
+        ForEach ($X in 0..($This.Output.Count-1))
+        {
+            $This.Output[$X].SetAvail($Load)
+        }
+    }
+    SetAvail()
+    {
+        $Load         = $This.GetLoad()
+
+        ForEach ($X in 0..($This.Output.Count-1))
+        {
+            $This.Output[$X].SetAvail($Load)
+        }
+    }
+    [UInt32] GetCurrentCount()
+    {
+        Return $This.Current * $This.Count
+    }
+    [Double] GetLoad()
+    {
+        Return (Get-CimInstance Win32_Processor | % LoadPercentage)/100
+    }
+    [UInt32] GetCount()
+    {
+        Return [Environment]::GetEnvironmentVariable("Number_Of_Processors")
+    }
+}
 #\____________________
 Class ProjectEventSlot
 {
@@ -4077,21 +4312,47 @@ Class ProjectEventTree
     }
 }
 #\__________________
+Class ProjectControl
+{
+    [String] $Name
+    [String] $Type
+    [Object] $Control
+    ProjectControl([String]$Name,[Object]$Control)
+    {
+        $This.Name    = $Name
+        $This.Type    = $Control.GetType().Name
+        $This.Control = $Control
+    }
+}
+#\__________________
 Class ProjectCommand
 {
-    [Object]   $Window
-    [Object]  $Console
-    [Object]    $Table
-    [Object]   $Output
-    ProjectCommand([Object]$Window)
+    [Object]      $Window
+    [Object]        $Text
+    [Object]        $Grid
+    [Object]     $Console
+    ProjectCommand([Object]$SyncHash)
     {
-        $This.Window   = $Window
-        $This.Table    = $Window.Table 
-        $This.Output   = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+        $This.Window            = $SyncHash.IO
+        $This.Text              = $This.Control("Console",$SyncHash.IO.Console)
+        $This.Grid              = $This.Control("Table",$Synchash.IO.Table)
+    }
+    [Object] Control([String]$Name,[Object]$Control)
+    {
+        Return [ProjectControl]::New($Name,$Control)
     }
     SetConsole([Object]$Console)
     {
-        $This.Console  = $This.Window.Console = $Console
+        $This.Console            = $Console
+        $Hash                    = @{ Control = $This.Grid.Control } 
+
+        Register-EngineEvent -SourceIdentifier Console_Updated -Action { 
+            
+            ForEach ($Item in $Event.Sender.Output | ? Index -notin $Hash.Control.Items)
+            {
+                $Hash.Control.Items.Add($Item)
+            }
+        } 
     }
     Current()
     {
@@ -4116,6 +4377,7 @@ Class ProjectCommand
 #\_____________________
 Class ProjectController
 {
+    [Hashtable]           $SyncHash # Control
     [Object]                  $Xaml # Graphical
     Hidden [Object]        $Command # 
     [Object]               $Console # 
@@ -4135,15 +4397,17 @@ Class ProjectController
     [UInt32]                  $Menu # UI
     [UInt32]                $Subset # UI
     [String[]]               $Panel = "Main","Log","Output","View" # UI
-    ProjectController()
+    ProjectController([Object]$SyncHash)
     {
+        $This.SyncHash  = $SyncHash
+
         # Set Defaults
         $This.SetBegin()
         $This.SetXaml()
-        $This.SetCommand($This.Xaml.IO)
+        $This.SetCommand($SyncHash)
         $This.SetThrottleIndex()
         $This.AutoThrottle()
-        If ($This.Throttle -gt 4)
+        If ($This.Throttle -gt 1)
         {
             $This.ThreadControl = $This.SetThreadControl("RunspacePool")
         }
@@ -4181,16 +4445,16 @@ Class ProjectController
             Throw "Xaml object already set"
         }
 
-        $This.Xaml           =  [XamlWindow][EventLogGui]::Tab
+        $This.Xaml = [RSXamlWindow]::New($This.SyncHash,[EventLogGui]::Tab)
     }
-    [Void] SetCommand([Object]$Window)
+    [Void] SetCommand([Object]$SyncHash)
     {
         If ($This.Command)
         {
             Throw "Command property already set"
         }
 
-        $This.Command        = [ProjectCommand]::New($Window)
+        $This.Command = [ProjectCommand]::New($SyncHash)
     }
     [Void] SetThrottleIndex()
     {
@@ -4198,7 +4462,7 @@ Class ProjectController
         {
             Throw "Throttle index has already been set"
         }
-        $This.ThrottleIndex  =  [ThrottleIndex]::New()
+        $This.ThrottleIndex = [ThrottleIndex]::New()
     }
     [Void] SetThrottle([Object]$Object)
     {
@@ -4385,16 +4649,20 @@ Class ProjectController
         }
         
         $This.ClearArchive()
-        $This.Project = [Project]::New($This.Throttle)
+        $This.Project = Get-EventLogProject -New $This.Archive
         $This.SetConsole()
         $This.Initialize()
     }
     LoadProject([String]$Path)
     {
         $This.SetArchive($Path)
-        $This.Project = [ProjectRestore]::New($Path)
+        $This.Project = Get-EventLogProject -Restore $This.Archive
         $This.SetConsole()
-        $This.Initialize()
+        $This.Submain(1)
+        # $This.SetThreadControl
+
+        #$This.Project.Init()
+        #$This.Initialize()
     }
     Reset([Object]$Sender,[Object[]]$Content)
     {
@@ -4491,7 +4759,33 @@ Class ProjectController
 #\___________________________________________________________________\_[ </Controller Class> ]_/
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
 
-$Ctrl = [ProjectController]::New()
+$SyncHash                       = [Hashtable]::Synchronized(@{})
+$Ctrl                           = [ProjectController]::New($SyncHash)
+$Ctrl.AutoThrottle()
+$Ctrl.ThreadControl.CreateInitial()
+
+ForEach ($Assembly in "System.Windows.Forms PresentationFramework System.IO.Compression System.IO.Compression.Filesystem" -Split " ")
+{
+    Write-Host "Adding [~] [$Assembly]"
+    $Ctrl.ThreadControl.AddAssembly($Assembly)
+}
+
+ForEach ($Function in "Get-EventLogConfigExtension Get-EventLogRecordExtension Get-SystemDetails Get-EventLogArchive Get-AssemblyList Get-EventLogProject" -Split " ")
+{
+    Write-Host "Adding [~] [$Function]"
+    $Ctrl.ThreadControl.AddFunction($Function)
+}
+
+ForEach ($Variable in "SyncHash" | % { Get-Variable $_ })
+{
+    Write-Host "Adding [~] [$Variable]"
+    $Ctrl.ThreadControl.AddVariable($Variable.Name,$Variable.Value,$Variable.GetType().Name)
+}
+
+$Ctrl.ThreadControl.Session
+
+# ------------
+
 
 # ______________________________________________________________________________________________ 
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
@@ -4506,7 +4800,7 @@ $Ctrl.Xaml.IO.MainTab.Add_Click(
     {
         $Ctrl.Main(0)
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (0.2) LogTab ________________
 $Ctrl.Xaml.IO.LogTab.Add_Click(
@@ -4515,7 +4809,7 @@ $Ctrl.Xaml.IO.LogTab.Add_Click(
     {
         $Ctrl.Main(1)
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (0.3) OutputTab ________________
 $Ctrl.Xaml.IO.OutputTab.Add_Click(
@@ -4524,7 +4818,7 @@ $Ctrl.Xaml.IO.OutputTab.Add_Click(
     {
         $Ctrl.Main(2)
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (0.4) ViewTab ________________
 $Ctrl.Xaml.IO.ViewTab.Add_Click(
@@ -4533,7 +4827,7 @@ $Ctrl.Xaml.IO.ViewTab.Add_Click(
     {
         $Ctrl.Main(3)
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # ______________________________________________________________________________________________  
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
@@ -4544,17 +4838,31 @@ $Ctrl.Xaml.IO.ViewTab.Add_Click(
 # (1.01) Mode __________________________
 $Ctrl.Xaml.IO.Mode.Add_SelectionChanged(
 {
-    $Index                          = $Ctrl.Xaml.IO.Mode.SelectedIndex
-    $Ctrl.Xaml.IO.Base.Text         = ""
-    $Ctrl.Xaml.IO.Browse.Visibility = @(1,0)[$Index]
-    $Ctrl.Xaml.IO.Browse.IsEnabled  = 1
-    $Ctrl.Xaml.IO.Export.Visibility = @(0,1)[$Index]
-    $Ctrl.Xaml.IO.Export.IsEnabled  = 1
+    Switch ($Ctrl.Xaml.IO.Mode.SelectedIndex)
+    {
+        0
+        {
+            $Ctrl.Xaml.IO.Export.Visibility  = "Visible"
+            $Ctrl.Xaml.IO.Export.IsEnabled   = 0
+            $Ctrl.Xaml.IO.Browse.Visibility  = "Collapsed"
+            $Ctrl.Xaml.IO.Browse.IsEnabled   = 0
+            $Ctrl.Xaml.IO.Continue.IsEnabled = 1
+        }
+        1
+        {
+            $Ctrl.Xaml.IO.Export.Visibility  = "Collapsed"
+            $Ctrl.Xaml.IO.Export.IsEnabled   = 0
+            $Ctrl.Xaml.IO.Browse.Visibility  = "Visible"
+            $Ctrl.Xaml.IO.Browse.IsEnabled   = 1
+            $Ctrl.Xaml.IO.Continue.IsEnabled = 0
+        }
+    }
+    $Ctrl.Xaml.IO.Base.Items.Clear()
     If ($Ctrl.Archive)
     {
         $Ctrl.ClearArchive()
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (1.02) Continue _______________
 $Ctrl.Xaml.IO.Continue.Add_Click(
@@ -4575,7 +4883,7 @@ $Ctrl.Xaml.IO.Continue.Add_Click(
                 Throw "Invalid file path"
             }
             $Ctrl.Submain(1)
-            $Ctrl.LoadProject($Ctrl.Archive.Path)
+            $Ctrl.LoadProject($Ctrl.Archive)
             $Ctrl.Xaml.IO.Browse.IsEnabled   = 0
             $Ctrl.Xaml.IO.Continue.IsEnabled = 0
             $Ctrl.SetMode($Index)
@@ -4588,7 +4896,7 @@ $Ctrl.Xaml.IO.Continue.Add_Click(
         $Ctrl.Xaml.IO.AutoThrottle.IsEnabled = 0
         $Ctrl.Xaml.IO.Threads.IsEnabled      = 0
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (1.05) Section __________________________
 $Ctrl.Xaml.IO.Section.Add_SelectionChanged(
@@ -4598,7 +4906,7 @@ $Ctrl.Xaml.IO.Section.Add_SelectionChanged(
     {
         $Ctrl.SetRank($Index)
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (1.06) Slot __________________________
 $Ctrl.Xaml.IO.Slot.Add_SelectionChanged(
@@ -4608,20 +4916,20 @@ $Ctrl.Xaml.IO.Slot.Add_SelectionChanged(
     {
         $Ctrl.SetSlot()
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (1.11) AutoThrottle _________________
 $Ctrl.Xaml.IO.AutoThrottle.Add_Checked(
 {
     $Ctrl.Xaml.IO.Throttle.IsEnabled = 0
     $Ctrl.AutoThrottle()
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (1.12) AutoThrottle ___________________
 $Ctrl.Xaml.IO.AutoThrottle.Add_Unchecked(
 {
     $Ctrl.Xaml.IO.Throttle.IsEnabled = 1
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (1.0A) Throttle __________________________
 $Ctrl.Xaml.IO.Throttle.Add_SelectionChanged(
@@ -4631,7 +4939,7 @@ $Ctrl.Xaml.IO.Throttle.Add_SelectionChanged(
     {
         $Ctrl.SetThrottle($Item)
     }
-})
+})  #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (1.0F) Browse _______________
 $Ctrl.Xaml.IO.Browse.Add_Click(
@@ -4641,20 +4949,24 @@ $Ctrl.Xaml.IO.Browse.Add_Click(
     $Item.InitialDirectory          = [Environment]::GetEnvironmentVariable("temp")
     $Item.Filter                    = "zip files (*.zip)|*.zip"
     $Item.ShowDialog()
-        
+
     If ($Item.FileName -ne "" -and ![System.IO.File]::Exists($Item.Filename))
     {
-        Throw "File does not exist"
+        [System.Windows.MessageBox]::Show("File does not exist")
     }
     ElseIf ($Item.FileName -eq "")
     {
         $Ctrl.Xaml.IO.Base.Text     = ""
         $Ctrl.SetArchive()
     }
-    $Ctrl.Xaml.IO.Base.Items.Add($Item.Filename)
-    $Ctrl.Xaml.IO.Base.SelectedIndex = 0
-    $Ctrl.SetArchive($Item.Filename)
-})
+    Else
+    {
+        $Ctrl.Xaml.IO.Base.Items.Add($Item.Filename)
+        $Ctrl.Xaml.IO.Base.SelectedIndex = 0
+        $Ctrl.Xaml.IO.Continue.IsEnabled = 1
+        $Ctrl.SetArchive($Item.Filename)
+    }
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (1.10) Export _______________
 $Ctrl.Xaml.IO.Export.Add_Click(
@@ -4674,7 +4986,7 @@ $Ctrl.Xaml.IO.Export.Add_Click(
     {
         $Ctrl.Xaml.IO.Base.Text      = $Item.SelectedPath
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (1.11) ConsoleSet _______________
 $Ctrl.Xaml.IO.ConsoleSet.Add_Click(
@@ -4683,7 +4995,7 @@ $Ctrl.Xaml.IO.ConsoleSet.Add_Click(
     {
         $Ctrl.SubMain(0)
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # (1.12) TableSet _______________
 $Ctrl.Xaml.IO.TableSet.Add_Click(
@@ -4692,7 +5004,7 @@ $Ctrl.Xaml.IO.TableSet.Add_Click(
     {
         $Ctrl.SubMain(1)
     }
-})
+}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # ______________________________________________________________________________________________  
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
