@@ -24,7 +24,7 @@
           Contact: @mcc85s
           Primary: @mcc85s
           Created: 2022-04-08
-          Modified: 2022-05-07
+          Modified: 2022-05-10
           
           Version - 2021.10.0 - () - Finalized functional version 1.
           TODO:
@@ -2209,7 +2209,8 @@ Function Get-EventLogProject
 {
     [CmdLetBinding()]
     Param(
-        [Parameter(ParameterSetName=0,Mandatory)][Object]$New,
+        [Parameter(Mandatory)][Object]$ThreadControl,
+        [Parameter(ParameterSetName=0,Mandatory)][Switch]$New,
         [Parameter(ParameterSetName=1,Mandatory)][Object]$Restore
     )
 
@@ -2367,16 +2368,14 @@ Function Get-EventLogProject
             $This.Type    = 0
             $This.Message = $Null
             $This.Count   = 0
-            $This.Output  = @( )
+            $This.Output  = [System.Collections.ObjectModel.ObservableCollection[object]]::New()
     
             $This.Status()
         }
         AddLine([String]$Line)
         {
-            $This.Output += [ProjectConsoleLine]::New($This.Output.Count,$This.Phase,$This.Type,$This.Time.Elapsed,$Line)
+            $This.Output.Add([ProjectConsoleLine]::New($This.Output.Count,$This.Phase,$This.Type,$This.Time.Elapsed,$Line))
             $This.Count  ++
-    
-            New-Event -SourceIdentifier Console_Updated -Sender $This -EventArguments ([PSObject]@{ Object = $This.Last() }) -MessageData $This.Last().ToString()
         }
         [String] Status()
         {
@@ -2712,23 +2711,27 @@ Function Get-EventLogProject
     #\__________________
     Class ProjectRestore
     {
-        [Object]        $Console
-        [Object]           $Time
-        [Object]          $Start
-        [Object]         $System
-        [Object]    $DisplayName
-        [UInt32]        $Threads
-        [String]           $Guid
-        [String]           $Base
-        [Object]           $Logs
-        [Object]         $Output
-        Hidden [Object] $Archive
-        Hidden [Object]     $Zip
-        ProjectRestore([Object]$Archive)
+        [Object]              $Console
+        [Object]                 $Time
+        [DateTime]              $Start
+        [Object]               $System
+        [String]          $DisplayName
+        [UInt32]              $Threads
+        [Guid]                   $Guid
+        [ProjectBase]            $Base
+        [Object]                 $Logs = @( )
+        [Object]               $Output = @( )
+        Hidden [Object]       $Archive
+        Hidden [Object]           $Zip
+        Hidden [Object]     $ThreadSet
+        Hidden [UInt32]    $MaxThreads
+        ProjectRestore([Object]$ThreadControl,[Object]$Archive)
         {
-            $This.Time       = [System.Diagnostics.Stopwatch]::New()
-            $This.Console    = [ProjectConsole]::New($This.Time)
-            $This.Archive    = $Archive
+            $This.Time           = [System.Diagnostics.Stopwatch]::New()
+            $This.Console        = [ProjectConsole]::New($This.Time)
+            $This.Archive        = $Archive
+            $This.ThreadSet      = $ThreadControl | ? Name -eq Project
+            $This.MaxThreads     = $This.ThreadSet.Threads.Count
         }
         Init()
         {
@@ -2892,24 +2895,28 @@ Function Get-EventLogProject
     #\___________
     Class Project
     {
-        [Object]        $Console
-        [Object]           $Time
-        [DateTime]        $Start
-        [Object]         $System
-        [String]    $DisplayName
-        [UInt32]        $Threads
-        [Guid]             $Guid
-        [ProjectBase]      $Base
-        [Object]           $Logs = @( )
-        [Object]         $Output = @( )
-        Hidden [Object] $Archive
-        Hidden [Object]     $Zip
-        Project([Object]$Archive)
+        [Object]              $Console
+        [Object]                 $Time
+        [DateTime]              $Start
+        [Object]               $System
+        [String]          $DisplayName
+        [UInt32]              $Threads
+        [Guid]                   $Guid
+        [ProjectBase]            $Base
+        [Object]                 $Logs = @( )
+        [Object]               $Output = @( )
+        Hidden [Object]       $Archive
+        Hidden [Object]           $Zip
+        Hidden [Object]     $ThreadSet
+        Hidden [UInt32]    $MaxThreads
+        Project([Object]$ThreadControl,[Object]$Archive)
         {
             # Start system snapshot, count threads / max runspace pool size
             $This.Time           = [System.Diagnostics.Stopwatch]::New()
             $This.Console        = [ProjectConsole]::New($This.Time)
             $This.Archive        = $Archive
+            $This.ThreadSet      = $ThreadControl | ? Name -eq Project
+            $This.MaxThreads     = $This.ThreadSet.Threads.Count
         }
         Init()
         {
@@ -2945,13 +2952,13 @@ Function Get-EventLogProject
             # Loads the provider names
             $Providers        = $This.System.LogProviders.Output
             $Slot             = $This.Slot("Threads")
-            $Depth            = ([String]$This.Threads).Length
-            $Names            = 0..($This.Threads-1) | % { "{0:d$Depth}.txt" -f $_ }
+            $Depth            = ([String]$This.MaxThreads).Length
+            $Names            = 0..($This.MaxThreads-1) | % { "{0:d$Depth}.txt" -f $_ }
             $Slot.Create($Names)
-            ForEach ($X in 0..($This.Threads-1))
+            ForEach ($X in 0..($This.MaxThreads-1))
             {
                 $File         = $Slot.File($Names[$X])
-                $Value        = 0..($Providers.Count-1) | ? { $_ % $This.Threads -eq $X } | % { $_,$Providers[$_].Value -join ',' }
+                $Value        = 0..($Providers.Count-1) | ? { $_ % $This.MaxThreads -eq $X } | % { $_,$Providers[$_].Value -join ',' }
                 $File.Write($Value -join "`n")
                 $Slot.Update()
             }
@@ -3030,8 +3037,8 @@ Function Get-EventLogProject
 
     Switch ($Pscmdlet.ParameterSetName)
     {
-        0 { [Project]::New($New)            }
-        1 { [ProjectRestore]::New($Restore) }
+        0 { [Project]::New($ThreadControl)                 }
+        1 { [ProjectRestore]::New($ThreadControl,$Restore) }
     }
 }
 #                                                                         ______________________
@@ -3455,7 +3462,7 @@ Class EventLogGui
     '                        <Label    Grid.Column="7" Content="[Throttle]:"/>',
     '                        <ComboBox Grid.Column="8"    Name="Throttle">',
     '                            <DataTemplate>',
-    '                                <ComboBoxItem Content="{Binding Output.Label}"/>',
+    '                                <ComboBoxItem Content="{Binding Output.Label}" IsEnabled="{Binding Output.Enabled}"/>',
     '                            </DataTemplate>',
     '                        </ComboBox>',
     '                        <CheckBox Grid.Column="9"   Name="AutoThrottle" Content="Auto"/>',
@@ -3542,7 +3549,7 @@ Class EventLogGui
     '                                    <DataGridTextColumn Header="Index"   Binding="{Binding Index}"   Width="40"/>',
     '                                    <DataGridTextColumn Header="Phase"   Binding="{Binding Phase}"   Width="175"/>',
     '                                    <DataGridTextColumn Header="Type"    Binding="{Binding Type}"    Width="40"/>',
-    '                                    <DataGridTextColumn Header="Time"    Binding="{Binding Time}"    Width="175"/>',
+    '                                    <DataGridTextColumn Header="Time"    Binding="{Binding Time}"    Width="75"/>',
     '                                    <DataGridTextColumn Header="Message" Binding="{Binding Message}" Width="*"/>',
     '                                </DataGrid.Columns>',
     '                            </DataGrid>',
@@ -3832,16 +3839,20 @@ Class ThreadProgressionList
 #\________________
 Class ThreadObject
 {
-    [UInt32] $Id 
+    [UInt32] $Rank
+    [UInt32] $Id
+    [String] $Type
     Hidden [Object] $PowerShell
     Hidden [Object] $Handle
     Hidden [Object] $Timer
     [String] $Time
     [UInt32] $Complete
     Hidden [Object] $Data
-    ThreadObject([UInt32]$Id,[Object]$PowerShell)
+    ThreadObject([UInt32]$Rank,[UInt32]$Id,[Object]$PowerShell)
     {
+        $This.Rank           = $Rank
         $This.Id             = $Id
+        $This.Type           = Switch ($Id) { 0 { "Main" } 1 { "Sub" } }
         $This.PowerShell     = $PowerShell
         $This.Handle         = $Null
         $This.Timer          = [System.Diagnostics.Stopwatch]::New()
@@ -3852,7 +3863,7 @@ Class ThreadObject
     BeginInvoke()
     {
         $This.Timer.Start()
-        $This.TIme           = $This.Timer.Elapsed
+        $This.Time           = $This.Timer.Elapsed
         $This.Handle         = $This.PowerShell.BeginInvoke()
     }
     IsComplete()
@@ -3874,28 +3885,49 @@ Class ThreadObject
         Return @( $This | Select-Object Id, Timer, PowerShell, Handle, Time, Complete)
     }
 }
-#\____________________
-Class ThreadCollection
+#\________________
+Class ThreadSetter
 {
+    [UInt32] $Rank
+    [UInt32] $Count
     [String] $Name
     [Object] $Time
     [UInt32] $Complete
-    [UInt32] $Total
-    [Object] $Threads  = @( )
-    ThreadCollection([String]$Name)
+    [Object] $Thread   = @( )
+    ThreadSetter([UInt32]$Rank,[UInt32]$Count,[String]$Name,[Object]$Runspace)
     {
+        $This.Rank     = $Rank
+        $This.Count    = $Count
         $This.Name     = $Name
         $This.Time     = [System.Diagnostics.Stopwatch]::New()
-        $This.Threads  = @( )
+        $This.Thread   = @( )
+
+        $Type          = $Runspace.GetType().Name
+        If ($Count -eq 1)
+        {
+            $This.SetThread($Rank,0,$This.PowerShell($Type,$Runspace)) 
+        }
+        If ($Count -gt 1)
+        {
+            ForEach ($X in 0..($Count-1))
+            {
+                $This.SetThread($Rank,$X,$This.PowerShell($Type,$Runspace))
+            }
+        }
     }
     [Bool] Query()
     {
-        Return @( $False -in $This.Threads.Handle.IsCompleted )
+        Return @($False -in $This.Threads.Handle.IsCompleted)
     }
-    AddThread([UInt32]$Index,[Object]$PowerShell)
+    SetThread([UInt32]$Rank,[UInt32]$Index,[Object]$PowerShell)
     {
-        $This.Threads += [ThreadObject]::New($_,$PowerShell)
-        $This.Total    = $This.Threads.Count
+        $This.Thread  += [ThreadObject]::New($Rank,$Index,$PowerShell)
+    }
+    [Object] PowerShell([String]$Type,[Object]$RunspaceFactory)
+    {
+        $PS       = [PowerShell]::Create()
+        $PS.$Type = $RunspaceFactory
+        Return $PS
     }
     BeginInvoke()
     {
@@ -3907,8 +3939,8 @@ Class ThreadCollection
     }
     IsComplete()
     {
-        $This.Threads.IsComplete()
-        $This.Complete = ($This.Threads | ? Complete -eq $True).Count
+        $This.Thread.IsComplete()
+        $This.Complete = ($This.Thread | ? Complete -eq $True).Count
 
         If ($This.Complete -eq $This.Total)
         {
@@ -3917,33 +3949,43 @@ Class ThreadCollection
         $This.Time.Elapsed.ToString()
         $This.ToString()
     }
+    [Object] Id ([UInt32]$Id)
+    {
+        $Return = $This.Thread | ? Id -eq $Id
+        If (!$Return)
+        {
+            Return [System.Windows.MessageBox]::Show("Thread/Id: [$Id]","Invalid entry")
+        }
+        Else
+        {
+            Return $Return
+        }
+    }
     [Void] Dispose()
     {
-        Get-Runspace | ? InstanceId -in $This.Threads.PowerShell.InstanceId | % Dispose
+        Get-Runspace | ? InstanceId -in $This.Thread.PowerShell.InstanceId | % Dispose
     }
     [Object] GetOutput()
     {
         Return @(
-        "                "
-        "ThreadCollection";
-        "----------------";
         $This | Select-Object Time, Complete, Total, Threads | Format-Table
         $This.Threads | Select-Object Id, Time, Complete | Format-Table
-        " ")
+        )
     }
     [Object] GetFullOutput()
     {
         Return @(
-        "                ";
-        "ThreadCollection";
-        "----------------";
-        $This | Select-Object Time, Complete, Total, Threads | Format-Table;
-        $This.Threads | Select-Object  Id, Timer, PowerShell, Handle, Time, Complete | Format-Table;
-        " ")
+        $This | Select-Object Time, Complete, Total, Threads | Format-Table
+        $This.Threads | Select-Object  Id, Timer, PowerShell, Handle, Time, Complete | Format-Table
+        )
+    }
+    [String] Status()
+    {
+        Return ( "Elapsed: [{0}], Completed ({1}/{2})" -f $This.Timer.Elapsed, $This.Complete, $This.Total )
     }
     [String] ToString()
     {
-        Return ( "Elapsed: [{0}], Completed ({1}/{2})" -f $This.Timer.Elapsed, $This.Complete, $This.Total )
+        Return $This.Name
     }
 }
 #\_________________
@@ -3951,7 +3993,7 @@ Class ThreadControl
 {
     [Object]             $Slot
     [Object]         $Throttle
-    [Object]       $Collection
+    [Object]        $ThreadSet = @( )
     [Object]  $RunspaceFactory
     [Object]          $Session
     [Object]   $ApartmentState
@@ -3960,11 +4002,10 @@ Class ThreadControl
     [Object]         $Variable = @( )
     [Object]         $Argument = @( )
     [Object]          $Command = @( )
-    [Object]      $ScriptBlock
-    [Object]      $ActionBlock
     Hidden [Bool]  $IsDisposed
     Hidden [UInt32] $MinThread
     Hidden [UInt32] $MaxThread
+    Hidden [UInt32] $Allocated
     ThreadControl([String]$Slot,[UInt32]$Throttle)
     {
         $This.MaxThread = [Environment]::GetEnvironmentVariable("Number_Of_Processors")
@@ -4042,9 +4083,10 @@ Class ThreadControl
 
         If ($This.RunspaceFactory)
         {
-            $This.RunspaceFactory.SetMinRunspaces(1) | Out-Null
+            $This.RunspaceFactory.ThreadOptions                   = "ReuseThread"
+            $This.RunspaceFactory.SetMinRunspaces(1)              | Out-Null
             $This.RunspaceFactory.SetMaxRunspaces($This.Throttle) | Out-Null
-            $This.IsDisposed  = 0
+            $This.IsDisposed                                      = 0
         }
     }
     CreateRunspace()
@@ -4063,7 +4105,8 @@ Class ThreadControl
 
         If ($This.RunspaceFactory)
         {
-            $This.IsDisposed  = 0
+            $This.RunspaceFactory.ThreadOptions                   = "ReuseThread"
+            $This.IsDisposed                                      = 0
         }
     }
     Dispose()
@@ -4100,15 +4143,44 @@ Class ThreadControl
             [ThreadProperty]::New($Property.Name,$Property.Value)
         })
     }
-    SetCollection([String]$Name)
+    [UInt32] GetProjectedCount([UInt32]$Count)
     {
-        $This.Collection = [ThreadCollection]::New($Name)
+        Return ($This.Allocated + $Count)
+    }
+    SetThreads([UInt32]$Count,[String]$Name)
+    {
+        If ($This.GetProjectedCount($Count) -gt $This.Throttle)
+        {
+            Throw "Cannot exceed the throttle count"
+        }
+
+        If (!$This.RunspaceFactory -or $This.IsDisposed)
+        {
+            Throw "Runspace factory not set, or has been disposed"
+        }
+
+        $This.ThreadSet     += [ThreadSetter]::New($This.ThreadSet.Count,$Count,$Name,$This.RunspaceFactory)
+        $This.Allocated += $Count
+    }
+    SetThreads([Switch]$Remain,[String]$Name)
+    {
+        If (!$This.RunspaceFactory -or $This.IsDisposed)
+        {
+            Throw "Runspace factory not set, or has been disposed"
+        }
+
+        $Count           = $This.Throttle - $This.Allocated
+        $This.ThreadSet += [ThreadSetter]::New($This.ThreadSet.Count,$Count,$Name,$This.RunspaceFactory)
+        $This.Allocated += $Count
+    }
+    [Object] Thread([UInt32]$Index)
+    {
+        Return $This.ThreadSet.Thread[$Index]
     }
 }
 #                                                                      _________________________
 #\_____________________________________________________________________\_[ </Thread Classes> ]_/
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
-
 
 # ______________________________________________________________________________________________
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\_[ <Controller Class> ]_/
@@ -4117,12 +4189,9 @@ Class ThreadControl
 Class ThrottleIndexItem
 {
     [UInt32]          $Index
+    [UInt32]        $Enabled
     [UInt32]          $Cores
     [Float]           $Value
-    Hidden [Float]    $Avail
-    Hidden [Float]     $Load
-    Hidden [UInt32]    $Axis
-    Hidden [Float]   $Result
     [String]          $Label
     ThrottleIndexItem([UInt32]$Index,[UInt32]$Cores,[Double]$Value)
     {
@@ -4130,34 +4199,6 @@ Class ThrottleIndexItem
         $This.Cores      = $Cores
         $This.Value      = $Value
         $This.Label      = $This.ToString()
-    }
-    SetLoad([Double]$Load)
-    {
-        $This.Avail      = 1 - $Load
-        $This.Load       = $Load
-        If ($This.Value -ge $Load)
-        {
-            $This.Axis   = 0
-        }    
-        If ($This.Value -lt $Load)
-        {
-            $This.Axis   = 1
-        }
-        $This.Result     = [Math]::Round($This.Value - $Load,3)
-    }
-    SetAvail([Double]$Load)
-    {
-        $This.Avail      = 1 - $Load
-        $This.Load       = $Load
-        If ($This.Avail -ge $This.Value)
-        {
-            $This.Axis   = 1
-        }    
-        If ($This.Avail -lt $This.Value)
-        {
-            $This.Axis   = 0
-        }
-        $This.Result     = [Math]::Round($This.Value - $Load,3)
     }
     [String] ToString()
     {
@@ -4167,37 +4208,70 @@ Class ThrottleIndexItem
 #\_________________
 Class ThrottleIndex
 {
-    [Decimal]  $Current
-    [UInt32]     $Count
-    [Object]   $Segment
+    [UInt32]     $Total
+    [UInt32]  $Reserved
+    [UInt32] $Available
+    [Decimal]  $Segment
+    [Object]   $Current
     [Object]   $Maximum
     [Object]   $Minimum
     [Object]    $Output = @( )
-    ThrottleIndex([Decimal]$Throttle)
-    {
-        $This.Current     = $Throttle
-        $This.Init()
-    }
+    Hidden [UInt32] $Debug
     ThrottleIndex()
     {
-        If (!$This.Current)
-        {
-            $This.Current = 1.00
-        }
-        $This.Init()
+        $This.Init(0,0)
     }
-    Init()
-    {   
-        $This.Count       = $This.GetCount()
+    ThrottleIndex([Decimal]$Throttle)
+    {
+        $This.Init(0,$Throttle)
+    }
+    ThrottleIndex([Switch]$Reserved,[UInt32]$Count)
+    {
+        $This.Init($Count,0)
+    }
+    ThrottleIndex([Switch]$Reserved,[UInt32]$Count,[Decimal]$Throttle)
+    {
+        $This.Init($Count,$Throttle)
+    }
+    [UInt32] GetCount()
+    {
+        Return [Environment]::GetEnvironmentVariable("Number_Of_Processors")
+    }
+    [Double] GetLoad()
+    {
+        Return (Get-CimInstance Win32_Processor | % LoadPercentage)/100
+    }
+    Init([UInt32]$Reserved,[Decimal]$Throttle)
+    {
+        $This.Total       = $This.GetCount()
+        $This.Reserved    = $Reserved
+        $This.Available   = $This.Total - $This.Reserved
         $This.Stage()
-        $This.Maximum     = $This.Output[0]
+        $This.Maximum     = $This.Output[0+$This.Reserved]
         $This.Minimum     = $This.Output[-1]
+
+        ForEach ($Item in $This.Output | ? Value -le $This.Maximum.Value)
+        {
+            $Item.Enabled = 1 
+        }
+
+        Switch ($Throttle)
+        {
+            0       
+            { 
+                $This.Current = $This.Maximum
+            }
+            Default 
+            {
+                $This.AutoThrottle()
+            }
+        }
     }
     Stage()
     {
         $This.Output      = @( )
-        $This.Segment     = (100/$This.Count)/100
-        ForEach ($X in $This.Count..1)
+        $This.Segment     = (100/$This.Total)/100
+        ForEach ($X in $This.Total..1)
         {
             $This.Add($X,$X*$This.Segment)
         }
@@ -4206,70 +4280,51 @@ Class ThrottleIndex
     {
         $This.Output     += [ThrottleIndexItem]::New($This.Output.Count,$Cores,$Value)
     }
+    [UInt32] GetInt([UInt32]$Slot)
+    {   
+        $Y = 0
+        Switch ($Slot)
+        {
+            0 { $Y = @(($This.Output | ? Enabled)[0];($This.Output)[0])[!$This.Reserved].Value } 1 { $Y = $This.GetLoad() } 2 { $Y = $This.Segment }
+        }
+
+        Return ($Y * 1000)
+    }
+    [UInt32] Factor([Double]$X)
+    {
+        Return [UInt32]($X * 1000)
+    }
     AutoThrottle()
     {
-        $Load             = $This.GetLoad()
-        $Tally            = 0
-        $C                = 0
-        Do
+
+        $Y  = @() 
+        $Y += $This.GetInt(0) - $This.GetInt(1)
+        $Y += $This.GetInt(2)
+        $Y += $Y[0] % $Y[1]
+        $Y += ($Y[0] - $Y[2])/$Y[1]
+        $Y += ($Y[-1] + [UInt32](($Y[1] - $Y[2]) -lt ($Y[1] * 0.5)))
+
+        If ($This.Debug -eq 1)
         {
-            If ($Load -ge $C * $This.Segment)
+            $L = "Target  : ;Segment : ;Remain  : ;Factor  : ;Final   : " -Split ";"
+            $C = 0
+            Do
             {
-                $Tally = $Tally + $This.Segment
+                [Console]::WriteLine($L[$C]+$Y[$C])
+                $C ++
             }
-            $C ++
+            Until ($C -eq 5) 
         }
-        Until ($Tally -gt $Load)
 
-        $This.Current = $This.Output[$C].Value
+        $This.Current     = $This.Output | ? Cores -eq $Y[-1]
     }
-    SetThrottle([UInt32]$C)
+    [Object[]] ToString()
     {
-        $This.Current = $This.Output[$C].Value
-    }
-    SetLoad([Float]$Load)
-    {
-        ForEach ($X in 0..($This.Output.Count-1))
-        {
-            $This.Output[$X].SetLoad($Load)
-        }
-    }
-    SetLoad()
-    {
-        $Load         = $This.GetLoad()
-
-        ForEach ($X in 0..($This.Output.Count-1))
-        {
-            $This.Output[$X].SetLoad($Load)
-        }
-    }
-    SetAvail([Float]$Load)
-    {
-        ForEach ($X in 0..($This.Output.Count-1))
-        {
-            $This.Output[$X].SetAvail($Load)
-        }
-    }
-    SetAvail()
-    {
-        $Load         = $This.GetLoad()
-
-        ForEach ($X in 0..($This.Output.Count-1))
-        {
-            $This.Output[$X].SetAvail($Load)
-        }
-    }
-    [UInt32] GetCurrentCount()
-    {
-        Return $This.Current * $This.Count
-    }
-    [Double] GetLoad()
-    {
-        Return (Get-CimInstance Win32_Processor | % LoadPercentage)/100
-    }
-    [UInt32] GetCount()
-    {
-        Return [Environment]::GetEnvironmentVariable("Number_Of_Processors")
+        $Return  = @( ) 
+        $Return += $This | Format-Table
+        $Return += $This.Output | Format-Table
+        
+        Return $Return
     }
 }
 #\____________________
@@ -4277,13 +4332,16 @@ Class ProjectEventSlot
 {
     [String] $Type
     [Int32]  $Index    = -1
+    [Object] $Filter
     [Object] $Property
-    [Object] $Filter   
+    [Object] $Result
     [Object] $Hash     = @{ }
-    [Object] $Result   = @( )
-    ProjectEventSlot([String]$Type)
+    ProjectEventSlot([Object]$Sync,[String]$Type)
     {
         $This.Type     = $Type
+        $This.Filter   = $Sync.IO."$($Type)Filter"
+        $This.Property = $Sync.IO."$($Type)Property"
+        $This.Result   = $Sync.IO."$($Type)Result"
     }
     SetIndex([UInt32]$Index)
     {
@@ -4300,87 +4358,21 @@ Class ProjectEventTree
     [Object] $LogMain
     [Object] $LogOutput
     [Object] $Output
-    ProjectEventTree()
+    ProjectEventTree([Object]$Sync)
     {
-        $This.LogMain   = $This.Add("LogMain")
-        $This.LogOutput = $This.Add("LogOutput")
-        $This.Output    = $This.Add("Output")
+        $This.LogMain   = $This.Add($Sync,"LogMain")
+        $This.LogOutput = $This.Add($Sync,"LogOutput")
+        $This.Output    = $This.Add($Sync,"Output")
     }
-    [Object] Add([String]$Type)
+    [Object] Add([Object]$Sync,[String]$Type)
     {
-        Return [ProjectEventSlot]::New($Type)
-    }
-}
-#\__________________
-Class ProjectControl
-{
-    [String] $Name
-    [String] $Type
-    [Object] $Control
-    ProjectControl([String]$Name,[Object]$Control)
-    {
-        $This.Name    = $Name
-        $This.Type    = $Control.GetType().Name
-        $This.Control = $Control
-    }
-}
-#\__________________
-Class ProjectCommand
-{
-    [Object]      $Window
-    [Object]        $Text
-    [Object]        $Grid
-    [Object]     $Console
-    ProjectCommand([Object]$SyncHash)
-    {
-        $This.Window            = $SyncHash.IO
-        $This.Text              = $This.Control("Console",$SyncHash.IO.Console)
-        $This.Grid              = $This.Control("Table",$Synchash.IO.Table)
-    }
-    [Object] Control([String]$Name,[Object]$Control)
-    {
-        Return [ProjectControl]::New($Name,$Control)
-    }
-    SetConsole([Object]$Console)
-    {
-        $This.Console            = $Console
-        $Hash                    = @{ Control = $This.Grid.Control } 
-
-        Register-EngineEvent -SourceIdentifier Console_Updated -Action { 
-            
-            ForEach ($Item in $Event.Sender.Output | ? Index -notin $Hash.Control.Items)
-            {
-                $Hash.Control.Items.Add($Item)
-            }
-        } 
-    }
-    Current()
-    {
-        $This.Write($This.Console.Status())
-    }
-    Update([String]$Phase,[String]$Message)
-    {
-        $This.Write($This.Console.Update($Phase,$Message))
-    }
-    Update([String]$Phase,[UInt32]$Type,[String]$Message)
-    {
-        $This.Write($This.Console.Update($Phase,$Type,$Message))
-    }
-    [Void] Write([Object]$Line)
-    {
-        $This.Output += $Line
-        $Object       = $This.Control
-        $This.Window.Dispatcher.Invoke([Action]{$Object.Control.AppendText($Line + "`n")}, $True)
-        $Object.Control.ScrollToEnd()
+        Return [ProjectEventSlot]::New($Sync,$Type)
     }
 }
 #\_____________________
 Class ProjectController
 {
-    [Hashtable]           $SyncHash # Control
     [Object]                  $Xaml # Graphical
-    Hidden [Object]        $Command # 
-    [Object]               $Console # 
     Hidden [Object]  $ThrottleIndex # Threading
     [UInt32]              $Throttle # Threading
     [Object]         $ThreadControl # Threading
@@ -4397,16 +4389,16 @@ Class ProjectController
     [UInt32]                  $Menu # UI
     [UInt32]                $Subset # UI
     [String[]]               $Panel = "Main","Log","Output","View" # UI
-    ProjectController([Object]$SyncHash)
+    ProjectController([Object]$Sync)
     {
-        $This.SyncHash  = $SyncHash
-
         # Set Defaults
         $This.SetBegin()
-        $This.SetXaml()
-        $This.SetCommand($SyncHash)
-        $This.SetThrottleIndex()
+        $This.SetXaml($Sync)
+
+        # Throttle
+        $This.SetThrottleIndex($True,1)
         $This.AutoThrottle()
+
         If ($This.Throttle -gt 1)
         {
             $This.ThreadControl = $This.SetThreadControl("RunspacePool")
@@ -4415,19 +4407,387 @@ Class ProjectController
         {
             $This.ThreadControl = $This.SetThreadControl("Runspace")
         }
-        $This.SetEvent()
+        $This.SetEvent($Sync)
 
         # Initial (Menu/GUI) settings
         $This.Main(0)
 
-        $This.Reset($This.Xaml.IO.Throttle.Items,$This.ThrottleIndex.Output)
-        $This.Xaml.IO.Throttle.SelectedIndex = $This.ThrottleIndex.Output | ? Cores -eq $This.Throttle | % Index
+        # [Project] Textboxes (Disabled)
+        $This.Xaml.IO.Time.IsEnabled         = 0
+        $This.Xaml.IO.Start.IsEnabled        = 0
+        $This.Xaml.IO.DisplayName.IsEnabled  = 0
+        $This.Xaml.IO.Guid.IsEnabled         = 0
 
-        $This.Reset($This.Xaml.IO.Threads.Items,$This.ThrottleIndex.Count)
+        # [System] ComboBoxes (Disabled)
+        $This.Xaml.IO.Section.IsEnabled      = 0
+        $THis.Xaml.IO.Slot.IsEnabled         = 0
+
+        # [Pseudo TabControl] Buttons (Disabled)
+        $This.Xaml.IO.LogTab.IsEnabled       = 0
+        $This.Xaml.IO.OutputTab.IsEnabled    = 0
+        $This.Xaml.IO.ViewTab.IsEnabled      = 0
+
+        # [Throttle/Threading] (Enabled)
+        $This.Xaml.IO.Throttle.IsEnabled     = 1 
+        $This.Xaml.IO.AutoThrottle.IsEnabled = 1
+
+        $This.Reset($This.Xaml.IO.Throttle.Items, $This.ThrottleIndex.Output)
+        $This.Xaml.IO.Throttle.SelectedIndex =    $This.ThrottleIndex.Current.Index
+
+        $This.Reset($This.Xaml.IO.Threads.Items,  $This.ThrottleIndex.Total)
         $This.Xaml.IO.Threads.SelectedIndex  = 0
-        $This.Xaml.IO.Threads.IsEnabled      = 0
+        $This.Xaml.IO.Threads.IsEnabled      = 0 # Kept to this setting
 
+        # [Archive] Controls (Enabled)
+        $This.Xaml.IO.Archive.IsEnabled      = 1
+        $This.Xaml.IO.Base.IsEnabled         = 1
+        $This.Xaml.IO.Mode.IsEnabled         = 1
         $This.ClearArchive()
+
+        # Event Handlers for each tab
+        $This.MainTabEvent()
+        $This.LogTabEvent()
+        $This.OutputTabEvent()
+        $This.ViewTabEvent()
+    }
+    MainTabEvent()
+    {
+        # [1.0]: MainTab/MainPanel (Event Handling) 
+        $Ctrl = $This
+
+        $This.Xaml.IO.MainTab.Add_Click(
+        {
+            If ($Ctrl.Menu -ne 0)
+            {
+                $Ctrl.Main(0)
+            }
+        })
+        
+        $This.Xaml.IO.LogTab.Add_Click(
+        {
+            If ($Ctrl.Menu -ne 1)
+            {
+                $Ctrl.Main(1)
+            }
+        })
+        
+        $This.Xaml.IO.OutputTab.Add_Click(
+        {
+            If ($Ctrl.Menu -ne 2)
+            {
+                $Ctrl.Main(2)
+            }
+        })
+        
+        $This.Xaml.IO.ViewTab.Add_Click(
+        {
+            If ($Ctrl.Menu -ne 3)
+            {
+                $Ctrl.Main(3)
+            }
+        })
+
+        $This.Xaml.IO.Mode.Add_SelectionChanged(
+        {
+            Switch ($Ctrl.Xaml.IO.Mode.SelectedIndex)
+            {
+                0
+                {
+                    $Ctrl.Xaml.IO.Export.Visibility  = "Visible"
+                    $Ctrl.Xaml.IO.Export.IsEnabled   = 0
+                    $Ctrl.Xaml.IO.Browse.Visibility  = "Collapsed"
+                    $Ctrl.Xaml.IO.Browse.IsEnabled   = 0
+                    $Ctrl.Xaml.IO.Continue.IsEnabled = 1
+                }
+                1
+                {
+                    $Ctrl.Xaml.IO.Export.Visibility  = "Collapsed"
+                    $Ctrl.Xaml.IO.Export.IsEnabled   = 0
+                    $Ctrl.Xaml.IO.Browse.Visibility  = "Visible"
+                    $Ctrl.Xaml.IO.Browse.IsEnabled   = 1
+                    $Ctrl.Xaml.IO.Continue.IsEnabled = 0
+                }
+            }
+
+            $Ctrl.Xaml.IO.Base.Items.Clear()
+            If ($Ctrl.Archive)
+            {
+                $Ctrl.ClearArchive()
+            }
+        })
+
+        $This.Xaml.IO.Section.Add_SelectionChanged(
+        {
+            $Index = $Ctrl.Xaml.IO.Section.SelectedIndex
+            If ($Ctrl.System -and $Index -gt -1)
+            {
+                $Ctrl.SetRank($Index)
+            }
+        })
+        
+        $This.Xaml.IO.Slot.Add_SelectionChanged(
+        {
+            $Index = $Ctrl.Xaml.IO.Slot.SelectedIndex
+            If ($Ctrl.System -and $Index -gt -1)
+            {
+                $Ctrl.SetSlot()
+            }
+        })
+        
+        $This.Xaml.IO.AutoThrottle.Add_Checked(
+        {
+            $Ctrl.Xaml.IO.Throttle.IsEnabled = 0
+            $Ctrl.AutoThrottle()
+        })
+        
+        $This.Xaml.IO.AutoThrottle.Add_Unchecked(
+        {
+            $Ctrl.Xaml.IO.Throttle.IsEnabled = 1
+        })
+        
+        $This.Xaml.IO.Throttle.Add_SelectionChanged(
+        {
+            $Item = $Ctrl.Xaml.IO.Throttle.SelectedItem
+            If ($Item.Cores -ne $Ctrl.Throttle)
+            {
+                $Ctrl.SetThrottle($Item)
+            }
+        })
+        
+        $This.Xaml.IO.Browse.Add_Click(
+        {
+            $Item                           = [System.Windows.Forms.OpenFileDialog]::New()
+            $Item.Title                     = "Select an existing archive made by this utility"
+            $Item.InitialDirectory          = [Environment]::GetEnvironmentVariable("temp")
+            $Item.Filter                    = "zip files (*.zip)|*.zip"
+            $Item.ShowDialog()
+        
+            If ($Item.FileName -ne "" -and ![System.IO.File]::Exists($Item.Filename))
+            {
+                [System.Windows.MessageBox]::Show("File does not exist")
+                $Ctrl.Xaml.IO.Base.Text     = ""
+                $Ctrl.ClearArchive()
+            }
+            ElseIf ($Item.FileName -eq "")
+            {
+                $Ctrl.Xaml.IO.Base.Text     = ""
+                $Ctrl.ClearArchive()
+            }
+            Else
+            {
+                $Ctrl.Xaml.IO.Base.Items.Add($Item.Filename)
+                $Ctrl.Xaml.IO.Base.SelectedIndex = 0
+                $Ctrl.Xaml.IO.Browse.IsEnabled   = 0
+                $Ctrl.Xaml.IO.Continue.IsEnabled = 1
+                $Ctrl.SetArchive($Item.Filename)
+            }
+        })
+
+        $This.Xaml.IO.Export.Add_Click(
+        {
+            $Item                           = [System.Windows.Forms.SaveFileDialog]::New()
+            $Item.Title                     = "Save the information collected with this utility"
+            $Item.InitialDirectory          = [Environment]::GetEnvironmentVariable("temp")
+            $Item.Filter                    = "zip files (*.zip)|*.zip"
+            $Item.FileName                  = $Ctrl.Begin
+            $Item.ShowDialog()
+                
+            If (!$Item.FileName)
+            {
+                $Ctrl.Xaml.IO.Base.Text     = ""
+            }
+            Else
+            {
+                $Ctrl.Xaml.IO.Base.Text      = $Item.SelectedPath
+            }
+        })
+    
+        $This.Xaml.IO.ConsoleSet.Add_Click(
+        {
+            If ($Ctrl.Subset -ne 0)
+            {
+                $Ctrl.SubMain(0)
+            }
+        })
+    
+        $This.Xaml.IO.TableSet.Add_Click(
+        {
+            If ($Ctrl.Subset -ne 1)
+            {
+                $Ctrl.SubMain(1)
+            }
+        })
+    }
+    LogTabEvent()
+    {
+        # [2.0]: LogTab/LogPanel (Event Handling)
+        $Ctrl = $This     
+
+        $This.Xaml.IO.LogMainFilter.Add_TextChanged( 
+        {
+            Start-Sleep -Milliseconds 50
+            $Ctrl.Event.LogMain.Filter = $Ctrl.Xaml.IO.LogMainFilter.Text
+
+            If ($Ctrl.Project.Logs.Count -gt 0 -and $Ctrl.Event.LogMain.Filter -ne "")
+            {
+                $Result = @( $Ctrl.Project.Logs | ? $Ctrl.LogProperty($Ctrl.Xaml.IO.LogMainProperty.Text) -match $Ctrl.CleanString($Ctrl.Event.LogMain.Filter) )
+                If ($Result)
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.LogMainResult.Items,$Result)
+                }
+                Else
+                {
+                    $Ctrl.Xaml.IO.LogMainResult.Items.Clear()
+                }
+            }
+            Else
+            {
+                If ($Ctrl.Project.Logs.Count -notmatch $Ctrl.Xaml.IO.LogMainResult.Items.Count)
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.LogMainResult.Items,$Ctrl.Project.Logs)
+                }
+            }
+        })
+    
+        $This.Xaml.IO.LogMainRefresh.Add_Click(
+        {
+            $Ctrl.Reset($Ctrl.Xaml.IO.LogMainResult.Items,$Ctrl.Project.Logs)
+        })
+    
+        $This.Xaml.IO.LogMainResult.Add_SelectionChanged(
+        {
+            If ($Ctrl.Xaml.IO.LogMainResult.SelectedIndex -gt -1)
+            {
+                $Ctrl.Event.LogMain.Index            = $Ctrl.Xaml.IO.LogMainResult.SelectedItem.Rank
+                $Ctrl.Xaml.IO.LogSelected.Text       = $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].LogName
+                $Ctrl.Xaml.IO.LogTotal.Text          = $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Total
+                $Ctrl.GetLogOutput()
+            }
+        })
+    
+        $This.Xaml.IO.LogMainResult.Add_MouseDoubleClick(
+        {
+            $Ctrl.Event.LogMain.Index                = $Ctrl.Xaml.IO.LogMainResult.SelectedItem.Rank
+            If ($Ctrl.Event.LogMain.Index -gt -1)
+            {
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Config()))
+                $Ctrl.Main(3)
+            }
+        })
+    
+        $This.Xaml.IO.LogClear.Add_Click(
+        {
+            $Ctrl.Event.LogMain.Index                 = -1
+            $Ctrl.Xaml.IO.LogOutputResult.Items.Clear()
+            $Ctrl.Xaml.IO.LogSelected.Text            = ""
+            $Ctrl.Xaml.IO.LogTotal.Text               = 0
+            $Ctrl.Xaml.IO.LogOutputProperty.IsEnabled = 0
+            $Ctrl.Xaml.IO.LogOutputFilter.Text        = ""
+            $Ctrl.Xaml.IO.LogOutputFilter.IsEnabled   = 0
+            $Ctrl.Xaml.IO.LogOutputRefresh.IsEnabled  = 0
+            $Ctrl.Xaml.IO.LogOutputResult.IsEnabled   = 0
+        })
+    
+        $This.Xaml.IO.LogOutputFilter.Add_TextChanged(
+        {
+            Start-Sleep -Milliseconds 50
+            $Ctrl.Event.LogOutput.Filter = $Ctrl.Xaml.IO.LogOutputFilter.Text
+            $Anchor                      = $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Output
+            If ($Anchor.Count -gt 0 -and $Ctrl.LogOutputFilter -ne "")
+            {
+                $Result = @( $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Output | ? $Ctrl.Xaml.IO.LogOutputProperty.Text -match $Ctrl.CleanString($Ctrl.Event.LogOutput.Filter) )
+                If ($Result)
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.LogOutputResult.Items,$Result)
+                }
+                Else
+                {
+                    $Ctrl.Xaml.IO.LogOutputResult.Items.Clear()
+                }
+            }
+            Else
+            {
+                If ($Anchor.Count -notmatch $Sync.IO.LogOutputResult.Items.Count)
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.LogOutputResult.Items,$Anchor)
+                }
+            }
+        })
+    
+        $This.Xaml.IO.LogOutputRefresh.Add_Click(
+        {
+            $Ctrl.Reset($Ctrl.Xaml.IO.LogOutputResult.Items,($Ctrl.Project.Logs | ? LogName -eq $Ctrl.Xaml.IO.LogSelected.Text | % Output))
+        })
+    
+        $This.Xaml.IO.LogOutputResult.Add_MouseDoubleClick(
+        {
+            $Ctrl.Event.LogOutput.Index = $Ctrl.Xaml.IO.LogOutputResult.SelectedItem.Index
+            If ($Ctrl.Event.LogOutput.Index -gt -1)
+            {
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Output[$Ctrl.Event.LogOutput.Index].Config()))
+                $Ctrl.Main(3)
+            }
+        })
+    }
+    OutputTabEvent()
+    {
+        # [3.0]: OutputTab/OutputPanel (Event Handling)
+        $Ctrl = $This
+
+        $This.Xaml.IO.OutputFilter.Add_TextChanged(
+        {
+            Start-Sleep -Milliseconds 50
+            $Ctrl.Event.Output.Filter = $Ctrl.Xaml.IO.OutputFilter.Text
+            If ($Ctrl.Project.Output.Count -gt 0 -and $Ctrl.Event.Output.Filter -ne "")
+            {
+                $Result = @( $Ctrl.Event.Output.Hash[0..($Ctrl.Event.Output.Hash.Count-1)] | ? $Ctrl.Xaml.IO.OutputProperty.Text -match $Ctrl.CleanString($Ctrl.Event.Output.Filter) )
+                If ($Result)
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.OutputResult.Items,$Result)
+                }
+                Else
+                {
+                    $Ctrl.Xaml.IO.OutputResult.Items.Clear()
+                }
+            }
+            Else
+            {
+                If ($Ctrl.Event.Output.Count -notmatch $Ctrl.Xaml.IO.OutputResult.Items.Count)
+                {
+                    $Ctrl.Reset($Ctrl.Xaml.IO.OutputResult.Items,$Ctrl.Project.Output)
+                }
+            }
+        })
+    
+        $This.Xaml.IO.OutputRefresh.Add_Click(
+        {
+            $Ctrl.Reset($Ctrl.Xaml.IO.OutputResult.Items,$Ctrl.Project.Output)
+        })
+    
+        $This.Xaml.IO.OutputResult.Add_MouseDoubleClick(
+        {
+            $Ctrl.Event.Output.Index = $Ctrl.Xaml.IO.OutputResult.SelectedIndex
+            If ($Ctrl.OutputIndex -gt -1)
+            {
+                $Ctrl.Reset($Ctrl.Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Project.Output[$Ctrl.Event.Output.Index].Config()))
+                $Ctrl.Main(3)
+            }
+        })
+    }
+    ViewTabEvent()
+    {
+        # [4.0]: ViewTab/ViewPanel (Event Handling)
+        $Ctrl = $This
+
+        $This.Xaml.IO.ViewCopy.Add_Click(
+        {
+            $Ctrl.ViewCopy() | Set-Clipboard
+        })
+    
+        $This.Xaml.IO.ViewClear.Add_Click(
+        {
+            $Ctrl.ViewClear()
+        })
     }
     [Void] SetBegin()
     {
@@ -4438,23 +4798,14 @@ Class ProjectController
 
         $This.Begin          =  "{0}-{1}" -f [DateTime]::Now.ToString("yyyy-MMdd-HHmmss"), [Environment]::MachineName
     }
-    [Void] SetXaml()
+    [Void] SetXaml([Object]$Sync)
     {
         If ($This.Xaml)
         {
             Throw "Xaml object already set"
         }
 
-        $This.Xaml = [RSXamlWindow]::New($This.SyncHash,[EventLogGui]::Tab)
-    }
-    [Void] SetCommand([Object]$SyncHash)
-    {
-        If ($This.Command)
-        {
-            Throw "Command property already set"
-        }
-
-        $This.Command = [ProjectCommand]::New($SyncHash)
+        $This.Xaml = [RSXamlWindow]::New($Sync,[EventLogGui]::Tab)
     }
     [Void] SetThrottleIndex()
     {
@@ -4464,21 +4815,35 @@ Class ProjectController
         }
         $This.ThrottleIndex = [ThrottleIndex]::New()
     }
-    [Void] SetThrottle([Object]$Object)
+    [Void] SetThrottleIndex([Switch]$Reserve,[UInt32]$Count)
     {
-        $This.Throttle                      = $Object.Cores
-        $This.Xaml.IO.Throttle.SelectedItem = $This.Xaml.IO.Throttle.Items | ? Cores -eq $This.Throttle
+        If ($This.ThrottleIndex)
+        {
+            Throw "Throttle index has already been set"
+        }
+        $This.ThrottleIndex = [ThrottleIndex]::New($Reserve,$Count)
     }
-    [Void] SetThrottle([UInt32]$Count)
+    [Void] SetThrottle([Decimal]$Current)
     {
-        $This.Throttle                      = $Count
-        $This.Xaml.IO.Throttle.SelectedItem = $This.Xaml.IO.Throttle.Items | ? Cores -eq $This.Throttle
+        If ($Current -notin $This.ThrottleIndex.Output.Value -or $Current -gt $This.ThrottleIndex.Maximum.Value)
+        {
+            Throw "Input parameter is out of bounds"
+        }
+
+        $This.ThrottleIndex.Current         = $This.ThrottleIndex.Output | ? Value -eq $Current
+        $This.Throttle                      = $This.ThrottleIndex.Current.Cores
+        $This.Xaml.IO.Throttle.SelectedItem = $This.ThrottleIndex.Current.Index
+    }
+    [Void] SetThrottle()
+    {
+        $This.ThrottleIndex.Current         = $This.ThrottleIndex.Maximum
+        $This.Throttle                      = $This.ThrottleIndex.Current.Cores
+        $This.Xaml.IO.Throttle.SelectedItem = $This.ThrottleIndex.Current.Index
     }
     [Void] AutoThrottle()
     {
         $This.ThrottleIndex.AutoThrottle()
-        $This.SetThrottle($This.ThrottleIndex.GetCurrentCount())
-        $This.Xaml.IO.Throttle.SelectedItem = $This.Xaml.IO.Throttle.Items | ? Cores -eq $This.Throttle
+        $This.SetThrottle($This.ThrottleIndex.Current.Value)
     }
     [Object] SetThreadControl([String]$Type)
     {
@@ -4488,14 +4853,14 @@ Class ProjectController
     {
         Return [ThreadControl]::New($Type,$Throttle)
     }
-    [Void] SetEvent()
+    [Void] SetEvent([Object]$Sync)
     {
         If ($This.Event)
         {
             Throw "Event tree has already been set"
         }
 
-        $This.Event = [ProjectEventTree]::New()
+        $This.Event = [ProjectEventTree]::New($Sync)
     }
     [Void] Main([UInt32]$Slot)
     {
@@ -4631,39 +4996,6 @@ Class ProjectController
         $This.Archive = Get-EventLogArchive -Path $Path
         $This.Reset($This.Xaml.IO.Archive.Items,$This.Archive.PSObject.Properties)
     }
-    SetConsole()
-    {
-        If ($This.Console)
-        {
-            Throw "Console has already been set"
-        }
-        
-        $This.Command.SetConsole($This.Project.Console)
-        $This.Console = $This.Command.Console
-    }
-    NewProject()
-    {
-        If (!$This.Throttle)
-        {
-            Throw "Set the throttle first"
-        }
-        
-        $This.ClearArchive()
-        $This.Project = Get-EventLogProject -New $This.Archive
-        $This.SetConsole()
-        $This.Initialize()
-    }
-    LoadProject([String]$Path)
-    {
-        $This.SetArchive($Path)
-        $This.Project = Get-EventLogProject -Restore $This.Archive
-        $This.SetConsole()
-        $This.Submain(1)
-        # $This.SetThreadControl
-
-        #$This.Project.Init()
-        #$This.Initialize()
-    }
     Reset([Object]$Sender,[Object[]]$Content)
     {
         $Sender.Clear()
@@ -4750,6 +5082,33 @@ Class ProjectController
         $This.Update("Exception",2,$Message)
         [System.Windows.MessageBox]::Show($This.Console.ToString())
     }
+    [Object] ThreadSet([Object]$Object)
+    {
+        $Return = $Null
+        $Type   = $Null
+        Switch ($Object.GetType().Name)
+        {
+            String
+            {
+                $Return = $This.ThreadControl.ThreadSet | ? Name -match $Object
+                $Type   = "Name"
+            }
+            Int32
+            {
+                $Return = $This.ThreadControl.ThreadSet | ? Rank -eq $Object
+                $Type   = "Rank"
+            }
+        }
+        
+        If (!$Return)
+        {
+            Return [System.Windows.MessageBox]::Show("ThreadSet/$Type`: [$Return]","Invalid entry")
+        }
+        Else
+        {
+            Return $Return
+        }
+    }
     Invoke()
     {
         $This.Xaml.Invoke()
@@ -4759,122 +5118,65 @@ Class ProjectController
 #\___________________________________________________________________\_[ </Controller Class> ]_/
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
 
-$SyncHash                       = [Hashtable]::Synchronized(@{})
-$Ctrl                           = [ProjectController]::New($SyncHash)
-$Ctrl.AutoThrottle()
+$Sync                           = [Hashtable]::Synchronized(@{})
+$Script:Ctrl                    = [ProjectController]::New($Sync)
+$Project                        = @( )
+
 $Ctrl.ThreadControl.CreateInitial()
 
 ForEach ($Assembly in "System.Windows.Forms PresentationFramework System.IO.Compression System.IO.Compression.Filesystem" -Split " ")
 {
-    Write-Host "Adding [~] [$Assembly]"
     $Ctrl.ThreadControl.AddAssembly($Assembly)
+    [Console]::WriteLine("Assembly [+] [$Assembly]")
 }
 
 ForEach ($Function in "Get-EventLogConfigExtension Get-EventLogRecordExtension Get-SystemDetails Get-EventLogArchive Get-AssemblyList Get-EventLogProject" -Split " ")
 {
-    Write-Host "Adding [~] [$Function]"
     $Ctrl.ThreadControl.AddFunction($Function)
+    [Console]::WriteLine("Function [+] [$Function]")
 }
 
-ForEach ($Variable in "SyncHash" | % { Get-Variable $_ })
+ForEach ($Variable in "Sync","Ctrl","Project" | % { Get-Variable $_ })
 {
-    Write-Host "Adding [~] [$Variable]"
     $Ctrl.ThreadControl.AddVariable($Variable.Name,$Variable.Value,$Variable.GetType().Name)
+    [Console]::WriteLine("Variable [+] [$($Variable.Name)]")
 }
 
-$Ctrl.ThreadControl.Session
+$Ctrl.ThreadControl.CreateRunspacePool()
+$Ctrl.ThreadControl.RunspaceFactory.Open()
+$Ctrl.ThreadControl.SetThreads(1,$Sync.IO.Title)
+$Ctrl.ThreadControl.SetThreads($True,"Project")
 
-# ------------
-
-
-# ______________________________________________________________________________________________ 
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-# [0.0]: Menu (Event Handling)
-#\______________________________________________________________________________________________/
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-
-# (0.1) MainTab ________________
-$Ctrl.Xaml.IO.MainTab.Add_Click(
+$Sync.IO.Continue.Add_Click(
 {
-    If ($Ctrl.Menu -ne 0)
-    {
-        $Ctrl.Main(0)
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (0.2) LogTab ________________
-$Ctrl.Xaml.IO.LogTab.Add_Click(
-{
-    If ($Ctrl.Menu -ne 1)
-    {
-        $Ctrl.Main(1)
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (0.3) OutputTab ________________
-$Ctrl.Xaml.IO.OutputTab.Add_Click(
-{
-    If ($Ctrl.Menu -ne 2)
-    {
-        $Ctrl.Main(2)
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (0.4) ViewTab ________________
-$Ctrl.Xaml.IO.ViewTab.Add_Click(
-{
-    If ($Ctrl.Menu -ne 3)
-    {
-        $Ctrl.Main(3)
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# ______________________________________________________________________________________________  
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
-# [1.0]: MainTab/MainPanel (Event Handling)                                                       
-#\______________________________________________________________________________________________/ 
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
-
-# (1.01) Mode __________________________
-$Ctrl.Xaml.IO.Mode.Add_SelectionChanged(
-{
-    Switch ($Ctrl.Xaml.IO.Mode.SelectedIndex)
-    {
-        0
-        {
-            $Ctrl.Xaml.IO.Export.Visibility  = "Visible"
-            $Ctrl.Xaml.IO.Export.IsEnabled   = 0
-            $Ctrl.Xaml.IO.Browse.Visibility  = "Collapsed"
-            $Ctrl.Xaml.IO.Browse.IsEnabled   = 0
-            $Ctrl.Xaml.IO.Continue.IsEnabled = 1
-        }
-        1
-        {
-            $Ctrl.Xaml.IO.Export.Visibility  = "Collapsed"
-            $Ctrl.Xaml.IO.Export.IsEnabled   = 0
-            $Ctrl.Xaml.IO.Browse.Visibility  = "Visible"
-            $Ctrl.Xaml.IO.Browse.IsEnabled   = 1
-            $Ctrl.Xaml.IO.Continue.IsEnabled = 0
-        }
-    }
-    $Ctrl.Xaml.IO.Base.Items.Clear()
-    If ($Ctrl.Archive)
-    {
-        $Ctrl.ClearArchive()
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (1.02) Continue _______________
-$Ctrl.Xaml.IO.Continue.Add_Click(
-{
-    $Index                                  = $Ctrl.Xaml.IO.Mode.SelectedIndex
+    $Index = $Ctrl.Xaml.IO.Mode.SelectedIndex
     Switch ($Index)
     {
         0 
         {
             $Ctrl.Submain(1)
-            $Ctrl.NewProject()
-            $Ctrl.SetMode($Index)
+            #.AddScript(
+            #{
+            #})
+            #NewProject()
+            #{
+                #If (!$This.Throttle)
+                #{
+                    #Throw "Set the throttle first"
+                #}
+                
+                #$This.ClearArchive()
+                #$This.Project = 
+                #$This.SetConsole()
+            #}
+            # $Ctrl.Submain(1)
+            # $Project = Get-EventLogProject -New (Get-EventLogArchive -New)
+            # $Ctrl.SetMode($Index)
+            # $Sync.IO.Browse.IsEnabled   = 0
+            # $Sync.IO.Continue.IsEnabled = 0
+            # $This.SetThreadControl
+            # $This.Project.Init()
+            # $This.Initialize()
         }
         1 
         {
@@ -4883,314 +5185,48 @@ $Ctrl.Xaml.IO.Continue.Add_Click(
                 Throw "Invalid file path"
             }
             $Ctrl.Submain(1)
-            $Ctrl.LoadProject($Ctrl.Archive)
-            $Ctrl.Xaml.IO.Browse.IsEnabled   = 0
-            $Ctrl.Xaml.IO.Continue.IsEnabled = 0
-            $Ctrl.SetMode($Index)
-        }
-    }
-
-    If ($Ctrl.Project)
-    {
-        $Ctrl.Xaml.IO.Throttle.IsEnabled     = 0
-        $Ctrl.Xaml.IO.AutoThrottle.IsEnabled = 0
-        $Ctrl.Xaml.IO.Threads.IsEnabled      = 0
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (1.05) Section __________________________
-$Ctrl.Xaml.IO.Section.Add_SelectionChanged(
-{
-    $Index = $Ctrl.Xaml.IO.Section.SelectedIndex
-    If ($Ctrl.System -and $Index -gt -1)
-    {
-        $Ctrl.SetRank($Index)
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (1.06) Slot __________________________
-$Ctrl.Xaml.IO.Slot.Add_SelectionChanged(
-{
-    $Index = $Ctrl.Xaml.IO.Slot.SelectedIndex
-    If ($Ctrl.System -and $Index -gt -1)
-    {
-        $Ctrl.SetSlot()
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (1.11) AutoThrottle _________________
-$Ctrl.Xaml.IO.AutoThrottle.Add_Checked(
-{
-    $Ctrl.Xaml.IO.Throttle.IsEnabled = 0
-    $Ctrl.AutoThrottle()
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (1.12) AutoThrottle ___________________
-$Ctrl.Xaml.IO.AutoThrottle.Add_Unchecked(
-{
-    $Ctrl.Xaml.IO.Throttle.IsEnabled = 1
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (1.0A) Throttle __________________________
-$Ctrl.Xaml.IO.Throttle.Add_SelectionChanged(
-{
-    $Item = $Ctrl.Xaml.IO.Throttle.SelectedItem
-    If ($Item.Cores -ne $Ctrl.Throttle)
-    {
-        $Ctrl.SetThrottle($Item)
-    }
-})  #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (1.0F) Browse _______________
-$Ctrl.Xaml.IO.Browse.Add_Click(
-{
-    $Item                           = [System.Windows.Forms.OpenFileDialog]::New()
-    $Item.Title                     = "Select an existing archive made by this utility"
-    $Item.InitialDirectory          = [Environment]::GetEnvironmentVariable("temp")
-    $Item.Filter                    = "zip files (*.zip)|*.zip"
-    $Item.ShowDialog()
-
-    If ($Item.FileName -ne "" -and ![System.IO.File]::Exists($Item.Filename))
-    {
-        [System.Windows.MessageBox]::Show("File does not exist")
-    }
-    ElseIf ($Item.FileName -eq "")
-    {
-        $Ctrl.Xaml.IO.Base.Text     = ""
-        $Ctrl.SetArchive()
-    }
-    Else
-    {
-        $Ctrl.Xaml.IO.Base.Items.Add($Item.Filename)
-        $Ctrl.Xaml.IO.Base.SelectedIndex = 0
-        $Ctrl.Xaml.IO.Continue.IsEnabled = 1
-        $Ctrl.SetArchive($Item.Filename)
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (1.10) Export _______________
-$Ctrl.Xaml.IO.Export.Add_Click(
-{
-    $Item                           = [System.Windows.Forms.SaveFileDialog]::New()
-    $Item.Title                     = "Save the information collected with this utility"
-    $Item.InitialDirectory          = [Environment]::GetEnvironmentVariable("temp")
-    $Item.Filter                    = "zip files (*.zip)|*.zip"
-    $Item.FileName                  = $Ctrl.Begin
-    $Item.ShowDialog()
-        
-    If (!$Item.FileName)
-    {
-        $Ctrl.Xaml.IO.Base.Text     = ""
-    }
-    Else
-    {
-        $Ctrl.Xaml.IO.Base.Text      = $Item.SelectedPath
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (1.11) ConsoleSet _______________
-$Ctrl.Xaml.IO.ConsoleSet.Add_Click(
-{
-    If ($Ctrl.Subset -ne 0)
-    {
-        $Ctrl.SubMain(0)
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# (1.12) TableSet _______________
-$Ctrl.Xaml.IO.TableSet.Add_Click(
-{
-    If ($Ctrl.Subset -ne 1)
-    {
-        $Ctrl.SubMain(1)
-    }
-}) #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# ______________________________________________________________________________________________  
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
-# [2.0]: LogTab/LogPanel (Event Handling)                                                         
-#\______________________________________________________________________________________________/ 
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
-
-# (2.2) LogMainFilter ______________________
-$Ctrl.Xaml.IO.LogMainFilter.Add_TextChanged( 
-{
-    Start-Sleep -Milliseconds 50
-    $Ctrl.Event.LogMain.Filter = $Ctrl.Xaml.IO.LogMainFilter.Text
-    If ($Ctrl.Project.Logs.Count -gt 0 -and $Ctrl.Event.LogMain.Filter -ne "")
-    {
-        $Result = @( $Ctrl.Project.Logs | ? $Ctrl.LogProperty($Ctrl.Xaml.IO.LogMainProperty.Text) -match $Ctrl.CleanString($Ctrl.Event.LogMain.Filter) )
-        If ($Result)
-        {
-            $Ctrl.Reset($Ctrl.Xaml.IO.LogMainResult.Items,$Result)
-        }
-        Else
-        {
-            $Ctrl.Xaml.IO.LogMainResult.Items.Clear()
-        }
-    }
-    Else
-    {
-        If ($Ctrl.Project.Logs.Count -notmatch $Ctrl.Xaml.IO.LogMainResult.Items.Count)
-        {
-            $Ctrl.Reset($Ctrl.Xaml.IO.LogMainResult.Items,$Ctrl.Project.Logs)
+            $Sync.Archive       = $Ctrl.Archive
+            $Sync.ThreadControl = $Ctrl.ThreadControl
+            $Sync.ThreadSet     = $Ctrl.ThreadSet(1)
+            $Sync.Thread        = $Sync.ThreadSet.Id(0)
+            $Sync.Thread.PowerShell.AddScript(
+            {
+                $Sync.Project   = Get-EventLogProject -ThreadControl $Sync.ThreadControl -Restore $Sync.Archive
+                If ($Sync.Project)
+                {
+                    $Sync.IO.Dispatcher.Invoke([Action]{ 
+                        
+                        $Sync.IO.Browse.IsEnabled       = 0
+                        $Sync.IO.Continue.IsEnabled     = 0
+                        $Sync.IO.Throttle.IsEnabled     = 0
+                        $Sync.IO.AutoThrottle.IsEnabled = 0
+                        $Sync.IO.Threads.IsEnabled      = 0
+                    }, "Normal")
+                
+                    $Sync.Project.Console.Output.Add_CollectionChanged(
+                    {
+                        $Sync.IO.Dispatcher.Invoke([Action]{ 
+                            
+                            $Sync.IO.Table.Items.Add($Sync.Project.Console.Last())
+                        }, "Normal")
+                    })
+                    $Sync.Project.Console.Update("Success",1,"Output console connected")
+                    $Sync.Project.Init()
+                }
+            })
+            #$Sync.Thread.BeginInvoke()
+            #$Ctrl.SetMode($Index)
+            #$Ctrl.Initialize()
         }
     }
 })
 
-# (2.3) LogMainRefresh ________________
-$Ctrl.Xaml.IO.LogMainRefresh.Add_Click(
+$Sync.IO.Add_Closed(
 {
-    $Ctrl.Reset($Ctrl.Xaml.IO.LogMainResult.Items,$Ctrl.Project.Logs)
+    [Console]::WriteLine("Dialog closed")
+    #$Sync.IO.DialogResult = $True | Out-Null
 })
 
-# (2.4) LogMainResult ___________________________
-$Ctrl.Xaml.IO.LogMainResult.Add_SelectionChanged(
-{
-    If ($Ctrl.Xaml.IO.LogMainResult.SelectedIndex -gt -1)
-    {
-        $Ctrl.Event.LogMain.Index            = $Ctrl.Xaml.IO.LogMainResult.SelectedItem.Rank
-        $Ctrl.Xaml.IO.LogSelected.Text       = $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].LogName
-        $Ctrl.Xaml.IO.LogTotal.Text          = $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Total
-        $Ctrl.GetLogOutput()
-    }
-})
+$Sync.IO.ShowDialog()
 
-# (2.4) LogMainResult ___________________________
-$Ctrl.Xaml.IO.LogMainResult.Add_MouseDoubleClick(
-{
-    $Ctrl.Event.LogMain.Index                = $Ctrl.Xaml.IO.LogMainResult.SelectedItem.Rank
-    If ($Ctrl.Event.LogMain.Index -gt -1)
-    {
-        $Ctrl.Reset($Ctrl.Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Config()))
-        $Ctrl.Main(3)
-    }
-})
-
-# (2.5) LogClear ________________
-$Ctrl.Xaml.IO.LogClear.Add_Click(
-{
-    $Ctrl.Event.LogMain.Index                 = -1
-    $Ctrl.Xaml.IO.LogOutputResult.Items.Clear()
-    $Ctrl.Xaml.IO.LogSelected.Text            = ""
-    $Ctrl.Xaml.IO.LogTotal.Text               = 0
-    $Ctrl.Xaml.IO.LogOutputProperty.IsEnabled = 0
-    $Ctrl.Xaml.IO.LogOutputFilter.Text        = ""
-    $Ctrl.Xaml.IO.LogOutputFilter.IsEnabled   = 0
-    $Ctrl.Xaml.IO.LogOutputRefresh.IsEnabled  = 0
-    $Ctrl.Xaml.IO.LogOutputResult.IsEnabled   = 0
-})
-
-# (2.8) LogOutputFilter _________________
-$Ctrl.Xaml.IO.LogOutputFilter.Add_TextChanged(
-{
-    Start-Sleep -Milliseconds 50
-    $Ctrl.Event.LogOutput.Filter = $Ctrl.Xaml.IO.LogOutputFilter.Text
-    $Anchor                      = $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Output
-    If ($Anchor.Count -gt 0 -and $Ctrl.LogOutputFilter -ne "")
-    {
-        $Result = @( $Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Output | ? $Ctrl.Xaml.IO.LogOutputProperty.Text -match $Ctrl.CleanString($Ctrl.Event.LogOutput.Filter) )
-        If ($Result)
-        {
-            $Ctrl.Reset($Ctrl.Xaml.IO.LogOutputResult.Items,$Result)
-        }
-        Else
-        {
-            $Ctrl.Xaml.IO.LogOutputResult.Items.Clear()
-        }
-    }
-    Else
-    {
-        If ($Anchor.Count -notmatch $Ctrl.Xaml.IO.LogOutputResult.Items.Count)
-        {
-            $Ctrl.Reset($Ctrl.Xaml.IO.LogOutputResult.Items,$Anchor)
-        }
-    }
-})
-
-# (2.9) LogOutputRefresh ___________
-$Ctrl.Xaml.IO.LogOutputRefresh.Add_Click(
-{
-    $Ctrl.Reset($Ctrl.Xaml.IO.LogOutputResult.Items,($Ctrl.Project.Logs | ? LogName -eq $Ctrl.Xaml.IO.LogSelected.Text | % Output))
-})
-
-# (2.A) LogOutputResult ______________________
-$Ctrl.Xaml.IO.LogOutputResult.Add_MouseDoubleClick(
-{
-    $Ctrl.Event.LogOutput.Index = $Ctrl.Xaml.IO.LogOutputResult.SelectedItem.Index
-    If ($Ctrl.Event.LogOutput.Index -gt -1)
-    {
-        $Ctrl.Reset($Ctrl.Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Project.Logs[$Ctrl.Event.LogMain.Index].Output[$Ctrl.Event.LogOutput.Index].Config()))
-        $Ctrl.Main(3)
-    }
-})
-
-# ______________________________________________________________________________________________  
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
-# [3.0]: OutputTab/OutputPanel (Event Handling)                                                   
-#\______________________________________________________________________________________________/ 
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
-
-# (3.0) OutputFilter ______________________
-$Ctrl.Xaml.IO.OutputFilter.Add_TextChanged(
-{
-    Start-Sleep -Milliseconds 50
-    $Ctrl.Event.Output.Filter = $Ctrl.Xaml.IO.OutputFilter.Text
-    If ($Ctrl.Project.Output.Count -gt 0 -and $Ctrl.Event.Output.Filter -ne "")
-    {
-        $Result = @( $Ctrl.Event.Output.Hash[0..($Ctrl.Event.Output.Hash.Count-1)] | ? $Ctrl.Xaml.IO.OutputProperty.Text -match $Ctrl.CleanString($Ctrl.Event.Output.Filter) )
-        If ($Result)
-        {
-            $Ctrl.Reset($Ctrl.Xaml.IO.OutputResult.Items,$Result)
-        }
-        Else
-        {
-            $Ctrl.Xaml.IO.OutputResult.Items.Clear()
-        }
-    }
-    Else
-    {
-        If ($Ctrl.Event.Output.Count -notmatch $Ctrl.Xaml.IO.OutputResult.Items.Count)
-        {
-            $Ctrl.Reset($Ctrl.Xaml.IO.OutputResult.Items,$Ctrl.Project.Output)
-        }
-    }
-})
-
-# (3.0) OutputRefresh ________________
-$Ctrl.Xaml.IO.OutputRefresh.Add_Click(
-{
-    $Ctrl.Reset($Ctrl.Xaml.IO.OutputResult.Items,$Ctrl.Project.Output)
-})
-
-# (3.0) OutputResult ___________________________
-$Ctrl.Xaml.IO.OutputResult.Add_MouseDoubleClick(
-{
-    $Ctrl.Event.Output.Index = $Ctrl.Xaml.IO.OutputResult.SelectedIndex
-    If ($Ctrl.OutputIndex -gt -1)
-    {
-        $Ctrl.Reset($Ctrl.Xaml.IO.ViewResult.Items,$Ctrl.ViewProperties($Ctrl.Project.Output[$Ctrl.Event.Output.Index].Config()))
-        $Ctrl.Main(3)
-    }
-})
-
-# ______________________________________________________________________________________________  
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
-# [4.0]: ViewTab/ViewPanel (Event Handling)                                                         
-#\______________________________________________________________________________________________/ 
-#/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\ 
-
-# (4.0) ViewCopy ________________
-$Ctrl.Xaml.IO.ViewCopy.Add_Click(
-{
-    $Ctrl.ViewCopy() | Set-Clipboard
-})
-
-# (4.0) ViewClear ________________
-$Ctrl.Xaml.IO.ViewClear.Add_Click(
-{
-    $Ctrl.ViewClear()
-})
-
-# Begin
-$Ctrl.Invoke()
+#>
