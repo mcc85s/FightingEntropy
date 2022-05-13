@@ -15,7 +15,7 @@
         Still a work in progress.
 .LINK
 .NOTES
-          FileName: EventLogs-UtilityRunspaces-v3.ps1
+          FileName: EventLogs-UtilityRunspace-v3.ps1
           Solution: FightingEntropy Module
           Purpose: For exporting all of a systems event logs
           Author: Michael C. Cook Sr.
