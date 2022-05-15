@@ -535,7 +535,7 @@ $Properties      = $Edge.PSObject.Properties | ? Name -notmatch "(^_|^PS)"
 
 # __________________________________________________________________________________________________
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-# In this instance, we don't care about the Membertype, IsSettable, IsGettable, or # IsInstance     /
+# In this instance, we don't care about the Membertype, IsSettable, IsGettable, or IsInstance       /
 # properties... but we'll adhere to those values anyway if we use the underlying base type.         \
 #                                                                                                   /
 # So, like I covered above, we can use "[PSNoteProperty]::New($Name, $Value)" to create an object   \ 
@@ -936,7 +936,7 @@ $ClassDefinition = @("Class $($Def.Name)","{",($Def.Type -join "`n"), "    $($De
 # implement various changes to more finely tune the capabilities, properties, values, etc.          \
 #\__________________________________________________________________________________________________/
 #/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-# The NAME of this class, is essentially "DefinitionTemplate", because the name of this class is    /
+# The NAME of this class, is essentially "DefinitionTemplate", because the name of this class       /
 # doesn't NEED to be COOL, because it's job is to produce a class that includes various elements    \
 # that would be needed to perform the same exact activity as the variables listed directly above.   /
 #                                                                                                   \
@@ -1209,7 +1209,7 @@ Class Uninstall
 # bolster one's ability to do it themselves. When they do, they'll understand how the "pros" went    /
 # ahead, and wrote a class that does all of that work, cause they're probably a real nice (guy/girl).\
 # ---------------------------------------------------------------------------------------------------/
-# Whether you use one of the streamreader/streamwriter class types, or I think the Xmlwriter class   \
+# Whether you use one of the StringWriter class types, or I think the Xmlwriter class                \
 # also does it, can't think off the top of my head what other default classes automatically indent   /
 # stuff for you, but they're out there. Things become harder to do when you're writing CODE that does\
 # what you as a human would do when editing the content, and that's when design choices might change./
@@ -1553,7 +1553,7 @@ $Temp.AddMethod(@('[Object[]] Output([UInt32]$Buff)','{','$X  = @( )',
 # and $Method3 and then those values were added... It could be done that way here as well.          \
 #                                                                                                   /
 # The main difference is that the method is NAMED, rather than just having some property named      \
-# Method allow items to be added to itself. Yeah, naming a property "method" that isn't actually    /
+# Method that allows items to be added to it. Yeah, naming a property "method" that isn't actually  /
 # a method might cause some confusion somewhere...? But then again, maybe it won't... Either way,   \
 # it's better to have a legitimate, actual-factual method named "AddMethod" rather than wingin' it  /
 # with a property named Method then a plus sign and an equals sign, then a variable value.          \
