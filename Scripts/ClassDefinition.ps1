@@ -12,7 +12,7 @@
 # 
 # Last night I decided to take a break from the threading stuff, and dive into the topic of converting
 # scripts to .Net class types, and teach people why classes are really... incredibly useful and 
-# underused. If people only knew that I look for ways to turn C# code it into PowerShell code... 
+# underused. If people only knew that I look for ways to turn C# code into PowerShell code... 
 # Sometimes it's possible. Sometimes it's not without a lot of additional code.
 #
 # In C#, classes are definitely not underused at all. In PowerShell, they definitely are.
