@@ -5584,7 +5584,7 @@ $UserInterface.AddScript(
                 Else
                 {
                     Get-EventLogArchive -Path $Sync.UI.Base.Items
-                }
+                })
 
                 $Sync.Project     = Get-EventLogProject -ThreadSlot $Slot -Restore $Restore
 
