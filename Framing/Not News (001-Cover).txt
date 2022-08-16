@@ -1,35 +1,35 @@
-            ____    ____    ____    ____    ____    ____        ____    ____    ____    ____    ____    ____             
-        ___//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\______//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__         
-    ___//¯¯\\__//¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯\\__//¯¯\\___    
-   //¯¯\\__//¯¯\\            ______________________________________________________________            //¯¯\\__//¯¯\\   
-   |\__//¯¯\\__//            | Secure Digits Plus LLC (π) | Top Deck Awareness - Not News |            \\__//¯¯\\__/|   
-   |/¯¯\\__//¯¯\\            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            //¯¯\\__//¯¯\|   
-   |\__//¯¯\\__//   ________________________________________________________________________________   \\__//¯¯\\__/|   
-   |/¯¯\\__//¯¯\\   | Used to be news...? Now its Not News. Not News. Part of the Not News Network |   //¯¯\\__//¯¯\|   
-   |\__//¯¯\\__//   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   \\__//¯¯\\__/|   
-   |/¯¯¯    ¯¯¯¯                                                                                        ¯¯¯¯    ¯¯¯\|   
-   |\   Author    : Michael C. Cook Sr. | Subjects: Science, Technology, Engineering, Math, History, Politics,     /|   
-   |/   Theme     : Reality/1984/Satire |           Psychology, Philosophy, Morality, Comedy, Commerce, Industry   \|   
-   |\___    ____    ____    ____    ____    ____    ____        ____    ____    ____    ____    ____    ____    ___/|   
-   |/¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\______//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\\__//¯¯\|   
-   |\__/¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯    ¯¯¯¯\__/|   
-   ||   Synopsis  : Fox News is not news, it is propaganda. They should change the name to Not News                ||   
-   ||   Conflicts : Treason, Corruption, Censorship, Injustice, Identity Theft, Cybercrime, Antitrust, Fraud       ||   
-   ||   Affairs   : Political/Foreign+Domestic+Local, Social/Personal                                              ||   
-   ||   Agencies  : NSA/Nat. Sec. Agency, CIA/Central Intel Agency, NIST/Nat. Institute of Standards and Tech.,    ||   
-   ||               FBI/Fed. Bureau of Invest., DHS/Dept. of Homeland Sec., CISA/Cybersec. Infra. Sec. Agency,     ||   
-   ||               NYSP/New York State Police, SCSO/Saratoga County Sheriffs Office                               ||   
-   |\______________________________________________________________________________________________________________/|   
-   [====( Characters )==============================================================================================]   
-   |/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\|   
-   ||     Julien Paul Assange/WikiLeaks | Edward Joseph Snowden/CIA+NSA | General Kenneth McKenzie Jr./CENTCOM     ||   
-   ||         Elon Musk/Tesla+SpaceX | William Gates/Microsoft+Gates Foundation | George W. Bush/President         ||   
-   ||               Rupert Murdoch, Tucker Carlson, Sean Hannity/Fox News | Hillary Clinton/Senator NY             ||   
-   ||                   Bob Lutz/General Motors | Ted Cruz/Senator TX | Mark Zuckerberg/Facebook                   ||    
-   ||   Warren Buffett/Berkshire Hathaway, Jeff Bezos/Amazon, Tim Cook/Apple, V.Putin/Russia, V.Zelensky/Ukraine   ||   
-   |\______________________________________________________________________________________________________________/|   
+            ____    ____    ________________________________________________________________    ____    ____            
+        ___//¯¯\\__//¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\__//¯¯\\___        
+    ___/    \__/    \__//¯¯¯          Secure Digits Plus LLC (π) | Fighting Entropy         ¯¯¯\\__/    \__/    \___    
+   //¯¯\    /¯¯\    /¯¯\\___                 Top Deck Awareness - Not News                  ___//¯¯\    /¯¯\    /¯¯\\   
+   \\__//¯¯\\__//¯¯\\__//¯¯\\______________________________________________________________//¯¯\\__//¯¯\\__//¯¯\\__//   
+   //¯¯\\__//¯¯\\__//¯¯¯    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\__//¯¯\\__//¯¯\\   
+   \\__/    \__//   ________________________________________________________________________________   \\__/    \__//   
+   //¯¯\    /¯¯\\   | Used to be news...? Now its Not News. Not News. Part of the Not News Network |   //¯¯\    /¯¯\\   
+   \\__//¯¯\\__//   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   \\__//¯¯\\__//   
+   //¯¯\\__//¯¯\\       ________________________________________________________________________       //¯¯\\__//¯¯\\   
+   \\__/    \__//   ___//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___   \\__/    \__//   
+   //¯¯\    /¯¯\\__//¯¯¯    Provisional Author: Michael C. Cook Sr. | "The Buck Stops Here"     ¯¯¯\\__//¯¯\    /¯¯\\   
+   \\__/¯¯¯¯    ¯¯¯¯                                                                                ¯¯¯¯    ¯¯¯¯\__//   
+   //   Thesis   : Fox News is not news, it is propaganda. They should change the name to Not News                 \\   
+   ||   Subject  : (STEM/Science, Technology, Engineering, Mathematics)                                            ||   
+   ||               History, Politics, Psychology, Philosophy, Morality, Comedy, Commerce, Industry                ||   
+   ||   Conflict : Treason, Corruption, Censorship, Injustice, Identity Theft, Cybercrime, Antitrust, Fraud        ||   
+   ||   Affair   : Political/Foreign+Domestic+Local, Social/Personal                                               ||   
+   ||   Agency   : NSA/Nat. Sec. Agency, CIA/Central Intel Agency, NIST/Nat. Institute of Standards and Tech.,     ||   
+   ||              FBI/Fed. Bureau of Invest., DHS/Dept. of Homeland Sec., CISA/Cybersec. Infra. Sec. Agency,      ||   
+   ||              NYSP/New York State Police, SCSO/Saratoga County Sheriffs Office                                ||   
+   \\______________________________________________________________________________________________________________//   
+   [====( Primary & Secondary Characters )==========================================================================]   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   [J. P. Assange/WikiLeaks], [E. J. Snowden/CIA+NSA], [General K. McKenzie Jr./USMC+CENTCOM]                 ||   
+   ||   [E. Musk/Tesla+SpaceX], [W. Gates/Microsoft+Gates Foundation], [W. Buffett/Berkshire Hathaway]             ||   
+   ||   [R. Murdoch, T. Carlson, S. Hannity/Fox News], [T. Cruz/Senator TX], [M. Zuckerberg/Facebook],             ||   
+   ||   [G. W. Bush/Former President], [B. Lutz/General Motors], [H. Clinton/Former First Lady+Senator NY],        ||   
+   ||   [V. Putin/Dictator of Russia], [V. Zelensky/President of Ukraine], [J. Bezos/Amazon], [T. Cook/Apple]      ||   
+   \\______________________________________________________________________________________________________________//   
    [====( Story )===================================================================================================]   
-   |/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Once upon a time, a man once lived in the crime-riddled badlands of suburbia... in Clifton Park, NY.       ||   
    ||   A KEYBOARD WARRIOR, whose story was unlike any other, unparalleled in nature. One night he was nearly      ||   
    ||   killed and somehow barely survived. His story and voice were both so gritty...? Well, people could         ||   
@@ -63,7 +63,7 @@
    ||   or destiny...? A shooting star fell from the heavens. From that day forward, his mission became clear.     ||   
    ||                                                                                                              ||   
    ||   His life...? Imbued with hardship. Pain. Scorn. Resentment, and atrocities. The love of his life...?       ||   
-   ||   Ripped away, outside of reach. His children...? Taken, and lied to. When society told him...               ||
+   ||   Ripped away, outside of reach. His children...? Taken, and lied to. When society told him...               ||   
    ||              ________________________________________________________________________________                ||   
    ||              | Society : If life hands you lemons...? Make lemonade.                        |                ||   
    ||              | Him     : *pauses for a while* Uh... That's moronic, bro.                    |                ||   
@@ -76,5 +76,5 @@
    ||                                                                                                              ||   
    ||  This is the story of a man who's faced a lot of resistance, a story SUPPOSEDLY 13.7 billion years in the    ||   
    ||  making. Practically told everybody and their mother, that somebody had been in the process, of ATTEMPTING   ||   
-   |\  to commit the ultimate sin against HIM... But- they failed.                                                 /|   
-   ==================================================================================================================   
+   \\  to commit the ultimate sin against HIM... But- they failed.                                                 //   
+   [================================================================================================================]   
