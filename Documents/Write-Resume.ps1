@@ -3,18 +3,20 @@
 .DESCRIPTION
 .LINK
 .NOTES
-          FileName: Write-Resume.ps1
-          Solution: FightingEntropy Write Resume
-          Purpose: To make a pretty deep impression on anybody who looks at your resume...
-          Author: Michael C. Cook Sr.
-          Contact: @mcc85s
-          Primary: @mcc85s
-          Created: 2022-08-11
-          Modified: 2022-08-11
-          Version - 0.0.0 - () - Finalized functional version 1.
-          TODO:
+          FileName : Write-Resume.ps1
+          Solution : FightingEntropy Write-Resume
+          Purpose  : To make a pretty deep impression on anybody who looks at your resume...
+          Author   : Michael C. Cook Sr.
+          Contact  : @mcc85s
+          Primary  : @mcc85s
+          Created  : 2022-08-11
+          Modified : 2022-08-19
+          Demo     : https://youtu.be/QSuge7p5_I8
+          Version  : 0.0.0 - () - Finalized functional version 1
+          TODO     : 
 .Example
 #>
+
 
 Function Write-Resume
 {
@@ -1330,8 +1332,14 @@ Function Write-Resume
                 $This.Swap[$X].Index  = $X
                 $This.Output    += $This.Swap[$X]
             }
-
+        }
+        [Void] Draw()
+        {
             $This.Output.Track.Draw(@(10,12,15,0))
+        }
+        [Void] Draw([UInt32[]]$Palette)
+        {
+            $This.Output.Track.Draw($Palette)
         }
         [String] Center([UInt32]$Length,[String]$Line)
         {
@@ -1339,11 +1347,25 @@ Function Write-Resume
             $Split  = [Math]::Round($Buffer / 2,[MidpointRounding]::ToZero)
             Return "{0}{1}{0}" -f (@(" ")*$Split -join ''), $Line
         }
+        [String[]] ToString()
+        {
+            If ($This.Output.Count -gt 0)
+            {
+                Return @( $This.Output | % { $_.Track.Object -join '' } )
+            }
+            Else
+            {
+                Return $Null
+            }
+        }
     }
 
     [Resume]::New($Name,$Title)
 }
-    
+
+
+
+
 <# [Drafting Mask/Blueprint]
        _____________________________________________________________
        | Legends of the (Hidden Temple/Drafting Blueprint)         |
@@ -1403,21 +1425,21 @@ _______|________________________________________________________________________
 #>
 
 <#
-[000]     ____                                                                                                    ____     
-[001]    //¯¯\\__________________________________________________________________________________________________//¯¯\\___ 
-[002]    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\
-[003]    |/¯¯\\__[ Michael C. Cook Sr. | Network Information System Security Professional | DevOPS Engineer ]____//¯¯\\__//
-[004]    |\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   ||==||
-[005]    |/¯¯\\______________________________________________________________________________________________________//¯¯\|
-[006]    |\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/|
-[007]    |/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\|
+[XXX]     ____                                                                                                    ____     
+[XXX]    //¯¯\\__________________________________________________________________________________________________//¯¯\\___ 
+[XXX]    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\
+[XXX]    |/¯¯\\__[ Michael C. Cook Sr. | Network Information System Security Professional | DevOPS Engineer ]____//¯¯\\__//
+[XXX]    |\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   ||==||
+[XXX]    |/¯¯\\______________________________________________________________________________________________________//¯¯\|
+[XXX]    |\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/|
+[XXX]    |/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\|
 #>
 
 $Resume = Write-Resume -Name "Michael C. Cook Sr." -Title "Network Information System Security Professional | DevOPS Engineer"
 
 <# [Add Qualifications]
-[008]    |     CompTIA A+/Network+/Security+ | Cisco CCNA/CNAP | Microsoft Certified Professional/MCDST/MCSA/MCSE         |
-[009]    |     Associate Degree in Information Technology (Drafting & Design/Multimedia) | Portfolio Award/CRCATS         |
+[XXX]    |     CompTIA A+/Network+/Security+ | Cisco CCNA/CNAP | Microsoft Certified Professional/MCDST/MCSA/MCSE         |
+[XXX]    |     Associate Degree in Information Technology (Drafting & Design/Multimedia) | Portfolio Award/CRCATS         |
 #>
 
 "CompTIA A+/Network+/Security+",
@@ -1430,45 +1452,45 @@ $Resume = Write-Resume -Name "Michael C. Cook Sr." -Title "Network Information S
      |          0         0         0         0         0         0         0         0         0         1         1         |
      |          1         2         3         4         5         6         7         8         9         0         1         |
      |012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789|
-[010]|   |\   _________________________________________________                                  _____________________   /|   |
-[011]|   |/   | Secure Digits Plus LLC (π) – Clifton Park, NY |                                  | 10/2018 - 08/2022 |   \|   |
-[012]|   |\   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   /|   |
-[013]|   |/                     _____________________________________________________________________                    \|   |
-[014]|   |\                     | Security Engineer, also CEO/NISSP/DevOPS/Investigative Journalist |                    /|   |
-[015]|   |/                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                    \|   |
-[016]|   |\   [+] Portfolio Development for Applications, as well as Investigative Journalism                            /|   |
-[017]|   |/   ________________________________________________________________________________________________________   \|   |
-[018]|   |\   | 08/02/22 | Top Deck Awareness - Not News | drive.google.com/file/d/1NoqGcpDVYnCF6zWx-7HPQBV3-MgeCzsT |   /|   |
-[019]|   |/   | 06/23/22 | Archimedes (CIA+Zuckerberg)   | https://youtu.be/QP25FbNhakQ                              |   \|   |
-[020]|   |\   | 02/15/22 | A Matter of National Security | https://youtu.be/e4VnZObiez8 (Links in video description) |   /|   |
-[021]|   |/   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   \|   |
-[022]|   |\   [+] Main development focus: (C/PowerShell/.NET) module development, codename [FightingEntropy(π)]          /|   |
-[023]|   |/   [+] [FightingEntropy(π)] is a MODULE for PowerShell which automatically installs itself, as well as...     \|   |
-[024]|   |\       (installing/configuring) Windows Server 2016/2019, Windows 10 Home/Education/Pro, RHEL/CentOS, and     /|   |
-[025]|   |/       FreeBSD/OPNsense/pfSense via the [(Microsoft Deployment Toolkit – by Michael T. Niehaus)]              \|   |
-[026]|   |\   [+] [FightingEntropy(π)] ALSO configures and establishes a network baseline for:                           /|   |
-[027]|   |/      __________________________________________________________________________________________________      \|   |
-[028]|   |\      | Active Directory Domain Services | Windows Deployment Services | Hyper-V/Veridian | DNS | DHCP |      /|   |
-[029]|   |/      | Demonstration of [FightingEntropy (π)][FEInfrastructure]: https://youtu.be/6yQr06_rA4I         |      \|   |
-[030]|   |\      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      /|   |
-[031]|   |/   [+] Other areas of development include:                                                                    \|   |
-[032]|   |\      _________________________________________________________________________________________________       /|   |
-[033]|   |/      | Extensible Application Markup Language | Graphical User Interface design | Linux/Unix/FreeBSD |       \|   |
-[034]|   |\      | IIS/Internet Information Services | Razor/Blazor/ASP.Net Core | Conceptualizing R&D projects  |       /|   |
-[035]|   |/      | Investigating: IDENTITY THEFT | CYBERCRIMINAL ACTIVITIES | GOVERNMENT CORRUPTION | ESPIONAGE  |       \|   |
-[036]|   |\      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯       /|   |
-[037]|   |/   [+] [FightingEntropy(π)] is completely written in (C/PowerShell/.Net), and is split between:               \|   |
-[038]|   |\       - Development: https://www.github.com/mcc85s/FightingEntropy                                           /|   |
-[039]|   |/       - Production: https://www.github.com/mcc85sx/FightingEntropy                                           \|   |
-[040]|   \\______________________________________________________________________________________________________________//   |
+[XXX]|   |\   _________________________________________________                                  _____________________   /|   |
+[XXX]|   |/   | Secure Digits Plus LLC (π) – Clifton Park, NY |                                  | 10/2018 - 08/2022 |   \|   |
+[XXX]|   |\   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   /|   |
+[XXX]|   |/                     _____________________________________________________________________                    \|   |
+[XXX]|   |\                     | Security Engineer, also CEO/NISSP/DevOPS/Investigative Journalist |                    /|   |
+[XXX]|   |/                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                    \|   |
+[XXX]|   |\   [+] Portfolio Development for Applications, as well as Investigative Journalism                            /|   |
+[XXX]|   |/   ________________________________________________________________________________________________________   \|   |
+[XXX]|   |\   | 08/02/22 | Top Deck Awareness - Not News | drive.google.com/file/d/1NoqGcpDVYnCF6zWx-7HPQBV3-MgeCzsT |   /|   |
+[XXX]|   |/   | 06/23/22 | Archimedes (CIA+Zuckerberg)   | https://youtu.be/QP25FbNhakQ                              |   \|   |
+[XXX]|   |\   | 02/15/22 | A Matter of National Security | https://youtu.be/e4VnZObiez8 (Links in video description) |   /|   |
+[XXX]|   |/   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   \|   |
+[XXX]|   |\   [+] Main development focus: (C/PowerShell/.NET) module development, codename [FightingEntropy(π)]          /|   |
+[XXX]|   |/   [+] [FightingEntropy(π)] is a MODULE for PowerShell which automatically installs itself, as well as...     \|   |
+[XXX]|   |\       (installing/configuring) Windows Server 2016/2019, Windows 10 Home/Education/Pro, RHEL/CentOS, and     /|   |
+[XXX]|   |/       FreeBSD/OPNsense/pfSense via the [(Microsoft Deployment Toolkit – by Michael T. Niehaus)]              \|   |
+[XXX]|   |\   [+] [FightingEntropy(π)] ALSO configures and establishes a network baseline for:                           /|   |
+[XXX]|   |/      __________________________________________________________________________________________________      \|   |
+[XXX]|   |\      | Active Directory Domain Services | Windows Deployment Services | Hyper-V/Veridian | DNS | DHCP |      /|   |
+[XXX]|   |/      | Demonstration of [FightingEntropy (π)][FEInfrastructure]: https://youtu.be/6yQr06_rA4I         |      \|   |
+[XXX]|   |\      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      /|   |
+[XXX]|   |/   [+] Other areas of development include:                                                                    \|   |
+[XXX]|   |\      _________________________________________________________________________________________________       /|   |
+[XXX]|   |/      | Extensible Application Markup Language | Graphical User Interface design | Linux/Unix/FreeBSD |       \|   |
+[XXX]|   |\      | IIS/Internet Information Services | Razor/Blazor/ASP.Net Core | Conceptualizing R&D projects  |       /|   |
+[XXX]|   |/      | Investigating: IDENTITY THEFT | CYBERCRIMINAL ACTIVITIES | GOVERNMENT CORRUPTION | ESPIONAGE  |       \|   |
+[XXX]|   |\      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯       /|   |
+[XXX]|   |/   [+] [FightingEntropy(π)] is completely written in (C/PowerShell/.Net), and is split between:               \|   |
+[XXX]|   |\       - Development: https://www.github.com/mcc85s/FightingEntropy                                           /|   |
+[XXX]|   |/       - Production: https://www.github.com/mcc85sx/FightingEntropy                                           \|   |
+[XXX]|   \\______________________________________________________________________________________________________________//   |
 #>
 
 $Resume.Person.AddEmployer("Secure Digits Plus LLC (π)",
-                           "Clifton Park, NY",
-                           "10/2018 - 08/2022",
-                           "Security Engineer, also CEO/NISSP/DevOPS/Investigative Journalist")
+    "Clifton Park, NY",
+    "10/2018 - 08/2022",
+    "Security Engineer, also CEO/NISSP/DevOPS/Investigative Journalist")
 $Hash = @{ }
-$Hash.Add(0,@"
+$Hash.Add(0, @"
 Portfolio Development for Applications, as well as Investigative Journalism:
 ________________________________________________________________________________________________________
 | 08/02/22 | Top Deck Awareness - Not News | drive.google.com/file/d/1NoqGcpDVYnCF6zWx-7HPQBV3-MgeCzsT |
@@ -1476,20 +1498,20 @@ ________________________________________________________________________________
 | 02/15/22 | A Matter of National Security | https://youtu.be/e4VnZObiez8 (Links in video description) |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
-$Hash.Add(1,"Main development focus: (C/PowerShell/.NET) module development, codename [FightingEntropy(π)]")
-$Hash.Add(2,@"
+$Hash.Add(1, "Main development focus: (C/PowerShell/.NET) module development, codename [FightingEntropy(π)]")
+$Hash.Add(2, @"
 [FightingEntropy(π)] is a MODULE for PowerShell which automatically installs itself, as well as...
 (installing/configuring) Windows Server 2016/2019, Windows 10 Home/Education/Pro, RHEL/CentOS, and
 FreeBSD/OPNsense/pfSense via the [(Microsoft Deployment Toolkit – by Michael T. Niehaus)]
 "@)
-$Hash.Add(3,@"
+$Hash.Add(3, @"
 [FightingEntropy(π)] ALSO configures and establishes a network baseline for:
 __________________________________________________________________________________________________
 | Active Directory Domain Services | Windows Deployment Services | Hyper-V/Veridian | DNS | DHCP |
 | Demonstration of [FightingEntropy (π)][FEInfrastructure]: https://youtu.be/6yQr06_rA4I         |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
-$Hash.Add(4,@"
+$Hash.Add(4, @"
 Other areas of development include:
 _________________________________________________________________________________________________
 | Extensible Application Markup Language | Graphical User Interface design | Linux/Unix/FreeBSD |
@@ -1497,57 +1519,56 @@ ________________________________________________________________________________
 | Investigating: IDENTITY THEFT | CYBERCRIMINAL ACTIVITIES | GOVERNMENT CORRUPTION | ESPIONAGE  |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
-$Hash.Add(5,@"
+$Hash.Add(5, @"
 [FightingEntropy(π)] is completely written in (C/PowerShell/.Net), and is split between:
 - Development: https://www.github.com/mcc85s/FightingEntropy
 - Production: https://www.github.com/mcc85sx/FightingEntropy
 "@)
 
-ForEach ($X in 0..($Hash.Count-1))
-{
-    $Resume.Person.Employer[$Resume.Person.Employer.Count-1].AddDetail($Hash[$X])
+ForEach ($X in 0..($Hash.Count - 1)) {
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X])
 }
 
 <# [Add Employer[1] (Former)]
-[041]    [====( Former Employers )========================================================================================]
-[042]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[043]    \    Computer Answers - Clifton Park, NY                                                   10/2015 - 07/2019     /
-[044]    /    Chief Technology Officer & Business Solutions Expert                                                        \
-[045]    \________________________________________________________________________________________________________________/
-[046]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[047]    ||   [+] Developed scripts and protocol, overseeing productivity/training of all employees                      ||
-[048]    ||   [+] Complaining about the development team that took forever to do anything                                ||
-[049]    ||   [+] Featured on WTEN Alert Desk via Andrew Banas regarding SmartTV’s at https://youtu.be/-jkDPv9H6BQ       ||
-[050]    ||   [+] Set highest sales record in the company to date, in August 2017                                        ||
-[051]    ||   [+] Rebuilt all of the networking equipment, point of sale equipment, server/router/access point           ||
-[052]    ||       configuration, surveillance system/cameras, and DHCP configuration/deployment, for ALL 7 stores        ||
-[053]    ||   [+] Deploying and configuring Clients/Servers/Routers/Switches/Access Points/receipt printers/SmartTV’s…   ||
-[054]    ||       …led to the founding of [Secure Digits Plus LLC], successor to [Mike’s PC Repair], in order to build   ||
-[055]    ||       a program that does all of this configuration, in a similar manner to:                                 ||
-[056]    ||        _____________________________________________________________________________________________         ||
-[057]    ||        | Google Kubernetes | Microsoft Azure | Amazon Web Services | VmWare vSphere | Cisco SD-WAN |         ||
-[058]    ||        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯         ||
-[059]    ||   [+] Upgraded each store network to gigabit Ethernet internally, as well as installation of:                ||
-[060]    ||                   ________________________________________________________________________                   ||
-[061]    ||                   | Security Gateways using | pfSense | OPNSense | HardenedBSD | FreeBSD |                   ||
-[062]    ||                   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                   ||
-[063]    \\______________________________________________________________________________________________________________//
+[XXX]    [====( Former Employers )========================================================================================]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Computer Answers - Clifton Park, NY                                                   10/2015 - 07/2019     /
+[XXX]    /    Chief Technology Officer & Business Solutions Expert                                                        \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   [+] Developed scripts and protocol, overseeing productivity/training of all employees                      ||
+[XXX]    ||   [+] Complaining about the development team that took forever to do anything                                ||
+[XXX]    ||   [+] Featured on WTEN Alert Desk via Andrew Banas regarding SmartTV’s at https://youtu.be/-jkDPv9H6BQ       ||
+[XXX]    ||   [+] Set highest sales record in the company to date, in August 2017                                        ||
+[XXX]    ||   [+] Rebuilt all of the networking equipment, point of sale equipment, server/router/access point           ||
+[XXX]    ||       configuration, surveillance system/cameras, and DHCP configuration/deployment, for ALL 7 stores        ||
+[XXX]    ||   [+] Deploying and configuring Clients/Servers/Routers/Switches/Access Points/receipt printers/SmartTV’s…   ||
+[XXX]    ||       …led to the founding of [Secure Digits Plus LLC], successor to [Mike’s PC Repair], in order to build   ||
+[XXX]    ||       a program that does all of this configuration, in a similar manner to:                                 ||
+[XXX]    ||        _____________________________________________________________________________________________         ||
+[XXX]    ||        | Google Kubernetes | Microsoft Azure | Amazon Web Services | VmWare vSphere | Cisco SD-WAN |         ||
+[XXX]    ||        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯         ||
+[XXX]    ||   [+] Upgraded each store network to gigabit Ethernet internally, as well as installation of:                ||
+[XXX]    ||                   ________________________________________________________________________                   ||
+[XXX]    ||                   | Security Gateways using | pfSense | OPNSense | HardenedBSD | FreeBSD |                   ||
+[XXX]    ||                   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                   ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddEmployer("Computer Answers",
-                           "Clifton Park, NY",
-                           "10/2015 - 07/2019",
-                           "Chief Technology Officer & Business Solutions Expert")
+    "Clifton Park, NY",
+    "10/2015 - 07/2019",
+    "Chief Technology Officer & Business Solutions Expert")
 $Hash = @{ } 
-$Hash.Add(0,"Developed scripts and protocol, overseeing productivity/training of all employees")
-$Hash.Add(1,"Complaining about the development team that took forever to do anything")
-$Hash.Add(2,"Featured on WTEN Alert Desk via Andrew Banas regarding SmartTV’s at https://youtu.be/-jkDPv9H6BQ")
-$Hash.Add(3,"Set highest sales record in the company to date, in August 2017")
-$Hash.Add(4,@"
+$Hash.Add(0, "Developed scripts and protocol, overseeing productivity/training of all employees")
+$Hash.Add(1, "Complaining about the development team that took forever to do anything")
+$Hash.Add(2, "Featured on WTEN Alert Desk via Andrew Banas regarding SmartTV’s at https://youtu.be/-jkDPv9H6BQ")
+$Hash.Add(3, "Set highest sales record in the company to date, in August 2017")
+$Hash.Add(4, @"
 Rebuilt all of the networking equipment, point of sale equipment, server/router/access point
 configuration, surveillance system/cameras, and DHCP configuration/deployment, for ALL 7 stores
 "@)
-$Hash.Add(5,@"
+$Hash.Add(5, @"
 Deploying and configuring Clients/Servers/Routers/Switches/Access Points/receipt printers/SmartTV’s…
 …led to the founding of [Secure Digits Plus LLC], successor to [Mike’s PC Repair], in order to build
 a program that does all of this configuration, in a similar manner to:
@@ -1555,145 +1576,142 @@ ________________________________________________________________________________
 | Google Kubernetes | Microsoft Azure | Amazon Web Services | VmWare vSphere | Cisco SD-WAN |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
-$Hash.Add(6,@"
+$Hash.Add(6, @"
 Upgraded each store network to gigabit Ethernet internally, as well as installation of:
 ________________________________________________________________________
 | Security Gateways using | pfSense | OPNSense | HardenedBSD | FreeBSD |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-ForEach ($X in 0..($Hash.Count-1))
-{
-    $Resume.Person.Employer[$Resume.Person.Employer.Count-1].AddDetail($Hash[$X])
+ForEach ($X in 0..($Hash.Count - 1)) {
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X])
 }
 
 <# [Add Employer[2] (Former)]
-[064]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[065]    \    KeyCorp - Albany, NY                                                                  03/2016 - 12/2016     /
-[066]    /    Help Desk Level (I & II) Support Engineer                                                                   \
-[067]    \________________________________________________________________________________________________________________/
-[068]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[069]    ||   [+] Provided support to (KeyCorp/KeyBank) employees over the phone and over Key's Inter IM client,         ||
-[070]    ||       Cisco Jabber, for various first and second level help desk support tickets                             ||
-[071]    ||   [+] First experience with System Center Configuration Manager, which utilizes core aspects of the          ||
-[072]    ||       Microsoft Deployment Toolkit and other Microsoft-centric programs/applications                         ||
-[073]    ||   [+] Exposure to Active Directory Administration was rather limited in this position (typically used for    ||
-[074]    ||       password resets), brief contact with Organizational Units, Site Links, Lotus Notes, Exchange,          ||
-[075]    ||       vSphere/eSXI, Group Policy Objects, RSA Encryption/Software tokens, KeyCounselor/HOGAN                 ||
-[076]    \\______________________________________________________________________________________________________________//
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    KeyCorp - Albany, NY                                                                  03/2016 - 12/2016     /
+[XXX]    /    Help Desk Level (I & II) Support Engineer                                                                   \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   [+] Provided support to (KeyCorp/KeyBank) employees over the phone and over Key's Inter IM client,         ||
+[XXX]    ||       Cisco Jabber, for various first and second level help desk support tickets                             ||
+[XXX]    ||   [+] First experience with System Center Configuration Manager, which utilizes core aspects of the          ||
+[XXX]    ||       Microsoft Deployment Toolkit and other Microsoft-centric programs/applications                         ||
+[XXX]    ||   [+] Exposure to Active Directory Administration was rather limited in this position (typically used for    ||
+[XXX]    ||       password resets), brief contact with Organizational Units, Site Links, Lotus Notes, Exchange,          ||
+[XXX]    ||       vSphere/eSXI, Group Policy Objects, RSA Encryption/Software tokens, KeyCounselor/HOGAN                 ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 
 # Add Employer [Former] #2
 $Resume.Person.AddEmployer("KeyCorp",
-                           "Albany, NY",
-                           "03/2016 - 12/2016",
-                           "Help Desk Level (I & II) Support Engineer")
+    "Albany, NY",
+    "03/2016 - 12/2016",
+    "Help Desk Level (I & II) Support Engineer")
 $Hash = @{ }
-$Hash.Add(0,@"
+$Hash.Add(0, @"
 Provided support to (KeyCorp/KeyBank) employees over the phone and over Key's Inter IM client,
 Cisco Jabber, for various first and second level help desk support tickets
 "@)
 
-$Hash.Add(1,@"
+$Hash.Add(1, @"
 First experience with System Center Configuration Manager, which utilizes core aspects of the
 Microsoft Deployment Toolkit and other Microsoft-centric programs/applications
 "@)
 
-$Hash.Add(2,@"
+$Hash.Add(2, @"
 Exposure to Active Directory Administration was rather limited in this position (typically used for
 password resets), brief contact with Organizational Units, Site Links, Lotus Notes, Exchange,
 vSphere/eSXI, Group Policy Objects, RSA Encryption/Software tokens, KeyCounselor/HOGAN
 "@)
 
-ForEach ($X in 0..($Hash.Count-1))
-{
-    $Resume.Person.Employer[$Resume.Person.Employer.Count-1].AddDetail($Hash[$X])
+ForEach ($X in 0..($Hash.Count - 1)) {
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X])
 }
 
 <# [Add Employer[3] (Former)]
-[077]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[078]    \    Metroland/Lou Communications - Albany, NY                                             01/2007 - 01/2014     /
-[079]    /    Distribution Contractor & IT Consultant                                                                     \
-[080]    \________________________________________________________________________________________________________________/
-[081]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[082]    ||   [+] Distributed the newspaper Metroland for several years throughout the Greater Capital Region            ||
-[083]    ||   [+] Eventually they were in need of IT services from 'Mike’s PC Repair' in September 2012                  ||
-[084]    ||   [+] Documented & moved their network from 420 Madison Ave, Albany NY - 523 Western Ave, Albany NY while    ||
-[085]    ||       upgrading old Dell based Win NT 4.0 server to 1U blade server w/ (2x AMD CPUs, Windows Server 2008)    ||
-[086]    ||   [+] Migrated ALL data from an older system that publishers used for archiving (weekly/legacy) content      ||
-[087]    ||   [+] Assisted John Bracchi with (printers/network storage for PUBLISHERS via Adobe (PS & Illustrator):      ||
-[088]    ||         ____________________________________________________________________________________________         ||
-[089]    ||         | mapping printers | domain logins | emails/Outlook | making sure that Ted Etoll was happy |         ||
-[090]    ||         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯         ||
-[091]    ||   [+] Limited use of domain resources, otherwise most services were DISTRIBUTION of the newspaper            ||
-[092]    \\______________________________________________________________________________________________________________//
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Metroland/Lou Communications - Albany, NY                                             01/2007 - 01/2014     /
+[XXX]    /    Distribution Contractor & IT Consultant                                                                     \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   [+] Distributed the newspaper Metroland for several years throughout the Greater Capital Region            ||
+[XXX]    ||   [+] Eventually they were in need of IT services from 'Mike’s PC Repair' in September 2012                  ||
+[XXX]    ||   [+] Documented & moved their network from 420 Madison Ave, Albany NY - 523 Western Ave, Albany NY while    ||
+[XXX]    ||       upgrading old Dell based Win NT 4.0 server to 1U blade server w/ (2x AMD CPUs, Windows Server 2008)    ||
+[XXX]    ||   [+] Migrated ALL data from an older system that publishers used for archiving (weekly/legacy) content      ||
+[XXX]    ||   [+] Assisted John Bracchi with (printers/network storage for PUBLISHERS via Adobe (PS & Illustrator):      ||
+[XXX]    ||         ____________________________________________________________________________________________         ||
+[XXX]    ||         | mapping printers | domain logins | emails/Outlook | making sure that Ted Etoll was happy |         ||
+[XXX]    ||         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯         ||
+[XXX]    ||   [+] Limited use of domain resources, otherwise most services were DISTRIBUTION of the newspaper            ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 
 # Add Employer [Former] #3
 $Resume.Person.AddEmployer("Metroland/Lou Communications",
-                           "Albany, NY",
-                           "01/2007 - 01/2014",
-                           "Distribution Contractor & IT Consultant")
+    "Albany, NY",
+    "01/2007 - 01/2014",
+    "Distribution Contractor & IT Consultant")
 $Hash = @{ }
 
-$Hash.Add(0,"Distributed the newspaper Metroland for several years throughout the Greater Capital Region")
-$Hash.Add(1,"Eventually they were in need of IT services from 'Mike’s PC Repair' in September 2012")
-$Hash.Add(2,@"
+$Hash.Add(0, "Distributed the newspaper Metroland for several years throughout the Greater Capital Region")
+$Hash.Add(1, "Eventually they were in need of IT services from 'Mike’s PC Repair' in September 2012")
+$Hash.Add(2, @"
 Documented & moved their network from 420 Madison Ave, Albany NY - 523 Western Ave, Albany NY while
 upgrading old Dell based Win NT 4.0 server to 1U blade server w/ (2x AMD CPUs, Windows Server 2008)
 "@)
-$Hash.Add(3,"Migrated ALL data from an older system that publishers used for archiving (weekly/legacy) content")
-$Hash.Add(4,@"
+$Hash.Add(3, "Migrated ALL data from an older system that publishers used for archiving (weekly/legacy) content")
+$Hash.Add(4, @"
 Assisted John Bracchi with (printers/network storage for PUBLISHERS via Adobe (PS & Illustrator):
 ____________________________________________________________________________________________
 | mapping printers | domain logins | emails/Outlook | making sure that Ted Etoll was happy |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
-$Hash.Add(5,"Limited use of domain resources, otherwise most services were DISTRIBUTION of the newspaper")
+$Hash.Add(5, "Limited use of domain resources, otherwise most services were DISTRIBUTION of the newspaper")
 
-ForEach ($X in 0..($Hash.Count-1))
-{
-    $Resume.Person.Employer[$Resume.Person.Employer.Count-1].AddDetail($Hash[$X])
+ForEach ($X in 0..($Hash.Count - 1)) {
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X])
 }
 
 <# [Add Employer[4] (Former)]
-[093]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[094]    \    Nfrastructure - Clifton Park, NY                                                      09/2010 - 01/2011     /
-[095]    /    Computer (Hardware/Printer/Network) Technician                                                              \
-[096]    \________________________________________________________________________________________________________________/
-[097]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[098]    ||   [+] Staged machines to be used for Point-Of-Sale systems for the Adidas-Reebok of North America, as well   ||
-[099]    ||       as testing, repairing, and maintaining a rolling inventory of computers, monitors, receipt printers,   ||
-[100]    ||       handheld devices, barcode scanners, & label/form printers (Epson)                                      ||
-[101]    ||   [+] Made DAILY warranty calls to HP for Elite 8100/8200's, AND Dell for various (laptops/workstations)     ||
-[102]    ||   [+] Told people how real I kept it, AND provided desktop support for internal company users                ||
-[103]    ||   [+] Repaired, inspected, and maintained full-size (Lexmark/HP) stack printers for various NYS agencies     ||
-[104]    ||   [+] Imaged THOUSANDS of computers to be used for various New York State companies and  gov't agencies:     ||
-[105]    ||      __________________________________________________________________________________________________      ||
-[106]    ||      | Dept. of Transportation | CSMIN | Golub Corporation | Office of People with Disabilities Dept. |      ||
-[107]    ||      | Dept. Of Correctional Services | Adidas-Reebok of NA | Testcomm of New York and Massachusetts  |      ||
-[108]    ||      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      ||
-[109]    \\______________________________________________________________________________________________________________//
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Nfrastructure - Clifton Park, NY                                                      09/2010 - 01/2011     /
+[XXX]    /    Computer (Hardware/Printer/Network) Technician                                                              \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   [+] Staged machines to be used for Point-Of-Sale systems for the Adidas-Reebok of North America, as well   ||
+[XXX]    ||       as testing, repairing, and maintaining a rolling inventory of computers, monitors, receipt printers,   ||
+[XXX]    ||       handheld devices, barcode scanners, & label/form printers (Epson)                                      ||
+[XXX]    ||   [+] Made DAILY warranty calls to HP for Elite 8100/8200's, AND Dell for various (laptops/workstations)     ||
+[XXX]    ||   [+] Told people how real I kept it, AND provided desktop support for internal company users                ||
+[XXX]    ||   [+] Repaired, inspected, and maintained full-size (Lexmark/HP) stack printers for various NYS agencies     ||
+[XXX]    ||   [+] Imaged THOUSANDS of computers to be used for various New York State companies and  gov't agencies:     ||
+[XXX]    ||      __________________________________________________________________________________________________      ||
+[XXX]    ||      | Dept. of Transportation | CSMIN | Golub Corporation | Office of People with Disabilities Dept. |      ||
+[XXX]    ||      | Dept. Of Correctional Services | Adidas-Reebok of NA | Testcomm of New York and Massachusetts  |      ||
+[XXX]    ||      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 
 # Add Employer [Former] #4
 $Resume.Person.AddEmployer("Nfrastructure",
-                           "Clifton Park, NY",
-                           "09/2010 - 01/2011",
-                           "Computer (Hardware/Printer/Network) Technician")
+    "Clifton Park, NY",
+    "09/2010 - 01/2011",
+    "Computer (Hardware/Printer/Network) Technician")
 $Hash = @{ }
-$Hash.Add(0,@"
+$Hash.Add(0, @"
 Staged machines to be used for Point-Of-Sale systems for the Adidas-Reebok of North America, as well
 as testing, repairing, and maintaining a rolling inventory of computers, monitors, receipt printers,
 handheld devices, barcode scanners, & label/form printers (Epson)
 "@)
-$Hash.Add(1,"Made DAILY warranty calls to HP for Elite 8100/8200's, AND Dell for various (laptops/workstations)")
-$Hash.Add(2,"Told people how real I kept it, AND provided desktop support for internal company users ")
-$Hash.Add(3,"Repaired, inspected, and maintained full-size (Lexmark/HP) stack printers for various NYS agencies")
-$Hash.Add(4,@"
+$Hash.Add(1, "Made DAILY warranty calls to HP for Elite 8100/8200's, AND Dell for various (laptops/workstations)")
+$Hash.Add(2, "Told people how real I kept it, AND provided desktop support for internal company users ")
+$Hash.Add(3, "Repaired, inspected, and maintained full-size (Lexmark/HP) stack printers for various NYS agencies")
+$Hash.Add(4, @"
 Imaged THOUSANDS of computers to be used for various New York State companies and  gov't agencies:
 __________________________________________________________________________________________________
 | Dept. of Transportation | CSMIN | Golub Corporation | Office of People with Disabilities Dept. |
@@ -1701,138 +1719,134 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-ForEach ($X in 0..($Hash.Count-1))
-{
-    $Resume.Person.Employer[$Resume.Person.Employer.Count-1].AddDetail($Hash[$X])
+ForEach ($X in 0..($Hash.Count - 1)) {
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X])
 }
 
 <# [Add Employer[5] (Former)]
-[110]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[111]    \    TEKsystems - Albany, NY                                                               06/2006 - 05/2019     /
-[112]    /    Various (Computer/Network) related roles                                                                    \
-[113]    \________________________________________________________________________________________________________________/
-[114]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[115]    ||   [+] Completed Pittsfield MA Census Bureau deployment (2009-2010) | KeyCorp (2016) | Patroon Creek (2017)   ||
-[116]    ||   [+] Trinity Health/St. Peters Hospital 02/2019 [Interview] - Potential client was seeking to build an      ||
-[117]    ||       entirely new domain physically as well as ASP.Net overhaul, already developing [FightingEntropy(π)]    ||
-[118]    \\______________________________________________________________________________________________________________//
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    TEKsystems - Albany, NY                                                               06/2006 - 05/2019     /
+[XXX]    /    Various (Computer/Network) related roles                                                                    \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   [+] Completed Pittsfield MA Census Bureau deployment (2009-2010) | KeyCorp (2016) | Patroon Creek (2017)   ||
+[XXX]    ||   [+] Trinity Health/St. Peters Hospital 02/2019 [Interview] - Potential client was seeking to build an      ||
+[XXX]    ||       entirely new domain physically as well as ASP.Net overhaul, already developing [FightingEntropy(π)]    ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 
 # Add Employer [Former] #5
 $Resume.Person.AddEmployer("TEKsystems",
-                           "Albany, NY",
-                           "06/2006 - 05/2019",
-                           "Various (Computer/Network) related roles")
+    "Albany, NY",
+    "06/2006 - 05/2019",
+    "Various (Computer/Network) related roles")
 $Hash = @{ }
-$Hash.Add(0,"Completed Pittsfield MA Census Bureau deployment (2009-2010) | KeyCorp (2016) | Patroon Creek (2017)")
-$Hash.Add(1,@"
+$Hash.Add(0, "Completed Pittsfield MA Census Bureau deployment (2009-2010) | KeyCorp (2016) | Patroon Creek (2017)")
+$Hash.Add(1, @"
 Trinity Health/St. Peters Hospital 02/2019 [Interview] - Potential client was seeking to build an
 entirely new domain physically as well as ASP.Net overhaul, already developing [FightingEntropy(π)]
 "@)
 
-ForEach ($X in 0..($Hash.Count-1))
-{
-    $Resume.Person.Employer[$Resume.Person.Employer.Count-1].AddDetail($Hash[$X])
+ForEach ($X in 0..($Hash.Count - 1)) {
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X])
 }
 
 <# [Add Employer[6] (Former)]
-[119]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[120]    \    Hearst Corporation – Albany, NY                                                       04/2006 - 04/2009     /
-[121]    /    Distribution Contractor & Accounts Receivable Collector                                                     \
-[122]    \________________________________________________________________________________________________________________/
-[123]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[124]    ||   [+] Provided distribution throughout lower Saratoga County, as well as the Greater Capital Region          ||
-[125]    ||   [+] Daily paper drops were required in early morning hours after they are printed (2AM-4AM), and stores    ||
-[126]    ||       would either be open or closed - some stops needed priority treatment (primarily Stewarts Corp)        ||
-[127]    ||   [+] Drifted in the snow a lot, found new ways to drop off newspapers, drove a minimum of 90 miles/night    ||
-[128]    ||   [+] Collected and calculated return payment amounts, deposited into bank account with Bank of America      ||
-[129]    ||   [+] Worked under (Kenny/Patrick Bernard) for Q122, Q107, Q121, & Chris Jones for daytime return routes     ||
-[130]    \\______________________________________________________________________________________________________________//
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Hearst Corporation – Albany, NY                                                       04/2006 - 04/2009     /
+[XXX]    /    Distribution Contractor & Accounts Receivable Collector                                                     \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   [+] Provided distribution throughout lower Saratoga County, as well as the Greater Capital Region          ||
+[XXX]    ||   [+] Daily paper drops were required in early morning hours after they are printed (2AM-4AM), and stores    ||
+[XXX]    ||       would either be open or closed - some stops needed priority treatment (primarily Stewarts Corp)        ||
+[XXX]    ||   [+] Drifted in the snow a lot, found new ways to drop off newspapers, drove a minimum of 90 miles/night    ||
+[XXX]    ||   [+] Collected and calculated return payment amounts, deposited into bank account with Bank of America      ||
+[XXX]    ||   [+] Worked under (Kenny/Patrick Bernard) for Q122, Q107, Q121, & Chris Jones for daytime return routes     ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 # Add Employer [Former] #6
 $Resume.Person.AddEmployer("Hearst Corporation",
-                           "Albany, NY",
-                           "04/2006 - 04/2009",
-                           "Distribution Contractor & Accounts Receivable Collector")
+    "Albany, NY",
+    "04/2006 - 04/2009",
+    "Distribution Contractor & Accounts Receivable Collector")
 $Hash = @{ }
-$Hash.Add(0,"Provided distribution throughout lower Saratoga County, as well as the Greater Capital Region")
-$Hash.Add(1,@"
+$Hash.Add(0, "Provided distribution throughout lower Saratoga County, as well as the Greater Capital Region")
+$Hash.Add(1, @"
 Daily paper drops were required in early morning hours after they are printed (2AM-4AM), and stores
 would either be open or closed - some stops needed priority treatment (primarily Stewarts Corp)
 "@)
-$hash.Add(2,"Drifted in the snow a lot, found new ways to drop off newspapers, drove a minimum of 90 miles/night")
-$Hash.Add(3,"Collected and calculated return payment amounts, deposited into bank account with Bank of America")
-$Hash.Add(4,"Worked under (Kenny/Patrick Bernard) for Q122, Q107, Q121, & Chris Jones for daytime return routes")
+$hash.Add(2, "Drifted in the snow a lot, found new ways to drop off newspapers, drove a minimum of 90 miles/night")
+$Hash.Add(3, "Collected and calculated return payment amounts, deposited into bank account with Bank of America")
+$Hash.Add(4, "Worked under (Kenny/Patrick Bernard) for Q122, Q107, Q121, & Chris Jones for daytime return routes")
 
-ForEach ($X in 0..($Hash.Count-1))
-{
-    $Resume.Person.Employer[$Resume.Person.Employer.Count-1].AddDetail($Hash[$X])
+ForEach ($X in 0..($Hash.Count - 1)) {
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X])
 }
 
 <# [Add Education[0]]
-[131]    [====( Education )===============================================================================================]
-[132]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[133]    \    New Horizons Learning Center - Albany, NY                                             01/2008 - 01/2009     /
-[134]    /    CompTIA & Microsoft Certifications Track                                                                    \
-[135]    \________________________________________________________________________________________________________________/
-[136]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[137]    ||   [+] Completed certifications from CompTIA A+/Network+, MCP/MCDST                                           ||
-[138]    ||   [+] Hands on support with hardware, and operating systems Windows (XP Pro/Home/Server 2003)                ||
-[139]    ||   [+] Studied server technologies and services: FTP, File Server, WINS/DNS/DHCP, RSAT/WSUS, Certificates,    ||
-[140]    ||       Active Directory, Group Policy, Drivers, Wireless, IIS 6.0, VPN Encryption, & Virtual Server           ||
-[141]    \\______________________________________________________________________________________________________________//
+[XXX]    [====( Education )===============================================================================================]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    New Horizons Learning Center - Albany, NY                                             01/2008 - 01/2009     /
+[XXX]    /    CompTIA & Microsoft Certifications Track                                                                    \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   [+] Completed certifications from CompTIA A+/Network+, MCP/MCDST                                           ||
+[XXX]    ||   [+] Hands on support with hardware, and operating systems Windows (XP Pro/Home/Server 2003)                ||
+[XXX]    ||   [+] Studied server technologies and services: FTP, File Server, WINS/DNS/DHCP, RSAT/WSUS, Certificates,    ||
+[XXX]    ||       Active Directory, Group Policy, Drivers, Wireless, IIS 6.0, VPN Encryption, & Virtual Server           ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #> 
 
 # Add Education #1
 $Resume.Person.AddEducation("New Horizons Learning Center",
-                            "Albany, NY",
-                            "01/2008 - 01/2009",
-                            "CompTIA & Microsoft Certifications Track")
+    "Albany, NY",
+    "01/2008 - 01/2009",
+    "CompTIA & Microsoft Certifications Track")
 $Hash = @{ }
-$Hash.Add(0,"Completed certifications from CompTIA A+/Network+, MCP/MCDST")
-$Hash.Add(1,"Hands on support with hardware, and operating systems Windows (XP Pro/Home/Server 2003)")
-$Hash.Add(2,@"
+$Hash.Add(0, "Completed certifications from CompTIA A+/Network+, MCP/MCDST")
+$Hash.Add(1, "Hands on support with hardware, and operating systems Windows (XP Pro/Home/Server 2003)")
+$Hash.Add(2, @"
 Studied server technologies and services: FTP, File Server, WINS/DNS/DHCP, RSAT/WSUS, Certificates,
 Active Directory, Group Policy, Drivers, Wireless, IIS 6.0, VPN Encryption, & Virtual Server
 "@)
 
-ForEach ($X in 0..($Hash.Count-1))
-{
-    $Resume.Person.Education[$Resume.Person.Education.Count-1].AddDetail($Hash[$X])
+ForEach ($X in 0..($Hash.Count - 1)) {
+    $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X])
 }
 
 <# [Add Education[1]]
-[142]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[143]    \    ITT Technical Institute - Albany, NY                                                  06/2004 - 06/2006     /
-[144]    /    Information Technology: Drafting & Design, Multimedia                                                       \
-[145]    \________________________________________________________________________________________________________________/
-[146]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[147]    ||   [+] Received Associate degree in (IT/Drafting and Design-Multimedia)                                       ||
-[148]    ||   [+] Course studies included:                                                                               ||
-[149]    ||       _________________________________________________________________________________________________      ||
-[150]    ||       | 2D/3D graphic, print AND web design AND publishing | Portfolio Development |  Problem-Solving |      ||
-[151]    ||       |  Instructional Design | Micro Economics | CompTIA (A+/Network+) | Intro to Visual Basic .Net  |      ||
-[152]    ||       |-----------------------------------------------------------------------------------------------|      ||
-[153]    ||       |   Macromedia | [Flash/Director/Dreamweaver] HTML/CSS and flash animation                      |      ||
-[154]    ||       |-----------------------------------------------------------------------------------------------|      ||
-[155]    ||       |        Adobe | [Premiere/After Effects] video/scene | [Photoshop/Illustrator] photo | editing |      ||
-[156]    ||       |-----------------------------------------------------------------------------------------------|      ||
-[157]    ||       | AutoDesk 3DS | scene/character modeling | lighting | texturing | rigging | animation          |      ||
-[158]    ||       ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      ||
-[159]    \\______________________________________________________________________________________________________________//
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    ITT Technical Institute - Albany, NY                                                  06/2004 - 06/2006     /
+[XXX]    /    Information Technology: Drafting & Design, Multimedia                                                       \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   [+] Received Associate degree in (IT/Drafting and Design-Multimedia)                                       ||
+[XXX]    ||   [+] Course studies included:                                                                               ||
+[XXX]    ||       _________________________________________________________________________________________________      ||
+[XXX]    ||       | 2D/3D graphic, print AND web design AND publishing | Portfolio Development |  Problem-Solving |      ||
+[XXX]    ||       |  Instructional Design | Micro Economics | CompTIA (A+/Network+) | Intro to Visual Basic .Net  |      ||
+[XXX]    ||       |-----------------------------------------------------------------------------------------------|      ||
+[XXX]    ||       |   Macromedia | [Flash/Director/Dreamweaver] HTML/CSS and flash animation                      |      ||
+[XXX]    ||       |-----------------------------------------------------------------------------------------------|      ||
+[XXX]    ||       |        Adobe | [Premiere/After Effects] video/scene | [Photoshop/Illustrator] photo | editing |      ||
+[XXX]    ||       |-----------------------------------------------------------------------------------------------|      ||
+[XXX]    ||       | AutoDesk 3DS | scene/character modeling | lighting | texturing | rigging | animation          |      ||
+[XXX]    ||       ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 
 # Add Education #2
 $Resume.Person.AddEducation("ITT Technical Institute",
-                            "Albany, NY",
-                            "06/2004 - 06/2006",
-                            "Information Technology: Drafting & Design, Multimedia")
+    "Albany, NY",
+    "06/2004 - 06/2006",
+    "Information Technology: Drafting & Design, Multimedia")
 $Hash = @{ }
-$Hash.Add(0,"Received Associate degree in (IT/Drafting and Design-Multimedia)")
-$Hash.Add(1,@"
+$Hash.Add(0, "Received Associate degree in (IT/Drafting and Design-Multimedia)")
+$Hash.Add(1, @"
 Course studies included:
 _________________________________________________________________________________________________
 | 2D/3D graphic, print AND web design AND publishing | Portfolio Development |  Problem-Solving |
@@ -1846,221 +1860,474 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-ForEach ($X in 0..($Hash.Count-1))
-{
-    $Resume.Person.Education[$Resume.Person.Education.Count-1].AddDetail($Hash[$X])
+ForEach ($X in 0..($Hash.Count - 1)) {
+    $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X])
 }
 
 <# [Add Education[2]]
-[160]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[161]    \    Capital Region Career and Technical School – Albany, NY                               09/2001 - 06/2003     /
-[162]    /    Microsoft System Administration, CompTIA A+/Network+, & Cisco Certified Network Academy                     \
-[163]    \________________________________________________________________________________________________________________/
-[164]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[165]    ||   [+] While attending Shenendehowa High School, this 2-year vocational program consisted of hands-on lab     ||
-[166]    ||       environment experience, and studies related to the above curriculum                                    ||
-[167]    ||   [+] Briefly acted as (Student Network Administrator), using (MMC/Microsoft Management Console) snap-ins,   ||
-[168]    ||       HyperTerminal, Novell Netware IPX/SPX, Windows XP/Server 2000 Workgroup, and some Red Hat Linux        ||
-[169]    ||   [+] Received an in-depth year with Cisco (routers/switches) via RS232                                      ||
-[170]    ||   [+] Participated in NYS competition at (SCCC/Schenectady County Community College), & ITT Tech             ||
-[171]    ||   [+] Received an award from the school for Portfolio Development at final graduation ceremony               ||
-[172]    \\______________________________________________________________________________________________________________//
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Capital Region Career and Technical School – Albany, NY                               09/2001 - 06/2003     /
+[XXX]    /    Microsoft System Administration, CompTIA A+/Network+, & Cisco Certified Network Academy                     \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   [+] While attending Shenendehowa High School, this 2-year vocational program consisted of hands-on lab     ||
+[XXX]    ||       environment experience, and studies related to the above curriculum                                    ||
+[XXX]    ||   [+] Briefly acted as (Student Network Administrator), using (MMC/Microsoft Management Console) snap-ins,   ||
+[XXX]    ||       HyperTerminal, Novell Netware IPX/SPX, Windows XP/Server 2000 Workgroup, and some Red Hat Linux        ||
+[XXX]    ||   [+] Received an in-depth year with Cisco (routers/switches) via RS232                                      ||
+[XXX]    ||   [+] Participated in NYS competition at (SCCC/Schenectady County Community College), & ITT Tech             ||
+[XXX]    ||   [+] Received an award from the school for Portfolio Development at final graduation ceremony               ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 # Add Education #3
 $Resume.Person.AddEducation("Capital Region Career and Technical School",
-                            "Albany, NY",
-                            "09/2001 - 06/2003",
-                            "Microsoft System Administration, CompTIA A+/Network+, & Cisco Certified Network Academy")
+    "Albany, NY",
+    "09/2001 - 06/2003",
+    "Microsoft System Administration, CompTIA A+/Network+, & Cisco Certified Network Academy")
 $Hash = @{ }
-$Hash.Add(0,@"
+$Hash.Add(0, @"
 While attending Shenendehowa High School, this 2-year vocational program consisted of hands-on lab
 environment experience, and studies related to the above curriculum
 "@)
-$Hash.Add(1,@"
+$Hash.Add(1, @"
 Briefly acted as (Student Network Administrator), using (MMC/Microsoft Management Console) snap-ins,
 HyperTerminal, Novell Netware IPX/SPX, Windows XP/Server 2000 Workgroup, and some Red Hat Linux
 "@)
-$Hash.Add(2,"Received an in-depth year with Cisco (routers/switches) via RS232")
-$Hash.Add(3,"Participated in NYS competition at (SCCC/Schenectady County Community College), & ITT Tech")
-$Hash.Add(4,"Received an award from the school for Portfolio Development at final graduation ceremony")
+$Hash.Add(2, "Received an in-depth year with Cisco (routers/switches) via RS232")
+$Hash.Add(3, "Participated in NYS competition at (SCCC/Schenectady County Community College), & ITT Tech")
+$Hash.Add(4, "Received an award from the school for Portfolio Development at final graduation ceremony")
 
-ForEach ($X in 0..($Hash.Count-1))
-{
-    $Resume.Person.Education[$Resume.Person.Education.Count-1].AddDetail($Hash[$X])
+ForEach ($X in 0..($Hash.Count - 1)) {
+    $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X])
 }
 
-<# [Add Skill[0]]
-[173]|   [====( Skills/Experience )=======================================================================================]   |
-     |          0         0         0         0         0         0         0         0         0         1         1         |
-     |          1         2         3         4         5         6         7         8         9         0         1         |
-     |012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789|
-[174]|   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[175]|   \    Top Deck Awareness - Not News                                                                   08/2022     /
-[176]|   /    https://drive.google.com/file/d/1XWGSsZ-rGQHfB8eY2Xm6uu51wuj1MqFW                                           \
-[177]|   \________________________________________________________________________________________________________________/
-[178]|   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[179]|   ||   My master thesis about the following subjects:                                                             ||
-[180]|   ||   ________________________________________________________________________________________________________   ||
-[181]|   ||   | U.S. CONSTITUTION | PSYCHOLOGICAL MANIPULATION | PRIVATE INVESTIGATION   |     COOL/SMART RICH DUDES |   ||
-[182]|   ||   | HIDDEN GOVERNMENT | USA-PATRIOT ACT of 2001    | SURVEILLANCE CAPITALISM | LAME/DOUCHEBAG RICH DUDES |   ||
-[183]|   ||   | NEWS VS PROPAGANDA | EXPERT PROGRAMMING | INJUSTICE | JULIEN ASSANGE | EDWARD SNOWDEN | U.S. HISTORY |   ||
-[184]|   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   ||
-[185]|   \\______________________________________________________________________________________________________________//
+# // ________________________________________________________________________________________________________________________
+# // | Section: [Application Development + Network/Hardware Magistration + Virtualization + Graphic Design]                 |
+# // |----------------------------------------------------------------------------------------------------------------------|
+# // | Date    | Name                                 | Detail                                                              |
+# // |---------|--------------------------------------|---------------------------------------------------------------------|
+# // | 12/2021 | FightingEntropy FEInfrastructure     | https://youtu.be/6yQr06_rA4I                                        |
+# // | 10/2021 | Advanced Domain Controller Promotion | https://youtu.be/O8A2PDfQOBs                                        |
+# // | 03/2021 | A Deep Dive: PowerShell and XAML     | https://youtu.be/NK4NuQrraCI                                        |
+# // | 05/2022 | Wireless Network Scanning Utility    | https://youtu.be/35EabWfh8dQ                                        |
+# // | 09/2021 | PowerShell Deployment FE Wizard      | https://youtu.be/lZX5fAgczz0                                        |
+# // | 01/2019 | 2019_0125-(Computer Answers - MDT)   | https://youtu.be/5Cyp3pqIMRs                                        |
+# // | 06/2021 | Install-pfSense                      | https://youtu.be/E_uFbzS0blQ                                        |
+# // | 06/2021 | Advanced System Administration Lab   | https://youtu.be/xgffIccX1eg                                        |
+# // | 06/2021 | Windows Image Extraction             | https://youtu.be/G10EuwlNAyo                                        |
+# // | 08/2021 | Flight Test Part 1                   | https://drive.google.com/file/d/1qdS_UVcLTsxHFCpuwK16NQs0xJL7fv0W   |
+# // | 08/2021 | Flight Test Part 2                   | https://youtu.be/vg359UlYVp8                                        |
+# // | 05/2019 | Hybrid | Desired State Controller    | https://youtu.be/C8NYaaqJAlI                                        |
+# // | 11/2019 | Methodologies                        | https://youtu.be/bZuSgBK36CE                                        |
+# // | 08/2019 | Education/Exhibition Program Design  | https://youtu.be/v6RrrzR5v2E                                        |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+<# [Add Skill[00]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    FightingEntropy FEInfrastructure                                                                12/2021     /
+[XXX]    /    https://youtu.be/6yQr06_rA4I                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video where I PROVE that BY MYSELF, I know ALL OF THE ASPECTS of:                                ||
+[XXX]    ||    ___________________________________________________________________________________________________       ||
+[XXX]    ||    | APP DEVELOPMENT | VIRTUALIZATION | HARDWARE/NETWORK MAGISTRATION | MICROSOFT DEPLOYMENT TOOLKIT |       ||
+[XXX]    ||    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯       ||
+[XXX]    ||   As in, I AM MORE EXPERIENCED THAN 95% of the people in the field of INFORMATION TECHNOLOGY.                ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
-$Resume.Person.AddSkill("Top Deck Awareness - Not News",
-                        "08/2022",
-                        "https://drive.google.com/file/d/1XWGSsZ-rGQHfB8eY2Xm6uu51wuj1MqFW",
-                        @"
-My master thesis about the following subjects:                                                              
-________________________________________________________________________________________________________
-| U.S. CONSTITUTION | PSYCHOLOGICAL MANIPULATION | PRIVATE INVESTIGATION   |     COOL/SMART RICH DUDES |
-| HIDDEN GOVERNMENT | USA-PATRIOT ACT of 2001    | SURVEILLANCE CAPITALISM | LAME/DOUCHEBAG RICH DUDES |
-| NEWS VS PROPAGANDA | EXPERT PROGRAMMING | INJUSTICE | JULIEN ASSANGE | EDWARD SNOWDEN | U.S. HISTORY |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+$Resume.Person.AddSkill("FightingEntropy FEInfrastructure",
+    "12/2021",
+    "https://youtu.be/6yQr06_rA4I",
+    @"
+This is a video where I PROVE that BY MYSELF, I know ALL OF THE ASPECTS of:
+___________________________________________________________________________________________________
+| APP DEVELOPMENT | VIRTUALIZATION | HARDWARE/NETWORK MAGISTRATION | MICROSOFT DEPLOYMENT TOOLKIT |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+As in, I AM MORE EXPERIENCED THAN 95% of the people in the field of INFORMATION TECHNOLOGY.
 "@)
 
-<# [Add Skill[1]]
-[186]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[187]    \    Central Intelligence Agency/VAULT 7/Archimedes                                                  02/2022     /
-[188]    /    https://youtu.be/QP25FbNhakQ                                                                                \
-[189]    \________________________________________________________________________________________________________________/
-[190]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[191]    ||   MARK ZUCKERBERG, owner of FACEBOOK using a TOOL developed by the CENTRAL INTELLIGENCE AGENCY from          ||
-[192]    ||   VAULT 7, to CAUSE INTERFERENCE to my LAPTOP, the CONTEXT of the VIDEO should SHOWCASE the REASONS WHY.     ||
-[193]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[01]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Advanced Domain Controller Promotion                                                             10/2021    /
+[XXX]    /    https://youtu.be/O8A2PDfQOBs                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   Basically, promoting a server to a domain controller via the GUI. This GUI can also be controlled          ||
+[XXX]    ||   via the process in Flight Test, which means that uh, I'm doing stuff that hasn't been developed yet.       ||
+[XXX]    \\______________________________________________________________________________________________________________//
+[XXX]     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
 #>
 
-$Resume.Person.AddSkill("Central Intelligence Agency/VAULT 7/Archimedes",
-                        "02/2022",
-                        "https://youtu.be/QP25FbNhakQ",
-                        @"
-MARK ZUCKERBERG, owner of FACEBOOK using a TOOL developed by the CENTRAL INTELLIGENCE AGENCY from
-VAULT 7, to CAUSE INTERFERENCE to my LAPTOP, the CONTEXT of the VIDEO should SHOWCASE the REASONS WHY.
-"@)
+$Resume.Person.AddSkill("Advanced Domain Controller Promotion",
+    "10/2021",
+    "https://youtu.be/O8A2PDfQOBs",
+    @'
+Basically, promoting a server to a domain controller via the GUI. This GUI can also be controlled    
+via the process in Flight Test, which means that uh, I'm doing stuff that hasn't been developed yet.
+'@)
 
-<# [Add Skill[2]]
-[194]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[195]    \    [02] 02/2022 - Central Intelligence Agency/VAULT 7/After Midnight (Laptop angle)                            /
-[196]    /    https://youtu.be/LYVUMLpofWg                                                                                \
-[197]    \________________________________________________________________________________________________________________/
-[198]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[199]    ||   From the CYBERATTACK on 02/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from   ||
-[200]    ||   VAULT 7, being used against me to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the    ||
-[201]    ||   DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below. (It failed)                             ||
-[202]    \\______________________________________________________________________________________________________________//
+
+<# [Add Skill[02]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    A Deep Dive: PowerShell and XAML                                                                01/2021     /
+[XXX]    /    https://youtu.be/NK4NuQrraCI                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   In this video, I EDUCATE PEOPLE on: BUILDING A GRAPHICAL USER INTERFACE using XAML & POWERSHELL            ||
+[XXX]    ||   This video should, single-handedly, prove that I'm an EXPERT.                                              ||
+[XXX]    ||   I can EASILY adjust my LANGUAGE so that PEOPLE can LEARN from an EXPERT such as MYSELF.                    ||
+[XXX]    ||   Like an ACTUAL EXPERT that gets PAID a LOT OF MONEY to TEACH PEOPLE...                                     ||
+[XXX]    ||   Like, a PROFESSOR. Sorta like KEVLIN HENNEY, ROBERT SOPOLSKY, or JEREMY RIFKIN. Even TIM COREY.            ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
-$Resume.Person.AddSkill("Central Intelligence Agency/VAULT 7/After Midnight (Laptop angle)",
-                        "02/2022",
-                        "https://youtu.be/LYVUMLpofWg",
-                        @"
-From the CYBERATTACK on 02/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from
-VAULT 7, being used against me to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the
-DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below. (It failed)
+$Resume.Person.AddSkill("A Deep Dive: PowerShell and XAML",
+    "03/2021",
+    "https://youtu.be/NK4NuQrraCI",
+    @"
+In this video, I EDUCATE PEOPLE on: BUILDING A GRAPHICAL USER INTERFACE using XAML & POWERSHELL
+This video should, single-handedly, prove that I am an EXPERT. 
+I can EASILY adjust my LANGUAGE so that PEOPLE CAN LEARN FROM AN *EXPERT* SUCH AS MYSELF.
+Like an ACTUAL EXPERT that gets PAID a LOT OF MONEY to TEACH PEOPLE...
+Like, a PROFESSOR. Sorta like KEVLIN HENNEY, ROBERT SOPOLSKY, or JEREMY RIFKIN. Even TIM COREY.
 "@)
 
-<# [Add Skill[3]]
-[203]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[204]    \    [03] 02/2022 - Central Intelligence Agency/VAULT 7/After Midnight (Smartphone angle)                        /
-[205]    /    https://youtu.be/oShPs6_uXIk                                                                                \
-[206]    \________________________________________________________________________________________________________________/
-[207]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[208]    ||   From the CYBERATTACK on 2/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from    ||
-[209]    ||   VAULT 7, being used against mme to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the   ||
-[210]    ||   DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below.                                         ||
-[211]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[03]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Wireless Network Scanning Utility                                                               05/2022     /
+[XXX]    /    https://youtu.be/35EabWfh8dQ                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video where I show off HOW TO PROGRAM & MANIPULATE WIRELESS RADIOS using POWERSHELL, and         ||
+[XXX]    ||   CREATE GRAPHICAL USER INTERFACES using XAML/POWERSHELL.                                                    ||
+[XXX]    ||   It should hands down, single handedly prove that I am MORE EXPERIENCED than 95% of people in the field     ||
+[XXX]    ||   of information technology.                                                                                 ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   So, for ANY USELESS DOUCHEBAG that wants to try and tell me that I “don't have enough experience”...       ||
+[XXX]    ||   WELL, dipshit... this video will show ya, I've got more experience than anyone you probably know.          ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
-$Resume.Person.AddSkill("Central Intelligence Agency/VAULT 7/After Midnight (Smartphone angle)",
-                        "02/2022",
-                        "https://youtu.be/oShPs6_uXIk",
-                        @"
-From the CYBERATTACK on 2/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from
-VAULT 7, being used against mme to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the
-DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below.
+$Resume.Person.AddSkill("Wireless Network Scanning Utility",
+    "05/2022",
+    "https://youtu.be/35EabWfh8dQ",
+    @"
+This is a video where I show off HOW TO PROGRAM & MANIPULATE WIRELESS RADIOS using POWERSHELL, and
+CREATE GRAPHICAL USER INTERFACES using XAML/POWERSHELL.
+It should hands down, single handedly prove that I am MORE EXPERIENCED than 95% of people in the field
+of information technology.
+
+So, for ANY USELESS DOUCHEBAG that wants to try and tell me that I “don't have enough experience”...
+WELL, dipshit... this video will show ya, I've got more experience than anyone you probably know.
 "@)
 
-<# [Add Skill[4]]
-[212]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[213]    \    [04] 02/2022 - Facebook BSOD                                                                                /
-[214]    /    https://youtu.be/40sQXpVh_8Y                                                                                \
-[215]    \________________________________________________________________________________________________________________/
-[216]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[217]    ||   This is a BLUE SCREEN OF DEATH that was CAUSED by FACEBOOK AFFILIATES that are HACKERS and they're known   ||
-[218]    ||   as (APT29/ADVANCED PERSISTENT THREAT 29), and they COMMIT CYBERATTACKS/IDENTITY THEFT and are VERY GAY,    ||
-[219]    ||   and every single one of them has sucked at QUAKE III ARENA over the last 20+ years.                        ||
-[220]    ||                  __________________________________________________________________________                  ||
-[221]    ||                  | APT29 : Yeah, we're the most raging homosexuals on the fuckin' planet. |                  ||
-[222]    ||                  |         AND, we suck at QUAKE III ARENA. So what...?                   |                  ||
-[223]    ||                  |         Who's gonna stop us...? Hm...?                                 |                  ||
-[224]    ||                  |         NOBODY... that's who.                                          |                  ||
-[225]    ||                  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                  ||
-[226]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[04]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    PowerShell Deployment FE Wizard                                                                 09/2021     /
+[XXX]    /    https://youtu.be/lZX5fAgczz0                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video where I've decided to EXTEND the CAPABILITIES & FUNCTIONS of the POWERSHELL DEPLOYMENT   ||
+[XXX]    ||   project written by:                                                                                        ||
+[XXX]    ||                _____________________________________________________________________________                 ||
+[XXX]    ||                | DEPLOYMENT BUNNY/JOHAN ARWIDMARK & MYKAEL NYSTROM (Both former Microsoft) |                 ||
+[XXX]    ||                ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                 ||
+[XXX]    ||   ...as well as:                                                                                             ||
+[XXX]    ||                        ______________________________________________________________                        ||
+[XXX]    ||                        | MICROSOFT/MICHAEL T. NIEHAUS – Vice President of Marketing |                        ||
+[XXX]    ||                        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                        ||
+[XXX]    ||   The original PSD Wizard GRAPHICAL USER INTERFACE that I modified, was created by:                          ||
+[XXX]    ||                                    ______________________________________                                    ||
+[XXX]    ||                                    | SYST AND DEPLOY/DAMIEN VAN ROBAEYS |                                    ||
+[XXX]    ||                                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                    ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
-$Resume.Person.AddSkill("Facebook BSOD",
-                        "02/2022",
-                        "https://youtu.be/40sQXpVh_8Y",
-                        @"
-This is a BLUE SCREEN OF DEATH that was CAUSED by FACEBOOK AFFILIATES that are HACKERS and they're known
-as (APT29/ADVANCED PERSISTENT THREAT 29), and they COMMIT CYBERATTACKS/IDENTITY THEFT and are VERY GAY,
-and every single one of them has sucked at QUAKE III ARENA over the last 20+ years.
-__________________________________________________________________________
-| APT29 : Yeah, we're the most raging homosexuals on the fuckin' planet. |
-|         AND, we suck at QUAKE III ARENA. So what...?                   |
-|         Who's gonna stop us...? Hm...?                                 |
-|         NOBODY... that's who.                                          |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+$Resume.Person.AddSkill("PowerShell Deployment FE Wizard",
+    "09/2021",
+    "https://youtu.be/lZX5fAgczz0",
+    @"
+This is a video where I've decided to EXTEND the CAPABILITIES & FUNCTIONS of the POWERSHELL DEPLOYMENT
+project written by:
+_____________________________________________________________________________
+| DEPLOYMENT BUNNY/JOHAN ARWIDMARK & MYKAEL NYSTROM (Both former Microsoft) |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+...as well as:
+______________________________________________________________________________
+| MICROSOFT/MICHAEL T. "Smart bastard" NIEHAUS – Vice President of Marketing |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+The original PSD Wizard GRAPHICAL USER INTERFACE that I modified, was created by:
+______________________________________
+| SYST AND DEPLOY/DAMIEN VAN ROBAEYS |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-<# [Add Skill[5]]
-[227]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[228]    \    [05] 02/2022 - Facebook Censorship                                                                          /
-[229]    /    https://youtu.be/Jmq4yBqGhTs                                                                                \
-[230]    \________________________________________________________________________________________________________________/
-[231]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[232]    ||   This is a video that showcases how gay MARK ZUCKERBERG/CEO OF FACEBOOK, actually is. I posted a comment,   ||
-[233]    ||   and then like magic, my COMMENT is REMOVED from the system before my very eyes. This showcases a living    ||
-[234]    ||   example of JUST HOW GAY, MARK ZUCKERBERG truly is. Doesn't matter if he's a COOL, HIGHLY RESPECTED         ||
-[235]    ||   BILLIONAIRE, because this is what this GAY BASTARD HAS BEEN DOING TO ME ever since I wrote a RESPONSE      ||
-[236]    ||   to an AD REJECTION in 02/2019. They felt that my AD was VIOLATING PEOPLE'S PRIVACY. What I told him, was   ||
-[237]    ||   that he's fucking lucky that I wasn't a member of Congress during the CAMBRIDGE ANALYTICA scandal.         ||
-[238]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[05]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    2019_0125-(Computer Answers - MDT)                                                              01/2019     /
+[XXX]    /    https://youtu.be/5Cyp3pqIMRs                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is when I was using VIRTUALBOX developed by ORACLE...                                                 ||
+[XXX]    ||   ...to create a CUSTOM MODIFICATION that became HYBRID-DSC.                                                 ||
+[XXX]    ||   I believe that Microsoft was PISSED about this video because I wasn't using HYPER-V...                     ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   Which is what I use basically all the time now...                                                          ||
+[XXX]    ||   And Microsoft agrees, HYPER-V is the way to go.                                                            ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   What's COOL about HYPER-V is that it is 100% CONTROLLABLE from POWERSHELL.                                 ||
+[XXX]    ||   So, you get cool features and kick ass performance that you just can't get from VIRTUALBOX...              ||
+[XXX]    \\______________________________________________________________________________________________________________//
+[XXX]     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
 #>
 
+$Resume.Person.AddSkill("2019_0125-(Computer Answers - MDT)",
+    "01/2019",
+    "https://youtu.be/5Cyp3pqIMRs",
+    @"
+This is when I was using VIRTUALBOX developed by ORACLE...
+...to create a CUSTOM MODIFICATION that became HYBRID-DSC.
+I believe that Microsoft was PISSED about this video because I wasn't using HYPER-V...
 
-$Resume.Person.AddSkill("Facebook Censorship",
-                        "02/2022",
-                        "https://youtu.be/Jmq4yBqGhTs",
-                        @"
-This is a video that showcases how gay MARK ZUCKERBERG/CEO OF FACEBOOK, actually is. I posted a comment,
-and then like magic, my COMMENT is REMOVED from the system before my very eyes. This showcases a living 
-example of JUST HOW GAY, MARK ZUCKERBERG truly is. Doesn't matter if he's a COOL, HIGHLY RESPECTED
-BILLIONAIRE, because this is what this GAY BASTARD HAS BEEN DOING TO ME ever since I wrote a RESPONSE
-to an AD REJECTION in 02/2019. They felt that my AD was VIOLATING PEOPLE'S PRIVACY. What I told him, was
-that he's fucking lucky that I wasn't a member of Congress during the CAMBRIDGE ANALYTICA scandal.
+Which is what I use basically all the time now...
+And Microsoft agrees, HYPER-V is the way to go.
+
+What's COOL about HYPER-V is that it is 100% CONTROLLABLE from POWERSHELL.
+So, you get cool features and kick ass performance that you just can't get from VIRTUALBOX...
 "@)
 
-<# [Add Skill[6]]
-[239]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[240]    \   [06] 07/2017 - Spectrum Cable Modem Reset                                                                    /
-[241]    /   https://youtu.be/LfZW-s0BMow                                                                                 \
-[242]    \________________________________________________________________________________________________________________/
-[243]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[244]    ||   This is a video that showcases just how gay PAVEL ZAICHENKO/CEO of COMPUTER ANSWERS, actually is.          ||
-[245]    ||   If people wanna argue with me “I don't see anything that indicates this dude is gay...”                    ||
-[246]    ||                                                                                                              ||
-[247]    ||   OH- well, I was able to EDUCATE A LOT OF PEOPLE by BEING MORE TALENTED at RUNNING COMPUTER ANSWERS,        ||
-[248]    ||   the COMPANY, than the OWNER/CEO... and EVEN the Vice President, DWAYNE O. COONRADT, the ol' PC-DOC         ||
-[249]    \\______________________________________________________________________________________________________________//
+
+<# [Add Skill[06]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Install-pfSense                                                                                 06/2021     /
+[XXX]    /    https://youtu.be/E_uFbzS0blQ                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video where I use VISUAL STUDIO CODE to access POWERSHELL DIRECT to manage HYPER-V over a        ||
+[XXX]    ||   REMOTE DESKTOP CONNECTION to AUTOMATE THE INSTALLATION of pfSense onto VIRTUAL GATEWAYS/ROUTERS            ||
+[XXX]    \\______________________________________________________________________________________________________________//
+[XXX]     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+#>
+
+$Resume.Person.AddSkill("Install-pfSense",
+    "06/2021",
+    "https://youtu.be/E_uFbzS0blQ",
+    @'
+This is a video where I use VISUAL STUDIO CODE to access POWERSHELL DIRECT to manage HYPER-V over a
+REMOTE DESKTOP CONNECTION to AUTOMATE THE INSTALLATION of pfSense onto VIRTUAL GATEWAYS/ROUTERS
+'@)
+
+<# [Add Skill[07]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Advanced System Administration Lab                                                               06/2021    /
+[XXX]    /    https://youtu.be/xgffIccX1eg                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    || Same sort of idea as above, except a lot more EXTENSIVE and COMPREHENSIVE.                                   ||
+[XXX]    \\______________________________________________________________________________________________________________//
+[XXX]     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+#>
+
+$Resume.Person.AddSkill("Advanced System Administration Lab",
+    "06/2021",
+    "https://youtu.be/xgffIccX1eg",
+    "Same sort of idea as above, except a lot more EXTENSIVE and COMPREHENSIVE.")
+<# [Add Skill[08]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Windows Image Extraction                                                                         06/2021    /
+[XXX]    /    https://youtu.be/G10EuwlNAyo                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This extracts Windows Images from the ISO directly from Microsoft's website, to be injected as             || 
+[XXX]    ||   TASK SEQUENCES for the MICROSOFT DEPLOYMENT TOOLKIT.                                                       ||
+[XXX]    \\______________________________________________________________________________________________________________//
+[XXX]     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+#>
+$Resume.Person.AddSkill("Windows Image Extraction",
+    "06/2021",
+    "https://youtu.be/G10EuwlNAyo",
+    @'                                    
+This extracts Windows Images from the ISO directly from Microsoft's website, to be injected as       
+TASK SEQUENCES for the MICROSOFT DEPLOYMENT TOOLKIT. 
+'@)
+
+<# [Add Skill[09]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Flight Test Part 1                                                                               08/2021    /
+[XXX]    /    https://drive.google.com/file/d/1qdS_UVcLTsxHFCpuwK16NQs0xJL7fv0W                                           \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||    This video has to be DOWNLOADED because of the MUSIC in a 6 hour video demonstration.                     ||
+[XXX]    ||   I don't expect EVERYBODY to watch the entire 6 hours worth of content here, but somebody will want         ||
+[XXX]    ||   to see HOW STRONGLY I CAN PROGRAM SOMETHING THAT ORCHESTRATES THE ENTIRE DEPLOYMENT PROCESS FOR AN         ||
+[XXX]    ||   ADVANCED NETWORK of GATEWAYS/ROUTERS, DHCP/DNS/ADDS SERVERS, DOMAIN CONTROLLERS, and WORKSTATIONS.         ||
+[XXX]    ||   There WILL be a few people who hire contractors at a STARTING RATE of over $250K/year, to do what I        ||
+[XXX]    ||   demonstrate in this particular video. That's because I'm fulfilling the role of SOLUTIONS ARCHITECT.       ||
+[XXX]    \\______________________________________________________________________________________________________________//
+[XXX]     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+#>
+$Resume.Person.AddSkill("Flight Test Part 1",
+    "08/2021",
+    "https://drive.google.com/file/d/1qdS_UVcLTsxHFCpuwK16NQs0xJL7fv0W",
+    @'
+This video has to be DOWNLOADED because of the MUSIC in a 6 hour video demonstration.                
+I don't expect EVERYBODY to watch the entire 6 hours worth of content here, but somebody will want   
+to see HOW STRONGLY I CAN PROGRAM SOMETHING THAT ORCHESTRATES THE ENTIRE DEPLOYMENT PROCESS FOR AN   
+ADVANCED NETWORK of GATEWAYS/ROUTERS, DHCP/DNS/ADDS SERVERS, DOMAIN CONTROLLERS, and WORKSTATIONS.   
+There WILL be a few people who hire contractors at a STARTING RATE of over $250K/year, to do what I  
+demonstrate in this particular video. That's because I'm fulfilling the role of SOLUTIONS ARCHITECT. 
+'@)
+
+<# [Add Skill[10]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Flight Test Part 2                                                                               08/2021    /
+[XXX]    /    https://youtu.be/vg359UlYVp8                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   Continuing on from the last video, covering some stuff I forgot to fix or implement.                       ||
+[XXX]    \\______________________________________________________________________________________________________________//
+[XXX]     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+#>
+
+$Resume.Person.AddSkill("Flight Test Part 2",
+    "08/2021",
+    "https://youtu.be/vg359UlYVp8",
+    "Continuing on from the last video, covering some stuff I forgot to fix or implement.")
+
+<# [Add Skill[11]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Advanced Domain Controller Promotion                                                             10/2021    /
+[XXX]    /    https://youtu.be/O8A2PDfQOBs                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   Basically, promoting a server to a domain controller via the GUI. This GUI can also be controlled          ||
+[XXX]    ||   via the process in Flight Test, which means that uh, I'm doing stuff that hasn't been developed yet.       ||
+[XXX]    \\______________________________________________________________________________________________________________//
+[XXX]     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+#>
+
+$Resume.Person.AddSkill("Advanced Domain Controller Promotion",
+    "10/2021",
+    "https://youtu.be/O8A2PDfQOBs",
+    @'
+Basically, promoting a server to a domain controller via the GUI. This GUI can also be controlled    
+via the process in Flight Test, which means that uh, I'm doing stuff that hasn't been developed yet.
+'@)
+
+
+<# [Add Skill[12]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Hybrid | Desired State Controller                                                               05/2019     /
+[XXX]    /    https://youtu.be/C8NYaaqJAlI                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a DEMONSTRATION of the MICROSOFT DEPLOYMENT TOOLKIT MODIFICATION that I spent like...              ||
+[XXX]    ||   (4) months working on, WHILE learning how to use PowerShell.                                               ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   I became rather INTRIGUED with the IDEA of DEPLOYING WINDOWS 10 TO THE CUSTOMERS COMPUTERS at:             ||
+[XXX]    ||         ____________________________________________________________________________________________         ||
+[XXX]    ||         | COMPUTER ANSWERS | 1602 US-9, Clifton Park, NY 12065 | 514 MAIN ST., BENNINGTON VT 05201 |         ||
+[XXX]    ||         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯         ||
+[XXX]    ||   That's why I WAS ATTACKED on 01/15/2019, left address, I was ATTACKED AGAIN on 03/07/2019, right side.     ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   I ASKED MY OLD INSTRUCTOR (BRUCE CHENEY/CYBERSTONE SECURITY) FOR SOME HELP...?                             ||
+[XXX]    ||   BUT HE'S SORT OF A DIPSHIT THAT HAS TO HIDE HIS TAIL BETWEEN HIS LEGS AND GETS OFFENDED VERY EASILY.       ||
+[XXX]    \\______________________________________________________________________________________________________________//
+#>
+
+$Resume.Person.AddSkill("Hybrid | Desired State Controller",
+    "05/2019",
+    "https://youtu.be/C8NYaaqJAlI",
+    @"
+This is a DEMONSTRATION of the MICROSOFT DEPLOYMENT TOOLKIT MODIFICATION that I spent like...
+(4) months working on, WHILE learning how to use PowerShell.
+
+I became rather INTRIGUED with the IDEA of DEPLOYING WINDOWS 10 TO THE CUSTOMERS COMPUTERS at:
+___________________________________________________________________________________________
+| COMPUTER ANSWERS | 1602 US-9, Clifton Park, NY 12065 | 514 MAIN ST. BENNINGTON VT 05201 |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ That's why I WAS ATTACKED on 01/15/2019, left address, I was ATTACKED AGAIN on 03/07/2019, right side.
+
+I ASKED MY OLD INSTRUCTOR (BRUCE CHENEY/CYBERSTONE SECURITY) FOR SOME HELP...?
+BUT HE'S SORT OF A DIPSHIT THAT HAS TO HIDE HIS TAIL BETWEEN HIS LEGS AND GETS OFFENDED VERY EASILY.
+"@)
+
+
+<# [Add Skill[13]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Methodologies                                                                                   11/2019     /
+[XXX]    /    https://youtu.be/bZuSgBK36CE                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video where I was about LESS THAN (1) year into PROGRAMMING/APP DEVELOPMENT w/ POWERSHELL.       ||
+[XXX]    \\______________________________________________________________________________________________________________//
+#>
+
+$Resume.Person.AddSkill("Methodologies",
+    "11/2019",
+    "https://youtu.be/bZuSgBK36CE",
+    "This is a video where I was about LESS THAN (1) year into PROGRAMMING/APP DEVELOPMENT w/ POWERSHELL.")
+
+<# [Add Skill[14]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Education/Exhibition Program Design                                                             08/2019     /
+[XXX]    /    https://youtu.be/v6RrrzR5v2E                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video where I was in the MIDDLE of being ATTACKED by some HACKERS, so I decided to tell em:      ||
+[XXX]    ||          __________________________________________________________________________________________          ||
+[XXX]    ||          | Me : You know what...?                                                                 |          ||
+[XXX]    ||          |      Fuck you guys.                                                                    |          ||
+[XXX]    ||          |      I'm just gonna start RECORDING VIDEOS of ME, TEACHING OTHER PEOPLE...             |          ||
+[XXX]    ||          |      ...that way you queers have 2x fewer legs to stand on when you keep ATTACKING ME. |          ||
+[XXX]    ||          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯          ||
+[XXX]    \\______________________________________________________________________________________________________________//
+#>
+
+$Resume.Person.AddSkill("Education/Exhibition Program Design",
+    "08/2019",
+    "https://youtu.be/v6RrrzR5v2E",
+    @"
+This is a video where I was in the MIDDLE of being ATTACKED by some HACKERS, so I decided to tell em:
+___________________________________________________________________________________________
+| Me : You know what...?                                                                  |
+|      Fuck you guys.                                                                     |
+|      I'm just gonna start RECORDING VIDEOS of ME, TEACHING OTHER PEOPLE...              |
+|      ...that way you queers have 2x fewer legs to stand on when you keep ATTACKING ME.  |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+# // ________________________________________________________________________________________________________________________
+# // | Section: [Network/Hardware Magistration]                                                                             |
+# // |----------------------------------------------------------------------------------------------------------------------|
+# // | Date    | Name                                  | Detail                                                             |
+# // |---------|---------------------------------------|--------------------------------------------------------------------|
+# // | 07/2017 | Spectrum Cable Modem Reset            | https://youtu.be/LfZW-s0BMow                                       |
+# // | 04/2018 | How to repair an iPhone 7+            | https://youtu.be/i3qn1CZ-5WM                                       |
+# // | 03/2018 | Troubleshooting Network Equipment 101 | https://youtu.be/0nEiGijjOEY                                       |
+# // | 11/2017 | Troubleshooting a poorly made CRM     | https://youtu.be/xs-FVZgjnkI                                       |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+<# [Add Skill[15]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \   [06] 07/2017 - Spectrum Cable Modem Reset                                                                    /
+[XXX]    /   https://youtu.be/LfZW-s0BMow                                                                                 \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video that showcases just how gay PAVEL ZAICHENKO/CEO of COMPUTER ANSWERS, actually is.          ||
+[XXX]    ||   If people wanna argue with me “I don't see anything that indicates this dude is gay...”                    ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   OH- well, I was able to EDUCATE A LOT OF PEOPLE by BEING MORE TALENTED at RUNNING COMPUTER ANSWERS,        ||
+[XXX]    ||   the COMPANY, than the OWNER/CEO... and EVEN the Vice President, DWAYNE O. COONRADT, the ol' PC-DOC         ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("Spectrum Cable Modem Reset",
-                        "07/2017",
-                        "https://youtu.be/LfZW-s0BMow",
-                        @"
+    "07/2017",
+    "https://youtu.be/LfZW-s0BMow",
+    @"
 This is a video that showcases just how gay PAVEL ZAICHENKO/CEO of COMPUTER ANSWERS, actually is.
 If people wanna argue with me “I don't see anything that indicates this dude is gay...”
     
@@ -2068,38 +2335,38 @@ OH- well, I was able to EDUCATE A LOT OF PEOPLE by BEING MORE TALENTED at RUNNIN
 the COMPANY, than the OWNER/CEO... and EVEN the Vice President, DWAYNE O. COONRADT, the ol' PC-DOC
 "@)
 
-<# [Add Skill[7]]
-[250]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[251]    \   How to repair an iPhone 7+                                                                       04/2018     /
-[252]    /   https://youtu.be/i3qn1CZ-5WM                                                                                 \
-[253]    \________________________________________________________________________________________________________________/
-[254]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[255]    ||   This is a video that showcases how gay TIM COOK/CEO of APPLE CORPORATION, actually is.                     ||
-[255]    ||   APPLE DISABLED MY IPHONE 8+ AFTER I SHOWED NYS TROOPER SHAEMUS LEAVEY A VIDEO OF 2 GUYS USING PEGASUS,     ||
-[255]    ||   AS THEY WERE ATTEMPTING TO MURDER ME OUTSIDE OF (1597-1602) US-9, CLIFTON PARK NY 12065 on 05/26/2020.     ||    
-[255]    ||                                                                                                              ||
-[255]    ||   RESULTANT, I HAVE WITNESSED TIM COOK BEING PRIMARILY RESPONSIBLE FOR COMMITTING OBSTRUCTION OF JUSTICE.    ||
-[255]    ||   TIM COOK will CONTINUALLY be CALLED OUT for being a FLAMING HOMOSEXUAL for ALLOWING THIS. I KNOW THAT IS   ||
-[255]    ||   EXACTLY WHAT HAPPENED, but the COMMUNITY and the POLICE have been TOO BUSY BEING MORONS, to watch this.    ||
-[255]    ||                                                                                                              ||
-[255]    ||   Sorta know what I'm doing more than most people in the COMMUNITY or the POLICE. (<- FACT, not an OPINION)  ||
-[255]    ||                                                                                                              ||
-[255]    ||   As for TIM COOK (CEO OF APPLE), the man has received a LOT of awards from the town, for being the GAYEST   ||
-[256]    ||   GUY IN CUPERTINO, CA each year. Nobody in CUPERTINO has a shot at outdoing this man, at being gay.         ||
-[257]    ||   Outside of CUPERTINO, CA...? VLADIMIR PUTIN, APT29 & CERBERUS most definitely win, hands down.             ||
-[255]    ||                                                                                                              ||
-[259]    ||   By the way, TIM COOK and I are NOT RELATED, but that man is DEFINITELY ALMOST as gay, as APT29.            ||
-[260]    ||   I have MORE EXPERIENCE than:                                                                               ||
-[261]    ||   ____________________________________________________________________________________________________       ||
-[262]    ||   | the people who work at ANY APPLE STORE | MOST of the people at APPLE HQ in CUPERTINO, CALIFORNIA |       ||
-[263]    ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯       ||
-[264]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[16]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \   How to repair an iPhone 7+                                                                       04/2018     /
+[XXX]    /   https://youtu.be/i3qn1CZ-5WM                                                                                 \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video that showcases how gay TIM COOK/CEO of APPLE CORPORATION, actually is.                     ||
+[XXX]    ||   APPLE DISABLED MY IPHONE 8+ AFTER I SHOWED NYS TROOPER SHAEMUS LEAVEY A VIDEO OF 2 GUYS USING PEGASUS,     ||
+[XXX]    ||   AS THEY WERE ATTEMPTING TO MURDER ME OUTSIDE OF (1597-1602) US-9, CLIFTON PARK NY 12065 on 05/26/2020.     ||    
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   RESULTANT, I HAVE WITNESSED TIM COOK BEING PRIMARILY RESPONSIBLE FOR COMMITTING OBSTRUCTION OF JUSTICE.    ||
+[XXX]    ||   TIM COOK will CONTINUALLY be CALLED OUT for being a FLAMING HOMOSEXUAL for ALLOWING THIS. I KNOW THAT IS   ||
+[XXX]    ||   EXACTLY WHAT HAPPENED, but the COMMUNITY and the POLICE have been TOO BUSY BEING MORONS, to watch this.    ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   Sorta know what I'm doing more than most people in the COMMUNITY or the POLICE. (<- FACT, not an OPINION)  ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   As for TIM COOK (CEO OF APPLE), the man has received a LOT of awards from the town, for being the GAYEST   ||
+[XXX]    ||   GUY IN CUPERTINO, CA each year. Nobody in CUPERTINO has a shot at outdoing this man, at being gay.         ||
+[XXX]    ||   Outside of CUPERTINO, CA...? VLADIMIR PUTIN, APT29 & CERBERUS most definitely win, hands down.             ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   By the way, TIM COOK and I are NOT RELATED, but that man is DEFINITELY ALMOST as gay, as APT29.            ||
+[XXX]    ||   I have MORE EXPERIENCE than:                                                                               ||
+[XXX]    ||   ____________________________________________________________________________________________________       ||
+[XXX]    ||   | the people who work at ANY APPLE STORE | MOST of the people at APPLE HQ in CUPERTINO, CALIFORNIA |       ||
+[XXX]    ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯       ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("How to repair an iPhone 7+",
-                        "04/2018",
-                        "https://youtu.be/i3qn1CZ-5WM",
-                        @"
+    "04/2018",
+    "https://youtu.be/i3qn1CZ-5WM",
+    @"
 This is a video that showcases how gay TIM COOK/CEO of APPLE CORPORATION, actually is.
 APPLE DISABLED MY IPHONE 8+ AFTER I SHOWED NYS TROOPER SHAEMUS LEAVEY A VIDEO OF 2 GUYS USING PEGASUS,
 AS THEY WERE ATTEMPTING TO MURDER ME OUTSIDE OF (1597-1602) US-9, CLIFTON PARK NY 12065 on 05/26/2020.
@@ -2121,68 +2388,80 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-<# [Add Skill[8]]
-[265]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[266]    \    Troubleshooting Network Equipment 101                                                           03/2018     /
-[267]    /    https://youtu.be/0nEiGijjOEY                                                                                \
-[268]    \________________________________________________________________________________________________________________/
-[269]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[270]    ||   This is a video that showcases how gay DWAYNE COONRADT/VP of COMPUTER ANSWERS, APPEARS to be when he       ||
-[271]    ||   refuses to tell people that I outperformed him for the 3+ years I (worked at/MANAGED the COMPANY)...       ||
-[272]    ||   COMPUTER ANSWERS.                                                                                          ||
-[273]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[17]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Troubleshooting Network Equipment 101                                                           03/2018     /
+[XXX]    /    https://youtu.be/0nEiGijjOEY                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video that showcases how gay DWAYNE COONRADT/VP of COMPUTER ANSWERS, APPEARS to be when he       ||
+[XXX]    ||   refuses to tell people that I outperformed him for the 3+ years I (worked at/MANAGED the COMPANY)...       ||
+[XXX]    ||   COMPUTER ANSWERS.                                                                                          ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("Troubleshooting Network Equipment 101",
-                        "03/2018",
-                        "https://youtu.be/0nEiGijjOEY",
-                        @"
+    "03/2018",
+    "https://youtu.be/0nEiGijjOEY",
+    @"
 This is a video that showcases how gay DWAYNE COONRADT/VP of COMPUTER ANSWERS, APPEARS to be when he
 refuses to tell people that I outperformed him 100% of the 3+ years I (worked at/MANAGED) the COMPANY
 COMPUTER ANSWERS.
 "@)
 
-<# [Add Skill[9]]
-[274]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[275]    \    Troubleshooting a poorly made CRM                                                               11/2017     /
-[276]    /    https://youtu.be/xs-FVZgjnkI                                                                                \
-[277]    \________________________________________________________________________________________________________________/
-[278]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[279]    ||   This is a video where I am attempting to educate the lazy moron who owns COMPUTER ANSWERS, what was        ||
-[280]    ||   ALWAYS PROBLEMATIC about the PIECE OF SHIT SOFTWARE that he was attempting to build, without having the    ||
-[281]    ||   experience necessary to do so. He actually STOLE THIS SOFTWARE from SOHRAB GHAIRAT who is an ACTUAL        ||
-[282]    ||   EXPERT at DEVELOPING APPLICATIONS/PROGRAMMING.                                                             ||
-[283]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[18]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Troubleshooting a poorly made CRM                                                               11/2017     /
+[XXX]    /    https://youtu.be/xs-FVZgjnkI                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video where I am attempting to educate the lazy moron who owns COMPUTER ANSWERS, what was        ||
+[XXX]    ||   ALWAYS PROBLEMATIC about the PIECE OF SHIT SOFTWARE that he was attempting to build, without having the    ||
+[XXX]    ||   experience necessary to do so. He actually STOLE THIS SOFTWARE from SOHRAB GHAIRAT who is an ACTUAL        ||
+[XXX]    ||   EXPERT at DEVELOPING APPLICATIONS/PROGRAMMING.                                                             ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("Troubleshooting a poorly made CRM",
-                        "11/2017",
-                        "https://youtu.be/xs-FVZgjnkI",
-                        @"
+    "11/2017",
+    "https://youtu.be/xs-FVZgjnkI",
+    @"
 This is a video where I am attempting to educate the lazy moron who owns COMPUTER ANSWERS, what was
 ALWAYS PROBLEMATIC about the PIECE OF SHIT SOFTWARE that he was attempting to build without having the 
 experience necessary to do so. He actually STOLE THIS SOFTWARE from SOHRAB GHAIRAT who is an ACTUAL 
 EXPERT at DEVELOPING APPLICATIONS/PROGRAMMING.
 "@)
 
-<# [Add Skill[10]]
-[284]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[285]    \    Game Design 101 Part I - 20KDM2 - Return to Castle: Quake                                       08/2021     /
-[286]    /    https://youtu.be/xN53K9oGCME                                                                                \
-[287]    \________________________________________________________________________________________________________________/
-[288]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[289]    ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAY back in (2001/2002) for    ||
-[290]    ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2001.                            ||
-[291]    ||                     _________________________________________________________________                        ||
-[292]    ||                     | This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |                        ||
-[293]    ||                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                        ||
-[294]    \\______________________________________________________________________________________________________________//
+# // _________________________________________________________________________________________________________________________________________
+# // | Section: [Graphic Design]                                                                                                             |
+# // |---------------------------------------------------------------------------------------------------------------------------------------|
+# // | Date    | Subject               | Name                            | Detail                                                            |
+# // |---------|-----------------------|---------------------------------|-------------------------------------------------------------------|
+# // | 08/2021 | Game Design 101 (1/4) | 20KDM1: Return to Castle: Quake | https://youtu.be/xN53K9oGCME                                      |
+# // | 08/2021 | Game Design 101 (2/4) | 20KDM1: Tempered Graveyard      | https://youtu.be/dyHwm9AdkQs                                      |
+# // | 08/2021 | Game Design 101 (3/4) | 20KCTF1: Out of my head         | https://youtu.be/rwyHCNnwlkM                                      |
+# // | 08/2021 | Game Design 101 (4/4) | 20KDM3: Insane Products         | https://youtu.be/EG8UyJSMK3Y                                      |
+# // | 05/2001 | Website Design 101    | BFG20K's Shopping Maul          | http://web.archive.org/web/20220000000000*/planetquake.com/bfg20k |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+<# [Add Skill[19]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Game Design 101 Part I - 20KDM2 - Return to Castle: Quake                                       08/2021     /
+[XXX]    /    https://youtu.be/xN53K9oGCME                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAY back in (2001/2002) for    ||
+[XXX]    ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2001.                            ||
+[XXX]    ||                     _________________________________________________________________                        ||
+[XXX]    ||                     | This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |                        ||
+[XXX]    ||                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                        ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("Game Design 101 Part I - 20KDM2 - Return to Castle: Quake",
-                        "08/2021",
-                        "https://youtu.be/xN53K9oGCME",
-                        @"
+    "08/2021",
+    "https://youtu.be/xN53K9oGCME",
+    @"
 This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAY back in (2001/2002) for
 QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2001.
 _________________________________________________________________
@@ -2190,24 +2469,24 @@ _________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-<# [Add Skill[11]]
-[295]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[296]    \    Game Design 101 Part II - 20KDM1 - Tempered Graveyard                                           08/2021     /
-[297]    /    https://youtu.be/dyHwm9AdkQs                                                                                \
-[298]    \________________________________________________________________________________________________________________/
-[299]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[300]    ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAY back in (2001) for         ||
-[301]    ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2001.                            ||
-[302]    ||                     _________________________________________________________________                        ||
-[303]    ||                     | This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |                        ||
-[304]    ||                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                        ||
-[305]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[20]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Game Design 101 Part II - 20KDM1 - Tempered Graveyard                                           08/2021     /
+[XXX]    /    https://youtu.be/dyHwm9AdkQs                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAY back in (2001) for         ||
+[XXX]    ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2001.                            ||
+[XXX]    ||                     _________________________________________________________________                        ||
+[XXX]    ||                     | This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |                        ||
+[XXX]    ||                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                        ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("Game Design 101 Part II - 20KDM1 - Tempered Graveyard",
-                        "08/2021",
-                        "https://youtu.be/dyHwm9AdkQs",
-@"
+    "08/2021",
+    "https://youtu.be/dyHwm9AdkQs",
+    @"
 This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAY back in (2001) for
 QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2001.
 _________________________________________________________________
@@ -2215,24 +2494,24 @@ _________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-<# [Add Skill[12]]
-[306]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[307]    \    Game Design 101 Part III - 20KCTF1 - Out of my head                                             08/2021     /
-[308]    /    https://youtu.be/rwyHCNnwlkM                                                                                \
-[309]    \________________________________________________________________________________________________________________/
-[310]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[311]    ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAAY back in (2002) for        ||
-[312]    ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2002.                            ||
-[313]    ||                     ___________________________________________________________________                      ||
-[314]    ||                     | This particular map is OLDER THAN FACEBOOK, or COMPUTER ANSWERS |                      ||
-[315]    ||                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                      ||
-[316]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[21]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Game Design 101 Part III - 20KCTF1 - Out of my head                                             08/2021     /
+[XXX]    /    https://youtu.be/rwyHCNnwlkM                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAAY back in (2002) for        ||
+[XXX]    ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2002.                            ||
+[XXX]    ||                     ___________________________________________________________________                      ||
+[XXX]    ||                     | This particular map is OLDER THAN FACEBOOK, or COMPUTER ANSWERS |                      ||
+[XXX]    ||                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                      ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("Game Design 101 Part III - 20KCTF1 - Out of my head",
-                        "08/2021",
-                        "https://youtu.be/rwyHCNnwlkM",
-@"
+    "08/2021",
+    "https://youtu.be/rwyHCNnwlkM",
+    @"
 This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAAY back in (2002) for
 QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2002.
 _________________________________________________________________
@@ -2240,24 +2519,24 @@ _________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-<# [Add Skill[13]]
-[317]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[318]    \    Game Design 101 Part IV - 20KDM3 - Insane Products                                              08/2021     /
-[319]    /    https://youtu.be/EG8UyJSMK3Y                                                                                \
-[320]    \________________________________________________________________________________________________________________/
-[321]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[322]    ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAAY back in (2006) for        ||
-[323]    ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2006.                            ||
-[324]    ||                     _________________________________________________________________                        ||
-[325]    ||                     | This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |                        ||
-[326]    ||                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                        ||
-[327]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[22]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Game Design 101 Part IV - 20KDM3 - Insane Products                                              08/2021     /
+[XXX]    /    https://youtu.be/EG8UyJSMK3Y                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAAY back in (2006) for        ||
+[XXX]    ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2006.                            ||
+[XXX]    ||                     _________________________________________________________________                        ||
+[XXX]    ||                     | This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |                        ||
+[XXX]    ||                     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                        ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("Game Design 101 Part IV - 20KDM3 - Insane Products",
-                        "08/2021",
-                        "https://youtu.be/EG8UyJSMK3Y",
-@"
+    "08/2021",
+    "https://youtu.be/EG8UyJSMK3Y",
+    @"
 This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAAY back in (2006) for
 QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2006.
 _________________________________________________________________
@@ -2265,35 +2544,35 @@ _________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-<# [Add Skill[14]]
-[328]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[329]    \    Website Design 101 - <|3FG20K>'s Shopping Maul                                                  05/2001     /
-[330]    /    http://web.archive.org/web/20220000000000*/planetquake.com/bfg20k                                           \
-[331]    \________________________________________________________________________________________________________________/
-[332]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[333]    ||   This is a link to the WAYBACK MACHINE, featuring a WEBSITE that I CREATED when I was 15 years old.         ||
-[334]    ||   This particular website is OLDER THAN FACEBOOK. AND YOUTUBE. AND REDDIT. AND TWITTER. AND MYSPACE...       ||
-[335]    ||                                                                                                              ||
-[336]    ||   So, when I hear people tell me that “I don't have enough experience”, that means they probably could use   ||
-[337]    ||   a nice, fresh smack across the fuckin' face. Dead serious.                                                 ||
-[338]    ||                                                                                                              ||
-[339]    ||   The WEBSITE BFG20K's Shopping Maul EXISTED in 1999, but then PLANETQUAKE.COM was like:                     ||
-[340]    ||                         ___________________________________________________________                          ||
-[341]    ||                         | PlanetQuake : DUDE, YOU CAN TOTALLY HAVE A HOSTED SITE. |                          ||
-[342]    ||                         |               YOU'RE ONLY 15...?                        |                          ||
-[343]    ||                         |               THIS SHIT IS COOL AS FUCK.                |                          ||
-[344]    ||                         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                          ||
-[345]    ||   Thus, PLANETQUAKE.COM/BFG20K was born, WAAAAAAY back in 2001~!                                             ||
-[346]    ||   Like, BEFORE THE TWIN TOWERS WERE ATTACKED~!                                                               ||
-[347]    ||   But, I'm gonna get some cocksucker that will TRY to say that “I don't have enough experience.” Sure.       ||
-[348]    ||   To anyone who wants to say that...?                                                                        ||
-[349]    ||   Make yourself useful, and go suck a fuckin' dick like MARK ZUCKERBERG does.                                ||
-[350]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[23]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Website Design 101 - <|3FG20K>'s Shopping Maul                                                  05/2001     /
+[XXX]    /    http://web.archive.org/web/20220000000000*/planetquake.com/bfg20k                                           \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a link to the WAYBACK MACHINE, featuring a WEBSITE that I CREATED when I was 15 years old.         ||
+[XXX]    ||   This particular website is OLDER THAN FACEBOOK. AND YOUTUBE. AND REDDIT. AND TWITTER. AND MYSPACE...       ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   So, when I hear people tell me that “I don't have enough experience”, that means they probably could use   ||
+[XXX]    ||   a nice, fresh smack across the fuckin' face. Dead serious.                                                 ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   The WEBSITE BFG20K's Shopping Maul EXISTED in 1999, but then PLANETQUAKE.COM was like:                     ||
+[XXX]    ||                         ___________________________________________________________                          ||
+[XXX]    ||                         | PlanetQuake : DUDE, YOU CAN TOTALLY HAVE A HOSTED SITE. |                          ||
+[XXX]    ||                         |               YOU'RE ONLY 15...?                        |                          ||
+[XXX]    ||                         |               THIS SHIT IS COOL AS FUCK.                |                          ||
+[XXX]    ||                         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                          ||
+[XXX]    ||   Thus, PLANETQUAKE.COM/BFG20K was born, WAAAAAAY back in 2001~!                                             ||
+[XXX]    ||   Like, BEFORE THE TWIN TOWERS WERE ATTACKED~!                                                               ||
+[XXX]    ||   But, I'm gonna get some cocksucker that will TRY to say that “I don't have enough experience.” Sure.       ||
+[XXX]    ||   To anyone who wants to say that...?                                                                        ||
+[XXX]    ||   Make yourself useful, and go suck a fuckin' dick like MARK ZUCKERBERG does.                                ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("Website Design 101 - BFG20K's Shopping Maul",
-                        "05/2001",
-                        "http://web.archive.org/web/20220000000000*/planetquake.com/bfg20k",@"
+    "05/2001",
+    "http://web.archive.org/web/20220000000000*/planetquake.com/bfg20k", @"
 This is a link to the WAYBACK MACHINE, featuring a WEBSITE that I CREATED when I was 15 years old.
 This particular website is OLDER THAN FACEBOOK. AND YOUTUBE. AND REDDIT. AND TWITTER. AND MYSPACE...
 
@@ -2313,206 +2592,213 @@ To anyone who wants to say that...?
 Make yourself useful, and go suck a fuckin' dick like MARK ZUCKERBERG does.
 "@)
 
-<# [Add Skill[15]]
-[351]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[352]    \    News 10 - Interview with Andrew Banas regarding WEEPING ANGEL                                   03/2018     /
-[353]    /    https://youtu.be/bPdWt7kcd3M                                                                                \
-[354]    \________________________________________________________________________________________________________________/
-[355]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[356]    ||   This is an INTERVIEW that I had with an actual NEWS REPORTER named ANDREW BANAS, WAAAAY back in 03/2018    ||
-[357]    ||   when I MANAGED COMPUTER ANSWERS at 1602 Route 9, CLIFTON PARK, NY 12065.                                   ||
-[358]    ||   This was BEFORE (HOMOSEXUALS/HACKERS from APT29) STARTED TO ATTACK ME and my work.                         ||
-[359]    ||   Still, I must NOT have enough EXPERIENCE to run CIRCLES around people that make over $250K/year, right?    ||
-[360]    \\______________________________________________________________________________________________________________//
+# // ________________________________________________________________________________________________________________________
+# // | Section: [Security Engineering & Journalism]                                                                         |
+# // |----------------------------------------------------------------------------------------------------------------------|
+# // | Date    | Name                                 | Detail                                                              |
+# // |---------|--------------------------------------|---------------------------------------------------------------------|
+# // | 08/2022 | Top Deck Awareness - Not News        | https://drive.google.com/file/d/1XWGSsZ-rGQHfB8eY2Xm6uu51wuj1MqFW   |
+# // | 03/2018 | News 10, Andrew Banas, WEEPING ANGEL | https://youtu.be/bPdWt7kcd3M                                        |
+# // | 02/2022 | CIA/VAULT 7/Archimedes               | https://youtu.be/QP25FbNhakQ                                        |
+# // | 02/2022 | CIA/VAULT 7/After Midnight (#1)      | https://youtu.be/LYVUMLpofWg                                        |
+# // | 02/2022 | CIA/VAULT 7/After Midnight (#2)      | https://youtu.be/oShPs6_uXIk                                        |
+# // | 02/2022 | Facebook BSOD                        | https://youtu.be/40sQXpVh_8Y                                        |
+# // | 02/2022 | Facebook Censorship                  | https://youtu.be/Jmq4yBqGhTs                                        |
+# // | 09/2019 | Hardware Security                    | https://youtu.be/-jkDPv9H6BQ                                        |
+# // | 03/2019 | NFRASTRUCTURE – RICO                 | https://youtu.be/vmDVKwTF2Zc                                        |
+# // | 02/2022 | A Matter of National Security        | https://youtu.be/e4VnZObiez8                                        |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+<# [Add Skill[24]]
+[XXX]|   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]|   \    Top Deck Awareness - Not News                                                                   08/2022     /
+[XXX]|   /    https://drive.google.com/file/d/1XWGSsZ-rGQHfB8eY2Xm6uu51wuj1MqFW                                           \
+[XXX]|   \________________________________________________________________________________________________________________/
+[XXX]|   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]|   ||   My master thesis about the following subjects:                                                             ||
+[XXX]|   ||   ________________________________________________________________________________________________________   ||
+[XXX]|   ||   | U.S. CONSTITUTION | PSYCHOLOGICAL MANIPULATION | PRIVATE INVESTIGATION   |     COOL/SMART RICH DUDES |   ||
+[XXX]|   ||   | HIDDEN GOVERNMENT | USA-PATRIOT ACT of 2001    | SURVEILLANCE CAPITALISM | LAME/DOUCHEBAG RICH DUDES |   ||
+[XXX]|   ||   | NEWS VS PROPAGANDA | EXPERT PROGRAMMING | INJUSTICE | JULIEN ASSANGE | EDWARD SNOWDEN | U.S. HISTORY |   ||
+[XXX]|   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   ||
+[XXX]|   \\______________________________________________________________________________________________________________//
+#>
+
+$Resume.Person.AddSkill("Top Deck Awareness - Not News",
+    "08/2022",
+    "https://drive.google.com/file/d/1XWGSsZ-rGQHfB8eY2Xm6uu51wuj1MqFW",
+    @"
+My master thesis about the following subjects:                                                              
+________________________________________________________________________________________________________
+| U.S. CONSTITUTION | PSYCHOLOGICAL MANIPULATION | PRIVATE INVESTIGATION   |     COOL/SMART RICH DUDES |
+| HIDDEN GOVERNMENT | USA-PATRIOT ACT of 2001    | SURVEILLANCE CAPITALISM | LAME/DOUCHEBAG RICH DUDES |
+| NEWS VS PROPAGANDA | EXPERT PROGRAMMING | INJUSTICE | JULIEN ASSANGE | EDWARD SNOWDEN | U.S. HISTORY |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+<# [Add Skill[25]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    News 10 - Interview with Andrew Banas regarding WEEPING ANGEL                                   03/2018     /
+[XXX]    /    https://youtu.be/bPdWt7kcd3M                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is an INTERVIEW that I had with an actual NEWS REPORTER named ANDREW BANAS, WAAAAY back in 03/2018    ||
+[XXX]    ||   when I MANAGED COMPUTER ANSWERS at 1602 Route 9, CLIFTON PARK, NY 12065.                                   ||
+[XXX]    ||   This was BEFORE (HOMOSEXUALS/HACKERS from APT29) STARTED TO ATTACK ME and my work.                         ||
+[XXX]    ||   Still, I must NOT have enough EXPERIENCE to run CIRCLES around people that make over $250K/year, right?    ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("News 10 - Interview with Andrew Banas regarding WEEPING ANGEL",
-                        "03/2018",
-                        "https://youtu.be/bPdWt7kcd3M",
-                        @"
+    "03/2018",
+    "https://youtu.be/bPdWt7kcd3M",
+    @"
 This is an INTERVIEW that I had with an actual NEWS REPORTER named ANDREW BANAS, WAAAAY back in 03/2018
 when I MANAGED COMPUTER ANSWERS at 1602 Route 9, CLIFTON PARK, NY 12065.
 This was BEFORE (HOMOSEXUALS/HACKERS from APT29) STARTED TO ATTACK ME and my work.
 Still, I must NOT have enough EXPERIENCE to run CIRCLES around people that make over `$250K/year, right?
 "@)
 
-<# [Add Skill[16]]
-[361]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[362]    \    Wireless Network Scanning Utility                                                               05/2022     /
-[363]    /    https://youtu.be/35EabWfh8dQ                                                                                \
-[364]    \________________________________________________________________________________________________________________/
-[365]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[366]    ||   This is a video where I show off HOW TO PROGRAM & MANIPULATE WIRELESS RADIOS using POWERSHELL, and         ||
-[367]    ||   CREATE GRAPHICAL USER INTERFACES using XAML/POWERSHELL.                                                    ||
-[368]    ||   It should hands down, single handedly prove that I am MORE EXPERIENCED than 95% of people in the field     ||
-[369]    ||   of information technology.                                                                                 ||
-[370]    ||                                                                                                              ||
-[371]    ||   So, for ANY USELESS DOUCHEBAG that wants to try and tell me that I “don't have enough experience”...       ||
-[372]    ||   WELL, dipshit... this video will show ya, I've got more experience than anyone you probably know.          ||
-[373]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[26]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Central Intelligence Agency/VAULT 7/Archimedes                                                  02/2022     /
+[XXX]    /    https://youtu.be/QP25FbNhakQ                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   MARK ZUCKERBERG, owner of FACEBOOK using a TOOL developed by the CENTRAL INTELLIGENCE AGENCY from          ||
+[XXX]    ||   VAULT 7, to CAUSE INTERFERENCE to my LAPTOP, the CONTEXT of the VIDEO should SHOWCASE the REASONS WHY.     ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
-$Resume.Person.AddSkill("Wireless Network Scanning Utility",
-                        "05/2022",
-                        "https://youtu.be/35EabWfh8dQ",
-                        @"
-This is a video where I show off HOW TO PROGRAM & MANIPULATE WIRELESS RADIOS using POWERSHELL, and
-CREATE GRAPHICAL USER INTERFACES using XAML/POWERSHELL.
-It should hands down, single handedly prove that I am MORE EXPERIENCED than 95% of people in the field
-of information technology.
-
-So, for ANY USELESS DOUCHEBAG that wants to try and tell me that I “don't have enough experience”...
-WELL, dipshit... this video will show ya, I've got more experience than anyone you probably know.
+$Resume.Person.AddSkill("Central Intelligence Agency/VAULT 7/Archimedes",
+    "02/2022",
+    "https://youtu.be/QP25FbNhakQ",
+    @"
+MARK ZUCKERBERG, owner of FACEBOOK using a TOOL developed by the CENTRAL INTELLIGENCE AGENCY from
+VAULT 7, to CAUSE INTERFERENCE to my LAPTOP, the CONTEXT of the VIDEO should SHOWCASE the REASONS WHY.
 "@)
 
-<# [Add Skill[17]]
-[374]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[375]    \    A Matter of National Security                                                                   02/2022     /
-[376]    /    https://youtu.be/e4VnZObiez8                                                                                \
-[377]    \________________________________________________________________________________________________________________/
-[378]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[379]    ||   This is a video that showcases someone in the CENTRAL INTELLIGENCE AGENCY that has been INTERACTING WITH   ||
-[380]    ||   ME for over 3+ years (must not have enough experience or something...) by using SCRIBBLES (VAULT 7) to     ||
-[381]    ||   ADD A LINE OF PIXELS to PARTICULAR LINES OF TEXT in ANY MICROSOFT WORD-LIKE EDITOR, and I TALK ABOUT       ||
-[382]    ||   PEGASUS/PHANTOM and JULIEN ASSANGE, and EDWARD SNOWDEN.                                                    ||
-[383]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[27]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    [02] 02/2022 - Central Intelligence Agency/VAULT 7/After Midnight (Laptop angle)                            /
+[XXX]    /    https://youtu.be/LYVUMLpofWg                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   From the CYBERATTACK on 02/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from   ||
+[XXX]    ||   VAULT 7, being used against me to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the    ||
+[XXX]    ||   DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below. (It failed)                             ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
-$Resume.Person.AddSkill("A Matter of National Security",
-                        "02/2022",
-                        "https://youtu.be/e4VnZObiez8",
-                        @"
-This is a video that showcases someone in the CENTRAL INTELLIGENCE AGENCY that has been INTERACTING WITH
-ME for over 3+ years by using SCRIBBLES (VAULT 7) to ADD A LINE OF PIXELS to PARTICULAR LINES OF TEXT in 
-ANY MICROSOFT WORD-LIKE EDITOR, and I TALK ABOUT PEGASUS/PHANTOM and JULIEN ASSANGE, and EDWARD SNOWDEN. 
-Still, with all of these INDICATIONS that I have PLENTY of EXPERIENCE...?
-I know that someone will come right out and say that I must not have enough, yet.
+$Resume.Person.AddSkill("Central Intelligence Agency/VAULT 7/After Midnight (Laptop angle)",
+    "02/2022",
+    "https://youtu.be/LYVUMLpofWg",
+    @"
+From the CYBERATTACK on 02/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from
+VAULT 7, being used against me to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the
+DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below. (It failed)
 "@)
 
-<# [Add Skill[18]]
-[384]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[385]    \    FightingEntropy FEInfrastructure                                                                12/2021     /
-[386]    /    https://youtu.be/6yQr06_rA4I                                                                                \
-[387]    \________________________________________________________________________________________________________________/
-[388]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[389]    ||   This is a video where I PROVE that BY MYSELF, I know ALL OF THE ASPECTS of:                                ||
-[390]    ||    ___________________________________________________________________________________________________       ||
-[391]    ||    | APP DEVELOPMENT | VIRTUALIZATION | HARDWARE/NETWORK MAGISTRATION | MICROSOFT DEPLOYMENT TOOLKIT |       ||
-[392]    ||    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯       ||
-[393]    ||   As in, I AM MORE EXPERIENCED THAN 95% of the people in the field of INFORMATION TECHNOLOGY.                ||
-[394]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[28]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    [03] 02/2022 - Central Intelligence Agency/VAULT 7/After Midnight (Smartphone angle)                        /
+[XXX]    /    https://youtu.be/oShPs6_uXIk                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   From the CYBERATTACK on 2/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from    ||
+[XXX]    ||   VAULT 7, being used against mme to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the   ||
+[XXX]    ||   DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below.                                         ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
-$Resume.Person.AddSkill("FightingEntropy FEInfrastructure",
-                        "12/2021",
-                        "https://youtu.be/6yQr06_rA4I",
-                        @"
-This is a video where I PROVE that BY MYSELF, I know ALL OF THE ASPECTS of:
-___________________________________________________________________________________________________
-| APP DEVELOPMENT | VIRTUALIZATION | HARDWARE/NETWORK MAGISTRATION | MICROSOFT DEPLOYMENT TOOLKIT |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-As in, I AM MORE EXPERIENCED THAN 95% of the people in the field of INFORMATION TECHNOLOGY.
+$Resume.Person.AddSkill("Central Intelligence Agency/VAULT 7/After Midnight (Smartphone angle)",
+    "02/2022",
+    "https://youtu.be/oShPs6_uXIk",
+    @"
+From the CYBERATTACK on 2/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from
+VAULT 7, being used against mme to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the
+DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below.
 "@)
 
-<# [Add Skill[19]]
-[395]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[396]    \    PowerShell Deployment FE Wizard                                                                 09/2021     /
-[397]    /    https://youtu.be/lZX5fAgczz0                                                                                \
-[398]    \________________________________________________________________________________________________________________/
-[399]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[400]    ||   This is a video where I've decided to EXTEND the CAPABILITIES & FUNCTIONS of the POWERSHELL DEPLOYMENT   ||
-[401]    ||   project written by:                                                                                        ||
-[402]    ||                _____________________________________________________________________________                 ||
-[403]    ||                | DEPLOYMENT BUNNY/JOHAN ARWIDMARK & MYKAEL NYSTROM (Both former Microsoft) |                 ||
-[404]    ||                ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                 ||
-[405]    ||   ...as well as:                                                                                             ||
-[406]    ||                        ______________________________________________________________                        ||
-[407]    ||                        | MICROSOFT/MICHAEL T. NIEHAUS – Vice President of Marketing |                        ||
-[408]    ||                        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                        ||
-[409]    ||   The original PSD Wizard GRAPHICAL USER INTERFACE that I modified, was created by:                          ||
-[410]    ||                                    ______________________________________                                    ||
-[411]    ||                                    | SYST AND DEPLOY/DAMIEN VAN ROBAEYS |                                    ||
-[412]    ||                                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                    ||
-[413]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[29]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    [04] 02/2022 - Facebook BSOD                                                                                /
+[XXX]    /    https://youtu.be/40sQXpVh_8Y                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a BLUE SCREEN OF DEATH that was CAUSED by FACEBOOK AFFILIATES that are HACKERS and they're known   ||
+[XXX]    ||   as (APT29/ADVANCED PERSISTENT THREAT 29), and they COMMIT CYBERATTACKS/IDENTITY THEFT and are VERY GAY,    ||
+[XXX]    ||   and every single one of them has sucked at QUAKE III ARENA over the last 20+ years.                        ||
+[XXX]    ||                  __________________________________________________________________________                  ||
+[XXX]    ||                  | APT29 : Yeah, we're the most raging homosexuals on the fuckin' planet. |                  ||
+[XXX]    ||                  |         AND, we suck at QUAKE III ARENA. So what...?                   |                  ||
+[XXX]    ||                  |         Who's gonna stop us...? Hm...?                                 |                  ||
+[XXX]    ||                  |         NOBODY... that's who.                                          |                  ||
+[XXX]    ||                  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                  ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
-$Resume.Person.AddSkill("PowerShell Deployment FE Wizard",
-                        "09/2021",
-                        "https://youtu.be/lZX5fAgczz0",
-                        @"
-This is a video where I've decided to EXTEND the CAPABILITIES & FUNCTIONS of the POWERSHELL DEPLOYMENT
-project written by:
-_____________________________________________________________________________
-| DEPLOYMENT BUNNY/JOHAN ARWIDMARK & MYKAEL NYSTROM (Both former Microsoft) |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-...as well as:
-______________________________________________________________________________
-| MICROSOFT/MICHAEL T. "Smart bastard" NIEHAUS – Vice President of Marketing |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-The original PSD Wizard GRAPHICAL USER INTERFACE that I modified, was created by:
-______________________________________
-| SYST AND DEPLOY/DAMIEN VAN ROBAEYS |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+$Resume.Person.AddSkill("Facebook BSOD",
+    "02/2022",
+    "https://youtu.be/40sQXpVh_8Y",
+    @"
+This is a BLUE SCREEN OF DEATH that was CAUSED by FACEBOOK AFFILIATES that are HACKERS and they're known
+as (APT29/ADVANCED PERSISTENT THREAT 29), and they COMMIT CYBERATTACKS/IDENTITY THEFT and are VERY GAY,
+and every single one of them has sucked at QUAKE III ARENA over the last 20+ years.
+__________________________________________________________________________
+| APT29 : Yeah, we're the most raging homosexuals on the fuckin' planet. |
+|         AND, we suck at QUAKE III ARENA. So what...?                   |
+|         Who's gonna stop us...? Hm...?                                 |
+|         NOBODY... that's who.                                          |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-<# [Add Skill[20]]
-[414]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[415]    \    A Deep Dive: PowerShell and XAML                                                                01/2021     /
-[416]    /    https://youtu.be/NK4NuQrraCI                                                                                \
-[417]    \________________________________________________________________________________________________________________/
-[418]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[419]    ||   In this video, I EDUCATE PEOPLE on: BUILDING A GRAPHICAL USER INTERFACE using XAML & POWERSHELL            ||
-[420]    ||   This video should, single-handedly, prove that I'm an EXPERT.                                              ||
-[421]    ||   I can EASILY adjust my LANGUAGE so that PEOPLE can LEARN from an EXPERT such as MYSELF.                    ||
-[422]    ||   Like an ACTUAL EXPERT that gets PAID a LOT OF MONEY to TEACH PEOPLE...                                     ||
-[423]    ||   Like, a PROFESSOR. Sorta like KEVLIN HENNEY, ROBERT SOPOLSKY, or JEREMY RIFKIN. Even TIM COREY.            ||
-[424]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[30]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    [05] 02/2022 - Facebook Censorship                                                                          /
+[XXX]    /    https://youtu.be/Jmq4yBqGhTs                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video that showcases how gay MARK ZUCKERBERG/CEO OF FACEBOOK, actually is. I posted a comment,   ||
+[XXX]    ||   and then like magic, my COMMENT is REMOVED from the system before my very eyes. This showcases a living    ||
+[XXX]    ||   example of JUST HOW GAY, MARK ZUCKERBERG truly is. Doesn't matter if he's a COOL, HIGHLY RESPECTED         ||
+[XXX]    ||   BILLIONAIRE, because this is what this GAY BASTARD HAS BEEN DOING TO ME ever since I wrote a RESPONSE      ||
+[XXX]    ||   to an AD REJECTION in 02/2019. They felt that my AD was VIOLATING PEOPLE'S PRIVACY. What I told him, was   ||
+[XXX]    ||   that he's fucking lucky that I wasn't a member of Congress during the CAMBRIDGE ANALYTICA scandal.         ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
-$Resume.Person.AddSkill("A Deep Dive: PowerShell and XAML",
-                        "03/2021",
-                        "https://youtu.be/NK4NuQrraCI",
-                        @"
-In this video, I EDUCATE PEOPLE on: BUILDING A GRAPHICAL USER INTERFACE using XAML & POWERSHELL
-This video should, single-handedly, prove that I am an EXPERT. 
-I can EASILY adjust my LANGUAGE so that PEOPLE CAN LEARN FROM AN *EXPERT* SUCH AS MYSELF.
-Like an ACTUAL EXPERT that gets PAID a LOT OF MONEY to TEACH PEOPLE...
-Like, a PROFESSOR. Sorta like KEVLIN HENNEY, ROBERT SOPOLSKY, or JEREMY RIFKIN. Even TIM COREY.
+
+$Resume.Person.AddSkill("Facebook Censorship",
+    "02/2022",
+    "https://youtu.be/Jmq4yBqGhTs",
+    @"
+This is a video that showcases how gay MARK ZUCKERBERG/CEO OF FACEBOOK, actually is. I posted a comment,
+and then like magic, my COMMENT is REMOVED from the system before my very eyes. This showcases a living 
+example of JUST HOW GAY, MARK ZUCKERBERG truly is. Doesn't matter if he's a COOL, HIGHLY RESPECTED
+BILLIONAIRE, because this is what this GAY BASTARD HAS BEEN DOING TO ME ever since I wrote a RESPONSE
+to an AD REJECTION in 02/2019. They felt that my AD was VIOLATING PEOPLE'S PRIVACY. What I told him, was
+that he's fucking lucky that I wasn't a member of Congress during the CAMBRIDGE ANALYTICA scandal.
 "@)
 
-<# [Add Skill[21]]
-[425]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[426]    \    Methodologies                                                                                   11/2019     /
-[427]    /    https://youtu.be/bZuSgBK36CE                                                                                \
-[428]    \________________________________________________________________________________________________________________/
-[429]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[430]    ||   This is a video where I was about LESS THAN (1) year into PROGRAMMING/APP DEVELOPMENT w/ POWERSHELL.       ||
-[431]    \\______________________________________________________________________________________________________________//
-#>
-
-$Resume.Person.AddSkill("Methodologies",
-                        "11/2019",
-                        "https://youtu.be/bZuSgBK36CE",
-                        "This is a video where I was about LESS THAN (1) year into PROGRAMMING/APP DEVELOPMENT w/ POWERSHELL.")
-
-<# [Add Skill[22]]
-[432]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[433]    \    Hardware Security                                                                               09/2019     /
-[434]    /    https://youtu.be/-jkDPv9H6BQ                                                                                \
-[435]    \________________________________________________________________________________________________________________/
-[436]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[437]    ||   This is a video where I discuss the INTERVIEW with ANDREW BANAS, as well as WEEPING ANGEL being REVERSE    ||
-[438]    ||   ENGINEERED, and EXPANDING UPON HIS REPORT.                                                                 ||
-[439]    ||   I also explain to people how I'm more EXPERIENCED than LINUS SEBASTIAN from LINUS MEDIA GROUP.             ||
-[440]    ||   And, that NFRASTRUCTURE was involved in ATTACKING MY EQUIPMENT.                                            ||
-[441]    ||   I also caught the attention of APT29 with this particular video.                                           ||
-[442]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[31]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    Hardware Security                                                                               09/2019     /
+[XXX]    /    https://youtu.be/-jkDPv9H6BQ                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video where I discuss the INTERVIEW with ANDREW BANAS, as well as WEEPING ANGEL being REVERSE    ||
+[XXX]    ||   ENGINEERED, and EXPANDING UPON HIS REPORT.                                                                 ||
+[XXX]    ||   I also explain to people how I'm more EXPERIENCED than LINUS SEBASTIAN from LINUS MEDIA GROUP.             ||
+[XXX]    ||   And, that NFRASTRUCTURE was involved in ATTACKING MY EQUIPMENT.                                            ||
+[XXX]    ||   I also caught the attention of APT29 with this particular video.                                           ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("Hardware Security",
-                        "09/2019",
-                        "https://youtu.be/-jkDPv9H6BQ",
-                        @"
+    "09/2019",
+    "https://youtu.be/-jkDPv9H6BQ",
+    @"
 This is a video where I discuss the INTERVIEW with ANDREW BANAS, as well as WEEPING ANGEL being REVERSE
 ENGINEERED, and EXPANDING UPON HIS REPORT.
 I also explain to people how I'm more EXPERIENCED than LINUS SEBASTIAN from LINUS MEDIA GROUP.
@@ -2520,91 +2806,25 @@ And, that NFRASTRUCTURE was involved in ATTACKING MY EQUIPMENT.
 I also caught the attention of APT29 with this particular video.
 "@)
 
-<# [Add Skill[23]]
-[443]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[444]    \    Education/Exhibition Program Design                                                             08/2019     /
-[445]    /    https://youtu.be/v6RrrzR5v2E                                                                                \
-[446]    \________________________________________________________________________________________________________________/
-[447]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[448]    ||   This is a video where I was in the MIDDLE of being ATTACKED by some HACKERS, so I decided to tell em:      ||
-[449]    ||          __________________________________________________________________________________________          ||
-[450]    ||          | Me : You know what...?                                                                 |          ||
-[451]    ||          |      Fuck you guys.                                                                    |          ||
-[452]    ||          |      I'm just gonna start RECORDING VIDEOS of ME, TEACHING OTHER PEOPLE...             |          ||
-[453]    ||          |      ...that way you queers have 2x fewer legs to stand on when you keep ATTACKING ME. |          ||
-[454]    ||          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯          ||
-[455]    \\______________________________________________________________________________________________________________//
-#>
-
-$Resume.Person.AddSkill("Education/Exhibition Program Design",
-                        "08/2019",
-                        "https://youtu.be/v6RrrzR5v2E",
-@"
-This is a video where I was in the MIDDLE of being ATTACKED by some HACKERS, so I decided to tell em:
-___________________________________________________________________________________________
-| Me : You know what...?                                                                  |
-|      Fuck you guys.                                                                     |
-|      I'm just gonna start RECORDING VIDEOS of ME, TEACHING OTHER PEOPLE...              |
-|      ...that way you queers have 2x fewer legs to stand on when you keep ATTACKING ME.  |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-"@)
-
-<# [Add Skill[24]]
-[456]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[457]    \    Hybrid | Desired State Controller                                                               05/2019     /
-[458]    /    https://youtu.be/C8NYaaqJAlI                                                                                \
-[459]    \________________________________________________________________________________________________________________/
-[460]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[461]    ||   This is a DEMONSTRATION of the MICROSOFT DEPLOYMENT TOOLKIT MODIFICATION that I spent like...              ||
-[462]    ||   (4) months working on, WHILE learning how to use PowerShell.                                               ||
-[463]    ||                                                                                                              ||
-[464]    ||   I became rather INTRIGUED with the IDEA of DEPLOYING WINDOWS 10 TO THE CUSTOMERS COMPUTERS at:             ||
-[465]    ||         ____________________________________________________________________________________________         ||
-[466]    ||         | COMPUTER ANSWERS | 1602 US-9, Clifton Park, NY 12065 | 514 MAIN ST., BENNINGTON VT 05201 |         ||
-[467]    ||         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯         ||
-[468]    ||   That's why I WAS ATTACKED on 01/15/2019, left address, I was ATTACKED AGAIN on 03/07/2019, right side.     ||
-[469]    ||                                                                                                              ||
-[470]    ||   I ASKED MY OLD INSTRUCTOR (BRUCE CHENEY/CYBERSTONE SECURITY) FOR SOME HELP...?                             ||
-[471]    ||   BUT HE'S SORT OF A DIPSHIT THAT HAS TO HIDE HIS TAIL BETWEEN HIS LEGS AND GETS OFFENDED VERY EASILY.       ||
-[472]    \\______________________________________________________________________________________________________________//
-#>
-
-$Resume.Person.AddSkill("Hybrid | Desired State Controller",
-                        "05/2019",
-                        "https://youtu.be/C8NYaaqJAlI",
-                        @"
-This is a DEMONSTRATION of the MICROSOFT DEPLOYMENT TOOLKIT MODIFICATION that I spent like...
-(4) months working on, WHILE learning how to use PowerShell.
-
-I became rather INTRIGUED with the IDEA of DEPLOYING WINDOWS 10 TO THE CUSTOMERS COMPUTERS at:
-___________________________________________________________________________________________
-| COMPUTER ANSWERS | 1602 US-9, Clifton Park, NY 12065 | 514 MAIN ST. BENNINGTON VT 05201 |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
- That's why I WAS ATTACKED on 01/15/2019, left address, I was ATTACKED AGAIN on 03/07/2019, right side.
-
-I ASKED MY OLD INSTRUCTOR (BRUCE CHENEY/CYBERSTONE SECURITY) FOR SOME HELP...?
-BUT HE'S SORT OF A DIPSHIT THAT HAS TO HIDE HIS TAIL BETWEEN HIS LEGS AND GETS OFFENDED VERY EASILY.
-"@)
-
-<# [Add Skill[25]]
-[473]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[474]    \    NFRASTRUCTURE – RICO                                                                            03/2019     /
-[475]    /    https://youtu.be/vmDVKwTF2Zc                                                                                \
-[476]    \________________________________________________________________________________________________________________/
-[477]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[478]    ||   This is a VIDEO that I sent to some woman at MICROSOFT regarding the CYBERATTACKS that I kept facing       ||
-[479]    ||   that I described up above in the PREVIOUS ENTRY. I actually ASSUMED that MICHAEL T. NIEHAUS had some       ||
-[480]    ||   HAND in ATTACKING ME.                                                                                      ||
-[481]    ||                                                                                                              ||
-[482]    ||   I don't think that he had ANYTHING to do with the attack.                                                  ||
-[483]    ||   I BELIEVE that MR. NIEHAUS has been HELPING ME ever since I recorded this video.                           ||
-[484]    \\______________________________________________________________________________________________________________//
+<# [Add Skill[32]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    NFRASTRUCTURE – RICO                                                                            03/2019     /
+[XXX]    /    https://youtu.be/vmDVKwTF2Zc                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a VIDEO that I sent to some woman at MICROSOFT regarding the CYBERATTACKS that I kept facing       ||
+[XXX]    ||   that I described up above in the PREVIOUS ENTRY. I actually ASSUMED that MICHAEL T. NIEHAUS had some       ||
+[XXX]    ||   HAND in ATTACKING ME.                                                                                      ||
+[XXX]    ||                                                                                                              ||
+[XXX]    ||   I don't think that he had ANYTHING to do with the attack.                                                  ||
+[XXX]    ||   I BELIEVE that MR. NIEHAUS has been HELPING ME ever since I recorded this video.                           ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
 $Resume.Person.AddSkill("NFRASTRUCTURE – RICO",
-                        "03/2019",
-                        "https://youtu.be/vmDVKwTF2Zc",
-                        @"
+    "03/2019",
+    "https://youtu.be/vmDVKwTF2Zc",
+    @"
 This is a VIDEO that I sent to some woman at MICROSOFT regarding the CYBERATTACKS that I kept facing
 that I described up above in the PREVIOUS ENTRY. I actually ASSUMED that MICHAEL T. NIEHAUS had SOME
 hand in ATTACKING ME...
@@ -2617,40 +2837,50 @@ performed the ATTACK that CAUSED ME TO THINK that my FORMER EMPLOYER had ATTACKE
 I BELIEVE that MR. NIEHAUS has been HELPING ME ever since I recorded this video.
 "@)
 
-<# [Add Skill[26]]
-[485]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
-[486]    \    2019_0125-(Computer Answers - MDT)                                                              01/2019     /
-[487]    /    https://youtu.be/5Cyp3pqIMRs                                                                                \
-[488]    \________________________________________________________________________________________________________________/
-[489]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
-[490]    ||   This is when I was using VIRTUALBOX developed by ORACLE...                                                 ||
-[491]    ||   ...to create a CUSTOM MODIFICATION that became HYBRID-DSC.                                                 ||
-[492]    ||   I believe that Microsoft was PISSED about this video because I wasn't using HYPER-V...                     ||
-[493]    ||                                                                                                              ||
-[494]    ||   Which is what I use basically all the time now...                                                          ||
-[495]    ||   And Microsoft agrees, HYPER-V is the way to go.                                                            ||
-[496]    ||                                                                                                              ||
-[497]    ||   What's COOL about HYPER-V is that it is 100% CONTROLLABLE from POWERSHELL.                                 ||
-[498]    ||   So, you get cool features and kick ass performance that you just can't get from VIRTUALBOX...              ||
-[499]    \\______________________________________________________________________________________________________________//
-[500]     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+<# [Add Skill[33]]
+[XXX]    /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+[XXX]    \    A Matter of National Security                                                                   02/2022     /
+[XXX]    /    https://youtu.be/e4VnZObiez8                                                                                \
+[XXX]    \________________________________________________________________________________________________________________/
+[XXX]    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+[XXX]    ||   This is a video that showcases someone in the CENTRAL INTELLIGENCE AGENCY that has been INTERACTING WITH   ||
+[XXX]    ||   ME for over 3+ years (must not have enough experience or something...) by using SCRIBBLES (VAULT 7) to     ||
+[XXX]    ||   ADD A LINE OF PIXELS to PARTICULAR LINES OF TEXT in ANY MICROSOFT WORD-LIKE EDITOR, and I TALK ABOUT       ||
+[XXX]    ||   PEGASUS/PHANTOM and JULIEN ASSANGE, and EDWARD SNOWDEN.                                                    ||
+[XXX]    \\______________________________________________________________________________________________________________//
 #>
 
-$Resume.Person.AddSkill("2019_0125-(Computer Answers - MDT)",
-                        "01/2019",
-                        "https://youtu.be/5Cyp3pqIMRs",
-                        @"
-This is when I was using VIRTUALBOX developed by ORACLE...
-...to create a CUSTOM MODIFICATION that became HYBRID-DSC.
-I believe that Microsoft was PISSED about this video because I wasn't using HYPER-V...
-
-Which is what I use basically all the time now...
-And Microsoft agrees, HYPER-V is the way to go.
-
-What's COOL about HYPER-V is that it is 100% CONTROLLABLE from POWERSHELL.
-So, you get cool features and kick ass performance that you just can't get from VIRTUALBOX...
+$Resume.Person.AddSkill("A Matter of National Security",
+    "02/2022",
+    "https://youtu.be/e4VnZObiez8",
+    @"
+This is a video that showcases someone in the CENTRAL INTELLIGENCE AGENCY that has been INTERACTING WITH
+ME for over 3+ years by using SCRIBBLES (VAULT 7) to ADD A LINE OF PIXELS to PARTICULAR LINES OF TEXT in 
+ANY MICROSOFT WORD-LIKE EDITOR, and I TALK ABOUT PEGASUS/PHANTOM and JULIEN ASSANGE, and EDWARD SNOWDEN. 
+Still, with all of these INDICATIONS that I have PLENTY of EXPERIENCE...?
+I know that someone will come right out and say that I must not have enough, yet.
 "@)
 
 $Resume.Illustrate()
 
-# Demonstration of the above from [08-11-2022] located @ https://youtu.be/QSuge7p5_I8
+# // _______________________________________________
+# // | To RENDER the COLORS and stuff, you can use |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+# $Resume.Draw() # // DEFAULT COLORS (10/Green), (12/Red), (15/White), (0/Black)
+
+# // _________
+# // | OR... |
+# // ¯¯¯¯¯¯¯¯¯
+
+# $Resume.Draw(@(10,14,15,0) # // Green, Yellow, White, Black
+
+# // ______________________________________________________
+# // | OR... whatever colors you want, knock yourself out |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+# // _________________________________________________________________________________________________
+# // | To get the STRING OUTPUT...? Run the Illustrate method above, and then use $Resume.ToString() |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Resume.ToString()
