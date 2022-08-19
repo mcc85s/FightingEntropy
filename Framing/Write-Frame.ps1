@@ -30,22 +30,22 @@ Function Write-Frame
     $Output
 }
 
-Function Top
+Function Write-Top
 {
     Return "    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\" 
 }
 
-Function Bottom
+Function Write-Bottom
 {
     Return "    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/"
 }
 
-Function Mid
+Function Write-Mid
 {
     Return "    |                                                                                                              |"
 }
 
-Function Side
+Function Write-Side
 {
     Return @(
     "    _________________________________________________________________________________________________________"
@@ -67,4 +67,59 @@ Function Write-Box
     $Hash[2] = @([char]175) * $Hash[1].Length -join ''
 
     Return $Hash[0..2]
+}
+
+Function Write-Border
+{
+    [CmdletBinding()]Param(
+        [Parameter(Position=0)][String]$InputObject
+    )
+
+    Begin
+    {
+        $Output = @( )
+        $Content = $InputObject -Split "`n"
+    }
+    Process
+    {
+        ForEach ($Line in $Content)
+        {
+            $Line = $Line.TrimEnd(" ")
+            If ($Line.Length -gt 104)
+            {
+                $Array           = [Char[]]$Line
+                $Tray            = ""
+                ForEach ($I in 0..($Array.Count-1))
+                {
+                    If ($Tray.Length -eq 104)
+                    {
+                        $Output += "   ||   {0}   ||   " -f $Tray
+                        $Tray    = ""
+                    }
+                    $Tray       += $Array[$I]
+                }
+                If ($I -gt 0 -and $I % 104 -ne 0)
+                {
+                    $Output      += "   ||   {0}   ||   " -f $Tray
+                }
+            }
+            ElseIf ($Line.Length -eq 104)
+            {
+                $Line = "   ||   {0}   ||   " -f $Line
+            }
+            ElseIf ($Line.Length -lt 104 -and $Line.Length -gt 0)
+            {
+                $Line = "   ||   {0}{1}   ||   " -f $Line, (@(" ") * (104 - $Line.Length) -join '')
+            }
+            ElseIf ($Line.Length -eq 0)
+            {
+                $Line = "   ||   {0}   ||   " -f (@(" ") * 104 -join '')
+            }
+            $Output += $Line
+        }
+    }
+    End
+    {
+        Return $Output
+    }
 }
