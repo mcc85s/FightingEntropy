@@ -1,7 +1,7 @@
    __________________________________________________________________________________________________________________   
    [====( Table of Content )========================================================================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
-   ||     Prologue |  XXX | History, the Constitution of the United States of America                              ||   
+   ||     Prologue |  XXX | History, the Constitution of the United States                                         ||   
    ||       Resume |  XXX | Michael C. Cook Sr. / Security Engineer                                                ||   
    ||            1 |  XXX | Liars in the Lead                                                                      ||   
    ||            2 |  XXX | Psychological Manipulation                                                             ||   
@@ -14,7 +14,7 @@
    ||            9 |  XXX | News vs. Propaganda                                                                    ||   
    ||           10 |  XXX | Expert Programming 101                                                                 ||   
    \\______________________________________________________________________________________________________________//   
-   [====( Prologue |  XXX | History, the Constitution of the United States of America   )===========================]   
+   [====( Prologue |  XXX | History, the Constitution of the United States      )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Introduction                                                                                               ||   
    ||   Signature Speech                                                                                           ||   
@@ -26,7 +26,7 @@
    ||   Integrity                                                                                                  ||   
    ||   Focus                                                                                                      ||   
    \\______________________________________________________________________________________________________________//   
-   [====(   Resume |  XXX | Michael C. Cook Sr. / Security Engineer                     )===========================]   
+   [====(   Resume |  XXX | Michael C. Cook Sr. / Security Engineer             )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   (Current)                                                                                                  ||   
    ||   - [00] Secure Digits Plus LLC                                                                              ||   
@@ -44,57 +44,75 @@
    ||   - [03] Capital Region Career and Technical School                                                          ||   
    ||                                                                                                              ||   
    ||   (Skills/Experience)                                                                                        ||   
-   ||   - [00] 08/2022 - Top Deck Awareness - Not News                                                             ||   
-   ||   - [01] 06/2022 - Central Intelligence Agency/VAULT 7/Archimedes                                            ||   
-   ||   - [02] 02/2022 - Central Intelligence Agency/VAULT 7/After Midnight (Laptop angle)                         ||   
-   ||   - [03] 02/2022 - Central Intelligence Agency/VAULT 7/After Midnight (Smartphone angle)                     ||   
-   ||   - [04] 02/2022 - Facebook BSOD (Blue Screen of Death)                                                      ||   
-   ||   - [05] 02/2022 - Facebook Censorship                                                                       ||   
-   ||   - [06] 07/2017 - Spectrum Cable Modem Reset                                                                ||   
-   ||   - [07] 04/2018 - How to repair an iPhone 7+                                                                ||   
-   ||   - [08] 03/2018 - Troubleshooting Network Equipment 101                                                     ||   
-   ||   - [09] 11/2017 - Troubleshooting a poorly made CRM                                                         ||   
-   ||   - [10] 08/2021 - Game Design 101 Part I - 20KDM2 - Return to Castle: Quake                                 ||   
-   ||   - [11] 08/2021 - Game Design 101 Part II - 20KDM1 - Tempered Graveyard                                     ||   
-   ||   - [12] 08/2021 - Game Design 101 Part III - 20KCTF1 - Out of my Head                                       ||   
-   ||   - [13] 08/2021 - Game Design 101 Part IV - 20KDM3 - Insane Products                                        ||   
-   ||   - [14] 05/2001 - Website Design 101 - <|3FG20K>'s Shopping Maul                                            ||   
-   ||   - [15] 03/2018 - News 10 - Interview with Andrew Banas regarding WEEPING ANGEL (CIA)                       ||   
-   ||   - [16] 05/2022 - Wireless Network Scanning Utility                                                         ||   
-   ||   - [17] 02/2022 - A Matter of National Security                                                             ||   
-   ||   - [18] 12/2021 - [FightingEntropy (π)][FEInfrastructure](Penultimate Showcase)                             ||   
-   ||   - [19] 09/2021 - PowerShell Deployment FE Wizard (PXE)                                                     ||   
-   ||   - [20] 01/2021 - A Deep Dive: PowerShell and XAML (Educational)                                            ||   
-   ||   - [21] 11/2019 - Methodologies (Educational)                                                               ||   
-   ||   - [22] 09/2019 - Hardware Security (Educational)                                                           ||   
-   ||   - [23] 08/2019 - Education/Exhibition Program Design (Educational)                                         ||   
-   ||   - [24] 05/2019 - Hybrid | Desired State Controller (Exhibition)                                            ||   
-   ||   - [25] 03/2019 - NFRASTRUCTURE – RICO (Beginning Investigation)                                            ||   
-   ||   - [26] 01/2019 - 2019_0125-(Computer Answers - MDT)                                                        ||   
+   ||   _______________________________________________________________________________________________            ||   
+   ||   | [Application Development + Network/Hardware Magistration + Virtualization + Graphic Design] |            ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            ||   
+   ||   - [01] FightingEntropy FEInfrastructure                                                                    ||   
+   ||   - [02] Advanced Domain Controller Promotion                                                                ||   
+   ||   - [03] A Deep Dive: PowerShell and XAML                                                                    ||   
+   ||   - [04] Wireless Network Scanning Utility                                                                   ||   
+   ||   - [05] PowerShell Deployment FE Wizard                                                                     ||   
+   ||   - [06] 2019_0125-(Computer Answers - MDT)                                                                  ||   
+   ||   - [07] Install-pfSense                                                                                     ||   
+   ||   - [08] Advanced System Administration Lab                                                                  ||   
+   ||   - [09] Windows Image Extraction                                                                            ||   
+   ||   - [10] Flight Test Part 1                                                                                  ||   
+   ||   - [11] Flight Test Part 2                                                                                  ||   
+   ||   - [12] Hybrid | Desired State Controller                                                                   ||   
+   ||   - [13] Methodologies                                                                                       ||   
+   ||   - [14] Education/Exhibition Program Design                                                                 ||   
+   ||   ___________________________________                                                                        ||   
+   ||   | [Network/Hardware Magistration] |                                                                        ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                                        ||   
+   ||   - [01] Spectrum Cable Modem Reset                                                                          ||   
+   ||   - [02] How to repair an iPhone 7+                                                                          ||   
+   ||   - [03] Troubleshooting Network Equipment 101                                                               ||   
+   ||   - [04] Troubleshooting a poorly made CRM                                                                   ||   
+   ||   ____________________                                                                                       ||   
+   ||   | [Graphic Design] |                                                                                       ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                                                       ||   
+   ||   - [01] Game Design 101 Part I - 20KDM2 - Return to Castle: Quake                                           ||   
+   ||   - [02] Game Design 101 Part II - 20KDM1 - Tempered Graveyard                                               ||   
+   ||   - [03] Game Design 101 Part III - 20KCTF1 - Out of my head                                                 ||   
+   ||   - [04] Game Design 101 Part IV - 20KDM3 - Insane Products                                                  ||   
+   ||   - [05] Website Design 101 - BFG20K's Shopping Maul                                                         ||   
+   ||   _______________________________________                                                                    ||   
+   ||   | [Security Engineering & Journalism] |                                                                    ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                                    ||   
+   ||   - [01] Top Deck Awareness - Not News                                                                       ||   
+   ||   - [02] News 10 - Interview with Andrew Banas regarding WEEPING ANGEL                                       ||   
+   ||   - [03] Central Intelligence Agency/VAULT 7/Archimedes                                                      ||   
+   ||   - [04] Central Intelligence Agency/VAULT 7/After Midnight (Laptop angle)                                   ||   
+   ||   - [05] Central Intelligence Agency/VAULT 7/After Midnight (Smartphone angle)                               ||   
+   ||   - [06] Facebook BSOD                                                                                       ||   
+   ||   - [07] Facebook Censorship                                                                                 ||   
+   ||   - [08] Hardware Security                                                                                   ||   
+   ||   - [09] NFRASTRUCTURE – RICO                                                                                ||   
+   ||   - [10] A Matter of National Security                                                                       ||   
    \\______________________________________________________________________________________________________________//   
-   [====(        1 |  XXX | Liars in the Lead                                           )===========================]   
+   [====(        1 |  XXX | Liars in the Lead                                   )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Overview                                                                                                   ||   
-   ||   Skit                           [~] It’s Not News                                                           ||   
+   ||   Skit                         [~] It’s Not News                                                             ||   
    ||   Fox News → Not News                                                                                        ||   
    ||   When Insults Are Warranted                                                                                 ||   
    ||   Censorship Meets Tyranny                                                                                   ||   
    ||   Climate Change                                                                                             ||   
-   ||   Skit                           [~] Sean Hannity and Rupert Murdoch                                         ||   
+   ||   Skit                         [~] Sean Hannity and RUPERT MURDOCK                                           ||   
    ||   Abusive Relationship                                                                                       ||   
-   ||   Enlightenment                  [!] Why smartphones are useful AND deadly                                   ||   
+   ||   Enlightenment                [!] Why smartphones are useful AND deadly                                     ||   
    ||   What is Censorship and Why does it happen?                                                                 ||   
    ||   Censorship and Militias: Peaceful versus Non-Peaceful Resolution                                           ||   
-   ||   Shoutout                       [+] George Pataki                                                           ||   
+   ||   Shoutout                     [+] George Pataki                                                             ||   
    ||   Give Andrew Cuomo SOME Credit                                                                              ||   
-   ||   Excerpt                        [~] Mark Zuckerberg                                                         ||   
+   ||   Excerpt                      [~] Mark Zuckerberg                                                           ||   
    ||   Expressing Something Offensive                                                                             ||   
    ||   Militias                                                                                                   ||   
    ||   Peaceful Resolution                                                                                        ||   
    ||   Non-Peaceful Resolution                                                                                    ||   
-   ||   Excerpt                        [+] Constitutional Guarantees                                               ||   
+   ||   Excerpt                      [+] Constitutional Guarantees                                                 ||   
    \\______________________________________________________________________________________________________________//   
-   [====(        2 |  XXX | Psychological Manipulation                                  )===========================]   
+   [====(        2 |  XXX | Psychological Manipulation                          )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Overview                                                                                                   ||   
    ||   Explanation                                                                                                ||   
@@ -112,111 +130,112 @@
    ||   Examination                                                                                                ||   
    ||   Solution                                                                                                   ||   
    ||   Multi-Pronged Approach (1)                                                                                 ||   
-   ||   Skit                           [~] You be the Judge (1)                                                    ||   
+   ||   Skit                         [~] You be the Judge (1)                                                      ||   
    ||   Multi-Pronged Approach (2)                                                                                 ||   
-   ||   Skit                           [~] You be the Judge (2)                                                    ||   
+   ||   Skit                         [~] You be the Judge (2)                                                      ||   
    ||   Multi-Pronged Approach (3)                                                                                 ||   
-   ||   Skit                           [~] You be the Judge (3)                                                    ||   
+   ||   Skit                         [~] You be the Judge (3)                                                      ||   
    ||   Multi-Pronged Approach (4)                                                                                 ||   
    ||   Cyberattacks (1)                                                                                           ||   
    ||   Recordings                                                                                                 ||   
    ||   Narrative                                                                                                  ||   
-   ||   Skit                           [~] Kristen Stangle                                                         ||   
+   ||   Skit                         [~] Kristen Stangle                                                           ||   
    ||   Body Language                                                                                              ||   
-   ||   Analogy                        [~] The cat’s outta the bag                                                 ||   
+   ||   Analogy                      [~] The cat’s outta the bag                                                   ||   
    ||   Respect is a TWO-WAY-STREET (1)                                                                            ||   
-   ||   Skit                           [~] $4500.00/month → $6500.00/month                                         ||   
+   ||   Skit                         [~] $4500.00                                                                  ||   
    ||   Respect is a TWO-WAY-STREET (2)                                                                            ||   
-   ||   Story                          [~] Ted Etoll, Lou Communications/Metroland                                 ||   
+   ||   Story                        [~] Ted Etoll, Lou Communications/Metroland                                   ||   
    ||   Insults                                                                                                    ||   
    ||   Threats                                                                                                    ||   
    ||   De-escalation                                                                                              ||   
    ||   Cyberattacks (2)                                                                                           ||   
-   ||   Excerpt                        [~] Raw Talent                                                              ||   
+   ||   Excerpt                      [~] Raw Talent                                                                ||   
    ||   Hidden Gov’t and Corruption                                                                                ||   
    ||   Tyranny                                                                                                    ||   
    \\______________________________________________________________________________________________________________//   
-   [====(        3 |  XXX | See no evil, Speak no evil, Hear no evil (Malice)           )===========================]   
+   [====(        3 |  XXX | See no evil, Speak no evil, Hear no evil (Malice)   )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Overview                                                                                                   ||   
    ||   Identification                                                                                             ||   
    ||   Moral Dilemma                                                                                              ||   
    ||   Determining Seriousness                                                                                    ||   
-   ||   Determining Scope, Severity, and Suspicion                                                                 ||   
+   ||   Determining “Scope”, “Severity”, and “Suspicion”                                                           ||   
    ||   Association List                                                                                           ||   
    ||   Impressions                                                                                                ||   
    ||   Observations                                                                                               ||   
    ||   Resistance                                                                                                 ||   
    ||   Narrative                                                                                                  ||   
    \\______________________________________________________________________________________________________________//   
-   [====(        4 |  XXX | The "Week"                                                  )===========================]   
+   [====(        4 |  XXX | The "Week"                                          )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Overview                                                                                                   ||   
-   ||   Theodore Roosevelt             [|] (05/19/20 → 05/21/20)                                                   ||   
-   ||   Beginning                      [|] (05/21/20 1500 → 05/22/20 1700)                                         ||   
-   ||   S.A.N.G                        [|] (05/22/20 2330)                                                         ||   
-   ||   Flashback                      [~] Gary McQueen                                                            ||   
-   ||   Schenectady                    [|] (05/23/20 0100 → 05/23/20 0230)                                         ||   
-   ||   Affairs in Order               [|] (05/23/20 1200 → 05/23/20 1330)                                         ||   
-   ||   On the Offensive               [|] (05/23/20 2000 → 05/24/20 0230)                                         ||   
-   ||   35th Birthday                  [|] (05/24/20 1200)                                                         ||   
-   ||   Biette Road                    [|] (05/24/20 1800)                                                         ||   
-   ||   Before Catricala               [|] (05/24/20 1845)                                                         ||   
-   ||   Excerpt                        [~] Now that’s what I call ‘Alliteration’                                   ||    
-   ||   Catricala                      [|] (05/24/20 1910)                                                         ||   
-   ||   Flashback                      [!] Eric Catricala                                                          ||   
-   ||   Catricala                      [|] (05/24/20 1910)                                                         ||   
-   ||   After Catricala                [|] (05/24/20 1915)                                                         ||   
-   ||   Bell Atlantic                  [|] (05/24/20 1930)                                                         ||   
-   ||   Halfmoon Town Hall             [|] (05/24/20 2045)                                                         ||   
-   ||   Solar Drive                    [|] (05/24/20 2200)                                                         ||   
-   ||   Mission Complete               [|] (05/24/20 2300)                                                         ||   
-   ||   Skit                           [~] Pencil Dickman vs. Fatcock Goodman                                      ||   
-   ||   Day Preceding the Attack       [|] (05/25/20 1200 → 05/25/20 1700)                                         ||   
-   ||   Night of the Attack            [|] (05/25/20 2100 → 05/25/20 2343)                                         ||   
-   ||   Skit                           [~] John Pickett and Scott Salvadore                                        ||   
-   ||   Flashback                      [!] The Attack                                                              ||   
-   ||   The Attack                     [|] (05/25/20 2343 → 05/26/20 0130)                                         ||   
-   ||   Story                          [~] Top Deck Awareness                                                      ||   
-   ||   Home Stretch                   [|] (05/26/20 0130 → 05/26/20 0155)                                         ||   
-   ||   Flashback                      [!] (SCSO-2020-028501) Zappone → Home                                       ||   
+   ||   Theodore Roosevelt           [|] (05/19/20 → 05/21/20)                                                     ||   
+   ||   Beginning                    [|] (05/21/20 1500 → 05/22/20 1700)                                           ||   
+   ||   S.A.N.G                      [|] (05/22/20 2330)                                                           ||   
+   ||   Flashback                    [~] Gary McQueen                                                              ||   
+   ||   Schenectady                  [|] (05/23/20 0100 → 05/23/20 0230)                                           ||   
+   ||   Affairs in Order             [|] (05/23/20 1200 → 05/23/20 1330)                                           ||   
+   ||   On the Offensive             [|] (05/23/20 2000 → 05/24/20 0230)                                           ||   
+   ||   35th Birthday                [|] (05/24/20 1200)                                                           ||   
+   ||   Biette Road                  [|] (05/24/20 1800)                                                           ||   
+   ||   Before Catricala             [|] (05/24/20 1845)                                                           ||   
+   ||   Excerpt                      [~] Now that’s what I call ‘Alliteration’                                     ||   
+   ||   Before Catricala             [|] (05/24/20 1845)                                                           ||   
+   ||   Catricala                    [|] (05/24/20 1910)                                                           ||   
+   ||   Flashback                    [!] Eric Catricala                                                            ||   
+   ||   Catricala                    [|] (05/24/20 1910)                                                           ||   
+   ||   After Catricala              [|] (05/24/20 1915)                                                           ||   
+   ||   Bell Atlantic                [|] (05/24/20 1930)                                                           ||   
+   ||   Halfmoon Town Hall           [|] (05/24/20 2045)                                                           ||   
+   ||   Solar Drive                  [|] (05/24/20 2200)                                                           ||   
+   ||   Mission Complete             [|] (05/24/20 2300)                                                           ||   
+   ||   Skit                         [~] Pencil Dickman vs. Fatcock Goodman                                        ||   
+   ||   Day Preceding the Attack     [|] (05/25/20 1200 → 05/25/20 1700)                                           ||   
+   ||   Night of the Attack          [|] (05/25/20 2100 → 05/25/20 2343)                                           ||   
+   ||   Skit                         [~] John Pickett and Scott Salvadore                                          ||   
+   ||   Flashback                    [!] The Attack                                                                ||   
+   ||   The Attack                   [|] (05/25/20 2343 → 05/26/20 0130)                                           ||   
+   ||   Story                        [~] Top Deck Awareness                                                        ||   
+   ||   Home Stretch                 [|] (05/26/20 0130 → 05/26/20 0155)                                           ||   
+   ||   Flashback                    [!] (SCSO-2020-028501) Zappone → Home                                         ||   
    ||   Barely Survived                                                                                            ||   
-   ||   Flashback                      [~] Stonecrest/Werner 05/26/20                                              ||   
+   ||   Flashback                    [~] Stonecrest/Werner 05/26/20                                                ||   
    ||   Day After the Attack (1)                                                                                   ||   
-   ||   Skit                           [~] Eric Catricala and James Leonard                                        ||   
+   ||   Skit                         [~] Eric Catricala and James Leonard                                          ||   
    ||   Day After the Attack (2)                                                                                   ||   
    ||   Cortana                                                                                                    ||   
    ||   Quantum Physics                                                                                            ||   
-   ||   Skit                           [~] FBI Investigator Ryan Ward                                              ||   
+   ||   Skit                         [~] FBI Investigator Ryan Ward                                                ||   
    ||   Reality Check (1)                                                                                          ||   
-   ||   Example                        [+] Someone spiked the punchbowl at Alcoholics Anonymous                    ||   
+   ||   Example                      [+] Someone spiked the punchbowl at Alcoholics Anonymous                      ||   
    ||   Reality Check (2)                                                                                          ||   
    ||   Exploits                                                                                                   ||   
    ||   Control                                                                                                    ||   
-   ||   Skit                           [~] Tatiana Cleveland                                                       ||   
-   ||   Excerpt                        [~] SCSO Captain Jeffrey Brown                                              ||   
+   ||   Skit                         [~] Tatiana Cleveland                                                         ||   
+   ||   Excerpt                      [~] SCSO Captain Jeffrey Brown                                                ||   
    ||                                                                                                              ||   
    \\______________________________________________________________________________________________________________//   
-   [====(        5 |  XXX | If you were smart, you’d be rich by now                     )===========================]   
+   [====(        5 |  XXX | If you were smart, you’d be rich by now             )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Overview (1)                                                                                               ||   
-   ||   Shoutout                       [+] Pablo Escobar                                                           ||   
+   ||   Shoutout                     [+] Pablo Escobar                                                             ||   
    ||   Overview (2)                                                                                               ||   
-   ||   Skit                           [~] Morning Briefing                                                        ||   
+   ||   Skit                         [~] Morning Briefing                                                          ||   
    ||   Overview (3)                                                                                               ||   
    ||   Reverse Psychology (1)                                                                                     ||   
    ||   Question (1)                                                                                               ||   
-   ||   Skit                           [~] FBI Raids the Clinton Residence                                         ||   
+   ||   Skit                         [~] FBI Raids the Clinton Residence                                           ||   
    ||   Question (2)                                                                                               ||   
    ||   Domino Theory (1)                                                                                          ||   
-   ||   Excerpt                        [~] Starlite                                                                ||   
+   ||   Excerpt                      [~] Starlite                                                                  ||   
    ||   Domino Theory (2)                                                                                          ||   
-   ||   Skit                           [~] Always Watchin’                                                         ||   
+   ||   Skit                         [~] Always Watchin’                                                           ||   
    ||   Reverse Psychology (2)                                                                                     ||   
    ||   Masters                                                                                                    ||   
    ||   Obedience                                                                                                  ||   
-   ||   Skit                           [~] Order of Credibility                                                    ||   
-   ||   Shoutout                       [+] Barack Obama                                                            ||   
+   ||   Skit                         [~] Order of Credibility                                                      ||   
+   ||   Shoutout                     [+] Barack Obama                                                              ||   
    ||   Focus                                                                                                      ||   
    ||   Intelligence                                                                                               ||   
    ||   Warren Buffett                                                                                             ||   
@@ -225,9 +244,9 @@
    ||   Elon Musk                                                                                                  ||   
    ||   Mark Zuckerberg                                                                                            ||   
    ||   Examination                                                                                                ||   
-   ||   Microsoft                       -  World’s 1st place Software Engineering                                  ||   
-   ||   Amazon                          -  The Bookstore and so much more                                          ||   
-   ||   Skit                           [~] Amazon Web Services                                                     ||   
+   ||   Microsoft                     -  World’s 1st place Software Engineering                                    ||   
+   ||   Amazon                        -  The Bookstore and so much more                                            ||   
+   ||   Skit                         [~] Amazon Web Services                                                       ||   
    ||   Programmers                                                                                                ||   
    ||   Ingenuity                                                                                                  ||   
    ||   Complacency                                                                                                ||   
@@ -242,31 +261,31 @@
    ||   Elaborate                                                                                                  ||   
    ||   Specifics                                                                                                  ||   
    ||   Suggestions                                                                                                ||   
-   ||   Skit                           [~] Strong Suggestions                                                      ||   
+   ||   Skit                         [~] Strong Suggestions                                                        ||   
    ||   Suggestions                                                                                                ||   
    ||   Conclusion                                                                                                 ||   
-   ||   Skit                           [~] Observation → Opinion → Fact                                            ||   
+   ||   Skit                         [~] Observation → Opinion → Fact                                              ||   
    \\______________________________________________________________________________________________________________//   
-   [====(        6 |  XXX | Hidden Government                                           )===========================]   
+   [====(        6 |  XXX | Hidden Government                                   )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Overview                                                                                                   ||   
    ||   Local Correlation                                                                                          ||   
-   ||   Scenario 1                     [+] They (win/survive), you (lose/die)                                      ||   
-   ||   Scenario 2                     [+] They (lose/die), you STILL (lose/go to prison)                          ||   
-   ||   Scenario 3                     [+] They (lose/go to prison), you (win/What's the problem officer?)         ||   
-   ||   Scenario 4                     [+] They (lose/die), you (win/Why do the police keep going missing?)        ||   
+   ||   Scenario 1                [+] They (win/survive), you (lose/die)                                           ||   
+   ||   Scenario 2                [+] They (lose/die), you STILL (lose/go to prison)                               ||   
+   ||   Scenario 3                [+] They (lose/go to prison), you (win/What's the problem officer?)              ||   
+   ||   Scenario 4                [+] They (lose/die), you (win/Why do the police keep going missing?)             ||   
    ||   Identification (1)                                                                                         ||   
    ||   Militia Cont'd                                                                                             ||   
-   ||   Skit                           [~] Negotiation                                                             ||   
+   ||   Skit                      [~] Negotiation                                                                  ||   
    ||   Identification (2)                                                                                         ||   
-   ||   Skit                           [~] Tucker’s Talking Smack                                                  ||   
+   ||   Skit                      [~] Tucker’s Talking Smack                                                       ||   
    ||   Identification (3)                                                                                         ||   
-   ||   Thesis                         [+] Change the name of Fox News → Not News                                  ||   
+   ||   Thesis                    [+] Change the name of Fox News → Not News                                       ||   
    ||   Counter-Manipulation (1)                                                                                   ||   
-   ||   Flashback                      [~] Dwayne Coonradt (Morality)                                              ||   
+   ||   Flashback                 [~] Dwayne Coonradt (Morality)                                                   ||   
    ||   Counter-Manipulation (2)                                                                                   ||   
    ||   Used to be News...? Now we’re not news                                                                     ||   
-   ||   Skit                           [~] Ted Cruz (Part 1)                                                       ||   
+   ||   Skit                      [~] Ted Cruz (Part 1)                                                            ||   
    ||   Interactions                                                                                               ||   
    ||   Excerpt [~] Familiar with the Technology                                                                   ||   
    ||   Familiar with the Technology (1)                                                                           ||   
@@ -281,9 +300,9 @@
    ||   Reasons They Want Me Dead                                                                                  ||   
    ||   Shaping the Question                                                                                       ||   
    ||   Leavey Synopsis (May 31st, 2020)                                                                           ||   
-   ||   Excerpt                        [~] Jake Gunslinger                                                         ||   
+   ||   Excerpt                   [~] Jake Gunslinger                                                              ||   
    \\______________________________________________________________________________________________________________//   
-   [====(        7 |  XXX | USA-Patriot Act of 2001 and Surveillance Capitalism         )===========================]   
+   [====(        7 |  XXX | USA-Patriot Act of 2001 and Surveillance Capitalism )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Overview                                                                                                   ||   
    ||   Bigger Picture                                                                                             ||   
@@ -291,16 +310,16 @@
    ||   Legislation                                                                                                ||   
    ||   Iraq/Kuwait                                                                                                ||   
    ||   Afghanistan                                                                                                ||   
-   ||   Skit                           [~] George W. Bush and Richard Sackler                                      ||   
+   ||   Skit                         [~] George W. Bush and Richard Sackler                                        ||   
    ||   War on Terror                                                                                              ||   
    ||   Preparation                                                                                                ||   
    ||   Examination (1)                                                                                            ||   
-   ||   Excerpt                        [~] USA-PATRIOT Act : Statutes                                              ||   
+   ||   Excerpt                      [~] USA-PATRIOT Act : Statutes                                                ||   
    ||   Examination (2)                                                                                            ||   
-   ||   Analogy                        [~] The Gay Kid                                                             ||   
+   ||   Analogy                      [~] The Gay Kid                                                               ||   
    ||   Examination (3)                                                                                            ||   
    ||   Compare/Contrast                                                                                           ||   
-   ||   Excerpt                        [+] Julien P. Assange                                                       ||   
+   ||   Excerpt                      [+] Julien P. Assange                                                         ||   
    ||   WikiLeaks                                                                                                  ||   
    ||   Collateral Murder                                                                                          ||   
    ||   Vault 7 (Summary)                                                                                          ||   
@@ -330,9 +349,9 @@
    ||   - [23] Angel Fire              [~] Various Windows exploitation                                            ||   
    ||   - [24] Protego                 [~] Tool for missile control systems                                        ||   
    ||   Hidden Government                                                                                          ||   
-   ||   Review                         [~] The Week                                                                ||   
-   ||   Excerpt                        [~] Factors                                                                 ||   
-   ||   Skit                           [~] Ted Cruz’ Fantasy                                                       ||   
+   ||   Review                       [~] The Week                                                                  ||   
+   ||   Excerpt                      [~] Factors                                                                   ||   
+   ||   Skit                         [~] Ted Cruz’ Fantasy                                                         ||   
    ||   Rich Brat                                                                                                  ||   
    ||   Comparisons                                                                                                ||   
    ||   - [01] Breaking Bad                                                                                        ||   
@@ -348,28 +367,28 @@
    ||   Microsoft - Larger than Life                                                                               ||   
    ||   Intellectual Property Theft                                                                                ||   
    ||   Cool Factor                                                                                                ||   
-   ||   Excerpt                        [~] Edward J. Snowden (Expert Cybercommando)                                ||   
+   ||   Excerpt                      [~] Edward J. Snowden (Expert Cybercommando)                                  ||   
    ||   Relevant Details                                                                                           ||   
-   ||   Original                       [~] The Uncanny Valley                                                      ||   
+   ||   Original                     [~] The Uncanny Valley                                                        ||   
    ||   Injustice                                                                                                  ||   
-   ||   Excerpt                        [~] General Kenneth F. ‘top-shelf commander’ McKenzie Jr.                   ||   
+   ||   Excerpt                      [~] General Kenneth F. ‘top-shelf commander’ McKenzie Jr.                     ||   
    ||   Taking Accountability                                                                                      ||   
-   ||   Skit                           [~] Bob Lutz : Show us mortals how to run a car company                     ||   
+   ||   Skit                         [~] Bob Lutz : Show us mortals how to run a car company                       ||   
    ||   Monarchy                                                                                                   ||   
-   ||   Excerpt                        [~] Communist outpost in the heart of a ‘democracy’                         ||   
+   ||   Excerpt                      [~] Communist outpost in the heart of a ‘democracy’                           ||   
    ||   Colorful Metaphors (1)                                                                                     ||   
-   ||   Skit                           [~] Jeopardy! Champion, Ken Jennings                                        ||   
+   ||   Skit                         [~] Jeopardy! Champion, Ken Jennings                                          ||   
    ||   Colorful Metaphors (2)                                                                                     ||   
-   ||   Excerpt                        [~] Presidents that have lied                                               ||   
+   ||   Excerpt                      [~] Presidents that have lied                                                 ||   
    ||   Architects & Engineers for 9/11 Truth                                                                      ||   
    ||   When the government goes too far                                                                           ||   
    ||   Who do they go after? (1)                                                                                  ||   
-   ||   Skit                           [~] IC3/Internet & Computer Crime Cybercommando Task Force                  ||   
+   ||   Skit                         [~] IC3/Internet & Computer Crime Cybercommando Task Force                    ||   
    ||   Who do they go after? (2)                                                                                  ||   
    ||   Logic Board                                                                                                ||   
    ||   Changing Direction                                                                                         ||   
    ||   June 13th, 2020 (1)                                                                                        ||   
-   ||   Skit                           [~] Kristin Johnson                                                         ||   
+   ||   Skit                         [~] Kristin Johnson                                                           ||   
    ||   June 13th, 2020 (2)                                                                                        ||   
    ||   June 16th, 2020                                                                                            ||   
    ||   June 17th, 2020                                                                                            ||   
@@ -383,7 +402,7 @@
    ||   - [07] Boomer-McCloud Plaza                                                                                ||   
    ||   - [08] Walmart                                                                                             ||   
    ||   - [09] GT Toys                                                                                             ||   
-   ||   Flashback                      [~] GT Toys/Trooper Borden/Clayton                                          ||   
+   ||   Flashback                    [~] GT Toys/Trooper Borden/Clayton                                            ||   
    ||   June 18th, 2020 (2)                                                                                        ||   
    ||   June 19th, 2020                                                                                            ||   
    ||   June 20th, 2020                                                                                            ||   
@@ -394,14 +413,14 @@
    ||   Turning the screws                                                                                         ||   
    ||   Narrative                                                                                                  ||   
    ||   Hiding Guilt (1)                                                                                           ||   
-   ||   Excerpt                        [~] Trooper Borden                                                          ||   
+   ||   Excerpt                      [~] Trooper Borden                                                            ||   
    ||   Hiding Guilt (2)                                                                                           ||   
    ||   Asking the Accused                                                                                         ||   
-   ||   Skit                           [~] Even a magic genie has limitations                                      ||   
+   ||   Skit                         [~] Even a magic genie has limitations                                        ||   
    ||   Exclusion                                                                                                  ||   
    ||   Verdict                                                                                                    ||   
    \\______________________________________________________________________________________________________________//   
-   [====(        8 |  XXX | The Rich Brat                                               )===========================]   
+   [====(        8 |  XXX | The Rich Brat                                       )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Board of Possibilities                                                                                     ||   
    ||   Clues                                                                                                      ||   
@@ -432,63 +451,63 @@
    ||   Evidence                                                                                                   ||   
    ||   Conclusion                                                                                                 ||   
    ||   Catricala                                                                                                  ||   
-   ||   Skit                           [~] Conducting a Sting Operation                                            ||   
+   ||   Skit                         [~] Conducting a Sting Operation                                              ||   
    ||   Intent (3)                                                                                                 ||   
    ||   Application                                                                                                ||   
-   ||   Flashback                      [~] Family Court - April 6th, 2021                                          ||   
+   ||   Flashback                    [~] Family Court - April 6th, 2021                                            ||   
    ||   Attitude Adjustment                                                                                        ||   
-   ||   Flashback                      [~] Eric Schnakenberg M.D. | 1783 Route 9 Ste 204, Clifton Park, 12065      ||   
+   ||   Flashback                    [~] Eric Schnakenberg M.D. | 1783 Route 9 Ste 204, Clifton Park, 12065        ||   
    ||   Correlation                                                                                                ||   
    ||   Compiling an effective motivator (1)                                                                       ||   
-   ||   Skit                           [~] Idea Competition                                                        ||   
+   ||   Skit                         [~] Idea Competition                                                          ||   
    ||   Compiling an effective motivator (2)                                                                       ||   
    ||   Intent (4)                                                                                                 ||   
    ||   You sound like a broken record                                                                             ||   
    ||   Ultimatum                                                                                                  ||   
    ||   Summary (2)                                                                                                ||   
-   ||   Excerpt                        [~] Room for one more...                                                    ||   
+   ||   Excerpt                      [~] Room for one more...                                                      ||   
    ||   Summary (3)                                                                                                ||   
    ||   Intent (5)                                                                                                 ||   
-   ||   Skit                           [~] Lawyer Man 5000                                                         ||   
-   ||   Excerpt                        [~] Taking the law into one’s own hands                                     ||   
-   ||   Skit                           [~] Ted Cruz (2)                                                            ||   
-   ||   Excerpt                        [~] That dudes crazy~!                                                      ||   
-   ||   Skit                           [~] Ted Cruz (3)                                                            ||   
+   ||   Skit                         [~] Lawyer Man 5000                                                           ||   
+   ||   Excerpt                      [~] Taking the law into one’s own hands                                       ||   
+   ||   Skit                         [~] Ted Cruz (2)                                                              ||   
+   ||   Excerpt                      [~] That dudes crazy~!                                                        ||   
+   ||   Skit                         [~] Ted Cruz (3)                                                              ||   
    ||   Hidden Government                                                                                          ||   
-   ||   Skit                           [~] Sky High Stacks                                                         ||   
+   ||   Skit                         [~] Sky High Stacks                                                           ||   
    ||   Propaganda                                                                                                 ||   
    \\______________________________________________________________________________________________________________//   
-   [====(        9 |  XXX | News vs. Propaganda                                         )===========================]   
+   [====(        9 |  XXX | News vs. Propaganda                                 )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Overview                                                                                                   ||   
    ||   Examination (1)                                                                                            ||   
-   ||   Discussion                     [~] Oil Corporation [Agenda] → Deny Climate Change                          ||   
-   ||   Shoutout                       [+] My Grandfather Thomas Cook                                              ||   
-   ||   Shoutout                       [+] Theodore Roosevelt: One of the greatest former presidents               ||   
+   ||   Discussion                   [~] Oil Corporation [Agenda] → Deny Climate Change                            ||   
+   ||   Shoutout                     [+] My Grandfather Thomas Cook                                                ||   
+   ||   Shoutout                     [+] Theodore Roosevelt: One of the greatest former presidents                 ||   
    ||   Examination (2)                                                                                            ||   
-   ||   Skit                           [~] Lester Holt accidentally hurled an F bomb                               ||   
+   ||   Skit                         [~] Lester Holt accidentally hurled an F bomb                                 ||   
    ||   Examination (3)                                                                                            ||   
-   ||   Skit                           [~] X-Files: Elementary School Synopsis                                     ||   
+   ||   Skit                         [~] X-Files: Elementary School Synopsis                                       ||   
    ||   Examination (4)                                                                                            ||   
-   ||   Excerpt                        [~] Square peg, round hole                                                  ||   
-   ||   Skit                           [~] Dramatic Genius                                                         ||   
+   ||   Excerpt                      [~] Square peg, round hole                                                    ||   
+   ||   Skit                         [~] Dramatic Genius                                                           ||   
    ||   Examination (5)                                                                                            ||   
-   ||   Skit                           [~] You and your god damn books...~!                                        ||   
+   ||   Skit                         [~] You and your god damn books...~!                                          ||   
    ||   Examination (6)                                                                                            ||   
-   ||   Shoutout                       [+] Tribute to Lester Holt                                                  ||   
+   ||   Shoutout                     [+] Tribute to Lester Holt                                                    ||   
    ||   Reality                                                                                                    ||   
-   ||   Shoutout                       [+] Tribute to Richard Engel                                                ||   
+   ||   Shoutout                     [+] Tribute to Richard Engel                                                  ||   
    ||   Examination (7)                                                                                            ||   
-   ||   Excerpt                        [+] Not News Trailer (1)                                                    ||   
-   ||   Excerpt                        [+] Not News Trailer (2)                                                    ||   
-   ||   Excerpt                        [+] Not News Trailer/Interview with Tucker Carlson                          ||   
-   ||   Excerpt                        [+] Not News Trailer/Interview with Sean Hannity                            ||   
+   ||   Excerpt                      [+] Not News Trailer (1)                                                      ||   
+   ||   Excerpt                      [+] Not News Trailer (2)                                                      ||   
+   ||   Excerpt                      [+] Not News Trailer/Interview with Tucker Carlson                            ||   
+   ||   Excerpt                      [+] Not News Trailer/Interview with Sean Hannity                              ||   
    ||   Examination (8)                                                                                            ||   
    ||   Conclusion (1)                                                                                             ||   
-   ||   Skit                           [~] Tucker and Bob’s golf match                                             ||   
+   ||   Skit                         [~] Tucker and Bob’s golf match                                               ||   
    ||   Conclusion (2)                                                                                             ||   
    \\______________________________________________________________________________________________________________//   
-   [====(       10 |  XXX | Expert Programming 101                                      )===========================]   
+   [====(       10 |  XXX | Expert Programming 101                              )===================================]   
    //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
    ||   Overview (1)                                                                                               ||   
    ||   Design Choices                                                                                             ||   
@@ -527,7 +546,7 @@
    ||   Excerpt [~] Comparing CSharp & PowerShell                                                                  ||   
    ||   Embrace, Extend, and Enhance                                                                               ||   
    ||   Internet Explorer vs. Chrome vs. Edge                                                                      ||   
-   ||   Skit                           [~] Dreaming Big, Building Bigger                                           ||   
+   ||   Skit [~] Dreaming Big, Building Bigger                                                                     ||   
    ||   The Two Titans of Technology                                                                               ||   
    ||   Continued, Language Construction/Similarities (Object-Oriented vs. Functional vs. String-based)            ||   
    ||   Quantum Physics, Entanglement, and Superposition                                                           ||   
@@ -539,7 +558,7 @@
    ||   Microsoft's Golden Standards                                                                               ||   
    ||   Insulting General Motors and Big Oil                                                                       ||   
    ||   Climate Change                                                                                             ||   
-   ||   Skit                           [~] Steve Jobs: 'You've baked a lovely cake...'                             ||   
+   ||   Skit [~] Steve Jobs: 'You've baked a lovely cake...'                                                       ||   
    ||   Martial Law                                                                                                ||   
    ||   Judgement Day                                                                                              ||   
    ||   Cyberterrorism                                                                                             ||   
@@ -553,4 +572,4 @@
    ||   Conclusion                                                                                                 ||   
    \\___                                                                                                        ___//   
     ¯¯¯\\______________________________________________________________________________________________________//¯¯¯    
-        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯        
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯         
