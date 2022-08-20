@@ -84,7 +84,19 @@ Function Write-Book
         }
         [String[]] ToString()
         {
-            Return $This.Line | % Content
+            $Hash = @{ }
+            $1    = $This.Name.Length
+            $0    = 116 - $1
+            $Hash.Add($Hash.Count,("  {0} /{1}\" -f $This.Name,(@([char]175) * $0 -join '' )))
+            $Hash.Add($Hash.Count,("/{0} {1} " -f (@([Char]175) * ($1 + 2) -join ''), (@(" ") * $0 -join '')))
+            ForEach ($Line in $this.Line | % Content)
+            {
+                $Hash.Add($Hash.Count,"    $Line    ")
+            }
+            $Hash.Add($Hash.Count,(" {0} _{1}_/" -f (@(" ") * $0 -join ''),(@("_") * $1 -join '')))
+            $Hash.Add($Hash.Count,("\{0}/ {1}  " -f (@("_") * $0 -join ''), $This.Name))
+
+            Return @($Hash[0..($Hash.Count-1)])
         }
     }
 
@@ -158,6 +170,18 @@ Function Write-Book
                     $This.Section[$X].Index = $X
                 }
             }
+        }
+        [String[]] ToString()
+        {
+            $Out                 = @( )
+            $This.Header         | % { $Out += $_ }
+            $Out                += " "
+            ForEach ($Line in $This.Section | % ToString)
+            {
+                $Out            += $Line
+            }
+
+            Return $Out
         }
     }
 
@@ -566,7 +590,18 @@ Function Get-FoundingFathers
                 "of 1787, where the Constitution of the United States of America as written and signed.",
                 "Washington has ben called the 'Father of the Nation' for being a fearless badass."))
 
-    $FF.Output | % Output
+    $Out       = @( )
+
+    $Out      += "Here is a list of the main founding fathers of the United States of America:"
+    $Out      += "______________________________________________________________________"
+    $Out      += "| Thomas Jefferson | James Madison | Alexander Hamilton | John Adams |"
+    $Out      += "| Samuel Adams  | Patrick Henry  | James Monroe | George Washington  |"
+    $Out      += (@([char]175) * $Out[1].Length -join '')
+    $Out      += "The following information for each of these men is, for the most part, directly from Wikipedia."
+
+    $FF.Output | % Output | % { $Out += $_ }
+
+    $Out
 }
 
 $Book = Write-Book "Top Deck Awareness - Not News"
@@ -748,12 +783,5 @@ This was the main motivation for writing the Constitution, although the Articles
 would remain in effect until the “complete/current” United States of America Constitution was written
 in September 1787.
 '@)
-########################################################################################################
-$FF  = @( )
-$FF += "______________________________________________________________________"
-$FF += "| Thomas Jefferson | James Madison | Alexander Hamilton | John Adams |"
-$FF += "| Samuel Adams  | Patrick Henry  | James Monroe | George Washington  |"
-$FF += (@([char]175) * $FF[0].Length -join '')
-$FF += "  "
-Get-FoundingFathers | % { $FF += $_ }
-$Book.Chapter[0].AddSection("Founding Fathers",$FF)
+
+$Book.Chapter[0].AddSection("Founding Fathers",(Get-FoundingFathers))
