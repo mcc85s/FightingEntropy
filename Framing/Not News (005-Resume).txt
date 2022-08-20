@@ -1,0 +1,577 @@
+    ____                                                                                                    ____        
+   //¯¯\\__________________________________________________________________________________________________//¯¯\\___    
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\   
+   |/¯¯\\__[ Michael C. Cook Sr. | Network Information System Security Professional | DevOPS Engineer   ]__//¯¯\\__//   
+   |\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   ||==||   
+   |/¯¯\\______________________________________________________________________________________________________//¯¯\|   
+   |\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/|   
+   |/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\|   
+   |       CompTIA A+/Network+/Security+ | Cisco CCNA/CNAP | Microsoft Certified Professional/MCDST/MCSA/MCSE       |   
+   |       Associate Degree in Information Technology (Drafting & Design/Multimedia) | Portfolio Award/CRCATS       |   
+   |\   _________________________________________________                                  _____________________   /|   
+   |/   | Secure Digits Plus LLC (π) - Clifton Park, NY |                                  | 10/2018 - 08/2022 |   \|   
+   |\   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   /|   
+   |/                    _____________________________________________________________________                     \|   
+   |\                    | Security Engineer, also CEO/NISSP/DevOPS/Investigative Journalist |                     /|   
+   |/                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                     \|   
+   |\   [+] Portfolio Development for Applications, as well as Investigative Journalism:                           /|   
+   |/   ________________________________________________________________________________________________________   \|   
+   |\   | 08/02/22 | Top Deck Awareness - Not News | drive.google.com/file/d/1NoqGcpDVYnCF6zWx-7HPQBV3-MgeCzsT |   /|   
+   |/   | 06/23/22 | Archimedes (CIA+Zuckerberg)   | https://youtu.be/QP25FbNhakQ                              |   \|   
+   |\   | 02/15/22 | A Matter of National Security | https://youtu.be/e4VnZObiez8 (Links in video description) |   /|   
+   |/   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   \|   
+   |\   [+] Main development focus: (C/PowerShell/.NET) module development, codename [FightingEntropy(π)]          /|   
+   |/   [+] [FightingEntropy(π)] is a MODULE for PowerShell which automatically installs itself, as well as...     \|   
+   |\       (installing/configuring) Windows Server 2016/2019, Windows 10 Home/Education/Pro, RHEL/CentOS, and     /|   
+   |/       FreeBSD/OPNsense/pfSense via the [(Microsoft Deployment Toolkit – by Michael T. Niehaus)]              \|   
+   |\   [+] [FightingEntropy(π)] ALSO configures and establishes a network baseline for:                           /|   
+   |/      __________________________________________________________________________________________________      \|   
+   |\      | Active Directory Domain Services | Windows Deployment Services | Hyper-V/Veridian | DNS | DHCP |      /|   
+   |/      | Demonstration of [FightingEntropy (π)][FEInfrastructure]: https://youtu.be/6yQr06_rA4I         |      \|   
+   |\      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      /|   
+   |/   [+] Other areas of development include:                                                                    \|   
+   |\      _________________________________________________________________________________________________       /|   
+   |/      | Extensible Application Markup Language | Graphical User Interface design | Linux/Unix/FreeBSD |       \|   
+   |\      | IIS/Internet Information Services | Razor/Blazor/ASP.Net Core | Conceptualizing R&D projects  |       /|   
+   |/      | Investigating: IDENTITY THEFT | CYBERCRIMINAL ACTIVITIES | GOVERNMENT CORRUPTION | ESPIONAGE  |       \|   
+   |\      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯       /|   
+   |/   [+] [FightingEntropy(π)] is completely written in (C/PowerShell/.Net), and is split between:               \|   
+   |\       - Development: https://www.github.com/mcc85s/FightingEntropy                                           /|   
+   |/       - Production: https://www.github.com/mcc85sx/FightingEntropy                                           \|   
+   \\______________________________________________________________________________________________________________//   
+   [====( Employer )================================================================================================]   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Computer Answers - Clifton Park, NY                                                   10/2015 - 07/2019     /   
+   /    Chief Technology Officer & Business Solutions Expert                                                        \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   [+] Developed scripts and protocol, overseeing productivity/training of all employees                      ||   
+   ||   [+] Complaining about the development team that took forever to do anything                                ||   
+   ||   [+] Featured on WTEN Alert Desk via Andrew Banas regarding SmartTV’s at https://youtu.be/-jkDPv9H6BQ       ||   
+   ||   [+] Set highest sales record in the company to date, in August 2017                                        ||   
+   ||   [+] Rebuilt all of the networking equipment, point of sale equipment, server/router/access point           ||   
+   ||       configuration, surveillance system/cameras, and DHCP configuration/deployment, for ALL 7 stores        ||   
+   ||   [+] Deploying and configuring Clients/Servers/Routers/Switches/Access Points/receipt printers/SmartTV’s…   ||   
+   ||       …led to the founding of [Secure Digits Plus LLC], successor to [Mike’s PC Repair], in order to build   ||   
+   ||       a program that does all of this configuration, in a similar manner to:                                 ||   
+   ||        _____________________________________________________________________________________________         ||   
+   ||        | Google Kubernetes | Microsoft Azure | Amazon Web Services | VmWare vSphere | Cisco SD-WAN |         ||   
+   ||        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯         ||   
+   ||   [+] Upgraded each store network to gigabit Ethernet internally, as well as installation of:                ||   
+   ||                   ________________________________________________________________________                   ||   
+   ||                   | Security Gateways using | pfSense | OPNSense | HardenedBSD | FreeBSD |                   ||   
+   ||                   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                   ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    KeyCorp - Albany, NY                                                                  03/2016 - 12/2016     /   
+   /    Help Desk Level (I & II) Support Engineer                                                                   \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   [+] Provided support to (KeyCorp/KeyBank) employees over the phone and over Key's Inter IM client,         ||   
+   ||       Cisco Jabber, for various first and second level help desk support tickets                             ||   
+   ||   [+] First experience with System Center Configuration Manager, which utilizes core aspects of the          ||   
+   ||       Microsoft Deployment Toolkit and other Microsoft-centric programs/applications                         ||   
+   ||   [+] Exposure to Active Directory Administration was rather limited in this position (typically used for    ||   
+   ||       password resets), brief contact with Organizational Units, Site Links, Lotus Notes, Exchange,          ||   
+   ||       vSphere/eSXI, Group Policy Objects, RSA Encryption/Software tokens, KeyCounselor/HOGAN                 ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Metroland/Lou Communications - Albany, NY                                             01/2007 - 01/2014     /   
+   /    Distribution Contractor & IT Consultant                                                                     \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   [+] Distributed the newspaper Metroland for several years throughout the Greater Capital Region            ||   
+   ||   [+] Eventually they were in need of IT services from 'Mike’s PC Repair' in September 2012                  ||   
+   ||   [+] Documented & moved their network from 420 Madison Ave, Albany NY - 523 Western Ave, Albany NY while    ||   
+   ||       upgrading old Dell based Win NT 4.0 server to 1U blade server w/ (2x AMD CPUs, Windows Server 2008)    ||   
+   ||   [+] Migrated ALL data from an older system that publishers used for archiving (weekly/legacy) content      ||   
+   ||   [+] Assisted John Bracchi with (printers/network storage for PUBLISHERS via Adobe (PS & Illustrator):      ||   
+   ||         ____________________________________________________________________________________________         ||   
+   ||         | mapping printers | domain logins | emails/Outlook | making sure that Ted Etoll was happy |         ||   
+   ||         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯         ||   
+   ||   [+] Limited use of domain resources, otherwise most services were DISTRIBUTION of the newspaper            ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Nfrastructure - Clifton Park, NY                                                      09/2010 - 01/2011     /   
+   /    Computer (Hardware/Printer/Network) Technician                                                              \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   [+] Staged machines to be used for Point-Of-Sale systems for the Adidas-Reebok of North America, as well   ||   
+   ||       as testing, repairing, and maintaining a rolling inventory of computers, monitors, receipt printers,   ||   
+   ||       handheld devices, barcode scanners, & label/form printers (Epson)                                      ||   
+   ||   [+] Made DAILY warranty calls to HP for Elite 8100/8200's, AND Dell for various (laptops/workstations)     ||   
+   ||   [+] Told people how real I kept it, AND provided desktop support for internal company users                ||   
+   ||   [+] Repaired, inspected, and maintained full-size (Lexmark/HP) stack printers for various NYS agencies     ||   
+   ||   [+] Imaged THOUSANDS of computers to be used for various New York State companies and  gov't agencies:     ||   
+   ||      __________________________________________________________________________________________________      ||   
+   ||      | Dept. of Transportation | CSMIN | Golub Corporation | Office of People with Disabilities Dept. |      ||   
+   ||      | Dept. Of Correctional Services | Adidas-Reebok of NA | Testcomm of New York and Massachusetts  |      ||   
+   ||      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    TEKsystems - Albany, NY                                                               06/2006 - 05/2019     /   
+   /    Various (Computer/Network) related roles                                                                    \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   [+] Completed Pittsfield MA Census Bureau deployment (2009-2010) | KeyCorp (2016) | Patroon Creek (2017)   ||   
+   ||   [+] Trinity Health/St. Peters Hospital 02/2019 [Interview] - Potential client was seeking to build an      ||   
+   ||       entirely new domain physically as well as ASP.Net overhaul, already developing [FightingEntropy(π)]    ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Hearst Corporation - Albany, NY                                                       04/2006 - 04/2009     /   
+   /    Distribution Contractor & Accounts Receivable Collector                                                     \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   [+] Provided distribution throughout lower Saratoga County, as well as the Greater Capital Region          ||   
+   ||   [+] Daily paper drops were required in early morning hours after they are printed (2AM-4AM), and stores    ||   
+   ||       would either be open or closed - some stops needed priority treatment (primarily Stewarts Corp)        ||   
+   ||   [+] Drifted in the snow a lot, found new ways to drop off newspapers, drove a minimum of 90 miles/night    ||   
+   ||   [+] Collected and calculated return payment amounts, deposited into bank account with Bank of America      ||   
+   ||   [+] Worked under (Kenny/Patrick Bernard) for Q122, Q107, Q121, & Chris Jones for daytime return routes     ||   
+   \\______________________________________________________________________________________________________________//   
+   [====( Education )===============================================================================================]   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    New Horizons Learning Center - Albany, NY                                             01/2008 - 01/2009     /   
+   /    CompTIA & Microsoft Certifications Track                                                                    \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   [+] Completed certifications from CompTIA A+/Network+, MCP/MCDST                                           ||   
+   ||   [+] Hands on support with hardware, and operating systems Windows (XP Pro/Home/Server 2003)                ||   
+   ||   [+] Studied server technologies and services: FTP, File Server, WINS/DNS/DHCP, RSAT/WSUS, Certificates,    ||   
+   ||       Active Directory, Group Policy, Drivers, Wireless, IIS 6.0, VPN Encryption, & Virtual Server           ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    ITT Technical Institute - Albany, NY                                                  06/2004 - 06/2006     /   
+   /    Information Technology: Drafting & Design, Multimedia                                                       \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   [+] Received Associate degree in (IT/Drafting and Design-Multimedia)                                       ||   
+   ||   [+] Course studies included:                                                                               ||   
+   ||      _________________________________________________________________________________________________       ||   
+   ||      | 2D/3D graphic, print AND web design AND publishing | Portfolio Development |  Problem-Solving |       ||   
+   ||      |  Instructional Design | Micro Economics | CompTIA (A+/Network+) | Intro to Visual Basic .Net  |       ||   
+   ||      |-----------------------------------------------------------------------------------------------|       ||   
+   ||      |   Macromedia | [Flash/Director/Dreamweaver] HTML/CSS and flash animation                      |       ||   
+   ||      |-----------------------------------------------------------------------------------------------|       ||   
+   ||      |        Adobe | [Premiere/After Effects] video/scene | [Photoshop/Illustrator] photo | editing |       ||   
+   ||      |-----------------------------------------------------------------------------------------------|       ||   
+   ||      | AutoDesk 3DS | scene/character modeling | lighting | texturing | rigging | animation          |       ||   
+   ||      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯       ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Capital Region Career and Technical School - Albany, NY                               09/2001 - 06/2003     /   
+   /    Microsoft System Administration, CompTIA A+/Network+, & Cisco Certified Network Academy                     \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   [+] While attending Shenendehowa High School, this 2-year vocational program consisted of hands-on lab     ||   
+   ||       environment experience, and studies related to the above curriculum                                    ||   
+   ||   [+] Briefly acted as (Student Network Administrator), using (MMC/Microsoft Management Console) snap-ins,   ||   
+   ||       HyperTerminal, Novell Netware IPX/SPX, Windows XP/Server 2000 Workgroup, and some Red Hat Linux        ||   
+   ||   [+] Received an in-depth year with Cisco (routers/switches) via RS232                                      ||   
+   ||   [+] Participated in NYS competition at (SCCC/Schenectady County Community College), & ITT Tech             ||   
+   ||   [+] Received an award from the school for Portfolio Development at final graduation ceremony               ||   
+   \\______________________________________________________________________________________________________________//   
+   [====( Skill - [Application Development + Network/Hardware Magistration + Virtualization + Graphic Design]  )====]   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    FightingEntropy FEInfrastructure                                                                 12/2021    /   
+   /    https://youtu.be/6yQr06_rA4I                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video where I PROVE that BY MYSELF, I know ALL OF THE ASPECTS of:                                ||   
+   ||   ___________________________________________________________________________________________________        ||   
+   ||   | APP DEVELOPMENT | VIRTUALIZATION | HARDWARE/NETWORK MAGISTRATION | MICROSOFT DEPLOYMENT TOOLKIT |        ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯        ||   
+   ||   As in, I AM MORE EXPERIENCED THAN 95% of the people in the field of INFORMATION TECHNOLOGY.                ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Advanced Domain Controller Promotion                                                             10/2021    /   
+   /    https://youtu.be/O8A2PDfQOBs                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   Basically, promoting a server to a domain controller via the GUI. This GUI can also be controlled          ||   
+   ||   via the process in Flight Test, which means that uh, I'm doing stuff that hasn't been developed yet.       ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    A Deep Dive: PowerShell and XAML                                                                 03/2021    /   
+   /    https://youtu.be/NK4NuQrraCI                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   In this video, I EDUCATE PEOPLE on: BUILDING A GRAPHICAL USER INTERFACE using XAML & POWERSHELL            ||   
+   ||   This video should, single-handedly, prove that I am an EXPERT.                                             ||   
+   ||   I can EASILY adjust my LANGUAGE so that PEOPLE CAN LEARN FROM AN *EXPERT* SUCH AS MYSELF.                  ||   
+   ||   Like an ACTUAL EXPERT that gets PAID a LOT OF MONEY to TEACH PEOPLE...                                     ||   
+   ||   Like, a PROFESSOR. Sorta like KEVLIN HENNEY, ROBERT SOPOLSKY, or JEREMY RIFKIN. Even TIM COREY.            ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Wireless Network Scanning Utility                                                                05/2022    /   
+   /    https://youtu.be/35EabWfh8dQ                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video where I show off HOW TO PROGRAM & MANIPULATE WIRELESS RADIOS using POWERSHELL, and         ||   
+   ||   CREATE GRAPHICAL USER INTERFACES using XAML/POWERSHELL.                                                    ||   
+   ||   It should hands down, single handedly prove that I am MORE EXPERIENCED than 95% of people in the field     ||   
+   ||   of information technology.                                                                                 ||   
+   ||                                                                                                              ||   
+   ||   So, for ANY USELESS DOUCHEBAG that wants to try and tell me that I “don't have enough experience”...       ||   
+   ||   WELL, dipshit... this video will show ya, I've got more experience than anyone you probably know.          ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    PowerShell Deployment FE Wizard                                                                  09/2021    /   
+   /    https://youtu.be/lZX5fAgczz0                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video where I've decided to EXTEND the CAPABILITIES & FUNCTIONS of the POWERSHELL DEPLOYMENT     ||   
+   ||   project written by:                                                                                        ||   
+   ||   _____________________________________________________________________________                              ||   
+   ||   | DEPLOYMENT BUNNY/JOHAN ARWIDMARK & MYKAEL NYSTROM (Both former Microsoft) |                              ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                              ||   
+   ||   ...as well as:                                                                                             ||   
+   ||   ______________________________________________________________________________                             ||   
+   ||   | MICROSOFT/MICHAEL T. "Smart bastard" NIEHAUS – Vice President of Marketing |                             ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                             ||   
+   ||   The original PSD Wizard GRAPHICAL USER INTERFACE that I modified, was created by:                          ||   
+   ||   ______________________________________                                                                     ||   
+   ||   | SYST AND DEPLOY/DAMIEN VAN ROBAEYS |                                                                     ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                                     ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    2019_0125-(Computer Answers - MDT)                                                               01/2019    /   
+   /    https://youtu.be/5Cyp3pqIMRs                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is when I was using VIRTUALBOX developed by ORACLE...                                                 ||   
+   ||   ...to create a CUSTOM MODIFICATION that became HYBRID-DSC.                                                 ||   
+   ||   I believe that Microsoft was PISSED about this video because I wasn't using HYPER-V...                     ||   
+   ||                                                                                                              ||   
+   ||   Which is what I use basically all the time now...                                                          ||   
+   ||   And Microsoft agrees, HYPER-V is the way to go.                                                            ||   
+   ||                                                                                                              ||   
+   ||   What's COOL about HYPER-V is that it is 100% CONTROLLABLE from POWERSHELL.                                 ||   
+   ||   So, you get cool features and kick ass performance that you just can't get from VIRTUALBOX...              ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Install-pfSense                                                                                  06/2021    /   
+   /    https://youtu.be/E_uFbzS0blQ                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video where I use VISUAL STUDIO CODE to access POWERSHELL DIRECT to manage HYPER-V over a        ||   
+   ||   REMOTE DESKTOP CONNECTION to AUTOMATE THE INSTALLATION of pfSense onto VIRTUAL GATEWAYS/ROUTERS            ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Advanced System Administration Lab                                                               06/2021    /   
+   /    https://youtu.be/xgffIccX1eg                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   Same sort of idea as above, except a lot more EXTENSIVE and COMPREHENSIVE.                                 ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Windows Image Extraction                                                                         06/2021    /   
+   /    https://youtu.be/G10EuwlNAyo                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This extracts Windows Images from the ISO directly from Microsoft's website, to be injected as             ||   
+   ||   TASK SEQUENCES for the MICROSOFT DEPLOYMENT TOOLKIT.                                                       ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Flight Test Part 1                                                                               08/2021    /   
+   /    https://drive.google.com/file/d/1qdS_UVcLTsxHFCpuwK16NQs0xJL7fv0W                                           \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This video has to be DOWNLOADED because of the MUSIC in a 6 hour video demonstration.                      ||   
+   ||   I don't expect EVERYBODY to watch the entire 6 hours worth of content here, but somebody will want         ||   
+   ||   to see HOW STRONGLY I CAN PROGRAM SOMETHING THAT ORCHESTRATES THE ENTIRE DEPLOYMENT PROCESS FOR AN         ||   
+   ||   ADVANCED NETWORK of GATEWAYS/ROUTERS, DHCP/DNS/ADDS SERVERS, DOMAIN CONTROLLERS, and WORKSTATIONS.         ||   
+   ||   There WILL be a few people who hire contractors at a STARTING RATE of over $250K/year, to do what I        ||   
+   ||   demonstrate in this particular video. That's because I'm fulfilling the role of SOLUTIONS ARCHITECT.       ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Flight Test Part 2                                                                               08/2021    /   
+   /    https://youtu.be/vg359UlYVp8                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   Continuing on from the last video, covering some stuff I forgot to fix or implement.                       ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Advanced Domain Controller Promotion                                                             10/2021    /   
+   /    https://youtu.be/O8A2PDfQOBs                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   Basically, promoting a server to a domain controller via the GUI. This GUI can also be controlled          ||   
+   ||   via the process in Flight Test, which means that uh, I'm doing stuff that hasn't been developed yet.       ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Hybrid | Desired State Controller                                                                05/2019    /   
+   /    https://youtu.be/C8NYaaqJAlI                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a DEMONSTRATION of the MICROSOFT DEPLOYMENT TOOLKIT MODIFICATION that I spent like...              ||   
+   ||   (4) months working on, WHILE learning how to use PowerShell.                                               ||   
+   ||                                                                                                              ||   
+   ||   I became rather INTRIGUED with the IDEA of DEPLOYING WINDOWS 10 TO THE CUSTOMERS COMPUTERS at:             ||   
+   ||   ___________________________________________________________________________________________                ||   
+   ||   | COMPUTER ANSWERS | 1602 US-9, Clifton Park, NY 12065 | 514 MAIN ST. BENNINGTON VT 05201 |                ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                ||   
+   ||    That's why I WAS ATTACKED on 01/15/2019, left address, I was ATTACKED AGAIN on 03/07/2019, right side.    ||   
+   ||                                                                                                              ||   
+   ||   I ASKED MY OLD INSTRUCTOR (BRUCE CHENEY/CYBERSTONE SECURITY) FOR SOME HELP...?                             ||   
+   ||   BUT HE'S SORT OF A DIPSHIT THAT HAS TO HIDE HIS TAIL BETWEEN HIS LEGS AND GETS OFFENDED VERY EASILY.       ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Methodologies                                                                                    11/2019    /   
+   /    https://youtu.be/bZuSgBK36CE                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video where I was about LESS THAN (1) year into PROGRAMMING/APP DEVELOPMENT w/ POWERSHELL.       ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Education/Exhibition Program Design                                                              08/2019    /   
+   /    https://youtu.be/v6RrrzR5v2E                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video where I was in the MIDDLE of being ATTACKED by some HACKERS, so I decided to tell em:      ||   
+   ||   ___________________________________________________________________________________________                ||   
+   ||   | Me : You know what...?                                                                  |                ||   
+   ||   |      Fuck you guys.                                                                     |                ||   
+   ||   |      I'm just gonna start RECORDING VIDEOS of ME, TEACHING OTHER PEOPLE...              |                ||   
+   ||   |      ...that way you queers have 2x fewer legs to stand on when you keep ATTACKING ME.  |                ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                ||   
+   \\______________________________________________________________________________________________________________//   
+   [====( Skill - [Network/Hardware Magistration]                                                              )====]   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Spectrum Cable Modem Reset                                                                       07/2017    /   
+   /    https://youtu.be/LfZW-s0BMow                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video that showcases just how gay PAVEL ZAICHENKO/CEO of COMPUTER ANSWERS, actually is.          ||   
+   ||   If people wanna argue with me “I don't see anything that indicates this dude is gay...”                    ||   
+   ||                                                                                                              ||   
+   ||   OH- well, I was able to EDUCATE A LOT OF PEOPLE by BEING MORE TALENTED at RUNNING COMPUTER ANSWERS,        ||   
+   ||   the COMPANY, than the OWNER/CEO... and EVEN the Vice President, DWAYNE O. COONRADT, the ol' PC-DOC         ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    How to repair an iPhone 7+                                                                       04/2018    /   
+   /    https://youtu.be/i3qn1CZ-5WM                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video that showcases how gay TIM COOK/CEO of APPLE CORPORATION, actually is.                     ||   
+   ||   APPLE DISABLED MY IPHONE 8+ AFTER I SHOWED NYS TROOPER SHAEMUS LEAVEY A VIDEO OF 2 GUYS USING PEGASUS,     ||   
+   ||   AS THEY WERE ATTEMPTING TO MURDER ME OUTSIDE OF (1597-1602) US-9, CLIFTON PARK NY 12065 on 05/26/2020.     ||   
+   ||                                                                                                              ||   
+   ||   RESULTANT, I HAVE WITNESSED TIM COOK BEING PRIMARILY RESPONSIBLE FOR COMMITTING OBSTRUCTION OF JUSTICE.    ||   
+   ||   TIM COOK will CONTINUALLY be CALLED OUT for being a FLAMING HOMOSEXUAL for ALLOWING THIS. I KNOW THAT IS   ||   
+   ||   EXACTLY WHAT HAPPENED, but the COMMUNITY and the POLICE have been TOO BUSY BEING MORONS, to watch this.    ||   
+   ||                                                                                                              ||   
+   ||   Sorta know what I'm doing more than most people in the COMMUNITY or the POLICE. (FACT, not an OPINION)     ||   
+   ||                                                                                                              ||   
+   ||   As for TIM COOK (CEO OF APPLE), the man has received a LOT of awards from the town, for being the GAYEST   ||   
+   ||   GUY IN CUPERTINO, CA each year. Nobody in CUPERTINO has a shot at outdoing this man, at being gay.         ||   
+   ||   Outside of CUPERTINO, CA...? VLADIMIR PUTIN, APT29 & CERBERUS most definitely win, hands down.             ||   
+   ||                                                                                                              ||   
+   ||   By the way, TIM COOK and I are NOT RELATED, but that man is DEFINITELY ALMOST as gay, as APT29.            ||   
+   ||   I have MORE EXPERIENCE than:                                                                               ||   
+   ||   ____________________________________________________________________________________________________       ||   
+   ||   | the people who work at ANY APPLE STORE | MOST of the people at APPLE HQ in CUPERTINO, CALIFORNIA |       ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯       ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Troubleshooting Network Equipment 101                                                            03/2018    /   
+   /    https://youtu.be/0nEiGijjOEY                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video that showcases how gay DWAYNE COONRADT/VP of COMPUTER ANSWERS, APPEARS to be when he       ||   
+   ||   refuses to tell people that I outperformed him 100% of the 3+ years I (worked at/MANAGED) the COMPANY      ||   
+   ||   COMPUTER ANSWERS.                                                                                          ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Troubleshooting a poorly made CRM                                                                11/2017    /   
+   /    https://youtu.be/xs-FVZgjnkI                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video where I am attempting to educate the lazy moron who owns COMPUTER ANSWERS, what was        ||   
+   ||   ALWAYS PROBLEMATIC about the PIECE OF SHIT SOFTWARE that he was attempting to build without having the     ||   
+   ||   experience necessary to do so. He actually STOLE THIS SOFTWARE from SOHRAB GHAIRAT who is an ACTUAL        ||   
+   ||   EXPERT at DEVELOPING APPLICATIONS/PROGRAMMING.                                                             ||   
+   \\______________________________________________________________________________________________________________//   
+   [====( Skill – [Graphic Design]                                                                             )====]   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Game Design 101 Part I - 20KDM2 - Return to Castle: Quake                                        08/2021    /   
+   /    https://youtu.be/xN53K9oGCME                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAY back in (2001/2002) for    ||   
+   ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2001.                            ||   
+   ||   _________________________________________________________________                                          ||   
+   ||   | This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |                                          ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                          ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Game Design 101 Part II - 20KDM1 - Tempered Graveyard                                            08/2021    /   
+   /    https://youtu.be/dyHwm9AdkQs                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAY back in (2001) for         ||   
+   ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2001.                            ||   
+   ||   _________________________________________________________________                                          ||   
+   ||   | This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |                                          ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                          ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Game Design 101 Part III - 20KCTF1 - Out of my head                                              08/2021    /   
+   /    https://youtu.be/rwyHCNnwlkM                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAAY back in (2002) for        ||   
+   ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2002.                            ||   
+   ||   _________________________________________________________________                                          ||   
+   ||   | This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |                                          ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                          ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Game Design 101 Part IV - 20KDM3 - Insane Products                                               08/2021    /   
+   /    https://youtu.be/EG8UyJSMK3Y                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAAY back in (2006) for        ||   
+   ||   QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2006.                            ||   
+   ||   _________________________________________________________________                                          ||   
+   ||   | This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |                                          ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                          ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Website Design 101 - BFG20K's Shopping Maul                                                      05/2001    /   
+   /    http://web.archive.org/web/20220000000000*/planetquake.com/bfg20k                                           \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a link to the WAYBACK MACHINE, featuring a WEBSITE that I CREATED when I was 15 years old.         ||   
+   ||   This particular website is OLDER THAN FACEBOOK. AND YOUTUBE. AND REDDIT. AND TWITTER. AND MYSPACE...       ||   
+   ||                                                                                                              ||   
+   ||   So, when I hear people tell me that “I don't have enough experience”, that means they probably could use   ||   
+   ||   a nice, fresh smack across the fuckin' face. Dead serious.                                                 ||   
+   ||                                                                                                              ||   
+   ||   The WEBSITE BFG20K's Shopping Maul EXISTED in 1999, but then PLANETQUAKE.COM was like:                     ||   
+   ||   ___________________________________________________________                                                ||   
+   ||   | PlanetQuake : DUDE, YOU CAN TOTALLY HAVE A HOSTED SITE. |                                                ||   
+   ||   |               YOU'RE ONLY 15...?                        |                                                ||   
+   ||   |               THIS SHIT IS COOL AS FUCK.                |                                                ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                ||   
+   ||   Thus, PLANETQUAKE.COM/BFG20K was born, WAAAAAAY back in 2001~!                                             ||   
+   ||   Like, BEFORE THE TWIN TOWERS WERE ATTACKED~!                                                               ||   
+   ||   But, I'm gonna get some cocksucker that will TRY to say that “I don't have enough experience.” Sure.       ||   
+   ||   To anyone who wants to say that...?                                                                        ||   
+   ||   Make yourself useful, and go suck a fuckin' dick like MARK ZUCKERBERG does.                                ||   
+   \\______________________________________________________________________________________________________________//   
+   [====( Skill - [Security Engineering & Journalism]                                                          )====]   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Top Deck Awareness - Not News                                                                    08/2022    /   
+   /    https://drive.google.com/file/d/1XWGSsZ-rGQHfB8eY2Xm6uu51wuj1MqFW                                           \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   My master thesis about the following subjects:                                                             ||   
+   ||   ________________________________________________________________________________________________________   ||   
+   ||   | U.S. CONSTITUTION | PSYCHOLOGICAL MANIPULATION | PRIVATE INVESTIGATION   |     COOL/SMART RICH DUDES |   ||   
+   ||   | HIDDEN GOVERNMENT | USA-PATRIOT ACT of 2001    | SURVEILLANCE CAPITALISM | LAME/DOUCHEBAG RICH DUDES |   ||   
+   ||   | NEWS VS PROPAGANDA | EXPERT PROGRAMMING | INJUSTICE | JULIEN ASSANGE | EDWARD SNOWDEN | U.S. HISTORY |   ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    News 10 - Interview with Andrew Banas regarding WEEPING ANGEL                                    03/2018    /   
+   /    https://youtu.be/bPdWt7kcd3M                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is an INTERVIEW that I had with an actual NEWS REPORTER named ANDREW BANAS, WAAAAY back in 03/2018    ||   
+   ||   when I MANAGED COMPUTER ANSWERS at 1602 Route 9, CLIFTON PARK, NY 12065.                                   ||   
+   ||   This was BEFORE (HOMOSEXUALS/HACKERS from APT29) STARTED TO ATTACK ME and my work.                         ||   
+   ||   Still, I must NOT have enough EXPERIENCE to run CIRCLES around people that make over $250K/year, right?    ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Central Intelligence Agency/VAULT 7/Archimedes                                                   02/2022    /   
+   /    https://youtu.be/QP25FbNhakQ                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   MARK ZUCKERBERG, owner of FACEBOOK using a TOOL developed by the CENTRAL INTELLIGENCE AGENCY from          ||   
+   ||   VAULT 7, to CAUSE INTERFERENCE to my LAPTOP, the CONTEXT of the VIDEO should SHOWCASE the REASONS WHY.     ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Central Intelligence Agency/VAULT 7/After Midnight (Laptop angle)                                02/2022    /   
+   /    https://youtu.be/LYVUMLpofWg                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   From the CYBERATTACK on 02/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from   ||   
+   ||   VAULT 7, being used against me to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the    ||   
+   ||   DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below. (It failed)                             ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Central Intelligence Agency/VAULT 7/After Midnight (Smartphone angle)                            02/2022    /   
+   /    https://youtu.be/oShPs6_uXIk                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   From the CYBERATTACK on 2/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from    ||   
+   ||   VAULT 7, being used against mme to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the   ||   
+   ||   DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below.                                         ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Facebook BSOD                                                                                    02/2022    /   
+   /    https://youtu.be/40sQXpVh_8Y                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a BLUE SCREEN OF DEATH that was CAUSED by FACEBOOK AFFILIATES that are HACKERS and they're known   ||   
+   ||   as (APT29/ADVANCED PERSISTENT THREAT 29), and they COMMIT CYBERATTACKS/IDENTITY THEFT and are VERY GAY,    ||   
+   ||   and every single one of them has sucked at QUAKE III ARENA over the last 20+ years.                        ||   
+   ||   __________________________________________________________________________                                 ||   
+   ||   | APT29 : Yeah, we're the most raging homosexuals on the fuckin' planet. |                                 ||   
+   ||   |         AND, we suck at QUAKE III ARENA. So what...?                   |                                 ||   
+   ||   |         Who's gonna stop us...? Hm...?                                 |                                 ||   
+   ||   |         NOBODY... that's who.                                          |                                 ||   
+   ||   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                 ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Facebook Censorship                                                                              02/2022    /   
+   /    https://youtu.be/Jmq4yBqGhTs                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video that showcases how gay MARK ZUCKERBERG/CEO OF FACEBOOK, actually is. I posted a comment,   ||   
+   ||   and then like magic, my COMMENT is REMOVED from the system before my very eyes. This showcases a living    ||   
+   ||   example of JUST HOW GAY, MARK ZUCKERBERG truly is. Doesn't matter if he's a COOL, HIGHLY RESPECTED         ||   
+   ||   BILLIONAIRE, because this is what this GAY BASTARD HAS BEEN DOING TO ME ever since I wrote a RESPONSE      ||   
+   ||   to an AD REJECTION in 02/2019. They felt that my AD was VIOLATING PEOPLE'S PRIVACY. What I told him, was   ||   
+   ||   that he's fucking lucky that I wasn't a member of Congress during the CAMBRIDGE ANALYTICA scandal.         ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    Hardware Security                                                                                09/2019    /   
+   /    https://youtu.be/-jkDPv9H6BQ                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video where I discuss the INTERVIEW with ANDREW BANAS, as well as WEEPING ANGEL being REVERSE    ||   
+   ||   ENGINEERED, and EXPANDING UPON HIS REPORT.                                                                 ||   
+   ||   I also explain to people how I'm more EXPERIENCED than LINUS SEBASTIAN from LINUS MEDIA GROUP.             ||   
+   ||   And, that NFRASTRUCTURE was involved in ATTACKING MY EQUIPMENT.                                            ||   
+   ||   I also caught the attention of APT29 with this particular video.                                           ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    NFRASTRUCTURE – RICO                                                                             03/2019    /   
+   /    https://youtu.be/vmDVKwTF2Zc                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a VIDEO that I sent to some woman at MICROSOFT regarding the CYBERATTACKS that I kept facing       ||   
+   ||   that I described up above in the PREVIOUS ENTRY. I actually ASSUMED that MICHAEL T. NIEHAUS had SOME       ||   
+   ||   hand in ATTACKING ME...                                                                                    ||   
+   ||                                                                                                              ||   
+   ||   However, I don't think that he had ANYTHING to do with the attack.                                         ||   
+   ||   The attack consisted of 1) PEGASUS/PHANTOM 2) DENIAL OF SERVICE, 3) CVE-2019-8936, 4) WANNACRY.            ||   
+   ||   Basically, SOMEONE WITH A LOT OF TECHNICAL EXPERTISE (like, the queers in APT29 that PAVEL knows)          ||   
+   ||   performed the ATTACK that CAUSED ME TO THINK that my FORMER EMPLOYER had ATTACKED ME.                      ||   
+   ||   2 former employers, by the way, not just (1). (2) former employers.                                        ||   
+   ||   I BELIEVE that MR. NIEHAUS has been HELPING ME ever since I recorded this video.                           ||   
+   \\______________________________________________________________________________________________________________//   
+   /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\   
+   \    A Matter of National Security                                                                    02/2022    /   
+   /    https://youtu.be/e4VnZObiez8                                                                                \   
+   \________________________________________________________________________________________________________________/   
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   
+   ||   This is a video that showcases someone in the CENTRAL INTELLIGENCE AGENCY that has been INTERACTING WITH   ||   
+   ||   ME for over 3+ years by using SCRIBBLES (VAULT 7) to ADD A LINE OF PIXELS to PARTICULAR LINES OF TEXT in   ||   
+   ||   ANY MICROSOFT WORD-LIKE EDITOR, and I TALK ABOUT PEGASUS/PHANTOM and JULIEN ASSANGE, and EDWARD SNOWDEN.   ||   
+   ||   Still, with all of these INDICATIONS that I have PLENTY of EXPERIENCE...?                                  ||   
+   ||   I know that someone will come right out and say that I must not have enough, yet.                          ||   
+   \\______________________________________________________________________________________________________________//   
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    
