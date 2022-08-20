@@ -143,6 +143,43 @@ Class FoundingFather
     {
         $This.Story = $String -Split "`n"
     }
+    [String[]] Output()
+    {
+        $Hash = @{ }
+        0..6  | % { $Hash.Add($_,"") }
+
+        $Hash[0] = "_" * 104 -join ''
+        $Hash[1] = "| Name  : {0}" -f $This.Name
+        $Hash[2] = "| Link  : {0}" -f $This.Link
+        $Hash[3] = "| Lived : {0}" -f $This.Lived
+        $Hash[4] = "| Age   : {0}" -f $This.Age
+        $Hash[5] = "| Roles : {0}" -f $This.Roles
+        $Hash[6] = "|{0}|" -f ("-" * 102 -join '')
+        ForEach ($X in 1..5)
+        {
+            Do
+            {
+                $Hash[$X] += " "
+            }
+            Until ($Hash[$X].Length -eq 103)
+
+            $Hash[$X]     += "|"
+        }
+        ForEach ($Line in $This.Story)
+        {
+            $Hash.Add($Hash.Count,"| $Line")
+            Do
+            {
+                $Hash[$Hash.Count-1] += " "
+            }
+            Until ($Hash[$Hash.Count-1].Length -eq 103)
+
+            $Hash[$Hash.Count-1]     += "|"
+        }
+        $Hash.Add($Hash.Count,(@([Char]175) * 104 -join ''))
+
+        Return @($Hash[0..($Hash.Count-1)])
+    }
 }
 
 Class FoundingFathers
@@ -210,8 +247,8 @@ Principle author of the Declaration of Independence, served as vice president un
 John Adams. They were both good friends as well as political rivals. During the American Revolution
 Jefferson represented Virginia in the Continental Congress which adopted the Declaration of ID4.
 He also played a key role in influencing James Madison, Alexander Hamilton, and John Jay in writing 
-THE FEDERALIST PAPERS. Proponent of democracy, republicamisn, nd individual rights, motivating the
-colonists to break away from Great Britain (cause the TEA TAX SUCKED ASS...)
+THE FEDERALIST PAPERS. Proponent of democracy, republicanism, nd individual rights, motivating the
+colonists to break away from Great Britain.
 "@)
 
 # James Madison
@@ -298,3 +335,5 @@ American Revolutionary War, and served as president of the Constitutional Conven
 of 1787, where the Constitution of the United States of America as written and signed.
 Washington has ben called the "Father of the Nation" for being a fearless badass.
 "@)
+
+$FF.Output | % Output
