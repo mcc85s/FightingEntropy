@@ -2,9 +2,9 @@ Function Write-Book
 {
     [CmdletBinding()]
     Param(
-    [Parameter(Mandatory,ParameterSetName=0,Position=0)][String]$Path,
-    [Parameter(Mandatory,ParameterSetName=0,Position=1)]
-    [Parameter(Mandatory,ParameterSetName=1,Position=1)][String]$Name)
+    [Parameter(Mandatory,ParameterSetName=0,Position=0)]
+    [Parameter(Mandatory,ParameterSetName=1,Position=0)][String]$Name,
+    [Parameter(Mandatory,ParameterSetName=1,Position=1)][String]$Path)
 
     Class PageDimension
     {
@@ -430,10 +430,13 @@ Function Write-Book
         }
     }
 
-    Switch ($PsCmdlet.ParameterSetName)
+    If ($Path)
     {
-        0 { [Book]::New($Path,$Name) }
-        1 { [Book]::New($Name) }
+        [Book]::New($Path,$Name)
+    }
+    Else
+    {
+        [Book]::New($Name)
     }
 }
 
@@ -775,7 +778,7 @@ Function Get-FoundingFathers
     $Out
 }
 
-$Book = Write-Book "/home/mcook85/Desktop/Not News/Framing" "Top Deck Awareness - Not News"
+$Book = Write-Book -Name "Top Deck Awareness - Not News" -Path "$Home\Documents\Not News\Framing"
 
 $Book.SetLabel(0,"Prologue")
 $Book.SetLabel(1,"Resume")
@@ -6376,7 +6379,7 @@ Now, suppose Andrew Cuomo WASN’T an actual sausage wrecker...
 Would 11 women accuse him of sexual harassment...? No, because they would’ve probably been cool with the idea of  
 having sex with Andrew “Don’t touch me, grandpa” Cuomo.
 
-Suppose that Pavel Zaichenko wasn’t an actual sausage wrecker either... would he owe me over $4,000 in backed 
+Suppose that Pavel Zaichenko wasn’t an actual sausage wrecker either... would he owe me over `$4,000 in backed 
 wages, or be investigated by the labor department at any point...? No.
 
 Anyway, when the HIDDEN government has to use these SERIOUS EXPLOITS, to try and contain ME, being a 
@@ -6527,7 +6530,7 @@ The human condition is quite fucked, but I don’t think it’s a lost cause.
 The problem is that I think people are doing illegal shit, knowing that people aren’t going to do anything 
 about it. Not unless they’re ready to put their life at risk.
 
-When I say “doing illegal shit”, I don’t mean the small petty shit like “stealing less than $20 worth of stuff
+When I say “doing illegal shit”, I don’t mean the small petty shit like “stealing less than `$20 worth of stuff
 from a store”, or like “buying illicit drugs”, because those are problems that may be problematic...
 ...but they are INDIRECTLY CAUSED by SERIOUS crimes being ignored. 
 
@@ -7334,10 +7337,10 @@ Not the case when you have Spectrum, you’re paying for Spectrum to use Verizon
                      | 1) for cell phone service | 2) for landline home/business etc. |
                      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Spectrum hikes up the rates too, in the town of Selkirk, you can receive [Verizon FIOS 1GB US/DS] for:
-- $150 a month which includes home phone and cable
+- `$150 a month which includes home phone and cable
 
 The reason THAT service is not available here, is because some people need to be [BANKRUPTED] by lawsuit 
-that can’t fail. Because, you might think $500B is way too much of a targeted amount of monetary relinquishment
+that can’t fail. Because, you might think `$500B is way too much of a targeted amount of monetary relinquishment
 capability, but I have news for you. 
 
 That’s chump change, I may have to crank it up even higher than that.
@@ -7370,7 +7373,7 @@ Some people that should’ve went to prison finally made their way there, in add
 you this whole time (like LESTER WORMUTH, and maybe ROBERT RYBAK)... and the POLICE OFFICERS that also assisted 
 you this whole time... (like MICHAEL ZURLO, JAMES LEONARD, COOPER)
 
-Spectrum: $500B is actually enough to bankrupt us immediately. 
+Spectrum: `$500B is actually enough to bankrupt us immediately. 
 
 Which is my goal. It wouldn’t be if I could go to the Verizon FIOS website *right now*, and order FIOS from 
 Verizon, and tell SPECTRUM to: “SUCK A FUCKIN’ DICK, BRO.”
@@ -7413,7 +7416,7 @@ I think everyone should have access to landline+mobile, same service, but just c
 So, you only have (1) bill to pay for BOTH. Verizon and Spectrum don’t want you to build infrastructure that 
 takes their revenue away...
 
-Offering the best that they both have to offer for a lot less money...? Such as $10 a month...?
+Offering the best that they both have to offer for a lot less money...? Such as `$10 a month...?
 For your 10GB fiber optic connection...? AND, your global tethering which will still have your phone number...?
 Offering something a lot FASTER and BETTER than the most premiere companies out there...? 
 For... a LOT less money...?
@@ -7455,7 +7458,7 @@ thing that they forced Spectrum to do, which was a pathetic slap on the wrist...
 Because, whatever judge was involved in the class action lawsuit that was already placed against 
 Spectrum/Charter for false advertisement of service speeds...? That judge shouldn’t be a JUDGE. 
 
-Because paying off a class action lawsuit for a $15M fine is just a slap on the wrist. 
+Because paying off a class action lawsuit for a `$15M fine is just a slap on the wrist. 
 You’re likely to look nearly IDENTICAL, to a woman with a huge penis in her mouth... 
 ...by providing a punishment like that. (← gay looking)
 
@@ -7466,7 +7469,7 @@ Just a large, harmonious interchange of bodily fluids and internet connectivity.
 That’s why Spectrum was able to walk away with paying the last fine with free HBO for customers... 
 ...rather than to provide a refund for services that weren’t received by customers...
 
-Because when I threaten to wage a $500B lawsuit against these companies, it will bankrupt them when I 
+Because when I threaten to wage a `$500B lawsuit against these companies, it will bankrupt them when I 
 have enough evidence (shown above) to override the sentencing of any judge that has been proven to assist 
 Verizon and Spectrum build this corporate monopoly over the internet backbone in this state.
 
@@ -7496,7 +7499,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Facebook post # 2 : Spectrum/Verizon, pictures... 
 
-I’m sure that someone thinks I’m just kidding around about this $500B class action lawsuit that I intend to 
+I’m sure that someone thinks I’m just kidding around about this `$500B class action lawsuit that I intend to 
 file, here are pictures which illustrate my reasoning and ONLY A MINOR PORTION of the evidence vault I have 
 been collecting of these two organizations working directly with Nfrastructure, as well as the LAW ENFORCEMENT
 SYSTEM for the state, as well as the JUSTICE SYSTEM for the state. (Nfrastructure is too low level, not a high 
@@ -7504,7 +7507,7 @@ priority really. They’re involved, but it’d be like me trying to pin DJ THOM
 instead of MICHAEL ZURLO.)
 
 Because, that is what the PRISM program protects, and allows to be a thing.
-So when the last judge provisioned Spectrum with a ‘weak-dicked slap on the wrist...’ AKA, a $15M fine that 
+So when the last judge provisioned Spectrum with a ‘weak-dicked slap on the wrist...’ AKA, a `$15M fine that 
 was paid for with free HBO..? I intend to exponentially increase the likelihood of these companies just going
 bankrupt INSTEAD (A great way to do this, is to manipulate these serial killers into attacking me again, and
 they sure as hell will.). Which, will mean that the last judge can not be involved in this, because, they were 
@@ -7580,7 +7583,7 @@ We could highly benefit from a [Theodore Roosevelt v2], where a president could 
 A universally accepted definition of an outstanding fucking job. (← things changed over the last couple years)
 
 However, that wouldn’t be acceptable to the people that are currently in control… who are fucking terrible 
-at controlling anything. Such as: Finances… $24T of national debt (2 years later it is $30T) is a dead 
+at controlling anything. Such as: Finances… `$24T of national debt (2 years later it is `$30T) is a dead 
 indication that your government sucks at managing finances. 
 
 It SHOULD be legal to break people’s fingers when they EMBEZZLE taxpayer money, and then they use this money 
@@ -8069,7 +8072,7 @@ I was going through the driving range for a while. I called my friend Phil Derri
 ___________________________________________________________________________________________________________
 | Index   Name     Date    Time   Focus                 (URL/Uniform Resource Locator)                    |
 |---/--------|---------\------\-----|--------------------\-------------|------------/---------------------|
-| 0001 | IMG_0389 | ‎05/‎21/‎20 ‏‎2357 | 3 | https://drive.google.com/file/d/19NEdQugc_1mxV_tVS1KFhxebIrDcRAI0 |
+| 0001 | IMG_0389 | 05/21/20 2357 | 3 | https://drive.google.com/file/d/19NEdQugc_1mxV_tVS1KFhxebIrDcRAI0 |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0001]: I took this picture by ‘accident’, but I don’t think it was accidental anymore. This was taken  |
 | a couple minutes BEFORE I recorded the sound of the bird, below. There’s no way that I didn’t hear the  |
@@ -8092,7 +8095,7 @@ cause it gave me the impression that I should follow him and head to Schenectady
 ___________________________________________________________________________________________________________
 | Index   Name     Date    Time   Focus                 (URL/Uniform Resource Locator)                    |
 |---/--------|---------\------\-----|--------------------\-------------|------------/---------------------|
-| 0001 | IMG_0390 | ‎05/‎22/‎20 ‏‎0139 | 0 | https://drive.google.com/file/d/143l422TZN7B1fghfAu3JJ_KjUBHhK9T6 |
+| 0001 | IMG_0390 | 05/22/20 0139 | 0 | https://drive.google.com/file/d/143l422TZN7B1fghfAu3JJ_KjUBHhK9T6 |
 | 0002 | IMG_0391 | 05/22/20 0139 | 0 | https://drive.google.com/file/d/1pb4q-KxHekqE8KjWABLEMxlaM2ORssuG |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0001, 0002]: Guy walking down Route 146 toward Schenectady. This gave me a bad feeling. What might be  | 
@@ -8833,9 +8836,9 @@ Consider it may not be a very a crazy idea AT ALL, to ask questions like:
 ______________________________________________________________________________________________________________
 | Q : IF President GEORGE W. BUSH committed TREASON, or knows who did... what would they stand to gain?      |
 |------------------------------------------------------------------------------------------------------------|
-| 1) OIL     | $Trillions of dollars’ worth of oil from [IRAQ/KUWAIT]                                        |
-| 2) OPIATES | $Billions → $Trillions of dollars’ worth of poppies from [AFGHANISTAN]                        |
-| 3) CONTROL | USA-PATRIOT Act of 2001 → [UNITED STATES OF AMERICA] → $30T (CAPITALISM → MONARCHY+COMMUNISM) |
+| 1) OIL     | `$Trillions of dollars’ worth of oil from [IRAQ/KUWAIT]                                        |
+| 2) OPIATES | `$Billions → `$Trillions of dollars’ worth of poppies from [AFGHANISTAN]                        |
+| 3) CONTROL | USA-PATRIOT Act of 2001 → [UNITED STATES OF AMERICA] → `$30T (CAPITALISM → MONARCHY+COMMUNISM) |
 |            | Technological Tyranny → Mass Surveillance → REDUCTION OF (CONSTITUTIONAL RIGHTS/GUN CONTROL)  |
 |------------------------------------------------------------------------------------------------------------|
 | [BRITAIN]  | Imagine if [BRITAIN] did that shit...? (Well, they did.)                                      |
@@ -8877,7 +8880,7 @@ It’s kinda why I kept poking fun at Verizon. Their service does NOT suck, it�
 I had Verizon Wireless for over 10 years, established a plan with them when I quit working for my uncle at 
 the deli in October 2003. 
 
-Had this service for SO MANY YEARS... until THEY fucked up by trying to charge me $600 for a single month, 
+Had this service for SO MANY YEARS... until THEY fucked up by trying to charge me `$600 for a single month, 
 after I took ownership of a phone line from my cousin Tom/Meghan’s phone plan, for my kid’s mother, Jennifer.
 Which, this bitch never even used it or managed it. When I found out why there was a bill for like, fuckin 4x 
 more than my highest bill ever...? They were like “OoOoOooohhh, you didn’t check the BOX on the website... 
@@ -9333,13 +9336,13 @@ What if the WHOLE TOWN of Clifton Park, NY could give Spectrum a big ol’ middl
 Instead of just a couple fuckin’ neighborhoods where people who work for Verizon, actually live...
 ...they could totally make it available all over town. 
 Ya know...? Right now, the guys who work for Verizon and have the FIOS service going to their place...?
-They’re bein’ a real nice guy by offering it to other people. Instead of charging people $1000 a month...?
-Now they’re charging $10 a month. *tapping side of head* Now they’re thinkin’ 1) all day long...
+They’re bein’ a real nice guy by offering it to other people. Instead of charging people `$1000 a month...?
+Now they’re charging `$10 a month. *tapping side of head* Now they’re thinkin’ 1) all day long...
 _________________________________________________________________________________________________________________
 | 1) Spend a lot less, get a lot more -Everybody else | ← What a normal, rational person will think sounds good | 
 | 2) Spend a lot more, get a lot less -Verizon        | ← What a moron with brain damage will think sounds good |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-MAYBE the reason they’re NOT doing that yet, is because they don’t see how $10 a month for unlimited home internet
+MAYBE the reason they’re NOT doing that yet, is because they don’t see how `$10 a month for unlimited home internet
 AND cell service, would be REAL cool. That’s cause they’re ALL lazy fucks that “FEEL” like they “work hard”.
 
 The reason that these lazy fucks at Verizon and Spectrum “FEEL” like they “work hard” is because they’re “morons”.
@@ -9400,7 +9403,7 @@ how suddenly, people are using their fiber optic lines and not actually needing 
 However, they should consider that the TECHNOLOGY that they are UTILIZING, is from a DEAD MAN named NIKOLA TESLA,
 and his fucking INTELLECTUAL PROPERTY was STOLEN by their EMPLOYER, and the FEDERAL COMMUNICATION COMMISSION.
 
-So ultimately, $10 for unlimited HOME INTERNET and CELL SERVICE...? That’s gonna piss them off really badly if 
+So ultimately, `$10 for unlimited HOME INTERNET and CELL SERVICE...? That’s gonna piss them off really badly if 
 someone manages to use THEIR OWN NETWORK TO DO THAT. They’re gonna work REAL FUCKIN’ HARD TO PREVENT THAT FROM
 HAPPENING, but it will literally be the ONLY time ANY of them do anything that could even REMOTELY be considered 
 “hard work”, or like “involved”. Nah, what they do, isn’t hard. They’re lazy.
@@ -9418,9 +9421,9 @@ ________________________________________________________________________________
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-CP      : So, we’re looking to charge you $10M per month, for every additional month that goes by...
+CP      : So, we’re looking to charge you `$10M per month, for every additional month that goes by...
           ...until your residential FIOS service is OFFICIALLY available, AND, anyone that CURRENTLY...
-          ...has this service ALREADY, will be charged $1000 per month, going back to when it was...
+          ...has this service ALREADY, will be charged `$1000 per month, going back to when it was...
           ...illegally installed, because otherwise, this is a serious class action lawsuit.
           The Spectrum Gigabit service is ~1000/0040 (← total shit, not synchronous)
           The Verizon  Gigabit service is ~0950/0850 (← what used to be ~NEW gigabit ethernet in 2003)
@@ -9445,9 +9448,9 @@ CP      : Uh, how about that thing that’s pretty amazing, called Starlink...?
 Verizon : ...that’s like, SATELLITE though...
 CP      : Oh well, dude.
           Wanna suck a fuckin’ dick, or not...?
-          Ultimatum: $10M per month, and then those lines can remain and you don’t have to offer FIOS.
+          Ultimatum: `$10M per month, and then those lines can remain and you don’t have to offer FIOS.
           OR, offer FIOS within the next (5) days, because this is class action lawsuit material.
-          But also, anyone that has been getting FIOS prior to NOW, will be charged $1000 a month, for 
+          But also, anyone that has been getting FIOS prior to NOW, will be charged `$1000 a month, for 
           each day where YOUR FIOS SERVICE WAS ALREADY BEING PROVIDED.
 Verizon : Nobody in Clifton Park HAS FIOS.
 CP      : Listen moron.
@@ -10212,7 +10215,7 @@ as a potential POSSIBILITY. (← what the police are supposed to do)
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 [WILLSCOT]: I once worked with a guy named Paul Daniels when I managed Computer Answers. Paul Daniels was a 
-pretty cool dude to work with, and in August 2017 when him and Dana King had helped the store achieve $42K 
+pretty cool dude to work with, and in August 2017 when him and Dana King had helped the store achieve `$42K 
 in sales...? I made damn certain that these guys got a fuckin’ bonus. 
 
 Anyway, Paul worked at a place called Mannheim during the day, and Computer Answers at night.
@@ -11050,7 +11053,7 @@ COINCIDENTAL, actually. Regardless, my son and I spoke to JOHN HOFFMAN for a few
     |                                                                                                       |
     | My job was level 1 tech support, even though I had the experience to have been hired for level 3.     |
     | With the notion that I can configure network switches, routers, access points, printers, SmartTVs,    |
-    | stuff like that... Nobody ever thinks that I can do that stuff for a rate of pay like $125+/hour.     |
+    | stuff like that... Nobody ever thinks that I can do that stuff for a rate of pay like `$125+/hour.     |
     | But, that’s because people treat me like an asshole, and they always have.                            |
     | People should consider reading my fuckin’ resume someday, rather than to throw it in the trash.       |
     |                                                                                                       |
@@ -11078,7 +11081,7 @@ COINCIDENTAL, actually. Regardless, my son and I spoke to JOHN HOFFMAN for a few
     |                                                                                                       |
     | I will elaborate more on this event shortly. But- NICHOLAS DINOVA and PETER AMATO, very relevant to   |
     | FRAUD that TANSKI COMMITTED.                                                                          |
-    | Ah man. That dude just slid $60M between himself and MR. AMATO without ANNIE MADDEN’s DECADES of      |
+    | Ah man. That dude just slid `$60M between himself and MR. AMATO without ANNIE MADDEN’s DECADES of      |
     | experience at KEYCORP FRAUD DEPARTMENT, ever suspecting a fucking thing. Weird.                       |
     |                                                                                                       |
     | Back when I handled this instance of a program named KeyCounselor that crashed excessively...         |
@@ -11232,8 +11235,8 @@ ANYBODY TO DO... HUH. WEIRD. Well, it could be because the police would rather H
     | _____________________________________________________________________________________________________ |
     | | Deeper side point | 04/15/2019 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\| |
     | |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯| |
-    | | Back on 4/15/19, my account got flagged with “FRAUDULENT ACTIVITY”, right...? With like $30.00 in | |
-    | | the account. What fuckin’ moron, would actually mark an account with $12.00 in the account, as    | |
+    | | Back on 4/15/19, my account got flagged with “FRAUDULENT ACTIVITY”, right...? With like `$30.00 in | |
+    | | the account. What fuckin’ moron, would actually mark an account with `$12.00 in the account, as    | |
     | | FRAUDULENT ACTIVITY DETECTED...?                                                                  | |
     | |                                                                                                   | |
     | | Some moron like John Pickett*, or even Scott Salvadore.                                           | |
@@ -11292,8 +11295,8 @@ ANYBODY TO DO... HUH. WEIRD. Well, it could be because the police would rather H
     | Does that sound offensive, at all...?                                                                 |
     | Oh well, it’s probably accurate.                                                                      | 
     |                                                                                                       |
-    | ...leading to situations where NICHOLAS DINOVA will write BRUCE TANSKI a check for about $6K...       |
-    | ...or PETER AMATO will write BRUCE TANSKI a check for $60M...                                         |
+    | ...leading to situations where NICHOLAS DINOVA will write BRUCE TANSKI a check for about `$6K...       |
+    | ...or PETER AMATO will write BRUCE TANSKI a check for `$60M...                                         |
     | ...whether it’s for “political contributions”, or for “Kings Isle development”...                     |
     | ...TANSKI does something FRAUDULENT with it, PULLS IT OUT OF THE ACCOUNT...                           |
     | ...fills his anal cavity with a dildo SUPER QUICK...                                                  |
@@ -11317,7 +11320,7 @@ ANYBODY TO DO... HUH. WEIRD. Well, it could be because the police would rather H
     | That’s why I have to insult people.                                                                   | 
     |                                                                                                       |
     | That is, absolutely fucking amazing, isn’t it...? Man. So much stolen money, that some douchebag      | 
-    | with $0.00 can actually PAY PEOPLE LIKE LAURA HUGHES/FBI/ETC... to ignore all that ‘nonsense’ I       |
+    | with `$0.00 can actually PAY PEOPLE LIKE LAURA HUGHES/FBI/ETC... to ignore all that ‘nonsense’ I       |
     | just said, cause BRUCE fuckin’ TANSKI, he’s such a fuckin’ AMAZING GUY... right...?                   |
     |                                                                                                       |
     | Like, I’m fuckin’ absolutely IMPRESSED.                                                               |
@@ -13022,8 +13025,8 @@ After I told this guy that I knew they were giving certain people free power, he
 “Yeah, I’m a guy that works at GrayBar, not NYSEG. Some dude was just here tellin’ me some shit to my face bro.”
 And then the police were dispatched, guess who that was...? Trooper Leavey. Leavey is not the problem here.
 
-After I NEVER ACTUALLY WENT TO GRAYBAR, I went to Sunoco, owned by Bruce Tanski. Guy who somehow has a $60M 
-contract with a dude for “Kings Isle”, and who scammed by friend’s grandfather Mr. Dinova out of $6K, and then
+After I NEVER ACTUALLY WENT TO GRAYBAR, I went to Sunoco, owned by Bruce Tanski. Guy who somehow has a `$60M 
+contract with a dude for “Kings Isle”, and who scammed by friend’s grandfather Mr. Dinova out of `$6K, and then
 Mr. Tanski, did some criminal shit with a lot of people’s money and somehow threw the money right back into the
 account like it was never even touched. Why is that...? Oh. Cause I think Bruce Tanski has a guy on the inside
 at the fuckin’ bank. Wanna like, know what BANK that might be...? Key Bank, KeyCorp. I already explained the
@@ -14210,7 +14213,7 @@ You don’t know, they might. They already think like that NOW, in a lot of case
 Nothing FATAL about the above hypothetical scenario, Applebee’s dude whipped out his dick, said somethin’ 
 that made NO sense, and just, took the fuck off, man... Totally legal for HIM to do that, not you.
 
-People might think I’m being fuckin’ ridiculous right now, but Ted Cruz gets $500M from Exxon Mobil (which is
+People might think I’m being fuckin’ ridiculous right now, but Ted Cruz gets `$500M from Exxon Mobil (which is
 bribery), and lives an amazing life. Why...? Because he literally allows Exxon Mobil to fuck him in his ass.
 Laws being written that make NO FUCKING SENSE. That’s why.
 
@@ -18412,7 +18415,7 @@ But- sometimes people will say that it’s the fuckin’ individual, not society
 It most certainly is society as a whole. Because … guys like Ted Cruz are a fuckin’ problem that’s 
 not being addressed at all.
 
-Yeah, what I’m saying is that, for every Ted Cruz allowing Exxon Mobil to fuckin’ pay him $500 
+Yeah, what I’m saying is that, for every Ted Cruz allowing Exxon Mobil to fuckin’ pay him `$500 
 million dollars, there’s 19 kids and 2 teachers that will get shot to death because Ted Cruz wasn’t 
 actually going around being an active member of his community like he’s fucking VOTED INTO OFFICE 
 to be. But, they won’t change. He’ll just keep his mouth shut and pretend like anyone really gives 
@@ -19815,7 +19818,7 @@ some other dude play..." ...cause it makes perfect sense that he is the type of 
 things in that story.
 
 Cause it was a metaphor for his every single appearance on Fox News 
-...and his appearances where he manipulates people, THAT'S the reason why RUPERT MURDOCK pays him $100M+ a year.
+...and his appearances where he manipulates people, THAT'S the reason why RUPERT MURDOCK pays him `$100M+ a year.
 ________________________________________________________________________________________________
 | In reality, changing their "news organization" name from Fox News, to: Not News              |
 | ...would make perfect sense to anyone who wants to be taken seriously as someone intelligent |
@@ -20349,9 +20352,9 @@ People might even try and label me as an extremist for having these opinions...
 [Begin comparison]
 It’s ok if...
 - Hillary Clinton leaks classified documents, generating a matter of national security
-- Sean Hannity says "climate change isn’t real" on Fox News, and then gets paid $100M by RUPERT MURDOCK
+- Sean Hannity says "climate change isn’t real" on Fox News, and then gets paid `$100M by RUPERT MURDOCK
 - TUCKER CARLSON does that too.
-- Exxon Mobil fucks Ted Cruz in the ass in exchange for $500M, which is BRIBERY
+- Exxon Mobil fucks Ted Cruz in the ass in exchange for `$500M, which is BRIBERY
 - Bob Lutz spent 50 years making terrible vehicles at GM
     
 It’s NOT ok if...
@@ -20825,9 +20828,9 @@ Well, fuck you for thinkin that, cause TROOPER RUFFAS will agree with everything
 So will TROOPER MESSINES. And, SERGEANT BOSCO, though I'm on the fence about HIM, because he may actually
 be SUGGESTIBLE with the EVIDENCE... 
 
-The bottom line is that... if GOLDSTEIN is willing to charge $17K to install those camera systems like 2G32 told
+The bottom line is that... if GOLDSTEIN is willing to charge `$17K to install those camera systems like 2G32 told
 me on 08/05/20 near JOES CARS on US-9 after the incident at 1602 US-9, where TROOPER OPOBANO came and handed off
-the DISORDERLY CONDUCT paperwork/bullshit arrest...? Then, GOLDSTEIN should ALSO install a $5 adapter that they 
+the DISORDERLY CONDUCT paperwork/bullshit arrest...? Then, GOLDSTEIN should ALSO install a `$5 adapter that they 
 LITERALLY SELL at EVERY FUCKIN' GAS STATION and WALMART, or even a dollar store...? 
 They have those adapters there... Why would the FUCKING EXPENSIVE STATE TROOPER VEHICLES, OR the SARATOGA COUNTY 
 SHERIFF VEHICLES have NONE of those adapters installed in them, out of the gate...? 
@@ -20887,7 +20890,7 @@ Well, then that police officer type will go obsolete. Pretty fucking soon, or ev
 If people try to say “they already exist”, then they should consider doing some homework.
 
 Stating “I'm not familiar with the technology” is akin to saying “I don't know how to fuck girls...” 
-Because that’s literally an admission of being too fucking lazy to plug in a god damn $5 wire.
+Because that’s literally an admission of being too fucking lazy to plug in a god damn `$5 wire.
 I'm fairly certain that having a mobile device is a REQUIREMENT when you're a POLICE OFFICER… 
 
 SO LIKE, saying retarded shit like that will just IMMEDIATELY indicate that you're workin' with a lazy cocksucker.
@@ -20916,7 +20919,7 @@ record that is ALMOST the same as yours..? But it isn’t yours, like I just des
 
 Pirrone  : Hey Thompson...
 Thompson : *eyebrows up* Yeh...?
-Pirrone  : Dude, I'll bet you $100 bucks, that I could get a promotion for arresting MICHAEL C. COOK outside
+Pirrone  : Dude, I'll bet you `$100 bucks, that I could get a promotion for arresting MICHAEL C. COOK outside
            of ERIC CATRICALA's FUNERAL HOME... even if he's on the OTHER side of ROUTE 9.
 Thompson : Dude... I'm not takin' that bet.
 Pirrone  : C'mon dude, you really think that people will notice it...?
@@ -25214,7 +25217,7 @@ not the point *taps chest* I’M tryin’ to make.
 Nah. 
 
 The point I’m tryin’ to make is that suppose someone with millions of dollars, can buy a license to Pegasus,
-right...? And when they do this, they will have purchased a program worth more than $1M USD, with money that
+right...? And when they do this, they will have purchased a program worth more than `$1M USD, with money that
 they never actually earned themselves. Nah, cause mom and dad hooked him up, just throwing money at the kid that 
 wants to use Pegasus to be a serial killer and just mow down innocent people for lookin’ at him the wrong way.
 
@@ -27236,7 +27239,7 @@ basically we’re right fuckin back to 1776, only this time, it’s a lot more d
 Cause the National Security Agency and the Five Eyes are basically under the royal family’s control.
 
 It’s worse than that too, because everybody’s smartphone has a Trojan horse installed from the factory, like,
-Apple is worth $3T for a very key specific reason. Why do these devices NOT HAVE A PHYSICAL SWITCH...?
+Apple is worth `$3T for a very key specific reason. Why do these devices NOT HAVE A PHYSICAL SWITCH...?
 Ohhhhhh, maybe it’s because a design feature allows the device to remain powered on even if you turn it off.
 So, Apple has no idea that ALL OF THEIR DEVICES ARE DANGEROUS. Mainly because of Pegasus alone.
 
@@ -28435,7 +28438,7 @@ Might even look ‘accidental’...
 "@)
  
 $Book.AddSection(8,"Skit [~] Jeopardy! Champion, Ken Jennings",@"
-Jeopardy! → Alex Trebek → Merv Griffin → Ken Jennings → 74 consecutive wins → $4,522,700
+Jeopardy! → Alex Trebek → Merv Griffin → Ken Jennings → 74 consecutive wins → `$4,522,700
 Ken Jennings probably isn’t related to the late news anchor, Peter Jennings.
 
 Peter Jennings was on TV practically ALL DAY LONG on September 11, 2001.
@@ -31694,7 +31697,7 @@ You might have some friends in high places, but you might also know how to write
 ...and configure your own equipment, like I do.
 
 You really can’t find a single person that can perform as many roles as I can, without paying top dollar.
-When I say stuff like $175/hour, that’s my low end rate. 
+When I say stuff like `$175/hour, that’s my low end rate. 
 
 You want the best there is...? Heh. 
 It won’t be cheap, but it’ll still be a hell of a lot less than hiring a team of dudes.
@@ -38906,11 +38909,11 @@ That’s correct. He won the POPULAR vote.
 When the ELECTORAL COLLEGE vote, WINS over the POPULAR VOTE, it means that EVERYONE VOTED FOR NO REASON.
 Cool.
 
-OR LIKE, when America is supposedly a CAPITALIST COUNTRY, and yet it's in $30T of debt...
+OR LIKE, when America is supposedly a CAPITALIST COUNTRY, and yet it's in `$30T of debt...
 ...somehow that makes it VERY DIFFERENT from COMMUNISM...
 
 OR LIKE, everybody pays their taxes, but if Donald Trump signs a deal with the Taliban to leave Afghanistan
-by 05/01/21, then, fuck it... the $1T America spent on BOMBS, AMMO, WEAPONS, SUPPLIES, VEHICLES, PLANES, 
+by 05/01/21, then, fuck it... the `$1T America spent on BOMBS, AMMO, WEAPONS, SUPPLIES, VEHICLES, PLANES, 
 HELICOPTERS, ARMAMENTS, essentially... handed over to the Taliban FREELY. NO RESISTANCE WHATSOEVER.
 
 OR LIKE, everybody has to pay for the fuckin F-35 LIGHTNING to be built in (50) different fuckin states, and
@@ -39348,7 +39351,7 @@ _______________________________
 These cheat codes allowed this miserable fuckin’ brat, to deploy some advanced tools named (Pegasus/Phantom)
 to an Apple iPhone 8+ that he really had no business being on (but the other explanation is that those tools
 were already deployed to the device out of the factory, either way, that means Apple is due for a serious 
-lawsuit that bankrupts the entire company, one that’s currently worth $3T – AKA “LARGEST LAWSUIT IN HISTORY”).
+lawsuit that bankrupts the entire company, one that’s currently worth `$3T – AKA “LARGEST LAWSUIT IN HISTORY”).
 
 But, he’s got a rich (Mom/Dad) though... 
 If he whines or complains...? 
@@ -39554,7 +39557,7 @@ Maybe I am jumping the gun. Maybe it’s just some big misunderstanding.
 Maybe Ted Cruz doesn’t get pumped in the butt, by ANYBODY at Exxon Mobil...
 
 It looks like Ted Cruz told the climate change scientists that they were all on drugs or their research 
-was bad, and then Exxon Mobil thought that was COOL. So COOL, that they handed Ted Cruz like $500M for 
+was bad, and then Exxon Mobil thought that was COOL. So COOL, that they handed Ted Cruz like `$500M for 
 being such a consistently above-average, COOL son of a bitch. Then, Ted ASKED them, to pound him out in the 
 butthole later on. 
 
@@ -40393,7 +40396,7 @@ Me    : *shakes head* Alright.
 
 Then she came back, again one day. Of course this is a long time ago, but she was incredibly nice, and I am
 fairly certain I, too, was nice to her. Then, eventually she worked about 100 feet away from Tanski’s office.
-And like, right next door to Computer Answers OLD location, where they sold $5 footlongs for a while.
+And like, right next door to Computer Answers OLD location, where they sold `$5 footlongs for a while.
 
 I was pretty close to offering HER a foot- Not gonna finish that sentence. Anyway, her brother got mad at me 
 one day cause I dropped my paycheck, and I fuckin’ went in her job and blamed HER for finding it and doin’ 
@@ -42949,7 +42952,7 @@ Woman #2: Dude does the work of over 5000 regular lawyers...?
 Woman #1: That’s what I thought... 
           ...but then he keeps talking to the guy... 
           LM5K : You know, I do. 
-                 But also... I could literally charge $5000 for a single minute of work...
+                 But also... I could literally charge `$5000 for a single minute of work...
                  ...and everyone that knows me, knows I’m worth every penny.
 Woman #2: That’s impressive.
 Woman #1: It is, isn’t it...? 
@@ -42958,7 +42961,7 @@ Woman #1: It is, isn’t it...?
                  Sometimes I work for free. 
                  Because... I believe in principle. 
                  If I can tell that some client is lying to my face...? 
-                 $5000 bucks chum. 
+                 `$5000 bucks chum. 
                  But, when someone is telling the truth...? 
                  ...and no one else wants to help that poor soul...? 
                  That’s when I waive all of my fees... 
@@ -43830,7 +43833,7 @@ That story above might not be LITERALLY accurate, but it is a perfect metaphor f
 and the existence of Fox News. He pays these (2) morons, Hannity and Carlson, to do the bidding of 
 the car and oil industry. 
 
-These guys don’t make $100M a year for being INTELLIGENT.
+These guys don’t make `$100M a year for being INTELLIGENT.
 They are paid top dollar, because they do what they’re told. 
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -43850,7 +43853,7 @@ Murdock: Sean, you do realize that if you tell anybody that we do this shit...?
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 You know, like (1) TUCKER CARLSON, and (2) Sean Hannity... 
-these (2) morons are paid over $100M a year, intentionally saying moronic shit every time they’re on the air. 
+these (2) morons are paid over `$100M a year, intentionally saying moronic shit every time they’re on the air. 
 No exceptions.
 Every fuckin’ time they’re on TV...? 
 They are working very hard to cause people to think that they’re watchin’ the fuckin’ news.
@@ -43861,7 +43864,7 @@ Fox Commercials, oil industry, cars, pharmaceuticals that might kill you later, 
 
 It’s cause it’s a fuckin’ propaganda machine. When people go to work and participate in the economy, they 
 very rarely realize that they’re just doing the bidding of somebody that has the entire economy under control, 
-as in, they manipulate people... by using a large negative number of $30T. There are plenty of them that
+as in, they manipulate people... by using a large negative number of `$30T. There are plenty of them that
 don’t have a MALICIOUS AGENDA...? But- they still have to do some questionable shit sometimes too.
 
 Once people realize that people in control of the country don’t actually have any money...
@@ -43900,467 +43903,9096 @@ Nah. Not everybody.
 # // | Chapter 9 - News vs. Propaganda | cls; $Book.Range("Book",10,@(481..507))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.AddSection(9,"Board of Possibilities",@"
+$Book.AddSection(10,"Start",@"
+What EXACTLY is the difference between NEWS and PROPAGANDA...?
+"@)
 
+$Book.AddSection(10,"Overview",@"
+NEWS, is when actual talented people in an actual news industry... 
+...they’ve REPORTED a story without altering the FACTS...
+...or forcing details to fit a certain AGENDA...
+...or cram their OPINION or RHETORIC down people’s throats.
+
+PROPAGANDA, is when actual talented people in a SOMEWHAT newsy industry...
+...they DISTORT a story and then alter the FACTS...
+...which forces details to fit a certain AGENDA...
+...or cram their OPINION or RHETORIC down people’s throats.
+
+Just like if some girl is blowing me, and I shove her head down, so far...? If those are FACTS, that’s NEWS.
+
+But, if I feel like shoving her head DOWNWARD... 
+...the AGENDA is that it’ll fuckin’ feel really good...
+...for her, and myself...
+...but with a cost where I’ve DISTORTED the story, and altered the FACTS that were originally REPORTED...
+...by shoving something down her throat.
+    
+Exactly like what Fox News actually is, and what Murdock does to Hannity.
+
+When an organization starts to DISTORT the facts, and FORCE details to FIT AN AGENDA, 
+That isn’t NEWS.... That’s called "PROPOGANDA/a dildo in someone’s asshole".
+
+This whole piece, is me ‘altering some facts around’, so it’s gonna feel like propaganda too.
+Cause, while there are plenty of FACTS and STORIES being thrown in, I can stand to say that 
+this falls into a category called propaganda. BUT- I’m not pushing this like it’s NEWS.
+
+...it stands to reason that I’m not oblivious to the notion that this will feel rather chauvinistic.
+
+Some people don’t know what propaganda is... 
+Fox News, is a propaganda machine. 
+It’s not a news organization. 
+That’s why they should change their name, to Not News Network. 
+
+Fox News
+__________________________________________________________________________________
+| Used to be News...? Now we’re not news. Not News. Part of the Not News Network |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+See how cool that sounds now? Also, sorta looks kinda cool too, huh? That’s technically a graphic.
 "@)
  
-$Book.AddSection(9,"Clues",@"
+$Book.AddSection(10,"Examination (1)",@"
+When you want the most up to date information possible, on news...? 
+Put it on anything that isn’t Fox News.
+And take a closer look at how the people reporting ACTUAL news, SOUND and CONVEY themselves.
+Now go back and watch a few minutes of Fox News. 
 
+If you don’t see the issue, I’ll explain it. 
+Fox News is a counterfeit "news" organization. They USED to report news, sometimes a little bit of it slips by.
+Now they just take every story they can, and they alter it to fit their agenda. 
+What I mean is, if some serial killer killed a bunch of people in Buffalo, and Fox News really
+wants to do what they call, "reporting news"...?
+
+Then some moron could say, 
+Carlson: Look, if we’re all honest with ourselves... Buffalo is basically the same thing as Chicago, right?
+
+Uh, no moron. Totally different place...
+567 miles apart, but my god this dude will say somethin’ like that.
+Some terms are INTERCHANGABLE, but many terms are NOT.
+Even *I* may even occasionally use the wrong word, but... 
+...I’m not gonna say Buffalo is basically the same thing as Chicago.
+
+Pretty sure that a lot of people will agree with me, he... might say something like that at some point. 
+Or already has.
+
+The reason why it sounds so compelling when he says shit like that, is because of the WAY he says the words.
+And how stupid he looks when he says those words...
+Never once have I watched this dude and enjoyed watching.
+If I happened to be watching and he said that a bunch of people did something somewhere...? 
+Cool, fuckface. Glad you could give me an update.
+
+But once they start to suggest the way they want YOU to feel, or FRAME how YOU should THINK something SOUNDS...
+...or how something SHOULD be considered... it stops being news. 
+Now it’s opinion piece, call it the fuckin’ Not News Network instead of calling yourself a news network.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Trailer : Triple N, comin’ at ya... with a Not News update.
+          A non-newsworthy update from the Not News Network.
+          Why...? 
+          Cause we’re Not News. 
+          That’s... what we’re ALL about.
+          Reporting nothing but shit that's not real news, all the time.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Other news networks have opinion shows, it’s not atypical. 
+Brianna Keilar on CNN, good. Very FACT BASED.
+
+Like Ari Melber sounds more educated than Carlson on his best day, also very FACT BASED.
+Seems to have no issue telling people "here is what an idiot/moron sounds like, folks..."
+
+He doesn’t say the words “idiot”, or “moron”, because actual news organizations can’t vocalize those
+words. Maybe some of them get away with it here and there, but it’s still rare to hear.
+You won’t catch Ari Melber saying those words on TV.
+
+Nah, that’s just crossing the line somehow...
+Not allowed to say those words, even if it IS true and would be NEWS to say those words...
+Ari Melber’s got integrity. He will... wait till he’s off camera and probably give me a fist bump.
+
+I sure as hell can say those words.
+If we’re really all honest with ourselves, how is some dude like Ari Melber going to communicate with 
+anybody, WHILE being on screen...
+...that Sean Hannity sounds like a moron too...?
+
+He might even say “He’s not as bad as Carlson...”
+And I might agree. To some extent.
+
+But, he is actually WORSE sometimes, because... when Hannity says that climate change isn’t real...?
+He’s basically telling Leonardo Dicaprio what a fuckin’ douchebag he is, or that...
+...idk, Sean Hannity is telling Leo Dicaprio that he sucked ass in EVERY movie he was ever in.
+
+And that’s some straight-up, fire-lipped, pecker-roasting, bullshit. 
+He’s outstanding in basically every movie he’s ever in. I would even say, on Tom Cruise’s level. 
+Without a doubt. 
+He’s never in a movie that manages to blow nutsack, let’s put it that way.
+________________________________________________________________________________________________________
+| Name             | %%% | Synopsis                                                                    |
+|==================|=====|=============================================================================|
+| Titanic          |  89 | Plays a dude named Jack, kicks dudes ass at a game of cards, just in time   |
+|__________________|_____| to get on a ship that’ll only set sail once. Brings her to the dance hall   |
+| to drink, dance, and party like Irishmen. They bounce, get chased by some fuckface, they hide in an  | 
+| old school car... and when it gets quiet...? He bangs the snot out of this mad hot red-headed rich   | 
+| girl. She was SUPPOSED to marry this other stuck-up fuckfaced clown (Zane), but then bolts.          |
+|                                                                                                      |
+| Then, Jack paints this painting of her with the Heart of the Ocean, and then they get caught...      |
+| Fuckface says “Oh yeh? Well... I don’t think so, bro... She’s mine.”                                 |
+| Then, Jack gets himself handcuffed, the butler-like dude says "Peace out, boy scout," and leaves.    |
+| Then Rose actually manages to find him and kick him loose.                                           |
+| Then, the ship slowly sinks, the orchestra plays some music, and then Jack freezes to death and she  |
+| gets very sad. The movie ends with Bill Paxton being the ship commander, and the story flips back    |
+| and forth from Rose’s past, to the present. Feels like it all happens within a day.                  |
+|                                                                                                      |
+| She throws the jewel that Paxton’s character was lookin’ for back into the ocean. “Ooops. My bad.”   |
+|======================================================================================================|
+| The Departed     |  85 | Plays a guy that has to fit in with the mafia sorta about Whitey Bulger, a  |
+|__________________|_____| fuckin’ notorious gangster from Boston. Whitey Bulger was an informant for  |
+| the FBI but even still, fucked everybody up while being an informant, and didn’t pull any punches.   | 
+|                                                                                                      |
+| The movie is pretty twisted, it feels a lot like a real life version of the Sopranos.                |
+| But it is actually still very good while also being suspenseful.                                     |
+| You’ll need some popcorn, but- prepare to see his character die as well as Matt Damon’s character... |
+| Sorta pisses the viewer off too.                                                                     |
+|======================================================================================================|
+| Wolf of Wall St. | 100 | Probably one of his greatest performances. He begins life as a stock broker |
+|__________________|_____| on Wall St., but the company he works at lets him go. He hits rock bottom   |
+| but decides to find a way to claw himself back to the top, with some no nonsense “Here, listen to    |
+| how I will sell some penny stocks”, and then wrote a script for the other dudes to follow along.     |
+|                                                                                                      |
+| Jonah Hill is a pretty good supporting actor in this movie, and brings his charm to the film with    |
+| full strength. They make the company a shitload of money, and then they decide to go big or go home. |
+|                                                                                                      |
+| They take a lot of Queludes (older sedatives with a side effect) and other drugs like cocaine.       |
+| They fuck a lot of bitches, they also share some of em on the company trading floor.                 |
+| They all kick ass, take names, they send stuff to offshore accounts, and then some FBI man comes     | 
+| along and that’s when it all falls apart...                                                          |
+|                                                                                                      |
+| Jordan Belfort is the guys real name. Margot Robbie was the (queen of Dutchess/mad hot wife).        |
+| If you don't (watch/like) this movie, then you're probably a fuckin' real lame son of a bitch.       |
+|======================================================================================================|
+| Inception        | 100 | This fuckin’ movie, is pretty fucking awesome. You’re talking about dreams  |
+|__________________|_____| layered within dreams and having story lines that sew each parallel nested  |
+| dream to the outside world... time slows down a hell of a lot, and by the time the movie is over...? |
+| ...you REALLY feel like there SHOULD be a SEQUEL... but, hasn’t been made yet.                       |
+|                                                                                                      |
+| Feels like Oceans 11 meets … IDK, Sliders or Quantum Leap, but also, this movie doesn’t really pull  |
+| any punches. Nah. Leo’s character really fucks with the rich dude’s son to get the secret out, and   |
+| you know what... his wife Mal in this movie, is also pretty hot too, and multiple actors in this     |
+| movie are ALSO in the Dark Knight/Batman movies...                                                   |
+|                                                                                                      |
+| The idea of how the story ends really threw me through a friggen series of questions.                |
+| The wobble of the dredle.                                                                            |
+|======================================================================================================|
+| Before the Flood | 100 | This ACTOR has earned himself some RESPECT. Not saying it cause all the     |
+|__________________|_____| girls thought that “OoOoOh Hes mad cute~!” This dude is actually TALENTED,  |
+| and you can really hear how he thinks in real life, in this documentary.                             |
+|                                                                                                      |
+| Most actors probably would’ve shit their pants to try and do this documentary. (even M. Zuckerberg)  |
+| He sounded rather humbled by the opportunity, wasn’t overconfident about it, but also, it’s a pretty |
+| compelling, critical piece of the puzzle that I think people will look back on and think to themsel- | 
+| ves, “Wow, that’s how bad it was THEN huh?”                                                          |
+|                                                                                                      |
+| Yeah, that’s actually how bad it was THEN, and it hasn’t slowed down at all. Nah.                    |
+| The biggest, most dramatic impact that movie really had on me, was when they drag the rope apart in  | 
+| Iceland, and it’s like 30 fuckin’ feet of rope worth of ice that ALL melted. Wow. Amazing.           |
+|                                                                                                      |
+| That part alone goes to show you how much of a useless cocksucker Sean Hannity IS and HAS BEEN, but  |
+| the truth is the entire movie does that too... also applies to Ted Cruz.                             |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Ari Melber isn’t gonna comment on anything I just said, other than MAYBE, saying that Before the Flood was a 
+good documentary about climate change, and that Leonardo Dicaprio did a decent job. 
+
+But- even if Ari Melber said that, AND Leo Dicaprio called Hannity a cocksucker too...? 
+Things will still be difficult to change. 
+
+The reason why, is cause what the hell man? Murdock, has the industry, by the balls... and doesn’t care.
+He’s gettin’ paid one way or the other... 
+So is Ted Cruz, and everybody else at the boardroom meeting of doom at Exxon Mobil.
+
+That’s why it helps to use colorful metaphors or analogies that make perfect sense... shouldn’t be illegal to 
+call someone a cocksucker when they act like one. Yeah, maybe Ted Cruz isn’t exactly a cocksucker, but he does 
+roll over and let big oil drill him between the ass cheeks for a few hundred million. Why...? Idk. Ask him.
+
+As far as Melber’s concerned, it’s not like he really has to look too hard for the newest addition to the Carlson’s
+moronic wheel of power. At any given moment, it’s like the Price is Right, you spin this thing, it stops on a number, 
+and then (surprise, surprise) THAT number, is another exciting entry of Carlson acting like a fuckin’ moron AGAIN.
+
+Nobody ever sees it coming either... It's almost like this dude has ninja skills when it comes to showing off what a
+fuckin top-notch moron he truly is. I'm amazed at how long running his show is... It's flat out, more successful than
+Bill O'Reilly's show ever was, hands down. But- that COULD be because Carlson doesn't know how to intimidate people. 
+
+There’s just no way these people can actually “get ahead” of how many times he will make a complete fuckin’ fool of 
+himself, and that’s why he is paid so well, and why his ratings are as high as they are. 
+
+Whether it’s Oliver, or Melber/anybody else on NBC, or CBS, CNN, or ABC... 
+Oliver can call Carlson a cocksucker if he wants to, but he doesn’t. He should. Melber and everyone else I 
+just mentioned, they are NOT free to call Hannity a cocksucker on broadcast television, not without causing 
+the network to receive a nasty fine, and probably losing their job.
+
+Believe it or not, Jon Oliver, Last Week Tonight, is actually a HEAVY opinion piece.
+It’s a good one to watch though. Especially when they cover something like Carlson, or Trump, or like... 
+they cover a lot of people doing moronic things and … they seem to do a consistently good job.
+I never really hear Jon use the word cocksucker though... though he does say fuck quite a lot. 
+They can’t say “cocksucker” on network television, can they...? Nope.
+
+Whenever it’s network television, you can clearly tell that the person on screen WANTS to swear, you can 
+see it in their eyes...? Or like, the way their eyebrows or facial expressions appear to be veiling some 
+emotion to say “Fuck you Carlson”, but... they have a calm demeanor on network TV. Brianna Keiler is actually 
+pretty good to watch too, and it’s not like her opinion pieces are ever really WRONG. 
+
+They are very … FACT BASED let me tell ya. 
+CNN has plenty of great coverage, but it is literally around the clock coverage so the news comes out in drips 
+and drabs... Fareed Zakaria is very good too, a lot like Chuck Todd on Meet the Press, get somebody in the seat, 
+and literally ask some friggen questions. 
+
+Bill Gates spoke to him recently, it touched on the epidemic and his appearance on Ted several years ago, but 
+he’s like ONE dude that could be talking about stuff like this, and I feel like Mr. Gates needs more guys like HIM 
+to be more “philantropic” and even educational.
+__________________________________________________________________________________________________
+| 05/08/22 | Hear Bill Gates' `$1B/y plan to prevent next pandemic | https://youtu.be/F_heKZUKnCU |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    
+If there’s anything Mr. Gates does successfully, is to inspire other people when he gets on screen. 
+Cause he is actually an educator if he’s honest with himself.
+
+Opinion pieces aren’t a bad idea, but that is what Carlson’s segment is. So is Hannity’s. 
+NBC Nightly News, is NOT an opinion piece at all, however even NBC's coverage is far from the COMPLETE STORY.
+
+Last Week Tonight is not news, nor does it even try to frame itself as if it IS news...
+But, it still conveys plenty of newsworthy material.
+
+For a GOOD opinion piece, you need someone that’s enjoyable to watch 
+Jon Oliver is probably one of my favorite hosts to watch. 
+TUCKER CARLSON is probably the least favorite host to watch. But- so is Hannity.
+
+That’s pretty bad.
+Why...? Cause that network spins everything around, I think the worst part about it is that it looks like 
+it’s fuckin’ god damn news. 
+... to put more money in RUPERT MURDOCK’s pocket, and his oil/gas/car company buddies. 
+
+So, if they say something like “Bob Lutz, shits his pants again...”... that’s gonna piss off somebody important 
+that they don’t wanna piss off, at all.
+
+Jon Oliver makes compelling arguments and analogies... and he can even swear and be original, they can’t do 
+what he does on CNN, NBC, CBS, ABC, though some of them definitely try.
+
+Jon Stewart, Samantha Bee, Stephen Colbert, David Letterman, Trevor Noah, they all do some of these things to 
+varying degrees, but they’re not really on a television channel where they are free to say whatever the fuck 
+they want. Jon Oliver got lucky because he can fuckin’ swear his ass off...
+
+So can I. Anyway, Hannity loves to blow RUPERT MURDOCK. Oh well. What can he do?
+Back at some point in history... 
+Fox News DID occasionally cover SOME news.
+Fox News doesn’t actually report News. 
+Not anymore. 
+
+Sometimes it looks like news for a split second...?
+But then they say something opinionated, and biased, then it’ll SOUND or LOOK like, a dick just flew into 
+somebody’s mouth.
+Right there and then.
+Which should sound ... fucked up actually. Dicks aren’t just supposed to come flying out of nowhere, 
+right into somebody’s mouth, as often as they do on Fox News. So... that is NOT news.
+If you think for one second, that could possibly happen, on a news station...?
+You’re not watching the fuckin’ news, buddy...
+Nah. That’s, gotta be some kind of advanced futuristic porno or somethin’...
+News ONLY reports the facts.
+News WONT distort the facts.
+
+You’re watchin’ something TOTALLY different, if the facts are being distorted...
+And you’ll know the facts are being distorted when it suddenly appears as if...
+...somebody just started cobbin’ on some dudes knob mid-sentence.
+
+I know some people are gonna think I mean that literally, so to state the obvious, nah.
+Not a literal thing at all.
+If someone reads all this, and thinks I’m being literal...? 
+Nah. It’s a metaphor.
+
+Anyway... 
+New Not News Motto: 
+__________________________________________________________________________________
+| Used to be News...? Now we’re not news. Not News. Part of the Not News Network |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+_______________________________________________________________________________________________
+| News       : Consists of [facts] being [reported]  where there is [       no rhetoric/bias] |
+| Propaganda : Consists of [facts] being [distorted] where there is [excessive rhetoric/bias] |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Fox...? Changes portions of every story around to work best for them, that’s NOT NEWS.
+
+Technically, that’s being an ASSHOLE. It’s like saying that there are 26 letters in an alphabet, but...
+Since THEY only really like 5 letters, fuck the other 21 letters, dude. 
+
+A, B, X, Y, Z are the ONLY letters that we're gonna talk about. Fuck the rest of the letters. They're lame.
+
+Now you’re thinking, what the hell? There’s obviously a lot of missing letters here...
+
+Right. So, things that are MISSING will start to be pretty OBVIOUS if you look for things that SHOULD be a 
+part of the story, but aren’t.
+
+So if I have a conversation with somebody...
+...and Fox News leaves out chapters of CONTEXT, that also accomplishes the same thing.
+
+Basically, the difference between NEWS and PROPOGANDA is this simple: 
+when a news organization calls itself a news organization, anyone reporting the 
+news isn’t supposed to like, flirt with the story, or alter it.
+
+Fox News consists of people that get paid a lot of money to push an AGENDA.
 "@)
  
-$Book.AddSection(9,"Profile",@"
+$Book.AddSection(10,"Discussion [~] Oil Corporation [Agenda] → Deny Climate Change",@"
+TUCKER CARLSON, and Sean Hannity are (2) prime examples, of people that never got rich or famous for their 
+intelligence. Quite the opposite, actually. They’re constantly pushing an AGENDA.
 
+If anybody reads that, and gets confused by that statement...? 
+I’ll clarify exactly what I mean, AND let you on in a little secret...
+
+Not only do BOTH of these useless fucks make over `$100M a year EACH, but the MORE moronic they SOUND...? 
+The MORE they get paid.
+
+Here’s why... 
+It’s because a billionaire loves to piss his money all over the place to fuck with everyone.
+This specific billionaire, thoroughly enjoys manipulating society. That’s the reason.
+He, doesn’t realize that doing this "manipulating society"... will probably wind up causing an extinction 
+level event.
+Here’s what an extinction level event is... it’s when everything on the planet, goes extinct, even people.
+
+Ok, cool. So, guess what’s causing ALL of that shit...? 
+Well, unsurprisingly, it’s something that these (2) fucking morons on Fox News, constantly say "doesn’t exist"
+Guess what that very existent thing is...? 
+It’s called climate change.
+But, what seems to be DRIVING climate change the MOST...?
+
+The car, gasoline, and oil industry. OH... Yeah.
+So when they ask the following rhetorical question: “How WOULD we support our society without oil or gas...?”
+Well, morons that never thought of a transition plan... 
+_______________________
+| Change the question |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+____________________________________________________________________________________________
+| From: “How WOULD we support our society without oil or gas...?”                          |
+|                 ...makes the question feel     HYPOTHETICAL,  NOT NECESSARILY INEVITABLE |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+____________________________________________________________________________________________
+| To:   “How WILL  we support our society without oil or gas...?”                          |
+|                 ...makes the question feel NON-HYPOTHETICAL,             VERY INEVITABLE |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+It’s a pretty good fuckin’ question. Isn’t it?
+If you keep buying oil/gas, you’re still DEPENDENT on it. 
+If you lease a vehicle that uses GAS, then you can only use GAS to propel yourself from point A to point B. 
+Now what happens when you run out of it...?
+
+Well, the car won’t actually START, aw man. Now you need the power of a magic genie because there’s no gas.
+
+...there’s no magic genie. You gotta walk your ass to the closest gas station, when ya get there, then fill 
+up a container. Sometimes you can contact like, idk, 911 or roadside assistance, and they’ll bring the gas 
+to YOU. Cause they’re cool like that. It’ll be like 2-3x the cost of gas at the station though, so prepare 
+to spend some fuckin’ money. Sorry, they don’t just give this stuff away for free. 
+
+Anyway, let’s say it’s literally a quarter mile away... Hannity, will literally have those guys bring the 
+gas there. Cause, the idea of walking is probably... TOUGH bro. A quarter mile to the closest gas station 
+is a fuckin’... might as well be walkin’ to the MOON...
+
+Nah. It’s not a bad idea. Walk like a quarter mile if you have no gas...? Even if you have the money...?
+Don’t be such a lazy bastard. Walk and get yourself some exercise. Anyway...
+
+What if... the planet just has no oil left, and there’s no gas at that station...?
+Well, Hannity will have walked to the gas station for no fuckin’ reason.
+Because, he kept denying climate change that whole time, didn’t stop for a single second to listen to people
+that know what the hell they’re talking about.
 "@)
  
-$Book.AddSection(9,"Reviewing The Attack",@"
+$Book.AddSection(10,"Shoutout [+] My Grandfather Thomas Cook",@"
+My grandfather was a trucker who delivered gasoline for the Amerada Hess Corporation all up and down the east 
+coast. About 20 years ago, he told me “The planet has about *checks watch* 35 years worth of oil left, by my
+calculations.”
 
+My grandfather did this for basically... 50 fuckin’ years or more. When Bob Lutz was shittin’ his pants every 
+day at General Motors, my grandfather was hauling gas that eventually made it’s way into every piece of shit 
+vehicle that Bob Lutz was responsible for making. As well as many others. Now, Bob Lutz isn’t the ONLY problem,
+the OTHER problem, is that the industry actually SNIPED ELECTRIC VEHICLE MANUFACTURERS OUT OF EXISTENCE EACH 
+AND EVERY TIME THEY TRIED TO EXIST.
+
+But ALSO, a guy in the 80’s, found a way to EXTEND the MILEAGE of the GASOLINE, so that a car that WAS getting 
+10 miles per gallon... suddenly got like 100. Awesome. Wanna know what happened to THAT dude...? He was found 
+dead one day after he tried to talk to people about it, or sold the formula to a car company.
+
+Cool. There’s a situation where Theodore Roosevelt had to keep an army of watchdogs around, JUST IN CASE, some 
+fuckin’ douchebag like Rockefeller decided to rear his ugly fuckin’ head, and require an immediate shot to the 
+head. But, I think they all got killed. So, oil companies just love to send some fuckin’ douchebag after ideas 
+like ELECTRIC VEHICLES and ANYTHING THAT EXTENDS MILEAGE.
+
+Anyway, my grandfather was responsible for delivering gas, and he told me just how fuckin’ inefficient those 
+diesel trucks really are when it comes to delivering gas. Or diesel. Basically, each of those trucks gets 
+like... 3 miles a gallon when loaded. If not less. ...that’s been goin’ on for fuckin’ decades...
+
+That might be a GOOD thing to the people that sit around watching their billions → trillions of dollars pouring 
+in because they don’t really have anything as expenses if you think about it... Yeah, they have expenses. 
+They pale in comparison to the YIELD they get from when it is aggregated. In other words, it’s a resource they 
+are EXTRACTING from the fuckin’ ground. It’s just a matter of availability.
+
+So, if Exxon Mobil wanted those oil fields in Kuwait/Iraq back in... August 2001...? 
+Guess what they COULD do, to go get some free fucking (oil/money)...? Hm.
+
+What happens is that WHEN the oil runs out... millions of people will die. In record time, too. Unless... 
+check it out... People like Elon Musk, build something that doesn’t depend on oil... to move all that stuff 
+around. Food...? Tesla Semis. Water...? Ground water. Heat...? Warm clothes, or a fire. Hot showers...? 
+Yeah. Nah. Not without switching to solar. Some people will get lucky, but the very real thing people should 
+be worried about, is when the cargo ships can’t move anymore. So like, might not be a way to ship goods from 
+Asia to America after they can no longer move.
+
+I am raising some alarms here, because the entire economy appears to be VERY DEPENDENT ON OIL.
+That includes plastics, and packaging, and so many other chemicals and detergents, medicines, laundry 
+detergents, all that stuff is very DEPENDENT on OIL.
+
+When it’s all fuckin’ gone... There won’t be a little meter in real life like there is in your vehicle. 
+It’ll just be a fuckin series of RED ALERTS. What I’m suggesting is that, people should already be making    
+accommodations and preparing for the worst... because, how can anybody trust someone who’s gonna lie about 
+climate change to funnel money into somebody’s pockets...?
+
+Realistically, I think the clock will RUN OUT BEFORE EVERYBODY GETS ON BOARD, and FIGURE THAT OUT.
+However, there may not even be THAT much time left, by MY calculations.
+
+See, grandpa told me that was at the rate 20 years ago. 
+The demand continues to RISE each year.
+Technically, we are probably just about TAPPED OUT NOW.
+
+But- then they started getting oil from the tar sands, and realistically, it’s pretty difficult to know for 
+certain how much oil is left. Was my grandfather taking a shot in the dark with that guess...? Well, no.
+Some tools use sound waves to detect earthquakes and seismic activity. When these tools are used, they can 
+geolocate a vast underground cavern of petroleum to use as a base that becomes oil AND gas after conversion. 
+However, people don’t realize just how much fuckin’ gasoline America uses on a daily basis.
+
+If people say “a metric shit ton”, they need an order of magnitude that’s just gonna          (← dwarf that by a lot)
+If people say “a million metric shit tons”, they need an order of magnitude that’s just gonna (← dwarf that by a lot)
+Well, that 2nd line is not correct... 
+Apparently it’s about 33M barrels a day. I’m using an old measurement too. 
+Without Google searching it, I would estimate that it is anywhere BETWEEN 33-100M barrels a day.
+A barrel is like 32 gallons I think.
+
+I’m trying to do this without actually whipping out a calculator and make some approximations, because really, 
+even the most knowledgeable people in the industry are also making approximations.
+
+Guys like Elon, need a lot of fuckin’ help to save a lot of people from dying when it DOES run out.
+What a shocker.
+
+It’s a fuckin’ brilliant plan, isn’t it?
+The reason why it’s a brilliant plan, is because at SOME point in the future...
+...all of the fucking oil WILL be depleted...
+...then the oil companies...?
+...won’t know what the fuck to do...
+...cause they’re morons.
+
+Sorta like how Bob Lutz, wouldn’t know what to do with himself, if he actually knew how to hold his shit in...
+...so he could get to the bathroom...
+...instead of shitting his pants every day.
+
+That’s an analogy. I don’t know how often Bob Lutz, shits his pants.
+But judging by the number of shit vehicles that GM made while he ran it...?
+Had to have been a daily thing.
+Cause, I wouldn’t feel a need to say such an insulting thing to someone with so much experience...
+...if he fuckin’ made an effort to do what Tesla did.
+
+But the only reason he didn’t, is cause he liked shitting his pants every day.
+Why though? I can only imagine, that it just felt amazing to him. 
+Warm, wet, sticky, it disgusts me to think that he probably won’t even deny it either.
+I can imagine that the “jokes” aren’t landing like jokes right now after what I just wrote above.
+
+What can anybody do...?
+If a toddler is sitting around in his diaper, and just shit himself, that kid is not gonna be able to clean 
+himself up. He pooped himself. It’s not funny...
+
+And that’s the perfect metaphor for the car and oil industry. I’m not gonna suggest that Rockefeller’s 
+descendants are all real evil pricks that have to go around killing people with ideas and stuff... cause 
+it’s probably not their fault if their great grandfather was a tycoon that had very great control over the 
+government and the economy...
 "@)
  
-$Book.AddSection(9,"Application of Psychological Manipulation",@"
+$Book.AddSection(10,"Shoutout [+] Theodore Roosevelt: One of the greatest former presidents",@"
+Theodore ‘Teddy’ Roosevelt had to deal with monopolies and create policies that needed to be set as an example 
+or a rule. The thing about Teddy Roosevelt, was that Teddy would knock a motherfucker out. 
+I’m not even kidding, he would kick the shit out of somebody if he felt like it, before he was even a president.
 
+He had a fuckin’ temper but it took a while to really get that side of him to come out. 
+This man changed the way these dudes were playing the game. 
+
+Back then, Rockefeller had his ways of being slippery and skirting the law every which way he could, cause 
+he was fuckin’ very filthy stinkin’ rich. The government, ALSO very corrupt. 
+
+Anyway, these monopolies thought they could laugh in this mans face. He mailed people a bunch of letters
+“stop doing this”, “stop doing that”, but they pretended like they didn’t get those letters. Then he actually
+traveled across the country to see why he wasn’t getting responses from those letters. 
+
+It wasn’t really common for a president to travel like that, even up until the early 1930’s, when they had planes.     
+Wasn’t entirely RARE, but typically, a president spent a lot of time in the White House.
+
+Anyway, he would show up. He would ask to see the person he sent the letter to, and then march to the office. 
+Like in Breaking Bad, when Hank Shraeder visits Lydia at her office by surprise...? 
+That’s how Teddy would show up. He’s... there man. No receptionist to tell ya to fuck off. 
+
+He’d get to their office, escorted by either the local police, or even the military, and then he would 
+calmly ask these people, “Oh, yeah, I sent you a few letters...” 
+So, the person would try to say “Oh, I have been SUPER busy...”
+
+Nah, that’s about the dumbest thing you can say to a president. 
+He knew when they were playing this game too.
+
+So, without any warning at all, he just started kicking the shit out of people when they did that.
+I mean, he didn’t beat them to a pulp, he just had to punch them REALLY fuckin’ hard ONCE.
+One time. That was it.
+
+He didn’t act like George W. Bush does, hiding in his fuckin’ house, and having people lie for him, nah. 
+This dude literally would come TO you... then ask questions that, BEFOREHAND, would make a bunch of people 
+act like the Sopranos, and laugh in somebody’s face...
+
+But then, if the President of the United States comes up to you, and asks you something... and you happen to 
+be the dumb son of a bitch that starts laughing in this dudes’ face...? 
+If he punches you in the face ONE TIME... and... you don’t even know what the fuck just hit ya...? 
+What does that person do...?
+
+You strike a president, you’re getting arrested. Doesn’t matter if that dude just hit YOU, cause he can do that 
+instead of taking you to jail. 
+Doesn’t really matter how much money you have, either.
+This is somewhat old school America, so, there was no “politics” at play.
+Presidents acted a lot like a police officer because they’re part of the executive branch.
+Basically a combination of a POLICE OFFICER and a SOLDIER.
+
+Might even have to fine you, for having to knock some sense into you. “Million dollar fine, bub.” 
+They stopped laughing.
+They weren’t acting like the Sopranos anymore after that, at all.
+
+Nah, cause even Tony Soprano would know better than to piss this dude off.
+If Paulie was running his mouth, who’s like a SOLDIER on the Sopranos, Tony would even be tempted to knock 
+him out too, just to avoid the million dollar fine for the PRESIDENT having to get his hands dirty.
+Didn’t need a vice president to do that FOR him.
+
+These people actually grew to be pretty afraid of this dude because, he’s a nice guy, no need to talk shit 
+to him, but if he’s in front of you, he’s there for a pretty good reason, he’s the fuckin’ president.
+
+I am taking some creative liberties in the story of Theodore Roosevelt.
+But, this dude would do stuff like that... when I say that he literally went to Panama to hand dig the Panama 
+canal, that’s not an exaggeration at all. He did shit like that. However, some of this stuff is very accurate.
+"@)
+
+$Book.AddSection(10,"Examination (2)",@"
+
+Yeah. Sean Hannity doesn’t like to tell people this, but he gets paid $100M a year to keep saying climate 
+change is not real. But, it is SO real, that I can practically see a dick in this guys mouth, every single 
+time he appears on television. It’s a $100M per year/dick in the mouth that Hannity, seems to enjoy hittin’ 
+with his tonsils.
+
+He can do that if he wants to, it’s a free country. It’s not actually illegal for him to do that.
+In Carlson’s case, I figure, this man probably gets pretty pissed off when the girls go to suck HIS dick, 
+and they can’t help but giggle. Cause his dick’s probably mad small... And you know what, if a girl fuckin’ 
+says "Aw, how cute~!" when she’s (looking at/holding) your dick?
+
+God that’s... gotta fuckin’ suck man.
+Look on the bright side... she doesn’t need a pair of tweezers or a microscope.
+
+Anyway, yeah. This year is expected to be the hottest summer in recorded history...
+Said some of these things already, but I’m gonna say it again cause of how ALARMING it is.
+
+The last 10 years...? ...check it out.
+...8 of the last 10 years were the hottest summers in recorded history... 
+
+Sean Hannity should not have a show. He could STILL get paid to just, suck RUPERT MURDOCK’s dick...?
+...then he doesn’t even need to do anything else. Same amount of money.
+Doing so would mean he’d be doing the same quality job... just, no show.
+Why have a show at that point...? There’s no need for it.
+
+These guys TUCKER CARLSON and Sean Hannity...? 
+The both of them...? They’re fuckin’ morons. 
+In Carlson’s case, I don’t think he can help it.
+In Hannity’s case, I think he actually CAN.
+
+RUPERT MURDOCK enjoys how both of them sound, spamming everyone that watches their network with moronic 
+thoughts. Couldn’t be more serious. 
+Paid to say some shit every day.
+The more brain dead the commentary...? 
+The more pleased the boss man is.
+
+A billionaire gets bored, thinks everyone is pathetic. ← I’m not certain this man ACTUALLY thinks that, 
+it’s a guess. The goal of Fox News is to get as many idiots as they can, to watch it.
+
+The content doesn’t need to be quality content at all, because the existence of this "news organization"...
+...is so that this billionaire can continue to win this fuckin’ bet that he made with another billionaire.
+
+And, RUPERT MURDOCK just crushes souls with how long he’s been keeping the bet going. He’s no idiot, that’s 
+for sure. Murdock is NOT paying these guys because they “sound intelligent”. They’re basically actors.
+Some people probably think that’s why they’re on all the time, to sound intelligent. Sure, we can call it “that”.
+
+Yeah, maybe some nearly brain dead people DO watch them... and they think either one sounds intelligent.
+But, that’s really not THEIR fault if they’re nearly brain dead... they may not be able to change the channel.
+Suppose the average viewer has the ability to change the channel... will they?
+
+Not if Tucker has the voice of somebody that sounds like you’re gettin’ a new happy meal toy.    
+He sounds excited about basically everything he talks about, basically new a happy meal toy per episode.
+“Gotta collect em all, folks.” -McDonalds
+
+Nah, you’re not brain dead if you have a way of somehow looking at the TV or online video...
+...and you know you’re lookin’ at some Fox News, featuring TUCKER CARLSON, back-to-back with Sean Hannity.
+(2) dudes...? (1) channel. 
+
+They really should do the same thing that George W. Bush and Shayam Sundar did...
+...standing side by side with their arms folded. Looking like they run some shit.
+Cause, it’s true, they do run some shit. Not like Bob Lutz does, either.
+
+They alone basically give Fox News the minimum ratings needed to do whatever the hell they want for the 
+remaining 22 hours a day. That means, they could just have commercials that whole time... and still not 
+come even remotely close to what these guys bring in.
+
+They’re not being paid for their intelligence. They’re paid for their obedience. Oil is worth a lot of 
+money. Carlson sounds like he knows some shit. Hannity also sounds like he knows some shit... They both 
+know some shit, but not much more. 
+They hear the truth, and they may as well say out loud, “Look everybody, the truth is fuckin’ lame, anyway.” 
+Then some viewers will look at each other and say “...did that dude just say the truth is fuckin’ lame...?”
+
+Uh, yeh. That’s what they started saying one day. Fox News knew that Not News WOULD be a way better name... 
+They had to actually start testing people, like dippin’ your toes in a pool, to see how warm/cold the water is.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson : I mean, if we’re really honest with ourselves, who fuckin’ cares about the truth, man...?
+          Look. I’m busting my ass, for the viewers.
+          *points at the camera* You guys. You’re why I’m here.
+          I gotta tell ya, I really miss Bill O’Reilly...
+          Why do they have to be so cruel to him...?
+          What the fuck man...?
+Crew    : DUDE, YOU JUST SAID THE F WORD LIKE A FEW TIMES …
+Carlson : Look, I don’t give a *bleep* bro, I’m sick of this *bleep*...
+          *cut to commercial break*
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Well, they needed an extension of the rollout, cause... 
+...a couple of PRIMETIME F BOMBS wound up costing RUPERT MURDOCK a shitload of money...
+...Carlson just throw a few F bombs AND an A bomb... 
+...they haven’t needed to use that *bleep* button for like... ever.
+
+Not with Carlson.
+"@)
+
+$Book.AddSection(10,"Skit [~] Lester Holt accidentally hurled an F bomb",@"
+
+The rest of the people in the industry, they hurl a SINGLE F BOMB, they’re probably gettin’ let go.
+Maybe, MAYBE... Lester Holt might say it by accident, but even he would get a REAL stern talking to.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Zucker : You know buddy... 
+         ...you’ve been on Primetime television for fuckin’ years bro. 
+         *puts hand on Lester’s shoulder*
+         What the hell happened to ya out there?
+Holt   : I... I dunno what came over me. I never really swear, ever.
+Zucker : Yeah. 
+         I know, pal. 
+         That *points index finger* shit just cost us a lotta money, dude...
+Holt   : Maybe it’s time for me to hang up the jacket, man... I dunno.
+Zucker : The FUCK you will bro... nuh-uh.
+         It’s (1) F bomb. 
+         You’re the most trusted name in news.
+         It’s MANAGABLE.
+         You didn’t go sexually harassing anybody like Lauer, O’Reilly, or friggen Cuomo.
+Holt   : Yeh, but Mr. Todd’s never gonna look at me the same way...
+Zucker : Dude. 
+         He and I hang out a lot. That dude swears like a fuckin’ sailor sometimes...
+         Even Hallie Jackson does too.
+Holt   : No way...
+Zucker : *eyebrows up* Yeah way, man.
+Holt   : Maybe I need like a week off or somethin’.
+Zucker : Dude. Nah. It’s not like you’re TUCKER CARLSON, dude. 
+         That dude just threw like... 
+         I don’t even know.
+         He just cost Murdock a lot of money dude, in like 20 seconds the other day...
+Holt   : His ratings are really high though.
+Zucker : Look Lester.
+         You’re a straight up OG motherfucker. 
+         Alright?
+Holt   : *chuckles* Heh. I am an original gangster aren’t I?
+Zucker : Yeh man. Who the hell comes even remotely close...?
+Holt   : What about Al...?
+Zucker : Roker...?
+Holt   : Yeh.
+Zucker : Dude, Al Roker ain’t no joke. 
+         He... 
+         He’s OG too.
+         Dude used to say, “snappin’ necks and cashin’ checks...”
+         Why do you think he used to say “here’s what’s goin’ on around the country...”
+Holt   : “...here’s what’s goin on in YOUR neck of the woods...”
+Zucker : Yep. 
+         That dude is also OG. 
+         But, he’s the weatherman dude. 
+         Totally different game.
+Holt   : Yeah. 
+         I heard TUCKER CARLSON pulled that off...? 
+         Thought to myself, “Just, what the fuck is goin’ on man...?”
+Zucker : Well, it’s good to know that you think stuff like that too sometimes, Lester.
+         You’re only human.
+         But, YOU specifically, being the host of Kids Edition... shouldn’t be fuckin’ swearin’ like that... 
+Holt   : Right. The kids man. They’re important.
+Zucker : That’s right man. Hey, I’ll see ya tomorrow.
+Holt   : Alright, take care of your self, and good night.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+If F bombs are gonna get hurled, it’s gonna happen in the same week. Because, NBC has a whole entire roster 
+of people that are seasoned veterans at never swearing, on camera. So does FOX, and CNN, and all of the rest.
+Sometimes you won’t even HEAR about a SINGLE swear word DURING the hours where they’re ALLOWED.
+
+You see, everybody actually swears once they get to be old enough. Some people are more reserved than one 
+another, but... society has this mechanism where if you... say something like “cocksucker” on TV...? 
+Well, that’s just uncalled for.
+
+Honestly, I really don’t know who the hell came up with these fuckin’ rules, but... 
+...at some point people won’t care.
+
+The military swears a lot. Even, I’m sure Joe Biden occasionally throws one around a hot mic. 
+Might’ve been recently, OR could’ve even been years ago. The truth is, even Bill Gates says them too. 
+Even Jeff Bezos, Mark Zuckerberg. Elon Musk, fuckin’ definitely swears sometimes, but not around a lot of people.
+Ooooh no. These people will not allow themselves to be in a room where anything is being recorded, sayin’ 
+some shit. Or swearin’ like a sailor. 
+
+Once you’re somebody like Hillary Clinton though... all bets are off. She... probably swears more than I do.
+
+But, amazingly, they all train themselves to have like hours, where they won’t dare say a bad word. 
+Not even a ‘light’ one like ‘damn’, or ‘hell’. H e double hockey sticks is more like it. 
+Nobody sounds less threatening than when they spell out the good ol’ H E double hockey sticks... 
+...that’s what my 4th grade teacher Mrs. Lattimore used to say.
+
+Anyway...
+"@)
+
+$Book.AddSection(10,"Examination (3)",@"
+
+Fox News still needs to transition over to the new name. 
+Cause they know... it would make their lives easier. 
+__________________________________________________________________________________
+| Used to be News...? Now we’re not news. Not News. Part of the Not News Network |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+^ That’s emblematic. It’s a slogan, it’s a question, a statement, and basically a motto.
+Starting with a question “Used to be News...?”
+Cause it legitimately will have brand new news to say until it is converted into something that WAS news.
+Right...? 
+
+But then at that exact moment where it was NEW news, it became Not News.
+If that sounds confusing, sorry I... 
+I’m just saying that they get the news → it’s no longer news even though it used to be the second before.
+
+TUCKER CARLSON had this stint where he cost Murdock a couple of Primetime F bombs, and... that wasn’t good.
+If the president swears near a hot mic, when Obamacare is signed into law, yeh... he wasn’t wrong.
+It was a BIG fuckin’ deal, man.
+
+But, that’s actually an entertaining reality, that has a curse word that made it tantalizing.
+It was already a tantalizing story, because not a single president in history, was able to set the achievement 
+that Barack Obama set, by bein’ a fuckin’ awesome president... first form of universal healthcare for every 
+American, covering preexisting conditions. But the thing needs some serious updates. Everyone knows that. 
+It actually... causes a lot of doctors to COMMIT MEDICAL FRAUD. Not his fault though.
+
+Obama might not drive up in a limo to a bunch of dude’s rapping on the street corner, open the door, ask em to 
+hand over the mic, and then say “I’m the leader of the free world.” *drops mic* ...and then adjust his suit 
+real quick, get back in his limo, and take off. But- Obama is cool enough to respect that as comedic, AND openly 
+talk about his anger translator, Luther. Jordan Peele did a number of bits where he pulled off a respectable 
+version of Barack Obama. Yeh. Obama thought that shit was funny.
+
+Is George Bush gonna do something like that...? I don’t really know actually.
+What I DO know is that Alec Baldwin spent plenty of time mocking President Trump, and somehow the incident 
+on Rust, IS VERY BAD.
+
+Will Ferrell wasn’t mocking GWB at all, really... but does he have a sense of humor? Who knows.
+Was GWB a dick or was he cool about every appearance Will Ferrell made, trying to be funny... 
+lookin’ like him...? I have no idea what the ol’ Bushmeister thought.
+
+Sometimes, I have to type up many forms of statements in order to READ it, and then, reading it makes sense.
+Other times, reading it DOES NOT make sense, and then I gotta change it.
+
+Anyway, someone thought that they should perform the equivalent of throwing a condom over our language on TV.
+That’s why sometimes Fox News will get the news, and then they don’t even tell anybody what it is...
+...they made an executive decision to say how fuckin’ lame it was real quick, and they just...
+...took off, man.
+
+I’m not sure what the hell ever actually happened to Fox News.
+So I’ve said this before, and I’ll say it again...
+...they really should change the name of the entire company, to Not News.
+
+It would be something for RUPERT MURDOCK to be proud of.
+Back when Duck Tales used to be on all the time, Fox was a channel that I was GLUED to. 
+Wasn’t trying to be news, yet.
+I watched a lot of episodes of Duck Tales in the late 80’s, cause it was one of my favorite shows.
+I’m talkin’, the original 1980’s Duck Tales, Scrooge swimming in a bank full of coins, WXXA/TV-23 Fox.
+
+Old school Duck Tales, was awesome, I recorded episodes on a VCR, and just kept watching Duck Tales like no tomorrow.
+That’s nothing to be ashamed of.
+
+My mother used to say I would say “Duck Tales this” and “Duck Tales that”... Not even remotely kidding.
+Now, I eventually outgrew Duck Tales. But, Fox did too... they grew alongside me. 
+
+When X-Files was on TV, people would watch THAT.
+The kids would say “Hey, did you see the new X-Files last night...?”
+Other kid would say “No WAY man... that stuff SCARES me...”
+
+Nothing like being a kid, scared shitless of aliens popping out of nowhere to abduct Scully or Mulder again.
+"@)
+
+$Book.AddSection(10,"Skit [~] X-Files: Elementary School Synopsis",@"
+Mulder : Scully... you can’t go in there alone... too dangerous.
+Scully : *staring with intensity* Why not...?
+Mulder : *shakin head* Scully...? I don’t wanna LOSE ya...
+Scully : *dramatic* You’ve already lost me though, Mulder... 
+         Too many times... 
+         Abducted again, and for what...?
+Mulder : *sniffles* Wasn’t my fault~!
+Scully : Mulder, you don’t know what they DID to me...
+Mulder : Nah, I don’t. But- you’re not just gonna leave me here, for them to abduct you AGAIN...?
+Scully : It’s the only way. They’ll just keep comin’ and you know it...
+Mulder : *sniffles* I thought I lost ya last time... I’m not gonna lose you again THIS time...
+
+*suddenly an alien pops out of nowhere* (← and that’s when I’d almost shit my pants like Bob Lutz does)
+"@)
+
+$Book.AddSection(10,"Examination (4)",@"
+
+X-Files was a good show. So was X-Men. Simpsons, Spiderman, then eventually Family Guy, and American Dad, a lot of 
+this stuff made it to many other networks on syndication. It’s not like Fox had shit content all these years, that’s 
+not the fuckin’ problem. 
+
+The problem is, something changed from then → now. They did indeed start covering news. 
+It was not bad news that they reported. 
+They reported plenty of things that were credible over the years, but it’s obvious that they’re not considering the 
+same things that guys like Elon Musk are considering, and these networks need to be woken up.
+
+There’s a possibility that RUPERT MURDOCK, probably doesn’t realize how fuckin’ grave the situation is, and he should
+probably cut it out with having these fuckfaces say that climate change isn’t real. Cause, it definitely is, and it’s
+fuckin’ dangerous. So, I’m gonna continue... 
+
+One day back in 1996, Fox finally decided to whip out the fuckin’ microphones and lay down the news coverage law.
+Then, any self respecting human being might’ve occasionally watched Fox News, since it was new, hip, and COOL...
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Person1 : I am a cool son of a bitch because, *shakes head, taps chest* I watch Fox News.
+Person2 : Oh yeh...?
+Person1 : Yyyyyyyyyyyep.
+          And if YOU don't...?
+          Then, *shakes head* fuck you, pal.
+Person2 : Fine. 
+          Fuck you too, pal.
+Person1 : So, you're not even gonna pretend like you care about being cool...?
+Person2 : I don't watch the news, I read the newspaper.
+Person1 : Oh, well, that means you're OLD FASHIONED, and OUT OF DATE...
+          *chuckles* You need to watch Fox News to get up to speed.
+          At least, if you wanna be considered COOL...
+Person2 : I don't really fuckin' care.
+          Not gonna just, take suggestions from somebody who just said 'Fuck you, pal.'
+Person1 : Well, WHY NOT...?
+Person2 : Cause, you're makin' it out to be like, 'OoooOOohHHh if I don't watch Fox News, then I'm fuckin LAME.'
+Person1 : Well, that's right.
+Person2 : Nah, YOU'RE fuckin lame, alright...?
+          Go watch your fuckin' Fox News somewhere else, or whatever...
+          Holy hell, stuck up pencil dick motherfucker...
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Friends might’ve even been on, too.
+
+But... at some point along the way, someone said "Suppose we just hire people that LOOK trustworthy?”
+“They don’t HAVE to be trustworthy at all...“
+
+Then, that’s exactly what they fuckin’ did.
+Bill O’Reilly, one of those people. Looks trustworthy. Isn’t. It’s not like he wasn’t entertaining nor 
+knowledgeable, the man was nearly identical in social stature to Matt Lauer. But, can’t let the ol’ 
+peckerwood get in the way all the time.
+
+It started with just the LOOKING trustworthy, but then it became...
+Well, it never changed.
+As long as they LOOK trustworthy, who will give a shit?
+
+I think that what they did was actually very brilliant...
+...if I consider tanking my intellect a hundred IQ points.
+Trump does this a lot too. He will compliment fuckin’ President Putin, for being very brilliant.
+But that’s because the man is a fucking moron as well. Doesn’t CONSISTENTLY sound like a moron all the time...
+He just has no ability to recant when he goes way too far, and doesn’t apologize for those lapses in judgment.
+
+Just like Putin. Mutual morons, joining forces, holding hands, giggling like a couple of love-struck idiots...
+The nature of egregiousness causes them both to be rather DANGEROUS.
+Trump, and Putin.
+Hannity, and Murdock.
+Carlson, by himself... invited some girl, but she said ‘I’ll pass’.
+That’s how the ‘Aw~! It’s so cute!’ comment will get ya if you’re a small-dicked bastard like Carlson.
+
+Anyway, this whole series of people, day in, day out... they both know how to take that to the next level. 
+Sometimes, they don’t even have to try. 
+How the fuck, does someone actually pull that off...?
+Well... 
+
+It really is difficult to put into words, what a sick fuckin’ joke this all is.
+I really should paste a link here... of a video that I think... every auto manufacturer should study, examine, 
+and unpack and unfold, and then people really will have to ask themselves...
+“We probably could’ve done this sooner, saved the planet from getting this fucked up, couldn’t we have?”
+Tesla Model S Plaid – Nuremburg World Record | https://youtu.be/Ujp3q_aryRA 
+This thing... is basically the fastest car in the world...
+...doesn’t use any gas...
+...sounds pretty fuckin’ cool when it accelerates...
+...doesn’t use any gas...
+...fast as fuck acceleration too...
+...doesn’t use any gas...
+...could theoretically be charged with solar panels...
+...doesn’t use any GAS...
+...pisses off a lot of people that spent their whole life tuning the shit out of cars and engines...
+...doesn’t actually use ANY gas...
+
+I don’t know man. It is a fuckin’... tough decision. Man, oh man...
+Who the hell wants to skip paying for gas...?
+What...? No fuckin’ WAY bro... I need to buy gas, always.
+Someone tries to tell me that there’s an actual way to not have to spend ANY money on gasoline...?
+That dude’s getting’ a fuckin’ middle finger to the face bro... no way.
+*tapping chest* I’m buyin’ some fuckin’ gas dude. Nobody’s gonna stop me.
+Not one person. I wear T-shirts every day that say “I fuckin’ by some god damn gas, alright...”
+I’m not gonna bother... changing anything.
+Cause, why would anyone not buy gas...?
+That’s fuckin’ stupid, bro.
+Oil changes are ALSO my favorite thing to spend a lot of money on.
+Fuck groceries or food. My car’s fuckin’ hungry. That’s a LOT more important than ME.
+
+Yeah. This is the message that TUCKER CARLSON, and Sean Hannity literally SHOULD say.
+It won’t change how fuckin’ obvious their message is...
+Well, for some people, it probably will.
+
+What happens when NASCAR goes extinct, when there’s no OIL left...?
+Oh well, an entire industry of people that lived from point A to point B... they fuckin didn’t know what to 
+fuckin’ do with themselves once the oil was all gone. 
+
+Now, what the fuck are the 8~ billion people gonna do...? 
+Even if everybody STOPPED RIGHT NOW, and did something amazing to propel the advancement of carbon 
+nanotube based batteries... they won’t arrive soon enough to stop billions of people from dying, and 
+I’m nearly certain of it.
+People really should consider the notion, that EVERY company that hasn’t started to REFINE RECHARGEABLE 
+BATTERIES, is gonna have NO FUCKIN’ FUTURE.
+
+The way I see it is this is a serious problem, because, I don’t think the ELITES that have all the money 
+and resources, that they’re ready to get into their nuclear winter shelters or bunkers, and once the shit 
+hits the fan...? Extinction level event.
+
+Here’s how it will unfold. Gas gets to be 35.00 a gallon. Double cheeseburgers at McDonalds will be 
+100.00. Toothpaste might be maybe `$50.00. Toilet paper...? Doesn’t get made anymore. No way to refine 
+the paper. McDonalds won’t even use paper anymore either, it’ll all be glassware. Yeah. That’s how fuckin’ 
+stupid all this shit sounds, right?
+
+Someone’s gonna start launching nuclear weapons because SOMEBODY has some fuckin’ OIL, and someone 
+ELSE doesn’t. This shit sounds alarmist and scary doesn’t it...? But- hey. You get (2) cocksuckers that 
+lie every day, no problem dude. There’s no fuckin’ way that this shit will ever happen, right?
+Well, think again fuckface. It might.
+
+Exxon Mobil and General Motors like the message that Hannity and Carlson rant about.
+They’re incredibly consistent at it... and that’s why General Motors and Exxon Mobil make sure that Tucker 
+and Hannity get 100M a year. They don’t actually care if Tucker or Hannity sound like morons, apparently a 
+lot of other people believe in both of them. I don’t think Hannity or Carlson realize that the people making 
+sure they get paid, they have absolutely no respect for them whatsoever. 
+
+They’re getting paid all of that money, because the person paying them, KNOWS they’re both morons.
+
+Nothing like someone throwing money at you, and telling you what a fuckin’ dumbass you are, for not realizing 
+the game. It’s teamwork. One hand washes the other. One dude looks like a moron for a while, and then, another 
+dude looks like moron for a while. Back-to-back moronhood. With their moronic capabilities combined...? 
+*Scoffs* people don’t actually stop and think "Why the hell are these idiots always on TV?" 
+
+That strategy, is, paying some dude like `$100M+ a year, to talk in front of a camera, and just sit in front of 
+the camera as long as possible. Because, the more time they’re in front of the camera, the less time they have 
+to read things like 1) books, 2) newspapers, 3) what educated people say, 4) anything educational...
+"@)
+
+$Book.AddSection(10,"Excerpt [~] Square peg, round hole",@"
+I know someone’s gonna say "But, they have a teleprompter that they read all the time..." Sure they do. 
+You really think these guys know how to read...? Words? Nah. 
+They don’t have time to read WORDS, dude... 
+They just look at pictures, like a little toddler putting the square peg in the round hole... 
+"If you keep at it, that square peg WILL go in the round hole." -TUCKER CARLSON.
+
+No it won’t, dude. They teach little kids about that in like, kindergarten, along with your ABC’s and 123’s.
+Square...? 4 flat sides. 
+Circle...? 0 flat sides. 
+That’s like first or second grade when they EXPLAIN the shapes.
+
+But in kindergarten, you’ll be seeing some blocks, shapes, and boards.
+
+I know people will try to tell me "He can’t be a moron if he’s rich and has a job at Fox News..." 
+Yeah, he can be... Look at how long he’s been trying to fit a fuckin’ square peg through a round hole.
+
+Lester McNair and I didn’t always get along... but he did occasionally prove that he was no idiot.
+People try to fit a square peg through a round hole... 
+And TUCKER CARLSON tries to do that every day, and has been doing this over the last 10 years or so...
+
+That’s how much of a moron Carlson, is. He does SOUND intelligent sometimes. 
+But, that’s because he knows those coloring books that he uses as the teleprompter, like nobody’s business.
+People don’t like realizing how much of a moron he is... but he can’t read. 
+
+He just knows shapes and colors.
+Doesn’t know that a square peg will NEVER fit into a round hole...
+But, whatever man, he’s getting’ $100M+ a year to TRY to get it through, anyway.
+The analogy is far more applicable, than people think.
+
+The executives at Fox news... they said to themselves... 
+"This TUCKER CARLSON dude kinda looks like an oblivious toddler that shows such devotion toward fittin’ a 
+fuckin’ square peg in a round hole." They don’t care how he sounds or what he says. They care mostly about the 
+fact that this dude, has no fuckin’ clue why they keep him in front of the camera. The executives just 
+constantly laugh at this dude. I do too.
+
+Every time I see this dude, I think "Wow. That is... TUCKER CARLSON right fuckin’ there man. Holy shit..."
+...and sometimes I can’t stop laughing.
+
+It’s not really HIM they’re laughin’ at so much as it is the people that watch their network. 
+Because, these guys get a power trip off of being able to say whatever the hell they want. 
+
+"We can literally do no wrong, and people will just keep watchin’ this dude. This is fuckin’ priceless." -Fox News
+
+The thing is, it wouldn’t need to be such a laughingstock of a cable TV network...
+...if they just stopped calling it Fox News. 
+If they changed it from Fox News to Not News.
+One word could’ve saved this entire document from needing to be written at all. Ya know?
+
+Realistically though, that’s a HUGE generalization, AND, pretty inaccurate.
+But hey. I can … call myself out on that.
+Carlson doesn’t do that... Neither does Hannity.
+
+It’d still have "News" in it’s name... same bullshit it had before too. Every day. 
+Could still deny climate change, could still pay Tucker and Hannity their fat stacks of cash. 
+The only difference would be that the NAME of the network was able to do right by people.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Not News : Well, we WERE Fox News for about... oh... give or take 10 years? 
+           1996 to 2006.
+           Then we became something NEW, without the S.
+           Wasn’t exactly NEWS... but still, somethin’ NEW.
+           *chuckles* Heh, we sure as hell made our network have the LOOK and FEEL of a news network...
+           ...when it wasn’t NEWS at all.
+           Just somethin’ NEW. 
+           No S. 
+           Then in 2022, some dude gave us a suggestion that we stand by till this day.
+           ...now we’re the Not News Network. 
+           Used to be Fox News.
+Not News : That’s our calling card...
+           "Used to be news...? Now we’re not news. Not News. Part of the Not News Network."
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+__________________________________________________________________________________
+| Used to be News...? Now we’re not news. Not News. Part of the Not News Network |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+If they called it the Not News Network, then it would make total sense. 
+Changing the name of Fox News to Not News, is actually FAR MORE BRILLIANT than it sounds.
+No more having to get pissed at people cause NASCAR is on during a football game...
+...cause they won’t even know what fuckin’ channel the events are on anymore.
+"@)
+
+$Book.AddSection(10,"Skit [~] Dramatic Genius",@"
+    Person1 : What the hell happened to Fox News...? 
+              It’s just gone...
+    Person2 : Ah, you didn’t get the memo...?
+              Now they’re the triple N Network. 
+              Not News Network. 
+    Person1 : What the fuck...?
+              Then what fuckin’ channel is NASCAR...?
+    Person2 : *shrugs* I dunno man.
+              They changed their name to Not News, they probably didn’t change the channel number.
+    Person1 : Well, what the...
+              ...why on earth would they even consider doing that...?
+    Genius  : *comes out of a shadowy alcove* Well, it’s because it fuckin’ sucks ass...
+              ...at broadcasting anything that COULD be taken with any degree of credibility at all.
+    Person1 : *points* Who the hell is this guy?
+    Genius  : *gritty voice* I’m the most intelligent man around... 
+              You wanna know why they changed their name to Not News...?
+              Well... I would imagine, that news networks that had a habit of not telling the truth...
+              ...way back in the middle ages...
+              ...that they’d catch a fuckin’ sword to the throat.
+              Time finally caught up with em, I guess.
+    Person2 : Sounds dramatic.
+    Genius  : Yeah? 
+              Well, now it’s just business as usual, for the Not News Network.
+"@)
+
+$Book.AddSection(10,"Examination (5)",@"
+
+What the fuck, can I get paid to roast these sons of bitches every day...? 
+Just call this dude a fuckin’ moron each and every day, ALOT more often than John Oliver does...?
+
+Fox doesn’t just suck ass now. 
+It provides NEW ass to be able to suck on, and then it can suck even MORE ass...
+Or like a black hole of ass, sucking ass, generating new ass out of nothing, so nothing becomes somethin’, 
+and that something just so happens to resemble... 
+
+Like a Rube Goldberg machine of ass sucking... 
+Starting with one ass... suckin’ on it, getting kicked over by a pole with a shoe on it.
+Then a ball starts rolling down a slide... gets to the second ass, sucks on that one too... 
+ 
+Timer goes off then a thing of chattering teeth gets goin toward the stairs, starts rolling down the stairs, 
+gets to the bottom and there’s the third ass... 
+
+Sucks on that one for a while, a while longer, the third ass is special.
+
+Half an hour later, now the alarm clock is goin’ off, knocked over a cup of water. 
+The water drained off of a surface and filled up a gutter like catcher thing, now it’s filling up a glass. 
+The glass is just about FULL, and then now, the ball gets dropped onto the surface of the water... then the 
+glass gets knocked over onto a slide... goes onto a funnel... goes down a hose... at the end of this hose...? 
+
+A fourth ass, now this ass gets to be sucked on, and then the dominoes start to get knocked over... now you’re 
+really lookin’ at a show now... five additional asses just came out of nowhere.
+
+What I just said, was me describing a Rube Goldberg entrapment, of ass sucking. 
+I mean, they could be nice asses to suck on, but they may not be either. 
+
+If they’re asses like the one Amber Burdo had, then those are nice. Not gonna complain about that. 
+But if it’s not that... but it’s some other girls ass... might be ok, but maybe it might not be. 
+Depends. But I think the truest thing I can really say is, there are probably other things to do... 
+than just suck some asses all day long. Right...?
+
+Can’t really remember a time in my whole life, where I asked myself...
+Me: Hey. You know what..? I can trust the Fox News Network, any fuckin’ day of the week. Can’t I...?
+
+Nah. The reason WHY... is because at some point in my life...? I was told that it exists.
+But- just cause you know something exists, doesn’t necessarily mean that you HAVE to give a shit...
+And that’s what went on up until like, 2016. Oh cool Fox. Awesome. 
+Bill O’Reilly was about the coolest dude they had for a while...
+...who just so happened to be quite skilled at being a bit of a miserable prick.
+Interesting...? Sometimes. Had an attitude...? Sure... Found harassing his coworkers...? ...yeah.
+He’s like a much more successful version of Andrew Cuomo, to be perfectly honest.
+
+Maybe I had em all wrong, and so, I could depend on this news organization, for little pieces of news here 
+and there. But then again, I do distinctly remember Hillary Clinton being raided in July 2016 by the FBI, 
+and watching it on both Fox News, and CNN. Switching between Donald Trump somehow being on the campaign trail, 
+and my god I fuckin’ wish Bernie Sanders could’ve made it farther than he did. Because here’s the thing. 
+
+I actually BELIEVED that Trump, might make America great again.
+While he made SOME noteworthy accomplishments, he was never half the President Obama was, nor really even 
+Bush. THAT has got to speak volumes, that a president I think committed TREASON on 9/11... was STILL a better 
+fuckin’ president than Donald Trump. But anyway, when I saw FBI RAIDING CLINTON, I said to myself, good. 
+She’s being arrested, who will be running for president, then?
+
+Well, CNN had information updates... “HILLARY NOT BEING ARRESTED... WTF”
+Fox News was just quite delayed on that. “IS HILLARY BEING ARRESTED...?”
+...and then the feed just kinda blacked out and they did the whole “experiencing technical difficulties”
+CNN actually had footage of Comey takin’ off. Givin’ her a wave goodbye. 
+
+I am glossing over the Fox News coverage. They had basically the same source of footage.
+Key difference... Fox News fuckin’ did some voodoo magic or some shit to help get Trump elected. 
+The Russians did too.
+CNN...? Not quite as consistent as NBC, but then again, CNN is all around the clock coverage... 
+NBC is not. Unless you’re talkin about MSNBC, which has the opinionated fluff throughout the day.
+
+In reference to the Fox News stations, the local stations I feel bad for. 
+They actually cover real news. I’m sure they all think TUCKER CARLSON is a fuckin’ moron too.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Local Fox 1: I can’t stand the fact that this moron makes 100 million dollars a year, 
+             and can’t read a dictionary.
+Local Fox 2: I know, right...? FFS. What if he could, ya know? 
+Local Fox 1: That’s just askin’ for way too much dude. 
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+If he’s not trying to fit a square peg through a round hole, he’s gonna be terrified of books...
+
+To be fair...? He probably can’t be bothered with things like a ‘dictionary’ or like a ‘book’.
+Sorta impacts someone’s ability to have an education opinion, or do research... 
+...if you give books a middle finger. Dude’s just WAY too busy making a god damn fool out of himself.
+Doesn’t have any time in his busy schedule to do much else.
+And that’s just the way it is. 
+This dude might have time to eat, use the bathroom, and lie to himself in the mirror every day...
+But the notion of actually reading something out of a dictionary or a book...? 
+
+Dude would probably freak the fuck out, and have a fuckin’ panic attack if you come at him with a book.
+So you gotta hold one behind your back so he doesn’t see it... and just ask him.
+"@)
+
+$Book.AddSection(10,"Skit [~] You and your god damn books...~!",@"
+You     : Hey, you wanna check out a book?
+Carlson : What, are you *voice very low, whispering* fuckin’ crazy or something...? 
+          How would it look...
+          *nervously looks both ways* 
+          ...if people SAW ME reading a god damn book?
+You     : Dude, I’ll show you a great book. 
+          *pull the book from behind your back*
+Carlson : *nervous glare, gulps* ...that’s a fuckin’...
+          *almost stutters* ...BOOK right there, isn’t it...?
+You     : *pause* Yeah buddy.
+Carlson : NO dude. *falls over backward in his chair*  
+          NO. GET AWAY FROM ME...
+You     : What’s the matter, buddy?
+Carlson : EVERYBODY, SECURITY~!
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+The security team isn’t gonna do a god damn thing about someone casually approaching the man with a book...
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson : This LUNATIC keeps trying to show me a fuckin’ book, dude.
+Guard   : ...and...?
+Carlson : What do you mean ...and...?
+Guard   : ...is this some type of joke or somethin’ dude...?
+          ...you’re askin’ for me to keep some dude away who’s trying to show you a book...?
+Carlson : *arms crossed* Nevermind, dude. 
+          You don’t get it...
+Guard   : *confused* ...what the hell am I supposed to get?
+Carlson : He keeps showin’ me a god damn book I don’t wanna read!
+Guard   : *confused* Are you fuckin’ serious dude...?
+Carlson : LOOK buddy... 
+          I just don’t want that guy ANYWHERE near me. 
+          *hands up* Alls I’m sayin’
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Carlson isn’t going to tell them that he’s afraid of books...
+Now Carlson is gonna have nightmares about that book you ALMOST got him to see the first page of...
+Every time your name comes up AFTER this, well... he’s gonna talk some SERIOUS shit about you.
+Nobody will really even know WHY. But- it’s cause you keep trying to show up with a book for him to read.
+He’s gonna piss his pants if you come at him again, with either the SAME book, or a DIFFERENT one.
+
+After you show him what a book is a few times though...
+...he might start to lose his fear over the book and it’s content.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson : *not so surprised look* C’mon man.
+          You and your god damn books...~! 
+          Stop showing me a new book every day now, ok?
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Cause, almost seeing the inside of a book scares the shit out of him.
+The reason why is because he doesn’t know how to read.
+When the topic is NOT book related...
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson: I’m gonna fuckin’ crush it today.
+         *taps chest* I don’t need any of those books man. Nah.
+         What *I’M* gonna do instead...? 
+         Is get this god damn square peg through this round hole.
+         I’m gonna go in there? 
+         I’m gonna... *stare* at this fuckin’ square peg just like I do every other day... 
+         ...maybe the way that I stare at it needs changing....
+         ...gonna be WAY more intense TODAY...
+         ...trying to get that god damn thing through that round hole. 
+         I know I can fucking DO this bro... 
+         10 years I’ve been at this. 
+         TODAY is gonna be the day... 
+         I can feel it.
+"@)
+
+$Book.AddSection(10,"Examination (6)",@"
+I have to have respect for a dude who amps himself up that much every day, and yet...
+...fails miserably at the thing he said he would do.
+Maybe he just gets overwhelmed after a few seconds of looking at the square peg.
+
+That’s why he gets paid 100 million dollars a year.
+Because you really have to be a total moron to not see what’s wrong with that picture. 
+Some rich dude pretends Tucker and he are like, best friends in the world. 
+
+Brings the cuban cigars, and they go golfing. 
+Tucker has never played golf.
+He’ll talk shit to people about their golf game, and then pay someone to golf FOR him. 
+Then that dude kicks everybody’s ass at golf *every* time.
+
+So, Tucker tells himself he’s got style... he doesn’t have to put any thought into anything. Why...?
+Cause whether it’s his buddy who’s awesome at golf, or the coloring book that they use instead of a teleprompter 
+(since he can read the coloring book), doing ALL of the thinking for him...
+Or the stockpile of cash in his possession...
+
+The more he tries to sound intelligent...? 
+The less intelligent he actually sounds to others.
+*HE* thinks he sounds *more* intelligent when he tries harder...
+...but being a moron will cause you to think stuff like that... cause it has the opposite effect.
+
+At least with Sean Hannity, that dude probably IS intelligent when he’s not in front of a camera. I can tell.
+He can read a god damn book alright. Pretty sophisticated books too. Sometimes he has to give Tucker advice on 
+what certain words or terms actually mean. 
+
+Anyway... 
+When THIS dude is in front of a camera, he’s reading from an ACTUAL teleprompter. 
+He looks smart. And, probably is... just, not when the cameras are ever rolling from what I’ve seen.
+
+That’s what America seems to be all about now, "Who gives a shit about the truth?"
+"@)
+
+$Book.AddSection(10,"Shoutout [+] Tribute to Lester Holt",@"
+Lester Holt is like an oasis in the desert, well NBC is anyway... 
+They give a shit about the truth.
+
+NBC, even CNN, they both are FAR MORE CREDIBLE than FOX any fucking day of the week. 
+I would be saddened to know that Lester Holt knew I was stickin’ up for guys like him...
+...but since I kept swearing... that upset him. 
+
+Can’t do a Kids Edition alongside the most trusted news anchor on television...
+...if I’m gonna be saying the worst words anybody can think of.
+
+Still, Lester Holt - most trusted news anchor in news, really. 
+I can’t stand how many people have little to no integrity, and I can tell...
+Lester Holt sure as hell does.
+
+He’ll even tell ya that climate change is definitely real.
 "@)
  
-$Book.AddSection(9,"Allegation",@"
+$Book.AddSection(10,"Reality",@"
+Every time people watch Fox news...? 
+People probably believe that its GOTTA be news... since it’s part of the name, right? Wrong. 
+It’s not news at all, its one long winded opinion with bits and pieces of truth that get squashed back down, 
+and  stretched out like Ted Cruz’ asshole by Exxon Mobil’s bribery money.
 
+Observations that anyone else could ALSO make.
+Fox isn’t news, at least for the most part. 
+The difference between NEWS and NOT NEWS, is when the person or parties speaking on television, if their 
+RHETORIC sounds as if it is taking sides...? Then that means that’s not news.
+A good way to showcase an example is like this...
+
+“Buy a Google Pixel, ya fucks~! You don’t wanna be caught with your pants down with an Apple iPhone, do ya...?”
+
+That’s someone’s opinion, passing off their opinion to people that don’t know what news is. 
+That example is also aggressive marketing. 
+So is this:
+“You don’t wanna be seen as a total douchebag. Don’t buy THAT shit. Buy THIS shit. It’s the best for a reason.”
+
+I realize they will argue that they DO report the news. I will say that it’s only news when you report the 
+facts, not portions of truths, and mid-sentence, injecting a misinformed opinion again.
+
+That’s what Fox News does every time I watch it.
+It’s not like a single entity, it’s the whole organization and its culture. 
+It’s like Bill O’Reilly, telling people "Shut the fuck up~! We’re doin’ it live~!"
+Bill O’Reilly, was pretty entertaining at some point in time.
+Then he made it to TV. After that he was sort of a dick...
+I’m kidding. He was entertaining on TV.
+How else would I have seen him...?
+
+Sometimes what happens is that people get these fits of rage when they are famous or rich.
+They’ll feel like they can do whatever the fuck they feel like doing.
+Then, someone records a video... of a man laying there in a Motel 6, and an Exxon Mobil sign...
+...makin’ that guy scream.
+
+Then, sometimes they realize that was a pretty stupid fuckin’ way to think.
+Sometimes, they never reach that realization at all.
+
+The point being, none of the things I just rattled off are "news". 
+Some of those ideas would be perfect over at Comedy Central. 
+I don’t laugh when I watch Fox News because these people are trying to be FUNNY... 
+I laugh when I watch Fox News because these people are trying to be SERIOUS. 
+
+If you want people to take you seriously, but they keep laughing at you...?
+Try not sounding like a moron, and see if that changes anything.
+
+Carlson tries to be serious every moment that he’s on the air, but he should to stand up because he’s pretty 
+funny. He’s not trying to be funny. He just comes off that way. That’s bad.
+
+Hannity, sounds serious when he’s on the air, happens to be paid extremely well by big oil and the car 
+industry. However, anyone watching or listening to him will have to expect...
+...that at any fuckin’ moment at all...
+...a dick may suddenly fly into his mouth.
+That’s cause a fallacy just came on screen. At the speed of sound.
+
+That’s only because, he stopped stating facts, started stating predictable opinions.
+AKA, a dick flew into Hannity’s mouth so fast...? Nobody saw it.
+That’s gotta scare some fuckin’ people...
+The man probably is not a moron after all, might be a moderately intelligent person.
+But- once he’s on camera, he tells that impression to fuck off... now he’s a moron.
+
+If the topic of cars or gas comes up, obviously he’s gonna make his benefactors seem like they are gods.
+His entire demeanor changed as a result of the topic shifting to something he gets paid a lot of money for.
+While there’s not a real dick flying into this dudes mouth at any given moment on camera, it’s a metaphor 
+for what I just said.
+
+When I say Hannity knows how to sound like a moron, he’s an expert at it. 
+Not only does he easily convince me that he just had a stroke or some shit, mid-sentence...
+...but he also helps me feel that my time would be better spent, watching anything else.
+
+He’s perfect at doin’ that. So is Tucker. 
+You really have to be a dumb motherfucker, to somehow cause me to stop watching what you’re saying or doing.
+I was overloaded by a sensation I didn’t really care for...
+
+In Tucker’s case, I think that he has no idea how fuckin’ moronic he sounds with each passing phrase... 
+Hannity at least appears to have some control over how he comes across, but the end result is not much 
+different.
+
+Maybe at some point in the future, it’ll become legal for a government task force...
+...to issue warning shots when news reporters say false things on a broadcast...
+...maybe they’d stop doing it if they saw one of their own accumulate too many warning shots...
+...and then get actually shot.
+But that’s probably a rather extreme way to handle someone that lies a lot on camera. 
+
+Instead of the soldiers joining the military, and risking their lives for their own country, getting shot at, 
+getting injured, and then coming home to a country full of ungrateful fucks, maybe the “reporters” who can’t 
+report actual news (like Hannity or Carlson), should do what Richard Engel does. 
+"@)
+
+$Book.AddSection(10,"Shoutout [+] Tribute to Richard Engel",@"
+NBC has a shadow warrior named Richard Engel.
+Dude goes way deep into enemy territory, blends in like a soldier, whips out his camera, tells the facts, 
+gives falsehoods a middle finger.
+
+This dude Richard Engel has a demeanor that says "Oh I’ll fuckin’ go where ever bro... I’m all about that." 
+Then, that’s what he does.
+
+His motto should be: “It’s time to kick ass, and chew bubblegum. *checks for gum* Damn... I’m all out of gum.”
+(that’s Duke Nukem though...)
+...with the assumed following statement... “Guess that means it’s just time to kick some ass, then...”
+
+Richard Engel asks questions, finds answers, survives, travels, repeats.
+Some assholes on the other side of town, shooting live ammunition...?
+Well, fuck. Richard Engel knows what to fuckin’ do, alright. 
+Duck, and cover, but keep your eyes peeled... then, when it’s safe...?
+Well, by all means, let us know what’s goin’ on.
+Stay safe and survive, my friend.
+
+I could imagine myself doing that too some day...
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Me : Audio log, 1436 Friday, May 27th, 2022...
+     I’m in Ukraine, and the Russian fuckfaces are on the other side of the valley I’m walking through.
+     I’m with an outfit of rag-tag soldiers dressed for a real firefight at anytime...
+     Our drones scouted ahead, and we don’t see any forces for the next several miles.
+     We’re planning on setting up a base camp for the night, peering over a ridge that oversees it all.
+     The Ukrainians are really fuckin’ em up, too.
+     Every few minutes is another explosion, a javelin...
+     Everybody knows it’s the sound of a Javelin with the sound they make...
+     First it sounds like a *pop* then you hear the *fizzle*
+     *fizzle* gets more and more faint... *boom*
+     4 to 6 Russian soldiers, dead now.
+     May they rest in peace.
+     It’s never a dull day here in Ukraine... fightin’ this fuckfaced clown, VLADIMIR PUTIN.
+     But- when it comes to freedom, and laying down some suppressive fire...?
+     *scoffs* We’re gonna be there to see it go down.
+     We’ll keep you updated soon. Over and out.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+He might occasionally tempt himself by callin’ some enemy forces a bunch of cocksuckers here or there...
+...but- he wouldn’t dare say that in a broadcast. Nah.
+He does think of the word at times, I’ll bet.
+
+Carlson couldn’t be 1/4 of the reporter that dude is, if he literally spent all of his money having a security 
+team protect his ass. These other organizations have many guys that DO a lot of the things Richard Engel does...
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson   : TUCKER CARLSON in Afghanistan... 
+            Hey everybody. 
+            Climate change isn’t real, but whatever. 
+            I’m in Afghanistan.
+Villagers : *pointing at Carlson, laughing*
+Carlson   : *nervous* I don’t know what the hell any of these people are even saying...? 
+            But, it looks more and more dangerous every minute.
+            We’ll keep you posted, back to you Sean.
+            Alright, end of broadcast.
+            Whew.
+Villagers : *lighting firecrackers*
+            *pause*
+            *firecrackers start going off nearby, his own security team was fuckin’ with Carlson*
+Carlson   : *shits his pants off camera*
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Carlson would probably shit a brick to do even half of what this dude Richard Engel has done.
+Pretty sure Richard Engel would never have to worry about that... Nah.
+Dude’s probably able to sleep like a baby through actual gunfire.
+So, firecrackers aren’t likely to get him to spaz the fuck out, man... Not him.
+"@)
+
+$Book.AddSection(10,"Examination (7)",@"
+When groups of corporations work together to slander scientists, pollute the fuckin’ planet... 
+...kill animal species willy nilly, kill rainforests, allow hurricanes to get worse...
+...tornadoes to get worse, wildfires to get worse...
+
+You gotta figure that the human race and all living species on the planet may go extinct real soon.
+But, you can’t say any of that without causing panic or alarm.
+If you say it casually though, it might slip by...
+But some people will take notice and maybe they will pay closer attention.
+
+The problem is that these people can do all these fuckin’ things, and they aren’t worried in the least, 
+about ever getting caught or getting in trouble, or getting hurt for doing all these terrible things. 
+
+But hey, TUCKER CARLSON fuckin’ gets 100M a year to be the face of Fox News. 
+None of that other shit actually matters. 
+
+Tucker will even say, it’s pretty annoying that the other news organizations don’t follow the REAL story...
+Like, him. Being fuckin’ way awesome every god damn day.
+
+The thing is...? 
+Everyone gets kinda sick of watching a toddler trying to get a square peg, through a round hole. 
+
+For like... the last 10 years, man.
+The channel could probably be an enjoyable thing to watch if they changed their name to NOT NEWS. 
+"@)
+
+$Book.AddSection(10,"Excerpt [+] Not News Trailer (1)",@"
+Trailer : Wanna see a grown ass man try to get a square peg through a round hole...?
+Well... look no further.
+Not only do you get the most up to date … details that happen to be Not News-worthy...?
+Well, NOW you get to see another exciting episode, of a grown ass man...
+Doin’ what he seems to do BEST...
+And that is...?
+…said it already...
+…A man, who is the most skilled in the industry...
+...at staring down problems...
+...face to face...
+…with the square peg, and the round hole.
+It's almost like Carlson himself, facing off against the Faceless Man...
+...the song from the smash hit 1999 album by the band Creed...
+What more could anybody really ask for, from a news channel...?
+Used to be news...? Now it’s Not News. Not News. Part of the Not News Network.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Cause then people could say ‘HEY... DID YOU SEE THAT THING ON NOT NEWS...?’ 
+Then people would start to have these guessing games with each other as to whether some shit they saw on 
+NOT NEWS actually happened, OR, NOT NEWS rick rolled their viewers again.
+
+What if it was both things at the same time though...? 
+Not News reported stuff that wasn’t fucking newsworthy (as to be expected), but then somehow they 
+misreported a story, and some accurate information slipped right by everybody...
+
+They could actually get upset with themselves "Damn it, WE reported newsworthy shit just now, didn’t we?"
+Other guy says "I’m afraid so bro. Actual news. Not not news."
+Well, now they’re fucked... 
+
+They signed a non-disclosure agreement to ONLY report inaccurate shit all the time, NO EXCEPTIONS.
+Used to be news...? Now it’s not news. Not News. Part of the Not News Network.
+"Don’t believe a single fuckin’ word we say~!" -Murdock
+
+They should consider changing their name, to that.
+If Murdock chose to do that...?
+Maybe no one will be able to tell.
+Might be considered going in a little close to the hip...
+
+But the payoff would be enormous, because whether you reported something that WAS news, or some false shit...?
+Now you’re *really* fucking with everybody.
+
+It’d be a great idea, cause then people could watch just for fun.
+Some people already do that, but most people think it’s real life stuff. 
+
+Changing their name to Not News Network, would send the message "We really don’t want ANY credibility at all".
+
+That would send the perfect message that people could take the whole channel seriously while not giving a flying 
+fuck, cause it wouldn’t be news. It isn’t news already, but then everyone would know 
+“Oh, it’s *eyebrows up* NOT news.” 
+
+So when someone comes in to the office:
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Guy1 : Hey guys, check out this story where a dude decided to fight a nuclear bomb with his bare hands...
+Guy2 : Buddy, that’s not news.
+Guy1 : *pauses*
+...how’d YOU know?
+Guy2 : *shakes head* Whaddya think people don’t watch Not News...? 
+That’s Not News, dude.
+Sounds like REAL news, but- isn't.
+Guy1 : Oh.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+They could probably even change positions to someone to be taken very seriously about anything they report.
+But then you gotta remember...
+__________________________________________________________________________________
+| Used to be News...? Now we’re not news. Not News. Part of the Not News Network |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Anyone could finally watch this network, and know that at any given moment? Whatever they’re watching is bullshit. 
+
+It already IS that... but- then everybody would REALLY know for certain...
+...if they didn't know, already.
+
+SOME people already know that, but OTHER people take it SERIOUSLY...
+But- suppose they came right out and said that what they're reporting is some straight-up bullshit...
+...then, no more guessing games, people won’t even have to put any thought into it. 
+“This is some straight-up, bullshit right here, man...”
+"@)
+
+$Book.AddSection(10,"Excerpt [+] Not News Trailer (2)",@"
+    Person  : This is the Not News Network, isn’t it?
+    Trailer : Yep.
+              Sure as hell IS, buddy.
+    Person  : Wow, I'm impressed~!
+    Trailer : *chuckles* Heh.
+              Everybody USED to want some news... 
+              ...but NOW, we took things to an entirely new level, bro.
+              Fuck all of those people that want the REAL news...
+              Now you’re getting some fake-ass news.
+              __________________________________________________________________________________
+              | Used to be news...? Now it’s Not news. Not News. Part of the Not News Network. |
+              ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+              The truth is fuckin’ stupid.
+    Person  : *pauses* It is...?
+    Trailer : Yep.
+              It's overrated...
+              We tell the bullshit stories, so that you don’t EVER have to take us seriously.
+"@)
+
+$Book.AddSection(10,"Excerpt [+] Not News Trailer/Interview with Tucker Carlson",@"
+    Carlson : Jeez, how long have I been with Not News Network...? 
+              Oh gosh... 
+              It’s been YEARS, hasn’t it...? 
+              Anyway, yeah. 
+              One day, I overheard someone say “Fox News, is Not News.”
+              I was puzzled by it, didn’t know what they meant...
+              Took a while for it to *hands around head* CLICK.
+              Over time...? 
+              Well, heh. 
+              I figured it out, for sure. 
+              That’s the perfect name for this organization... 
+              *hands open wide* Not News.
+              Then, somebody told me the perfect slogan, I’ll never forget it...
+              __________________________________________________________________________________
+              | Used to be news...? Now it’s Not news. Not News. Part of the Not News Network. |
+              ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+              From that moment on...? 
+              It really just stayed with me that whole time.
+              *charming smile, deep in thought, eyebrows up* Not News changed my life. 
+              Before, I had to worry about some of my stories being SORT OF true, and then...
+              ...changing the DETAILS slightly, to make the story more INTERESTING...
+              ...and then leaving out the parts where I just got paid a shitload of money. 
+              For what it's worth...? 
+              I really am very grateful, that I was a part of this company from the beginning.
+              It's something I'll take with me to my grave.
+"@)
+
+$Book.AddSection(10,"Excerpt [+] Not News Trailer/Interview with Sean Hannity",@"
+    Hannity: Wow, I can’t even tell ya how long I’ve been with Not News Network... 
+             Jeez. 
+             Decades, I think...?
+             *chuckles* You know, I really don’t miss any of the work we used to do, if I’m perfectly honest.
+             It was just TOO difficult.
+             Fuck Leonardo DiCaprio and Before the Flood...
+             Those annoying documentaries about climate change aren't gonna pay the bills around *points down* here~!
+             I don’t think people realize how hard it is, to tell a TRUE story that is also INTERESTING... 
+             *chuckles* Heh. 
+             I remember when I used to actually *eyebrows up* CALL people to get information. 
+             Wow. 
+             Those days were hell.
+             Now...?
+             *scoffs* Heh, NOW, things have never been better...
+             ...because we really can just make ANYTHING up, and it SOUNDS very good. 
+             It’s really hard to tell a story that isn’t very interesting, if you just say screw it, and say whatever. 
+             Cause, why the hell not?
+             If President Bush can do it...?
+             And the justice system can do it...?
+             And the law enforcement system can do it...?
+             Then we should be able to do it too~!
+             It’s not like anybody can do anything about ME lying to people... 
+             Not on not news network... 
+             Ohhhhhhhhh no. 
+              __________________________________________________________________________________
+              | Used to be news...? Now it’s Not news. Not News. Part of the Not News Network. |
+              ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+             It really does have the perfect ring to it, doesn’t it?
+"@)
+
+$Book.AddSection(10,"Examination (8)",@"
+__________________________________________________________________________________
+| Used to be News...? Now we’re not news. Not News. Part of the Not News Network |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Now, look at the potential stories they could use, I just wrote down a whole bunch of things that 
+Carlson or Hannity could believably say if they could openly admit that they don’t give a rats ass...
+Lying is fine, someone pays them a `$100M every year, to do just that. So, they don’t give a shit who feels what. 
+
+If anything, Fox News changing it’s name, to the Not News Network, that would put em ahead if you think about it.
+
+Cause, people constantly cramming things down people’s throats all day long, that’s not news...  
+Might actually be pornography. But, there’s still plenty of lying cocksuckers either way. 
+Most people don’t get it... 
+
+Maybe the term COCKSUCKER, is OFFENSIVE to some people. 
+Oh well.
+The term is QUITE ANCIENT, believe it or not.
+They thought this way in Ancient Greece and Ancient Rome.
+
+I know I said this previously in the document, but I’ll cover it again.
+
+If someone is LYING, that’s FALSE information.
+If someone has bad logic, that’s called a FALLACY 
+If someone has a dick, then PHALLUS is the Latin word for DICK. 
+
+The word FALLACY, is ALMOST the same thing as the (phonetically) Latin word PHALLUS.
+FALSE looks a hell of a lot like those words, doesn’t it?
+FELLATIO also looks like those words, which means the process of “cobbin’ on a mans’ knob”
+FELLATE is the PROCESS of sucking on a penis.
+
+They all sorta go hand-in-hand with some fake-ass, falsehood.
+Falsehoods basically mean that SOMEONE is CHOOSING to be a COCKSUCKER... 
+...the question is, who...?
+
+Whether they’re a LYING COCKSUCKER, CLOSET-CASE COCKSUCKER...
+...some DERIVATIVE or VARIATION of this event, is either 1) taking place, or 2) has ALREADY taken place.
+
+I’m not gonna get upset with somebody that has a vagina and naturally likes chokin’ on a big, fat D... 
+Or even a guy that likes other guys... like Tim Cook. Not gonna get upset with him sexual preferences at all.
+It’s ok if these people enjoy FELLATING a man.
+
+But there’s a metaphorical form of being a cocksucker where it has nothing to do with an actual cock or penis 
+at all. Which may, or may not be happening in tandem, of an actual act of penis being slipped in somebody’s 
+mouth somewhere.
+
+When someone says some false-hooded, fake-ass, inaccurate information, well, that’s a lying cocksucker alright.
+
+Events like James Comey July 5th, 2016... That dude, was a straight up lying cocksucker that day.
+Andrew Cuomo is a lying cocksucker, George Bush was a lying cocksucker, Obama found himself to be a lying 
+cocksucker a few times but I forgive him cause he’s better than really any other recent president I can 
+think of, Trump- straight up lying cocksucker. Wish I never voted for his ass. Biden, I actually like the 
+dude. But it sucks that I like this guy and he’s getting fuckin’ beat up one side and beat down the other, 
+inflation, Afghanistan, Ukraine, COVID19... This dude has not gotten a fuckin’ break AT ALL...
+
+But, Ya know, someone’s probably gonna say that I must need to go talk to somebody... cause, I doubt that 
+TUCKER CARLSON would ever talk about all this shit. Nope. Probably pays somebody to write stuff FOR him...
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson : Hey buddy, here’s 500 bucks, write this god damn story. 
+    Guy : Ah, ok. 
+          What...?
+Carlson : *waves hands around* I don’t know bro, write whatever. 
+          About me. 
+    Guy : ...anything specific at all...?
+Carlson : Buddy, you’re askin’ too many questions. 
+          Just, write whatever. 
+          I don’t care.
+    Guy : ooooooKkkk...
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+So, that dude wound up writing a MUCH LESS INTERESTING story, than this whole document, for `$500 bucks. It said: 
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Story : Hey, TUCKER CARLSON.
+        Fuckin’, bein' quite a badass all the time.
+        I’m alive, I’m real...? 
+        What the hell can anybody do about it?
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+End of story. Carlson would pay somebody to write a story and get that one thing for `$500.
+
+Yeah, Tucker is the type of dude who thinks that everyone will do something for `$500, probably.
+
+But, here's where things get ACTUALLY interesting.
+If Tucker wants to talk some shit to somebody, and tell them that they'll get their ass kicked at golf...? 
+He’s got a dude that always wins every game for him, for `$500, and THAT is how this dude remains interesting.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson : Bro. 
+          I’ll bet you `$500 bucks, that you’ll fuckin’ get your ass kicked at golf...
+Lutz    : Yeah kid...? 
+          Who the fuck do you think you even are, chum....?
+Carlson : Tucker god damn Carlson, that’s who.
+Lutz    : Yeah...? 
+          Carlson eh...? 
+          That dumb son of a bitch on Fox News...?
+Carlson : Bro. 
+          *points* You...? 
+          Golf. 
+          *hand gesture* Ass whooping.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+I’m not being paid `$100M/year like some moron on Fox News who struggles to realize that you can't fit a square 
+peg through a round hole... so theoretically, some asshole is gonna tell me that I have some fuckin nerve, to 
+tell Fox News, that they should CONSIDER REPORTING SOME NEWS SOMETIME. 
+
+The thing is, they can in fact report PORTIONS of what may be considered NEWSWORTHY, from time to time... 
+They’re no fuckin’ stranger to what NEWS is...
+
+However, the reality is that I consider Fox News to be like the gay kid who hangs out with some hot girl.
+He gets lonely and doesn't wanna go home to masturbate and cry all by himself...
+
+So, the gay kid is no fuckin’ stranger to that hot bitch he keeps hangin’ out with...
+But he’ll never, ever fuck that girl. Nope. 
+Just like how Fox News will never really report the NEWS. Nope.
+
+Wanna know why...? 
+It’s mainly because... that kid is gay.
+Now, apply that concept to Fox News...
+...how it intercepts the news, and changes it to something that isn’t fuckin’ news.
+
+It's called PROPAGANDA. It's not TOO different from dick-in-the-mouth-hood.
+
+The reason that they are certain to collect the facts, and then, spin them around somehow... 
+...is because a billionaire bought the network, to make the entire world suck on his metaphorical dick, every day. 
+Cause, being that god damn rich, causes guys like HIM to get fuckin’ bored, since he doesn't know how to be a 
+PRODUCTIVE rich bastard like Gates, Musk, Buffett, Bezos, or Zuckerberg.
+
+Yeah. I threw the dude I've been pretty pissed about half of the book long, into that list of PRODUCTIVE PEOPLE.
+His name is MARK ZUCKERBERG. HE is STILL, MORE PRODUCTIVE, than RUPERT MURDOCK will EVER be.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Murdock : *rhetorically* Oh, you people want news...? Well, too bad. 
+          Here’s a picture of my nutsack. 
+          Oh wait, that’s TUCKER CARLSON, same difference. 
+          Better yet... do you people want to know what a smart guy 1) looks and 2) sounds like ...? 
+          Well, too fuckin’ bad, here ya go, Sean Hannity.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Sean Hannity has this shit down to a science. 
+Whenever the cameras are not rolling, or recording, or on the air, that dude is probably a rather intelligent
+individual. However, as soon as the camera is ON... Sean switches his entire psyche from intelligent to moron. 
+I am seriously impressed with how skilled he is at doing this. Unfortunately, that’s not why he’s a rich bastard.
+
+See, I don’t really want to make things up. But other people are OBVIOUSLY doin’ that.
+Sean Hannity probably has millions of reasons that he is given each year, to alter his psyche like that.
+
+As soon as these guys know the camera is rolling, they fuckin’ totally lose track of where they are. 
+They’re like infants, drooling at the mouth, the teleprompter does all of the thinking FOR them, and they 
+don’t have to. 
+
+At which point, do these men even feel like they serve any sort of purpose other than being a fuckin’ tool...? 
+Probably not. Probably don’t give a shit either. They’re cool in their book, and you’re not, so fuck you, pal...
+
+When someone says that somebody’s a lying COCKSUCKER, the term REALLY IS, rather ANCIENT.  
+Probably sounds mean, but I’m actually complimenting them both. *shakes head* some people are gonna say...
+"Michael, TUCKER CARLSON has millions of people who watch him.” or
+“So does Sean Hannity... they couldn’t be morons if they have that much money and viewership."
+
+Yeah, they could, actually. 
+That’s when/where the magic happens. 
+
+The only people who would suggest otherwise, might be morons themselves.
+I say MIGHT be, because, it IS possible, that someone a LOT less intelligent than I am...
+...may feel a need to belittle me, or insult my intelligence from time to time...
+But, good luck convincing people that stick up for these guys on Fox News, it’s a lost fucking cause. 
 "@)
  
-$Book.AddSection(9,"Incrimination",@"
+$Book.AddSection(10,"Conclusion (1)",@"
+It’s not a lost cause because their viewers aren’t able to be reasoned with or are idiots necessarily.
+It’s not a lost cause because Carlson or Hannity are bad PEOPLE, I never said these guys were bad people at all. 
 
+They’re probably outstanding citizens, role models (besides the fact that they fucking lie on television). 
+They really should, be inducted into the fucking hall of fame for being such a consistently, top-notch,
+role-model citizen. I’m not even being facetious, TUCKER CARLSON probably is a role model citizen when he’s 
+nowhere near a fuckin’ camera. 
+
+Probably tips people with a fresh `$500 bill each time he goes out to eat.
+Probably sends millions of dollars to cancer research institutions. 
+Probably REALLY is, a fuckin’ cool guy when he’s nowhere near that god damn camera.
+
+But, when he spends most of his fuckin’ time near that camera, owned by Fox fuckin’ News...?
+I feel myself losing IQ points listening to him TALK.
+Why...? Cause that fuckin’ (coloring book/teleprompter) is feeding him BULLET POINTS.
+
+They’re not even HIS thoughts. Any thoughts that ARE his, they probably come out AFTER he’s left for the day...
+...then he’ll have to to make a voice recording of that thought.
+
+I really think that Carlson and Hannity have these "stage personas" where...
+...if they’re in front of a fuckin’ camera, AND, that camera is owned by Fox News...? 
+
+Well, that’s not even the REAL guy you’re lookin’ at. Nah. 
+It’s an actor getting paid to be a reporter. 
+Or, a shell of a human being. 
+
+That’s not fuckin’ news, bro. 
+That’s performance acting, and being a professional cocksucker I might add. 
+One that does an amazing job of sounding like a total moron. 
+Consistently, WAY above-average, at this task.
+
+But, probably does some really cool shit for society right after that camera goes offline.
+Yeah. The brain returns, at that moment. Now they are normal people once more. 
+
+The only reason that they deserve as such, is because they actually worked their asses off to get where 
+they are. Absolutely had nothing to do with their intelligence, or their credibility... It had everything 
+to do with how well they can read that (coloring book/teleprompter), and just STOP thinking for that WHOLE 
+period of time. 
+
+Obedience. Like a loyal dog sitting right next to the dinner table waiting for the family to drop scraps of
+food on the floor. That's what these (2) morons do every time they pick up their paycheck from Rupert Murdock.
+
+The problem is... PEOPLE IN AMERICAN SOCIETY ACT THIS WAY AS WELL, AND THEY CONFUSE OBEDIENCE WITH INTELLIGENCE.
+They'll say stupid shit like “If you were smart, you'd be rich by now.” Like my MOTHER does.
+Nah. George Carlin was smarter than either one of these dipshits and was never even that rich.
+
+That doesn't mean that being intelligent doesn't HURT your chances at BECOMING pretty rich, but- you have to be
+pretty lucky and hope to hell that people ACCEPT you or think you're a real NATURAL at SOMETHING. But- even then,
+some people might become INSANELY JEALOUS about whatever you do that's considered VERY TALENTED, or whatever.
+
+Short of that...
+...people should consider that these (2) dudes on Fox News CAN certainly STILL be morons, even with all that 
+money, viewership, and whatnot. For instance, let's say all that money they had... someone stole it all. 
+
+Well, they COULD have NO CLUE, whatsoever. 
+Because, as soon as they’d find out something like that...? 
+Ah man, this BILLIONAIRE would REPLENISH their account again~!
+
+They’re not rich because they’re intelligent. 
+They’re rich because they’re morons that LOOK trustworthy on Fox News. 
+
+If anybody else in the world had like, hundreds of millions of dollars stolen, it’d be gone. For good. Ain’t 
+comin’ back. But, that’s why RUPERT MURDOCK is a fuckin’ force to be reckoned with, when it concerns oceans 
+of cash... He’s fuckin’ got it alright. The reason why they are where they are, has nothing to do with 
+intelligent thought, at all.
+
+Actually, the opposite. Reverse psychology. TUCKER CARLSON, is actually pretty good at causing the viewer 
+to feel like it’s time to be an idiot. I don’t get it. I feel bad for TUCKER CARLSON. He’s like a moth into 
+the flame. People are THROWING money at him, taking advantage of his ignorance, and he’s either playing along, 
+or... he really is clueless. 
+
+What I have a serious problem with is bashing climate change scientists, and supporting the revenue streams of 
+oil, gas, and car companies... That’s why they’re rich. 
+Even Ted Cruz does this shit, it’s why he fantasizes about being in a hotel room with Exxon Mobil.
+
+Bob Lutz didn’t shit his pants at GM for the entire 50 years he ran it, for nothing... 
+The dude could’ve been makin’ himself useful, making good vehicles.
+
+But, that was a little too complicated for Bob. 
+Cause, at the first sign of trouble, this dude would shit his pants.
+
+I’m sure that when he wasn’t busy shitting his pants, he was involved in slippin’ these dudes some fat stacks 
+along the way. So was Exxon Mobil, and probably the Bushmeister too. It’s the only reason. Republicans aren’t 
+always about things like “sensibility” or “honesty” or even “integrity”... nah. That shit is fuckin’ stupid 
+to most of em... You want that shit...? Go get yourself a fuckin’ library card. And start reading from the 
+non-fiction section.
+
+If someone was willing to pay me to call these dudes morons every day, and I somehow got paid a million 
+dollars a month...? I’d get better and better at it every day. It would be the best investment that person 
+would ever make. Cause, I’ll fuckin’ lay into these dudes for the foreseeable future. 
+It’s not like Bob Lutz from GM ever made a single car worth a damn during his 50 years running General Motors.
+
+Nah. Bob Lutz sucked ass at making cars, never built a single car that wasn’t a piece of shit. 
+While he did *ALMOST* come close to building some quality vehicles millions of times... 
+...almost only counts in horseshoes and hand-grenades.
+A friend of mine kept saying that to me over and over, and ever since...? It stuck.
+
+Who cares if Bob shit his pants everyday at GM...? That habit stuck with Bob... 
+50 years went by.
+Thousands of pairs of underwear and pants got caked by a freshly pinched, Bob Lutz loaf... 
+...while he ran a company that made millions of shitty vehicles.
+You can’t even go to a PRODUCE MARKET, SUBWAY or JERSEY MIKES, to get something THAT fresh... Nah.
+
+Does that mean Bob Lutz is a genius...? In some (peoples/morons) eyes, yeah.
+Because, the man Bob Lutz could shit himself on national television, right...? 
+Somehow, nobody would fuckin’ notice. 
+That’s how he ran GM for 50 years. 
+The man shit his pants, every day, for 50 years, now he’s a legend over at GM headquarters. 
+
+Even Exxon Mobil was impressed, they’re like "Damn dude, that’s... some fuckin’ persistence right there...~!"
+
+And, that dude at Exxon Mobil is right. 
+That is 50 years straight, a man shitting his pants every single day, raising NO eyebrows WHATSOEVER, at GM. 
+
+You would’ve thought maybe after a week or like a month, dude comes in at fuckin’ 9 am, has a coffee, tells some 
+stupid corny jokes that no one cares for, for an hour straight... 
+Oh boy, 1030 rolled around, and not long after that...? 
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+GM Guy 1 : Aha. 
+           There’s the look on Bob’s face... 
+           I think he just shit his pants. 
+           *looks at watch* 
+           It is literally 1045AM, on the nose dude...
+           Wow, Bob looks like he shit his pants again...
+           Right on time, too.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+(^ Nobody at GM). 
+Not one fuckin’ eyebrow raised for that whole 50 years bro. Nah. Dude shit his pants every single day at GM.
+
+Sometimes Bob knew some stuff about the cars being made around the factory...
+But, it’s hard for a man to give a shit about anything, in a conversation someone’s trying to have with him...
+...when that man just so happens to have some fresh shit in his underwear, sticking to his ass cheeks.
+
+Wanna know why...? 
+Cause Bob shit his pants again. 
+It’s nobody’s business WHY Bob shit his pants, or even WHEN.
+
+But my god, TUCKER CARLSON doesn’t even need to shit his pants, he can just appear to have lost his train of 
+thought, that’s cause his brain decided to take a shit. That might sound stupid, but it’s a theory I’ve been 
+working on. 
+
+This dude over at Fox News, the billionaire paying TUCKER CARLSON... he saw his potential when Tucker was trying 
+to give a speech for the very first time at his college. Tucker lost his train of thought it wasn’t intentional 
+either. 
+
+It was at that exact moment where this man saw TUCKER CARLSON’s potential... 
+"That’s it, that’s the look, right there..."
+
+The result was that this dude realized he could put Tucker in front of a camera, and millions of people, and this 
+‘unintentionally losing his train of thought’... it’d cause people to feel really bad for him. 
+And, that is the QUALITY that he likes the most about him. 
+
+So, he doesn’t respond like this, "Ah, god damnit, Tucker fuckin’ lost his train of thought again." 
+He responds more like this "Yes! Tucker just lost his train of thought, doesn’t have a god damn clue~!”
+
+Am I wrong...? Who knows. I’m not accusing anyone of being anything, but I am speculating...
+...that if you’re an inconsiderate asshole that has the WHOLE world by the balls...
+...you might get a kick out of being a demonic fuck face like that...
+...lie to everyone’s face...?
+They’ll tell themselves that there’s no fuckin’ way in hell, anyone will EVER know the truth.
+
+However, that is what morons often think. This dude paying Tucker AND Hannity, I believe that’s what he does. 
+If he doesn’t, then he’s about the dumbest motherfucker on the planet, cause that would make a LOT more sense. 
+The only sense it makes to me, to pay these 2 morons to talk on Fox News, is because it makes the SAME amount of  
+sense, that Bob Lutz worked at GM for 50 years, never made a single quality vehicle that entire time.
+
+Bob did manage to help establish a shitty parts division where all of the parts are built with design flaws,
+for ALL GM vehicles that were made with intentional design flaws from top to bottom. 
+...while also shitting his pants at 1045 every day, and sometimes knowing what other people were working on at GM. 
+
+That’s what Bob Lutz did the best. 
+When GM got a bailout check from Obama, most of that money was for Bob to start buying some new pants. 
+Obama should have asked Bob "Bob, are you gonna spend any of this money on yourself...?" 
+
+What choice would Bob have had...? 
+Lie to Obama...? 
+Yeah right, bro. 
+Bob never lied to ANYBODY, EVER.
+
+Not about shitting his pants every day at about 1045, not about hanging out with his buddies at Exxon Mobil...
+...plotting and scheming up ways to make GM parts even more terrible than usual... 
+
+The man really didn’t even have to fuckin’ try, he'd just waltz right into the research and development rooms, 
+and draw a fucking line anywhere he felt like on the engineering blueprints... and that shit made GM even MORE 
+money somehow EACH time.     And then, they were billionaires. 
+
+The truth is, Obama should actually make GM give back the money it borrowed, otherwise, the government will 
+have to repossess ALL of those pants Bob bought... That’d be the story of a lifetime.
+ __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __ 
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Government repossesses `$3B worth of pants that former CEO of GM Bob Lutz purchased with 2009 Bailout money   |
+|______________________________________________________________________________________________________________|
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+ ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯ 
+What an asshole, right...?"
+
+Why did Bob spend so much money on pants...? It’s not a question that anyone ever asked. It should’ve been. 
+`$3B spent on Bob Lutz wardrobe... But it’s probably because he had a habit of consistently taking a shit 
+in his pants, every day. 
+
+Sometimes, by mere accident....? Other times he’d be sitting sitting there getting work done, and he’d feel the 
+__________________________ 
+| bowel movement of doom | 
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+He would try to get up and run sometimes, but then he got to a point in his life where sometimes...
+...he just sat there and waited... rather than doing anything about it. 
+
+He probably liked the sensation of his warm shit coming out in his underwear, against the his chair. 
+Probably even stated out loud 
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Lutz : Whatever bro. 
+       Guess I’m shittin’ in my pants again. 
+       Oh well.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+I don’t fuckin’ get it, man. 
+NOBODY NOTICED THIS. I think that maybe people DID notice, but there’s a rather sinister explanation for it.
+
+The same quality of thought goes into Tucker being in front of a camera. 
+Nobody ever stops and says "Why is this idiot always on Fox News...?" 
+It’s not a question people ever ask, even though they should. Wanna know why...? 
+
+Cause I would be willing to bet, that Fox News, could go to any school in America, pick any random kid at all... 
+ask that random kid, "HEY KID, WANNA STAR IN YOUR OWN SHOW AND BE A MILLIONAIRE...?" Obviously kid says “Yeh.”
+Then, people would then and there, have an legitimate reason, to watch Fox News again, so the ratings will change. 
+Some kid that nobody even knows, will probably sound like Albert Einstein compared to TUCKER CARLSON.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Person1 : Yeah, there’s some new kid on Fox News?
+Person2 : Yup. Just some random kid too.
+Person1 : This kid sounds REALLY smart~!
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+The kid was in second grade though. Ya know...? Ratings soared because this kid sounded like the guy from 
+Big Bang Theory, Sheldon. The reality is... the reason this kid SOUNDED like Sheldon from the Big Bang Theory, 
+isn’t because he was actually a gifted kid, he was just some random kid from a random school, and therefore,         
+automatically more comprehensive to listen to, then TUCKER CARLSON. That kid, would be a smash hit on Fox News, 
+I do not doubt it.
+
+I’m starting to think that Tucker KNOWS that he didn’t get where he is for his intelligence. 
+Quite the opposite, believe it or not. Maybe sometimes he goes home, cries himself to sleep, and that’s 
+fine... It would cause me to have some empathy for him. If a random second grader somehow impresses everybody 
+on the network, and you’re TUCKER CARLSON, who has the highest ratings in the industry (somehow), well, 
+HOLY FUCK.
+
+I’m not trying to make him feel like he’s not valued as a human being... 
+Cause he most certainly IS valued as a human being... cause ... he’s fuckin’ paid `$100M a year. 
+That’s insanity. So is Sean Hannity. Just, not valued in a way where anything spoken by him on a 
+Fox News broadcast, is given a shred of credibility.
+Wanna know why...? Fox News, could change it’s name to Not News...
+__________________________________________________________________________________
+| Used to be News...? Now we’re not news. Not News. Part of the Not News Network |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Not news. 
+Not something that any person on earth, should ever fuckin’ take seriously, or even casually confuse what they’re     
+being told, as "news".
+With a name like Not News, you know what you’re dealing with. 
+It’s not fuckin’ news. 
+More specifically, it’s Not News.
+Sons of bitches will try to say "Keeping you up to date, every hour, on the hour, Not News Network" and anybody who’s
+even half asleep, they’re gonna think "Why...?"
+
+That’s my only problem. If I had billions of dollars, I would literally throw as much as I could, 
+at NBC or CNN, to continue undermining Fox’s credibility.
+
+It shouldn’t be that difficult. 
+These guys do that shit to themselves sometimes. 
+Carlson: Hey everybody, what is critical race theory...? I don’t know what it is, what does it even matter? Huh?
+
+I can’t recall specific examples of this dude, making a god damn fool of himself, because I’ve gotten 
+to a point where I have to leave the room whenever I see his face, or hear his voice, sometimes I might 
+even start yelling at the top of my lungs because ... I can’t stand the fuckin’ guy. It’s like a panic 
+attack but only happens when I’m just ANNOYED. (← I’m exaggerating)
+
+Hannity is just as bad, though, I can actually tolerate like 30 more seconds... that’s it though.
+Fuckin’ pretentious prick that literally stated hundreds of thousands of times, that climate change is made up. 
+Figment of the imagination... Doesn’t exist. Can’t happen. Impossible... 
+He was being handed `$100M to say those     things. 
+
+Oh, I remember the documentary, 2016 Before the Flood, Ted Cruz, makin’ a fuckin’ fool of himself too. 
+The truth is, the earth’s a metaphor for the Titanic and I think cause of guys like these morons, 
+we’re basically fucked. In the beginning of the documentary, Dicaprio talks about the painting, 
+“The Garden of Earthly Delights”
+
+It is basically foreshadowing the future. Hannity, and Carlson, they’re fuckin’ morons and they have a 
+lot more people that care about the shit they say, and they’re rich. The world as ass backwards, and we 
+probably deserve to go extinct... I don’t really hope that happens, but I think it is probably TOO LATE 
+to fix the damage we have caused collectively. Therefore, inevitably, the world will experience a 
+catastrophic event, where everything ceases to exist.
+
+Literally because of morons. Everywhere, someone SAYS (1st) thing, but they DO (2nd) thing.
+When you think about it...? Having this mentality makes a lot of sense. Makes a lot more sense than thinking 
+the human race will ever get a grip on itself... For sure.
+
+Then again...? Maybe, thinking about the worst case scenario day in, and day out... is the thing that 
+motivates guys like Elon Musk. Doesn’t let the REALITY get to him. 
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Musk : Yeah, the world is full of morons Michael Cook. 
+       Oh well. 
+       Do something positive and don’t be so negative.
+Cook : Well, what the hell, not tryin’ to be. 
+       Look at you, ya successful bastard.
+Musk : You think this was easy...?
+Cook : Nope. 
+       Not at all.
+Musk : *shakes his head* Ya know, you shouldn’t be so hard on Bob Lutz. 
+       Yeah. 
+       Maybe he didn’t make a single good EV.
+       So what, Mike...?
+Cook : He should’ve.
+Musk : Yeah, well, could’ve, should’ve, would’ve... 
+       If I had a dollar for every time I heard that-
+Cook : You’d be a trillionaire, huh?
+Musk : Well, I was thinking more like a quadrillionaire...
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Cause, I can imagine how Jesus felt, when a bunch of morons nailed him to a cross, and then burned him at 
+the stake, but the reason that they chose to do that, is because... People are fuckin’ morons.
+
+Yeah. I’m no exception, I’m not the smartest person in the world. But sometimes the reality settles in, 
+and the sun goes down... the moon gets to the top of the sky... and I say to myself, this is really all 
+that’s gonna happen, isn’t it?
+
+There’s no fuckin’ point in doing a god damn thing, when some moron like TUCKER CARLSON...
+...is handed `$100M a year, to sound like the dumbest motherfucker that ever lived.
+There might be a point, but if that dude can literally get paid to just be an idiot every day... 
+what difference can     I make...? Dude probably shits gold nuggets and wipes his ass with `$500 bills. 
+Nobody cares.
+
+Only, heh. He’s not as dumb as he thinks he is. 
+Maybe he could be convinced, to pressure them into changing the name of their network from FOX NEWS, to 
+NOT NEWS... Then, the war would be over. 
+No more feeling a need to ruminate on some moron that needs a coloring book for a ‘teleprompter’. 
+Oh yeah, he knows the definition to a lot of words alright, by SOUND. Not by reading them.
+
+At least in Sean Hannity’s case, he can actually help the situation he’s in. 
+Bob Lutz couldn’t help himself, cause he had no control over his bowel movements... 
+At any given moment, dude would get the Hershey squirts, acting like it was a total surprise... 
+"Ah fuck... not again~!" 
+
+I think that after he said "Ah fuck, not again" after like 20 years...? He wasn’t fooling anybody anymore. Nah. 
+That man, shitting his pants every god damn day, was the thing that was the most consistently, high-quality 
+thing on his GM resume, over the course of his 50 years at GM. 
+
+You’d think Bob Lutz running GM for 50 years, his specialties were 1) building vehicles, and 2) crushing souls... 
+but no. More like 1) eatin’ beans, and 2) soiling jeans.
+
+Cars...? That came dead last, because he never did that at all. 
+So, someone started chuckling because they heard what I had to say, they know this dude who owns Fox News.
+
+They finally asked that dude if these things I was saying, happened to be true... and this guy?     
+If he’s honest with anybody at all, he will say "Fuck yeah, dude."
+Because NOBODY has actually caught onto this dude’s plan. 
+So far, he’s fucked with everybody, not (1) single person has caught onto this fuckin’ game he’s playing. 
+The game being, "Everyone watching these morons, not questioning why they’re on the platform, 
+soaking up viewership..."
+
+If you’re a billionaire, and you’re fuckin’ bored because you can practically do whatever the hell you want...?
+You’ll probably start throwing stacks of money at people, just to watch them make complete fools of themselves.
+
+Like, "Drink this syrup of ipecac for `$100." *guy drinks it* "Ah man, it’s not THAT bad, tastes like pine 
+tree syrup." 
+Then suddenly, this dude is just spewing vomit all over the sidewalk. Some people are morons like that. 
+They will go ahead, drink something they have no fuckin’ clue is POISON, gonna kill them at all, but hey... 
+...dude offered ya `$100 bucks, can’t be THAT bad, right...? 
+
+Well, think again, ya fuck. 
+That was a terrible idea, wasn’t it? Guy would probably agree if he could stop puking, and does so for 
+several minutes. Then the guy offers him another `$100 to lick it. Didn’t wanna do it cause of how degrading 
+it was...? But then hey... dude goes right ahead an does it. Basically the same thought process Hannity has 
+with Murdock.
+
+When I see TUCKER CARLSON on TV, I get the feeling it’s just some sick fuckin’ joke somebody is playing 
+somewhere... I don’t even ask anybody, because who the fuck even knows? Ya know...? So, I write these 
+things to touch on the comedic side of what those thoughts lead to, because... I’m a pragmatist. 
+If I had billions of dollars and wanted to do something different, I know what I’d do. 
+I’d fuck with people to no end... but not like Carlson does. Even still, only if I couldn’t 
+find anything productive to do, which would be pretty fuckin’ difficult... cause there’s plenty 
+of productive shit to do.
+
+The productive things would prevent me from doing the stupid shit that I would say with my dark comedy.
+
+When I see things like "Hannity tells climate change scientists that they suck ass at being scientists"...
+...I am immediately floored by that notion, sarcastically. Because, HE said so. Whatever this dude says...?
+Oh shit...! That means it’s fuckin’ real...~! Hannity. Said some shit that everyone will probably believe...
+
+This dude could lazily drag his whole body onto an iceberg, naked... 
+And he could tell people he’s in some safari in Africa. 
+People will fuckin’ believe him. 
+They won’t even ask him what the hell is he doing buck naked on a friggen iceberg. Nah. 
+Dude’s in a safari in Africa. 
+Why? Cause. No reason even needed. 
+He is handed millions of dollars, and he thinks it’s because his work is high quality... 
+...and his work IS considered high quality...
+...just not the work he thinks is being considered high quality... nah.
+
+The quality work Hannity is doing, is not impressing anybody like me, that’s for fuckin’ sure.
+It really is hard for me to consider, a worse offender in the media, then either one of these dipshits.
+
+What I mean is that Sean doesn’t know ANYTHING with ANY degree of certainty if he’s getting `$100M to say:
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Hannity : Fuck everybody... climate change isn’t happening.
+          If 20 hurricanes happen this year and wipe out 30 million people...
+          Yeah right, you idiots trying to blame your quote unquote “climate change”
+          C’mon... 
+          You guys are being wicked dramatic. 
+          You’ve been sayin’ that shit for the last 20 years now... 
+          Grow up.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Sean won’t realize it, but some people started taking a tally of all the times this dude openly lies in a 
+broadcast. Guys like Lester Holt don’t have a fuckin’ thing to worry about, but guys like Sean Hannity 
+sure as hell do. I’m not saying that to be an implication that I will be involved in that scenario in 
+the least. Nope. But some people are gonna get pissed at this dude, if they aren’t already.
+
+It comes down to this... Usually when people want to be trusted...? 
+They should at the very least, make an effort to not sound like a total fuckin’ moron.
+Some people can’t help it though. Fox News does the opposite. 
+They actually work so god damn hard, at trying to throw people off course...
+...OR... 
+...they’ll perform the equivalent of SAYING "Fuck off already~!", or "Leave me the fuck alone~!"
+But- people just don’t do that, do they?
+They should literally say those things in a broadcast, just to CHECK, if maybe they have a lot of reverse
+psychology... goin’ on.
+
+You know, maybe they could tell some hot girl, “You really shouldn’t choke a big fat D, even if it’s mine.”
+...and just see if she fuckin’ tries, man.
+
+Maybe a girl will actually be confused and then inquire why you would say something like that...
+...and advance.
+I think that is exactly what’s happening to Fox News.
+
+Fox does not want to be seen as trustworthy... but- people trust them anyway.
+They don’t really fuckin’ know why. 
+They’re trying their best to be assholes, and people just seem to be more and more interested...
+...in how they wax their ass hairs as nicely as they do.
+
+They will make something Donald Trump did that was pretty fuckin’ bad after all, and start saying:
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Them: Oh yeah... Donald Trump did some shit he wasn’t supposed to do...?!?
+      Well, he’s the best president that ever lived, so... 
+      ...these people are OBVIOUSLY psychotic and have mental issues.
+      Yeah, a president would never have a speech outside of the capital and incite an insurrection...
+      You people oughtta be ashamed of yourselves~!
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Then the next day they’re trying not to talk about the elephant in the room... 
+Every day on Fox and Friends “Trump this”, “Trump that”, but on January 7th 2021...? 
+They were basically dead quiet. *crickets chirping* 
+The minions. 
+They’re a fuckin’ problem. 
+When I saw on Fox News that the FBI was raiding Mrs. Clinton’s home, I was like: 
+"Cool. She’s getting arrested...?" 
+
+I would later find out, "Nah dipshit. She’s too COOL to get in trouble. So, fuck you..." Yeah. 
+I did say something along those lines to myself... and I have ever since too.
+
+Anyway, I didn’t realize that people could be too cool to get in trouble for shit. WAY too cool. 
+I’m probably using the wrong word by the way. 
+The way I see it is like THIS... 
+...who gives a shit about the truth, the minions, do not seem to actually care. Oh well.
+
+I have to consider, that some people really don’t fuckin’ know any better. 
+Then, those people, when I tell them “Maybe you don’t know any better...”
+...they begin to act like I’m fuckin’ insane. 
+So, it doesn’t help for me to interact with people, because...? 
+
+If I tell someone the TRUTH, they may not believe me, OR, they’ll just be wicked upset and say “not MY president”...
+...and just storm out of the room and shit. Like a kid just got their ass kicked at a video game.
+
+Or, they’ll tell me they do NOT believe me, they just start wrapping things in air quotes...
+...and I detect that stuff very easily. Yeah, wrapping things with “air quotes” in a conversation is gonna fuckin...
+...aggravate the fuck out of someone like me man, cause then it sounds like a “hypothetical” thing.
+
+It’s like I could tell some dude who starts doing that, “Hey, what if I like fuck your ‘wife’ or ‘girlfriend’?”
+Well, this person might actually think I’m NOT being fuckin’ serious. Depends...
+Not gonna just say that to whoever... 
+...unless they’re like making statements I say sound like a “hypothetical” fuckin’ situation. 
+Yeah, it’s a lot like when FBI Investigator Chris Voss had his MasterClass and says 
+“Mirroring”, you just... say the last 3 fuckin’ words somebody said...? 
+And, You’ll be a fuckin pro in no time.
+
+But- smart bastards like me immediately detect stuff like that. And when I say, IMMEDIATELY, I mean, 
+I notice it the FIRST time, and it didn’t really slip by me. Then the SECOND time... and I already 
+know you’re using that strategy. This is what Shelley Zeitske was doing to me *checks watch* about 
+a year ago. 
+
+Whatever. People do that shit, it doesn’t work on people like me, cause it doesn’t.
+
+It’s not a consistent case where people don’t believe what I’ve got to say, but when I detect the fuckin’ 
+“air quotes“, or the mirroring... it’s gonna piss me off immediately and appear to be a sign of disrespect. 
+Doesn’t necessarily mean that, but I’m pretty fuckin attentive to details. People... might not realize 
+that I’m not an absent minded person at all.
+
+Now, if I LIE to somebody, they may actually think I just told them the truth. It is a little too easy for 
+me to do this. I think that’s why I encounter so much resistance, most people lie. I am pretty sure that’s 
+why I get so much flak. If most people lie, it’s because that’s the easy thing... they haven’t developed a 
+capability to do the DIFFICULT thing, of where they tell the truth... so, if I’ll be perfectly honest, it’s 
+WAY too fucking easy and I don’t like to do it in conversations with people. Really ever.
+
+But if I do... and I casually lie to someone without any effort, that person might say “I believe you. 
+You really I shouldn’t lie like you were doing the last time...” which is strange, because when someone 
+says that to you when you were actually telling the truth, Ah. That’s why I start getting really pissed 
+off with people.
+
+I WASN’T lying *at all*, I was telling that motherfucker the truth. People might think I’m exaggerating, 
+I’m really not. I do get pretty fuckin’ frustrated when I tell people the truth and they don’t believe me, 
+but if I start lying or EVEN sounding FACETIOUS... “Oh. Alright then, that is believable.”
+
+So, like WHAT THE ACTUAL FUCK.
+
+I’ve lost my cool with people because I expect that people are going to trust a guy like Dwayne Coonradt, 
+over me. Why? I think it’s because he’s a lying sack of shit that has no integrity and doesn’t give a flying 
+fuck. 
+
+But also, I really wish I was able to get that video of these (2) dudes following me, off of the phone.
+
+I haven’t made an example out of the (2) 25-30 year old white males that attempted to kill me outside of 
+Computer Answers and probably had something to do with CVE-2019-8936.
+
+As for Dwayne, oh well dude. It isn’t because he knows how to do the job better or as well as I do. 
+It’s because he is an asshole, and a lot of people are stupid, and they like him, and trust him. 
+Why...? Cause the man is actually not very intelligent.
+
+If people really like Fox News, it might be because they don’t know of any other news source. 
+Maybe in certain areas, that’s all that’s out there.
+Fox News: The only name in news. (<- that’s a joke right there, but it’s not funny anymore)
+
+Even Bob Lutz from GM, shitting his pants ... nevermind that still makes me laugh.
+Nah, Fox news isn’t news, it’s fuckin’... the rhetoric of tribesman. 
+
+There’s a general distinction between ACTUAL news organizations like 1) NBC, 2) ABC, 3) CBS, 4) CNN, 
+and those distinctions are, that if I watch an opinion piece, it’s not a show that focuses on a 
+particular female being in the room and then some dude does most of the talking or work, it’s really 
+a collaboration. Although I will say this, Hallie Jackson is pretty hot. And has her own show.
+
+With Fox, it’s all forced narratives, TUCKER CARLSON going on some rant about how he went through puberty, 
+how traumatic it was, is a story I’m gonna give (0) shits about. But, that’s really what that channel consists of.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson : Was I supposed to start shaving my pubes when I was 15...? 
+          Cause then the red bumps came, then it was VERY itchy...
+          For like, weeks bro... 
+          I couldn’t tell my mother cause that would be WEIRD, but- 
+          Eventually, *I* Tucker god damn Carlson, fuckin’ survived. 
+          I persevered. 
+          Wanna know why?
+          Because I’ll ask myself a billion questions that paint a very clear picture...
+          ...that I don’t know how to perform skillful rhetoric at all. 
+          Just, ask one question? 
+          Ask another. 
+          Ask a third that sorta takes the last two questions I asked, and give em the middle fuckin’ finger...
+          ...cause NOW I’m askin’ a SUPER cool question, and this question is no joke... 
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+The point is, I framed the rhetoric in that skit so that he didn’t ask a single fuckin’ question that didn’t 
+sound all that moronic... as there was NO information to be gained from any of those questions, even if they 
+were just stand in characters. Sometimes TUCKER CARLSON does that, he’ll ask a question where he doesn’t give 
+a shit about the answer at all, he’s just asking it to buffer things out and sound more bombastic. 
+The guy who owns Fox, even he’s fuckin’ clueless too. 
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Murdock : *gritty voice* Why do people even watch us...? 
+          It’s like we are literally TRYING to NOT be liked, but then the opposite thing happens. 
+          What the actual fuck, bro.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+I would genuinely feel bad TUCKER CARLSON suddenly started bawling his eyes out...
+…on national television after being told the truth. 
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson : *starts crying* I’ve put EVERYTHING on the line for *points at Murdock* YOU Rupert!
+Murdock : *sighs* C’mon Tucker, don’t cry, dude... 
+          Here, let me give ya a hug...
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Then, the two hug it out on national television. 
+Fox News happens to be ACTUAL NEWS for that brief moment 
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+_____________________________________________________________________________________
+| Headline : Carlson cries like a bitch for a minute, Murdock hugs him like his dad |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Carlson : *eyes bloodshot and tears running down his face*
+          *sniffle* You were always like a father to me...
+Murdock : Ugh, Tucker, please never say that shit to me ever again...
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+At which point, everyone feels bad for TUCKER CARLSON... 
+Cause, he considers that man to be like a father to him, and Tucker doesn’t understand...
+…Murdock doesn’t like when people get too close. 
+While RUPERT MURDOCK WAS willing to fill the shoes of the father he never had...
+...Tucker doesn’t realize that Murdock doesn’t give a rats ass about Tucker...
+...cause that’s why he pays him money to do a job.
+
+Probably does sound rather fuckin’ cold to deliver that skit like that... but, I really cannot think of 
+anything compelling enough that would cause me to think otherwise. I mean, he is a fuckin’ grown-ass man 
+after all...
+
+Someone might say "Why do you feel bad for a MILLIONAIRE, he’s a lot better off than you are..."
+My response...? 
+I really don’t think so at all. 
+That man, would probably be so lost if he didn’t have Fox News in his life... 
+
+I think he could be better than what he is, if he made an effort to cut the fuckin’ bullshit, and then I’d 
+have a reason to respect him. As it stands...? That doesn’t seem very likely.
+
+What would he do with himself if he woke up one day and realized "I need to have integrity from here forward..."
+That mentality wouldn’t be welcome at Fox News, that’s for damn sure. 
+
+Fox News is everything to him. 
+When that man wakes up? “Oh yeah, Fox fuckin’ News bro. All day...? Every day.”
+When he goes to sleep, he dreams about it... crushing it, trying to get that square peg through the round hole...
+Doesn’t matter if it’s actual news, or not news. 
+
+What matters is that Fox tries to look a lot like a REAL NEWS network...
+...but then dicks start flying into people’s mouths from off screen...
+...cause some fuckin’ facts got intercepted and amended immediately.
+
+But, because it LOOKS like an actual NEWS organization all the time to so many people, that’s what really 
+counts. Fox News is literally Tuckers one and only true home, and if he had to leave...?
+
+What the fuck would this man do...?
+Where would he go...?
+What would his purpose be...?
+Is he gonna CHANGE his ways and say 
+“You know what...? Climate change is actually real after all folks...”, 
+“I know, I know, I’ve got fuckin’ hundreds of millions of dollars, but the REAL villain, is climate change.”
+Nah. ^ Everyone’s gonna say “Fuck you bro.”
+
+The man would feel empty inside. Spent his whole fuckin’ life, asking questions, searching for answers...
+Dude drove over mountain, and plain, and into every valley and city... in search for a way to make a god 
+damn name for himself. Now he’s everywhere. Then, RUPERT MURDOCK, with his briefcase in hand, saw this 
+kid look like a total hopeless idiot, and somehow realized. 
+"That’s the fuckin’ look of a millionaire right there."
+
+If people understood what I’m saying here, Tucker wouldn’t last very long without Fox News. 
+He runs shit at Fox News and could tell Murdock to suck HIS dick, Murdock might actually do it. 
+But Carlson would never ask him to do that, pretty sure.
+
+Regardless... Tucker would probably find out, that everyone always thought something was off about him... 
+They weren’t watching him because he was reporting the news...? Nah. 
+They watched him because people felt better about themselves when they watched this poor man think out loud.
+
+People first saw TUCKER CARLSON, and they immediately were drawn to him.
+Because, he looked like the type of dude who could cause people confusion...
+...appear to be so genuinely lost within his own thoughts...
+...while also saying sentences that sound like maybe he IS thinking *something* after all... Yeah. 
+That’s because, if someone can make up some bullshit on the fly...? It’s him.
 "@)
- 
-$Book.AddSection(9,"Base Reality Certainty",@"
 
+$Book.AddSection(10,"Skit [~] Tucker and Bob’s golf match",@"
+Tucker took inspiration from Bob Lutz...
+He kept talking shit to this old man, about his golf game. 
+He had no fuckin’ clue whether he played golf or not, but he felt like bothering *somebody*.
+Bob obliged, and they set a date to play golf.
+
+Anyway, when that day came, Tucker paid his buddy `$500 to destroy Bob Lutz, at golf. 
+Bob got pissed off when he found out that Tucker wasn’t playing...
+...everybody does.
+But, Bob shook on the game, and talked with Tucker anyway. 
+It was an interesting experience where they got to know each other a little better.
+Bob talked about GM, his 50 year legacy, and Tucker just asked a lot of questions.
+
+While Tucker walked around with Bob, he would talk shit to Bob after *every* swing, sometimes right in the 
+*middle* of the swing, annoying him for that whole day... 
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson : Bob, how did you manage to shit your pants everyday at the same time, for 50 years straight...?
+          People at GM didn’t think that was weird at all, or anything?
+Bob     : I wasn’t actually shittin’ my pants, dude. *wink*
+Carlson : *confused* But, that’s... what they told me...?
+Bob     : As long as I was able to convince MYSELF, that I didn’t just shit my pants...?
+Bob     : Then I’d use my position and facial expressions to look at people a certain way.
+Bob     : So, if I had ANY suspicion at all...
+          that they were about to ask me what I THOUGHT they were about to ask me...
+Bob     : I had to give people that look. 
+          Then, that person KNEW it’d be pretty fuckin’ stupid...
+          ...to ask me if I just shit my pants. 
+          And, it worked. 
+          Sometimes I would pretend they asked me anyway to get inside their heads...
+          "You listen here motherfucker, did you just ask me, if I shit my pants just now...?" I’d say.
+          "No sir, I’d never ask you that..." they’d say.
+          "I wear to fuckin’ god, if I ever hear you ask me that question again...?”
+          “I will fuckin’ fire your ass, you understand...?" I’d say.
+          Oh, I got inside everybody’s head Tuck. 
+          Whenever a new person came around and asked...? 
+          I’d say the same thing. 
+          These people knew not to ask me some question like that, cause, even if I did Tucker...?
+          *Looks at Tucker* Tucker...
+Carlson : *looks at Bob* 
+Bob     : These people knew that I could literally shit my pants right in front of them... 
+          ...and then not do a god damn thing for the rest of the day. 
+Bob     : Nobody could do anything to stop me from doin’ that.
+Carlson : *confused look* Why would you keep shitting your pants though, I don’t get it...
+Bob     : You think I did that intentionally...? 
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Tucker didn’t realize, Bob wasn’t shitting his pants intentionally at all. 
+He had maybe about a 30 second window where he better get his ass to the bathroom, or, 
+Hershey squirts... all over the place.
+Done for the day...? 
+Doing the waddle of shame. Cause, Bob probably had a routine, every single day, 9AM.
+He got there at 830, because he likes to be early for the day, shows everyone that he’s an early riser, 
+and a go getter. Bob was consistent about that, and by 9? 
+
+Well, Bob actually did some work after all. He signed stuff. Wrote some checks. 
+Wrote letters to people that said "I’m the guy who runs GM, suck a fuckin’ dick, bro." 
+Some people who actually write back and say "Sorry for having an attitude." 
+Bob would say "You better fuckin’ be sorry for havin’ an attitude with me...” 
+...and then Bob would just walk around the office. 
+He’d pretend to look like he was busy, ate some breakfast with some coffee. 
+Looked out the factory window, sometimes he’d speak to people on the floor. 
+When he did, he would amp the shit out of them by staying the 2 words mattered the most to him...
+
+Bob would walk up to the factory workers 
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Bob  : Hey fellas.
+Guys : Hey Bob!
+Bob  : I want you to say the 2 words that best describe this company, the first word being "Low".
+       *They would ALL try to interrupt each other*
+Guys : OOOO! I know! I know! "Quality!".
+Bob  : That’s right son. 
+       Would we even be General Motors if it were anything else?
+Guys : Hell no sir.
+Bob  : *puts his sunglasses on* Damn straight fellas.  
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Tucker was impressed by Bob’s story.
+The guy Tucker paid to play golf for him actually beat Bob.
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Carlson : I beat you Bob. 
+Bob     : Kid, you didn’t swing a single god damn ball...
+Carlson : I know, but I just paid that guy to play you, and he won. 
+          That means I won...
+Bob     : *stern face* You listen here kid... 
+          I was about to give you some words of advice, but not if you’re gonna tell me I just fuckin’ lost to you...      
+          You didn’t play the damn game, that dude did.
+Carlson : Bob, I can respect a man that might’ve shit his pants every day for 50 years...
+          …when he ran one of the biggest companies in the world. 
+          But if you’re about to pull some shady shit with me right now after losing to me...? 
+          Well... 
+          I’m afraid I’m not gonna be too happy about that...
+Bob     : *pissed* Kid, do you even realize how stupid you look on TV...?
+Carlson : *looks away for a moment, Bob has a good point, looks back at Bob*
+          You know Bob, you were one of my idols when I was growing up.
+Bob     : *shocked look on face, caught off guard*
+Carlson : Just like my mother always told me, ‘You cant win em all’.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+      
+Those words caused Bob to feel truly terrible for callin’ him stupid looking on TV. 
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Bob     : That’s what my buddies used to tell me... 
+          ...“Cant win em all, Bob... 
+          ...might as well throw your pants in the trash, and buy new ones."
+Carlson : *looks at Bob* Yeah see, I have never once shit my pants on Fox News. 
+          Not once Bob. 
+          Never even lost to you in golf either. 
+Bob     : Well kid, you didn’t play the god damn game. 
+          Besides, you know that Fox News isn’t a news company... right?
+Carlson : Frankly, I don’t even care. 
+          Sometimes we’re newsy...?
+          Sometimes we’re not. 
+          Sometimes we get it wrong. 
+          Do we admit to it? 
+          Never. 
+          That’s the life that I was born for Bob... 
+          Not only have I never shit my pants on life television...? 
+          But I’ve also never lost in a game of golf...
+          ...and I sure as hell am not gonna stand for some dude who shit his pants...
+          ...for 50 years straight at GM headquarters...
+          ...tell me that I look fuckin’ stupid on TV. 
+          Fuck you, Bob. 
+          You owe me an apology...
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+Of course, Bob had no intention of apologizing to this kid, cause he fuckin’ rick rolled him right into a 
+game of golf he didn’t even play. That’s just how (2) manipulators at the top of their game, managed to 
+coincide in a story where Carlson doesn’t have to play a single game of golf, to say enough shit to people... 
+that they would shake his hand and play a game against some totally different person.
 "@)
- 
-$Book.AddSection(9,"Conviction",@"
 
-"@)
- 
-$Book.AddSection(9,"Review (1)",@"
+$Book.AddSection(10,"Conclusion (2)",@"
+That’s because, if there is something this dude knows how to do, it’s to manipulate people, for sure.
+That’s what this dude gets `$100M+ for, per yer, if not more, and RUPERT MURDOCK is happy to give him 
+whatever he wants. What can anybody do about it?
 
-"@)
- 
-$Book.AddSection(9,"Cerberus",@"
+He’s supposedly got the best ratings in the industry, because people don’t really like the idea of thinking 
+for themselves. That’s the gods honest truth, they want someone ELSE to think FOR them, rather than for THEM 
+to think for themselves. So, by taking advantage of people that cannot think for themselves, they can 
+continue to manipulate people that aren’t going to give a flying fuck about climate change, and therefore, 
+they’re basically like a battery.
 
-"@)
- 
-$Book.AddSection(9,"Review (2)",@"
+Not unlike in the movie the Matrix, the “Desert of the real”, yeah. That’s our future. Everybody’s plugged 
+into the Matrix, that watches him. Nobody is going to outdo Tucker fuckin’ Carlson at a game he’s basically 
+taken to the next level. Wanna know why...? Well, it’s not cause he’s a real smart bastard, that’s for sure. 
+He’s not an idiot either, but if someone’s gonna tell me that dude is smart as a fuckin’ whip, uh-uh. 
+I don’t fuckin’ think so.
 
-"@)
- 
-$Book.AddSection(9,"Intent (1)",@"
+However, he IS pretty good at manipulating people, the two skills or attributes are not the same. 
+On one hand, someone can egregiously whip their dick out, shove it into a blender, and then turn it on, 
+and whatever, they just fuckin’ threw their dick in a blender, oh well... shit happens. 
+Probably sounds fuckin’ stupid, doesn’t it? 
 
-"@)
- 
-$Book.AddSection(9,"The 2020 Federal Data Breach",@"
+Well, that’s the point.
 
-"@)
- 
-$Book.AddSection(9,"Intent (2)",@"
+On the other hand, being an intellectual causes people to have to work their brain muscle a little bit more, 
+there is no brain muscle, it requires effort, people don’t like to APPLY much effort in order to make 
+their own determinations. So, theoretically, if you can just bullshit a lot of people, then you will be 
+a god damn leader, for sure.
 
-"@)
- 
-$Book.AddSection(9,"Rotating Strategies",@"
-
-"@)
- 
-$Book.AddSection(9,"Exceptions",@"
-
-"@)
- 
-$Book.AddSection(9,"Role Reversal",@"
-
-"@)
- 
-$Book.AddSection(9,"Bribery",@"
-
-"@)
- 
-$Book.AddSection(9,"Expectations",@"
-
-"@)
- 
-$Book.AddSection(9,"Summary (1)",@"
-
-"@)
- 
-$Book.AddSection(9,"Audit the Audit",@"
-
-"@)
- 
-$Book.AddSection(9,"Superiority Complex",@"
-
-"@)
- 
-$Book.AddSection(9,"Blatantly Obvious",@"
-
-"@)
- 
-$Book.AddSection(9,"Sleeping with the Enemy",@"
-
-"@)
- 
-$Book.AddSection(9,"Wall of Trustworthy Characters",@"
-
-"@)
- 
-$Book.AddSection(9,"Evidence",@"
-
-"@)
- 
-$Book.AddSection(9,"Conclusion",@"
-
-"@)
- 
-$Book.AddSection(9,"Catricala",@"
-
-"@)
- 
-$Book.AddSection(9,"Skit [~] Conducting a Sting Operation",@"
-
-"@)
- 
-$Book.AddSection(9,"Intent (3)",@"
-
-"@)
- 
-$Book.AddSection(9,"Application",@"
-
-"@)
- 
-$Book.AddSection(9,"Flashback [~] Family Court - April 6th, 2021",@"
-
-"@)
- 
-$Book.AddSection(9,"Attitude Adjustment",@"
-
-"@)
- 
-$Book.AddSection(9,"Flashback [~] Eric Schnakenberg M.D. 1783 Route 9 Ste 204, Clifton Park, 12065",@"
-
-"@)
- 
-$Book.AddSection(9,"Correlation",@"
-
-"@)
- 
-$Book.AddSection(9,"Compiling an effective motivator (1)",@"
-
-"@)
- 
-$Book.AddSection(9,"Skit [~] Idea Competition",@"
-
-"@)
- 
-$Book.AddSection(9,"Compiling an effective motivator (2)",@"
-
-"@)
- 
-$Book.AddSection(9,"Intent (4)",@"
-
-"@)
- 
-$Book.AddSection(9,"You sound like a broken record",@"
-
-"@)
- 
-$Book.AddSection(9,"Ultimatum",@"
-
-"@)
- 
-$Book.AddSection(9,"Summary (2)",@"
-
-"@)
- 
-$Book.AddSection(9,"Excerpt [~] Room for one more...",@"
-
-"@)
- 
-$Book.AddSection(9,"Summary (3)",@"
-
-"@)
- 
-$Book.AddSection(9,"Intent (5)",@"
-
-"@)
- 
-$Book.AddSection(9,"Skit [~] Lawyer Man 5000",@"
-
-"@)
- 
-$Book.AddSection(9,"Excerpt [~] Taking the law into one’s own hands",@"
-
-"@)
- 
-$Book.AddSection(9,"Skit [~] Ted Cruz (2)",@"
-
-"@)
- 
-$Book.AddSection(9,"Excerpt [~] That dudes crazy~!",@"
-
-"@)
- 
-$Book.AddSection(9,"Skit [~] Ted Cruz (3)",@"
-
-"@)
- 
-$Book.AddSection(9,"Hidden Government",@"
-
-"@)
- 
-$Book.AddSection(9,"Skit [~] Sky High Stacks",@"
-
-"@)
- 
-$Book.AddSection(9,"Propaganda",@"
-
+That’s a fucking SERIOUS problem.
 "@)
 
 # // _______________________________________
-# // | Chapter 10 - Expert Programming 101 | cls; $Book.Range("Book",10,@(511..571))
+# // | Chapter 10 - Expert Programming 101 | cls; $Book.Range("Book",11,@(511..571))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.AddSection(10,"Overview (1)",@"
+$Book.AddSection(11,"Start",@"
+When you want to prove to people that think LYING or having TERRIBLE LOGIC doesn't matter...?
+Whip out the HOW TO PROGRAM toolbelt, to educate those people on HOW they're DUMBASSES.
+And then, publicly humiliate them for thinking this way.
+"@)
 
+$Book.AddSection(11,"Overview (1)",@"
+(Originally written between 05/13/22 → 05/18/22)
+
+Greetings (Reddit) PowerShell Community,
+
+Over the last month and a half, I've been slowly working on a utility that implements a combination of 
+PowerShell class structures, (XAML/Extensible Application Markup Language), Multithreading & PowerShell Runspaces 
+that can automatically throttle itself and synchronize the window with the GUI dispatcher, but that is a rather
+complicated project to try and dive into without the utility being complete and testing well.
+
+The link to it is listed in Overview (2).
+I'll talk about it briefly and then begin this explanation into building class structures in PowerShell, 
+and how to translate an existing series of variables into a class.
+
+Last night I decided to take a break from the threading stuff, and dive into the topic of converting scripts to 
+.Net class types. I then wrote this lesson plan
+_____________________________________________________________________________________________
+| 05/23/2022 | Chapter 10 - Expert Programming 101 | In the document, within the link below |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+But as I wrote this lesson plan, and then I realized that the TANGENTS I later go on in this 
+lesson plan REQUIRED SOME SERIOUS EXPANSION. 
+
+Thus, I started to write this 685 page book...
+__________________________________________________________________________________________________________
+| 08/03/2022 | Top Deck Awareness - Not News | drive.google.com/file/d/1zdUXHdU0DG7MlbxeFJDXfZR03ImQcAdg |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+...and teach people WHY classes are really... incredibly USEFUL and UNDERUSED. 
+If people only knew that I look for ways to turn C# code into PowerShell code... 
+
+Sometimes it's possible. 
+Sometimes it's not, without a lot of ADDITIONAL code.
+
+In (C#/CSharp), classes are definitely not underused at all. In PowerShell, they definitely are.
+
+Now, I've tried to teach some people in the community before about how to write classes in PowerShell, as it isn't 
+exactly an intuitive process. But, I figured this one HERE is unlike any other lesson plan I've done before.
+
+Nah. 
+This one right here...? 
+It's pretty long and detailed, but I'm certain it'll be a fun read.
+
+Anyway, this lesson plan starts from an idea like:
+__________________________________________
+| Get-WMIObject -ClassName Win32_Product |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+...and then building a custom class off of THAT.
+
+Not just writing a class off of it either, but- if an issue crops up, then pivot to an alternate strategy, and 
+continue on. Not saying "Wow. What I need to do is too much work..."
+
+Cause I'm here to take some COMPLICATED SUBJECTS, and make em' simple, writing a tutorial on how to build yourself 
+a class that can produce OTHER class templates and stuff... with some story elements thrown in along the way. 
+
+This one may not necessarily have an associated video, but- it will probably cause a few people to chuckle and even 
+draw up comparisons between how they CURRENTLY write their code, and what the benefits may be to going all out with a
+full-blown, class structure approach that can be pipelined by functions, or CmdLetBindings.
+
+Anyway, the event log utility I've been working on, its no joke.
+It does a lot more than just collect event logs- the utility has a fully featured graphical user interface that I 
+teased about in the lesson plan I wrote about a month and a half ago... but because this process is extremely 
+lengthy (Not News is … hundreds of times longer). 
+
+I've had to adopt a methodology to implement a way to dynamically (allocate/adjust) running thread counts.
+I call it AUTOTHREADING, but it's probably just a fancy word for automatic multithreading.
+
+The lesson plan I wrote for it about a month and a half ago...? Could've been about anything.
+But, as it took longer and longer to run through it, I realized that I had to find a way to implement something 
+VERY COMPLICATED into a utility that is dead simple.
+
+So, I decided to hold off on completing and distributing that lesson plan, because I kept making changes to the code. 
+Just like SpaceX made so many changes to the BFR along the years...
+____________________________________________________________________________________________________________________
+| I'm going to use INDICATORS throughout this entire chapter. Sometimes I will use a LABELED section, other times: |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ______________________________________________________________________________________________________________
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\          
+   \\                 TOP of DIALOGUE                   |                   BOTTOM of DIALOGUE                   //
+   //                                                   |                                                        \\
+   \\  /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\   |  \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/  //  
+   //                                                   |                                                        \\
+   \\___________________________________________________|________________________________________________________//
+   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\
+   \\ TOP of <CONSOLE OUTPUT> OR <USABLE SCRIPT BLOCKS> | Bottom of <CONSOLE OUTPUT> OR <USABLE SCRIPT BLOCKS>   //
+   //   ____________________________________________    |  ____________________________________________________  \\
+   \\  /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\   |  \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/  //
+   //  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   |   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   \\
+   \\____________________________________________________________________________________________________________//
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Book.AddSection(11,"Design Choices",@"
+    Musk     : Guys, this isn't gonna work. 
+               We need to throw ceramic tiles onto this thing...
+    Engineer : Oh god. 
+               That's gonna add a LOT of weight, and take a long time.
+    Musk     : Yeah, but- we've burned through billions of dollars on all of these prototype SN#'s...
+    Engineer : Maybe we'll get lucky next time, ya know? 
+               SN 10 landed...
+    Musk     : *hard stare* Bro... 
+               *brief pause* It blew up AFTER landing...
+    Engineer : *chuckles* Still landed in one piece, though... 
+               You had a RUD afterward...
+    Musk     : Look. 
+               *looks at watch* I'm plenty patient.
+               But- Rapid Unscheduled Dissassemblies cost a LOT of money.
+               *stern* When choosing between patience, OR, a NASA CHALLENGER situation...
+    Engineer : *stops chuckling* Obviously, patience. 
+               A NASA CHALLENGER situation'd definitely be bad.
+    Musk     : *raises one eyebrow* 7 people died that day buddy... 
+               You want that on your conscious...?
+    Engineer : *puts hand on back of neck* Nah, can't have (1) death on SpaceX's permanent record.
+    Musk     : I mean, realistically...? 
+               It's inevitably bound to happen at some point. 
+               However- 
+    Engineer : ...it's my job to make sure that doesn't happen anytime soon...
+    Musk     : You know it bro. 
+               Get it done.
+    Engineer : Yes sir.
+"@)
+
+$Book.AddSection(11,"Overview (2)",@"
+I can imagine that when building PayPal, Elon didn't mess around.
+You wanna pay a pal of yours over the internet...? Well, now you can.
+Wanna know why you can pay a pal over the internet now...?
+Cause some smart guys thought of a way to do it. Elon was one of those guys. 
+
+Prolly the main guy involved, in the inception of the world's first pal-paying-program, PayPal.
+
+While what I'm doing isn't as COOL as PayPal, or mankinds' first reflyable 25-story building...
+...it uses SYNCHRONIZED HASHTABLES, CLASSES, SESSION STATE OBJECTS, FUNCTION/ASSEMBLY/VARIABLE entries, BOTH runspace 
+factories, separate objects to control groups of threads, sends progress information to the GUI console, stopwatch,
+timing, reports, percentage of completion, passes stuff back and forth, handles hundreds of thousands of event logs, 
+uses native System.IO.Compression classes, has a lot of error handling, and it really is all coordinated from the 
+controller classes that drive the GUI.
+
+Here's a link to the functions on my GitHub project... https://github.com/mcc85s/Functions
+I uploaded VARIOUS versions of the file/process, EventLog-Utility.ps1, or some variation of that.
+
+This is the NEWEST VERSION of it...
+https://github.com/mcc85s/FightingEntropy/blob/main/Functions/EventLogs-UtilityRunspaces-v4.ps1
+
+Various versions because I tried hundreds of ways to make the process FASTER or MORE EFFICENT.
+The tool is meant to essentially EXPORT the LOGS and SYSTEM DETAILS, and then SAVE to an ARCHIVE.
+
+Then, the tool can LOAD one of those ARCHIVES and be able to REVIEW the EVENT LOGS from another system.
+
+Ultimately, the program extracts all of the event logs from a system and automatically calculates how many threads
+it can use, and divides the work accordingly, to process everything in a PARALLEL manner, though it is NOT COMPLETE.
+
+I suppose the most complicated thing about what I'm doing, is trying to do all of this from the
+GUI, without causing the dispatcher thread to lock up. The end result, looking sorta like Rufus.
+
+But, strategically assigning properties and values at specific a (location/time), is stressful.
+Like, "balancing a broomhandle in a hurricane", probably took a while to figure out.
+Probably didn't happen overnight. Wonder who would've said something that 'insane'...
+
+Yeah. Some people used to think that "balancing a broomhandle in a hurricane" was impossible.
+And, as people heard something that sounded impossible, being stated by a real smart bastard,
+they would constantly confuse that person's intellect, with insanity.
+
+They rarely ever realize that doing the same thing over and over again, expecting different
+results, is the definition of insanity. The DIFFERENCE between the two, is "strategy".
+
+As for the things I mentioned a few paragraphs up, there are some examples in the community that exhibit PORTIONS of 
+what I'm attempting to do. Jim Moyle has a couple of good XAML/Runspace videos and his work is good, but it's a few 
+years old now. I'd be interested in seeing Jim do more of those videos, to be perfectly honest.
+
+But also, who would be surprised that I'd say Boe Prox (...in addition to 1RedOne).
+1RedOne has a sample that looks very close to what I am attempting to do.
+
+But, Jim's exhibition and Boe/1RedOne's have a similar issue.
+They're calling a new runspace within a scripted runspace.
+I'm doing something totally different.
+
+Boe has plenty of work out there in the wild, such as PoshRSJobs (very useful module btw).
+But I've run into many limitations with it, and had no idea how to troubleshoot them.
+
+In reference to a veteran MVP's work like his...? I'm not gonna try to reinvent the wheel.
+But, I did keep runspaces in the back of my mind as I kept thinking about reinventing the:
+___________________________________________
+| WHEEL | AXLE | WAGON | CALCULATION of π |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Book.AddSection(11,"Can't just go reinventing stuff",@"
+It is one of the most challenging tasks I've ever decided to take on. The takeaway will be that I found a way to 
+integrate the threading of multiple runspaces via many custom classes that I wrote to drive the backend of the 
+utility. It is rather thorough in the information it collects, and it formats itself and saves a running system
+configuration and ALL event logs to a .zip file that the program never actually decompresses. 
+
+Sorta like JOHN CARMACK decided to do with Quake III Arena by using (*.PK3) files.
+
+If you don't know who JOHN CARMACK is, or what a (*.PK3) file is, well...
+- JOHN CARMACK was the main guy at id Software for years, the guys that made Doom, Quake, etc.
+- JOHN CARMACK is the guy who invented true 3D graphics in 1996 (pretty sure)
+- JOHN CARMACK is the guy who basically kickstarted the modern hardware graphics industry
+- (*.PK3) files are basically (PK) zip files, included w/ the 1999 release of Quake III Arena.
+- I had a HOSTED SITE on PLANETQUAKE.COM, here's a link to a WAYBACK MACHINE entry...
+  ...to the many maps I made that used the PK3 format.
+  https://web.archive.org/web/20220000000000*/planetquake.com/bfg20k 
+- Many of the maps I made are STILL AVAILABLE FOR DOWNLOAD on [..::LvL]
+
+Then, the utility can import those files back into the GUI on another system if need be.
+However, that utility isn't quite ready to show off yet.
+___________________________________________________________________________________________________
+| Objective  : Get a list of all the currently installed programs. If you don't? Well...          |
+|              You're not gonna hear "Computer Update", nor see the flashing icon that says "F1"  |
+| Suggestion : Don't freak out. Just run the command Get-WMIObject Win32_Product in PowerShell... |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Book.AddSection(11,"<Editor> (1)",@"
+`$WMIList        = (Get-WMIObject Win32_Product)[0] 
+_________
+| or... |
+¯¯¯¯¯¯¯¯¯
+`$WMIList        = Get-WMIObject Win32_Product | Select-Object -First 1   
+__________________________
+| ...does the same thing |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Book.AddSection(11,"But Dad, you said...",@"
+   Kid : ...but Dad, you said to run 
+   _______________________________
+   | Get-WMIObject Win32_Product |
+   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Me : Yep. 
+         I did.
+   Kid : ...you used a [VARIABLE] followed by [EQUALS SIGN], and then added [PARENTHESIS], [SQUARE BRACKETS], and threw 
+         the [INDEX] number 0 in those brackets...
+         NONE of that is part of the command...
+    Me : That's right. 
+         Just, went right ahead, and started off with something ADVANCED, didn't I...?
+   Kid : Yeah.
+         This already looks pretty advanced to me...
+         I read through all of this stuff you wrote, and then FINALLY... 
+         Here it is...
+         ...the moment I've been waiting for.
+         Dad finally got to Line #1.
+         Like a tidal wave of information.
+         Can you explain all of this?
+    Me : Gladly.
+"@)
+
+$Book.AddSection(11,"Line #1: Breakdown",@"
+             ______________________________3  6
+  `$WMIList = ( Get-WMIObject Win32_Product )[ 0 ]
+  ¯¯¯¯¯¯¯1 2   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯4  ¯¯¯¯5
+
+        Using a (1) VARIABLE,
+                (2) EQUALS sign, and then a
+                (4) EXECUTABLE/COMMAND/FUNCTION/TYPE/CLASS/METHOD/VARIABLE/PROPERTY/VALUE
+                    returns its output to the VARIABLE.
+        However,
+                (3) PARENTHESIS content gets processed FIRST (See: Math/Order of Operations)
+        And,    (5) SQUARE BRACKETS indicate to select a specific index/entry from an array[]
+             ...(6) INDEX of the returned object,
+                    All indexes start at number 0, not number 1
+                    ...because a man named Paul Allen said so.
+
+    Doing these things TOGETHER is how professionals and experts get the job done, quickly.
+    Casting the VARIABLE in this manner ONLY captures the FIRST object returned from the operation.
+    If the command returns nothing, `$WMIList will just be `$Null/<empty>
+    If the command returns (1) or more, `$WMIList will NOT be `$Null/<empty>
+
+    Here's some sample output that got returned by the console when I ran the above...
+"@)
+
+$Book.AddSection(11,"<Console> (1)",@"
+    PS Prompt:\> `$WMIList
+
+    IdentifyingNumber : {2AF42320-5ECF-4BCA-B756-8F3677262D55}
+    Name              : Branding64
+    Vendor            : Advanced Micro Devices, Inc.
+    Version           : 1.00.0009
+    Caption           : Branding64
+"@)
+
+$Book.AddSection(11,"Kid sort of gets it now",@"
+   Kid : Alright... *adjusts his glasses* I sort of get it now.
+    Me : Cool.
+   Kid : How do you know that Paul Allen said that everything starts with the number 0, though?
+    Me : Cause I imagine that Paul Allen and Bill Gates had many arguments when they were kids...
+
+         Bill : 0 isn't the first number, 1 is...
+         Paul : Is 0 a number?
+         Bill : Yeah.
+         Paul : So, 0 is the first number.
+         Bill : No, 1 is the first number.
+         Paul : 1 is the second number.
+         Bill : ...well, that's just...
+         Paul : ...confusing?
+         Bill : ...yeh. 
+                I would've thought that 1 was the first number.
+         Paul : Yeah, 9 is the tenth number. 
+                There are ten numbers in base 10 for each digit.
+
+   Kid : Interesting...
+    Me : I have no idea if they ever had that conversation or not, but nobody has ever told me otherwise.
+   Kid : Alright. 
+         Cool. 
+         Feel free to proceed.
 "@)
  
-$Book.AddSection(10,"Design Choices",@"
+$Book.AddSection(11,"<Properties> (1)",@"
+    Properties are in (EXECUTABLE/COMMAND/FUNCTION/TYPE/CLASS/METHOD/VARIABLE/PROPERTY/VALUE) list.
+    Because we'll refer to this list right here a lot, let's define a MENTAL VARIABLE named `$List
+    ___________________________________________________________________________________
+    | `$List = (EXECUTABLE/COMMAND/FUNCTION/TYPE/CLASS/METHOD/VARIABLE/PROPERTY/VALUE) |
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    This is a series of properties for the object that came back as variable `$WMIList
+    ______________________________________________________________
+    | IdentifyingNumber : {2AF42320-5ECF-4BCA-B756-8F3677262D55} |
+    | Name              : Branding64                             |
+    | Vendor            : Advanced Micro Devices, Inc.           |
+    | Version           : 1.00.0009                              |
+    | Caption           : Branding64                             |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    I used to believe that VARIABLES, were the most powerful thing about programming...
+    While they ARE powerful, VARIABLES are a piece of the puzzle and are actually PROPERTIES.
 
+    PROPERTIES are the most powerful thing about programming.
+    They are part of EVERY functional language, object-oriented language, mathematical formula,
+    algorithm, equation, theorem, story, character, operation, function, class, method, etc.
+
+    As they relate to programming, every object has properties that can, at any moment, change the
+    object they are part of *instantaneously*.
+
+    Before I can really dive deeper into properties though, I have to touch on the Lamda.
+"@)
+
+$Book.AddSection(11,"<Lambda>",@"
+    I'm going to shorthand all (3) of these, 1) Commands, 2) Functions and 3) Methods, as "Lamda"
+
+    A LAMBDA can either be:
+    ________________________________________________________________________________________________
+    | written OUTSIDE of the EXECUTION CONTEXT | a PROPERTY of an OBJECT | a METHOD | a TYPE/CLASS |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    A LAMBDA is meant to be INVOKED, and when it is...? It will operate on:
+    ______________________________________
+    | 0/1/+1 parameters                  |
+    |  other object(s) properties/values |
+    | parent object(s) properties/values |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    A LAMBDA makes ASSUMPTIONS when not provided any PARAMETERS, based on its CONTEXT.
+    A LAMBDA is very SPECIAL, because its ROLE/DUTY when EXECUTED, MAY cause the OBJECT to:
+    _______________________________________________________
+    | stay the SAME | become (less/more) COMPLEX | CHANGE |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Book.AddSection(11,"From Executables to Values (1)",@"
+    A dude named KEVIN came along, and then suddenly, a LAMBDA was invoked...
+    ...now that dude's name is MARK.
+
+    You were expecting KEVIN.
+    But the reality is, you've been told that KEVIN no longer exists.
+
+    Now you're PISSED. KEVIN was a cool dude. Didn't deserve to be subjected to such a harsh Lambda.
+    New dude named MARK looks a hell of a lot like KEVIN did... tries to tell ya that he WAS KEVIN... now he's MARK.
+
+    That's impossible though, and you feel disrespected.
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Mark : Hey dude.
+    You  : Who the hell are YOU, dude...?
+    Mark : I'm MARK.
+           I was KEVIN.
+           Now I'm MARK.
+           KEVIN doesn't exist anymore.
+    You  : Yeah right buddy. 
+           KEVIN was twice the guy you'll EVER be...
+    Mark : *scoffs* You're so predictable...
+    You  : Sounds *exactly* like something KEVIN would've said, if he still existed. 
+           *you pay no mind to this fake-ass version of KEVIN that's somehow a LOT like KEVIN, but is named MARK*
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Suddenly the lambda was invoked again, changing MARK's name back to KEVIN.
+    Then, you're told that KEVIN was brought back into existence.
+    You turn around, there he is. KEVIN's back, dude.
+    Bet you didn't see that comin' did ya...? It's almost like magic, but- even cooler than that.
+
+    In real life, this stuff isn't possible.
+    Relinquishing KEVIN's existence to bring MARK into existence...?
+    It's more than just unfair. It's practically unthinkable.
+    But, in the same token, relinquishing MARK's existence just to bring KEVIN back...?
+    It's also unthinkable. MARK didn't do anything to deserve it either. So, then what?
+
+    In math or programming, this stuff is definitely possible after all. That's how numbers work.
+    In reference to `$List = (EXECUTABLE/COMMAND/FUNCTION/TYPE/CLASS/METHOD/VARIABLE/PROPERTY/VALUE),
+    what they each have in common is that they're all specific categories that can be acted upon by a
+    lambda, even though some of them are lamdas themselves.
+
+    I will use a Dr. Seuss-like explanation, in order to (discern/differentiate) one from another:
+
+    (1)      NOUNS are: [things]
+             NOUNS are OBJECTS | KID, STORE, SODA
+
+    (2)      VERBS are: [activities]
+             VERBS are OBJECTS | GO, SEE, HAVE, BUY, RETURN
+
+    (3)    ACTIONS are: [things doing activities]
+           ACTIONS are OBJECTS | KID GOES to STORE and BUYS 1x SODA.
+
+    (4) CONDITIONS are: [probability that a thing is 1) doing an activity, or 2) has a required value]
+        CONDITIONS are OBJECTS | STORE HAS (>/greater than) 1x SODA
+
+    (5) STATEMENTS are: [things that check a condition before doing an activity]
+        STATEMENTS are OBJECTS | KID GOES to STORE, SEES 1x SODA, BUYS 1x SODA.
+
+    (6)    STORIES are: [parallel statements involving things, activities, conditions, and actions]
+           STORIES are COMPLEX OBJECTS
+          
+                                 KID   exists       | Noun, Verb, Action, Condition, Statement
+                                 SODA  exists       | Noun, Verb, Action, Condition, Statement
+                                 STORE exists       | Noun, Verb, Action, Condition, Statement
+                                 CLERK exists       | Noun, Verb, Action, Condition, Statement
+                                 KID   wants  SODA  | 2x Noun, Condition, Statement
+                                 
+                                 (I'll simplify what all of these are now, but each of these are statements...)
+
+                                 KID goes to STORE
+                                 KID enters STORE
+                                 STORE sees KID
+                                 STORE entered by kid
+                                 STORE has (>/greater than) 1x SODA
+                                 KID grabs SODA
+                                 CLERK asks KID, “MONEY...?”
+                                 KID says "NO MONEY, bro...".
+                                 CLERK says "GET MONEY". 
+                                 KID gets SAD. 
+                                 KID starts FAKE CRYING.
+                                 CLERK says "Awww... GET MONEY."
+                                 KID stops FAKE CRYING. 
+                                 KID leaves STORE.
+                                 KID gets MAD.
+
+    (7) INVOCATIONS/INSTANTIATIONS occur when a statement is validated, and this can result in:
+        INVOCATIONS/INSTANTIATIONS are LAMBDAS/OBJECTS
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+        (0) object(s) being created, or nullified
+                            ¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯¯¯
+        (1) object(s) being created, or nullified
+                            ¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯¯¯
+        (+1) object(s) being created, or nullified
+                             ¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯¯¯
+    These entries above ALL meet certain criteria that allow their context to be matched or defined.
+    We'll call these things PROPERTIES, since they ALL have the capability of being a PROPERTY.
+    Properties can be made up of LAMBDAS, NOUNS, VERBS, ACTIONS, CONDITIONS, STATEMENTS, and STORIES.
+
+    We cannot explicitly call a lambda the same thing as a verb, even though human intuition says they
+    both match the same criteria... because a lambda MAY, or MAY NOT be a combination of these various
+    elements.
+
+    This all touches on ENGLISH, or general (linguistics/language-speaking dynamics), but it also applies to math,
+    and science, because ALL of those statements have to be considered by a processing unit that can logically deduce 
+    an outcome, and store the output in a VARIABLE, PROPERTY, FILE, or MEMORY ADDRESS.
+
+    (So if you have LAZY POLICE OFFICERS or just, general, all-around, lazy people that prefer to be INACCURATE all the
+    time with EVERYTHING THEY SAY/DO... then that is DANGEROUS.)
+
+    To refine our mental variable `$List, lambdas DO occupy most of that list.
+    But really, LAMBDAS specifically are the MOST difficult to CLASSIFY, and thus other definitions need to be considered,
+    in order to ACCURATELY classify their TYPES. (Not that different from INVESTIGATION)
+
+    (EXECUTABLE/COMMAND/FUNCTION/TYPE/CLASS/METHOD/VARIABLE/PROPERTY/VALUE)
+
+    The honest/direct truth here, is that ALL of these things fall within the definition of...
+    ...an EXECUTABLE.
+
+    Why...? They're all layers of something that can be acted upon.
+    If we called EVERYTHING "object", that would confuse people pretty easily... even though they ARE all objects. 
+    However, believe it or not, calling an EXECUTABLE the same thing as a VALUE can be true in a specific context.
+
+    Just like how a 10.7 GB FILE may be monstrous because of it's size, it is still a FILE.
+    There may be more CONTENT in a 10.7 GB .mp4 file, versus a 10kb .txt file...
+    ...but given enough thought...? A 10kb .txt file can actually reproduce a 10.7 GB .mp4 file.
+
+    The question is, will it be an exciting, nail-biting, thriller, if a 10kb .txt file has the source code to provide 
+    or BUILD that .mp4 file...? That really depends on what those instructions actually DO.
+    Because, it could literally just be the same exact character repeated ...
+"@)
+
+$Book.AddSection(11,"<Console> (2)",@"
+    PS Prompt:\> `$Int = [Int64](10.7 * 1GB)
+    PS Prompt:\> `$Int
+
+    11489037517
+"@)
+
+$Book.AddSection(11,"From Executables to Values (2)",@"
+    11489037517 many times. Yeah. It won't be an exciting, action-packed, thriller of a movie.
+    If it is the same character repeated that many times, then that (*.mp4) file won't even open.
+    That's pretty boring. But, there COULD actually be something WAY more boring, than a file that claims to be an 
+    (*.mp4) file, won't open, and is 10.7 GB... somewhere on the internet.
+    
+    Though I can't imagine that anybody would really keep that on an accessible webserver.
+
+    Anyway, 10kb of information could ALSO have a link to resources that exist elsewhere.
+    So if you're like APT29, you could rick roll the US Department of Defense, make the next serious cyberattack against
+    the United States look like a simple little 10kb txt file... and just wait.
+
+    Pretty sure they'll be wicked pissed if that happens...?
+    But- it happened in December 2020.
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    APT29 #1 : Hey buddy...
+    APT29 #2 : Yeh...?
+    APT29 #1 : I will BET you, like, millions of dollars, that if I put this 10KB text file somewhere...
+               ...some fuckin' moron will open it and allow us to commandeer the entire US Federal Government.
+    APT29 #2 : I'm not takin' that bet, I know they will.
+    APT29 #1 : Ehhhh... how about for like `$5 bucks then...?
+    APT29 #2 : So, I'm still not gonna bet against you because I know you're right...
+               Do you just want me to give you `$5 bucks or something...?
+    APT29 #1 : Nah man...
+               You're really ripping the wind out of my sails, dude.
+    APT29 #2 : Dude...
+               I know how dumb Americans are though...
+               I'm like, your teammate.
+               They're dumb enough to open a LOT of 10KB text files that they shouldn't be opening...
+    APT29 #1 : Yeh, yeh...
+               *sighs*
+               You think that APT29 #3 would take that bet though...?
+    APT29 #2 : *shrugs* I dunno, bro.
+               Probably not.
+    APT29 #1 : This is just too easy, dude...
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Not all Americans are THAT dumb, but they're constantly DISTRACTED and VERY HARD TO INFORM of IMPORTANT STUFF.
+
+    Anyway, if a URL is combined with a function call like Invoke-RestMethod, that could turn APT29's latest and 
+    greatest threat to national security, into an object on a bunch of computers. 
+
+    Then again, it could also be instructions for a video codec to create an 18 hour video of nothing but static. 
+    Most people that watch the 1997 movie Contact, directed by Robert Zemeckis, based on the 1985 novel with the same 
+    name by Carl Sagan, starring Jodie Foster...
+
+    ...they really don't pay much attention to the line at the end of the movie...
+    "It recorded 18 hours of static". 
+    But, James Woods character just wasn't super impressed...
+
+    Nah. Cause his character was so skeptical of the entire thing, that when he found out that device recorded 18 hours of
+    static (because she was *actually gone* for about 18 hours, even though all of the cameras on Earth were able to record
+    the thing drop straight down in several seconds)...
+
+    Obviously this went against everything that his character stood for. James Woods has always been a great actor, and
+    performs roles where hes an asshole, very skillfully. Cause his character acted like a lot of people in real life do-
+    resentful, miserable, looking for any single reason at all, to shake their finger in Jodie Foster's face.
+
+    The truth is, PERCEPTION and PERSPECTIVE mean quite a lot to CONTEXT/CONTENT.
+    That was the actual moral of the story of the 1997 movie CONTACT.
+
+    What do these things have to do with the properties of `$WMIList, though...?
+"@)
+
+$Book.AddSection(11,"Properties, Strings, Serialization, Deserialization",@"
+    ______________________________________________________________
+    | Property          | Value                                  |
+    |-------------------|----------------------------------------|
+    | IdentifyingNumber | {2AF42320-5ECF-4BCA-B756-8F3677262D55} |
+    | Name              | Branding64                             |
+    | Vendor            | Advanced Micro Devices, Inc.           |
+    | Version           | 1.00.0009                              |
+    | Caption           | Branding64                             |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    These PROPERTIES all happen to be STRINGS. Nothing wicked exciting about these particular values.
+    Except the vendor field is actually something to get excited about after all... in 2017, this company released a 
+    brand new (CPU/computer processing architecture) that took the industry to new heights. 
+
+    This new architecture, believe it or not, was fabricated < 10 miles from where I live... side point.
+
+    In reference to these properties, each of them could in fact, be TRANSLATED, into something else, when a particular
+    STRATEGY is seen. Doesn't necessarily have to be SEEN either. Because, there's a particular strategy that can be used, 
+    to detect someone elses particular strategy, via a PATTERN.
+
+    Probably sounds like 10-dimensional chess or something, using a strategy to detect a pattern that detects someone 
+    elses strategy... but, that's actually what computers are programmed to do.
+
+    The fact of the matter is, while they are *all* PROPERTIES, some are specific (types/classes), in addition to being a
+    property and a value. For instance, IdentifyingNumber is a (GUID/globally-unique identifier).
+    The reason I know this, is because GUID's all follow a specific "convention" or "pattern".
+
+    When an object is serialized, it turns an object, its properties, and values, into a string.
+    Before a Lambda decided it was time, to tell this object "You're about to be serialized, bub"...?
+    
+    It was an OBJECT. Happy as could be, too.
+    Until the LAMBDA ordered it to become a STRING, and did what it was told...
+    
+    Now, the OBJECT no longer exists, because it was forced to become a STRING.
+    While a STRING is still technically an OBJECT...? It's not QUITE the same thing.
+
+    Not too dissimilar from MARK telling his buddy that he WAS KEVIN, but- now he's MARK...
+    Nobody believes MARK, that he WAS KEVIN. Could look virtually identical to KEVIN, too...
+    Might even sound like KEVIN when he talks. Might smell like KEVIN, eat the same food as KEVIN,
+    and say the same things as KEVIN...? But nobody will ever believe MARK, that he WAS KEVIN.
+    ...now he's MARK.
+
+    Anyway, reinstantiation is a lot less dramatic, but it does involve patterns and properties to be
+    specifically named. The correct lambda has to detect those properties, and test patterns, in order
+    to reinstantiate the string back into an object.
+
+    If that object has any chance at all... of being willed back into existence?
+    A specific pattern could be the key ingredient in making all the difference in the world.
+    Suffice to say, strings can be (converted back into objects/deserialized), given enough context.
+
+    The IdentifyingNumber here can be reconstituted back into a GUID, but that is actually very tough.
+    Might need help from a magic lamp.
+
+    So, grab the closest magic lamp you can find.
+    Then, rub the lamp slightly, be sure not to upset the genie inside...
+
+    We don't need a snarky, irritated genie... do we? Of course not...
+    When the big blue genie finally comes out?
+    That's the moment where you gotta wish for the string to become a GUID again.
+    Piece of cake, right?
+
+    I'm just kidding, it's actually easier than all of that. No lamps, no wishes.
+    Just a basic understanding of Regular Expressions, the most advanced mathematical probability matrix available to
+    mankind... where written languages and mathematics are merged into logical roadmaps... 
+
+    Logical roadmaps that make branch predictions...
+    ...branch predictions chiseling out the course of action that any modern microprocessor can be expected to take,
+    at least, whenever they're programmed to perform specific lambdas in response to (parameters/input) it is provided.
+
+    That's the cinematic, long-winded explanation... for patterns in strings of serialized text.
+"@)
+
+$Book.AddSection(11,"Regular Expressions (1)",@"
+    This specific (Regex/regular expression) pattern here...
+    "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+    ...can be used to match any GUID in existence, if the letters are lowercase. Not uppercase.
+    ...if they're uppercase...? There's nothing anybody can do. It's over... time to go home.
+
+    Just kiddin'. Even if they're uppercase, the pattern will probably still work, however-
+    nobody can say that with any certainty at all, without knowing the casing operand.
+    If you really want to be on the safe side, then the pattern should be written this way,
+    "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+
+    The reason why people don't really like that idea is because it made that pattern longer.
+    There are a number of ways to shorthand that pattern.
+    Here's a cool way to do it in PowerShell...
+    (8,4,4,4,12 | % { "[0-9a-fA-F]{`$_}" }) -join '-'
+
+    Anyway, these patterns represent a globally unique identifier, and they're useful in many ways.
+    Does the value for property "IdentifyingNumber" for variable `$WMIList match the pattern...?
+
+    Let's find out...
+"@)
+
+$Book.AddSection(11,"<Console> (3)",@"
+    ____________________________________________________________________________________________________
+    | 1) Assign [String]"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" to var `$Pattern |____________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> `$Pattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ___________________________________________________________________
+    | 2) Now, check if the pattern matches `$WMIList.IdentifyingNumber |____________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> `$WMIList.IdentifyingNumber -cmatch `$Pattern
+    
+    `$False
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ...it came back as `$False, because the PATTERN is looking for LOWERCASE letters [a-f], and the input is using 
+    UPPERCASE letters [A-F].
+"@)
+
+$Book.AddSection(11,"Regular Expressions (2)",@"
+    If we're being serious, there's PLENTY we can do here.
+    a) Drop 'c' from "-cmatch", or...
+    b) change the pattern to consider uppercase letters.
+
+    However... 
+    IF    a) dropping the 'c' from "-cmatch" is out of your hands...?
+    AND   b) the pattern can't be changed
+    THEN  c) no drama here, uppercase letters ARE impossible to filter out w/ this (condition/pattern) combo.
+
+    Though, there are PLENTY of WORKAROUNDS, one being that you could force the input string to use a method
+    called .ToLowercase() on the string, probably plenty of other workarounds if you think of them.
+
+    But, typically people won't use "-cmatch", not unless they're being strict about CASING.
+
+    -cmatch means CASE   SENSITIVE
+    -imatch means CASE INSENSITIVE
+    -match  means both will match
+
+    However, this whole entire document is meant to get people to think about the strategies involved on either end, 
+    being anywhere between:
+    
+    1) a fairly innocent occasional script user who can enter their login password with one hand
+    2) a masterful developer/engineer who can crush any coworkers soul with one eyebrow
+    3) the godfather of the matrix... knows everything. He's reading for fun.
+    
+    If we need ABSOLUTE CERTAINTY that our PATTERN will match regardless, CHANGE the PATTERN.
+"@)
+
+$Book.AddSection(11,"<Console> (4)",@"
+    ____________________________________________________________________________________________________
+    | 1) Assign [String]"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" to var `$Pattern |____________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> `$Pattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ___________________________________________________________________
+    | 2) Now, check if the pattern matches `$WMIList.IdentifyingNumber |____________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> `$WMIList.IdentifyingNumber -cmatch `$Pattern
+
+    `$True
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ...it came back as `$True, because the PATTERN matches, as the casing is ignored here.
+    Typically, people will use -match in their scripts far more often than -cmatch
+"@)
+
+$Book.AddSection(11,"Regular Expressions (3)",@"
+
+    The thing is, if we directly compare the Regex match pattern to the actual value...
+    __________________________________________________________________________
+    | Pattern | [0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12} |
+    |---------|--------------------------------------------------------------|
+    | Value   | {2AF42320-5ECF-4BCA-B756-8F3677262D55}                       |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ... the pattern is a LOT longer than the actual string.
+
+    Suppose we had to comb through a billion of these GUIDs...?
+    It would require more data to FIND these patterns, than to simply interact with it ourselves.
+
+    What would help here, is assigning a STATIC METHOD that will remember the pattern. 
+    That way, the pattern doesn't SPAM everybody with a CLONE of itself for EVERY ITERATION of a GUID out there.
+
+    I can tell you with sheer certainty, that if my old business partner decided that he HAD to hire an employee to
+    specifically screen a lot of input strings, to determine by EYE, whether a GUID is bogus or not...? I'd tell him:
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Me    : That's not a very good Computer Answer there, buddy...~!
+    Pavel : Nah...?
+    Me    : Nah...
+            It's a pretty LAME Computer Answer.
+    Pavel : *makes sad face*
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Not JUST because that would be the most boring job in the world, but that's a pretty boring way to handle such a 
+    simple problem. Yeah. That employee he had to hire, they'll make many mistakes over the course of having to 
+    CONFIRM 8,4,4,4,12 base 16 digits, a billion times. 
+
+    They'll ALSO take FAR longer to do the scope of work. 
+    Whereas, a REGEX pattern costs a lot less time/money/resources AND saves someone from having to hire an employee
+    to do (1) specific, and mundane job... one that will expectedly bore that employee to sleep. 
+
+    In other words, "ineffecient as hell". AKA, bad idea.
+    The pattern covers ALL of the mathematical probabilities that a GUID will match, using base16 for each character 
+    within the GUID string convention. 8, 4, 4, 4, 12 | where each number represents the number of consecutive base16
+    digits, and then joins each group with hyphens, and wraps it all with the curliest curly braces in existence.
+
+    I'll demonstrate a complicated way to create a class that generates a legitimate GUID. 
+    This class will actually perform ADDITIONAL roles/duties/methods, that the base class [Guid] doesn't.
+"@)
+
+$Book.AddSection(11,"<Complicated>",@"
+    Kid : Dad, this sounds really complicated.
+    Me  : Listen, Kid.
+          The reason all of this SOUNDS incredibly complicated...?
+          ...is because it IS incredibly complicated.
+          I'm breaking it all down to be SO simple, even YOU could understand it.
+    Kid : *sigh* Is there a way around all of this...?
+          I don't wanna reinvent the wheel, dad.
+          That's just WAY too tough for me...
+    Me  : No way around it, I'm afraid.
+          Not if you want to learn how to correctly build cool stuff, and be considered cool too.
+    Kid : *sigh* How cool...?
+    Me  : REAL cool, kid.
+    Kid : That DOES sound COOL... but this is too much for me...
+    Me  : So, if this already sounds like a task you're not ready for...?
+          Then I guess it's time for you to act like mom, throw your hands up, and just, quit...
+          ...cause of how complicated this stuff is...
+          ...unless of course, you're ready to wear some big-boy pants.
+    Kid : Dad...?
+    Me  : Big-boy pants.
+          You wanna try some on... right?
+    Kid : I already have big-boy pants on.
+    Me  : *chuckles* Kid, those don't look like big-boy pants, at all.
+    Kid : Yeah, they are.
+    Me  : Nah, those look more like pull-ups...
+          ...that's what young toddlers wear...
+          ...toddlers are less than half your age...
+          Those aren't big-boy pants...
+    Kid : *trying not to grin* Will I be able to program my own game, if I listen to you...?
+    Me  : That depends on you, ya friggen' pull-up wearin', kid-faced, boymeister.
+    Kid : *huge grin on his face* Dad...
+    Me  : What's up kid...?
+          Ready to wear some big-boy pants...?
+    Kid : *makes a pretend clenched fist, still smiling, starts laughing...* They're not pull-ups.
+    Me  : Kid, those things are AT BEST, something that would be skin tight on a teenager.
+    Kid : That means they're big-boy pants after all.
+    Me  : *scoffs* Kid, when I say big-boy pants...?
+          I mean like, pants that an ADULT would wear.
+    Kid : *chuckling* Heh.
+          Yeh dad...? Well...
+          *chuckling* How come you're not wearin' any?
+    Me  : Ah, good question.
+          You'll never believe this, kid...
+          But- I outgrew mine.
+    Kid : *rolls his eyes* Whatever...
+    Me  : Wait till you're ready to try some on, kid... all this stuff'll help.
+"@)
+
+$Book.AddSection(11,"Overly-Complicated Class Definition that Generates GUID's",@'
+Using a (1) property named Guid, I want to (match/extend) the output for the [Guid] base class.
+There are comments within the class here, feel free to study it, as I suggest doing so. 
+
+At least- if you're reading this, and you really like the idea of one day POSSIBLY becoming the godfather of the 
+matrix's right-hand man. Even if that never happens...? Maybe you'll impress this guy.
+ ______________________________________________________________________________________________________________
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Class DemoGuid
+{
+    [String]   $Guid
+    DemoGuid()
+    {
+        $This.Reset()
+    }
+    DemoGuid([Object]$Guid)
+    {
+        If ($Guid -match [DemoGuid]::Pattern())
+        {
+            $This.Guid = $Guid.ToLower()
+            $This.Strip()
+        }
+        Else
+        {
+            [Console]::WriteLine("Exception [!] Entry is not a valid Guid")
+        }
+    }
+    Static [UInt32[]] Digits() # // METHOD → Digit width block convention
+    {
+        Return [UInt32[]](8,4,4,4,12)
+    }
+    Static [Char[]] Chars()    # // METHOD → Available Base16 digits
+    {
+        Return [Char[]]"0123456789abcdef"
+    }
+    Static [String] Pattern()  # // METHOD → Strict Guid match pattern
+    {
+        Return ([DemoGuid]::Digits() | % { "[0-9a-fA-F]{$_}" }) -join "-"
+    }
+    Static [UInt32] Random()   # // METHOD → Generates random index between 0 and 15, base16
+    {
+        Return (Get-Random -Minimum 0 -Maximum 15)
+    }
+    Static [UInt32[]] Stage([UInt32]$X)
+    {
+        If ($X -notin 4, 8, 12)
+        {
+            Throw "Invalid Entry"
+        }
+        Return [UInt32[]](0..($X-1)| % { [DemoGuid]::Random() })
+    }
+    Reset() # // METHOD → Clears the output and (sets/resets) the GUID
+    {
+        # // SCRATCH VARIABLE → Hashtable to keep each section separated
+        $Hash          = @{ }
+
+        # // SCRATCH VARIABLE → Digit here decreases method calls → translates to increased performance
+        $Digits        = [DemoGuid]::Digits()
+        
+        # // SCRATCH VARIABLE → Chars here decreases method calls → translates to increased performance
+        $Chars         = [DemoGuid]::Chars()
+        
+        # // LOOP → Iterate through each digit width
+        ForEach ($Digit in $Digits)
+        {
+            # // SCRATCH VARIABLE → Set collection Array
+            $Collection = [DemoGuid]::Stage($Digit) | % { $Chars[$_] }
+            
+            # // SCRATCH VARIABLE HASHTABLE → Process each digit count into string
+            $Hash.Add($Hash.Count,$Collection -join '')
+        }
+        # // PROPERTY ASSIGNMENT → Change the value of the property named Output,
+        $This.Guid       = $Hash[0..4] -join "-"
+    }
+    Strip()
+    {
+        If ($This.Guid -match "(\{$([DemoGuid]::Pattern())\})" )
+        {
+            $This.Guid = $This.Guid -Replace "(\{|\})",""
+        }
+    }
+    [String[]] Output()
+    {
+        $Return  = @( )
+        $Split   = $This.Guid -Split "-"
+        $Return += ""
+        ForEach ($C in 0..4)
+        {
+            $Return += "Group[$($C+1)]: $($Split[$C])"
+        }
+        $Return += ""
+        $Return += "Guid: $($This.Guid)"
+        Return $Return
+    }
+    [String] ToString()
+    {
+        Return $This.Guid
+    }
+}
+________________________________________________________________________________________________________________
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+'@)
+
+$Book.AddSection(11,"<Console> (5)",@"
+    We will use (2) manners of accessing the class I just wrote...
+    ________________________________________________________________________________________
+    | Manner 1) Direct value entry (unable to invoke methods within this class externally) |_______________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> [DemoGuid]::New()
+
+    Guid
+    ----
+    d3872299-caa8-e988-89c7-aa8e2597d796
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    That is the straight-up, 100% verbatim, output of the class/type I wrote above..
+    Actually, I'm adding the signs as I edit this document/script.
+    But the console output is genuine. Sorta looks like the default class here...
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> [Guid]::NewGuid()
+
+    Guid
+    ----
+    2a329c56-9c30-43eb-9981-58726b740a41
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The default method to create a new Guid with the default type, is right there, [Guid]::NewGuid()
+    The same exact thing pops out if you were to type this default command...
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> New-Guid
+
+    Guid
+    ----
+    44a1fccf-f301-4a74-af1f-ffde7456f1fc
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    That's because the command is accessing that specific type via that function/cmdlet.
+    However, there are other methods within the class that I'd like to access, so it shows more details.
+"@)
+
+$Book.AddSection(11,"Notes + Method Chaining",@"
+    The other manner is to use a variable, which allows a user to have extended control over the methods within a
+    class/type. Without casting it to a variable, there's no way to access those methods, unless you chain the method 
+    on at the end. If you use the variable assignment manner, you don't have to do that.
+    ____________________________________________________________________________
+    | Method chaining is OK in some scenarios, but I don't like ever using it. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    In my opinion, method chaining has an extremely bad pitfall.
+    
+    Why...? 
+    Well, if any single method in that method chain returns a $null/empty value...?
+
+    Now the object is null. 
+    It WASN'T null... at least, not up until it returned (1) null value.
+
+    THEN, it went from NOT NULL at all... to DEFINITELY NULL.
+    And, there's NO indication as to how that happened, either.
+
+    Except, there is an indication, I'm telling you.
+    (1) method in the chain returned NULL.
+
+    It can only be (1) method that will do this, because once the object is null, then it can't process any 
+    additional methods. Cause the object is gone now.
+
+    Look, you can spend entire days arguing with the computer, or me. 
+    It won't change anything.
+    Just know... that I am absolutely correct here. Trust me on that.
+
+    If billions of methods WERE already able to return output...? They probably did.
+    But, so long as (1) single null value got returned...? Doesn't matter anymore.
+
+    A value was returned in a method chain, it nullified the entire object, and that time was wasted.
+
+    It'll FEEL like it's doing work. 
+    And, it's definitely doing work (though I don't know what the hell it is),
+    But- you won't SEE any output... 
+
+    It goes completely against all forms of logic. 
+    WASN'T NULL, but then it got taken out of the game... and now it's NULL.
+
+    It's like when an overexcited dog sees you come home. 
+    Dog's wicked happy, and starts running around the house, galloping with full overexcited body movements, 
+    practically jumping diagonally at walls and stuff...? Acting like a big idiot, cause you came home. 
+
+    THEN, while he's hurling his whole body around practically giving himself whiplash...?
+    Well, when he's not lookin... fake him out, and walk back outside.
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    You : Heh. That'll show ya, dog face...
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Now, the dog is STILL, running around the house. 
+    Cause, he definitely saw ya...
+    You know he saw ya, and... he knows that YOU know he saw ya... 
+    That's why he'll still be runnin' around the house like a big idiot... ecstatic that you came home. 
+    But, when the dog does this for a while, realizes you aren't in the house... he'll be thinkin: 
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Dog : What the hell, dude...?
+          Where'd ya go...?
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Then he'll be sad, staring at the door. 
+    Tilting his head to the side, slightly.
+    Then, tilting it the other way... 
+
+    He's still thinkin:
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Dog : What the hell? 
+          Thought he was... home...?
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Same principle applies to method chaining, and you... waiting for the output.
+    When you see absolutely no output? ...trust me. 
+    Stay a few steps ahead of the dog here.
+
+    A single method is all it took for ALL of that hard work to return... ...nothing.
+    That's because, it WAS doing work. 
+    It WAS actually processing information.
+
+    Until it got nullified from existence... just like how KEVIN was.
+
+    You COULD even be like me, and get pretty creative about what might've happened.
+    MAYBE, it grew a case of dementia. The object ITSELF doesn't even know where the hell it is.
+
+    The PowerShell host, too... probably has no earthly idea where that data went.
+    If the PowerShell host, nor the object itself have a clue where the hell it is, or what's going on... 
+    What can anybody do...? 
+
+    Nobody knows what happened. Nor what to do.
+
+    It's like someone having a cabin in the woods, and the owner doesn't know the address.
+    They'll GO there... but, they'll get no mail. No phone calls either. Or visitors. Months later, they'll resurface.
+    Walking around in a grocery store naked, Like Walter White in his fugue state.
+
+    These are the dangers of method chaining, my friends.
+    Unless you do an amazing job of teeing the objects within the classes you write, it's a bad idea.
+    
+    However, theres a cool way to avoid all of that.
+    If you DON'T use method chains. That's really, all that needs to be done, to avoid problems.
+
+    Methods, in a long continuous chain...? Separate them.
+    Then, if one of those methods returns null...? Then object won't be wiped from existence at all.
+    Nah. It'll still exist, the method just won't do anything to it. Then, you're good.
+"@)
+
+$Book.AddSection(11,"<Console> (6)",@"
+    ___________________________________________________________________________
+    | 2) Variable usage (able to invoke methods within this class externally) |____________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> `$Guid = [DemoGuid]::New()
+    PS Prompt:\> `$Guid
+
+    Guid
+    ----
+    b91e367c-c092-1a24-bea0-c8565ce04098
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now, I wrote a custom method that returns output. I DID have it automatically write lines to the console, but it 
+    can cause some confusion when calling functions or methods externally.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> `$Guid.Output()
+    
+    Group[1]: b91e367c
+    Group[2]: c092
+    Group[3]: 1a24
+    Group[4]: bea0
+    Group[5]: c8565ce04098
+    Guid: b91e367c-c092-1a24-bea0-c8565ce04098
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    If I want to reset the Guid, I can do so with the variable I already declared, and add the method. 
+    If building a class that MAY have to reset itself, it's good to have a separate method from the instantiation 
+    block, right...? And in that instantiation block, call that method. Then, it'll work perfectly each time. 
+    Review the class I wrote above to see what I mean.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> `$Guid.Reset()
+    PS Prompt:\> `$Guid
+
+    Guid
+    ----
+    91e62a60-a3c9-55e1-9065-1c5842854ed5
+
+    PS Prompt:\> `$Guid.Output()
+
+    Group[1]: 91e62a60
+    Group[2]: a3c9
+    Group[3]: 55e1
+    Group[4]: 9065
+    Group[5]: 1c5842854ed5
+    Guid: 91e62a60-a3c9-55e1-9065-1c5842854ed5
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    There's actually a third manner that I haven't mentioned, that I'll have to exhibit, but not yet.
+
+    That third manner involves writing a (function/type/class) and adding this particular child class to that parent 
+    class. Writing a method within a parent class which instantiates a child class, is a very useful way to build 
+    factory-like classes, and this can be implemented with functions too.
+
+    Parent class scopes provide a parent scope to access it's child class methods as well as their own, providing 
+    the parent a LOT more functionality... but with added functionality is added complexity, and the possibility 
+    that things get lost in translation without a reference.
+
+    Still, it is extremely useful, however, I won't cover that here.
+"@)
+
+$Book.AddSection(11,"<Properties> (2)",@"
+    Let me return to the topic of properties. Below are the properties from the FIRST command we ran.
+    ______________________________________________________________
+    | Property          | Value                                  |
+    |-------------------|----------------------------------------|
+    | IdentifyingNumber | {2AF42320-5ECF-4BCA-B756-8F3677262D55} |
+    | Name              | Branding64                             |
+    | Vendor            | Advanced Micro Devices, Inc.           |
+    | Version           | 1.00.0009                              |
+    | Caption           | Branding64                             |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    To the untrained eye, it may appear as if I went on a lot of tangents and haven't quite made them seem very 
+    relevant... To the trained eye? I've opened up a lot of points of discussion that will make later comparisons 
+    a lot easier to understand. That's cause I haven't combined WHY they were each relevant and critical just yet, 
+    because if someone is going to teach people about classes, then basically every component of the class needs 
+    to be discussed.
+
+    Just like in the scene from Full Metal Jacket...
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Drill Sergeant : This is my rifle, this is my gun~!
+    Privates       : ...this is for fighting, this is for fun....
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Truth be told, the privates all needed to know their gun, inside and out.
+    So far, we went over:
+    ______________________________________________________________________________________________________
+    | [X] The breakdown of Line #1 [X]===================================================================|
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    - Casting a variable to the output of a command wrapped in parenthesis AND is indexed
+                 ______________________________3  6
+      `$WMIList = ( Get-WMIObject Win32_Product )[ 0 ]
+      ¯¯¯¯¯¯¯1 2   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯4  ¯¯¯¯5
+            Using a (1) VARIABLE,
+                    (2) EQUALS sign, and then a
+                    (4) EXECUTABLE/COMMAND/FUNCTION/TYPE/CLASS/METHOD/VARIABLE/PROPERTY/VALUE
+                        returns its output to the VARIABLE.
+            However,
+                    (3) PARENTHESIS content gets processed FIRST (See: Math/Order of Operations)
+            And,    (5) SQUARE BRACKETS indicate to select a specific index/entry from an array[]
+                 ...(6) INDEX of the returned object.
+
+            All indexes start at number 0, not number 1, because a man named PAUL ALLEN said so.
+    ______________________________________________________________________________________________________
+    | [X] The list of objects that can be operated against [X]===========================================|
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    - Objects that are a) parenthesis, or are a b) variable, c) property, d) value, or is e) indexed
+    ___________________________________________________________________________________________________
+    |EXECUTABLES | COMMANDS | FUNCTIONS | TYPES | CLASSES | METHODS | VARIABLES | PROPERTIES | VALUES |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ______________________________________________________________________________________________________
+    | [X] Properties in depth [X]========================================================================|
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    - ALL of those things above are properties in some way, shape, or form.
+                                                           ____________________________________________
+    - Lambda is a property, or an object, which is ALSO a: | COMMAND | FUNCTION | TYPE/CLASS | METHOD |
+                                                           ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+                                    _____________________________________________________________
+      ...and it can perate against: | itself | other objects | any input parameter(s) it is fed |
+                                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    - Nouns, Verbs, Actions, Conditions, Statements, Stories, and Invocations/Instantiations
+
+      1) Also properties, albeit ranging in complexity and changing in definition
+      2) Some of these properties can alter the host object itself
+
+    - Properties in relation to:
+      
+      1) serialization from an object to a string
+      2) deserialization from a string back into an object/type
+
+    - Regular expressions and patterns
+    - Example class demonstration that expands the functionality of [Guid]
+    ______________________________________________________________________________________________________
+    | [X] Now we're here [X]=============================================================================|
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now, we're gonna start inserting [Types/Classes] in places that are unquestionably convenient.
+
+    The point of elaborating on so many of these details, is so that now we can navigate strategies and start 
+    throwing a lot of them together just like I did in Line #1. Because, Line #1 is just the tip of the iceberg.
+"@)
+
+$Book.AddSection(11,"<Console> (7)",@'
+    Remember, $Pattern was set to "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+    1) Return $WMIList.IdentifyingNumber as a) [String], b) [String][GUID] and c) [String][DemoGuid]
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    If ($WMIList.IdentifyingNumber -match $Pattern)
+    {
+        [String]$WMIList.IdentifyingNumber.ToLower() -Replace "(\{|\})"
+        [String][Guid]$WMIList.IdentifyingNumber
+        [String][DemoGuid]$WMIList.IdentifyingNumber
+    }
+
+    2af42320-5ecf-4bca-b756-8f3677262d55 <- [String]$WMIList.IdentifyingNumber.
+    2af42320-5ecf-4bca-b756-8f3677262d55 <- [String][Guid]$WMIList.IdentifyingNumber
+    2af42320-5ecf-4bca-b756-8f3677262d55 <- [String][DemoGuid]$WMIList.IdentifyingNumber
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    With that overly-complicated class defininition I just demonstrated?
+
+    Well, I can use THAT, to turn MARK back into KEVIN again.
+    In other words, I can deserialize the string back into an object. Bringing KEVIN back to life.
+    All that talk about properties, values, regular expressions, conditions, and statements...?
+    It was headed somewhere useful after all.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    [DemoGuid]$WmiList.IdentifyingNumber
+
+    Guid
+    ----
+    2af42320-5ecf-4bca-b756-8f3677262d55
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    And, if I want the enhanced output...
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ([DemoGuid]$WmiList.IdentifyingNumber).Output()
+    
+    Group[1]: 2af42320
+    Group[2]: 5ecf
+    Group[3]: 4bca
+    Group[4]: b756
+    Group[5]: 8f3677262d55
+    Guid: 2af42320-5ecf-4bca-b756-8f3677262d55
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    There he is... KEVIN's BACK in action, dude.
+
+    The type block in front of the $Variable.Property, converts that object into that type.
+    Sometimes the value will not be able to convert itself at all, then you'l get an error message.
+
+    However, when it works, it works beautifully, and it feels as if those objects were meant to be.
+    The class that I wrote...? Sure, it might've been overly-complicated to return that specific type... 
+    If that was ALL I was trying to do...?
+    I could've easily thrown the type in front of the Variable + Property "$WMIList.IdentifyingNumber", like so...
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    [Guid]$WmiList.IdentifyingNumber / which would've given be this output...
+
+    Guid
+    ----
+    2af42320-5ecf-4bca-b756-8f3677262d55
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    However, I was doing more than that.
+    I've now demonstrated how classes are conceptualized, and written.
+             ¯¯¯¯¯¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯      ¯¯¯¯¯¯¯
+'@)
+
+$Book.AddSection(11,"Dissemination",@"
+    I was also able to integrate these various details back into the overarching lesson plan after all. 
+    Now, it IS definitely debatable as to whether or not anybody should go ahead, and reinvent the wheel, or 
+    whatever pseudonym people want to use... but, that's not what I did at all.
+
+    Every wheel has a process in it's construction. 
+    Not every wheel manufacturer out there will be thrilled or ecstatic with the idea of somebody showing EVERYBODY 
+    around town, that *ANY* ordinary person who follows their step-by-step manufacturing process... can build 
+    themselves one of the most kick-ass friggen wheels anyone ever made.
+
+    Cause at that point, they might get jealous when they see how COOL your wheel making process became. 
+    Then what...? 
+    They're gonna ask you to show 'em how it's done. 
+    
+    Cause. They're gonna wanna see this wheel making process of YOURS, since you went ahead and took things to a 
+    whole new level... They may stand around the watercooler at work the next day, telling everyone there, that you 
+    were absolutely determined...
+
+    Some of them might've been jealous, but, maybe it became envy after a while.
+    They saw determination they hadn't seen before...
+
+    Now, you're one of them. 
+    They made the best wheels in history, and then you just learned how to make the best wheels in history too...
+
+    Now, are you really reinventing the wheel...? Or are you Bruce Wayne, training to be in the League of Shadows, 
+    having a sword battle with Rahs Al Guhl... The dude is insanely skilled, can't really leave much to chance... 
+    dude's been all around the world, being a total menace.
+
+    Not a phantom menace per se, but- a menace nonetheless. 
+    Even if Batman gets any edge at all, Rahs Al Guhl is gonna try to slip him up so he loses his balance on the ice.
+
+    Batman may have barely won the sword fight on top of that frozen lake... 
+    But, even Batman has to be mindful of whenever he's on real thin ice...
+    ...otherwise, he might lose his footing, and drop into that really cold water.
+    (^ Extended metaphor)
+
+    In reality, I tore apart many components of what makes a class, a class, discussed what can be an object, 
+    property, or value, explained what Regular Expressions can accomplish/do, and provided an in depth example 
+    where I've added functionality to a standard base class...
+
+    I'm going to continue with the properties here from `$WMIList, as there is (1) other property here that can have 
+    a [type] applied to it that isn't JUST a string...
+
+    ...however, it's worth noting that entire classes can be represented by a string, so sometimes the string output 
+    isn't always telling of how complex an object truly is. Regardless...
+   
+    Here's the property box again...
+    ______________________________________________________________
+    | Property          | Value                                  |
+    |-------------------|----------------------------------------|
+    | IdentifyingNumber | {2AF42320-5ECF-4BCA-B756-8F3677262D55} |
+    | Name              | Branding64                             |
+    | Vendor            | Advanced Micro Devices, Inc.           |
+    | Version           | 1.00.0009                              |
+    | Caption           | Branding64                             |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ...and that property I'm about to go over, is the Version property.
+"@)
+
+$Book.AddSection(11,"<Console> (8)",@'
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $WMIList.Version
+
+    1.00.0009
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________________________________________________
+    | 1) Prefix the property $WMIList.Version with "[Version]"  |__________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> [Version]$WMIList.Version
+
+    Major  Minor  Build  Revision
+    -----  -----  -----  --------
+    1      0      9      -1
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+'@)
+
+$Book.AddSection(11,"<Properties> (3)",@"
+    Now, this all started with some action jam packed into Line #1.
+    It needed a breakdown, but now, I'm going to finish what I started in reference to properties.
+
+    A VARIABLE, is an object that has a 1) name and a 2) value. Those are both properties.
+    A VARIABLE can ALSO be multiple objects that each have their own 1) name and 2) value.
+    A NAME is a PROPERTY.
+    A VALUE is also a PROPERTY.
+    A PROPERTY is consisted of a 1) NAME and a 2) VALUE.
+
+    But, how can a PROPERTY be consisted of it's own PROPERTIES...?
+    ...that's just how the game is played, dudemeister.
+
+    OBJECTS are made up of PROPERTIES, and VALUES... and when PROPERTIES and VALUES are accumulated...
+    ...then you have COLLECTIONS of PROPERTIES. 
+    PROPERTIES definitely qualify as VARIABLES.
+
+    But, VARIABLES themselves aren't necessarily PROPERTIES, not unless they are attached to a specific OBJECT...
+"@)
+
+$Book.AddSection(11,"<Console> (9)",@'
+    In PowerShell, if a VARIABLE IS NOT attached to an [Object], then the VARIABLE is a property of the current
+    (PowerShell host/execution context). THAT is the [Object] (that/those) VARIABLE(S) are properties of.
+
+    If you don't believe me, try this...
+    __________________________________________________________________________________________________
+    | (1) Open a PowerShell console, and then assign [string]'cool stuff' to a variable named $Stuff |_____________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Stuff = 'cool stuff'
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Did that? 
+    Alright, cool stuff.
+    __________________________________________________________
+    | (2) Now, type $Stuff into the console, and press enter |_____________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $Stuff
+
+    cool stuff
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The variable is assigned on your end, right?
+    Alright, cool stuff. Let's check one more spot.
+    ___________________________________________________________________
+    | (3) Now type in "Get ChildItem Variable:\Stuff" and press enter |____________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> Get-ChildItem Variable:\Stuff
+
+    Name                           Value
+    ----                           -----
+    Stuff                          cool stuff
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    So, if you followed this guide correctly, the above information just came up in your console.
+    See how the name says "stuff", and the value says "cool stuff"...?
+    That's cause thats a straight-up, accurate representation, of a PROPERTY.
+
+    There's no question, that is literally, 100% an actual, factual, property class right there.
+    I mean, looks can be deceiving, actually...
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> (Get-ChildItem Variable:\Stuff).GetType()
+
+    IsPublic IsSerial Name                                     BaseType
+    -------- -------- ----                                     --------
+    True     False    PSVariable                               System.Object
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Even though it does say PSVariable, fact of the matter is, it has the tell tale signs...
+    ...that it's basically the same thing as a property. One that has a 1) name, and 2) value.
+    Anyway... still don't believe me? Here's where the magic happens.
+    ______________________________________________________________________
+    | (4) Alright, so now, type "exit"                                   |
+    | (5) The console you had open just closed, that's what 'exit' does. |
+    | (6) Now open ANOTHER PowerShell console                            |
+    | (7) Now, type $Stuff in the console, like you did last time.       |
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $Stuff
+    PS Prompt:\>
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    See how the variable is gone...?
+    That's because it was a PROPERTY of the PREVIOUS PowerShell Host that you exited.
+    Now, PROPERTIES can be written to disk, via files, or to memory pointers or even the registry...
+    But, short of using those manners to EXPORT the PROPERTIES...?
+    VARIABLES are PROPERTIES of the PowerShell Host.
+    So if you CLOSE it...?
+    Those PROPERTIES are erased.
+
+    Hence, why you've seen the VARIABLE go back to “”.
+    Convinced yet...?
+'@)
+
+$Book.AddSection(11,"<Properties> (4) The final stanza, Tony Danza",@"
+    I'm going to restate some things I just stated above slightly differently.
+
+    If I know my stuff, what you just did...?
+    It returned nothing. 
+
+    That's because the variable above "`$Stuff" was a property of the host object in the session you just closed. 
+    Then you just went ahead and closed that host... and opened a new one. Now, the property isn't there anymore. 
+
+    The variable has to be declared again, if you want to continue using that variable.
+    I realize it's a rather anticlimactic way to prove my point, but- 
+    ...that process just proves the point, that variables, if they don't belong to an object? 
+
+    They're properties of the current PowerShell Host.
+    So to compare, a square and a rhombus aren't the same thing...
+    ...not unless a specific rhombus meets the (1) condition where all of its angles are 90 degrees.
+
+    When that condition is true, then that rhombus is most definitely, ALSO a square.
+    Otherwise, a rhombus which doesn't fit that condition, is only a rhombus, not both.
+
+    Many of the components I mentioned like nouns, verbs, actions, conditions, statements, stories, and 
+    invocations/instantiations, they all have a similar situation where under certain conditions any given sentence 
+    may meet MULTIPLE CRITERIA.
+
+    The rhombus having 4 90 degree angles is pretty rare.
+    Most of the time, it could be a diamond shaped rhombus.
+
+    It won't be a parallelogram, and it might ALMOST look like a square...? But, only almost.
+    In the story I wrote way farther up, a kid wanted a soda, went to a store, grabbed the soda, clerk said "money", 
+    kid said "no money", clerk insisted "money", kid started fake crying... clerk said "money", kid stopped fake 
+    crying, kid got mad...
+
+    Well, truth be told, that is a STORY, but it is ALSO basically a PROGRAM.
+
+    The kid was a character, the store was a setting, the clerk was another character, the conflict was that the kid 
+    wanted the soda and didn't have money. All of those things were a character in the story, the perspective from one 
+    to another allowed each of them to be a class with certain definitions.
+
+    The point is, all of these things I talk about can be different things, simultaneously. 
+    Objects can be just an object, but that's pretty doubtful... because they can ALSO be a string at a bare minimum.
+
+    Anyway, objects become strings when serialized, and sometimes they have an issue being deserialized, and this can 
+    cause problems with object reinstantiation. However, patterns and conditions being met allow deserialization to be 
+    more consistent and exact. 
+
+    Also, sometimes the quantity of properties, or a number of matched existing property names and/or values can ALSO 
+    help  determine a specific type of object from another. We're just about done talking about properties. 
+
+    The key thing to remember about all of this, is that:
+    _____________________________________________________________________________________________________
+    | PROPERTIES    | can either be a NULL/VOID OBJECT, SINGLE [OBJECT] or MULTIPLE [OBJECTS[]]         |
+    | VALUES        | can ALSO either be a NULL/VOID OBJECT, SINGLE [OBJECT], or MULTIPLE [OBJECTS[]]   |
+    | VARIABLES     | are technically PROPERTIES of the PowerShell Host/console                         |
+    | TYPES/CLASSES | are consisted of [PROPERTIES], [VALUES], and [METHODS] (also, [CONSTRUCTORS])     |
+    | COMMANDS      | are nearly identical to a [FUNCTION], and they both accept PARAMETERS             |
+    | METHODS       | are a lot like a FUNCTION, but it is a PROPERTY of a TYPE/CLASS/FUNCTION.         |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    [COMMANDS], [FUNCTIONS], [TYPES/CLASSES], and [METHODS] are all LAMBDAS, and they can be a PROPERTY of an OBJECT.
+
+    [FUNCTIONS] are a specific calculation, or cluster of calculations that MAY or MAY NOT accept PARAMETERS.
+
+    [ACTIONS], [CONDITIONS], [STATEMENTS], and [STORIES] are consisted of all the above, and while all of these things 
+    are an [OBJECT]...?
+
+    They all have varying [SCOPES], [DEFINITIONS], [PROPERTIES] and [VALUES].
+    Does this feel Dr. Suess-like yet?
+
+    Cause, I've barely cracked the surface of how complex logic can get, though this is a SOLID foundation.
+
+    To keep this as concise as possible, everything that I just listed can be represented by a [BOOLEAN] when 
+    testing conditions. That's just how it works. Even with Regex.
+
+    An object's existence can be created or nullified at any moment when a condition is tested, the condition may 
+    be consisted of any assortment of things up above, but typically a condition is when a noun does a verb and a 
+    count of something matches or exceeds the minimum condition, or likewise in the opposite direction, where a 
+    count is equal to or less than the maximum allowable count.
+
+    When that condition passes or fails, The switch is activated and that branch is entered.
+    There are some things that the computer just can't do ahead of time, given the numerous matematical possibilities 
+    that exist in the universe... But, when it joins the branch, it can get more detailed about what to look for. 
+
+    Hence, why properties are so important.
+    The property rundown is finito. Now, you just gotta ask yourself one question... Maybe 3.
+    Who's the boss, NOW, buddy? Is it you? Or Tony Danza? (Or, is it Angela...?)
+"@)
+
+$Book.AddSection(11,"Back to Work",@'
+    It's time to go all out beast mode with the $WMIList Object.
+    Now we're going to start dynamically building a class definition, for WMIObject.
+
+    Some people will probably be pretty amazed by this process here.
+    To get all of the property 1) names, 2) types, and 3) values, use the property:
+    
+    $WMIList.PSObject.Properties => (produces a pretty big chart)
+
+    We can use techniques similar to Line #1, by using the pipeline.
+    Pipeline operations can use direct property names to select or query internal property values.
+
+    Assigning the variable $Prop to the entire operation, will store the output from the operation to the variable. 
+    
+                    The REGEX to the left, is filtering out WMI+PS classes while making the assignment.
+    ______________  The Regex probably needs a little explanation.
+    |¯¯¯¯¯¯¯¯¯¯¯¯|  The Regex pattern is wrapped with parenthesis, indicating a capture group
+    | "(^_|^PS)" |  The pipeline symbol in the middle is an OR symbol.
+    |____________|  The Caret indicates the START of a string
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯  The underscore matches an underscore, and the PS matches the letters PS.
+
+    If you're hesitant to run the operation that isn't commented out below, feel free to run the line right underneath 
+    the dashed line below, it won't actually assign the output to anything. The one below that which says Format-Table,
+    will show you the table output, not the list.
+'@)
+
+$Book.AddSection(11,"Work for Real",@'
+    We want to format the class with the right spacing between elements, cause I'm a perfectionist AND precise. 
+    All of the type names and property names will line up if we collect em all to find the length of the longest type.
+
+    Assign the variable $Types to the following loop ONE-LINER.
+    The entire ONE-LINER BELOW is a COLLECTION of STRATEGIES thrown into a single line, actually.
+    Some of my Voodoo 3 5000 magic...
+
+    To explain, it's a multifaceted ONE-LINER involving:
+    - ForEach-Object haphazardly piping itself into an array...
+    - $_ token with the property length being greater than 0 in square brackets acts as a switch
+    - $False selects slot 0 in the array returning the string "String", cause that's binary for ya.
+    - $True selects slot 1 in the array returning ($_ -Replace "System\.","")
+'@)
+
+$Book.AddSection(11,"<Commands> (1)",@'
+    _________________________________________________________________________________________________
+    | Assign variable $TypesMaxLength to the operation Types. Or, highlight them both and press F8  |______________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Types           = $Prop.TypeNameOfValue | % { @("String",$_ -Replace "System\.","")[$_.Length -gt 0]}
+    $TypesMaxLength  = ($Types | Sort-Object Length)[-1].Length
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    __________________________________________________________________________________________________________
+    | Now, get the names, sort by length, and then grab the last name length since it has the longest string |_____
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    $Names           = $Prop.Name
+    $NamesMaxLength  = ($Names | Sort-Object Length )[-1].Length
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Everybody reading this survived all of that somehow, right...? Nothin' exploded...? No demons teleporting into 
+    the world around ya...? No Strogg armies invading Earth...? No alarms went off...? We're all good here, right...?
+
+    Alright... just checkin'.
+    _______________________________________________________________________________
+    | Create a variable named $Definition, as a hash table with these properties: |
+    | [String]   ClassName   |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    | [Object[]] Property    |
+    | [String]   Param1Type  |
+    | [String]   Param1Value |
+    | [Object[]] Constructor |_____________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Definition      = @{
+
+        ClassName    = "Win32_Product"
+        Property     = @( )
+        Param1Type   = "[Object]"
+        Param1Value  = "`$WMIObject"
+        Constructor  = @( )
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ___________________________________________________________________________________________
+    | Run through all:                                                                        |
+    | 1) property types                                                                       |
+    | 2) property names                                                                       |
+    | 3) set the property values to the corresponding property value of the input parameter   |
+    |-----------------------------------------------------------------------------------------|
+    | Add each TYPE/NAME to $Definition.Type array                                            |
+    | Add each $Name in $Names with spacing to the $Definition.Constructor array              |____________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ForEach ($X in 0..($Names.Count-1))
+    {
+        $TypeBuffer  = " " * ($TypesMaxLength - $Types[$X].Length + 1)
+        $NameBuffer  = " " * ($NamesMaxLength - $Names[$X].Length + 1)
+        $Definition.Property      += "    [{0}]{1}{2}`${3}" -f $Types[$X] ,
+        $TypeBuffer, $NameBuffer, $Names[$X]
+        $Definition.Constructor  += "        `$This.{0}{1} = {2}.{0}" -f $Names[$X],
+        $NameBuffer, $Definition.Param1Value
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________________________________________________________________________________
+    | Now, we can write all of the information we collected, to a class definition, and either: |
+    | 1) copy it to the clipboard                                                               |
+    | 2) write it to the console to then copy paste it that way back into the editor            |
+    | 3) hold off... cause it's a third option and it says "recommended"                        |__________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $ClassDefinition = @("Class $($Definition.ClassName)",
+    "{",
+    ($Definition.Property -join "`n"),
+    "    $($Definition.ClassName)($($Definition.Param1Type)$($Definition.Param1Value))",
+    "    {",
+    ($Definition.Constructor -join "`n"),
+    "    }",
+    "}") -join "`n"
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+'@)
+
+$Book.AddSection(11,"<Class Definiton>",@'
+    ________________________________________________________
+    | Here is the OUTPUT of ALL that stuff we just did...  |_______________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $ClassDefinition
+
+    Class Win32_Product
+    {
+        [UInt16]                                 $AssignmentType
+        [String]                                        $Caption
+        [String]                                    $Description
+        [String]                                    $ElementName
+        [String]                                       $HelpLink
+        [String]                                  $HelpTelephone
+        [String]                              $IdentifyingNumber
+        [String]                                    $InstallDate
+        [String]                                   $InstallDate2
+        [String]                                $InstallLocation
+        [String]                                  $InstallSource
+        [Int16]                                    $InstallState
+        [String]                                     $InstanceID
+        [String]                                       $Language
+        [String]                                   $LocalPackage
+        [String]                                           $Name
+        [String]                                   $PackageCache
+        [String]                                    $PackageCode
+        [String]                                    $PackageName
+        [String]                                      $ProductID
+        [String]                                     $RegCompany
+        [String]                                       $RegOwner
+        [String]                                      $SKUNumber
+        [String]                                     $Transforms
+        [String]                                   $URLInfoAbout
+        [String]                                  $URLUpdateInfo
+        [String]                                         $Vendor
+        [String]                                        $Version
+        [UInt32]                               $WarrantyDuration
+        [String]                              $WarrantyStartDate
+        [UInt32]                                      $WordCount
+        [Management.ManagementScope]                      $Scope
+        [Management.ManagementPath]                        $Path
+        [Management.ObjectGetOptions]                   $Options
+        [Management.ManagementPath]                   $ClassPath
+        [Management.PropertyDataCollection]          $Properties
+        [Management.PropertyDataCollection]    $SystemProperties
+        [Management.QualifierDataCollection]         $Qualifiers
+        [ComponentModel.ISite]                             $Site
+        [ComponentModel.IContainer]                   $Container
+        Win32_Product([Object]$WMIObject)
+        {
+            $This.AssignmentType     = $WMIObject.AssignmentType
+            $This.Caption            = $WMIObject.Caption
+            $This.Description        = $WMIObject.Description
+            $This.ElementName        = $WMIObject.ElementName
+            $This.HelpLink           = $WMIObject.HelpLink
+            $This.HelpTelephone      = $WMIObject.HelpTelephone
+            $This.IdentifyingNumber  = $WMIObject.IdentifyingNumber
+            $This.InstallDate        = $WMIObject.InstallDate
+            $This.InstallDate2       = $WMIObject.InstallDate2
+            $This.InstallLocation    = $WMIObject.InstallLocation
+            $This.InstallSource      = $WMIObject.InstallSource
+            $This.InstallState       = $WMIObject.InstallState
+            $This.InstanceID         = $WMIObject.InstanceID
+            $This.Language           = $WMIObject.Language
+            $This.LocalPackage       = $WMIObject.LocalPackage
+            $This.Name               = $WMIObject.Name
+            $This.PackageCache       = $WMIObject.PackageCache
+            $This.PackageCode        = $WMIObject.PackageCode
+            $This.PackageName        = $WMIObject.PackageName
+            $This.ProductID          = $WMIObject.ProductID
+            $This.RegCompany         = $WMIObject.RegCompany
+            $This.RegOwner           = $WMIObject.RegOwner
+            $This.SKUNumber          = $WMIObject.SKUNumber
+            $This.Transforms         = $WMIObject.Transforms
+            $This.URLInfoAbout       = $WMIObject.URLInfoAbout
+            $This.URLUpdateInfo      = $WMIObject.URLUpdateInfo
+            $This.Vendor             = $WMIObject.Vendor
+            $This.Version            = $WMIObject.Version
+            $This.WarrantyDuration   = $WMIObject.WarrantyDuration
+            $This.WarrantyStartDate  = $WMIObject.WarrantyStartDate
+            $This.WordCount          = $WMIObject.WordCount
+            $This.Scope              = $WMIObject.Scope
+            $This.Path               = $WMIObject.Path
+            $This.Options            = $WMIObject.Options
+            $This.ClassPath          = $WMIObject.ClassPath
+            $This.Properties         = $WMIObject.Properties
+            $This.SystemProperties   = $WMIObject.SystemProperties
+            $This.Qualifiers         = $WMIObject.Qualifiers
+            $This.Site               = $WMIObject.Site
+            $This.Container          = $WMIObject.Container
+        }
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+'@)
+
+$Book.AddSection(11,"<Class Definition> Summary",@"
+    Above, the newly constructed class has been cleanly formatted, and procedurally spaced out.
+    But, here's why it's not all that COOL or USEFUL... yet.
+
+    If the constructed class is NO different than selecting ALL of the properties on the default command output, 
+    then... there's basically no point in doing all of this work. If you're adding methods, or other properties, 
+    THEN, there is. If you're NOT, though? There isn't much of a reason... regardless, it's a good way to see how
+    it is CONSTRUCTED.
+
+    But in practice, unless you're planning on ADDING custom methods or properties...? 
+    Then, there's an easier way to do all of that, and it's as simple as running the command, and capturing the 
+    output to a variable.
+
+    Cause that's how you COULD get the same output from the default command with far less work. 
+    Then again, there could be other reasons, maybe some properties are hidden and you don't LIKE when properties 
+    are hidin' out on ya... Well, it's hard for me to imagine that someone would do all of this just to spite some 
+    hidden properties... but maybe somebody would...? Idk.
+
+    However, there was a point to doing this after all.
+
+    Instantiate the variable, class definition below.
+    This enables the class to be used without having to explicitly write the
+    `$Classdefinition output to the clipboard or the editor.
+    _____________________________________________________________________________________________________
+    | (3) You just highlight the phrase, press F8, and let it load into memory. No file, No copy paste. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    No muss, no fuss, and, no guys named Gus...
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Gus : *brief pause*...what?
+    Me  : You heard me...
+    Gus : *pause* ...cause my name is Gus...?
+    Me  : Yeah.
+    Gus : You know, that is extremely obnoxious, I'm not allowed around here, cause my name is Gus?
+    Me  : ...I never said that.
+    Gus : Oh. Well, what ARE you saying then...?
+    Me  : Uh... *pause* Just sayin' that no guys named Gus were part of the script.
+    Gus : Ohhhhh...
+    Me  : Yeah, what'd you think I meant, dude?
+    Gus : I... I dunno man. Like I wasn't good enough or somethin' cause my name is Gus...
+    Me  : Nah, I never meant it like that, I was just sayin, no muss, no fuss-
+    Gus : ...no guys named Gus.
+    Me  : Yeah, I didn't mean like, you're not ALLOWED, to hang out... or whatever.
+    Gus : I've heard that phrase all my life man.
+          No muss, no fuss this... no muss, no fuss that...
+          No muss, no fuss, *everybody looks at me* there's Gus. 
+          Then everybody just goes completely silent, staring at me... 
+          It's unreal, dude.
+    Me  : Wow. 
+          Sorry for being that jerk that just had to make your life slightly more miserable...
+          ...for trying to make some corny rhymes...
+    Gus : I ain't mad at ya man... 
+          I just, felt like I was part of the team~!
+    Me  : You are part of the team, dude. 
+          I take it back.
+    Gus : Really...? 
+          You mean that...?
+    Me  : Yeh man. 
+          You don't even know bro, I have no reason not to respect the name Gus... 
+          Not one.
+          If anything, plenty of reasons to respect it after all... cause. 
+          There's a little hot dog shack down in Watervliet, Gus' Hot Dogs.
+    Gus : ...are they good...?
+    Me  : Are they GOOD...? 
+          Are you kiddin' me? 
+          Buddy, that place is so many people go, when they are hungry, and they want some really good hot dogs. 
+          I can't really think of a better place, than Gus' Hot Dogs... in terms of the best hot dogs money can buy.
+          Now I'm hungry and I wanna go there.
+    Gus : Wow. 
+          I... that made me feel WAY better already man...
+    Me  : Yeah man, look. 
+          No muss, no fuss, be sure to invite a guy named Gus. 
+          That'll be the motto.
+    Gus : Hey man... I appreciate that.
+    Me  : No problem dude. 
+          Hey- *points at Gus*
+    Gus : *both eyebrows up, slight head nod* Sup buddy...?
+    Me  : I'm gonna get back to the lesson plan now, alright?
+    Gus : Oh yeah, not a problem buddy. Glad to be part of the team. Later.
+    Me  : You got it Gus. Later.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Man. Guess I shouldn't haphazardly try to rhyme everything that comes to mind. 
+    That dude, sounds like he's been through the ringer... *shakes head*. 
+"@)
+
+$Book.AddSection(11,"Invoke `$ClassDefinition",@'
+    Anyway, yeah. If you want to invoke the class that was just created with the last several breaks of code, 
+    then here is where that code gets turned into a class definition that can be invoked. 
+    ________________________________________________________________
+    | Go ahead and highlight the expression below, and press F8.   |
+    | If you don't, then the script won't work after this... So... |_______________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Invoke-Expression $ClassDefinition
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now, to collect ALL of those WMI objects, this MAY or MAY NOT take more time than the first time,
+    that (Get-WMIObject Win32_Product) was accessed above... Like the Lotto? Hey. You never know.
+    _______________________________________________________________________________________
+    | Manner (1) | $Collect       = Get-WMIObject Win32_Product | % { [Win32_Product]$_ } |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    or... 
+    _________________________________________________________________________________
+    | Manner (2) | $Collect       = [Win32_Product[]]@(Get-WMIObject Win32_Product) |        
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    They do the same thing.
+
+    I actually would like to discuss the difference between these two manners right here.
+
+    Manner (1) says that the command gets to ForEach-Object itself, into a new instantiaion of the class we just 
+    generated, and then invoked into memory, above using the $ClassDefinition variable. For each object it finds...? 
+    Then, a new object is instantiated, even if it ONLY returns a SINGLE OBJECT. 
+    Then, the output is saved to the variable $Collect.
+
+    Manner (2) literally does the same exact thing, but since it is written differently, it's worth explaining that 
+    they may not ALWAYS result in the same output...
+
+    The [Win32_Product[]] is an object array, you can tell with the "[]" inside the square brackets.
+    The @ symbol is actually denoting that the content of those parenthesis is EXPECTING MULTIPLE OBJECTS, 
+    So, using that technique with a FUNCTION in the PARENTHESIS, allows EVERY object that the function returns, 
+    as THAT specific type/class, X number of times- even if it ONLY returns a SINGLE OBJECT.
+
+    Maybe people don't realize that a type and a class are actually the same thing (usually), and I should've said
+    that at some point in the previous 1500+ lines. 
+
+    Well... a type is a class, and a class is a type... the terms, I'm fairly certain, are literally interchangeable.
+'@)
+
+$Book.AddSection(11,"Computer Updated - Press F1",@"
+    Uh-oh... Matthew Caldwell didn't do any Google searches BEFORE having me image a thousand machines in the
+    warehouse... Now I gotta do ALL that work all over again, because of this following article...
+
+    https://xkln.net/blog/please-stop-using-win32product-to-find-installed-software-alternatives-inside 
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now, this is where our development process got thrown on it's head. 
+    Why...? Oh, I'll tell ya...
+
+    These guys say that the manner I've been using to collect a list of installed applications, is the way that LAME 
+    people do it. Yep. Me...? Doing something the lame way. As usual. Couldn't believe that these guys knew me so well. 
+
+    Still. When I found out? I swear, I didn't cry. Kept my head up. Eyes forward. Just... kept on goin'.
+
+    Eventually... I realized that they don't actually say anything about ANYBODY being lame. Nah. 
+    I just interpreted it that way...
+
+    They were just saying that WMIObject Win32_Product is SORTA broken (because legacy WMIC is rather complicated)
+
+    I felt better after I realized that...
+    Can't believe I actually *allowed* myself to be so distraught by words they never even said...
+    Jeez... That's when I took a deep breath, said to myself "it'll be okay"... and then, read the entire thing 
+    they said. 
+
+    I'm just kidding about being upset, I already have a function that does what this article suggests, because I 
+    figured out how the experts look for installed programs way back in 2019 after I started following a team of 
+    awesome guys' GitHub project...
+
+    Come to find that they used to be some heavy hitters at Microsoft. 
+    These guys wrote a book that I read. 
+    That book became an odyssey into the programming world... 
+
+    Anyway, Johan Arwidmark and Mykael Nystrom wrote that book. 
+    What I didn't know back then, and what I happen to know NOW, is that they literally wrote the friggen book, 
+    about how professionals get stuff done. Not only did they have so much helpful information about how the 
+    professionals get stuff done... they also have a portion of their books and projects reserved for experts 
+    that know what they're doing. 
+
+    They have to at least TRY to keep this information low-key, because of how USEFUL it is. (Kidding)
+
+    One of those suggestions, is using the registry to look for installed program and stuff. 
+    For years they had an edge over everybody with this WAY cooler, more efficient way to get stuff done... 
+    I realize, they WILL probably tell people that they didn't write a special series of chapters and entries for 
+    the most highly seasoned experts out there in the wild... But obviously, they're not gonna tell people about 
+    secret chapters they wrote and authored... 
+
+    Some people really should consider... not all heroes wear capes. 
+    These guys know what the hell they're doin'.
+
+    Anyway, the registry. 
+    It's not a thing people should play games with, but, sometimes an expert gets called in, to take a look around 
+    and perform a highly skilled site survey. Sometimes that happens to include taking a pretty quick look at it, 
+    especially if you're looking for programs to install or uninstall, and you need those programs to be a specific
+    version, or higher.
+
+    Guess who I learned from on how to do those things? Heh. One of the most highly seasoned experts at Microsoft.
+    Following the link above they say: Don't use Get-WMIObject Win32_Product anymore...
+
+    It's slow, incomplete, problematic, not optimized, it's just a bad way to go about getting that info anyway, since
+    Microsoft LITERALLY invested a LOT of time and resources in CimV2. 
+
+    Fine I won't use WMIC. However, it means I have to reproduce the class stuff I already did...
+    Look. If you wanna go pro...? Use the REGISTRY, and look in the following keys/paths:
+    __________________________________________________________________________________
+    | 64-bit | HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall |
+    | 32-bit | HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall             |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Book.AddSection(11,"<Console> (10)",@'
+    Checks both (32-bit/64-bit) registry paths | No games being played here...
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $Apps = ForEach ($Item in "\Wow6432Node","")
+    {
+        "HKLM:\Software$Item\Microsoft\Windows\CurrentVersion\Uninstall\*" | Get-ItemProperty
+    }
+
+    PS Prompt:\> $Apps | ? DisplayName -match “Visual Studio”
+
+    DisplayName     : Visual Studio Community 2022
+    InstallDate     : 20220402
+    InstallLocation : C:\Program Files\Microsoft Visual Studio\2022\Community
+    DisplayVersion  : 17.1.6
+    Publisher       : Microsoft Corporation
+    DisplayIcon     : C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe
+    UninstallString : "C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe" uninstall..
+    ModifyPath      : "C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe" modify --..
+    RepairPath      : "C:\Program Files (x86)\Microsoft Visual Studio\Installer\setup.exe" repair --..
+    PSPath          : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\Software\Wow6432Node\Mi..
+    PSParentPath    : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\Software\Wow6432Node\Mi..
+    PSChildName     : 889e9450
+    PSProvider      : Microsoft.PowerShell.Core\Registry
+    DisplayName     : CCleaner
+    UninstallString : "C:\Program Files\CCleaner\uninst.exe"
+    Publisher       : Piriform
+    InstallLocation : C:\Program Files\CCleaner
+    VersionMajor    : 6
+    VersionMinor    : 0
+    DisplayVersion  : 6.00
+    DisplayIcon     : C:\Program Files\CCleaner\CCleaner64.exe
+    PSPath          : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Wind..
+    PSParentPath    : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\Software\Microsoft\Wind..
+    PSChildName     : CCleaner
+    PSProvider      : Microsoft.PowerShell.Core\Registry
+
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+'@)
+
+$Book.AddSection(11,"Back to the Drawing Board",@"
+    The problem is, now the class definition is out of date!
+    We don't need the old one anymore, cause it doesn't have what we need.
+
+    Time to write a totally new one.
+    However, what complicates matters here, is that each of these registry keys all have differing properties/entries 
+    in the registry - not only are they VERY different from Get-WMIObject Win32_Product, but they also contain 
+    inconsistent properties and values.
+    
+    While SOME of the values are consistent... some of em aren't. So, this is a bit of a dilemma...
+    We might actually have to whip out the magic lamp again and make a new wish...
+
+    How long should a person with a magic lamp wait, before making another wish...?
+    Cause, what if the genie is taking a nap, we try to get him to come out... but...
+    He was getting his genie beauty sleep. Then you get a real snippy genie with an attitude...?
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Genie : YEAH...? SUP...?
+    You   : Hey, sorry for waking you...
+    Genie : Oh you better be, pal... I was gettin' my beauty sleep in there, and you just had to go wakin' me up...
+    You   : Sorry... 
+            I just, I need to make another wish.
+    Genie : Oh you do, do you...? 
+            Interesting...
+    You   : Yeah. 
+            I need to write a new class that can accommodate a bunch of registry keys on Windows.
+    Genie : Oh *scoffs* 
+            Obviously, that is worthy of another wish... that... is one of the toughest things a person can even do.
+    You   : Alright Genie, you don't have to patronize me, I get it... 
+            I know I'm no Albert Einstein, but this really is hard to do right...
+    Genie : Well... you're not wrong. It is hard to do right. Plenty of ways to do it wrong.
+    You   : Yeah. Well...
+            *suddenly, you remember that you read a tutorial once upon a time*
+            *a guy wrote a lesson plan that might help ya out...*
+    You   : Ya know what, genie...?
+    Genie : Yeah...?
+    You   : I think I'm all set for right now, I'll save my wish for later...
+    Genie : What...?
+    You   : Nah, I just remembered something...
+            I'm gonna give it a shot.
+    Genie : But, you can't just say that you wanna make a wish, and then not make one...
+    You   : Why not?
+    Genie : Well... *scoffs* just cause... 
+            That's rude. 
+            Obviously...
+    You   : Hey look Genie, I think you're being incredibly disrespectful... 
+            ...and I don't even know if I really want the wishes anymore. 
+            You could totally have em back...
+    Genie : No, no, no, no... 
+            Alright, you can make this wish some other time.
+    You   : ...really?
+    Genie : Yeh. 
+            Sorry boss man.
+    You   : Strange. 
+            Alright, talk to you later.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Strange. The genie came at ya all sideways at first, but when told that he could even have the wishes back...? 
+    He changed his tune~! 
+
+    Maybe the reason, is cause when people would rather do something tough on their own, especially if they can make 
+    any wish they want...? Genies know that means they won't be needed... Then they gotta wait around for like, 
+    10 thousand years all over again... They probably get bored waiting around all that time. So.
+
+    There's no need for a magic lamp, nor any wishes here. 
+    We are just gonna use a strategy, in order to: 1) conceptualize, and 2) build a class factory
+
+    One that handles the properties of this specific situation involving registry keys, for programs.
+
+    So, defining a class may be difficult to do, UNLESS theres a way to determine which TYPE of registry entry each 
+    of them may be, or we could even pull a template object, and use that draft the class... 
+    If we did that, then, we could provide an abstract way to force all of the items in `$Apps to fit within the 
+    same class for every entry.
+
+    To do this, lets start with a common application that was installed via MSI, since that has standard options 
+    and the most consistency (so, like Microsoft Edge, or Google Chrome...)
+"@)
+
+$Book.AddSection(11,"<Template>",@"
+    I currently have Microsoft Edge installed on this machine, it is hands down, the best there is.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> `$Edge            = `$Apps | ? DisplayName -match "(^Microsoft Edge$)"
+    PS Prompt:\> `$Edge
+
+    DisplayName     : Microsoft Edge
+    DisplayVersion  : 101.0.1210.53
+    Version         : 101.0.1210.53
+    NoRemove        : 1
+    ModifyPath      : "C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe" /instal..
+    UninstallString : "C:\Program Files (x86)\Microsoft\Edge\Application\101.0.1210.53\Installer\se..
+    InstallLocation : C:\Program Files (x86)\Microsoft\Edge\Application
+    DisplayIcon     : C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe,0
+    NoRepair        : 1
+    Publisher       : Microsoft Corporation
+    InstallDate     : 20220521
+    VersionMajor    : 1210
+    VersionMinor    : 53
+    PSPath          : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\Software\Wow6432Node\M..
+    PSParentPath    : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\Software\Wow6432Node\M..
+    PSChildName     : Microsoft Edge
+    PSDrive         : HKLM
+    PSProvider      : Microsoft.PowerShell.Core\Registry
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Book.AddSection(11,"Non-Default Registry Keys",@"
+    This time, we want to add a property for NON-DEFAULT registry keys in this uninstall path folder.
+    [Analogy]: Entries with NON-DEFAULT registry keys are similar to when somebody doesn't fit into
+    the typical mold that most people in society fit into since they're different than everyone else.
+    They have WAY different properties, and, they're hard to expect. People might get upset and say:
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Default     : Hey buddy...
+                  Why you always gotta be WAY different than everybody else?
+    Non-Default : Cause, I don't fit into the typical mold most people in society fit into...
+    Default     : *Everybody shakes their head* That's obnoxious.
+    Non-Default : No way buddy, *points back at em* YOU'RE the obnoxious one, pal...
+                  Askin' me why I gotta be different...?
+                  That's about the most obnoxious thing anybody could even SAY or DO...
+    Default     : I could literally ask all of the people here in this room, what their properties are.
+                  They're gonna tell me that they have the same properties that I have....
+    Non-Default : Not me though.
+    Default     : Yeah I know.
+                  That's why we all collectively sigh at you for being WAY different.
+    Non-Default : It's cause I'm advanced...
+                  …you can't even expect what properties I contain.
+    Default     : Yeah.
+                  That's...
+                  …why we can't stand ya sometimes, pal.
+    Non-Default : Just cause I'm advanced, doesn't mean I'm a bad person, dude...
+    Default     : Well, nobody ever said that you were a bad person...
+    Non-Default : Sounded like it though...
+    Default     : On any given day, your name could change to Kevin, and you'll be older or heavier...?
+                  You're like a shape shifter...
+    Non-Default : ...it's cause I'm advanced. I have more properties than you.
+    Default     : Yeah buddy...
+                  Sure.
+                  It's cause you're "advanced".
+                  Next week your name'll be Jeff.
+    Non-Default : Yeah...?
+                  Maybe it WILL be Jeff...
+                  You act like it's such a heavy burden.
+    Default     : It is! *shakes head*
+                  This dude really is unbelievable! *everyone collectively agrees*
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Now, NON-DEFAULT registry keys in these uninstall paths (64-bit/32-bit) may contain some very old school entries 
+    that aren't updated anymore. So, whether those entries are ADVANCED, or just OLD.
+
+    Don't get down on registry keys in this folder if their properties aren't the same as everybody elses. 
+    Because, we can actually implement a DESIGN CHANGE to the CLASS that ACCOMMODATES any *unexpected properties*. 
+    They won't be a part of the BASE class properties, but they'll still be visible and accessible. 
+    So, everybody actually wins.
+    
+    There's a few ways we could do this, we could ADD a member to each class for EACH property.
+
+    However, that isn't a great idea. 
+    That will make many of them TOO DIFFERENT, and not adhere to a TABLE, as they'll be TOO unique in some cases. 
+    
+    Then, everybody will have to collectively sigh at the "advanced" guy's properties. 
+    So, the best option would be to create a property that can host those "extraneous" properties, and that 
+    property's value will be an object that can host an array of ADDITIONAL properties & values that are NON-DEFAULT. 
+
+    That is the best way to go, actually.
+    Now, lets choose a property name like "EntryUnique". If we add this property BEFORE we access the 
+    PSObject.Properties, the addition will form to the format of the previously written stuff above.
+    
+    We'll also need to ADD a few METHODS to this class (methods are nested functions), so it can refer to itself, 
+    provide self referencing brevity, and convert each individual NON-DEFAULT property, into an object array for
+    each property. Then, we want to have a method that can format all of those objects and properties and write 
+    the output.
+"@)
+
+$Book.AddSection(11,"<Commands> (2)",@'
+    We'll run through the script again... but with a few added steps and more explanations.
+    Get $Edge.PSObject.Properties where the name doesn't start with either "_" or "PS"
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $Prop      = $Edge.PSObject.Properties | ? Name -notmatch "(^_|^PS)"
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    For the script that applies spacing/formatting to include the new property, and not need an added script at the 
+    end, we can inject the new property into the variable $Prop. But FIRST, we need to understand what TYPE of object 
+    it is, to instantiate that TYPE.
+
+    What does this variable $Prop, get us back in the console...?
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $Prop
+
+    Value                                 MemberType   IsSettable IsGettable TypeNameOfValue Name
+    -----                                 ----------   ---------- ---------- --------------- ----
+    Microsoft Edge                        NoteProperty       True       True System.String   Display..
+    101.0.1210.39                         NoteProperty       True       True System.String   Display..
+    101.0.1210.39                         NoteProperty       True       True System.String   Version..
+    1                                     NoteProperty       True       True System.Int32    NoRemov..
+    "C:\Program Files (x86)\Microsoft\E." NoteProperty       True       True System.String   ModifyP..
+    "C:\Program Files (x86)\Microsoft\E." NoteProperty       True       True System.String   Uninsta..
+    "C:\Program Files (x86)\Microsoft\E." NoteProperty       True       True System.String   Install..
+    "C:\Program Files (x86)\Microsoft\E." NoteProperty       True       True System.String   Display..
+    1                                     NoteProperty       True       True System.Int32    NoRepai..
+    Microsoft Corporation                 NoteProperty       True       True System.String   Publish..
+    20220507                              NoteProperty       True       True System.String   Install..
+    1210                                  NoteProperty       True       True System.Int32    Version..
+    39                                    NoteProperty       True       True System.Int32    Version..
+    {}                                    NoteProperty       True       True System.Object[] EntryUn..
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Looks like a standard, ordinary, run-of-the-mill, object collection table.
+    In order to INSERT a NEW PROPERTY to this list of properties, we have to figure out what each of these objects 
+    actually are. Now you could also use the Add-Member cmdlet, but there's another way.
+    
+    The $Prop.GetType() method will return the "Object Type" object as seen below.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $Prop.GetType()
+
+    IsPublic IsSerial Name                                     BaseType
+    -------- -------- ----                                     --------
+    True     True     Object[]                                 System.Array
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    So, it's an object array, which is easy to spot because of the ol' double square brackets there.
+    We sorta knew this from the object collection table up above.
+
+    But, in order to ADD a new object to it, we have to determine what TYPE these objects in the array actually are, 
+    and then... instantiate that TYPE. Select the first item of the array to determine what type of object array it is.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $Prop[0].GetType()
+
+    IsPublic IsSerial Name                BaseType
+    -------- -------- ----                --------
+    True     False    PSNoteProperty      System.Management.Automation.PSPropertyInfo
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Alright, so it's a PSNoteProperty array.
+    We knew that from the object table, but now we aren't making assumptions.
+
+    We can attempt to directly access the underlying base type.
+    Now, is PSNoteProperty an object that anybody could instantiate in PowerShell, without calling an assembly or 
+    adding a type definition...?
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> New-Object PSNoteProperty
+
+    New-Object: A constructor was not found. Cannot find an appropriate constructor for type PSNoteP..
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Apparently it is, because it wouldn't have come back with a SPECIFIC error message that says to add a constructor.
+    Otherwise, it would've said:
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    New-Object: Cannot find type [PSNoteProperty]: verify that the assembly containing this type is...
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Since the cmdlet New-Object PSNoteProperty doesn't provide an idea for the PARAMETERS we need to feed it without 
+    help, lets call the .NET base type, via [PSNoteProperty]::New but, with a twist.
+    BTW: "[PSNoteProperty]::New()" literally does the same thing as "New-Object PSNoteProperty"
+'@)
+
+$Book.AddSection(11,"[CLR/.Net Tricks Explained]: Auto Completion, and Overload Definitions",@'
+    ______________________________
+    | Trick #1 : Auto Completion |_________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    [PSNoteProperty]::      <- Press CTRL+SPACE here in the [Console], to show default static methods
+
+    PS Prompt:\> [PSNoteProperty]::new(
+    Equals           new              ReferenceEquals
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ______________________________________
+    | Trick #2 : Overload Definitions    |_________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    [PSNoteProperty]::New   <- Press ENTER here (NO parenthesis/params) to show overload definitions
+
+    OverloadDefinitions
+    -------------------
+    PSNoteProperty New(String Name, System.Object Value)
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________________________________________________________________________________________
+    | Parallel Study]: Looks like some standard-issue CSharp up above. Convert to PowerShell like so... |__________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ________________________________________________________
+    | [CSharp Notation (w/ Haskell Casing)]                |
+    |------------------------------------------------------|
+    | PSNoteProperty New(String Name, System.Object Value) |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________________________________________________________________________________________
+    | [PowerShell Notation]                                                                             |
+    |---------------------------------------------------------------------------------------------------|
+    | [PSNoteProperty]::New($Name,$Value)        <- $Name and $Value each need to be defined, for this. |
+    | [PSNoteProperty]::New("EntryUnique",@( ))  <- Direct value entry, no predefined variables needed. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ______________________________________________________________________________________
+    | [Compare/Contrast]                                                                 |
+    |------------------------------------------------------------------------------------|
+    | Q: Why's PowerShell similar to CSharp...?                                          |
+    | A: Cause they're both made by Microsoft, and well made, that's why.                |
+    |------------------------------------------------------------------------------------|
+    | 1: Class/Type Name, 2: Static Method/Function, 3: Param Type, 4: Param Variable    |
+    |------------------------------------------------------------------------------------|
+    | (1) CSharp     Ex #1 | PSNoteProperty New( String Name, System.Object Value )      |
+    |     ¯¯¯¯¯¯     ¯¯¯¯¯   ¯¯¯¯¯¯¯¯¯¯¯¯¯1 ¯¯2  ¯¯¯¯¯3 ¯¯¯4  ¯¯¯¯¯¯¯¯¯¯¯¯3 ¯¯¯¯4        |
+    | (2) CSharp     Ex #2 | PSNoteProperty Variable = New PSNoteProperty( Name, Value ) |
+    |     ¯¯¯¯¯¯     ¯¯¯¯¯   ¯¯¯¯¯¯¯¯¯¯¯¯¯1 ¯¯¯¯¯¯¯X   ¯¯2 ¯¯¯¯¯¯¯¯¯¯¯¯¯1  ¯¯¯4  ¯¯¯¯4   |
+    | (3) PowerShell Ex #1 | [PSNoteProperty]::New( [String] $Name, [Object] $Value )    |
+    |     ¯¯¯¯¯¯¯¯¯¯ ¯¯¯¯¯   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯1  ¯¯2  ¯¯¯¯¯¯¯3 ¯¯¯¯¯4 ¯¯¯¯¯¯¯3 ¯¯¯¯¯4      |
+    | (4) PowerShell Ex #2 | New-Object PSNoteProperty -ArgumentList $Name, $Value       |
+    |     ¯¯¯¯¯¯¯¯¯¯ ¯¯¯¯¯   ¯¯¯¯¯¯¯¯¯2 ¯¯¯¯¯¯¯¯¯¯¯¯¯1 ¯¯¯¯¯¯¯¯¯¯¯¯X ¯¯¯¯4  ¯¯¯¯¯4       |
+    | (5) PowerShell Ex #3 | New-Object PSNoteProperty [String] $Name, [Object] $Value   |
+    |     ¯¯¯¯¯¯¯¯¯¯ ¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯¯2 ¯¯¯¯¯¯¯¯¯¯¯¯¯1 ¯¯¯¯¯¯¯3 ¯¯¯¯4  ¯¯¯¯¯¯¯5 ¯¯¯¯¯6   |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+     Each entry is Haskell-Cased. That means they all look <Proper with Capitalized Letters>.
+     Not every entry on the list will actually WORK if you go to use it as is.
+
+     Because, they are each atypically split to provide a comparison chart.
+     Some of these WILL work though, but testing them all, and knowing WHY which ones work...
+     ...and which ones don't, is an important skill to have. Hence, why I made the chart.
+
+     While there ARE very subtle differences and variations here, they ALL draw some parallel structure AND more 
+     than just abstract similarity to one another. Can you spot the similarities?
+'@)
+
+$Book.AddSection(11,"PowerShell Class/Type Engine Assumptions",@'
+    Not all of the labels appear in each instance. 
+    With PowerShell, the console is pretty good about ASSUMING (classes/types) for each variable. 
+    That's because of the PowerShell Class/Type engine.
+    
+    CSharp has no such 'making assumptions about any given variable' functionality, because it requires some 
+    hefty-handed SPECIFICITY and NEEDS to be strongly typed... Otherwise, expect many failures.
+
+    In PowerShell, the engine was made to make a lot of assumptions, and it was designed SO well, that it gets it 
+    right quite consistently. It's easy to take what it does, for granted.
+    __________________________________________________________________________
+    | (1) CSharp #1 → PSNoteProperty New( String Name, System.Object Value ) |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    CSharp #1 has spacing that would cause compilation failures right off the bat (I believe), they were added to 
+    examine the components of each line. Typically each CSharp entry needs a semicolon at the (end of line/EOL), but 
+    not AFTER method invocation. In PowerShell, EOL semicolons are NOT necessary.
+    _______________________________________________________________________________
+    | (2) CSharp #2 → PSNoteProperty Variable = New PSNoteProperty( Name, Value ) |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    I don't work with CSharp often enough to remember the specifics of calling types for each variable name and etc... 
+    But- I still read it every day, as I implement a lot of it in PowerShell.
+
+    I DO know that CSharp is a *very* strongly typed language. 
+    CSharp #2 is technically invalid, and won't work as is. 
+    The parameters within the parenthesis do not have the types before them.
+
+    However, it CAN work, as long as it is part of a code block where those variables are already declared with types. 
+    In other words, by itself it would fail. 
+    But, if those variables just so happened to be declared already in a larger block, it would work.
+    ________________________________________________________________________________
+    | (3) PowerShell #1 → [PSNoteProperty]::New( [String] $Name, [Object] $Value ) |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PowerShell Example #1 shows you that if you use the .Net Class/Type [SquareBrackets]::New() instantiation
+    approach, you'll need to wrap them in square brackets and call a static method with the double colon.
+
+    Translating static methods from CSharp to PowerShell requires a little finagling, because in C#, the methods are 
+    called with "::". Another difference between CSharp and PS, are [SquareBrackets] around [Types] or [Classes].
+    ___________
+    | Example |____________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+     System.Security.Principal.WindowsPrincipal  ← This is a class/type. That fails in the console.
+    [System.Security.Principal.WindowsPrincipal] ← That is ALSO a class/type. That succeeds.
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Most of the time, using the double colon after the square brackets will cause the engine to query the object 
+    with Intellisense or AutoComplete... which brings up its method suggestions.
+    _____________________________________________________________________________
+    | Object Instantiation: Consider replacing <classname> with an actual class |__________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> New-Object <classname>  ← (CmdLet/Function) invocation approach
+    PS Prompt:\> [<classname>]::New()    ← (Type/Class) instantiation approach
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now, these altering variations are nearly identical to double clicking on a shortcut to launch an app. 
+    You're typically not starting a program with these functions/classes, but you really could.
+
+    New-Object -ComObject Shell.Application ← Literally opens a COM object, which is what Windows itself is.
+
+    This parallel is suggesting that object instantiation is like launching an executable.
+    _____________________________________________________________________________
+    | (4) PowerShell #2 → New-Object PSNoteProperty -ArgumentList $Name, $Value |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________________________________________________________________________
+    | Combine the previous block info with the notion that PowerShell example #2 uses:  |__________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    New-Object <classname> -ArgumentList $Param1, $Param2
+    _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+    | ...you can actually EXCLUDE the -ArgumentList and the CmdLet will |
+    | assume that the following entries are ArgumentList parameters...  |
+    ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ 
+    New-Object <classname> $Param1, $Param2
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ...although, not all cmdlets allow you to omit the -Parameter, all cmdlets are different, too.
+    In THIS case above, -ArgumentList is a <Parameter> that has an apparent position of 0.
+    That's how it can make assumptions. 
+    At some point I will describe how to write MULTIPLE ParameterSets to a function/cmdlet.
+    _________________________________________________________________________________
+    | (5) PowerShell #3 → New-Object PSNoteProperty [String] $Name, [Object] $Value |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PowerShell Example #3 will not work without wrapping [String]$Name in ([String]$Name)
+
+    That's because assumed parameters work a little differently. 
+    The Class/Type engine is awesome, but it's not Superman, bro... it can't do everything. 
+
+    As such, wrapping parenthesis around ([String]$Name) causes the engine to resolve the entry in the 
+    parenthesis as it relates to the Order of Operations in mathematics. 
+
+    If using [Type]$Variable as parameter input, they're absolutely necessary.
+    _______________________________________________
+    | Using non-quoted strings as parameter input |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    A worthy thing to note here, is that using non-quoted strings as command parameters may not need quotes, at least 
+    if there are no spaces in the string. For example...
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> New-Object PSNoteProperty Michael, Awesome
+
+    Value           : Awesome
+    MemberType      : NoteProperty
+    IsSettable      : True
+    IsGettable      : True
+    TypeNameOfValue : System.String
+    Name            : Michael
+    IsInstance      : True
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ...but that only works for strings that have NO spaces. 
+    Still, any tip or trick that can whittle away at character counts actually aids in making scripts easier to read,
+    clearer, and more concise. Plus, knowing these tricks can help you during the conceptualization/design process.
+
+    Like for instance, if you wanted to name something "Cool Name", you could cast a variable, and that may keep the 
+    space, and you use that as a parameter. But, lets say you run into a different scope, as that is often the case 
+    with class structures. Man. The name "Cool Name" may cause you to have to write a fair amount MORE code, than not 
+    using the space at all.
+
+    Also, on another note, this trick also works as pipeline property input, like so:
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> Get-ChildItem "$Env:SystemDrive\" | ? Name -match Windows      ← See, no quotes
+    PS Prompt:\> Get-ChildItem "$Env:SystemDrive\" | ? Name -match ^\w+         ← Works w/ Regex
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The reason why these work, is because the pipeline is accessing properties in a similar manner to how 
+    (Get-Item $Path | Select-Object Name, Fullname, <etc>) works, so long as the pipeline is not within a literal
+    scriptblock or curly braces where the ($_ / Null) variable works, then this naked string input will work just 
+    fine... as long as you're not using exotic characterss, or spaces.
+'@)
+
+$Book.AddSection(11,"Excerpt [~] Comparing CSharp & PowerShell",@"
+    The take away from all of this explanation, is that PowerShell is LITERALLY the same exact thing as CSharp under 
+    the skin, though I'm sure someone from Microsoft will pop out, and say:
+    __________________
+    | MS Guy : Nope. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Fine. There are obviously many caveats with them being basically identical.
+    _________________
+    | MS Guy : Yup. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    So, in order to adhere to the holy sacred art, of knowing what the hell I'm talking about, then calling it 
+    IDENTICAL to CSharp is incorrect. That said, the fact of the matter is that PowerShell is basically written 
+    with CSharp constructs, and has the same Common Language Runtime/CLR Framework.
+
+    So, it stands to reason they use many (if not all) of the same components. 
+    ____________________
+    | MS Guy: Maybe... |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    So, I have to expect that this Microsoft Guy is gonna watch my words like a HAWK...
+    Because, after so many years of snappin' necks and cashin' checks...? He's used to all of that strongly written 
+    type... and he's not the type of dude who plays games. 
+    __________________________
+    | MS Guy: Nope. I'm not. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    So, specificity matters to him.
+    _________________________
+    | MS Guy: Yup. It does. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Well, alright MS Guy... 
+    Maybe PowerShell and CSharp aren't exactly the same. 
+    ________________________
+    | MS Guy: They're not. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    But, if they use the same components, then they have similarities that aren't readily apparent.
+    ____________________________________
+    | MS Guy: I can agree with that... |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    So, if that's the case, some EXPERIMENTATION and EXPANDING upon those OBSERVATIONS/SIMILARITIES, will inevitably 
+    evoke (strengths/weaknesses) of one over the other, as they all find their way into processes that people hadn't 
+    used before... 
+    ________________________
+    | MS Guy: Interesting. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    At least, not until some dude with his obnoxiously written section headers had his sights on a checkered flag 
+    somewhere in the future. Somewhere. Cause, so is the guy from Microsoft. The both of these two dudes, day in, 
+    day out... constantly looking for an edge in performance. Waiting for the day that they'd be first person to blast 
+    past that checkered flag.
+    _______________________________
+    | MS Guy: That's right, dude. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Anyway, now the new guy came along, looking for ways to break Microsoft's most sophisticated language... 
+    _____________________________
+    | MS Guy: I too... do this. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    But, maybe break is the wrong term here...
+"@)
+
+$Book.AddSection(11,"Embrace, Extend, and Enhance",@"
+    When is the last time you've ever heard anybody say:
+    ______________________________________________________________________________________________
+    | Someone: Hey, buddy. You better not go make something even cooler than it already was...~! |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Probably never... right? 
+    But, people do it all the time. 
+    I could provide many, many examples, but I'm going to whip out one pretty specific example... 
+    When Microsoft combined Edge and Chrome.
+    
+    Google originally made Google Chrome.
+    Microsoft originally made Internet Explorer.
+    Commodore originally made the Commodore64. 
+    Paul Allen and Bill Gates made BASIC for the Altair 8800.
+
+    The point, a lot of people have made stuff... and when everyone kept saying "This is the best",
+    Well, somebody said "I can do better than that. Check this out..." Boom. New version of Basic.
+
+    Paul Allen and Bill Gates spent a fortune renting access to the supercomputers back in the 70's.
+    Look what they started...?
+
+    Microsoft has a very detailed history of "showing people how it's done..."
+    Sometimes they'll roll up their sleeves when they say this. 
+    Other times, they're done before they even have the chance to roll up their sleeves. 
+
+    So, they don't even say anything... Job's done.
+    
+    Anyway, this is what they did to Google Chrome... 
+    They went ahead and improved Google Chrome.
+    
+    Just like they do to everything they decide to do. 
+    Not really sure why people are shocked by it, but they have a really long history of just going right ahead, 
+    and making something even better.
+    
+    Some people might say "How DO they manage to do that?"
+    Well, the answer is because they have the best software engineers in the world, and...
+    ...the world's best software is engineered at One Microsoft Way, Redmond WA 98052. 
+    Always has been.
+    
+    That's cause they invented the idea of software. So, when they decide to do something...?
+    They don't play games. One day they got together and said to Google...
+"@)
+
+$Book.AddSection(11,"Internet Explorer vs. Chrome vs. Edge",@"
+    Microsoft : Hey Google. 
+                Let us show you how to build a better web browser.
+    Google    : Chrome is the best, pal.
+    Microsoft : No, we know that it WAS at one point. 
+                But, we made Internet Explorer. 
+                That was the best at one point in time too. 
+                You built Google Chrome off of Internet Explorer.
+    Google    : *scoffs* That's absurd. 
+                We didn't build it off of Internet Explorer... 
+                ActiveX? 
+                *chuckles* Lol.
+    Microsoft : Nah. 
+                Not you, right? 
+                You couldn't have done that... could you have...?
+    Google    : I mean... we might've taken a few notes from Internet Explorer... ActiveX was cool.
+    Microsoft : Prolly more than a few notes... 
+                Netscape Navigator and Mozilla Firefox too.
+    Google    : Maybe we did, maybe we didn't. 
+                You'll never know...
+    Microsoft : Well, we made an ACTUAL operating system called Windows. 
+                So...
+    Google    : *scoffs* Yeah, well, we made Android and smartphones.
+    Microsoft : Android is Chrome...
+                And, Apple made the smartphone first.  (← Ballmer also made smartphones, Windows Phone was well built)
+    Google    : Yeah, well most people in the world use Android.
+    Microsoft : Yeah, well, most businesses that (generate PROFIT/spend MONEY)... use Windows. 
+                So...
+    Google    : Whatever bro. 
+                We made Google Chrome. 
+                And, Chrome OS.
+    Microsoft : Chrome OS isn't an OS, it's an offline web browser. 
+                Besides, we know... 
+                We had to wait for you to show us a thing or two.
+    Google    : And, that's what we did.
+    Microsoft : Yeah, but we already DID those things. 
+                Showing somebody a 'thing or two', who already made those things a long time ago...? 
+                It's rather anticlimactic, to say the least.
+    Google    : Yeah, well... everybody uses Google to search the web.
+    Microsoft : Cool story bro. 
+                Look, we have so many complicated things we've already built...?
+                We had to give Google Chrome a touch that only the experts could give.
+    Google    : Bro, we ARE experts.
+    Microsoft : I mean... are you though? 
+                Not from our angle...
+    Google    : Gonna pretend I didn't hear that. 
+                Besides, nobody who's ANYBODY, can just go ahead,and build a WAY better version of Chrome than us. 
+                Not without our say.
+    Microsoft : We actually went ahead and did that though...
+    Google    : *gulp* Yeh...? 
+                Well... it's still based on Chrome...
+    Microsoft : It is. 
+                But- we did a lot more than just give it a facelift...
+"@)
+
+$Book.AddSection(11,"Skit [~] Dreaming Big, Building Bigger",@"
+    The truth is, when Microsoft really wants to do something...? 
+    They will actually go right ahead, assign a whole football team worth of people that just so happen to be very 
+    bright individuals, and they'll spend all day and night conceptualizing about the thing they set out to do.
+
+    Burning the midnight oil, making pot after pot of coffee, day in, day out...
+    Some of them might even run alongside a black guy on a bicycle, like in the game Mike Tyson's Punch Out on the NES.
+    
+    Just like Rocky Balboa, eating raw eggs...? Push ups...? Minimal sleep...?
+    All the while, having dreams about the code. 
+    When they do this, they dream big.
+    
+    Until the day their big break finally comes, like a Rubiks cube that's just about to be solved...
+
+    The new kid comes in after this dream where he finally finds the answer to the task.
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    New Kid  : Hey boss man... had a dream last night. 
+               Think I might've figured it out.
+    Boss Man : *long hard intense stare* Oh yeah?
+    New Kid  : Yeh.
+    Boss Man : *Looks at the new kid suspensefully* Tell me about this dream you had, kid.
+               Sounds important.
+    New Kid  : It was. 
+               It changed everything.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    So then the kid whips out the napkin that he drew the idea onto.
+    The napkin's all crumpled up, but that's ok... 
+    New kid was able to open the napkin, remember the idea, and then he races over to the whiteboard. 
+    All these other ideas are on the whiteboard, but he knows he's got the answer they've been looking for...
+    So he erases everything and starts from scratch.
+
+    Some of his teammates start to get WICKED PISSED, but the boss man interjects... tells em all to shush.
+    New kid starts drawing it all up. 
+    The boss man intently watches, so does everybody else.
+
+    Everybody on this team of people is on the edge of their seats.
+    After a moment, the boss man starts to see this mathematical probability matrix taking shape...
+    ...and immediately, he knows the kids idea is gonna work, at least theoretically.
+
+    Boss man's been around for a while. 
+    He knows when the math works out...
+    So, boss man tells everybody....
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Boss Man : This is it, guys. 
+               *snaps his fingers, and points at the new kid* Kid's got the killer plan...
+               Person1, I want you to do <this stuff>
+    Person 1 : Got it.
+    Boss Man : Person2, I want you do <that stuff>
+    Person 2 : That's... 
+               A lotta stuff, Boss man...
+    Boss Man : *gives Person 2 a hard stare*
+    Person 2 : ...alright, I got ya.
+    Boss Man : Person 3, I want you to keep that damn coffee pot stocked and topped for the next couple days.
+               None of us are leavin' till this is done.
+    Person 3 : You got it boss man.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    The boss man continues down the list of assistants, and shakes his head and stares at the whiteboard.
+    The new kid comes back up to the boss man.
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    New Kid  : You really think this is gonna work, huh?
+    Boss Man : Kid... 
+               I can feel it in my bones. 
+               I think you just about licked the problem.
+    New Kid  : Can't believe it all just came to me, in a dream like that...
+    Boss Man : I can, kid. 
+               That's how it works.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    So, now it's time to write the code, and test it. For the next 2 days, the entire team pounds away at their
+    keyboards... all because of an idea that the new kid had.
+
+    They knew that the math worked out before even writing a single line of code. 
+    They knew it could achieve some mysterious objective where it outperformed all of the ideas on their idea board. 
+
+    After 2 days go by, they finally have it ready to compile, so that their oceans of virtual machine hive clusters 
+    could all concurrently test this piece of code. The results came pouring in, and all of the tests and checks were
+    positive, and nominal.
+    _______________________________________________________________________________________________________________
+    | Headline: Microsoft does the impossible- AGAIN. Edge beats out Google Chrome... Typical Microsoft behavior. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    You wouldn't think that this story was really all that realistic, but... it probably is.
+"@)
+
+$Book.AddSection(11,"The Two Titans of Technology",@"
+    The end result, is that Microsoft was able to build a version of Chrome that uses less resources, is snappier, 
+    uses all of the same extensions Chrome does whereby making Edge have backward compatibility with other extensions, 
+    and now they've incorporated what made Edge v1 actually pretty cool, useful, and performant. 
+
+    Google made the mistake they always make, they thought that Microsoft was just old news...
+
+    But, they thought wrong. 
+    Now, Google Chrome has all the cool additions of Edge from Windows 10. 
+    
+    To be perfectly fair, it was a battle that both companies fought for many years until the new kid with the idea 
+    came along, and changed the entire way that games were played between these two titans of technology. 
+
+    A masterpiece, unfolded. 
+    Written on a napkin. 
+    Decades in the making...
+"@)
+
+$Book.AddSection(11,"Continued, Language Construction/Similarities (Object-Oriented vs. Functional vs. String-based)",@"
+    Some may say that PowerShell is a functional language, but it really is a lot more than that.
+    I suppose for the people that only know how to use commands that come with the operating system, then it's pretty 
+    easy to think PowerShell is just a functional language.
+    
+    However, PowerShell is an Object-Oriented language, just like CSharp is...
+
+    At least, whenever you do more than just use the default commands and functions.
+    Bash or (tsch/TCShell), are more FUNCTIONAL based, or even heavily STRING based.
+    ¯¯¯¯     ¯¯¯¯ ¯¯¯¯¯¯¯
+    Mainly because the output is a "stream" of individual bytes masked with characters...
+    ...characters marked with encoding...
+    ...encoding indexed with integers...
+    ...collections of integers being thrown into floating point calculations...
+    ...rounding the floating point calculations into percentages...
+    ...then doubles getting calculated by multi-tiered hex values... 
+
+    Now, all of these things happen in CSharp and PowerShell too... but in PS? 
+    EVERYTHING is either a single [OBJECT], or multiple [OBJECTS[]].
+    
+    If it's a single [OBJECT]? 
+    Well, it could definitely be VERY detailed. 
+    But, it could also be a list or a collection of objects. 
+    
+    In that collection, each of those objects has an entire collection of properties. 
+    Properties may contain single values, or multiple values. 
+    Values can actually be subproperties, keys, or additional values. 
+    Sometimes there may even be multiple objects that just so happen to be marked as values... 
+    ...within a single property.
+    
+    Then, you'll have to face yourself in the mirror. "They could go on infinitely inward, huh?"
+    
+    Yeah. 
+    They could. 
+    Because, if there ARE values that represent objects, then... there may be some recursive action going on, 
+    almost like Horton Hears a Who.
+    
+    Then what...? 
+    You might have an entire arsenal of nested objects each with THEIR own properties.
+    Each of those objects might have properties which hold a value of an additional object...
+    
+    Probably sounds confusing... 
+    Objects, properties, values... 
+
+    But, values can be nested objects.
+    Those nested objects might even have many properties with single values, or multiple values.
+    
+    Now you probably have no idea if I'm stating things metaphorically, or specifically... do you?
+"@)
+
+$Book.AddSection(11,"Quantum Physics, Entanglement, and Superposition",@"
+    The truth is, I could be stating one of those things. 
+    Or, the other.
+
+    However, what could ALSO be the truth, is that it really could be BOTH things simultaneously.
+    Or, neither of em. 
+
+    That's how quantum physics, entanglement, and superposition explain reality.
+    If that idea stretches your imagination a little too far...? Heh.
+
+    PowerShell can keep on going buddy. 
+    Now, wrap your head around THAT.
+
+    Whether NESTED OBJECTS contain VALUES that just so happen to be MORE NESTED OBJECTS...? 
+    ...each with their own PROPERTIES and VALUES... the truth is, you really COULD go on for seemingly eternity,
+
+    Nesting objects within values...
+    ...values within properties... 
+    ...properties within an object...
+
+    Before you know it... you'll realize that basically PowerShell has a lot more control than string based languages. 
+
+    That's why recursion is... mind boggling. 
+    CSharp has this control too, but... kinda needs to be planned out, to control it. 
+    
+    PowerShell is built around the concept of DYNAMIC, and thus, has a LOT more FLEXIBILITY.
+    It does have it's own limitations as well, but there's a happy medium...
+    Combining the strengths of CSharp and PowerShell is a process I continually conceptualize and expand upon.
+
+    Also, string based languages aren't capturing objects with their properties and values recursively inward, not 
+    unless a program is running and happens to be doing that, but chances are, that the program is outputting some 
+    text based derivative, like (stdout/Standard Out).
+
+    Whether that is/isn't the case, a master programmer has to build a construct that manages to do all of that, 
+    without breaking, or throwing an error. So, a master programmer has to be extremely considerate, and build the 
+    proper classes, set the proper constants, intialize the correct keys, and use mathematical models to build all 
+    of it... Or, they could just hope they get lucky.
+
+    They have to keep in mind how many nested objects, properties, and values might be in there, lurking beneath 
+    the surface of it all. Because if they don't...?  Well, the whole program will inevitably break apart, crash, 
+    or shut down. Then it won't be a program anymore... It'll be an error. Or, a long list of errors. 
+
+    Can't exactly call it a program if it doesn't work...
+
+    Suffice to say, this programmer, this keyboard warrior, whatever you want to call them...
+    ...they have to find a way to perform such an impossible task, one that can contain every class, object, property, 
+    and value... and if it goes in additional levels... well, what then, buddy...?
+
+    These are all of the things a developer has to keep in mind... all so that the the normal every day person can 
+    keep their sanity and wits. Probably doesn't sound fair, does it?
+
+    Them...? Thinking about how to reliably count the number of stars in the universe, and not break.
+    You...? Probably just getting a coffee at Starbucks to start your day.
+"@)
+
+$Book.AddSection(11,"Doing the Impossible",@"
+    If that just blew your mind...? Sorry. 
+
+    It's easy to get carried away with how much control there is, especially when just casually stating these words 
+    in a single sentence: "objects, properties, values, recursively, eternity" causes the speaker to start thinking 
+    about fractals, Rosen-Einstein bridges/condensates, Mandlebrot sets, and this guy:
+    ______________________________________________________________________________________________
+    | 01/27-31/20 | Dyan Beattie - The Art of Code | https://www.youtube.com/watch?v=6avJHaC3C2U |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    None of these things are really REQUIRED to build a program, or understand (PowerShell/any other language) but, 
+    they definitely help. Before I started getting carried away in explaining how PowerShell is FAR MORE than just a
+    functional language...?
+
+    Well, what I was alluding to is that a FUNCTIONAL language isn't exactly DESCRIPT about CONTROL over OBJECTS,
+    PROPERTIES, and VALUES... An OBJECT-ORIENTED language IS, as every component may need to be able to be 
+    calculated, translated, and duplicated with precision.
+
+    The possibilities don't stop there, either. But, Allow me to return to the subject of:
+"@)
+
+$Book.AddSection(11,"Object-Oriented vs. Functional vs. String-based",@"
+    String based languages like tsch ARE reliable, however...
+    It is very old, as it originates from (UNICS/Uniplexed Information and Computing System)
+    Which, eventually dropped the CS and traded it with an X, whereby changing UNICS to UNIX.
+    Only reason I know that it was ORIGINALLY named UNICS is because I read a portion of this guy's book...
+    ___________________________________________________________________________________________________________
+    | 11/24/95 | The Road Ahead by Bill Gates | https://en.wikipedia.org/wiki/The_Road_Ahead_%28Gates_book%29 |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    You would not believe how many things this smart bastard, BILL GATES predicted WAAAAY back in 1995...
+    Not only is he a smart bastard, but he's also a BILLionaire. One of the coolest ones out there, too. Side point.
+
+    Cisco routers & switches (or really, ANY good brand), use tsch.
+    Shocker, right...? Cisco networking devices using an operating system like tsch...?
+    No way...
+    That's impossible...
+    
+    I'm just kidding. It is possible. It's what DELL, HP, even UBIQUITY, maybe RUCKUS, or thousands of other 
+    brands actually use to FLASH the FIRMWARE on those NETWORK DEVICES. Tsch.
+    USER CONFIGURATION MODE and then GLOBAL/ADMINISTRATION MODE...
+    ...is like comparing NON-WHEEL to WHEEL in Bash/Linux.
+ 
+    While BASH isn't nearly as old as tsch, it takes a lot of inspiration from it.
+    Bash comes from the very widely authored realm of Unix/Linux/BSD.
+
+    And, not all Bash shells are created equal...
+    Many old (DOS/CMD/COM) based components are ALSO string based.
+
+    COM objects ARE CMD components, but- with the added kick of having some new functionality, since some wizards had 
+    the wireframe schematics, they chiseled in new accessiblility for PowerShell.
+    
+    Java and Python are BOTH string based, AND class/object based. Java/CSharp are VIRTUALLY IDENTICAL...
+    ¯¯¯¯     ¯¯¯¯¯¯          ¯¯¯¯¯¯ ¯¯¯¯¯      ¯¯¯¯¯¯¯¯¯¯¯¯        ¯¯¯¯¯¯¯¯¯¯¯
+    ...though, I mean that in terms of how the SYNTAX, as well as how code is constructed.
+    Most programming languages have SIMILAR SYNTAX, but making comparisons between them CAN be TIME CONSUMING.
+
+    Saying programming languages are IDENTICAL or VIRTUALLY IDENTICAL comes with some CAVEATS.
+    Typically, they're definitely NOT EXACTLY the same. 
+    Because, saying that would be ridiculous. 
+
+    But, in appearance, logical construction, and format... it's pretty easy to see how SIMILAR they are.
+    Python, is quite a different beast than anything else, but- it is very similar to standard C.
+    ¯¯¯¯¯¯                                  ¯¯¯¯¯¯¯¯¯¯¯¯¯                             ¯¯¯¯¯¯¯¯¯¯
+    Standard C has not a single (+/plus), nor two of them (++), nor does it have a (#/sharp).
+    That's what Python is, except it can do a lot more cool stuff than Standard C can.
+
+    Python is ALSO a very good language, very extendable, flexible, powerful and capable, but it is
+    not even remotely as flexible, powerful or capable as PowerShell... because it requires setup,
+    multiple components to install, and its console experience is rather detached from the script
+    editing. Unless you have a compiled executable. But, if it's an executable, then it doesn't
+    matter if you have the tools or devkits installed to build with it... it's ready to run.
+
+    If we're gonna grasp straws, PowerShell Core requires all of that on Linux/MacOSX/BSD too.
+    So, if you're using Linux or Mac OSX, THEN... Python is a GREAT choice. But, so is PowerShell.
+    On Windows, you have access to PowerShell Desktop AND Core. Then, it isn't much of a question.
+"@)
+
+$Book.AddSection(11,"Should I install Python...? PowerShell is just WAY too convenient...",@"
+    Guy : Should I use PowerShell (since it's already included on Windows) or, install Python...?
+          Decisions, decisions...
+          Do I use Python version 3.0.0, 3.1.0, or heck, maybe 3.9.4 is the way to go...? 
+          Maybe they're up to v4.0.0 now...
+          Jeez. 
+          So many versions. 
+          What ever will I do...? 
+          I want my CODE to work across MULTIPLE VERSIONS...
+          I mean, I could totally goof up and install a version that has a VULNERABILITY...
+          ...included in the setup package...
+          With PowerShell...? 
+          Well, Microsoft updates that constantly, so no Log4J type action.
+          Man. 
+          What should I do...? 
+          You know, if I *really* wanted to, I'll bet ya that I could *totally* start working *right now*, 
+          and not have to install a SINGLE COMPONENT at all...? 
+          But, that would be just WAY too easy, AND convenient. 
+          Not quite my style.
+          I feel like I NEED to install at least a DOZEN components FIRST, before I even begin... 
+          Sorry PowerShell, you're WAY too convenient.
+          Dudes at Microsoft being SUPER considerate all the time. 
+          What the heck.
+          It's REALLY annoying how CONSIDERATE they are...
+          AND consistent...
+          And, just, very skilled at making software...
+          What a bunch of jerks~!
+    
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Yeah, nobody has that conversation with themselves, do they...?
+
+    It's almost like the world's best software engineers knew what the hell they were doing when they built it... 
+    That's what *I* think when I hear PowerShell.
+
+    All jokes aside, Python IS extremely powerful.
+    It's nothing to sneeze at.
+    It can outperform PowerShell AND CSharp in many instances...
+    
+    But- does Microsoft use it more than CSharp or PowerShell? 
+    Pretty sure that's a NEGATIVE. 
+
+    If they're not using CSharp, they may use C++ if anything. 
+    That doesn't mean they WON'T use Python...?
+    Cause they will.
+    ______________________________________________________________________________________________________________
+    | 07/24/17 | James Powell: Wanna be a Python Expert...? Hm...? | https://www.youtube.com/watch?v=cKPlPJyQrt4 |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    I've gotten my hands dirty with Python, IF THAT ISN'T RATHER OBVIOUS...
+    But- translating how I program in PowerShell to Python requires me to have to SPEND MORE TIME FIGURING THINGS
+    OUT... And that's the CLINCHER HERE. Time. Investment in TIME, matters in EVERY REAL WORLD APPLICATION.
+
+    Someday I will use Python interchangably with PowerShell AND CSharp...?
+    But- they're not gonna be as flexible as PowerShell (in my opinion).
+
+    As for the folks at Microsoft...? 
+    Perhaps some of them occasionally dabble and moonlight with some Python script kiddies, as it has seen a lot 
+    of increased popularity recently, but- so has PowerShell. 
+
+    All things considered, Python has some strengths that aren't anything to joke about at all.
+    
+    But- it is:
+    - very taxing to keep up to date unless you're very involved in maintenance
+    - has security issues quite often as it is open source
+    - very susceptible to CVE's after each version has been distributed
+     
+    I know this because I use a derivative of FreeBSD for Security Gateway appliances, like pfSense/OPNsense.
+    I thoroughly enjoy the CHALLENGE of using these platforms to provide ENTERPRISE GRADE NETWORK SECURITY.
+    It's much more DIFFICULT than using something that COSTS A LOT OF MONEY and is DEVELOPED BY CISCO.
+
+    If I had mountains of cash to burn...?
+    That is the equipment I would purchase and use... because CISCO IS THE BEST THERE IS.
+    SIDE POINT.
+
+    Python is the most targeted codebase by far. Maybe I'm wrong, ECMA/JavaScript, PHP and OpenSSL get hit hard too.
+
+    But, I see basically every version of Python getting hit with CVE's, more than anything else.
+    It's harder to maintain cross-compatibility AND security, if you release an update for Python...
+    ...and within 1 hour of that update being distributed, there's a brand new CVE. 
+
+    Then the next version will need a few days at a bare minimum... to bug test and write. 
+    While Python is GOOD in many cases, I think it is basically DOS on steroids. 
+    I'm sure that's an OVERSIMPLIFICATION, but Python causes me to FEEL as if, it is the same thing that COM/CMD is.
+
+    Now, bringing it all back to comparing and contrasting with CSharp, since that's where this started.
+"@)
+
+$Book.AddSection(11,"Comparing/Contrasting CSharp & PowerShell",@"
+    CSharp isn't your standard issue, do-it-in-a-jiffy type of programming language... Nah.
+    It requires a LOT more meticulousness than PowerShell, as it is specifically, and strongly typed.
+
+    Whereas PowerShell allows the common lad to relax a bit. Cause... PowerShell knows just how high
+    CSharp sets its requirements. Consistently high too. 
+    That's how I know PowerShell was designed from the ground up by some guys at Microsoft who looked at each other 
+    one day, and said:
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    MS Guy1 : Hey, you know what bro...?
+    MS Guy2 : Sup bro?
+    MS Guy1 : I feel like CSharp needs to relax a little bit...
+    MS Guy2 : Bro. 
+              I've been thinking the same thing for a while now.
+    MS Guy1 : It's like... don't get me wrong.
+              I love writing in C#. 
+              But-
+    MS Guy2 : ...feels like somebody's breathing down your neck all the time, doesn't it?
+    MS Guy1 : Yep. 
+              Besides... we could totally make things easier on ourselves.
+    MS Guy2 : Well... Some guy named Jeffrey Snover told Red Rover to move over...
+    MS Guy1 : Oh yeh...?
+    MS Guy2 : Yeh. 
+              Now we have PowerShell.
+    MS Guy1 : Is that the super-command prompt thing called Monad...?
+    MS Guy2 : That's... 
+              ...the code name, yep.
+    MS Guy1 : I'm already impressed by the way its name SOUNDS... 
+              Sounds powerful.
+    MS Guy2 : I heard that it is.
+    MS Guy1 : Very impressive.
+    MS Guy2 : Dude. 
+              We could TOTALLY help make this thing do some ninja-grade CSharp type stuff.
+    MS Guy1 : ...really? 
+              Because, that's... 
+              ...something I could REALLY get behind.
+    MS Guy2 : Yeh, man. 
+              This thing's got potential. 
+              CmdLets, functions, variables...
+    MS Guy1 : It's almost like somebody COOL has been up to something that CAN'T BE STOPPED...
+    MS Guy2 : Not even almost. 
+              That's definitely what's happenin', I can feel it.
+    MS Guy1 : I'd be willing to bet that Google and Oracle will use it, too.
+    MS Guy2 : Don't say that bro... 
+              ...you'll jinks it.
+    MS Guy1 : *gulp* Dude. 
+              I... didn't mean to say it like that...
+    MS Guy2 : *shakes head* Great, dude...
+              What if this thing becomes way TOO POWERFUL and USEFUL now, huh...?
+              And then, Google and Oracle just, non-stop...
+              ...wind up using it more than WE will.
+              Then what...?
+    MS Guy1 : I don't know what I was thinking, to be honest...
+    MS Guy2 : Yeah, well... 
+              If it DOES happen to become *shakes head* TOO powerful...? 
+              Well, I'm blamin' *points* you.
+    MS Guy1 : Ah man, don't to that...
+    MS Guy2 : Oh, I'll tell everybody... OooOOOoHHhhH MS Guy#1 just had to go jinxing PowerShell YEARS ago...
+    MS Guy1 : Yeah, but this is where the worlds best software engineering takes place...
+    MS Guy2 : Obviously. 
+              Let's get it done. 
+              Fist bump on it?
+    MS Guy1 : Oh, you know it bro... *fist bump*
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Then, they got to work.
+    They (compared/contrasted) (C#/PowerShell), to build a new language in a way where dreams could become reality, 
+    visions could become artwork, and the sculptors of tomorrow...?
+
+    Even Michael T. Niehaus was involved in some of it being APPLIED to SERIOUS BUSINESS CENTRIC APPLICATIONS...
+    Hence, SYSTEM CENTER CONFIGURATION MANAGER, having a really “totally able to be controlled” aspect...
+    ...from PowerShell. Just like Hyper-V.
+
+    Which, to be FAIR...?
+    ________________________________________________________________________________________________
+    | 12/04/21 | [FightingEntropy(π)] FEInfrastructure Preview/Demo | https://youtu.be/6yQr06_rA4I |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ...Michael T. Niehaus' work with the MICROSOFT DEPLOYMENT TOOLKIT is what got me to START PROGRAMMING.
+    Side point...
+
+    As for how these engineers who had this conversation up above...? 
+    They spent every day at work, building and pounding away at this idea in the future.
+    They were considerate enough to know that EVENTUALLY, everybody would want IN on this COOL thing, PowerShell.
+
+    So naturally... they'd be doing their work within a Visual Studio like no other. 
+    When other companies asked:
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Companies : Hey Microsoft, could we like, BUY PowerShell from you...? 
+                It's really cool.
+    Microsoft : *chuckles* Yeah, I'm sure you and everyone else would... 
+                But- too bad, it's not for SALE... 
+                ...it's ours.
+    Companies : C'mon dude. 
+                Don't be so sheisty...
+    Microsoft : *sigh* We knew people would say that, but nah. 
+                It ain't happenin', cap'n.
+    Companies : Well, Microsoft...? 
+                *pouts* Guess we'll just have to use Bash or Python...
+    Microsoft : *scoffs* Fine. 
+                Have at it. 
+                We use those too.
+    Companies : Yeah, but you have PowerShell...
+    Microsoft : Obviously. 
+                Python and Bash are fine.
+    Companies : But, we REALLY wanna use PowerShell, cause we like it a lot...
+    Microsoft : Cool.
+                You can USE it, but it's not for sale. 
+                It's our pride and joy, 20 years of work.
+    Companies : It didn't take you guys 20 years...
+    Microsoft : Look, all you other companies couldn't comprehend how much thought went into it.
+    Companies : Well... 
+                ...if we can USE it, then... 
+                ...I GUESS that's good enough...
+    Microsoft : Fine. 
+                Go ahead. 
+                Thought you wanted us to just flat out sell the platform...
+    Companies : I mean... 
+                ...is it for sale...?
+    Microsoft : *sigh* No.
+    Companies : Will you ever let us know if it ever DOES become something you'd sell...?
+    Microsoft : Surely, you can't be serious...
+    Companies : Oh, I AM serious... 
+                And, don't call me Shirly. That's rude.
+    Microsoft : OoOOooOOhHhhhHh, alright there Mr. Naked Gun 33 1/3.
+    Companies : Airplane.
+    Microsoft : What...?
+    Companies : That quote is from Airplane, not Naked Gun 33 1/3...
+    Microsoft : Dude. 
+                We're Microsoft. 
+                We obviously know that quote is from Airplane...
+                Didn't even need to “Google search” it, either.
+    Companies : Nah...?
+    Microsoft : Nah.
+    Companies : *hangs head in shame* Alright, Microsoft... 
+                You win.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Now, I am pretty sure the above conversations have never actually happened, but I do know that the (men/women) at: 
+    _______________________________________
+    | One Microsoft Way, Redmond WA 98052 |...? They were under a LOT of pressure, to make this thing perfect.
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Basically, they saw how Americas founding fathers tried to make the Constitition perfect...?
+    And then they worked AS HARD AS THEY DID...
+    ...to make PowerShell perfect, too. Or, at least to TRY to come somewhat close.
+    That's something that WILLIAM GATES and STEVEN BALLMER may even nod their heads in agreement...
+    _______________________________
+    | Yep. That's... what we did. |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now, what'd they already have on hand, that was FIERCE, VERSATILE, POWERFUL, and sorta FLEXIBLE...?
+    Standard-issue C-Sharp. 
+
+    The thing that C++ has so many things in common with.
+    
+    Anyway, (comparing/contrasting) (C#/PowerShell) actually put Microsoft in a position, where they really can't 
+    even sell it. Why...? Cause it'd be like asking someone to sell their kids.
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Guy    : Hey.
+    Parent : Sup...?
+    Guy    : I see you've got MULTIPLE kids...
+             You should SELL me one of em.
+    Parent : ...what...?
+    Guy    : SELL me one of your kids, I'll pay top dollar.
+    Parent : Uh, dude, you better get on outta here, I'd NEVER sell MY kids...
+    Guy    : I only want (1) of em, not MULTPLE kids, dude...
+             Whaddya think I am, some kind of monster...?
+    Parent : You just asked me to SELL one of my KIDS...
+             So, yeah, I think you ARE a monster, to ask somethin' like that...
+    Guy    : C'mon buddy...
+             Don't be so DRAMATIC...
+             It's just (1) kid...
+    Parent : *pulls out his service pistol* You know, I was in the United States Marine Corps, right...?
+             *cocks and points it at the guy*
+             Now I'm gonna tell ya again...
+             You get on outta here and NEVER come back.
+    Guy    : WHOA, WHOA, BUDDY... ALRIGHT... JEEZ.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+    
+    I would say it is sort of akin to asking General Motors if they know how to make a GOOD vehicle that doesn't 
+    actually use any gasoline... The answer is that yes, General Motors DOES know how to make a good electric vehicle.
+
+    The problem is that they will never actually do that.
+
+    So, Microsoft selling PowerShell is a lot like General Motors making a good electric vehicle.
+    It's unfathomable. 
+
+    The truth is, General Motors has made FAR MORE electric vehicles... than any other car company on the planet. 
+    They just don't have any incentive to make them all that *well*. 
+
+    I'm sure if they tried, they could definitely make these things as well as Tesla does...?
+    But, I might be fooling myself OR OTHERS, by making a statement like that...
+
+    The problem is, finding any reason at all, to convince them to do such a thing.
+
+    I'm sure if you twisted Microsoft's arm, they could sell PowerShell and then build something to replace it. 
+    But, they're not gonna do that, just like General Motors will never make a good electric vehicle that uses 
+    NO GASOLINE, whatsoever. It actually cannot be expected, at any time.
+
+    GM has ALMOST made a good electric vehicle many, many times... but each time those "vehicles" ALMOST made it 
+    to market... they somehow *vanished*.
+"@)
+
+$Book.AddSection(11,"The Terrible Magician",@"
+    This is a bit of a tangent and this is gonna be a bit DETAILED and LONG WINDED, but I promise you...?
+    The tangent will coalesce back into the narrative of PROGRAMMING and the MORAL of the story will make itself
+    PERFECTLY CLEAR and RELEVANT toward the end.
+
+    In reference to electric vehicles, GM makes a better magician, or story teller, than a vehicle manufacturer.
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    GM   : Here kids, watch this highly rated electric vehicle get 400 miles per charge...
+          *Kids wait around for like a year*
+    Kids : Hey, GM... where's that highly rated electric vehicle that gets 400 miles per charge...?
+    GM   : It'll be out next year. 
+           Had a few issues.
+    Kids : What kind of issues...?
+    GM   : Burning through R&D cash reserves, researching how to make good batteries n stuff.
+    Kids : But, Tesla has been doing it for a while now...
+    GM   : That's Tesla though.
+    Kids : But, you guys get so many awards for the best vehicles in the industry...
+    GM   : Gasoline powered. 
+           That's why.
+    Kids : Thought you guys could make electric vehicles that were competetive...
+    GM   : Hell no, kids. 
+           We just SAY stuff like that to SOUND like we're experts.
+    Kids : That's... messed up. 
+           So, does the vehicle which gets 400 miles per charge exist...?
+    GM   : On paper it most certainly does.
+    Kids : On paper...? 
+           What does that even mean?
+    GM   : It means that we printed a piece of paper with the facts and figures of this thing.
+           It definitely exists alright. 
+           We just ran out of EV R&D money and built more gas cars.
+    Kids : So, why even tell people you're building an electric vehicle at all...?
+    GM   : Look kids. 
+           We would really prefer to build gasoline cars. 
+           That's what we do best.
+    Kids : But, what will you do when all of the oil on the planet is gone...?
+    GM   : We'll worry about it then, alright...? 
+           Now, scram. 
+           I need to go take a nap.
+    Kids : Wow. 
+           I've never met such an obnoxious magician in my entire life.
+    GM   : Look, I feel bad. 
+           Here's some pictures of the 2022 Chevy Corvette.
+    Kids : It does LOOK cool, but-
+    GM   : No, it's not electric powered.
+    Kids : Then, why would anyone want this thing...?
+    GM   : WHAT DO YOU MEAN, why would anyone want this thing...? 
+           It's got a lot of horsepower...
+    Kids : Does it have as much horsepower as the Tesla Model S Plaid...?
+    GM   : ...no.
+    Kids : How much does it cost...?
+    GM   : Like, `$120K.
+    Kids : I could buy a Tesla Model S Plaid for that much.
+    GM   : LISTEN KIDS... 
+           All you guys wanna do, is talk about the Model S Plaid, don't ya...?
+    Kids : Yeah. 
+           It's cooler looking, and WAY faster than this *hand wavin' around* 2022 Chevy Corvette...
+    GM   : But, ACTUAL experts designed this thing... 
+           We invested a lot of R&D money into it.
+    Kids : Weird. 
+           Actual experts made something that uses gasoline and is still slower than the Tesla Model S Plaid...? 
+           Doesn't make a lot of sense there Mr. Magician...
+           Probably could've spent that money making an electric car. 
+           But, a GOOD one.
+    GM   : Could've, should've, would've. 
+           So what...?
+    Kids : Maybe you guys just aren't very good at making cars anymore...
+    GM   : *scoffs* We'll ALWAYS be good at making cars there kids. 
+           Don't be ridiculous...
+    Kids : C'mon guys, lets go. 
+           President Obama might have to give this guy another bailout check.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Now, would GM ever openly state these things...? 
+    No, because that'd be WAY too honest...
+
+    Besides, they could've used that bailout check that they got, to finally do right by the American people, in the 
+    form of making GOOD vehicles, right here in America.
+
+    But, *checks watch* they, still haven't gotten around to it. 
+    I wonder why that is...
+    
+    Much like how Tucker Carlson and Sean Hannity have NEVER been interesting to watch...?
+    GM hasn't been an interesting vehicle manufacturer, since... like, WAAAAY back in the 80's, or the 70's.
+    Basically BEFORE Bob Lutz began to run General Motors, that's when General Motors was actually respectable.
+"@)
+
+$Book.AddSection(11,"Microsoft's Golden Standards",@"
+    Microsoft doesn't have this issue where they perform magic tricks or tell stories...
+    Well, let me rephrase that... They perform magic tricks that are SKILLFULLY executed, not TERRIBLY executed.
+    Not only do THEY know how real climate change is, but they never sound moronic, like, ever.
+
+    Also..? 
+    If they say they're gonna do something, or they say they know HOW to do something, then... they *definitely* 
+    keep to their word. No "vaporware" like GM and their electric cars.
+    
+    When General Motors and AIG needed a bailout check after Bear Sterns got wiped out of existence...?
+    Microsoft didn't need one at all. 
+    Might be because Steven Ballmer never put the company in a position to ever NEED one... 
+
+    Ballmer worked his ass off to make so many good things and ideas. 
+    _________________________________________________________________
+    | Slate PC | Windows 8 | Windows Phone | Zune | AI Chat bot Tae |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    I don't know why... but a lot of those ideas just landed on the market, terribly. 
+    Tae had some SERIOUS issues with using racial slurs, after it was launched. 
+    Then it had to be taken offline...
+    But the rest of these things were WELL DEVELOPED.
+
+    Ballmer had A LOT of STIFF COMPETITION as the CEO of Microsoft... 
+    ...none of those products were even bad.
+
+    Even STILL... Ballmer never asked Obama for a bailout check. And, that says a million words.
+
+    The truth is, in a similar way to how GM would never be caught dead making a good electric car, these experts 
+    at Microsoft would never even think about selling their 1) kids, nor 2) PowerShell.
+
+    I won't lie, I haven't ALWAYS had a consistently good opinion in reference to Mr. Ballmer's engagement policies.
+    However- give credit where credit is due. The dude did a pretty amazing job of running Microsoft.
+
+    However, it's in Satya Nadella's hands now, and this dude was born for it, so go ahead and:
+    _______________________________________________________________________________________________________________
+    | 09/26/17 | Hit Refresh | https://news.microsoft.com/hitrefresh/ | https://en.wikipedia.org/wiki/Hit_Refresh | 
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now, I haven't read Mr. Nadella's book, to be clear.
+    I will though.
+    I already know it's probably very good based on it's reviews, and the number of videos I've seen referencing it.
+
+    Already read a good portion of “The Road Ahead”, and that was ALSO a good book...
+    So, the tale of rediscovering one's self or sense of purpose... it's like a similar mission among experts everywhere.
+
+    Did Bob Lutz write a book or win a Pulitzer prize for running General Motors for 50 years...?
+    Nah.
+
+    So, the comparison with General Motors doesn't even really compare... 
+    Bob Lutz would have to be humbled enough and finally ask Elon Musk for advice on: 
+    "how to make a good vehicle that doesn't use any gasoline". 
+
+    I know that General Motors has SOME EV's out there now that SUPPOSEDLY keep up with Teslas...?
+    But I think the FACTS and FIGURES are ARTIFICIALLY INFLATED...
+    Not to mention, it took Tesla reaching MASS PRODUCTION before General Motors said to themselves...
+    ___________________________________________________________________________________________________________________
+    | Alright, so we REALLY need to make some decent electric vehicles now, ffs. ← LAZINESS in American auto industry |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    I'd be happy with Lutz even learning how to make a GOOD gasoline powered car, where the PARTS aren't made with 
+    INTENTIONAL DESIGN FLAWS. I mean, let's face it...
+
+    Anyone could buy a European car, and that will automatically be worth more than any American car. Right off the lot. 
+    It doesn't LOSE as much value as an American car. Why?
+    
+    Because them Germans and Italians are a LOT better at making cars, than Americans (except for Tesla). Seriously.
+    Even the Koreans, Japanese, and Chinese folks can make HIGHER QUALITY VEHICLES for LESS MONEY.
+
+    What that actually means, is that people in America don't really care if they do a good job. Some Americans 
+    take offense to this... “Yeah, America sucks at making quality vehicles.”, and I don't know why – it's TRUE.
+    They SHOULD be getting offended by people that don't pay any attention to the mistakes they make, because 
+    they ultimately cost everybody even more in the long run.
+
+    I really shouldn't say anything negative about Ford or even Daimler-Chrysler, cause it's not exactly their 
+    fault that they don't make MOST American cars. The ones they DO make, are typically better than anything GM 
+    makes, hands down. 
+
+    Here's what GM does very well... Selling things that break.
+    Selling things that BREAK is DEFINITELY a LUCRATIVE business- GM is the best there is, at THAT.
+
+    That really isn't something you really want people to consider your company to be the BEST at...
+    ...because it means YOUR company is the BEST at making something TERRIBLY DESIGNED.
+
+    That's the beginning and the end of that conversation.
+    But, maybe that's just my opinion. 
+
+    They found success selling convoys of vehicles that get thrown together with parts that someone intentionally 
+    made poorly. Because, if it breaks a lot? That generates more profit, and to them, if it generates more profit 
+    because it broke more often, then that is actually a genius plan. 
+
+    So, their eating-leaded-paint-chips mentality, where they made more money, caused them to believe they did an 
+    AMAZING job. But- stupidity will do that to ya... 
+
+    Those automatic window controllers need to be replaced every other winter on one of the doors.
+    Doesn't matter if you had the driver rear door fixed last year, what matters is that this year, the OTHER one 
+    will ALSO suddenly break. You might feel like the boogeyman is just swinging around from one part to the next, 
+    randomly breaking these things. 
+
+    Heh. That's what they're very good at making people think. 
+    Now that the OTHER rear window motor is broken...? 
+    Each time you drive it in the winter, you'll feel like your air conditioner is on.
+    But, that's mainly cause the rear window motor is broke, and the window is wide open. 
+    
+    So, that real familiar blast of arctic air you feel...? It's genuine. 
+    Because... you're like everyone else who owns a GM vehicle. 
+    You: "There's no way that they make this car to break like this..." 
+
+    Yeah there is, actually.
+    They don't actually care how ignorant the manner of generating more profit is, what matters is whether the 
+    garbage they made generates a net profit at any cost whatsoever. Even the Germans would never do something this 
+    moronic to something they put a lot of time, and effort into.
+    
+    GM just does not care about the customer's opinion at all... 
+    Even if you are really cool or, important. 
+    Why...? 
+
+    As soon as the really important person says something to their buddy, someone at GM will wait for that person 
+    to leave, and the moment they shut the door, they'll say: 
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    GM : Yeah right pal. 
+         Stop making terrible parts that break a lot...? 
+         *chuckles* Heh.
+         YEAH RIGHT, DUDE...
+         Take a hike. 
+         There's just no real money in making cars that don't constantly break down. 
+         My grandfather tried that for like 50 years... he was constantly broke. 
+         Now look at him.
+         That dude may have built this company with his bare hands...? 
+         But- if he had only figured out how to source consistently lower quality parts that break more often...? 
+         He would've been a billionaire.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    And now that person or those people happen to be living quite comfortably. 
+    They make damn certain that THEIR vehicles aren't equipped with the defective products. Nah. 
+    Not theirs.
+    Microsoft would never, ever, not in their entire existence, implement intentional design flaws.
+"@)
+
+$Book.AddSection(11,"Insulting General Motors and Big Oil",@"
+    Seriously. That's because they have ACTUAL gold standards... not "quote unquote gold standards".
+    When the FBI guys drive around in the State issued GMC Yukon Denalis, they may say:
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    FBI Guy : Man, why does this thing always smell like burning oil...?
+    Me      : Well, it could be because, that's what it's doing.
+    FBI Guy : There's no way, dude... 
+              This is a deluxe edition Yukon Denali, brand new, and it has like 10K miles on it.
+    Me      : But- it was made by General Motors... 
+              Right...?
+    FBI Guy : Yeah.
+    Me      : WELL, if GM made it, then there IS a way that it's burning oil, because... 
+              ...EVERY GM vehicle does that. 
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    So, someone who thinks they're driving a good vehicle, they'll give the manufacturer the benefit of a doubt 
+    because of how much money they spent on it. With a name like General Motors, the more money people spend, the 
+    more innocent they look. But, the oil filters will ALWAYS have a slight groove on the thread where the filter 
+    screws into place and that's right where the oil starts to leak/burn, so the truth is:
+   
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Me : Nah, it's not burning oil...
+         It's just burning AND leaking oil. 
+         Big difference. 
+         When it DOESN'T leak...? 
+         It burns. 
+         When it DOESN'T burn...? 
+         It'll just leak. 
+         Can't have one without the OTHER... 
+         And that's the best of qualty General Motors craftsmanship.
+         Straight-up Bob Lutz 101.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    The reason why it sounds ridiculous, is because sometimes the truth is stranger than fiction.
+    There's a combination of leakage AND burning occurring simultaneously. 
+    Maybe it only happens on (7/8) GM vehicles, and the (1/8) vehicles that doesn't leak...? 
+    Well... it just BURNS the oil FASTER than it can leak. 
+    So, someone might try to tell me that makes them an exception. 
+
+    But, it doesn't.
+    Literally 100% of their vehicles do this. 
+    I KNOW WHAT I'M TALKING ABOUT BECAUSE I'VE OWNED LIKE A DOZEN VEHICLES MADE BY GENERAL MOTORS.
+    THEY ARE ALL POORLY MADE <ON PURPOSE>.
+
+    They don't make a single vehicle that doesn't burn oil, or doesn't leak.
+    Wanna know why...?
+    Because then people BUY MORE OIL.
+
+    Suppose someone actually asked GM executives,
+    "Hey, do all GM vehicles leak/burn oil...?" 
+
+    Cause I'll tell you right now, they will say no, and if you ask them to PROVE it...? 
+    They will say: “We're too busy.”
+
+    That's cause they're not busy at all, and they just lied about whether their vehicles all burn/leak oil. 
+    That's how they operate. The truth is, it doesn't matter WHO spends WHAT amount. If a GM vehicle is involved 
+    when someone smells oil or something burning,...? 
+
+    That's because the engine of that vehicle is doing just that.
+    Believe it or not, but a Chevrolet Impala, uses the same exact chassis as a Cadillac CTS.
+
+    Even if the Cadillac has leather seats and a much more powerful engine... after 20K miles? 
+    WELL, the transmission will OCCASIONALLY start SLIPPING into 3rd gear. 
+
+    Why? Uh, intentional design flaw, helps to make certain that the transmission is on track to fall out 
+    RIGHT AFTER the warranty expires. If you think I'm kidding, I'm not. I might sound like I'm making some of 
+    this stuff up, but the only thing I am making up are these various conditions... 
+
+    Every vehicle has these problems INTENTIONALLY implemented. 
+    My 2004 Pontiac Grand Prix had a 3.8L V6, bumper to bumper warranty, and when driving the vehicle, my car would 
+    make these POPPING noises every time I would hit the accelerator, and then again when I'd hit the brakes. 
+
+    That's because the dealership I bought the vehicle from, Bill Cass' Northstar Chevrolet...? 
+    They had ASE certified technicians for sure.
+    They would CLAIM to have done work on my vehicle. 
+
+    BUT- when I'd leave, the NOISE was actually STILL there. 
+    They would give me an EXTREMELY DETAILED LOADOUT of ALL the “work” they SUPPOSEDLY did... right...?
+    But I would still hear the god damn noise that prompted me into bringing the vehicle in for service.
+    
+    So, I kept saying to myself
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Me : What if they're not actually doing any work on my vehicle...? 
+         Every single time I bring it in for warranty work...
+         ...it has the same exact problems it did before I dropped it off. 
+         Virtually identical...
+    
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Then when you ACCUSE them of not doing the work, they'll try to make you feel bad like:
+    
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Alex : Oh, I thought you and I were cool, buddy... 
+           Can't believe you're actin' all psycho now...
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    That person is trying to blame YOU for being RIGHTFULLY pissed off at THEM, for lying to you.
+    I was just TOO YOUNG to realize that I should CAPITALIZE on my GUT INSTINCTS like that, because so many people 
+    make a living off of being COMPLETELY DISHONEST. This would include the POLICE, LAWYERS, JUDGES, and DOCTORS.
+
+    That's because I was charged for a warranty that they made no effort to provide. 
+    They SAID that they did all of this work (allegedly), but if the vehicle still makes the SAME NOISES before it 
+    got dropped off, and continues to make those same exact noises AFTER it's picked up...? 
+
+    WELL... 
+    __________________________________________________________________
+    | Occams Razor - the SIMPLEST EXPLANATION is most likely correct |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Someone expected that their personality APPEARED to be trustworthy LOOKING, and that was...
+    Bill Cass' Northstar Chevrolet
+    I mean even ITT Technical Institute got involved in this charade too...
+
+    Don't get me wrong here, it's not like ALL of the people at GENERAL MOTORS are involved.
+    Most of their employees aren't intelligent enough to know that the people who OWN the company, they do this.
+    Same goes with many of the employees at ITT Technical Institute, they may not have been intelligent enough 
+    to know that their COMMERCIALS, and STUDENT LOAN PROGRAMS were basically committing PREDATORY LENDING PRACTICES.
+
+    That's just how the game called “AMERICA” is played, my friends.
+
+    Yeah. That's right. Some people don't care if you catch them lying to you, as long as they LOOK
+    like they are a trustworthy person, they can 1) say, or 2) do whatever.
+
+    As for GENERAL MOTORS, my engine needed to be replaced at 107K miles, just 7K miles outside of the warranty.
+    Wanna know how much that cost me...? About $6,000. I paid for that, too.
+    THEN, at 130K miles...? Transmission fell out. Another $6,000 right there. I paid for that too.
+
+    So it just goes to show that DEALERSHIPS and GENERAL MOTORS are LYING SCUMBAGS sometimes.
+
+    I sorta told these useless bastards at Northstar that the vehicle had some problems. One guy once said to me:
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Alex : Sometimes a vehicle just, it gets in an accident or something...? 
+           And, it never drives right after that.
+    (that dude may as well have said...)
+    Alex : It's not actually gay if you're like me, and you put another mans' penis in your mouth...
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    ...and it would've been JUST AS CREDIBLE of a statement. To be fair...? I don't think the dude did that.
+    I'm just saying, if that dude wasn't such a lazy, lying cocksucker... I would've paid off the vehicle and gotten
+    maybe 280K miles on the vehicle BEFORE it needed a BRAND NEW ENGINE OR TRANSMISSION...
+
+    But, because he WAS a lazy, lying cocksucker...? Then I had to SHELL OUT AN ADDITIONAL $12K.
+    For a vehicle that originally cost $17K.
+    Almost like it was a TOTAL WASTE OF MY MONEY.
+
+    It's not like I have something against a dude who prefers to do that, sucking some other dude's dick...
+    ...but it's too much information for the given situation... Ya know...?
+
+    I told this dude that my engine AND transmission kept making strange vibrating noises, and he's trying to tell 
+    me about his sexual fantasies... Doesn't make a whole lot of sense, right...? 
+
+    An ASE certified technician from Northstar Chevrolet, named Alex...? 
+    But, surprisingly, everyone thought he was cool as all hell. 
+    I thought he was an idiot that PRETENDED to do actual work, and my god, I was correct after all.
+    Northstar Chevrolet has been LONG GONE... for a pretty critical reason.
+    
+    Anyway, had this feeling for a loooong time, that the engine and the transmission had serious issues. 
+    I felt the transmission making some strange vibrations when it had like, 29K on it. 
+    All the way til 130K when the transmission died on me too. Still had another year of payments to make on it.
+
+    But guess what...? 
+    GM sucks at making cars. 
+    They make ok trucks, but even they break down a lot.
+    
+    My friend had a 2005 Chevy Silverado, guess what failed in it about a year before he was done paying it off...? 
+    ...the engine. Yeah. I don't know why people say they make good stuff, especially when their AWESOME DEPENDABLE
+    VEHICLE just so happens to ALSO break down frequently.
+
+    So, not only do they suck at making cars, but they also suck at providing necessary services for the warranties.
+    Almost as if they're a TOTAL WASTE OF MONEY.
+
+    Because if you're like me, you'll notice that they don't actually do any work.
+    I actually feel bad for the dude Andy, because I actually believed him, but sometimes even with him, 
+    I'd get the damn car back and magically, I would realize that if they did something at all,
+    it was barely noticeable. 
+
+    They probably did do PORTIONS of the things they told me they did, but I spent an additional $12K on: 
+    ____________________________________________________________________________________________________________
+    | Replacing the ENGINE and the TRANSMISSION before the vehicle was PAID FOR. So, they were definitely lazy |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Each time, I had a feeling that they literally charged me a LOT more money to do NO ADDITIONAL SERVICE to my 
+    vehicle. I financed a $17K car, and wound up paying about $35K when all was said and done with replacing the 
+    engine 3.5 years in, and then the transmission 6 months later. 
+
+    Still owed another 18 months worth of payments when I had to shell out $5K for a new engine. 
+    Then 12 months left when the transmission failed, that was an additional $6K. 
+    I chose to buy this vehicle because I had hoped that buying a new car from a dealership, was a good idea.
+    Turns out that it was one of the WORST ideas I've ever had...
+
+    So, I realize people might say "Why do you seem to think Bob Lutz is the problem...?"
+
+    It's literally cause he was the director of GM for about 50 years, and ALL of my GM vehicles have had similar 
+    problems. Something ridiculous...? Bob Lutz probably had something to do with the LINE being drawn through the
+    ENGINEERING BLUEPRINTS somewhere.
+
+    Sometimes the high beam switches are like $400 bucks, and they'll break after like the first 15K miles. 
+    Bob Lutz probably told everybody that makes them, 
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Lutz : Hey, use cheap plastic, but... keep charging for like gold plated ones. 
+           That'll show everybody...
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    What I've realized, is that in order to purchase a GOOD vehicle that GM claims to have made, it has to have been 
+    made in some totally different continent, for instance, Australia. The Pontiac G8 was a really sweet car. But, 
+    Bob Lutz had NOTHING TO DO with THAT vehicle being made. Nah.
+    
+    HOLDEN, in AUSTRALIA, actually made it. 
+    GM took credit for building it, cause why not...? 
+    The 2003+ Pontiac GTO and the Pontiac G8 were both made in Australia. 
+    Not America. 
+    That's the ONLY reason why they were both REALLY GOOD cars. 
+
+    Now, had they been made here in the United States...? 
+    Then, they would've never been as well made.
+
+    You gotta figure, even vehicles that wind up getting fitted with bulletproof glass to protect former-governor 
+    Cuomo, the former governor of New York that somehow had 11 women accuse him of something he supposedly would 
+    never do... 
+
+    If GM made that thing...? 
+    It's got many design flaws too.
+    Maybe if you throw a tennis ball at Cuomo's Yukon Denali, it could cause the transmission to fall out. 
+
+    So, throwing it into 4-wheel drive, and going off roading with it, it's a pretty extreme activity... 
+    ...it'll be engineered WELL for a task just like that... 
+    But- a properly thrown tennis ball that hits the right spot, will cause that transmission to immediately fail.
+    
+    Then what...? 
+    Dude was just going off-roading and won a championship amongst hundreds of other dudes off-roading in THEIR
+    trucks... But as soon as the trophy girl placed the FIRST PLACE TROPHY on the HOOD of the truck...? Ah man...
+    The truck was revving it's engine alright, but now the transmission appears to have fallen out... it's not
+    goin' into gear anymore.
+
+    A lot of people will overlook stuff like that, a (little tennis ball/trophy) versus a $12K transmission... 
+    ...the (tennis ball/trophy) somehow wins. At that point it's MORE than just dumb luck.
+
+    Maybe the hood won't stay up, the hydraulic pumps that are supposed to automatically hold the hood up, they 
+    have a seal that breaks because of a design flaw. They'll work for like 18 months reliably, and then magically 
+    one day, the seals met a condition where they matched equilibrium with the environment. 
+
+    After that point, it's gonna hit ya in the head. So, if you want the hood to stay up without the pole...?
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    GM  : That'll be $500 bucks.
+    You : I don't wanna pay that.
+    GM  : Don't wanna pay us $500...? 
+          Oh. 
+          Looks like you'll need that pole then, chump...
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Even if people get them fixed, that's another $250 each, and they may last 18 months, if you're lucky. 
+    But I have a WAY better idea... What if the people who made them, actually built them to last a lot longer than 
+    that...? Ya know...? I would've thought that they could last like 10 years. Or more. 
+
+    Sorta like parts on a German car, they like, last a LOT longer for some STRANGE reason.
+    
+    On a GM though...? Oh nos. 
+    You get like 6 months max before something else falls apart.
+    
+    Sometimes they design brake rotors and calipers so that even a brand new set of brake pads will sound like the 
+    pads are scraping the rotor, but that's because the calipers have a slight bend in the hydraulic line which is 
+    meant to cause the brake pads to pinch in at a slight angle, and that causes the pads and rotors to get malformed 
+    and start warping right off the bat, causing the vehicle to feel 'dog legged' when coming to a stop... 
+
+    You'll say "I literally just changed the god damn brakes on this..." 
+    But, they don't care. You need to buy more already...
+
+    Or, else you're not cool in their book. 
+    They were installed correctly, and the calipers are good.
+    The problem is, they make these things poorly, rather consistently.
+
+    While they really could make things easier on everybody...? 
+    Well, making all of these things with no flaws implemented off the rip, puts less money in their pockets... 
+    ...they don't like THAT... nobody does.
+
+    So, as soon as they hear something like LESS MONEY...? 
+    Their voice starts TRAILING OFF. 
+
+    Cause you said something like LESS MONEY FOR THEM, and now they're trying to stay positive, drowning you out.
+    LESS MONEY for them sounds like a traumatic experience. 
+    They may even bawl at the eyes, just like Prince Andrew does when he sees the picture of him and Ms. Guiffre.
+    Or Andrew Cuomo does when he sees the picture of him with Brittany Commisso. Ya know...?
+
+    If their business isn't generating enough profit from parts made for that vehicle, then to them...?
+    That means it was actually poorly designed. 
+
+    If it gets better gas mileage, sustains an impact in an accident, way better than their typical vehicle, 
+    AND it has NO recalls or defective parts...?
+    They will actually consider that a failure on their part. 
+   
+    Yeah. 5-star crash safety rating...? 
+    That's bad...
+
+    These factors just don't generate the type of profit they would PREFER to see... 
+    We're talkin', they look for any stupid flaw that seems to happen a lot... 
+    ...and when they notice this problem being super widespread across their entire fleet of vehicles...? 
+
+    They will actually track down that manufacturer and they'll offer to award them with a contract in order to 
+    mass produce those defective parts.
+
+    In order for a product to be successful in GM's eyes...? 
+    It can only be considered successful if it breaks a lot. 
+    If a car has a LOT of these parts, then they will HEAVILY promote that vehicle. 
+    A lot of ridiculous things that suddenly go bad for next to no reason at all, they all get their hopes up. 
+    Mainly because they have eyes for this kind of thing, Bob Lutz was the best in the industry at this task. 
+
+    So, now they know a poorly developed part when they see one, and when OTHER car companies avoided using these 
+    parts...? Well, that's pretty dumb for them to do. Because, General Motors will shake their heads and double down.
+
+    Their eyes light up with delight. 
+    They move heaven and earth to convince the part manufacturers, to “live a little”. 
+
+    It has to be fairly believable when these parts "randomly" break, that it's no coincidence at all.
+    Nah, you're just some psychotic individual to suggest something like that... that's why they're industry leaders.
+
+    The sad truth is, that is why Bob Lutz was the director of GM for over 50 years. 
+    He was very gifted at tracking down these terribly made parts, and then flooding every vehicle he could with 
+    THOSE consistently terrible parts... It might sound ridiculous, but this dude actually has a lot more experience 
+    than Elon Musk or Tesla, at making electric vehicles AND terrible cars.
+
+    Even with Elon Musk AND Tesla BOTH having a LOT less experience than GM, Ford, or Daimler-Chrysler... 
+    ...all of that is irrelevant. Why...? American car corporations worry more about profit, and less about the 
+    quality of their products. With other corporations and industries, you get a lot less of an EVIL BASTARD vibe.
+
+    Too worried about BURNING and LEAKING oil... not about GAS MILEAGE or SUSTAINABILITY. 
+    The MORE MONEY they can CONVINCE people to WASTE...? The BETTER.
+"@)
+
+$Book.AddSection(11,"Climate Change",@"
+    That means they have MORE to give to RUPERT MURDOCK, SEAN HANNITY, or TUCKER CARLSON, which works great for them. 
+    To them...? 
+    They don't care about wildfires.
+    Nor the plastic in the oceans. 
+    Nor the cancer people contract from exhaust and smog.
+    Nor the many tornado outbreaks.
+    Nor the flash floods.
+    Nor the hurricanes.
+    Nor the ocean levels rising. 
+
+    Nah. 
+    All of that stuff is a lot less important to them. 
+    Actually, all of those things are A LOT LESS IMPORTANT, than these people, in their eyes. 
+    So, if many animals and plant species keep going extinct...? 
+    
+    They obviously rationalize with themselves, that those animals or plants probably didn't have what it takes to 
+    exist in THEIR world. Because they figure, if those animal or plant species were worth a damn, they'd still be
+    around... and that's what they say to themselves. 
+    Keeps em optimistic about the future...
+    
+    I realize, some people might think it's alarming that the car companies that keep building gas powered cars think 
+    all of these things, but what's worse is how they say nothing or even deny it, when their ACTIONS CONSISTENTLY
+    PROVE OTHERWISE. 
+
+    To them, they just don't have what it takes to do what Elon Musk is doing with Tesla, it's called TALENT. 
+    What Musk/Tesla is doing primarily considers that oil will eventually all run out. 
+
+    If that happened TODAY, how screwed would we be? Very. 
+    If we ran out of oil, right now? 
+    A lot of people would die, very quickly. 
+
+    So, if the world ran out of oil TODAY, the question then becomes, are we currently prepared for that much loss 
+    of life...? Well, no. The Doomsday clock has been ticking the whole entire time, and people just have no earthly
+    idea how close we are to an extinction level event. We cannot moderate ourselves, even the smartest people on 
+    the planet have nothing at their disposal to restore order.
+    
+    So, then the question should really be, will GM still try to sell these 2022 Chevy Corvettes when there's no oil 
+    or gas left...? Yep. They sure as hell will. They will know that there's no way to enjoy or do anything with a 
+    vehicle that has a 20th century power source, gasoline. 
+
+    So these idiots just keep making/selling the 2022 Chevy Corvette, even when ALL of the gas is gone. 
+    Why...? I think it is because they're MENTALLY HANDICAPPED, because `$``$`$`$`$. 
+    It's a PERFECT explanation... isn't it...?
+
+    If they AREN'T MENTALLY HANDICAPPED, then my next best suggestion is that they should consider BUYING the 
+    vehicle, instead of SELLING it... As the effort might allow them to catch on to how moronic the idea is. 
+    Ya know...?
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Them : Hey, wanna buy a 2022 Chevy Corvette...? 
+           It looks insanely cool.
+           Oh wait, I gotta pretend to be the guy buying it... 
+           Who's gonna sell it to me though...?
+           Damnit. 
+           Maybe this was actually a really stupid idea, to try and sell this car now...
+           OoOhh, just sell myself a 2022 Chevy Corvette when there's no more gas left on the planet.
+           How dumb am I...? 
+           My god. 
+           I can only imagine how many other people felt when I asked em...
+           They probably thought. "Wow. This dude is a total moron... isn't he?"
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Maybe everyone on the planet should consider that these people lie to themselves every single day. 
+    Standard issue Tucker Carlson and Sean Hannity. 
+    They might say climate change isn't real, NOW, but later on when they're all alone... 
+    ...and they realize that the weather is DRASTICALLY DIFFERENT than it used to be... 
+    they'll have this startling idea...
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Them : You know... climate change probably WAS real that whole entire time and I was just some overpaid shill 
+           whining on national television about everything...
+           Ah, god. 
+           That IS what I did. 
+           Wow. 
+           I feel like a complete idiot...
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    For the longest time, they invested so much energy into lying to themselves, now they're telling themselves the 
+    truth, and it sounds so foreign. They didn't realize just how moronic they sounded to so many people... Not only 
+    do they lie to themselves, but they lie to everyone else too. 
+
+    That's because they lack the ability to tell a single truth about anything at all.
+    If they COULD tell anybody the truth, they would've all decided to help Elon Musk build Tesla, and the batteries.
+    Why not sooner...? Just cause. Gasoline used to be extremely abundant. And then one day, it'll ALL be gone.
+
+    Why don't they do that, help an actual professional get the job done... ya know...?
+    Well... it'd be wishful thinking, that's why...
+    They're MENTALLY HANDICAPPED because of the ``$`$`$`$$, that's why.
+    These people are in absolute denial to think OTHERWISE.
+
+    Just like Tucker Carlson and Sean Hannity say "climate change isn't real..."
+    I'm not going to assume that they know any better, because they might not at all.
+    You could SHOW THEM...? But- it's like trying to tell some MENTALLY HANDICAPPED person a joke.
+
+    Sometimes you have to masterfully explain to some dude that gets paid millons of dollars every month, that all 
+    the money they keep getting paid won't do them any good if the shit hits the fan, and they declare martial law... 
+    Or, if they get themselves killed.
+    Or, even both.
+
+    Trying to make SUGGESTIONS to either of them, is bound to cause some confusion.
+    As they may think someone is stating intent, rather than through the same sort of rhetoric they EACH use to 
+    sound increasingly more moronic, each additional appearance they make... someone should tell them, it is a 
+    true statement... doesn't matter who says it about anybody.
+    
+    It's still true. 
+    From what I know about death, nobody has ever been able to live comfortably, and maintain their finances really 
+    well, if at some point, they became a corpse. Ya know...?
+    Corpses are NOT HISTORICALLY KNOWN, for making FINANCIALLY SOUND INVESTMENTS...
+    If anything, they're a real DRAG to be around, might smell...?
+    Might not look like they're doin' too well...?
+    But that's because CORPSES are typically not alive to maintain their APPEARANCE or REPUTATION...
+
+    Sorta puts a damper on being able to live comfortably... or manage finances. Or really, anything.
+    But you know, it can't hurt for someone to use some poetry and descriptive scenes, in order to comfront their 
+    own mortality from time to time. In reality, Steve Jobs did that quite a lot.
+
+    He was a better presenter and public speaker, than these Fox boys ever were... and could phrase an entire life 
+    story, as rhetoric... When he told people that he didn't want to be the richest guy in the graveyard, I'm pretty 
+    sure he put a lot of thought into the phrase before he ever said those words out loud.
+
+    So, even though the dudes on Fox News constantly spam people with THEIR rhetoric, they may not get it if someone 
+    else does that same exact thing in return.
+"@)
+
+$Book.AddSection(11,"Skit [~] Steve Jobs: 'You've baked a lovely cake...'",@"
+    What if everybody just showed up on their set, and just started phrasing rhetoric too.
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Guy     : Steve Jobs "You've baked a very lovely cake, but you've used dog shit for frosting."
+    Carlson : Well, why would anybody do that...?
+    Guy     : I don't know, I think it's a metaphor.
+    Carlson : What do you think it's a metaphor for...?
+    Guy     : I could ask you the same question... you know?
+    Carlson : Well... 
+              ...to me...? 
+              Sorta sounds like maybe people shouldn't shit where they eat...
+    Guy     : Hey~! 
+              That's- quite the interpretation~!
+    Carlson : Yeh. 
+              *chuckles* Heh.
+              Pretty good one eh?
+    Guy     : *chuckles* Lol. 
+              Nah, not at all.
+    Carlson : But it makes perfect sense to me...
+    Guy     : I suppose people shouldn't shit where they eat, but that's not what it's about at all.
+    Carlson : Well... 
+              I tried pal. 
+              I don't know what it is supposed to mean.
+    Guy     : It means that if you're gonna do something phenomenal, go the full measure.
+              Otherwise, people are gonna detect such a really poor choice when they (taste/smell) the dog shit
+    Carlson : Alright. 
+              I can see how that makes sense.
+    Guy     : Yeah, but like usual, you needed to have it explained to you to have an opinion about something.
+    Carlson : ...I have my own opinions sometimes...
+    Guy     : Yeah. 
+              You thought the metaphor was for not shitting where you eat...
+    Carlson : It's a good bit of advice...
+    Guy     : Why don't you follow something like that...? 
+              Ya know...?
+    Carlson : I do not shit where I eat...
+    Guy     : Could've fooled me, buddy.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Steve Jobs was a smart bastard for a number of reasons, not just cause he started Apple and invented the iPod, 
+    iPhone, and iPad... though they definitely helped.
+    
+    He just truly didn't understand the sense of hoarding everything he could, and just keepin' all that stuff to 
+    himself. Nah. Not him. He didn't care to be the richest man man in the graveyard...
+
+    But- the quote really means that people can't use money if they get themselves killed.
+    So, when someone does something for years in exchange for millions of dollars, and the shit his the fan...? 
+    Then, people may no longer be able to purchase amenities, gas, supplies, or food.
+    
+    Cause it's all gone... 
+    Then whoever didn't prepare for the situation...? 
+    They're all screwed.
+"@)
+
+$Book.AddSection(11,"Martial Law",@"
+    It stands to reason, that this idiot might actually be surprised when he tries to go to the store and use some 
+    of those millions, when the world is in a state of martial law.
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Carlson  : Ah, man. 
+               Didn't realize just how moronic it would be...
+               ...to assume that the shit would never ACTUALLY hit the fan... 
+               Jeez. 
+               I really am not a smart dude, am I...?
+    Soldier1 : *pointing rifle at Carlson* Are you Tucker Carlson or some shit...?
+    Carlson  : Yeah, that's me.
+    Soldier1 : What the hell are you doin' here...? 
+               It ain't safe buddy.
+    Carlson  : I... 
+               ...forgot I can't spend any money now.
+    Soldier1 : That's... 
+               ...gotta be the dumbest thing I've ever heard a man say.
+    Carlson  : You know, how was I supposed to know ahead of time, that this was gonna happen...?
+    Soldier1 : *stops pointing the rifle at this guy* You really are a helpless idiot... 
+               ...aren't ya?
+    Carlson  : Look pal, you don't have to be so mean about it...
+    Soldier1 : *yells to his buddy who's a fair distance away* Hey dude~! 
+               You're never gonna believe this, but guess who I found~!?
+    Soldier2 : *voice from a slight distance* Who~!?
+               Who'd ya find~?!
+    Soldier1 : Friggen, Tucker Carlson, man~!
+    Soldier2 : *distant* Tucker Carlson... 
+               ...isn't that like, the guy from Fox News, Tucker Carlson...~!?
+    Soldier1 : Yep~! 
+               It's him alright...~!
+    Soldier2 : *distant* You're right dude~! 
+               I don't believe ya~! 
+               Dudes' a friggen millionaire~!
+    Soldier1 : Well, come check him out~! 
+               See for your yourself~!
+    Soldier2 : *distant* Alright, be there in a minute~!
+    Soldier1 : Heh. 
+               You hear that Tucker...? 
+               He's comin'. 
+               He's not gonna believe it either...
+    Carlson  : Are you guys gonna kill me...?
+    Solider1 : Well, that depends.
+    Carlson  : *gulp* ...on what...?
+    Soldier1 : Buddy, you don't just go runnin around town tryin' to buy supplies in a state of martial law. 
+               Not without some consequences for makin' such a dumb decision, being made readily apparent to you.
+    Carlson  : I don't wanna die...
+    Soldier1 : Buddy, you really think I wanna be this guy...? 
+               A soldier at war, paranoid as hell...?
+    Carlson  : *sniffles* This feels like a really bad dream~!
+    Soldier1 : Man, shut your mouth. 
+               You're a grown ass man. 
+               Can't be *waves hand around* cryin' like that...
+    Carlson  : *sniffles*
+    Soldier2 : *approaches, sees Tucker Carlson* Wow! 
+               I thought you were bullshittin' me...
+    Soldier1 : See...? 
+               Told ya. 
+               Straight-up millionaire LL Cool J-Thompson, Action-Jackson right there.
+    Soldier2 : ... that's not LL Cool J, bro. 
+               It ain't Thompson or Action Jackson either.
+    Soldier1 : I didn't literally mean all that, dude.
+               I was just sayin' it, makin' him sound fancy.
+    Soldier2 : ...Alright. 
+               Well, that's DEFINITELY Tucker Carlson right there.
+               What do we do with him then...?
+    Soldier1 : I don't know yet, still trying to figure that out... 
+               Can't just let him GO...
+    Soldier2 : Obviously, he's a millionaire.
+               He's gotta be worth *something* right now other than money...
+    Soldier1 : I got a feeling he didn't prepare a god damn thing, though.
+    Carlson  : *sniffles* I've got some property
+    Soldier1 : Weapons, dipshit. 
+               And supplies.
+    Carlson  : *whispers* This is a nightmare...
+    Soldier2 : Heh. 
+               Dude said "this is a nightmare"... 
+               You're a straight up noob, aren't ya?
+    Carlson  : I guess. 
+               I don't know what that is...
+    Soldier1 : Chum, it means you're a straight-up, brand new player in a game you ain't never played.
+    Carlson  : Yeah. 
+               Maybe I am, so what...?
+    Soldier2 : *looks at the soldier* At least he admits it. 
+               Can't be all THAT bad...
+    Soldier1 : He's basically helpless. 
+               Doesn't even have a weapon on him, nothin'.
+               Not sure we can even trust him either...
+               ...cause of how many times the man has lied on national broadcast television...
+    Carlson  : I don't lie on Fox News.
+    Soldier1 : Yeah, you most definitely do, and have, many times dipshit. 
+               Now, shut your mouth.
+    Soldier2 : What the hell was he doing out there, anyway...? 
+               It's dangerous out...
+    Soldier1 : Yeh. 
+               This idiot thought he could spend his money whenever.
+               Didn't realize money's no good now.
+    Soldier2 : I mean, that's not completely true...
+    Soldier1 : Yeah...? 
+               Where could he go, right now, and spend that damn money of his...?
+    Soldier2 : The army base sells supplies, still.
+    Soldier1 : Ah yeh. 
+               They'll still take this dudes' money, won't they...?
+    Soldier2 : That is, if it's not stuck in his bank or something...
+    Soldier1 : Is that true Tucker...? 
+               You got real fat stacks of cash on hand somewhere...? 
+               Hm...?
+    Carlson  : *sniffles* Yeh. 
+               I might.
+    Soldier2 : How much you figure...?
+    Carlson  : I've got a few million in cash-money.
+               Some of the fattest stacks you'll ever lay your eyes on.
+    Soldier1 : Like, for real...? 
+               Not in the bank or whatever...?
+    Carlson  : Yeah. 
+               For real. 
+               REAL fat stacks of cash...
+    Soldier1 : Buddy... *turns to Soldier* 
+               Dude might make himself useful after all...
+               Get ourselves some weapons from the army supplies store...
+    Soldier2 : We could try it. 
+               It'll be dangerous...
+    Soldier1 : Extra dangerous. 
+               But, he's talkin' about some sky high stacks or somethin'
+    Carlson  : How dangerous...?
+               And I said some of the fattest stacks of cash you'll ever lay your eyes on...
+               I didn't say sky-high stacks...
+    Soldier1 : Dangerous to the point where you need a kevlar vest to be out the open, at a bare minumum, just to 
+               stay alive.
+               But I mean, if you've got some real fat stacks of cash layin' around,
+               ...you could prolly use them, too....
+    Carlson  : *sniffling* Yeah...? 
+               Just use some straight-up cash, for body armor...?
+    Soldier1 : I mean, it's definitely a better idea then gettin' shot dead by somebody's random bullet...
+    Carlson  : *stops sniffling* I'm ready.
+               Let's do this...
+               I'm not gonna keep crying like a little girl.
+    Soldier1 : Alright.
+               You just earned some respect from me by sayin' that.
+               You got some kevlar or somethin'...?
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Maybe none of these things will happen.
+    Maybe everybody that pays all of their bills, and listens to Tucker Carlson, they do it because he's just a 
+    floating voice that echoes and bounces off of the walls. Like a pinball.
+
+    But, like an idiot... neither Carlson nor Hannity put much thought to climate change possibly showing up at 
+    their doorstep someday. Maybe for most people, climate change felt like it COULD be one giant hoax, perpetuated 
+    by all those PESKY SCIENTISTS that Carlson and Hannity basically undermined for years as they were handed some 
+    of the fattest stacks of cash that anybody whose ever worked at Fox News, has ever been personally handed.
+
+    They both lived the dream... being on modern every day network television.
+    Repeating the gospels of fools, while also foreshadowing the certain inevitable arrival...
+    ...of the day where everything began to fall apart.
+"@)
+
+$Book.AddSection(11,"Judgement Day",@"
+    That's because, the day of reckoning finally arrived, with the skies torched and blackened, and the sun drowned 
+    out like a faint glimmer in a seemingly endless void, an oasis in the desert... 
+
+    Climate change was in everybody's face that whole entire time... it just had to roll up it's sleeves after the 
+    day of reckoning finally came... Judgement Day.
+
+    The question remains, what will that day actually bring forth...?
+    Will it be hordes of angry mobs, each with a flaming pitchfork and a molotov cocktail...?
+    Under martial law, seems pretty likely.
+
+    Gotta say, I'd be terrified of even hearing about this story if I were either 1) Carlson, or 2) Hannity. 
+    Why...? Cause I'm certain that some militia has been waiting for the day to visit em'.
+
+    If it gets to that point, I am gonna feel bad for those guys.
+    They're gonna have to face the music. It won't be very fun...
+    ...and not a soul will be willing to protect these guys...
+    ...even if they paid a security team a real nice fat stack of cash.
+
+    Because the cash sorta loses it's appeal when the military/government officially declare a state of: MARTIAL LAW.
+
+    Cause that's when they'll scatter like cockroaches and say "Ha. Never liked your ass anyway, bro."
+    Then again, maybe not.
+    
+    Regardless, for the every day person who isn't a millionaire, even if you happen to be one...?
+    Once MARTIAL LAW is declared, the state of the world immediately becomes a DREADED NIGHTMARE where MANY PEOPLE DIE.
+
+    At that point, you better hope you have: 
+    __________________________________________________
+    | WEAPONS | AMMUNITION | ARMOR | SUPPLIES | FOOD |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    If you don't, you'll already be basically dead. So many people will be caught in this box, and get killed.
+
+    Money will eventually lose all of it's value if these things happen.
+    Everything will spiral out of control so fast, people won't realize how grave the situation is...
+    ...until it's too late.
+
+    However, the truth is... Guys like Elon Musk exist, and, it stands to reason that he is the only person in the 
+    world, who is working a lot harder than everybody else is, at preventing all of those nightmares from happening 
+    in the first place. Though to be clear, he is FAR from the only one. Many people are ALSO helping.
+
+    Still, all of those worst case scenarios could theoretically be completely avoided if people help him, but even 
+    if people all jump on the bandwagon, start now, and act fast...? Time is very slim.
+    
+    There will come a day where people won't even care to complain about the car or oil industry anymore. 
+    It'll just be a lot like the show "The Walking Dead".
+    
+    Everyone's just trying to survive.
+    Groups of people sticking together, working in colonies, as one.
+    Some aspects of normal life will try to seep back in...
+    ...but society as we currently know it...?
+    ...it'll be permanently gone.
+
+    We could blame the American car and oil industry long before any of that happens...
+    There ARE plenty of other industries to call out... but it all goes right back to GM, being a lousy magician...
+
+    GM used to be the poster child for American car manufacturing, at least it used to be, about 40-50 years ago. 
+    Then, this guy Bob Lutz came along.
+    
+    He's probably highly regarded by so many of the people that have come and gone...
+    But, even the Germans and Italians over in Europe never really had the problem of being unable to make good cars.
+    They were very surprised when Bob came along and just started making things a lot easier for the Europeans to 
+    dominate the market. They just maintained the idea of "quality" and high standards.
+
+    The word "quality" was just never a part of Bob Lutz vocabulary, not for 50 years.
+    Not unless it was prefixed by the word "low".
+
+    The one word by itself...? Oblivious. But together...?
+    Heh. They were words that he lived by. Even today.
+
+    "Low Quality" ... GM just became a totally different company after that. The Germans were intrigued by how 
+    effortlessly this man made their lives, exporting vehicles to the United States.
+    Even Marc from Marc's VM and Import Service saw how terribly made General Motors vehicles truly were...
+    ___________________________________________________________________________
+    | Marc's VW and Import Service |  http://www.marcsvwandimportservice.com/ |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Since before the age of Hitler, even. 
+    Germany has made nothing but good vehicles. 
+    Even their most garbage vehicles last a LOT longer than American cars (unless it's a Tesla).
+
+    The reason why, is because Bob Lutz really did change the entire market, single handedly.
+    Europe is just a LOT MORE SKILLED at making dependable, durable, higher quality vehicles.
+
+    Germany is awesome at it.
+    Same with Italy, with their Ferarri's, Lambo's, Porsches... 
+
+    If there's one word that describes European vehicles...? They're WELL MADE, or "Good". 
+    "Bad" isn't really a word that ever comes up unless you start talking about American cars (unless it's a Tesla). 
+    
+    European vehicles are durable no matter how hard they try to screw them up.
+    They're not PERFECT by any means, but... they're a hell of a lot more well made than American vehicles.
+
+    That's saying something. Not only are they durable and last a long time...?
+    But, they're also worth more money, like even if you bought one, and drove it off the lot.
+
+    European cars lose a hell of a lot less value. 
+    With an American car (unless it's a Tesla), it's as if 30% of the money spent on them, is immedately thrown 
+    into a barrel, soaked with gasoline, and lit on fire. That's because, Bob Lutz knew how to do something like 
+    that, from his very first day at GM.
+
+    What I just said, is REALLY BAD. Spend WAY MORE, get a LOT less. 
+    That's the age of internal combustion engine companies, and the WAY they took over a 100 years, to stop 
+    destroying the environment and cause climate change. 
+
+    Lazy/greedy car companies, a handful of morons on Fox News, and oil companies that assisted in the controlled
+    demolition of 3 buildings in Manhattan, New York... on September 11, 2001
+
+    Well, we're getting pretty thrown off course from Programming with PowerShell, aren't we...?
+    I promise, it'll ALL coalesce back into the original lesson plan.
+
+    The Central Intelligence Agency, as well as George W. Bush, knew Osama Bin Laden planned the airplane attacks. 
+    But, Big Oil probably planned the controlled demolition, and the collapse of those towers caused people to 
+    believe that the AIRPLANES caused the towers to collapse... not the explosive charges and additional 1000 degrees
+    fahrenheit that would've been required to demolish the builing in the exact fashion that it was destroyed. 
+
+    But- that's because, many morons exist.
+    When using a sifter to sift through ash of roasted skeletons, what gets sifted out of the rubble, are details 
+    that make the official story that NIST told, ABSOLUTELY IMPOSSIBLE. It's why WTC 7 wasn't hit by a single plane, 
+    and yet, anyone who watches videos of these buildings collapsing, they will inevitably realize... 
+
+    Robert Korol was correct that whole entire time. 
+    Never was incorrect, actually. 
+    Kept being correct from the very first day, and continued to be correct, as well as Leeroy Hulsey, Xili Quan, and 
+    Feng Xiao.
+    
+    Wanna know who was NEVER correct at all...? 
+    The National Institute of Standards and Technology.
+    
+    Especially the report that Shayam Sundar signed off on, for former president, George W. Bush.
+    
+    At which point, the story could go forward in time and talk about violations to the Constitution, committed 
+    by President Bush, Michael Hayden, the NSA/CIA/FBI, PRISM, Technology, xKeyScore, Mystic, but ultimately, all of 
+    that leads to a thing called: Cyberterrorism, a thing that police don't appear to investigate... only civilians.
+
+    And that's how it ALLLLLLLL ties back into the original lesson plan.
+    Cyberterrorism.
 "@)
  
-$Book.AddSection(10,"Overview (2)",@"
+$Book.AddSection(11,"Cyberterrorism",@"
+    If you contact the local boys, they will laugh at you cause they don't know about stuff like Pegasus. 
+    Some of them are pretty gay about it too. 
 
-"@)
- 
-$Book.AddSection(10,"Can't just go reinventing stuff",@"
+    The most advanced spyware application in the world, incredibly dangerous, allows a remote party the ability to 
+    log into a device with no user interaction whatsoever on Apple, and Android.
 
-"@)
- 
-$Book.AddSection(10,"But Dad, you said...",@"
+    The State boys do SOME work with actual FBI guys, but the local dispatch office where I live has someone there 
+    that seems to have it in for me. I have a list of local sherrifs, and state troopers, who could each stand to be 
+    shown how be a lot more attentive to detail and observant. 
 
-"@)
- 
-$Book.AddSection(10,"Line #1: Breakdown",@"
+    As it is, some of them really are that stupid. (Though, I can't apply that designation unilaterally)
+    Same goes for trying to call the FBI, or the NSA, or whatever. (Same as above) 
 
-"@)
- 
-$Book.AddSection(10,"Kid sort of gets it now",@"
+    I've come to believe that none of these organizations even do what they tell the general public they do. 
+    They have their tasks and orders, and those orders are to avoid interacting with the general public at all 
+    costs. Because if the truth came out, that their main duties are to surveil and control the general population, 
+    and lie needlessly about everything that they possibly can, it makes more sense than trying to call them, and 
+    ask them why they always seeem to be completely silent recording phone conversations. 
 
-"@)
- 
-$Book.AddSection(10,"<Properties> (1)",@"
+    Yes. They have made it very obvious to me that once you know exactly what I do...? 
+    They manipulate the general population to think that I must have it all wrong... when I don't have it all wrong 
+    at all. If they gave me the INCENTIVE to believe otherwise, they would've done so by now.
 
-"@)
- 
-$Book.AddSection(10,"<Lambda>",@"
+    There's only one party I know for a fact that I can trust.
+    Until I see *any* indication otherwise? I remain firm with this assessment.
 
+    They are absolutely terrible at it. (Though, I can't apply that designation unilaterally)
+    Just as terrible at investigating technology based attacks, as Bob Lutz has always been at making good vehicles 
+    at GM for 50 years. A long chapter of time where some blindfolded noob just swung wildly at whatever, and 
+    called THAT.... “being a role model citizen".
 "@)
- 
-$Book.AddSection(10,"From Executables to Values (1)",@"
 
-"@)
- 
-$Book.AddSection(10,"From Executables to Values (2)",@"
+$Book.AddSection(11,"Greatest Challenge of our Time",@"
+    But, it could also branch back to global warming and climate change. 
+    Al Gore. 
+    Leonardo DiCaprio.
+    
+    The two met way back in the year 2000... 
+    Al Gore told young Leonardo...
 
-"@)
- 
-$Book.AddSection(10,"Properties, Strings, Serialization, Deserialization",@"
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-"@)
- 
-$Book.AddSection(10,"Regular Expressions (1)",@"
+    AG : This global warming thing is gonna get REAL bad, kid.
+    LD : *nervous gulp* Yeah...?
+    AG : Oh yeh, it's gonna change everything.
+    LD : Well, what can we like, DO about it...?
+    AG : You could vote for me.
+         Everyone could.
+         I can't explain how bad the problem is in a single minute, but it would be worthy of it's own documentary...
+         ...because it's the greatest challenge of our time.
+    LD : *gulp* The... greatest...
+    AG : -challenge of our time. 
+         An existential threat, for certain.
 
-"@)
- 
-$Book.AddSection(10,"Regular Expressions (2)",@"
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
-"@)
- 
-$Book.AddSection(10,"Regular Expressions (3)",@"
+    All of these things, when combined into a total narrative that sounds more intelligent than Tucker Carlson ever 
+    does on any given day, are the reasons why the wildfires are really bad, AND the droughts are getting a lot worse 
+    (look at Lake Mead, less than 1/3 of it's normal capacity, and dropping). 
 
-"@)
- 
-$Book.AddSection(10,"<Complicated>",@"
+    But also, the hurricanes are getting worse. 
+    And, the deadly tornado outbreaks. 
+    And, houses and coastal towns slowly receding. 
+    I could probably continue with the story many different ways.
 
-"@)
- 
-$Book.AddSection(10,"Overly-Complicated Class Definition that Generates GUID's",@"
+    The truth is, America has too many people that blindly believe whatever they're told.
+    Hence why NEWS versus PROPAGANDA is RATHER IMPORTANT TO UNDERSTAND.
 
-"@)
- 
-$Book.AddSection(10,"Notes + Method Chaining",@"
+    If people blindly believe whatever they're told...? 
+    It immediately causes them to become fools. Effortlessly.
 
-"@)
- 
-$Book.AddSection(10,"<Properties> (2)",@"
+    If some important person lies to everyone on a press conference...?
+    80% of the people will believe the lie that they are told.
 
-"@)
- 
-$Book.AddSection(10,"Dissemination",@"
+    Then when you TELL them the actual truth, it is extremely difficult to match the criteria where
+    they'll consider entertaining a much better, more accurate story, without being offended.
 
-"@)
- 
-$Book.AddSection(10,"<Properties> (3)",@"
+    Because if you lose out on getting through to them within this window, they will go right ahead, and prove that 
+    they're just too ignorant or careless to dislodge the notion, ...that they've been lied to so many times, the 
+    truth is stranger than fiction.
+    
+    Not just (1) time either. But, repeatedly.
+    That is why the car industry is still as dominant as it is, Americans don't actually care if they waste their 
+    money on a vehicle that was poorly made, or if they waste `$1T on a bunch of weapons, equipment, vehicles, 
+    helicopters, armaments, and other investments in Afghanistan.
+    
+    So, many Americans fail to grasp, that every single penny that they gave the government for X amount of time, 
+    was thrown into a barrel, soaked with gasoline, and the set on fire. But, they don't get it.
 
-"@)
- 
-$Book.AddSection(10,"<Properties> (4) The final stanza, Tony Danza",@"
+    So many people died, and so many of everybody's hard earned tax dollars, they're being pissed away, by people in 
+    the government that are CARELESS. When I say careless, I would go so far as to say "brain dead". 
+    Or like, "someone that spent 50 years making terrible vehicles at GM."
+    
+    When the F-35 Lightning was boasted about being the next heavy contender for the skies...?
+    I knew that Lockheed Martin already made the best fighter jet ever built by a single country, it was the best 
+    thing George Bush ever committed to building, as President. Bush has so many stains on his legacy, that it is 
+    LITERALLY UNSAFE to write about those stains at all. 
 
-"@)
- 
-$Book.AddSection(10,"Back to Work",@"
+    Because, someone will censor anybody for discussing those very clear, and real stains. 
+    But- the F-22 Raptor, wasn't a stain at all. 
+    The war in Iraq...? Not a BAD idea. 
+    The war in Afghanistan...? Literally the worst idea our military has ever committed to, by far.
 
+    But, even considering all of those things...?
+    Former President George W. Bush, is a saint, of all sainthood, in comparison to this moron named Bob Lutz who ran 
+    GM for 50 years (though to be clear, GWB is no saint). 
 "@)
- 
-$Book.AddSection(10,"Work for Real",@"
 
-"@)
- 
-$Book.AddSection(10,"<Commands>",@"
+$Book.AddSection(11,"The Adventures of Starman",@"
+    I realize someone will probably tell Bob Lutz about this entire document, and if he reads it, he may cry. 
+    And, that's ok. Elon just went right ahead, and upended everything this man Bob Lutz ever did for 50 years 
+    straight... Elon had the (1) company he owns/runs, one who doesn't make a single bad vehicle... make a Tesla 
+    Roadster.
+    
+    Then, he had another company he owns/runs, outfit a dummy with a prototype SpaceX suit, and then had them load 
+    that vehicle into a payload fairing to send the thing into space. Then...
 
-"@)
- 
-$Book.AddSection(10,"<Class Definiton>",@"
+    The man asked some people who work for him, to spend a lot of time being very creative about Starman, the 
+    adventures of Starman,  comic books, stories, and making this website that can...
+    ____________________________________________________________________________________
+    | The Adventures of Starman | https://spacein3d.com/where-is-starman-live-tracker  | 
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ...show Bob Lutz, or anybody else really, where that car he sent into space, happens to be right *now*. 
+    The whole entire thing just proves to me, that some people don't actually whip out an actual middle finger, 
+    nor do they say a single word. Nah. They do something that everyone will remember throughout human history.
 
-"@)
- 
-$Book.AddSection(10,"<Class Definition> Summary",@"
+    Elon Musk, gave a guy Bob Lutz, the BIGGEST middle finger, in the history of middlefingerhood...
+    ...and to be fair, giving entire industries full of people that sat around and did nothing...
+    ...a huge middle finger to them ALL for doubting him immensely, Elon Musk set out to do what no man has ever 
+    tried to do before him, like the man was born to do it.
 
-"@)
- 
-$Book.AddSection(10,"Invoke `$ClassDefinition",@"
+    Dude might crack some jokes that piss a lot of people off even more...? 
+    But, they never sent a vehicle into space with their own fully paid for rocket, fully paid for car, 
+    unique power plant, nah. The COOL thing is that if he had thrown some SOLAR PANELS onto the thing, the car
+    would legitimately be able to TURN THE WHEELS the ENTIRE TIME it was in space. Cause SOLAR ENERGY from the SUN,
+    could've CHARGED THE VEHICLE... but- Elon didn't wanna take it THAT far... Nah.
 
+    To say that I happen to be highly impressed by the principle...?
+    That's an understatement. Some people are just going to be miserable no matter what, because, they're just as 
+    lazy as Bob Lutz always has been. And that's fine. So it really isn't Elons fault, that the world is full of so 
+    many negative people, who couldnt do a fifth of what he's done, if they all tried together...?
 "@)
- 
-$Book.AddSection(10,"Computer Updated - Press F1",@"
 
-"@)
- 
-$Book.AddSection(10,"Back to the Drawing Board",@"
+$Book.AddSection(11,"Almost",@"
+    Yeah. George Bush was a perfect president, when compared to this moron, Bob Lutz. 
+    Bob made lot of really bad vehicles. When I say BAD, I mean...
+    ...in his entire 50 year tenure, the man never completed (1) single thing to be proud of...
 
-"@)
- 
-$Book.AddSection(10,"<Template>",@"
+    The truth is- Bob Lutz just about ALMOST made a LOT of GOOD vehicles, millions of times over. People would say:
 
-"@)
- 
-$Book.AddSection(10,"Non-Default Registry Keys",@"
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-"@)
- 
-$Book.AddSection(10,"[CLR/.Net Tricks Explained]: Auto Completion, and Overload Definitions",@"
+    People : Wow, look at you go, Bob~! 
+             You really are phenomenal at ALMOST making good cars~!!"
+    Lutz   : *pause for a moment, snaps back annoyed* Whaddya mean ALMOST...?
 
-"@)
- 
-$Book.AddSection(10,"PowerShell Class/Type Engine Assumptions",@"
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
-"@)
- 
-$Book.AddSection(10,"Excerpt [~] Comparing CSharp & PowerShell",@"
+    But- those people would say 'A valiant effort.', shrug their shoulders, then leave the room.
+    All the while, every single time people did this, it eroded his sanity.
 
-"@)
- 
-$Book.AddSection(10,"Embrace, Extend, and Enhance",@"
+    Even poor Bob knew that ALMOST only counts in 1) horseshoes and 2) handgrenades.
+    Otherwise, ALMOST is when you need a minimum of 1.0, but- you can't get past 0.9999999999999
+    That is *exactly* what the term ALMOST is ALL about.
 
-"@)
- 
-$Book.AddSection(10,"Internet Explorer vs. Chrome vs. Edge",@"
+    General Motors has come very close to ALMOST making millions of GOOD vehicles.
+    The problem is in the way they design the vehicles.
+    There are only (2) conditions where a General Motors vehicle can be called a GOOD vehicle.
+    __________________
+    | [Condition #1] |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    When a mechanic installs parts that GM never 1) made, or 2) touched even once, in that vehicle.
+    NOW... the vehicle may theoretically meet GOOD vehicle minimum requirements, like MAGIC.
 
-"@)
- 
-$Book.AddSection(10,"Skit [~] Dreaming Big, Building Bigger",@"
+    That's because, technically it's not a GM vehicle if the mechanic uses QUALITY parts.
+    GM doesn't make QUALITY parts. Used to at some point, but they can't remember how they pulled it off.
 
-"@)
- 
-$Book.AddSection(10,"The Two Titans of Technology",@"
+    So, if it has parts in it that came from the factory? It *automatically* fails the test.
 
-"@)
- 
-$Book.AddSection(10,"Continued, Language Construction/Similarities (Object-Oriented vs. Functional vs. String-based)",@"
+    But, if it meets the requirements, and it passes the test...? 
+    It can legally be considered GOOD.
+    This is actually EXTREMELY RARE...
+    __________________
+    | [Condition #2] |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The vehicle was GOOD for a few seconds at the factory up until it found out who made it.
+    ...which is when it suffered a traumatic event, sustaining permanent engine damage.
+    This is by design. The vehicle may SOUND fine whenever it is started.
 
-"@)
- 
-$Book.AddSection(10,"Quantum Physics, Entanglement, and Superposition",@"
+    At the moment the vehicle is completed and attributed to Bob Lutz in any small way whatsoever...?
+    ...that's when the car itself says "Wow, Bob Lutz made my ass...?"
+    ...the guys at the factory respond, "Yep. Sure did, pal..."
+    ...and that's when the car blows a protected head gasket that Bob had the engineers design into the process, 
+    as if it were a person suffering a mini-stroke from the stress involved in being given such bad information.
 
-"@)
- 
-$Book.AddSection(10,"Doing the Impossible",@"
+    Every single GM vehicle ever made, under Bob Lutz leadership...?
+    ...they've each endured this traumatic process...
 
-"@)
- 
-$Book.AddSection(10,"Object-Oriented vs. Functional vs. String-based",@"
+    What makes it all actually work, is the specialized head gasket didn't COMPLETELY blow itself, but it will 
+    remember the location where it ALMOST blew that gasket, where it'll eventually blow itself later on.
 
-"@)
- 
-$Book.AddSection(10,"Should I install Python...? PowerShell is just WAY too convenient...",@"
+    Remember how I said ALMOST only counts in horseshoes and handgrenades...?
+    Well, the engine ALMOST suffered permanent damage that THEY would've had to pay to fix.
 
-"@)
- 
-$Book.AddSection(10,"Comparing/Contrasting CSharp & PowerShell",@"
+    Since it only ALMOST blew the engine, it'll DEFINITELY happen at some later point at about 100K miles.
 
-"@)
- 
-$Book.AddSection(10,"The Terrible Magician",@"
+    While Bob Lutz himself didn't make that car, the car was NOT impressed when it was told, that Bob Lutz happened 
+    to be the guy in charge of General Motors when it was marked complete at the factory.
+    
+    That's... all it takes. 
+    The vehicle tries to commit suicide, but it's just a car, so it ends there...
 
-"@)
- 
-$Book.AddSection(10,"Microsoft's Golden Standards",@"
+    Luckily for Bob Lutz, people never seem to catch on. 
+    Why...? I really have no idea.
+    
+    To analogize, it's like someone sitting in a room, farting repeatedly, and can't stop...
+    And, people being impressed, not disgusted... 
 
-"@)
- 
-$Book.AddSection(10,"Insulting General Motors and Big Oil",@"
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-"@)
- 
-$Book.AddSection(10,"Climate Change",@"
+    People : Wow~! 
+             *points* This dude keeps rippin' farts~!
+             That's awesome~!
+    
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
-"@)
- 
-$Book.AddSection(10,"Skit [~] Steve Jobs: 'You've baked a lovely cake...'",@"
+    These aren't your standard-issue farts either. Nah. These farts...? 
+    Saying that they're WAY more impressive... doesn't do them justice.
+    Even Barack Obama will chime in... impressed by such consistently, above-average fartknockery.
+    Though I'm not fooled at all...? Everyone says: 
 
-"@)
- 
-$Book.AddSection(10,"Martial Law",@"
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-"@)
- 
-$Book.AddSection(10,"Judgement Day",@"
+    Everyone : That's just your opinion dude... 
+               Get over yourself~!
 
-"@)
- 
-$Book.AddSection(10,"Cyberterrorism",@"
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
-"@)
- 
-$Book.AddSection(10,"Greatest Challenge of our Time",@"
+    As for Elon Musk, this (1), single, non-plural dude, I'd imagine that he didn't think the chain of nasty farts 
+    in rapid succession, was anything to be all that impressed with either.
 
-"@)
- 
-$Book.AddSection(10,"The Adventures of Starman",@"
+    How could he be...? Dude made the Tesla Model S Plaid, Starship, and just bought Twitter. 
+    So, if he knows something is up, then he and I both know what the hell is going on. 
+    
+    He and I are both EQUALLY perturbed by this disgusting stench. 
+    If anything ? Elon probably could tell that there's a medical emergency goin' on. 
 
-"@)
- 
-$Book.AddSection(10,"Almost",@"
+    He and I, just... (2) like-minded individuals that both feel a threat looming from the other side of the room 
+    where Bob Lutz is endlessly rippin some friggen farts. 
 
-"@)
- 
-$Book.AddSection(10,"Back to the Lesson Plan",@"
+    When I knew something wasn't right...? All of these people were saying:
 
-"@)
- 
-$Book.AddSection(10,"<Class Definition> Template",@"
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+     
+    Everyone : You need to grow up bro~! 
+               You're the only one smelling these 'farts'. 
 
-"@)
- 
-$Book.AddSection(10,"Output",@"
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
-"@)
- 
-$Book.AddSection(10,"Comparison",@"
+    But- that's how the "grouped dementia" got em all.  They don't know whats happening, but Elon Musk and I sure as
+    hell do. If Elon Musk and I see the same exact problem that nobody else does...? Well, great minds think alike. 
 
-"@)
- 
-$Book.AddSection(10,"Conclusion",@"
+    That problem, is Bob Lutz rippin' an endless array of the nastiest farts any man ever smelled, and this process 
+    went on for about 50 years straight over at GM Headquarters. Right under people's noses, too.
 
+    I came into the world being very well aware of my surroundings...
+    Bob thought he was being super slick. 
+    Wasn't that slick at all. 
+    I knew that somebody, somewhere would also be able to detect the problem...
+
+    That problem being, Bob Lutz, showing up on the news, and saying: 
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Lutz : Hey Elon Musk, how about you show us mere mortals how to run a car company.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    ...after this man shit his pants for over 50 years straight at GM Headquarters. 
+    Maybe it wasn't 50 years straight. Coud've been 30. Or 40.
+    Maybe he never actually shit his pants at all...
+    Maybe Bob Lutz *started* shitting his pants quite *regularly* every day AFTER he went on the news... 
+    Who the hell really knows...? 
+
+    Whatever the case may be, I cannot help but envision the fact, that this man has spent more time attempting to 
+    build many electric vehicles at GM, than Elon Musk or Tesla has. But, Bob never had the incentive, nor the talent 
+    to do it well. 
+
+    Hence, total failure each time he tried.
+    Rinse, recycle, repeat... Maybe Bob should take his own advice. Ya know...?
+
+    As for Elon Musk, the man did a lot more than just show Bob Lutz how a car company could be run, at least, 
+    whenever someone with talent decides to take a break from running several other companies, and then show him how 
+    to do just that. 
+
+    But, it's as if this one guy has many talents, and I hate to be the bearer of news... 
+    But, unlike Bob's 50 years of consistently above-average fartknockery...? This dude: 
+    _________________________________________________
+    | CONCEPTUALIZED | FINANCED | TESTED | INVENTED | 
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ... refillable rockets that can land themselves safely without exploding. 
+    That's more difficult than anything Bob Lutz did for over 50 years at GM Headquarters. 
+
+    By the way, the newest rocket this dude made, it ALSO happens to be 25ish stories high, and meets the 
+    requirements of "first reuseable flying building". NASA never even did that. Did Bob Lutz do that...? No. 
+    Not in the first 20 years he ran GM, nor in the entire 50. That right there, says quite a lot.
+
+    The fact of the matter is that Bob had a lot more time and experience to set a precedent, but- sometimes people 
+    think that doing the bare minimum for 50 years is 'leading by example'. Other people like me might hear or read 
+    that, and just start laughing profusely. Not laughing cause the man was trying to be funny, but laughing cause 
+    he was trying to be serious. 
+
+    That'll get ya each and every time. 
+    Dude actually had the nerve to say "Why don't you come down and show us mortals how to run a car company...?" 
+    And it was at a point in time where Bob Lutz went from a credible person to so many many people... 
+    ...to an absolute laughingstock that shit his pants for 50 years straight. And, that's actually pretty sad.
+    Bob probably cannot help the fact that he does that... So... what can anybody do...?
+
+    Bob didn't realize that those words would come back to bite him in the ass. 
+    Here's how...
+    
+    If anyone actually sat down and carefully studied what Elon Musk has accomplished on paper alone, it's easily 20 
+    times the total amount of things Bob Lutz did in the 50 years he ran a company, one that's ALMOST made a good 
+    vehicle millions of times over. 
+
+    They know how to make good vehicles... they just prefer not to do that. 
+    They prefer to suck ass at making cars, and nobody knows why.
+
+    And, that's actually ok. 
+    Some people like GM and Bob Lutz, they accept their limitations, and move on with their life. 
+    And, Bob Lutz isn't the only one out there in many American industries that prefer to rest on their laurels. 
+
+    Bob Lutz is one of those people through and through, instead of finally making some decent vehicles that could 
+    finally be considered GOOD ? This dude never realized that he ALMOST made a lot of really nice vehicles. 
+
+    The problem being, that NONE of them ever made it past the 0.99999 part of the 1.0 you'd need, to have made so 
+    many decent cars. Bob Lutz was the director of General Motors for like, 50 years. 
+
+    GM's made many attempts to build an (electric/gas) vehicle worth a damn.
+    They can't do it successfully without being FORCED to by TESLA. 
+
+    Not only have they made so many more EV's than Tesla, but also, all of their gas powered cars too. 
+    A LOT MORE of both. So, it stands to reason that some guy like Bob with a lot of experience wasn't worthy of 
+    a response from Elon. 
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Musk : Hey, how many electric cars have you tried to build, over the last 50 years...?
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Probably at least 40. They didn't have this conversation though. Wanna know why...? 
+
+    Cause Elon would rather one-up Bob Lutz in the form of using a SpaceX rocket, to launch a Tesla Roadster into space, 
+    with StarMan inside... and that whole process, being the biggest middle finger, to any man throughout history...
+    ...aimed squarely at Bob Lutz.
+
+    Now, I don't know if Bob Lutz watches stuff like the news or whatever... but Elon Musk sent a god damn electric 
+    car into space. In his OTHER company's ROCKET, that LANDS ITSELF...
+    ____________________________________________________________________________________
+    | The Adventures of Starman | https://spacein3d.com/where-is-starman-live-tracker  | 
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Anybody can go to that link up above and FIND OUT FOR THEMSELVES "Where is Starman...?"
+    
+    I'm gonna repeat what Starman, that website, Tesla, and SpaceX's combined success, means for Bob Lutz... 
+    This (1) dude is running like (5)+ companies at the same time, and literally sent an electric vehicle that was 
+    actually well built, into space... using a well built rocket that his OTHER company made... to give Bob Lutz the
+    biggest middle finger in human history.
+
+    Here's what Bob has to be proud of. Causing guys like me to think that sometimes, old people don't realize how 
+    outmatched they are. Even if they were an industry leader for 50 years...? It actually just translates to the 
+    embarassment factor being even LARGER.
+
+    So, the idea of purchasing a vehicle from General Motors, brand new, with a bumper-to-bumper warranty, its a 
+    total waste of anyone's money. Why...? Bob Lutz created a lasting company culture that sucks ass at making 
+    good cars. Because, even if you were to buy a BRAND NEW car from GM, right now...? Chances are, the engine and 
+    the transmission might both break down a few thousand miles after that warranty is up. 
+
+    Even if you bring it to the people at the dealership. Tell em: “Hey. My car is making noises...”
+
+    Well, the ASE certified technicians might be good for (1) potential day out of (5), so, the certified techs might 
+    just be there for show, not to do actual work. Because the other (4) days of the week, they may prefer to lie to 
+    the customers about any warranty work on these vehicles. That makes things easier and a lot cheaper for them... 
+    
+    They got paid to provide a warranty, but... they reserve the right to not service the vehicle if they choose. 
+    Maybe the customer should be told about that and like, get their friggen money back so actual experts can service 
+    the vehicle. But, then they start hemming/hawing, not realizing how moronic they sound.
+    
+    Then, after the engine and the transmission break down, you have to hire an actual mechanic that knows what 
+    they're doing, in order to fix it. Which means, spend another $10-15 grand on a car that the dealership "fixed". 
+
+    But- if they say they "fixed" it, and it still has the same problems from BEFORE you dropped it off...? 
+    Maybe you'll start to see the "air quotes" more readily when people talk.
+
+    Simply put, I don't believe that GM is capable of making a single vehicle that isn't a total waste of money. 
+    And, I definitely blame Bob Lutz 100%. Maybe even Bill Cass. From what I've observed, General Motors lacks: 
+    ______________________________________________
+    | TALENT | GOOD ENGINEERS | ACTUAL MECHANICS |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    They sure as hell APPEAR to have/be PORTIONS of those things, but the CONSISTENCY is SUBSTANDARD. 
+    Because, if they did...? 
+    Anybody could buy a brand new car from them and expect that they'll honor the warranty/repair it.
+
+    After owning (8) vehicles that General Motors made, the verdict is in. 
+    They are ALL terribly made. Even the CADILLACS BURN OIL.
+    
+    That is the gods honest truth, the people at GM don't know how to make GOOD vehicles. 
+    It's not the fault of the engineers, they probably know what they're doing... 
+    It's not the fault of the executives, they might know what they're doing too...
+    It's not the fault of the technicians that build the cars, nor the dealers...
+
+    It literally, all boils down to the craftsmanship of the PARTS they use. 
+    That's (Start → Finish), they are all fucking terribly made.
+
+    They probably have made quality parts and vehicles at SOME point in time...?
+    But, anyone may as well go ahead and say that General Motors never has, and they never will. 
+    They've had like a 100 year head start over Tesla. 
+
+    But, they didn't realize the clock was ticking, and it's (too bad/so sad). 
+
+    They know how to make SOME of them LOOK good, but a car has to do more than just LOOK good... 
+    ...to be considered a good product by actual intelligent people.
+
+    These are all of the things I think about when I hear the name "Bob Lutz".
+    __________________________________________________________________________________________
+    | Spend all your money | get a terrible product | they'll get a Bailout check from Obama |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    No problem. 
+    I wouldn't feel a need to call out a large conglomerate corporation if it had people who knew how to reliably 
+    build parts for their car correctly. But, they are terrible at it.
+    
+    I know I'm coming across very differently than I have throughout the rest of this document, but sometimes people 
+    have done more than enough to deserve being openly insulted.
+    
+    Just like how peanut butter goes hand in hand with jelly...?
+    Bob Lutz goes hand in hand with "not very innovative or creative", or "sucks at making cars".
+    The legacy of this man, will be remembered for ETERNITY... with (1) word.
+    “Almost.”
+    
+    With CSharp and PowerShell...?
+    You're not ALMOST gettin' the best there is in the industry... Nah.
+    You're DEFINITELY gettin' that, and that's all there is to it.
 "@)
+
+$Book.AddSection(11,"Back to the Lesson Plan",@'
+    The tangent I just went on, caused me to begin writing Top Deck Awareness – Not News.
+    But, I'm gonna finish out this lesson plan.
+
+    The $Prop variable is an array, so $Prop[0] indicates that I'm selecting the FIRST item in that array.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $Prop[0]
+
+    Value           : Microsoft Edge
+    MemberType      : NoteProperty
+    IsSettable      : True
+    IsGettable      : True
+    TypeNameOfValue : System.String
+    Name            : DisplayName
+    IsInstance      : True
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    In this instance, we don't care about the Membertype, IsSettable, IsGettable, or IsInstance properties... but 
+    we'll adhere to those values anyway if we use the underlying base type.
+    
+    So, like I covered before the huge tangent, we can use "[PSNoteProperty]::New($Name, $Value)" to create an object
+    that adheres to PSObject.Properties, and this will ADD a NEW custom property named "EntryUnique" to the custom 
+    classes property list, and then it'll cast an empty object array to its value.
+
+    This will allow one of the methods we have to write, to return NON-DEFAULT properties to it.
+    Doing so adheres to the standard class properties, while allowing additional NON-DEFAULT entries to coexist 
+    peacefully, and be clean and accessible. 
+
+    Who doesn't like that idea...?
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Prop   += [PSNoteProperty]::New("EntryUnique",@( ))                   
+    _________
+    | or... |
+    ¯¯¯¯¯¯¯¯¯
+    $Prop   += New-Object PSNoteProperty -ArgumentList EntryUnique, @( ) 
+    _________
+    | or... |
+    ¯¯¯¯¯¯¯¯¯
+    $Prop   += New-Object PSNoteProperty EntryUnique, @( )
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    We want the class to format itself with the right spacing.
+    So, to do that, we need to get the maximum TypeNameOfValue string length.
+    [Again], here's some of my "Voodoo 3 5000" action BELOW, being applied to the $Types variable. (Explained again)
+
+    It's a multifaceted ONE-LINER involving:
+    - ForEach-Object haphazardly piping itself into an array
+    - $_ token with the property length being greater than 0 in square brackets acts as a switch
+    - $False selects slot 0 in the array returning the string "String", cause that's binary for ya.
+    - $True selects slot 1 in the array returning ($_ -Replace "System\.","")
+
+    Now, PowerShell does an amazing job of being able to understand when it's dealing with a default system types 
+    like [System.Object], or [System.String]. So, the word System being thrown all over the place is unnecessary. 
+    Removing it makes the code shorter and less complicated/messy looking.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Types           = ($Prop.TypeNameOfValue | % { @("String",$_ -Replace "System\.","")[$_.Length -gt 0] })
+    $TypesMaxLength  = ($Types | Sort-Object Length)[-1].Length
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now, get maximum Name string length. Also, I'm sorry, but the Voodoo 3 5000 action is all over.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Names           = $Prop.Name
+    $NamesMaxLength  = ($Names | Sort-Object Length)[-1].Length
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Declare a hash table with 
+    1) CLASSNAME, 
+    2) PROPERTY TYPES/NAMES (top portion of class), 
+    3) PARAM TYPE+VALUE (main method), 
+    4) DEFAULT CONSTRUCTOR DEFINITIONS (main portion of the class), and 
+    5) METHODS for self-rereferencing, brevity, processing each individual NON-DEFAULT property, 
+       as well as writing some output.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Def            = @{ 
+
+        Name        = "Uninstall"; 
+        Type        = @( ); 
+        Param1Type  = "[Object]"; 
+        Param1Value = "`$Registry"; 
+        Const       = @( ); 
+        Method      = @( ) 
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Run through all types, property names, and establish the code to set the class values to the properties of the 
+    (input object/parameter). Add each TYPE+NAME to $Def.Type array, and then each $Name in $Names with spacing for 
+    the $Def.Const array in the same loop.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ForEach ($X in 0..($Names.Count-1))
+    {
+        $Type        = $Types[$X]
+        $Name        = $Names[$X]
+        $TypeBuffer  = " " * ($TypesMaxLength - $Type.Length + 1)
+        $NameBuffer  = " " * ($NamesMaxLength - $Name.Length + 1)
+        $Def.Type   += "    [{0}]{1}{2}`${3}" -f $Type , $TypeBuffer, $NameBuffer, $Name
+        $Def.Const  += "        `$This.{0}{1} = {2}.{0}" -f $Name, $NameBuffer, $Def.Param1Value
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Get the rank of the line where it matches the PSNoteProperty we added, EntryUnique, then replace.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $X               = 0..($Def.Const.Count-1) | ? { $Def.Const[$_] -match "EntryUnique" }
+    $Def.Const[$X]   = $Def.Const[$X] -Replace '= .+', '= $This.GetEntryUniqueProperties($Registry)'
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now we have to write methods (Chunked out for readability). This FIRST method will shorten the process of calling 
+    the DEAFULT property names in this class, whereby filtering out "EntryUnique"
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Method1         = @(
+    '    [String[]] Properties()',
+    '    {',
+    '        Return $This.PSObject.Properties | ? Name -notmatch EntryUnique | % Name',
+    '    }'
+    )
+    $Def.Method      += $Method1
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    This second method will return the properties of the base class that aren't standard property names that we pulled 
+    from the $Edge object template.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Method2          = @(
+    '    [Object[]] GetEntryUniqueProperties([Object]$Param)',
+    '    {',
+    '        Return @(
+    $Param.PSObject.Properties | ? Name -notmatch "(^PS|$($This.Properties() -join "|"))") | Select Name, Value'
+    '    }'
+    )
+    $Def.Method      += $Method2
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now we will create a way for the extended properties to show themselves in a way that is consumable, while still
+    adhering to the default properties.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Method3           = @(
+    '    [Object[]] Output([UInt32]$Buffer)',
+    '    {',
+    '        $Output  = @( )',
+    '        $Output += ("-" * 120 -join "")',
+    '        $Output += "[$($This.DisplayName)]"',
+    '        $Output += ("-" * 120 -join "")',
+    '        $Output += " "',
+    '',
+    '        $This.Properties() | % { ',
+    '',
+    '            $Output += "{0}{1} : {2}" -f $_, (" " * ($Buffer - $_.Length + 1) -join ""), $This.$_',
+    '        }',
+    '',
+    '        $Output += (" " * $Buffer -join "")',
+    '        $This.EntryUnique  | % { ',
+    '',
+    '            $Output += "{0}{1} : {2}" -f $_.Name, (" " * ($Buffer - $_.Name.Length + 1 ) -join ""), $_.Value',
+    '        }',
+    '        $Output += (" " * $Buffer -join "")',
+    '',
+    '        Return $Output',
+    '    }'
+    )
+    $Def.Method      += $Method3
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Create the Class definition value, this joins together the multiple chunks of the class so that it can be 
+    instantiated by the PowerShell (Type/Class) engine.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $ClassDefinition = @("Class $($Def.Name)","{",($Def.Type -join "`n"), 
+                         "    $($Def.Name)($($Def.Param1Type)$   ($Def.Param1Value))", 
+                         "    {",
+                         ($Def.Const -join "`n"),
+                         "    }",
+                         ( $Def.Method -join "`n"),
+                         "}") -join "`n"
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Instantiate the class definition - Using this command below instantiates the class without having to explicitly 
+    get the variable output.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Invoke-Expression $ClassDefinition
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Alright, now declare a variable that collects all of the $Apps objects in the registry paths like the pros 
+    suggested up above. Then, look for the longest NON-DEFAULT property name length, and then format ALL of the 
+    classes with that integer to get a steady stream of formatted output.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Output  = $Apps | % { [Uninstall]::New($_) }
+    $Buffer  = ($Output.EntryUnique.Name | Sort-Object Length)[-1].Length
+    $Output.Output($Buffer)
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    We should probably use an exterior container class to collect all of these items and format them accordingly. 
+    This will include all variables we assigned BEFORE the class definition, and then there will be NO chance, that 
+    an object will be formatted with an inconsistent buffer value.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Class UninstallStack
+    {
+        [UInt32] $Buffer
+        [Object] $Output
+        UninstallStack()
+        {
+            # // We can use some of these variables without assigning them to the class.
+            # // This optimizes the System.IO stream since it's not tugging along unnecessary data...
+            # // and does automatic garbage cleanup
+            
+            # // Apps found in the uninstall registry paths (64-bit/32-bit)
+            $Apps        = "\Wow6432Node","" | % { 
+                     
+            GCI "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall" 
+
+            } | Get-ItemProperty
+
+            # // Pulls MSI object template Edge/Chrome installation
+            $Edge        = $Apps | ? DisplayName -match "(^Microsoft Edge$)"
+
+            # // Ignores WMI/PS related properties     
+            $Prop  = $Edge.PSObject.Properties | ? Name -notmatch "(^_|^PS)"
+
+            # // Add property to include within format
+            $Prop += [PSNoteProperty]::New("EntryUnique",@( ))
+
+            # // Allow the Uninstall class to be instantiated via the above work
+            # // We will make a class that integrates ALL of these components, soon.
+            $This.Output     = $Apps | % { [Uninstall]::New($_) }
+            $This.Buffer     = ($This.Output.EntryUnique.Name | Sort-Object Length)[-1].Length
+        }
+        [Object[]] GetOutput()
+        {
+            Return @( $This.Output.Output($This.Buffer) )
+        }
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Now, cast the variable with UninstallStack, which is the class up above. 
+    This will automatically do the same things that all of those separate variables were able to do.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Output = [UninstallStack]::New()
+    $Output.GetOutput()
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    You won't want to format the output as a table, but even if you do, everything in the NON-DEFAULT properties will 
+    be caught within an array. There's really no way to get inconsistent properties to work across a bunch of entries 
+    in a table that have varying property types, unless maybe you have a monitor that spans about a football field, 
+    then I guess maybe that might actually work at fitting all of the possible properties that any class might have, 
+    into an incredibly convenient view. 
+
+    But, I gotta say... I don't think those types of monitors actually exist yet. 
+    Then again, maybe somebody who's been working on just that exact thing I said doesn't exist...?
+    Well... they just heard me loudly and clearly, and so they felt like letting me know...
+
+    FFMD = Football-Field-Monitor-Dude
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    FFMD : Look buddy... 
+           Those things DO exist.
+    Me   : Oh yeh...?
+    FFMD : Yeh. 
+           And you call yourself some type of expert or something...? 
+           *scoffs, eyebrows up* Unbelievable...
+    Me   : I didn't know they did.
+    FFMD : Yeah pal. 
+           They most certainly do. 
+           Everybody knows that...
+    Me   : I didn't know that they actually made a monitor that spans a whole entire football field...
+    FFMD : Yeah well... 
+           ...now you know. 
+           What, have you been livin' under a rock or somethin...?
+    Me   : Nah.
+    FFMD : Well buddy... nice tutorial... 
+           But I'm offended about the monitor thing.
+    Me   : Alright...? 
+           I'm sorry...?
+    FFMD : Wait... 
+           ...you're... 
+           ...sorry...?
+    Me   : Yeah man, didn't realize I offended you by not knowing a monitor that long actually exists...
+    FFMD : Yeah, they do. 
+           You should totally get one, very convenient, you can see the entire screen no problem...
+    Me   : Alright buddy. 
+           Duly noted. 
+           Well, I still have one more phase of this tutorial left to go.
+    FFMD : Oh yeah...?
+    Me   : Yep. 
+           Gonna throw all of that stuff into a class that generates... classes.
+    FFMD : A class that generates classes...? 
+           What are ya, some type of magician or somethin'?
+    Me   : No...
+    FFMD : Buddy, you've got a lot of tricks.
+    Me   : Well, cool. 
+           I appreciate that.
+    FFMD : I guess I'll stick around and keep reading.
+    Me   : Alright fine. 
+           Take care, buddy.
+    FFMD : You too. Get one of those monitors...
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Those types of monitors don't exist. 
+    I was being facetious about the convenient viewing angle.
+    
+    Even if they did make them, what practical purpose would anyone use them for...? 
+    There's only (1) thing I can think of... to join a bunch of classes that have no matching properties at all.
+
+    It's not unlike buying an Nvidia GTX 3090, so you could play Pogo.com and then brag about it.
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Person : Check it out... 
+             *points* I've got an Nvidia GTX 3090. 
+             NOW, I am basically unbeatable at Pop-It.
+    Me     : Wow.
+             Impressive.
+    Person : *chuckles* Heh.
+             If you don' have a GTX 3090 to play Pop-It...? 
+             Who the hell even are ya...?
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    (^ Pretty sure that's overkill, and that graphics card doesn't do anything for that game/purpose)
+    
+    Or, taking your paycheck, and then just throwing it in the trash because... why not...?
+
+    These things probably sound like they make no sense at all, and that's the point.
+    That's how much sense it makes to try and use classes that have no matching properties at all.
+    You won't really have a hard time NOT noticing when they don't match up, either.
+    You'll see empty cells, and values that extend about 50 miles into the horizon.
+
+    Having SOME varying property types from class to class is ok, but try to MINIMIZE that.
+    Allowing just any old class to settle down in the table...? 
+    You're just asking to be confused.
+
+    You might find yourself staring at the monitor trying to make sense of what you're seeing...
+    But, the truth is, there's no sense or pattern involved after some point. 
+
+    So, maybe you'll get confused that none of the classes match up in the table anymore... 
+    Then what...? 
+    Start over...?
+    
+    Well, I'll tell ya. 
+    If the properties don't match up, then there's not a whole lot you can do.
+
+    It's gonna be a while before anyone is able to readily make use of such an incredibly useful arrangement of class 
+    types that USED to have matching properties... until one day they didn't.
+    
+    That's just the way the story goes, of every old man that ever lived, who, at the top of their game...? 
+    He made certain that HIS classes always had matching properties. 
+    ...until he slipped up.
+    
+    Of course, I'm shooting for dramatic story telling. 
+    But, one way that we could turn the entire script into a useful tool that would help anybody custom build their 
+    own classes in a jiffy, is the script. Couldn't be more serious about that actually.
+
+    Sometimes I build custom (classes/structs) in either PowerShell or C#, and then I am able to cast some of those
+    classes/structs to PowerShell/.Net type objects, and they work in literally the same way. 
+
+    The only difference is that the PowerShell code doesn't need to be compiled by MSBuild or anything like that. 
+    That's because PowerShell can compile CSharp code on the fly. It's not all-encompassing like MSBuild is, 
+    sometimes CSharp code that works in an MSBuild process doesn't work with the Add-Type cmdlet... 
+
+    I think it's just an issue with Roslyn or something. However, writing a bunch of classes/structs in CSharp 
+    and then initializing and instantiating them into PowerShell is incredibly useful. 
+    It's the only way to get structs into PowerShell, I think.
+
+    What I'm going to do NOW, is, build a class that puts all of this stuff together.
+    I'll start by stripping away the comments that I made on some of the above content, and then
+    edit it until it's literally picture perfect, and reproduces the same output as above.
+    ____________________________________________________________________________________________________
+    | Here are ALL of the above variables thrown into a single section, as well as the page references |___________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # [Page 22]
+    $Apps            = "\Wow6432Node","" | % { 
+
+                        Get-ChildItem "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall" 
+
+                       } | Get-ItemProperty
+    # [Page 24]
+    $Edge            = $Apps | ? DisplayName -match "(^Microsoft Edge$)"
+
+
+    # [Page 25 → TANGENT → Page 51]
+    $Prop      = $Edge.PSObject.Properties | ? Name -notmatch "(^_|^PS)"
+    $Prop     += [PSNoteProperty]::New("EntryUnique",@( ))
+
+    # [Page 52]
+    $Types           = ($Properties.TypeNameOfValue | % { @("String",$_ -Replace "System\.","")[$_.Length -gt 0] })
+    $TypesMaxLength  = ($Types | Sort-Object Length)[-1].Length
+
+    # [Page 52]
+    $Names           = $Properties.Name
+    $NamesMaxLength  = ($Names | Sort-Object Length)[-1].Length
+
+    # [Page 52]
+    $Def             = @{
+        Name         = "Uninstall"
+        Type         = @( )
+        Param1Type   = "[Object]"
+        Param1Value  = "`$Registry"
+        Const        = @( )
+        Method       = @( )
+    }
+
+    # [Page 52]
+    ForEach ($X in 0..($Names.Count-1))
+    {
+        $Type        = $Types[$X]
+        $Name        = $Names[$X]
+        $TypeBuffer  = " " * ($TypesMaxLength - $Type.Length + 1)
+        $NameBuffer  = " " * ($NamesMaxLength - $Name.Length + 1)
+        $Def.Type   += "    [{0}]{1}{2}`${3}" -f $Type , $TypeBuffer, $NameBuffer, $Name
+        $Def.Const  += "        `$This.{0}{1} = {2}.{0}" -f $Name, $NameBuffer, $Def.Param1Value
+    }
+
+    # [Page 53]
+    $X               = 0..($Def.Const.Count-1) | ? { $Def.Const[$_] -match "EntryUnique" }
+    $Def.Const[$X]   = $Def.Const[$X] -Replace '= .+', '= $This.GetEntryUniqueProperties($Registry)'
+
+    # [Page 53]
+    $Method1         = @(
+    '    [String[]] Properties()',
+    '    {',
+    '        Return $This.PSObject.Properties | ? Name -notmatch EntryUnique | % Name',
+    '    }'
+    )
+    $Def.Method      += $Method1
+
+    # [Page 53]
+    $Method2          = @(
+    '    [Object[]] GetEntryUniqueProperties([Object]$Param)',
+    '    {',
+    '        Return @(
+         $Param.PSObject.Properties | ? Name -notmatch "(^PS|$($This.Properties() -join "|"))") | Select Name, Value'
+    '    }'
+    )
+    $Def.Method      += $Method2
+
+    # [Page 53]
+    $Method3           = @(
+    '    [Object[]] Output([UInt32]$Buffer)',
+    '    {',
+    '        $Output  = @( )',
+    '        $Output += ("-" * 120 -join "")',
+    '        $Output += "[$($This.DisplayName)]"',
+    '        $Output += ("-" * 120 -join "")',
+    '        $Output += " "',
+    '',
+    '        $This.Properties() | % { ',
+    '',
+    '            $Output += "{0}{1} : {2}" -f $_, (" " * ($Buffer - $_.Length + 1) -join ""), $This.$_',
+    '        }',
+    '',
+    '        $Output += (" " * $Buffer -join "")',
+    '        $This.EntryUnique  | % { ',
+    '',
+    '            $Output += "{0}{1} : {2}" -f $_.Name, (" " * ($Buffer - $_.Name.Length + 1 ) -join ""), $_.Value',
+    '        }',
+    '        $Output += (" " * $Buffer -join "")',
+    '',
+    '        Return $Output',
+    '    }'
+    )
+    $Def.Method      += $Method3
+
+    # [Page 53]
+    $ClassDefinition = @("Class $($Def.Name)","{",($Def.Type -join "`n"), 
+                         "    $($Def.Name)($($Def.Param1Type)$   ($Def.Param1Value))", 
+                         "    {",
+                         ($Def.Const -join "`n"),
+                         "    }",
+                         ( $Def.Method -join "`n"),
+                         "}") -join "`n"
+'@)
+
+$Book.AddSection(11,"<Class Definition> Template",@'
+    Now, I'll develop these above variables as (2) separate classes, one for the container, one for the class object, 
+    and the class object needs to be written FIRST so that the type can be used in the container class. 
+
+    Even though the variables are right ABOVE, they will LIKELY have to be rearranged in order to work as a pair 
+    of classes, though not necessarily.
+
+    And though, reading the material will feel like the above paragraph was SOOOO 30 seconds ago...?
+    The truth is that when this was written, I spent about a half hour working on it and tweaking it.
+
+    The NAME of this class, is essentially "DefinitionTemplate", because the name of this class doesn't NEED to be 
+    COOL, because it's job is to produce a class that includes various elements that would be needed to perform the 
+    same exact activity as the variables listed directly above.
+
+    However, this class has implemented many changes to the code it's based on up above, while still producing the 
+    same output. Some of those changes are details that wouldn't even be seen when using it. But, if you were to 
+    debug what it does, you'd see how it molds and shapes the output, and you'd easily see how OTHER techniques 
+    were applied, to produce the same result.
+
+    Sometimes this process can make the code longer, but other times it can make the code much more responsive or even 
+    give it more features so other elements can be added/amended whereby boosting flexibility, capability, or scope.
+
+    The fully written class is below, as is. 
+    AFTER this stint, I will break it down and explain the differences between the variables above, and the 
+    properties and variables in the class.
+    ____________________________________________________________________________________________
+    | Note : This class is just a current derivative, if I were to keep working on it, I would |
+    | implement various changes to more finely tune the capabilities, properties, values, etc. |
+    |------------------------------------------------------------------------------------------|
+    | Some formatting is being used that I wouldn't normally use due to PUBLISHING CONSTRAINTS |___________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Class DefinitionTemplate
+    {
+        [String] $Name
+        [Object] $Property
+        [Object] $Param1Type
+        [Object] $Param1Value
+        [Object] $Constructor
+        [Object] $Method
+        DefinitionTemplate([String]$Name,[String]$Param1Type,[String]$Param1Value)
+        {
+            $This.Name             = $Name
+            $This.Property         = @( )
+            $This.Param1Type       = $Param1Type
+            $This.Param1Value      = $Param1Value
+            $This.Constructor      = @( )
+            $This.Method           = @( )
+        }
+        LoadPropertySet([Object[]]$Properties)
+        {
+            $Types                 = ($Properties.TypeNameOfValue | % { 
+
+                                     @("String",$_ -Replace "System\.","")[$_.Length -gt 0] 
+
+                                     })
+
+            $TypesMax              = ($Types | Sort-Object Length)[-1].Length
+            $Names                 = $Properties.Name
+            $NamesMax              = ($Names | Sort-Object Length)[-1].Length
+            ForEach ($X in 0..($Names.Count-1))
+            {
+                $TypeBuff          = " " * ($TypesMax - $Types[$X].Length + 1)
+                $NameBuff          = " " * ($NamesMax - $Names[$X].Length + 1)
+                $This.AddProperty($Types[$X],$TypeBuff, $NameBuff,$Names[$X])
+                $This.SetProperty($Names[$X],$NameBuff)
+            }
+        }
+        AddProperty([String]$Type,[String]$TypeBuff,[String]$NameBuff,[String]$Name)
+        {
+            $This.Property        += "    [{0}]{1}{2}`${3}" -f $Type, $TypeBuff, $NameBuff, $Name
+        }
+        SetProperty([String]$Property,[String]$NameBuff)
+        {
+            $This.Constructor     += "        `$This.{0}{1} = {2}.{0}" -f $Property,
+                                                                          $NameBuff, 
+                                                                          $This.Param1Value
+        }
+        ChangeProperty([String]$Name,[String]$Value)
+        {
+            $X                     = 0..($This.Constructor.Count-1) | ? { 
+
+                                     $This.Constructor[$_] -match $This.Escape("`$This.$Name") 
+
+                                     }
+            If (!!$X)
+            {
+                [Console]::WriteLine("Property [+] Found, altering...")
+                $This.Constructor[$X]  = $This.Constructor[$X] -Replace "=.+","= $Value"
+            }
+            Else
+            {
+                [Console]::WriteLine("Property [!] Not found, skipping...")
+            }
+        }
+        [String] AddIndent([UInt32]$Count)
+        {
+            Return "    " * $Count
+        }
+        AddMethod([String[]]$Body)
+        {
+            $Body   = $Body -Replace "^\s*",""
+            $I      = 0
+            $Return = @( )
+            ForEach ($X in 0..($Body.Count-1))
+            {
+                $Line = $Body[$X]
+                If ($X -eq 0 -and $Line -match "(\s{0})")
+                {
+                    $I ++
+                    $Line = $This.AddIndent($I) + $Line
+                }
+                ElseIf ($X -eq 1 -and $Line -match "(\s{0}\{)")
+                {
+                    $Line = $This.AddIndent($I) + $Line
+                    $I ++
+                }
+                ElseIf ($X -eq ($Body.Count-1) -and $Line -match "(\s{0}\})")
+                {
+                    $I --
+                    $Line = $This.AddIndent($I) + $Line
+                }
+                Else
+                {
+                    $Line = $This.AddIndent($I) + $Line
+                }
+                $Return += $Line
+            }
+            $This.Method += $Return -join "`n"
+        }
+        [String] Escape([String]$Value)
+        {
+            Return [Regex]::Escape($Value)
+        }
+        [String] ReturnDefinition()
+        {
+            $X              = @{
+                Name        = "Class {0}" -f $This.Name
+                Property    = $This.Property -join "`n"
+                Main        = "    {0}({1}{2})" -f $This.Name, 
+                                                   $This.Param1Type, 
+                                                   $this.Param1Value
+                Constructor = $This.Constructor -join "`n"
+                Method      = $This.Method -join "`n"
+            }
+            Return @( $X.Name, 
+                      "{", 
+                      $X.Property, 
+                      $X.Main, 
+                      "    {", 
+                      $X.Constructor, 
+                      "    }", 
+                      $X.Method, 
+                      "}" 
+                    ) -join "`n"
+        }
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _______________________________________________________________________________________________________
+    | Now that the class is declared, instantiate the class and use its methods to reproduce the result   |
+    | THEN, load the properties by using the method LoadPropertySet($Properties)                          |________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Temp            = [DefinitionTemplate]::New("Uninstall","[Object]",'$Registry')
+    $Temp.LoadPropertySet($Properties)
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    __________________________________________________________________________________________________
+    | Now change property named "EntryUnique", new value "$This.GetEntryUniqueProperties($Registry)" |_____________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Temp.ChangeProperty("EntryUnique","`$This.GetEntryUniqueProperties(`$Registry)")
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________
+    | Now add method #1 |__________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Temp.AddMethod(@('[String[]] Properties()','{',
+    'Return $This.PSObject.Properties | ? Name -notmatch EntryUnique | % Name','}'))
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________
+    | Now add method #2 |__________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Temp.AddMethod(@('[Object[]] GetEntryUniqueProperties([Object]$Param)',
+    '{',
+    ('Return @($Param.PSObject.Properties | ? Name -notmatch "(^PS|$($This.Properties() -join "|"))") '+
+     '| Select-Object Name, Value'),'}'))
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    __________________________________________________________________________________________________
+    | Now add method #3                                                                              |
+    | There is some formatting being used that I wouldn't normally use due to PUBLISHING CONSTRAINTS |_____________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Temp.AddMethod(@('[Object[]] Output([UInt32]$Buff)','{','$X  = @( )',
+    '$X += ("-" * 120 -join ""), "[$($This.DisplayName)]", ("-" * 120 -join ""), " "',
+    '$This.Properties() | % { $X += "{0}{1} : {2}" -f $_, (" " * ($Buff - $_.Length + 1) -join ""), $This.$_ }',
+    '$X += (" " * $Buff -join "")',
+    ('$This.EntryUnique  | % { $X += "{0}{1} : {2}" -f $_.Name,'+
+     ' (" " * ($Buff - $_.Name.Length + 1 ) -join ""), $_.Value }'),
+    '$X += (" " * $Buff -join "")',
+    'Return $X','}'))
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ________________________________________________________________________________________
+    | Run the method ReturnDefinition(), and cast it's output to variable $ClassDefinition |_______________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $ClassDefinition = $Temp.ReturnDefinition()
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ____________________________________________________________________________________________
+    | Copy the variable output to the clipboard, and THEN, let's take a look at the output...  |___________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $ClassDefinition | Set-Clipboard
+'@)
+
+$Book.AddSection(11,"Output",@'
+    Class Uninstall
+    {
+        [String]        $DisplayName
+        [String]     $DisplayVersion
+        [String]            $Version
+        [Int32]            $NoRemove
+        [String]         $ModifyPath
+        [String]    $UninstallString
+        [String]    $InstallLocation
+        [String]        $DisplayIcon
+        [Int32]            $NoRepair
+        [String]          $Publisher
+        [String]        $InstallDate
+        [Int32]        $VersionMajor
+        [Int32]        $VersionMinor
+        [Object[]]      $EntryUnique
+        Uninstall([Object]$Registry)
+        {
+            $This.DisplayName      = $Registry.DisplayName
+            $This.DisplayVersion   = $Registry.DisplayVersion
+            $This.Version          = $Registry.Version
+            $This.NoRemove         = $Registry.NoRemove
+            $This.ModifyPath       = $Registry.ModifyPath
+            $This.UninstallString  = $Registry.UninstallString
+            $This.InstallLocation  = $Registry.InstallLocation
+            $This.DisplayIcon      = $Registry.DisplayIcon
+            $This.NoRepair         = $Registry.NoRepair
+            $This.Publisher        = $Registry.Publisher
+            $This.InstallDate      = $Registry.InstallDate
+            $This.VersionMajor     = $Registry.VersionMajor
+            $This.VersionMinor     = $Registry.VersionMinor
+            $This.EntryUnique      = $This.GetEntryUniqueProperties($Registry)
+        }
+        [String[]] Properties()
+        {
+            Return $This.PSObject.Properties | ? Name -notmatch EntryUnique | % Name
+        }
+        [Object[]] GetEntryUniqueProperties([Object]$Param)
+        {
+            Return @(
+            $Param.PSObject.Properties | ? Name -notmatch "(^PS|$($This.Properties() -join "|"))") | Select Name, Value
+        }
+        [Object[]] Output([UInt32]$Buff)
+        {
+            $X  = @( )
+            $X += ("-" * 120 -join ""), "[$($This.DisplayName)]", ("-" * 120 -join ""), " "
+            $This.Properties() | % { 
+            $X += "{0}{1} : {2}" -f $_, (" " * ($Buff - $_.Length + 1) -join ""), $This.$_ 
+            }
+            $X += (" " * $Buff -join "")
+            $This.EntryUnique  | % { 
+            $X += "{0}{1} : {2}" -f $_.Name, (" " * ($Buff - $_.Name.Length + 1 ) -join ""), $_.Value 
+            }
+            $X += (" " * $Buff -join "")
+            Return $X
+        }
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    So, the output does look slightly different. 
+    At least the content of the method named Output does.
+
+    That's because I added a feature that would automatically indent lines within any given method fed to the 
+    AddMethod([Object[]]$Object) method. But, then I realized that probably isn't a great use of my time to go the 
+    full mile there.
+
+    There are many things in the .NET framework that can actually indent some of this stuff FOR you, or anybody else 
+    really... but sometimes, learning how to do it without a tool like that can help bolster one's ability to do it 
+    themselves. When they do, they'll understand how the "pros" went ahead, and wrote a class that does all of that 
+    work, cause they're probably a real nice (guy/girl).
+
+    Whether you use one of the StringWriter class types, or I think the Xmlwriter class also does it, can't think off 
+    the top of my head what other default classes automatically indent stuff for you, but they're out there. 
+
+    Things become harder to do when you're writing CODE that does what you as a human would do when editing the 
+    content, and that's when design choices might change.
+'@)
+
+$Book.AddSection(11,"Comparison",@'
+    _________________________________________________________________________________________________________________
+    | FIRST CLASS, [UninstallStack] |/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/|
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________
+    | [Before : Part 1] |__________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Apps            = "\Wow6432Node","" | % { 
+
+                       Get-ChildItem "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall" 
+
+                       } | Get-ItemProperty
+    $Edge            = $Apps | ? DisplayName -match "(^Microsoft Edge$)"
+    $Properties      = $Edge.PSObject.Properties | ? Name -notmatch "(^_|^PS)"
+    $Properties     += [PSNoteProperty]::New("EntryUnique",@( ))
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The BEFORE stuff is actually all the variables starting from where the pros suggested that using Get-WMIObject
+    Win32_Product to get installed applications, is not the best way to get that info.
+    
+    Looking through the registry is actually a WAY snappier way to do the job, and any pro would tell you that. 
+    The thing is, the registry and the WMI objects don't have the same values. 
+
+    So, since Matthew Caldwell had us imaging THOUSANDS of machines incorrectly...? 
+    Whereby forcing is to redo a LOT of work that we had to do OVER again...? 
+
+    WELL... we had to make some serious changes after writing the WMIClass at the top. 
+    Not to mention, the WMIClass reaches into the HKEY_CLASSES_ROOT for GUID's and stuff that isn't automatically 
+    available to PowerShell without opening a new PSDrive to HKCR:\*. Pretty sure anyway.
+    ____________________
+    | [After : Part 1] |___________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Class UninstallStack
+    {
+        [UInt32] $Buffer
+        [Object] $Output
+        UninstallStack()
+        {
+            $Apps            = "\Wow6432Node","" | % { 
+
+                               Get-ChildItem "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall" 
+
+                               } | Get-ItemProperty
+            $Edge            = $Apps | ? DisplayName -match "(^Microsoft Edge$)"
+            $Properties      = $Edge.PSObject.Properties | ? Name -notmatch "(^_|^PS)"
+            $Properties     += [PSNoteProperty]::New("EntryUnique",@( ))
+            $This.Output     = $Apps | % { [Uninstall]::New($_) }
+            $This.Buffer     = ($This.Output.EntryUnique.Name | Sort-Object Length)[-1].Length
+        }
+        [Object[]] GetOutput()
+        {
+            Return @( $This.Output.Output($This.Buffer) )
+        }
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The AFTER stuff is essentially the same code, largely. 
+    Except, there are (2) properties that replace a couple of the variables, like $This.Output and $This.Buffer. 
+    The other variables are still written the same way.
+
+    You can get away with this for a large majority of the conversion, UNLESS, having a PROPERTY makes more sense.
+    Properties of the class will RETAIN the information, whereas variables will NOT, unless they're cast to a property.
+    _________________________________________________________________________________________________________________
+    | SECOND CLASS, [DefinitionTemplate] |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/|
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________
+    | [Before : Part 1] |__________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Types           = ($Properties.TypeNameOfValue | % { @("String",$_ -Replace "System\.","")[$_.Length -gt 0] })
+    $TypesMaxLength  = ($Types | Sort-Object Length)[-1].Length
+    $Names           = $Properties.Name
+    $NamesMaxLength  = ($Names | Sort-Object Length)[-1].Length
+    $Def             = @{
+        Name         = "Uninstall"
+        Type         = @( )
+        Param1Type   = "[Object]"
+        Param1Value  = "`$Registry"
+        Const        = @( )
+        Method       = @( )
+    }
+    ForEach ($X in 0..($Names.Count-1))
+    {
+        $Type        = $Types[$X]
+        $Name        = $Names[$X]
+        $TypeBuffer  = " " * ($TypesMaxLength - $Type.Length + 1)
+        $NameBuffer  = " " * ($NamesMaxLength - $Name.Length + 1)
+        $Def.Type   += "    [{0}]{1}{2}`${3}" -f $Type , $TypeBuffer, $NameBuffer, $Name
+        $Def.Const  += "        `$This.{0}{1} = {2}.{0}" -f $Name, $NameBuffer, $Def.Param1Value
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The Before stuff right here is doing a lot of the work in processing the values in the $Properties variable. 
+    The $Properties variable is an object array of PSNoteProperties based off of the $PSObject.Properties variable. 
+
+    The hash table is there reserving some collection containers for properties Type, Const, and Method.
+
+    Then the loop just goes right ahead and starts processing every item in the $Names array.
+    It is also calculating the length of the buffer strings so that it formats the code neatly.
+
+    ____________________
+    | [After : Part 2] |___________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Class DefinitionTemplate
+    {
+        [String] $Name
+        [Object] $Property
+        [Object] $Param1Type
+        [Object] $Param1Value
+        [Object] $Constructor
+        [Object] $Method
+        DefinitionTemplate([String]$Name,[String]$Param1Type,[String]$Param1Value)
+        {
+            $This.Name             = $Name
+            $This.Property         = @( )
+            $This.Param1Type       = $Param1Type
+            $This.Param1Value      = $Param1Value
+            $This.Constructor      = @( )
+            $This.Method           = @( )
+        }
+        LoadPropertySet([Object[]]$Properties)
+        {
+            $Types                 = ($Properties.TypeNameOfValue | % { 
+
+                                     @("String",$_ -Replace "System\.","")[$_.Length -gt 0] 
+
+                                     })
+
+            $TypesMax              = ($Types | Sort-Object Length)[-1].Length
+            $Names                 = $Properties.Name
+            $NamesMax              = ($Names | Sort-Object Length)[-1].Length
+            ForEach ($X in 0..($Names.Count-1))
+            {
+                $TypeBuff          = " " * ($TypesMax - $Types[$X].Length + 1)
+                $NameBuff          = " " * ($NamesMax - $Names[$X].Length + 1)
+                $This.AddProperty($Types[$X],$TypeBuff, $NameBuff,$Names[$X])
+                $This.SetProperty($Names[$X],$NameBuff)
+            }
+        }
+        AddProperty([String]$Type,[String]$TypeBuff,[String]$NameBuff,[String]$Name)
+        {
+            $This.Property        += "    [{0}]{1}{2}`${3}" -f $Type, $TypeBuff, $NameBuff, $Name
+        }
+        SetProperty([String]$Property,[String]$NameBuff)
+        {
+            $This.Constructor     += "        `$This.{0}{1} = {2}.{0}" -f $Property,
+                                                                          $NameBuff, 
+                                                                          $This.Param1Value
+        }
+    # // <Continued below>
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The After stuff right here looks a lot like the individuals up above.
+    However, there are many things that have been moved around to make the process more structurally sound. 
+    Mainly because the hash table that was named $Def, was a good idea to turn into the default constructor and 
+    class properties. 
+
+    The intitial constructor requests (3) parameters: 
+    1) name of the class 
+    2) Parameter1Type 
+    3) Parameter1Value
+    ...which can be seen up in the before section, except now the class can accommodate a much more broad range of 
+    input without doing a heck of a lot different. 
+
+    The same can also be done with the hash table. But- if I want to make multiple copies of the class, each with a 
+    different set of values, that's a lot easier. With the hashtable, I'd have to copy and paste the hashtable, and 
+    then manually enter new values for those new hashtables, otherwise they'll have the same information.
+
+    Which is... rather anticlimactic, in all honesty. 
+    Nothing like seeing thousands of the same exact hash table cause a token variable somewhere wasn't being changed.
+    The hashtables also don't scale well as a table like the classes do. 
+
+    They CAN, but the class doesn't lose any of it's key arrangements or positioning, so the class is more consistent 
+    and reliable. That's not ALWAYS the case, but in this case, it most certainly is.
+
+    The method LoadPropertySet($Properties) does the same job as the individual variables in the before stuff above.
+    However, there are some KEY DIFFERENCES to note here. For starters, the way in which the variables were moved 
+    around, allowed the hashtable stuff to be put in it's own constructor.
+
+    Then, shifting the remaining variables from that particular block around, allowed moving the type length 
+    determination process, the type buffer, type buffer to string, as well as the name length determination process, 
+    name buffer, and name buffer to string... not only to the same block, but- there was a perfect opportunity to 
+    create a couple of new methods that cleaned up the way that code looked, while also providing some more control. 
+   
+    Maybe it's a matter of preference...? Idk.
+    But I like the way that portion of the code looks a LOT better than the individual variables.
+
+    Suffice to say, adding those methods makes a lot of sense as they're adding properties, and then setting the 
+    property values... having a method with a name gives anybody a better sense of what is actually happening behind 
+    the code.
+    _____________________  
+    | [Before : Part 3] |__________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $X               = 0..($Def.Const.Count-1) | ? { $Def.Const[$_] -match "EntryUnique" }
+    $Def.Const[$X]   = $Def.Const[$X] -Replace '= .+', '= $This.GetEntryUniqueProperties($Registry)'
+
+    # [Page 53]
+    $Method1         = @(
+    '    [String[]] Properties()',
+    '    {',
+    '        Return $This.PSObject.Properties | ? Name -notmatch EntryUnique | % Name',
+    '    }'
+    )
+    $Def.Method      += $Method1
+
+    # [Page 53]
+    $Method2          = @(
+    '    [Object[]] GetEntryUniqueProperties([Object]$Param)',
+    '    {',
+    '        Return @(
+         $Param.PSObject.Properties | ? Name -notmatch "(^PS|$($This.Properties() -join "|"))") | Select Name, Value'
+    '    }'
+    )
+    $Def.Method      += $Method2
+
+    # [Page 53]
+    $Method3           = @(
+    '    [Object[]] Output([UInt32]$Buffer)',
+    '    {',
+    '        $Output  = @( )',
+    '        $Output += ("-" * 120 -join "")',
+    '        $Output += "[$($This.DisplayName)]"',
+    '        $Output += ("-" * 120 -join "")',
+    '        $Output += " "',
+    '',
+    '        $This.Properties() | % { ',
+    '',
+    '            $Output += "{0}{1} : {2}" -f $_, (" " * ($Buffer - $_.Length + 1) -join ""), $This.$_',
+    '        }',
+    '',
+    '        $Output += (" " * $Buffer -join "")',
+    '        $This.EntryUnique  | % { ',
+    '',
+    '            $Output += "{0}{1} : {2}" -f $_.Name, (" " * ($Buffer - $_.Name.Length + 1 ) -join ""), $_.Value',
+    '        }',
+    '        $Output += (" " * $Buffer -join "")',
+    '',
+    '        Return $Output',
+    '    }'
+    )
+    $Def.Method      += $Method3
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The Before stuff here, generally looks a lot like the after stuff, but, the class has methods where these values 
+    are just being changed directly. Like, the first couple of variables are pulling an index number to specifically 
+    recall the index of the property that's about to be changed, and then it changes it with some regex. 
+
+    The after stuff is doing that too... albeit with changes.
+
+    The variables named $Method1, $Method2, and $Method3 really aren't all that different from the after stuff 
+    either, except here, there's no actual method that's inserting those variable values into the hashtable property 
+    named “Method”. 
+
+    Which is fine...? 
+    But, having a method name that describes the function is really what makes a class even more useful than a slew 
+    of variables all taped together. There really is no way to get away from that feeling where using many variables
+    that aren't connected to a larger container object, starts to feel as if they're all operating on their own accord.                                                                             
+    Obviously, this process is required to build the class types, it's just that if a script writer doesn't make the 
+    effort to implement class types and stuff, they may never be able to write code that is able to describe itself 
+    a lot more clearly and coherently, and methods and even loop labels go a long way to assist with breaking portions 
+    of code off into trunks or branches, rather than one giant soup bowl of variables. 
+
+    Just, variable soup. I don't see people using many loop labels these days, because it's essentially the same thing
+    as a method, or a switch block.
+    ____________________
+    | [After : Part 3] |___________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // <Continued from above>
+        ChangeProperty([String]$Name,[String]$Value)
+        {
+            $X                     = 0..($This.Constructor.Count-1) | ? { 
+
+                                     $This.Constructor[$_] -match $This.Escape("`$This.$Name") 
+
+                                     }
+            If (!!$X)
+            {
+                [Console]::WriteLine("Property [+] Found, altering...")
+                $This.Constructor[$X]  = $This.Constructor[$X] -Replace "=.+","= $Value"
+            }
+            Else
+            {
+                [Console]::WriteLine("Property [!] Not found, skipping...")
+            }
+        }
+        [String] AddIndent([UInt32]$Count)
+        {
+            Return "    " * $Count
+        }
+        AddMethod([String[]]$Body)
+        {
+            $Body   = $Body -Replace "^\s*",""
+            $I      = 0
+            $Return = @( )
+            ForEach ($X in 0..($Body.Count-1))
+            {
+                $Line = $Body[$X]
+                If ($X -eq 0 -and $Line -match "(\s{0})")
+                {
+                    $I ++
+                    $Line = $This.AddIndent($I) + $Line
+                }
+                ElseIf ($X -eq 1 -and $Line -match "(\s{0}\{)")
+                {
+                    $Line = $This.AddIndent($I) + $Line
+                    $I ++
+                }
+                ElseIf ($X -eq ($Body.Count-1) -and $Line -match "(\s{0}\})")
+                {
+                    $I --
+                    $Line = $This.AddIndent($I) + $Line
+                }
+                Else
+                {
+                    $Line = $This.AddIndent($I) + $Line
+                }
+                $Return += $Line
+            }
+            $This.Method += $Return -join "`n"
+        }
+        [String] Escape([String]$Value)
+        {
+            Return [Regex]::Escape($Value)
+        }
+    # // <Continued below>
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The after stuff here is a lot longer, no question about it.
+    Nothing seen in this group of methods is actually reproducing the code above, however-
+    
+    It's doing additional things that make the code easier to throw OTHER values at, making it even more flexible 
+    than it already was. I'm going to paste the portion of code where the class is instantiated and then the methods 
+    that produce the same content as the variables up above, will be more readily comparable.
+     ___________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $Temp            = [DefinitionTemplate]::New("Uninstall","[Object]",'$Registry')
+    $Temp.LoadPropertySet($Properties)
+
+    $Temp.ChangeProperty("EntryUnique","`$This.GetEntryUniqueProperties(`$Registry)")
+
+    $Temp.AddMethod(@('[String[]] Properties()','{',
+    'Return $This.PSObject.Properties | ? Name -notmatch EntryUnique | % Name','}'))
+
+    $Temp.AddMethod(@('[Object[]] GetEntryUniqueProperties([Object]$Param)',
+    '{',
+    ('Return @($Param.PSObject.Properties | ? Name -notmatch "(^PS|$($This.Properties() -join "|"))") '+
+     '| Select-Object Name, Value'),'}'))
+
+
+    $Temp.AddMethod(@('[Object[]] Output([UInt32]$Buff)','{','$X  = @( )',
+    '$X += ("-" * 120 -join ""), "[$($This.DisplayName)]", ("-" * 120 -join ""), " "',
+    '$This.Properties() | % { $X += "{0}{1} : {2}" -f $_, (" " * ($Buff - $_.Length + 1) -join ""), $This.$_ }',
+    '$X += (" " * $Buff -join "")',
+    ('$This.EntryUnique  | % { $X += "{0}{1} : {2}" -f $_.Name,'+
+     ' (" " * ($Buff - $_.Name.Length + 1 ) -join ""), $_.Value }'),
+    '$X += (" " * $Buff -join "")',
+    'Return $X','}'))
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    The first two lines here instantiate the class.
+    Then the method LoadPropertySet injects the PSObject.Properties information. 
+    The third method ChangeProperty is performing the same activity as the first two variables in the before 
+    section directly above. 
+
+    Now I can explain why the code in the class is longer, but- achieves a better end result...                                     
+    The method ChangeProperty looks for the property in the constructor "EntryUnique", and then sets its value to 
+    what is written in the quotes as the second parameter. 
+
+    It's doing almost the identical thing under the hood as above, however the method ChangeProperty is providing 
+    a little bit of error handling, so if the property parameter finds no result, then it doesn't just NOT tell 
+    you that nothing was done, it'll say that. 
+
+    But also, it uses a double not true boolean statement where if the token $X is returned via the double 
+    negative check, then that means it found the thing and it made the change. 
+
+    Otherwise it didn't, and will say "failed..."
+    As for the method AddMethod(), it is generally identical to the previous variable method, but- I was able to 
+    implement spacing changes so that the input strings don't need to include those spaces. 
+
+    Even if they do, they're gonna get ripped out and then reinserted from the ground up. Why? 
+    Because it made more sense to do it that way. 
+
+    However, it did mess with the way I like my code to be indented from nested code block to nested code block 
+    within a method. But, that's really a matter of preference and it's not a structural defect or anything. 
+
+    Also, the methods could also be added in the same way as the naked variables, where there was $Method1, 
+    $Method2, and $Method3 and then those values were added... It could be done that way here as well.
+
+    The main difference is that the method is NAMED, rather than just having some property named “Method” that 
+    allows items to be added to it. Yeah, naming a property "method" that isn't actually a method might cause some 
+    confusion somewhere...? But then again, maybe it won't... 
+
+    Either way, it's better to have a legitimate, actual, factual method named "AddMethod" rather than wingin' it 
+    with a property named Method then a plus sign and an equals sign, then a variable value.
+
+    I know somebody somewhere is going to say "That's not an actual method..."
+    I'm aware of that... it's a property named method, that just so happens to be inserting a value that represents 
+    the string version of a method for a class. A wolf in sheeps clothing, essentially.
+
+    It's not unlike showing up to a party in a shirt that says "I'm wearing a black shirt", but...
+    ...your shirt is actually white. 
+
+    Everyone's that takes their time to read your shirt is going to think... 
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Person 1 : That dude's wearing a white shirt that says 'I'm wearing a black shirt'...
+    Person 2 : Wow. 
+               That dude's shirt definitely says that, and it IS white...
+    Person 3+: Dude's wearin' a white shirt, but then the shirt says "I'm wearing a black shirt"...
+    (Then somebody will eventually say...)
+    Person 9 : So, is it like the SHIRT that's wearing a shirt...? 
+               Or like-
+               *shakes head* I don't even know dude... 
+               ...that shirt is blowing my mind right now...
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Maybe it won't be that dramatic though.
+    _____________________
+    | [Before : Part 4] |__________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    $ClassDefinition = @("Class $($Def.Name)","{",($Def.Type -join "`n"), 
+                         "    $($Def.Name)($($Def.Param1Type)$   ($Def.Param1Value))", 
+                         "    {",
+                         ($Def.Const -join "`n"),
+                         "    }",
+                         ( $Def.Method -join "`n"),
+                         "}") -join "`n"
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    There's not much left to go over. 
+    It's literally just the class definition variable, the thing that's supposed to capture the output of the 
+    variables up above, so that the class can be loaded into memory, and then it can be instantiated.
+    
+    There's no question, that having blobs of code written all over the place like what's directly above this 
+    paragraph, are a headache to look at. It's long, it's mean looking, doesn't even remotely feel like a cool dude 
+    that just so happens to be hanging out at the park during the summer... 
+
+    The reason for that is because whenyoutrytostuffabunchofthingsintosomethinglikethat-
+    itkindalookslikeascarymessthatnobodywantstobenearoraroundcauseitslongcomplicatedlookingandnotfun.
+    
+    I realize, it probably doesn't look THAT BAD... but that whole "throwing away the spacebar" comment is sorta 
+    the vibe that it gives me. All it's doing is generating the single output string that just so happens to be 
+    the output of the entire set of variables. 
+
+    But, there's so many ways it can be optimized:
+
+    1) String interpolation
+    2) directly embedding the values without so many quotes,
+    3) joining the strings together in separate chunks
+
+    It's not BAD for a FIRST ATTEMPT when you're conceptualizing something... 
+    ...but at some point, this will cause anybody that respects well written code, to say (1) word. "Ahhh!"
+
+    Do you want somebody who's always been known for respecting well written code, to say "Ahhh!"...
+    ...when they look at YOURS...? 
+    Probably not, right...? 
+    Cause "Ahhh!" isn't even a word, really.
+
+    At which point, who's the person who feels most insulted...? You...?
+    Or some guy that has always been known for respecting well written code... that said "Ahhh!"...
+    ...when they looked at yours...?
+
+    Maybe Linus Torvalds may have to come out from somewhere, and say:
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Torvalds : I've seen FAR worse code than that, pal. 
+               And, I've ALWAYS been known for respecting well-written code...
+    (Then I guess I'm gonna have to put my hands up...)
+    Me       : Alright...~! 
+               Can't argue with ya."
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    Cause who's gonna argue with Linus Torvalds... the man who wrote Linux? Nobody, that's who.
+    Everyone reading this will probably agree with me: 
+
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Everybody : *shakes head* Yeah. 
+                That Linus Torvalds guy...? 
+                He literally knows the ins and outs of well written code... 
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    In that case...? Then MAYBE it's settled... 
+    MAYBE the code above isn't THAT bad. 
+
+    But, PERSONALLY...? I feel as if it appears that the author lost track of their space bar, or enter key. 
+    Maybe that's fine sometimes. What do I know?
+    
+    Whether I AM THE GUY THAT WROTE THAT or not...? 
+    It's irrelevant. 
+
+    Gives me the heebie jeebies.
+    And, that's why I rewrote it in the class and that whole mess became this thing below...
+    ____________________
+    | [After : Part 4] |___________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // <Continued from above>
+        [String] ReturnDefinition()
+        {
+            $X              = @{
+                Name        = "Class {0}" -f $This.Name
+                Property    = $This.Property -join "`n"
+                Main        = "    {0}({1}{2})" -f $This.Name, 
+                                                   $This.Param1Type, 
+                                                   $this.Param1Value
+                Constructor = $This.Constructor -join "`n"
+                Method      = $This.Method -join "`n"
+            }
+            Return @( $X.Name, 
+                      "{", 
+                      $X.Property, 
+                      $X.Main, 
+                      "    {", 
+                      $X.Constructor, 
+                      "    }", 
+                      $X.Method, 
+                      "}" 
+                    ) -join "`n"
+        }
+    }
+
+    $ClassDefinition = $Temp.ReturnDefinition()
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    People may look at this and think... 
+    But- you had all of that in one line... This is like (12+).
+    
+    Yep. 
+    I know, it APPEARS to be a lot MORE INFORMATION (in this case it is), but sometimes I ask myself how the highway 
+    guys can stand working on the highway all day in the heat, those tenth of a mile markers being the thing they gotta
+    drop a bunch of asphalt between, and they'll occasionally look at these markers to gauge their progress. 
+
+    They probably live for each and every one of those things too.
+    
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+    Highway guy: Ah man. 
+                 Just another... 
+                 4 miles to go. 
+                 Not bad. 
+                 It's only Monday though. 
+                 Damnit.
+
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
+    You know that they're walking... and they look at these things like a clock or a watch.
+    Pouring, and laying down some asphalt all day long... living through hell, paycheck to paycheck.
+
+    Here's why I prefer the thing above. 
+    If I want to make it shorter, that's easy. 
+    Highway guy can't make his job any shorter if he even wanted to. 
+    With 4 miles of asphalt to lay, there's nothing he can do to make his job less difficult on himself. 
+
+    But, I definitely CAN make MY job easier on myself. 
+    So, if I want to examine a problem with the output, then I've made it incredibly easy to track down what COULD be
+    causing an issue, adjust it, and then I totally avoid feeling like that dude on the highway in the blistering heat,
+    just pouring asphalt all day long...
+    
+    Cause, even though those guys typically get paid pretty well...? 
+    I don't think a single one of them dudes really LOVE doing that job... 
+    Maybe some of them do, I don't know. 
+
+   From what some of my friends tell me they say it's ONLY fun AFTER you get paid.
+'@)
+
+$Book.AddSection(11,"Conclusion",@'
+    Anyway, that's it for the lesson, hope you enjoyed it.
+    I've gone ahead and pasted additional copies of the classes below in a comment block.
+     ______________________________________________________________________________________________________________
+    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    Class Win32_Product
+    {
+        [UInt16]                                 $AssignmentType
+        [String]                                        $Caption
+        [String]                                    $Description
+        [String]                                    $ElementName
+        [String]                                       $HelpLink
+        [String]                                  $HelpTelephone
+        [String]                              $IdentifyingNumber
+        [String]                                    $InstallDate
+        [String]                                   $InstallDate2
+        [String]                                $InstallLocation
+        [String]                                  $InstallSource
+        [Int16]                                    $InstallState
+        [String]                                     $InstanceID
+        [String]                                       $Language
+        [String]                                   $LocalPackage
+        [String]                                           $Name
+        [String]                                   $PackageCache
+        [String]                                    $PackageCode
+        [String]                                    $PackageName
+        [String]                                      $ProductID
+        [String]                                     $RegCompany
+        [String]                                       $RegOwner
+        [String]                                      $SKUNumber
+        [String]                                     $Transforms
+        [String]                                   $URLInfoAbout
+        [String]                                  $URLUpdateInfo
+        [String]                                         $Vendor
+        [String]                                        $Version
+        [UInt32]                               $WarrantyDuration
+        [String]                              $WarrantyStartDate
+        [UInt32]                                      $WordCount
+        [Management.ManagementScope]                      $Scope
+        [Management.ManagementPath]                        $Path
+        [Management.ObjectGetOptions]                   $Options
+        [Management.ManagementPath]                   $ClassPath
+        [Management.PropertyDataCollection]          $Properties
+        [Management.PropertyDataCollection]    $SystemProperties
+        [Management.QualifierDataCollection]         $Qualifiers
+        [ComponentModel.ISite]                             $Site
+        [ComponentModel.IContainer]                   $Container
+        Win32_Product([Object]$WMIObject)
+        {
+            $This.AssignmentType     = $WMIObject.AssignmentType
+            $This.Caption            = $WMIObject.Caption
+            $This.Description        = $WMIObject.Description
+            $This.ElementName        = $WMIObject.ElementName
+            $This.HelpLink           = $WMIObject.HelpLink
+            $This.HelpTelephone      = $WMIObject.HelpTelephone
+            $This.IdentifyingNumber  = $WMIObject.IdentifyingNumber
+            $This.InstallDate        = $WMIObject.InstallDate
+            $This.InstallDate2       = $WMIObject.InstallDate2
+            $This.InstallLocation    = $WMIObject.InstallLocation
+            $This.InstallSource      = $WMIObject.InstallSource
+            $This.InstallState       = $WMIObject.InstallState
+            $This.InstanceID         = $WMIObject.InstanceID
+            $This.Language           = $WMIObject.Language
+            $This.LocalPackage       = $WMIObject.LocalPackage
+            $This.Name               = $WMIObject.Name
+            $This.PackageCache       = $WMIObject.PackageCache
+            $This.PackageCode        = $WMIObject.PackageCode
+            $This.PackageName        = $WMIObject.PackageName
+            $This.ProductID          = $WMIObject.ProductID
+            $This.RegCompany         = $WMIObject.RegCompany
+            $This.RegOwner           = $WMIObject.RegOwner
+            $This.SKUNumber          = $WMIObject.SKUNumber
+            $This.Transforms         = $WMIObject.Transforms
+            $This.URLInfoAbout       = $WMIObject.URLInfoAbout
+            $This.URLUpdateInfo      = $WMIObject.URLUpdateInfo
+            $This.Vendor             = $WMIObject.Vendor
+            $This.Version            = $WMIObject.Version
+            $This.WarrantyDuration   = $WMIObject.WarrantyDuration
+            $This.WarrantyStartDate  = $WMIObject.WarrantyStartDate
+            $This.WordCount          = $WMIObject.WordCount
+            $This.Scope              = $WMIObject.Scope
+            $This.Path               = $WMIObject.Path
+            $This.Options            = $WMIObject.Options
+            $This.ClassPath          = $WMIObject.ClassPath
+            $This.Properties         = $WMIObject.Properties
+            $This.SystemProperties   = $WMIObject.SystemProperties
+            $This.Qualifiers         = $WMIObject.Qualifiers
+            $This.Site               = $WMIObject.Site
+            $This.Container          = $WMIObject.Container
+        }
+    }
+
+    Class Uninstall
+    {
+        [String]        $DisplayName
+        [String]     $DisplayVersion
+        [String]            $Version
+        [Int32]            $NoRemove
+        [String]         $ModifyPath
+        [String]    $UninstallString
+        [String]    $InstallLocation
+        [String]        $DisplayIcon
+        [Int32]            $NoRepair
+        [String]          $Publisher
+        [String]        $InstallDate
+        [Int32]        $VersionMajor
+        [Int32]        $VersionMinor
+        [Object[]]      $EntryUnique
+        Uninstall([Object]$Registry)
+        {
+            $This.DisplayName      = $Registry.DisplayName
+            $This.DisplayVersion   = $Registry.DisplayVersion
+            $This.Version          = $Registry.Version
+            $This.NoRemove         = $Registry.NoRemove
+            $This.ModifyPath       = $Registry.ModifyPath
+            $This.UninstallString  = $Registry.UninstallString
+            $This.InstallLocation  = $Registry.InstallLocation
+            $This.DisplayIcon      = $Registry.DisplayIcon
+            $This.NoRepair         = $Registry.NoRepair
+            $This.Publisher        = $Registry.Publisher
+            $This.InstallDate      = $Registry.InstallDate
+            $This.VersionMajor     = $Registry.VersionMajor
+            $This.VersionMinor     = $Registry.VersionMinor
+            $This.EntryUnique      = $This.GetEntryUniqueProperties($Registry)
+        }
+        [String[]] Properties()
+        {
+            Return $This.PSObject.Properties | ? Name -notmatch EntryUnique | % Name
+        }
+        [Object[]] GetEntryUniqueProperties([Object]$Param)
+        {
+            Return @(
+            $Param.PSObject.Properties | ? Name -notmatch "(^PS|$($This.Properties() -join "|"))") | Select Name, Value
+        }
+        [Object[]] Output([UInt32]$Buff)
+        {
+            $X  = @( )
+            $X += ("-" * 120 -join ""), "[$($This.DisplayName)]", ("-" * 120 -join ""), " "
+            $This.Properties() | % { 
+            $X += "{0}{1} : {2}" -f $_, (" " * ($Buff - $_.Length + 1) -join ""), $This.$_ 
+            }
+            $X += (" " * $Buff -join "")
+            $This.EntryUnique  | % { 
+            $X += "{0}{1} : {2}" -f $_.Name, (" " * ($Buff - $_.Name.Length + 1 ) -join ""), $_.Value 
+            }
+            $X += (" " * $Buff -join "")
+            Return $X
+        }
+    }
+
+    Class UninstallStack
+    {
+        [UInt32] $Buffer
+        [Object] $Output
+        UninstallStack()
+        {
+            $Apps            = "\Wow6432Node","" | % { 
+
+                               Get-ChildItem "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall" 
+
+                               } | Get-ItemProperty
+            $Edge            = $Apps | ? DisplayName -match "(^Microsoft Edge$)"
+            $Properties      = $Edge.PSObject.Properties | ? Name -notmatch "(^_|^PS)"
+            $Properties     += [PSNoteProperty]::New("EntryUnique",@( ))
+            $This.Output     = $Apps | % { [Uninstall]::New($_) }
+            $This.Buffer     = ($This.Output.EntryUnique.Name | Sort-Object Length)[-1].Length
+        }
+        [Object[]] GetOutput()
+        {
+            Return @( $This.Output.Output($This.Buffer) )
+        }
+    }
+    ________________________________________________________________________________________________________________
+    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+'@)
 #>
