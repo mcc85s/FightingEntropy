@@ -1,10 +1,7 @@
 <#
 .SYNOPSIS
-
 .DESCRIPTION
-
 .LINK
-
 .NOTES
           FileName: Write-Theme.ps1
           Solution: FightingEntropy Write Theme
@@ -14,11 +11,8 @@
           Primary: @mcc85s
           Created: 2021-10-02
           Modified: 2021-11-11
-
           Version - 0.0.0 - () - Finalized functional version 1.
-
           TODO:
-
 .Example
 #>
 
@@ -30,10 +24,11 @@ Function Write-Theme
         [Parameter(ParameterSetName=0)][String] $Title,
         [Parameter(ParameterSetName=0)][String] $Prompt,
         [Parameter(ParameterSetName=0,Position=1)][UInt32[]] $Palette = @(10,12,15,0),
-        [Parameter(ParameterSetName=0)][Switch] $Text,
         [Parameter(ParameterSetName=1,Mandatory)][Switch] $Banner,
-        [Parameter(ParameterSetName=2,Mandatory)][Switch] $Flag
-    )
+        [Parameter(ParameterSetName=2,Mandatory)][Switch] $Flag,
+        [Parameter(ParameterSetName=0)]
+        [Parameter(ParameterSetName=1)]
+        [Parameter(ParameterSetName=2)][Switch] $Text)
     
     Class ThemeMask       # Creates a guide for the function and debugging/editing
     {
@@ -722,40 +717,40 @@ Function Write-Theme
                                         "2)*3;10;@(15)*16;10;@(12)*3;@(10)*3"), "@(10)*3;@(12)*2;10;@(15)*18;10;@(12)*2;@(10)*3").Split(" ") | % { 
                                         "@($_)" })
         Hidden [String[]] $Back_   = @("@(0)*30") * 25
-        [Object] $Track
+        [Object] $Output
         Banner()
         {
-            $This.Track            = @( )
+            $This.Output            = @( )
 
-            ForEach ( $I in 0..24 )
+            ForEach ($I in 0..24)
             {
-                $This.Track += [ThemeTrack]::new($I,$This.String_[$I],$This.Fore_[$I],$This.Back_[$I])
-                $This.Track[$I].Mask[-1].NoNewLine = 0
+                $This.Output += [ThemeTrack]::new($I,$This.String_[$I],$This.Fore_[$I],$This.Back_[$I])
+                $This.Output[$I].Mask[-1].NoNewLine = 0
             }
 
-            ForEach ( $I in 0..7 )
+            ForEach ($I in 0..7)
             {
-                $This.Track[ 9].Mask[11+$I].Object = "   S;ecur;e Di;gits; Plu;s LL;C ($([char]960);)   ".Split(";")[$I]
-                $This.Track[10].Mask[11+$I].Object = "   -;----;----;----;----;----;----;-   ".Split(";")[$I]
-                $This.Track[15].Mask[11+$I].Object = "Netw;ork ;& Ha;rdwa;re M;agis;trat;ion ".Split(";")[$I]
-                $This.Track[16].Mask[11+$I].Object = "----;----;----;----;----;----;----;--- ".Split(";")[$I]
+                $This.Output[ 9].Mask[11+$I].Object = "   S;ecur;e Di;gits; Plu;s LL;C ($([char]960);)   ".Split(";")[$I]
+                $This.Output[10].Mask[11+$I].Object = "   -;----;----;----;----;----;----;-   ".Split(";")[$I]
+                $This.Output[15].Mask[11+$I].Object = "Netw;ork ;& Ha;rdwa;re M;agis;trat;ion ".Split(";")[$I]
+                $This.Output[16].Mask[11+$I].Object = "----;----;----;----;----;----;----;--- ".Split(";")[$I]
             }
 
-            ForEach ( $I in 0..9 )
+            ForEach ($I in 0..9)
             {
-                $This.Track[11].Mask[10+$I].Object = "Dyna;mica;lly ;Engi;neer;ed D;igit;al S;ecur;ity ".Split(";")[$I]
-                $This.Track[12].Mask[10+$I].Object = "----;----;----;----;----;----;----;----;----;--- ".Split(";")[$I]
-                $This.Track[13].Mask[10+$I].Object = "Appl;icat;ion ;Deve;lopm;ent ;- Vi;rtua;liza;tion".Split(";")[$I]
-                $This.Track[14].Mask[10+$I].Object = "----;----;----;----;----;----;----;----;----;----".Split(";")[$I]
+                $This.Output[11].Mask[10+$I].Object = "Dyna;mica;lly ;Engi;neer;ed D;igit;al S;ecur;ity ".Split(";")[$I]
+                $This.Output[12].Mask[10+$I].Object = "----;----;----;----;----;----;----;----;----;--- ".Split(";")[$I]
+                $This.Output[13].Mask[10+$I].Object = "Appl;icat;ion ;Deve;lopm;ent ;- Vi;rtua;liza;tion".Split(";")[$I]
+                $This.Output[14].Mask[10+$I].Object = "----;----;----;----;----;----;----;----;----;----".Split(";")[$I]
             }
         }
         Draw()
         {
-            ForEach ( $I in 0..( $This.Track.Count - 1 ) )
+            ForEach ($I in 0..($This.Output.Count - 1))
             { 
-                ForEach ( $X in 0..( $This.Track[$I].Mask.Count - 1 ) )
+                ForEach ($X in 0..($This.Output[$I].Mask.Count - 1))
                 {
-                    $Item               = $This.Track[$I].Mask[$X]
+                    $Item               = $This.Output[$I].Mask[$X]
 
                     @{  Object          = $Item.Object 
                         ForegroundColor = $Item.ForegroundColor 
@@ -765,6 +760,10 @@ Function Write-Theme
                     }                   | % { Write-Host @_ }
                 }
             }
+        }
+        [String[]] Text()
+        {
+            Return @( 0..($This.Output.Count-1) | % { "#$($This.Output[$_].Mask.Object -join '')" } )
         }
     }
 
@@ -804,10 +803,10 @@ Function Write-Theme
                                         "*6;@(15)*8;@(0)*4")) -Split " " | % { "@($_)" })
         Hidden [String[]] $Date_    = (Get-Date -UFormat "_[ %m/%d/%Y ]_").ToCharArray()
         Hidden [String[]] $Date
-        [Object] $Track
+        [Object] $Output
         Flag()
         {
-            $This.Track            = @( )
+            $This.Output            = @( )
             $This.Date             = @( ForEach ( $I in 0..( $This.Date_.count - 1 ) )
             {
                 $This.Date_[$I]
@@ -819,41 +818,41 @@ Function Write-Theme
 
             ForEach ( $I in 0..38 )
             {
-                $This.Track += [ThemeTrack]::new($I,$This.String_[$I],$This.Fore_[$I],$This.Back_[$I])
-                $This.Track[$I].Mask[-1].NoNewLine = 0
+                $This.Output += [ThemeTrack]::new($I,$This.String_[$I],$This.Fore_[$I],$This.Back_[$I])
+                $This.Output[$I].Mask[-1].NoNewLine = 0
             }
 
             ForEach ( $I in 0..11 )
             {
-                $This.Track[10].Mask[14+$I].Object = "[__[; Dyn;amic;ally; Eng;inee;red ;Digi;tal ;Secu;rity; ]_/".Split(";")[$I]
-                $This.Track[10].Mask[14+$I].ForegroundColor = 0
-                $This.Track[14].Mask[14+$I].Object = "[_[ ;Appl;icat;ion ;Deve;lopm;ent ;- Vi;rtua;liza;tion; ]_/".Split(";")[$I]
-                $This.Track[14].Mask[14+$I].ForegroundColor = 0
-                $This.Track[18].Mask[14+$I].Object = "[___;__[ ;Netw;ork ;& Ha;rdwa;re M;agis;trat;ion ;]___;___/".Split(";")[$I]
-                $This.Track[18].Mask[14+$I].ForegroundColor = 0
+                $This.Output[10].Mask[14+$I].Object = "[__[; Dyn;amic;ally; Eng;inee;red ;Digi;tal ;Secu;rity; ]_/".Split(";")[$I]
+                $This.Output[10].Mask[14+$I].ForegroundColor = 0
+                $This.Output[14].Mask[14+$I].Object = "[_[ ;Appl;icat;ion ;Deve;lopm;ent ;- Vi;rtua;liza;tion; ]_/".Split(";")[$I]
+                $This.Output[14].Mask[14+$I].ForegroundColor = 0
+                $This.Output[18].Mask[14+$I].Object = "[___;__[ ;Netw;ork ;& Ha;rdwa;re M;agis;trat;ion ;]___;___/".Split(";")[$I]
+                $This.Output[18].Mask[14+$I].ForegroundColor = 0
             }
 
             ForEach ( $I in 0..3 )
             {
-                $This.Track[24].Mask[13+$I].Object = "----;----;----;----".Split(";")[$I]
-                $This.Track[25].Mask[13+$I].Object = "  Fi;ghti;ng (;$([char]960))  ".Split(";")[$I]
-                $This.Track[26].Mask[13+$I].Object = "    ; Ent;ropy;    ".Split(";")[$I]
-                $This.Track[27].Mask[13+$I].Object = "----;----;----;----".Split(";")[$I]
-                $This.Track[32].Mask[13+$I].Object = $This.Date.Split(";")[$I]
+                $This.Output[24].Mask[13+$I].Object = "----;----;----;----".Split(";")[$I]
+                $This.Output[25].Mask[13+$I].Object = "  Fi;ghti;ng (;$([char]960))  ".Split(";")[$I]
+                $This.Output[26].Mask[13+$I].Object = "    ; Ent;ropy;    ".Split(";")[$I]
+                $This.Output[27].Mask[13+$I].Object = "----;----;----;----".Split(";")[$I]
+                $This.Output[32].Mask[13+$I].Object = $This.Date.Split(";")[$I]
             }
 
             ForEach ( $I in 0..7 )
             {
-                $This.Track[28].Mask[11+$I].Object = "___[; Sec;ure ;Digi;ts P;lus ;LLC ;]___".Split(";")[$I]
+                $This.Output[28].Mask[11+$I].Object = "___[; Sec;ure ;Digi;ts P;lus ;LLC ;]___".Split(";")[$I]
             }
         }
         Draw()
         {
-            ForEach ( $I in 0..( $This.Track.Count - 1 ) )
+            ForEach ($I in 0..($This.Output.Count - 1))
             { 
-                ForEach ( $X in 0..( $This.Track[$I].Mask.Count - 1 ) )
+                ForEach ($X in 0..($This.Output[$I].Mask.Count - 1))
                 {
-                    $Item               = $This.Track[$I].Mask[$X]
+                    $Item               = $This.Output[$I].Mask[$X]
 
                     @{  Object          = $Item.Object 
                         ForegroundColor = $Item.ForegroundColor 
@@ -864,43 +863,47 @@ Function Write-Theme
                 }
             }
         }
+        [String[]] Text()
+        {
+            Return @( 0..($This.Output.Count-1) | % { "#$($This.Output[$_].Mask.Object -join '')" } )
+        }
     }
 
-    Switch($PSCmdlet.ParameterSetName)
+    $Item = Switch($PSCmdlet.ParameterSetName)
     {
         0
         {
             If ($Title -and $Prompt)
             {
-                $Theme = [ThemeOutput]::New($InputObject,$Title,$Prompt)
+                [ThemeOutput]::New($InputObject,$Title,$Prompt)
             }
             ElseIf ($Title)
             {
-                $Theme = [ThemeOutput]::New($InputObject,$Title)
+                [ThemeOutput]::New($InputObject,$Title)
             }
             Else
             {
-                $Theme = [ThemeOutput]::New($InputObject)
-            }
-        
-            If ($Text)
-            {
-                $Theme.Text()
-            }
-            If (!$Text)
-            {
-                $Theme.Output.Draw(@($Palette))
+                [ThemeOutput]::New($InputObject)
             }
         }
 
         1
         {
-            [Banner]::New().Draw()
+            [Banner]::New()
         }
 
         2
         {
-            [Flag]::New().Draw()
+            [Flag]::New()
         }
+    }
+
+    If ($Text)
+    {
+        $Item.Text()
+    }
+    If (!$Text)
+    {
+        $Item.Output.Draw(@($Palette))
     }
 }
