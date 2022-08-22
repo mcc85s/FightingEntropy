@@ -1,3 +1,61 @@
+
+<#
+.SYNOPSIS
+.DESCRIPTION
+.LINK
+.NOTES
+          FileName: Backup-AndroidPhone.ps1
+          Solution: For backing up the content of an android device on LINUX
+          Purpose: 
+          Author: Michael C. Cook Sr.
+          Contact: @mcc85s
+          Primary: @mcc85s
+          Created: 2022-08-22
+          Modified: 2022-08-22
+          Version - 0.0.0 - () - Finalized functional version 1.
+          TODO:
+.Example
+_________________________________________________________________________________________________________________
+| Original instructions from https://www.linuxexperten.com/content/connect-any-android-device-linux-kali-2019xx |
+|---------------------------------------------------------------------------------------------------------------|
+| For Windows, use (New-Object -ComObject Shell.Application)                                                    |
+| https://github.com/nosalan/powershell-mtp-file-transfer/blob/master/phone_backup.ps1                          |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+_____________________
+| Install MTP Tools |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+sudo apt-get update && sudo apt-get install mtp-tools
+________________________________
+| Check for other installation |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+sudo dpkg --get-selections | grep -v deinstall | grep -i mtp
+_____________________________________________
+| Remove current, if any installation found |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+sudo apt-get remove mtp-server
+___________________________________
+| Open a terminal window and type |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+sudo apt-get install jmtpfs
+________________________________
+| Assign label for device path |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+$Label = "moto_g7"
+$Root  = "/media/$Label"
+__________________________________________
+| Make a mount folder, and assign rights |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+sudo mkdir $Root
+sudo chmod 777 $Root
+______________________
+| Mount using jmtpfs |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+sudo jmtpfs $Root
+ls $Root
+sudo fusermount -u $Root
+
+#>
+
 Function Backup-AndroidPhone
 {
     [CmdLetBinding()]
