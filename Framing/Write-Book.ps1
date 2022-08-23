@@ -1,3 +1,5 @@
+[Reflection.Assembly]::LoadWithPartialName("System.Drawing")
+
 Function Write-Book
 {
     [CmdletBinding()]
@@ -12,7 +14,7 @@ Function Write-Book
         [String] $Name
         [Object] $Bitmap
         [Object] $Graphic
-        Screenshot([String]$Name,[Object]$Dimension)
+        Screenshot([String]$Name,[Object]$XY)
         {
             $This.Name    = $Name
             If (Test-Path $Name)
@@ -20,10 +22,9 @@ Function Write-Book
                 Throw "File exists"
             }
             
-            $Rect         = 
-            $This.Bitmap  = Drawing.Bitmap]::New($Rect.Width,$Rect.Height)
+            $This.Bitmap  = [Drawing.Bitmap]::New($XY.Width,$XY.Height)
             $This.Graphic = [Drawing.Graphics]::FromImage($This.Bitmap)
-            $This.Graphic.CopyFromScreen($Dimension.Location,[Drawing.Point]::Empty,$Dimension.Size)
+            $This.Graphic.CopyFromScreen($XY.Location,[Drawing.Point]::Empty,$XY.Size)
             $This.Bitmap.Save($This.Name)
             $This.Graphic.Dispose()
             $This.Bitmap.Dispose()
@@ -47,13 +48,29 @@ Function Write-Book
                 Throw "Invalid path"
             }
     
-            $This.Base   = $Base
-            $This.Name   = $Name
-            $This.Date   = Get-Date -UFormat "%m%d%Y"
-            $This.Root   = $This.Base, $This.Date, $This.Name -join "/"
-            $This.Swap   = $Swap
-            $This.Output = @{ }
-            $Block       = @( )
+            $This.Base      = $Base
+            $This.Name      = $Name
+            $This.Date      = Get-Date -UFormat "%m%d%Y"
+            $This.Root      = $This.Base, $This.Date, $This.Name -join "\"
+            If (!(Test-Path $This.Root))
+            {
+                New-Item $This.Root -ItemType Directory -Verbose
+            }
+            #If ($IsLinux)
+            #{
+                #$This.Dimension = [Drawing.Rectangle]::FromLTRB(25,190,1165,835)
+            #}
+            #If ($VSCode)
+            #{
+                #$This.Dimension = [Drawing.Rectangle]::FromLTRB(20,110,1440,868)
+            #}
+            #If ($WindowsTerminal)
+            #{
+                $This.Dimension = [Drawing.Rectangle]::FromLTRB(0,32,1560,760)
+            #}
+            $This.Swap      = $Swap
+            $This.Output    = @{ }
+            $Block          = @( )
             ForEach ($X in 0..($This.Swap.Count-1))
             {
                 If ($X -ne 0 -and $X % 30 -eq 0)
@@ -76,7 +93,8 @@ Function Write-Book
             $Depth = ([String]($This.Output.Count)).Length
             $ID    = "{0}/{1:d$Depth}.png" -f $This.Root, $Index
     
-            Invoke-Expression "Clear-Host;`$This.Output[$Index] | % { Write-Host `$_ };Write-Host '`n'"
+            Invoke-Expression "Clear-Host;`$This.Output[$Index] | % { Write-Host `$_ };Start-Sleep -Milliseconds 500"
+
             $This.File += [Screenshot]::New($ID,$This.Dimension)
         }
     }
@@ -194,12 +212,18 @@ Function Write-Book
             $Hash.Add($Hash.Count,("/{0} {1} " -f (@([Char]175) * ($1 + 2) -join ''), (@(" ") * $0 -join '')))
             ForEach ($Line in $This.Line | % Content)
             {
-                Switch ($This.Mode)
+                $Item = Switch ($This.Mode)
                 {
-                    0 { $Hash.Add($Hash.Count,"    $Line    ") }
-                    1 { $Hash.Add($Hash.Count,$Line)}
+                    0 { "    $Line    " }
+                    1 { $Line }
                 }
-                 
+
+                If ($Item.Length -gt 128)
+                {
+                    $Item = $Item.Substring(0,128)
+                }
+
+                $Hash.Add($Hash.Count,$Item)
             }
             $Hash.Add($Hash.Count,(" {0} _{1}_/" -f (@(" ") * $0 -join ''),(@("_") * $1 -join '')))
             $Hash.Add($Hash.Count,("\{0}/ {1}  " -f (@("_") * $0 -join ''), $This.Name))
