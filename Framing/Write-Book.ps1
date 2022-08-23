@@ -6,6 +6,81 @@ Function Write-Book
     [Parameter(Mandatory,ParameterSetName=1,Position=0)][String]$Name,
     [Parameter(Mandatory,ParameterSetName=1,Position=1)][String]$Path)
 
+    Class Screenshot
+    {
+        [UInt32] $Index
+        [String] $Name
+        [Object] $Bitmap
+        [Object] $Graphic
+        Screenshot([String]$Name,[Object]$Dimension)
+        {
+            $This.Name    = $Name
+            If (Test-Path $Name)
+            {
+                Throw "File exists"
+            }
+            
+            $Rect         = [Drawing.Rectangle]::FromLTRB(25,190,1165,835)
+            $This.Bitmap  = [Drawing.Bitmap]::New($Rect.Width,$Rect.Height)
+            $This.Graphic = [Drawing.Graphics]::FromImage($This.Bitmap)
+            $This.Graphic.CopyFromScreen($Dimension.Location,[Drawing.Point]::Empty,$Dimension.Size)
+            $This.Bitmap.Save($This.Name)
+            $This.Graphic.Dispose()
+            $This.Bitmap.Dispose()
+        }
+    }
+    
+    Class Reel
+    {
+        [String] $Base
+        [String] $Name
+        [String] $Date
+        [String] $Root
+        [UInt32[]] $Dimension = @(25,190,1165,835)
+        [Object] $Swap
+        [Object] $Output
+        [Object] $File
+        Reel([String]$Base,[String]$Name,[Object[]]$Swap)
+        {
+            If (!(Test-Path $Base))
+            {
+                Throw "Invalid path"
+            }
+    
+            $This.Base   = $Base
+            $This.Name   = $Name
+            $This.Date   = Get-Date -UFormat "%m%d%Y"
+            $This.Root   = $This.Base, $This.Date, $This.Name -join "/"
+            $This.Swap   = $Swap
+            $This.Output = @{ }
+            $Block       = @( )
+            ForEach ($X in 0..($This.Swap.Count-1))
+            {
+                If ($X -ne 0 -and $X % 30 -eq 0)
+                {
+                    $This.Output.Add($This.Output.Count,$Block)
+                    $Block        = @( )
+                }
+    
+                $Block += $This.Swap[$X]
+            }
+            $This.File   = @( )
+        }
+        Screenshot([UInt32]$Index)
+        {
+            If ($Index -gt $This.Output.Count)
+            {
+                Throw "Invalid index"
+            }
+    
+            $Depth = ([String]($This.Output.Count)).Length
+            $ID    = "{0}/{1:d$Depth}.png" -f $This.Root, $Index
+    
+            Invoke-Expression "Clear-Host;Write-Host `$This.Output[$Index];Write-Host '`n'"
+            $This.File += [Screenshot]::New($ID,$This.Dimension)
+        }
+    }
+
     Class PageDimension
     {
         [UInt32] $Width
@@ -264,6 +339,7 @@ Function Write-Book
         [Object] $Flag
         [Object] $Table
         [Object] $Chapter
+        Hidden [Object] $Reel
         Book([String]$Name)
         {
             Write-Host "Assembling book... $Name"
@@ -430,6 +506,49 @@ Function Write-Book
             }
 
             Return $This.Chapter[$Index]
+        }
+        [Object[]] Output()
+        {
+            $Hash              = @{ }
+            $This.Cover -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
+            $This.Flag  -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
+            $This.Table -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
+            Write-Progress -Activity Output -Status Chapters -PercentComplete 0
+            ForEach ($X in 0..($This.Chapter.Count-1))
+            {
+                $Item          = $This.Get($X)
+                Write-Progress -Activity Output -Status Chapters -PercentComplete ($X * 100/$This.Chapter.Count)
+                $Item.Output() | % { $Hash.Add($Hash.Count,$_) }
+            }
+            Write-Progress -Activity Output -Status Chapters -Complete
+            Return @($Hash[0..($Hash.Count-1)])
+        }
+        [Object[]] Guide()
+        {
+            $Hash              = @{ }
+            $This.Output()     | % { $Hash.Add($Hash.Count,$_) }
+            $Ct                = $Hash.Count
+            $Depth             = ([String]$Ct).Length
+            $Step              = 1..100 | % { $Ct/$_ }
+            $Index             = 0
+            $Hash2             = @{ }
+
+            Write-Progress -Activity Guide -Status Chapters -PercentComplete 0
+            ForEach ($X in 0..($Ct-1))
+            {
+                If ($X -ge $Step[$Index])
+                {
+                    Write-Progress -Activity Guide -Status Chapters -PercentComplete ($X * 100/$Ct)
+                    $Index ++
+                }
+                $Hash2.Add($X,("[{0:d$Depth}] {1}" -f $X, $Hash[$X]))
+            }
+            Write-Progress -Activity Guide -Status Chapters -Complete
+            Return @($Hash2[0..($Ct-1)])
+        }
+        GenerateReel([String]$Base)
+        {
+            $This.Reel = [Reel]::New($Base,$This.Name,$This.Guide())
         }
     }
 
