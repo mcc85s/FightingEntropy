@@ -161,6 +161,7 @@ Function Write-Book
             }
 
             $This.Section += [Section]::New($This.Section.Count,0,$Name,$Content)
+            Write-Host ("Loaded [+] {0}: Section ({1}) [{2}]" -f $This.Label,$This.Section[-1].Index,$Name)
             If ($Name -eq "Start")
             {
                 $This.Section | ? Name -eq Start | % { $_.Index = 0 }
@@ -349,6 +350,8 @@ Function Write-Book
             If ($Item)
             {
                 $Item.SetLabel($String)
+
+                Write-Host ($Item.Header -join "`n")
             }
         }
         AddSection([UInt32]$Index,[String]$Name,[String[]]$Content)
@@ -439,7 +442,6 @@ Function Write-Book
         [Book]::New($Name)
     }
 }
-
 Function Get-FoundingFathers
 {
     Class Year
@@ -778,24 +780,15 @@ Function Get-FoundingFathers
     $Out
 }
 
-$Book = Write-Book -Name "Top Deck Awareness - Not News" -Path "$Home\Documents\Not News\Framing"
-
-$Book.SetLabel(0,"Prologue")
-$Book.SetLabel(1,"Resume")
-$Book.SetLabel(2,"Chapter 1")
-$Book.SetLabel(3,"Chapter 2")
-$Book.SetLabel(4,"Chapter 3")
-$Book.SetLabel(5,"Chapter 4")
-$Book.SetLabel(6,"Chapter 5")
-$Book.SetLabel(7,"Chapter 6")
-$Book.SetLabel(8,"Chapter 7")
-$Book.SetLabel(9,"Chapter 8")
-$Book.SetLabel(10,"Chapter 9")
-$Book.SetLabel(11,"Chapter 10")
+$Book      = Write-Book -Name "Top Deck Awareness - Not News"
+$Book.Flag = $Book.Flag -Replace "08/16/2022",(Get-Date -UFormat "%m/%d/%Y")
 
 # // _____________________________________________________________
 # // | Prologue - History, the Constitution of the United States |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Book.SetLabel(0,"Prologue")
+
 $Book.AddSection(0,"Start",@'
 Benjamin Franklin: It is the RESPONSIBILITY of EVERY citizen, to QUESTION AUTHORITY.
 Keep this quote in mind, because it is the beginning and the end of this entire document.
@@ -955,8 +948,8 @@ since he was the man everybody went to (including acting presidents), on how to:
 ______________________________________________________________
 | 1) set examples | 2) set new precedents | 3) raise the bar |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-You can’t just leave an opportunity like that to chance.
-Especially, if the acting president has a new pair of shoes to fill. 
+You just can't leave an opportunity like that to chance.
+Especially if the acting president has a new pair of shoes to fill. 
 America needed the RIGHT GUY for the job...
 ...and, if I gotta come right out and say it...? That guy, was Benjamin Franklin.
 
@@ -1373,11 +1366,17 @@ Here's that person's resume.
 # // ____________________________________________________
 # // | Resume - Michael C. Cook Sr. / Security Engineer |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-$Book.AddSection(1,1,"Resume",$Book.Path("Not News (005-Resume).txt"))
+
+$Book.SetLabel(1,"Resume")
+
+$Book.AddSection(1,1,"Resume",$Book.Resource("Not%20News%20(005-Resume).txt"))
 
 # // _________________________________
 # // | Chapter 1 - Liars in the Lead | $Book.Range("Book",2,@(94..112))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Book.SetLabel(2,"Chapter 1")
+
 $Book.AddSection(2,"Start",@"
 Suggestion: If Fox News has the best ratings in the industry...? 
 That’s a fuckin’ problem right there.
@@ -2722,6 +2721,8 @@ DISASSEMBLED WHEN THEY ARE DETECTED, however they are part of a larger scope of 
 # // __________________________________________
 # // | Chapter 2 - Psychological Manipulation | cls; $Book.Range("Book",3,@(116..154))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Book.SetLabel(3,"Chapter 2")
 
 $Book.AddSection(3,"Start",@"
 Psychological Manipulation is an understanding of how psychology and manipulation work in conjunction, to 
@@ -6591,6 +6592,8 @@ nobody has any defense against. (Covered in [Chapter 6 - Hidden Government])
 # // | Chapter 3 - See no evil, Speak no evil, Hear no evil (Malice) |  cls; $Book.Range("Book",4,@(158..167))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
+$Book.SetLabel(4,"Chapter 3")
+
 $Book.AddSection(4,"Start",@"
 See no evil...? Speak no evil...? Hear no evil...? 
 Malice is basically the living embodiment of Satan. 
@@ -7294,6 +7297,8 @@ When I spoke to Mr. McCabe, he appeared to have NO idea who I was. So, I think h
 # // ________________________
 # // | Chapter 4 - The Week |  cls; $Book.Range("Book",5,@(171..215))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Book.SetLabel(5,"Chapter 4")
 
 $Book.AddSection(5,"Start",@"
 This is an actual statement that I am making, as to the events over the course of about a week, in May 2020.
@@ -8555,11 +8560,11 @@ I had a feeling that an FBI man, was keeping tabs on me all the time.           
 _______________________________________________________________________________________________________________
 | Index Type  Name      Date   Time   Focus                (URL/Uniform Resource Locator)                     |
 |---/----|------|----------\------\-----|--------------------\-------------|------------/---------------------|
-| 0001 | P | IMG_0392 | ‎05/‎23/‎20 ‏‎0121 | 0 | https://drive.google.com/file/d/1zhf0SMu_OkvtoGtA7htepib4DddDX-RE |
-| 0002 | P | IMG_0393 | ‎05/‎23/‎20 ‏‎0128 | 0 | https://drive.google.com/file/d/1HGW-2UPIWDTuZIv9nPo3hys9kdZmUWMc |
-| 0003 | P | IMG_0394 | ‎05/‎23/‎20 ‏‎0132 | 0 | https://drive.google.com/file/d/1fZRCFjw2bw6BGoWcmyaYvLkMAOLsJVb_ |
+| 0001 | P | IMG_0392 | 05/23/20 0121 | 0 | https://drive.google.com/file/d/1zhf0SMu_OkvtoGtA7htepib4DddDX-RE |
+| 0002 | P | IMG_0393 | 05/23/20 0128 | 0 | https://drive.google.com/file/d/1HGW-2UPIWDTuZIv9nPo3hys9kdZmUWMc |
+| 0003 | P | IMG_0394 | 05/23/20 0132 | 0 | https://drive.google.com/file/d/1fZRCFjw2bw6BGoWcmyaYvLkMAOLsJVb_ |
 | 0004 | V | IMG_0395 | 05/23/20 0133 | 0 | https://youtu.be/3twiZEsyQf0                                      |
-| 0005 | P | IMG_0396 | ‎05/‎23/‎20 ‏‎0141 | 0 | https://drive.google.com/file/d/1oHaFO_1ZSw8Gwx62Yyfla2yw6DB-VF4j |
+| 0005 | P | IMG_0396 | 05/23/20 0141 | 0 | https://drive.google.com/file/d/1oHaFO_1ZSw8Gwx62Yyfla2yw6DB-VF4j |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0001,0002,0003,0005]: Riverfront property in Schenectady, NY – Particularly near Rivers Casino.            | 
 | [0004]: Video of Riverfront property, pointing toward the Golub Corporation, talking about an FBI man       |
@@ -10751,36 +10756,36 @@ SCHELLINGER, KRISTIN JOHNSON, or LAURA HUGHES...? And, THESE <unspecified> will 
 ___________________________________________________________________________________________________________
 | Index   Name     Date    Time   Focus                (URL/Uniform Resource Locator)                     |
 |---/--------|---------\------\-----|--------------------\-------------|------------/---------------------|
-| 0001 | IMG_0585 | ‎05/‎24/‎20 ‏‎2239 | 0 | https://drive.google.com/file/d/1y4f8SmcgZf_vJ8ohXVSFFWQlC19QEDZe | 
-| 0002 | IMG_0590 | ‎05/‎24/‎20 ‏‎2242 | 0 | https://drive.google.com/file/d/1_QUY6XrDIBIJJvjaYw02B-1OdEOXm5zk |
-| 0003 | IMG_0591 | ‎05/‎24/‎20 ‏‎2243 | 3 | https://drive.google.com/file/d/1BrGQnWB2xPNudtUdItlJm29PqQMVltGh |
-| 0004 | IMG_0594 | ‎05/‎24/‎20 ‏‎2248 | 1 | https://drive.google.com/file/d/10r3SnCMggf2BRmlST4fdX5f104mwNxau |
-| 0005 | IMG_0595 | ‎05/‎24/‎20 ‏‎2249 | 1 | https://drive.google.com/file/d/1BnoTT0-IHk0TNvIDIYPj_H4q6fk4EkF7 |
-| 0006 | IMG_0596 | ‎05/‎24/‎20 ‏‎2249 | 1 | https://drive.google.com/file/d/1aZFTnKVwQXakRMHbCt9WIpKxpJUV2Q8G |
-| 0007 | IMG_0597 | ‎05/‎24/‎20 ‏‎2249 | 0 | https://drive.google.com/file/d/11GDlXvkiMVnt4iu8zqhzphbEjogAkvqY |
-| 0008 | IMG_0598 | ‎05/‎24/‎20 ‏‎2249 | 0 | https://drive.google.com/file/d/1eaT4t3viNY_j02BMbV_TxJJ-e2zCPtjq |
-| 0009 | IMG_0599 | ‎05/‎24/‎20 ‏‎2250 | 0 | https://drive.google.com/file/d/1VqlgtK2ER65_28Bpr7dJboIg8nzNOzMY |
-| 0010 | IMG_0600 | ‎05/‎24/‎20 ‏‎2250 | 1 | https://drive.google.com/file/d/1fElcWAHc6GdZVw6XsDfJZSMeM6f0e6EN |
-| 0011 |*IMG_0601 | ‎05/‎24/‎20 ‏‎2250 | 1 | https://drive.google.com/file/d/15ZtekTtGuKWTrJ2brozUabQhlcURu7Xe |
-| 0012 | IMG_0602 | ‎05/‎24/‎20 ‏‎2250 | 0 | https://drive.google.com/file/d/13KQTzbTLQ7NNzS7OZ4Zmx63pgU9gF7au |
-| 0013 | IMG_0603 | ‎05/‎24/‎20 ‏‎2250 | 0 | https://drive.google.com/file/d/1HPdGPltH9_Nyr9GtFqYKn509z6i5ZoGF |
-| 0014 |*IMG_0604 | ‎05/‎24/‎20 ‏‎2251 | 0 | https://drive.google.com/file/d/1p_tdU-9lQ391UxsNfixLg71F_M3aGchz |
-| 0015 | IMG_0605 | ‎05/‎24/‎20 2251 | 0 | https://drive.google.com/file/d/18DeG9RcavSV42907L1kcHuTgnfC59LfG |
-| 0016 | IMG_0606 | ‎05/‎24/‎20 ‏‎2251 | 1 | https://drive.google.com/file/d/1U0A_lsgspUeU7AJQ9m-KebOPdkKHJsRS |
-| 0017 | IMG_0607 | ‎05/‎24/‎20 ‏‎2253 | 1 | https://drive.google.com/file/d/1jNHmvr66KZMoX0JiT3Cbs43Buu6zADIE |
-| 0018 |*IMG_0608 | ‎05/‎24/‎20 ‏‎2255 | 1 | https://drive.google.com/file/d/1hv3JhYKD--0BQg-x66sO0fomgAy3kFFi |
-| 0019 | IMG_0609 | ‎05/‎24/‎20 ‏‎2255 | 1 | https://drive.google.com/file/d/1shrLewHORf86sf4TIp3ykAe6WosZ4Q2J |
-| 0020 | IMG_0611 | ‎05/‎24/‎20 ‏‎2256 | 1 | https://drive.google.com/file/d/1UfA4j-wAO1VfehUwUUJWOGJc6N9SCMFl |
-| 0021 |*IMG_0612 | ‎05/‎24/‎20 ‏‎2256 | 0 | https://drive.google.com/file/d/1qhhH-kHGxCqUuR-8BLWjBzONOWvoEoMB |
-| 0022 | IMG_0613 | ‎05/‎24/‎20 ‏‎2256 | 1 | https://drive.google.com/file/d/1RzZixkCkQrD4raxRBDmehTLwTzgRLoee |
-| 0023 | IMG_0614 | ‎05/‎24/‎20 ‏‎2256 | 0 | https://drive.google.com/file/d/154R8Vpi-v72jyEG7Roh8hE_Ds5jLiqCm |
-| 0024 | IMG_0615 | ‎05/‎24/‎20 ‏‎2256 | 0 | https://drive.google.com/file/d/1d4LjeUQ-XqsiQMayFxdfq6ecC1wGWgH9 |
-| 0025 | IMG_0616 | ‎05/‎24/‎20 ‏‎2256 | 1 | https://drive.google.com/file/d/1M83c0dFf6HxY8YgOc68O8ydE_pLrvU7i |
-| 0026 | IMG_0617 | ‎05/‎24/‎20 ‏‎2257 | 0 | https://drive.google.com/file/d/1lk98_0EvCmYMaew4KY2f50iE6gfJRM92 |
-| 0027 | IMG_0618 | ‎05/‎24/‎20 ‏‎2257 | 1 | https://drive.google.com/file/d/1vHsJwwj-9E135C2jR1v5Elo6I65tnNCG |
-| 0028 | IMG_0619 | ‎05/‎24/‎20 ‏‎2257 | 0 | https://drive.google.com/file/d/1mtARlTxYGR7_UvkTBoz31Alfh6EyR9dO |
-| 0029 | IMG_0620 | ‎05/‎24/‎20 ‏‎2257 | 0 | https://drive.google.com/file/d/1iun2RJ-pToqMlUUQMdKl_yWvJWxKioON |
-| 0030 | IMG_0621 | ‎05/‎24/‎20 ‏‎2310 | 1 | https://drive.google.com/file/d/19qa9qfALiWRJQwTHwvMhmyZldxBmuEZT |
+| 0001 | IMG_0585 | 05/24/20 2239 | 0 | https://drive.google.com/file/d/1y4f8SmcgZf_vJ8ohXVSFFWQlC19QEDZe | 
+| 0002 | IMG_0590 | 05/24/20 2242 | 0 | https://drive.google.com/file/d/1_QUY6XrDIBIJJvjaYw02B-1OdEOXm5zk |
+| 0003 | IMG_0591 | 05/24/20 2243 | 3 | https://drive.google.com/file/d/1BrGQnWB2xPNudtUdItlJm29PqQMVltGh |
+| 0004 | IMG_0594 | 05/24/20 2248 | 1 | https://drive.google.com/file/d/10r3SnCMggf2BRmlST4fdX5f104mwNxau |
+| 0005 | IMG_0595 | 05/24/20 2249 | 1 | https://drive.google.com/file/d/1BnoTT0-IHk0TNvIDIYPj_H4q6fk4EkF7 |
+| 0006 | IMG_0596 | 05/24/20 2249 | 1 | https://drive.google.com/file/d/1aZFTnKVwQXakRMHbCt9WIpKxpJUV2Q8G |
+| 0007 | IMG_0597 | 05/24/20 2249 | 0 | https://drive.google.com/file/d/11GDlXvkiMVnt4iu8zqhzphbEjogAkvqY |
+| 0008 | IMG_0598 | 05/24/20 2249 | 0 | https://drive.google.com/file/d/1eaT4t3viNY_j02BMbV_TxJJ-e2zCPtjq |
+| 0009 | IMG_0599 | 05/24/20 2250 | 0 | https://drive.google.com/file/d/1VqlgtK2ER65_28Bpr7dJboIg8nzNOzMY |
+| 0010 | IMG_0600 | 05/24/20 2250 | 1 | https://drive.google.com/file/d/1fElcWAHc6GdZVw6XsDfJZSMeM6f0e6EN |
+| 0011 |*IMG_0601 | 05/24/20 2250 | 1 | https://drive.google.com/file/d/15ZtekTtGuKWTrJ2brozUabQhlcURu7Xe |
+| 0012 | IMG_0602 | 05/24/20 2250 | 0 | https://drive.google.com/file/d/13KQTzbTLQ7NNzS7OZ4Zmx63pgU9gF7au |
+| 0013 | IMG_0603 | 05/24/20 2250 | 0 | https://drive.google.com/file/d/1HPdGPltH9_Nyr9GtFqYKn509z6i5ZoGF |
+| 0014 |*IMG_0604 | 05/24/20 2251 | 0 | https://drive.google.com/file/d/1p_tdU-9lQ391UxsNfixLg71F_M3aGchz |
+| 0015 | IMG_0605 | 05/24/20 2251 | 0 | https://drive.google.com/file/d/18DeG9RcavSV42907L1kcHuTgnfC59LfG |
+| 0016 | IMG_0606 | 05/24/20 2251 | 1 | https://drive.google.com/file/d/1U0A_lsgspUeU7AJQ9m-KebOPdkKHJsRS |
+| 0017 | IMG_0607 | 05/24/20 2253 | 1 | https://drive.google.com/file/d/1jNHmvr66KZMoX0JiT3Cbs43Buu6zADIE |
+| 0018 |*IMG_0608 | 05/24/20 2255 | 1 | https://drive.google.com/file/d/1hv3JhYKD--0BQg-x66sO0fomgAy3kFFi |
+| 0019 | IMG_0609 | 05/24/20 2255 | 1 | https://drive.google.com/file/d/1shrLewHORf86sf4TIp3ykAe6WosZ4Q2J |
+| 0020 | IMG_0611 | 05/24/20 2256 | 1 | https://drive.google.com/file/d/1UfA4j-wAO1VfehUwUUJWOGJc6N9SCMFl |
+| 0021 |*IMG_0612 | 05/24/20 2256 | 0 | https://drive.google.com/file/d/1qhhH-kHGxCqUuR-8BLWjBzONOWvoEoMB |
+| 0022 | IMG_0613 | 05/24/20 2256 | 1 | https://drive.google.com/file/d/1RzZixkCkQrD4raxRBDmehTLwTzgRLoee |
+| 0023 | IMG_0614 | 05/24/20 2256 | 0 | https://drive.google.com/file/d/154R8Vpi-v72jyEG7Roh8hE_Ds5jLiqCm |
+| 0024 | IMG_0615 | 05/24/20 2256 | 0 | https://drive.google.com/file/d/1d4LjeUQ-XqsiQMayFxdfq6ecC1wGWgH9 |
+| 0025 | IMG_0616 | 05/24/20 2256 | 1 | https://drive.google.com/file/d/1M83c0dFf6HxY8YgOc68O8ydE_pLrvU7i |
+| 0026 | IMG_0617 | 05/24/20 2257 | 0 | https://drive.google.com/file/d/1lk98_0EvCmYMaew4KY2f50iE6gfJRM92 |
+| 0027 | IMG_0618 | 05/24/20 2257 | 1 | https://drive.google.com/file/d/1vHsJwwj-9E135C2jR1v5Elo6I65tnNCG |
+| 0028 | IMG_0619 | 05/24/20 2257 | 0 | https://drive.google.com/file/d/1mtARlTxYGR7_UvkTBoz31Alfh6EyR9dO |
+| 0029 | IMG_0620 | 05/24/20 2257 | 0 | https://drive.google.com/file/d/1iun2RJ-pToqMlUUQMdKl_yWvJWxKioON |
+| 0030 | IMG_0621 | 05/24/20 2310 | 1 | https://drive.google.com/file/d/19qa9qfALiWRJQwTHwvMhmyZldxBmuEZT |
 |___\________|_________/______/_____|____________________/_____________|____________\_____________________|
 | Index   Name     Date    Time   Focus                (URL/Uniform Resource Locator)                     |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -16753,6 +16758,8 @@ I don’t know if this guy knows this or not... but this guy may have lived up t
 # // | Chapter 5 - If you were smart, you’d be rich by now | cls; $Book.Range("Book",6,@(220..266))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
+$Book.SetLabel(6,"Chapter 5")
+
 $Book.AddSection(6,"Start",@"
 "If you were smart, you’d be rich by now". 
 Whoever says this, would be a shitty programmer.
@@ -18943,6 +18950,8 @@ I’m just ILLUSTRATING a point, I still think he’s still a cocksucker.
 # // _________________________________
 # // | Chapter 6 - Hidden Government | cls; $Book.Range("Book",7,@(270..302))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Book.SetLabel(7,"Chapter 6")
 
 $Book.AddSection(7,"Start",@"
 The thing is, when SOME DETAILS aren’t known, or collected yet, operating on assumptions is a bad idea.
@@ -21957,6 +21966,8 @@ That's why he gave me his name and number.
 # // ___________________________________________________________________
 # // | Chapter 7 - USA-Patriot Act of 2001 and Surveillance Capitalism | cls; $Book.Range("Book",8,@(306..325+350..355+365..394+404..420))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Book.SetLabel(8,"Chapter 7")
 
 $Book.AddSection(8,"Start",@"
 |¯|       |¯|             |¯|        |¯|         |¯|           |¯|     |¯|    |¯|         |¯|        |¯|
@@ -36511,11 +36522,12 @@ time at all, because you are no fucking threat to someone that has made you cont
 you decide that you want to be paid more money, or know some secrets that might damage their credibility, some 
 of them will actually try to kill you.
 "@)
- 
 
 # // _____________________________
 # // | Chapter 8 - The Rich Brat | cls; $Book.Range("Book",9,@(424..477))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Book.SetLabel(9,"Chapter 8")
 
 $Book.AddSection(9,"Start",@"
 The “Rich brat”, is someone that I intend to catch.
@@ -43903,6 +43915,8 @@ Nah. Not everybody.
 # // | Chapter 9 - News vs. Propaganda | cls; $Book.Range("Book",10,@(481..507))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
+$Book.SetLabel(10,"Chapter 9")
+
 $Book.AddSection(10,"Start",@"
 What EXACTLY is the difference between NEWS and PROPAGANDA...?
 "@)
@@ -44471,9 +44485,9 @@ canal, that’s not an exaggeration at all. He did shit like that. However, some
 
 $Book.AddSection(10,"Examination (2)",@"
 
-Yeah. Sean Hannity doesn’t like to tell people this, but he gets paid $100M a year to keep saying climate 
+Yeah. Sean Hannity doesn’t like to tell people this, but he gets paid `$100M a year to keep saying climate 
 change is not real. But, it is SO real, that I can practically see a dick in this guys mouth, every single 
-time he appears on television. It’s a $100M per year/dick in the mouth that Hannity, seems to enjoy hittin’ 
+time he appears on television. It’s a `$100M per year/dick in the mouth that Hannity, seems to enjoy hittin’ 
 with his tonsils.
 
 He can do that if he wants to, it’s a free country. It’s not actually illegal for him to do that.
@@ -46610,6 +46624,8 @@ That’s a fucking SERIOUS problem.
 # // _______________________________________
 # // | Chapter 10 - Expert Programming 101 | cls; $Book.Range("Book",11,@(511..571))
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Book.SetLabel(11,"Chapter 10")
 
 $Book.AddSection(11,"Start",@"
 When you want to prove to people that think LYING or having TERRIBLE LOGIC doesn't matter...?
@@ -52996,3 +53012,4 @@ $Book.AddSection(11,"Conclusion",@'
      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 #>
+
