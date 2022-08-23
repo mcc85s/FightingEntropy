@@ -20,8 +20,8 @@ Function Write-Book
                 Throw "File exists"
             }
             
-            $Rect         = [Drawing.Rectangle]::FromLTRB(25,190,1165,835)
-            $This.Bitmap  = [Drawing.Bitmap]::New($Rect.Width,$Rect.Height)
+            $Rect         = 
+            $This.Bitmap  = Drawing.Bitmap]::New($Rect.Width,$Rect.Height)
             $This.Graphic = [Drawing.Graphics]::FromImage($This.Bitmap)
             $This.Graphic.CopyFromScreen($Dimension.Location,[Drawing.Point]::Empty,$Dimension.Size)
             $This.Bitmap.Save($This.Name)
@@ -36,7 +36,7 @@ Function Write-Book
         [String] $Name
         [String] $Date
         [String] $Root
-        [UInt32[]] $Dimension = @(25,190,1165,835)
+        [Drawing.Rectangle] $Dimension
         [Object] $Swap
         [Object] $Output
         [Object] $File
@@ -76,7 +76,7 @@ Function Write-Book
             $Depth = ([String]($This.Output.Count)).Length
             $ID    = "{0}/{1:d$Depth}.png" -f $This.Root, $Index
     
-            Invoke-Expression "Clear-Host;Write-Host `$This.Output[$Index];Write-Host '`n'"
+            Invoke-Expression "Clear-Host;`$This.Output[$Index] | % { Write-Host `$_ };Write-Host '`n'"
             $This.File += [Screenshot]::New($ID,$This.Dimension)
         }
     }
@@ -53131,4 +53131,3 @@ $Book.AddSection(11,"Conclusion",@'
      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 #>
-
