@@ -41,7 +41,7 @@ Function Write-Book
         [Object] $Swap
         [Object] $Output
         [Object] $File
-        Reel([String]$Base,[String]$Name,[Object[]]$Swap)
+        Reel([String]$Base,[String]$Name,[String[]]$Swap)
         {
             If (!(Test-Path $Base))
             {
@@ -79,7 +79,7 @@ Function Write-Book
                     $Block        = @( )
                 }
     
-                $Block += $This.Swap[$X]
+                $Block += $This.Swap[$X] 
             }
             $This.File   = @( )
         }
@@ -96,6 +96,13 @@ Function Write-Book
             Invoke-Expression "Clear-Host;`$This.Output[$Index] | % { Write-Host `$_ };Start-Sleep -Milliseconds 250"
 
             $This.File += [Screenshot]::New($ID,$This.Dimension)
+        }
+        Compile()
+        {
+            ForEach ($X in 0..($This.Output.Count-1))
+            {
+                $This.Screenshot($X)
+            }
         }
     }
 
@@ -214,7 +221,7 @@ Function Write-Book
             {
                 $Item = Switch ($This.Mode)
                 {
-                    0 { "    $Line    " }
+                    0 { "    $Line" }
                     1 { $Line }
                 }
 
@@ -401,7 +408,7 @@ Function Write-Book
                 Throw "Invalid path"
             }
 
-            Return @(Get-Content $Path)
+            Return @([System.IO.File]::ReadAllLines($Path))
         }
         LoadChapters()
         {
@@ -923,7 +930,7 @@ Function Get-FoundingFathers
     $Out
 }
 
-$Book      = Write-Book -Name "Top Deck Awareness - Not News"
+$Book      = Write-Book -Name "Top Deck Awareness - Not News" -Path "$Home\Documents\Not News\Framing"
 $Book.Flag = $Book.Flag -Replace "08/16/2022",(Get-Date -UFormat "%m/%d/%Y")
 
 # // _____________________________________________________________
@@ -1512,7 +1519,7 @@ Here's that person's resume.
 
 $Book.SetLabel(1,"Resume")
 
-$Book.AddSection(1,1,"Resume",$Book.Resource("Not%20News%20(005-Resume).txt"))
+$Book.AddSection(1,1,"Resume",$Book.Path("Not News (005-Resume).txt"))
 
 # // _________________________________
 # // | Chapter 1 - Liars in the Lead | $Book.Range("Book",2,@(94..112))
@@ -1882,7 +1889,7 @@ He gives suggestions to YOU. Either YOU follow HIS suggestions, OR...
 ...the dude's gonna whip out a stack of cash, tape it all together, and then wait to throw it at ya.
 
 A stack of cash like the one he's likely to throw at any damn fool out there...?
-It will definitely injure somebody. It'll sound stupid ‘Yeah, someone threw a stack of cash at me...'
+It will definitely injure somebody. It'll sound stupid 'Yeah, someone threw a stack of cash at me...'
 Who's gonna believe you, that someone threw a stack of cash at you, one that injured you...?
 Nobody. Even if they SEE the stack of cash he threw at you...?
 They'll say: "Yeah right, dude. You must've done that shit to yourself... Idiot."
@@ -2730,7 +2737,7 @@ to do something ILLEGAL.
 So, not following orders from a superior officer that's ALSO BRIBED, can lead to situations where that officer 
 will get in trouble for attempting to enforce the law.
 
-Not only that, but then ALSO, the judges. Many of them are corrupt, too. It's not like ‘OoOoohHhh there's a 
+Not only that, but then ALSO, the judges. Many of them are corrupt, too. It's not like 'OoOoohHhh there's a 
 couple people breaking the law that haven't gotten caught yet...' Nah, it's literally... fuckin' everywhere. 
 
 But we have a series of rights that are literally written in the Constitution, that allow any citizen to take 
@@ -3711,7 +3718,7 @@ While (Prince/Andrew/Cuomo) is just a normal, regular, every-day-at-the-park typ
 The guy trying to kill me on a video I recorded on 05/26/20 is a cocksucker AND a SERIAL KILLER. 
 See, here's why that SOUNDS REALLY BAD... THE SERIAL KILLER IS NOT A FIGMENT OF MY FUCKING IMAGINATION.
 So, I can tell who in SCSO is compromised by reading certain reports, and things of that nature.
-DOZENS of cases where somebody said "OoOOOhhHHh Michael Cook is ‘delusional'." (← INDICATES MALICIOUS INTENT)
+DOZENS of cases where somebody said "OoOOOhhHHh Michael Cook is 'delusional'." (← INDICATES MALICIOUS INTENT)
 
 Wanna know what people do nothing about, though...? The evidence I recorded, of this demon EXISTING. 
 Not just (1) guy, cause it's him and his brother. They're a team. But they are part of the HIDDEN GOVERNMENT.
@@ -3807,7 +3814,7 @@ There's nothing particularly SPECIAL about ME, or anyone that's wicked observant
 ...other than the fact that I literally see things that OTHER PEOPLE don't bother to QUESTION. 
 
 When you ask questions, someone that rests on their laurels will not realize that you're smarter than they are.
-This "asking questions" makes them "more intelligent", and so when this is combined with ‘RECORDING EVIDENCE', 
+This "asking questions" makes them "more intelligent", and so when this is combined with 'RECORDING EVIDENCE', 
 THEN it stands to reason that the 20 days I did in the Saratoga County Jail, represents a CRIME that Judge 
 Paul Pelagalli committed.
 
@@ -4176,7 +4183,7 @@ UNLESS... you expect that they're going to lie. THEN, they can be depended on wi
 
 Guy  : *sorta frustrated* HEY.
 Girl : *nervous* Uh, what's up, babe...?
-Guy  : SOME DUDE TOLD ME THAT YOU SMILED BACK AT HIM, WHEN HE ‘WAVED' AT YA EARLIER TODAY...
+Guy  : SOME DUDE TOLD ME THAT YOU SMILED BACK AT HIM, WHEN HE 'WAVED' AT YA EARLIER TODAY...
 (She knows that if she says the truth, the guy MIGHT get upset for something really fuckin' insignificant.)
 Girl : *nervous, gulps* Nah babe, I never smile at ANYBODY who even THINKS about wavin' at me.
 Guy  : *relieved* Oh yeah...?
@@ -4657,7 +4664,7 @@ some shadow warriors and scheme a new way to fuck people over... not at all. I'm
 based on her appearance, I'm also not going to make assumptions about Chuck Schumer... BUT A LOT OF OTHER 
 PEOPLE WILL DO THAT.
 
-They'll be like "Ah. There's Hillary Rodham ‘Who gives a shit...?' Clinton, at Madelline Albright's funeral 
+They'll be like "Ah. There's Hillary Rodham 'Who gives a shit...?' Clinton, at Madelline Albright's funeral 
 service. She is fucking amazing, isn't she...? Look... at... her. Fuckin' absolutely stellar and perfect."
 Yeah, I realize people aren't using those EXACT words, but the context is quite accurate.
 
@@ -4986,7 +4993,7 @@ gotten in years. You're welcome. Even Andrew Cuomo didn't get that lucky. Not ev
 Pelagalli a sausage wrecker cause he doesn't seem to be one at least from my observations.
 
 ^ That's another part of the multi-pronged approach. Cause if I just tell people like a fuckin' crybaby, 
-‘OooOohH fuckin' Pelagalli fuckin' did some real shady shit to me~!' People will say "Fuck you bro."
+'OooOohH fuckin' Pelagalli fuckin' did some real shady shit to me~!' People will say "Fuck you bro."
 So, I expect that people are gonna do that, I know most people WON'T say that at all, but if I make this about 
 CONSTITUTIONAL LIBERTIES AND RIGHTS, and how some fuckin' more-than-just-a-touch-of-gray douchebag that calls 
 himself a fuckin' judge... acts a lot like Andrew Cuomo... Well, if Theodore Roosevelt (the former President) 
@@ -5236,7 +5243,7 @@ Maybe I'm not even going to try and manipulate anybody about anything, cause, th
 that I should've asked more girls if they wanna choke on a fat D. It's not really that offensive when 
 you're really blatant about it, they're not gonna say "Huh...? What's a big fat D...?!?" 
 
-Then you gotta say "D stands for ‘dick'." Then they might be like oblivious like Melanie strikes me:
+Then you gotta say "D stands for 'dick'." Then they might be like oblivious like Melanie strikes me:
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
@@ -6105,7 +6112,7 @@ Bad uses of this strategy...
     ------------------------------------------ … so don't use these. 
 Good uses of this strategy...
     - Being surprised that <insert name here> hasn't <insert something a moron would do>
-    - I'll bet that <insert name>‘s (wife/girlfriend) would prefer <insert something erotic & indicative>, huh?
+    - I'll bet that <insert name>'s (wife/girlfriend) would prefer <insert something erotic & indicative>, huh?
 You can really slip in so many various terms there, or in her, or THOSE multiple hers.
 
 Yeah, saying stuff about somebody's female partner is usually a good way to get their attention.
@@ -6309,7 +6316,7 @@ The identity thieves are probably the reason why I am in this predicament, but a
 
 Being nice, is fine. Nothing wrong with mutual respect at all. And if I have apparently insulted the entire 
 stack of people in the S&P 500, I really hope that they realize that I don't actually think they got where 
-they are for their ‘ass kissing skills', alright...?
+they are for their 'ass kissing skills', alright...?
 ___________
 | Dilemma |
 ¯¯¯¯¯¯¯¯¯¯¯
@@ -7655,7 +7662,7 @@ priority really. They're involved, but it'd be like me trying to pin DJ THOMPSON
 instead of MICHAEL ZURLO.)
 
 Because, that is what the PRISM program protects, and allows to be a thing.
-So when the last judge provisioned Spectrum with a ‘weak-dicked slap on the wrist...' AKA, a `$15M fine that 
+So when the last judge provisioned Spectrum with a 'weak-dicked slap on the wrist...' AKA, a `$15M fine that 
 was paid for with free HBO..? I intend to exponentially increase the likelihood of these companies just going
 bankrupt INSTEAD (A great way to do this, is to manipulate these serial killers into attacking me again, and
 they sure as hell will.). Which, will mean that the last judge can not be involved in this, because, they were 
@@ -7750,8 +7757,8 @@ Then, the cocksuckers have no choice but to do what the fuck they're told.
 
 Now look… this word <unspecified>… it's a derogatory term, and I shouldn't use it so loosely to describe the 
 <unspecified> that happens to be going on in terms of what fuck faced individuals get to 
-‘pick and choose when to enforce the law' or 
-‘when to ignore the criminal activity you can do as often as you fucking please'… 
+'pick and choose when to enforce the law' or 
+'when to ignore the criminal activity you can do as often as you fucking please'… 
 ...in the same manner that 1) Verizon, 2) Spectrum, 3) the FBI, and 4) Nfrastructure… do.
 
 Here's the thing… I'm sure that by now, Judge Wormuth is getting sick of being called a cocksucker, so… 
@@ -7791,7 +7798,7 @@ series of pictures...
 
 I'm fairly certain that the highway you see here would have to be shut down, so that they can install ANOTHER 
 fiber optic backbone cable that would cost in the hemisphere of "a lot of fucking money..."... because the way
-it works is, fiber optics aren't just a ‘plug and play' type of thing. 
+it works is, fiber optics aren't just a 'plug and play' type of thing. 
 
 The equipment that relays the transmissions is quite expensive... and so is the cable.
 But when they made that investment many, many years ago, and then they failed to upgrade the speed 
@@ -8027,8 +8034,8 @@ actually suck at being a doctor.... and he'll misdiagnose someone who's naturall
 AND a lot better at psychiatry, than his ass will ever be because of it.
 
 The resistance that society develops is because people don't know how to talk about something UNLESS other 
-people are doing it. Then society sorta shapes itself to draw these ridiculous lines about whats ‘allowable' 
-or ‘not allowable'. That's not because the subject isn't necessarily worth talking about, but rather, the 
+people are doing it. Then society sorta shapes itself to draw these ridiculous lines about whats 'allowable' 
+or 'not allowable'. That's not because the subject isn't necessarily worth talking about, but rather, the 
 subject may be too EMBARASSING, UNIMPORTANT, UNINTERESTING, or not COOL enough... but those are all OPINIONS.
 
 That means that those topics are always subject to change at a moment's notice.
@@ -8222,7 +8229,7 @@ ________________________________________________________________________________
 |---/--------|---------\------\-----|--------------------\-------------|------------/---------------------|
 | 0001 | IMG_0389 | 05/21/20 2357 | 3 | https://drive.google.com/file/d/19NEdQugc_1mxV_tVS1KFhxebIrDcRAI0 |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
-| [0001]: I took this picture by ‘accident', but I don't think it was accidental anymore. This was taken  |
+| [0001]: I took this picture by 'accident', but I don't think it was accidental anymore. This was taken  |
 | a couple minutes BEFORE I recorded the sound of the bird, below. There's no way that I didn't hear the  |
 | bird when I took this picture. I heard that thing from like a mile away.                                |
 |                                                                                                         |
@@ -8837,7 +8844,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Sometimes I wonder if maybe people really are absent-minded. 
 I'm sure people really AREN'T absent-minded at all, they just have a very difficult time thinking outside
-of the box. For instance, people will say ‘If you were so smart, you'd be rich by now'. 
+of the box. For instance, people will say 'If you were so smart, you'd be rich by now'. 
 
 Not really... George Carlin is a prime example of someone that was probably smarter than all of the current 
 top 10 billionaires in the world. That dude, knew philosophy inside and out. He also had a pretty good idea
@@ -8914,8 +8921,8 @@ ________________________________________________________________________________
 _______________________________________________________________________________________________________________
 | Index Type  Name      Date   Time   Focus                (URL/Uniform Resource Locator)                     |
 |---/----|------|----------\------\-----|--------------------\-------------|------------/---------------------|
-| 0001 | P | IMG_0410 | ‎05/‎23/‎20 ‏‎2015 | 0 | https://drive.google.com/file/d/17A8VrKhf6FoijaCqYz3ElKh7KXCtmAIe |
-| 0002 | P | IMG_0411 | ‎05/‎23/‎20 ‏‎2015 | 0 | https://drive.google.com/file/d/1gYQRrg1bl7M2OyxcS4N65ttcF2L-x1PY |
+| 0001 | P | IMG_0410 | 05/23/20 2015 | 0 | https://drive.google.com/file/d/17A8VrKhf6FoijaCqYz3ElKh7KXCtmAIe |
+| 0002 | P | IMG_0411 | 05/23/20 2015 | 0 | https://drive.google.com/file/d/1gYQRrg1bl7M2OyxcS4N65ttcF2L-x1PY |
 | 0003 | V | IMG_0412 | 05/23/20 2022 | 0 | https://drive.google.com/file/d/1Exs2UsfQ13CKS4BE2CZU8kvMNpqH0tld |
 | 0004 | V | IMG_0413 | 05/23/20 2040 | 0 | https://drive.google.com/file/d/101pjzpA_MlxqcrCBaFuWShtXK8j1k6YQ |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
@@ -8940,7 +8947,7 @@ campus, until I saw a few vehicles just like, drivin' mad slow, trying to be inc
 _______________________________________________________________________________________________________________
 | Index Type  Name      Date   Time   Focus                (URL/Uniform Resource Locator)                     |
 |---/----|------|----------\------\-----|--------------------\-------------|------------/---------------------|
-| 0005 | P | IMG_0414 | ‎05/‎23/‎20 ‏‎2109 | 1 | https://drive.google.com/file/d/1c7Ffv6EO0Jw9d1Jv-zYWNMmnoVrdI2-C |
+| 0005 | P | IMG_0414 | 05/23/20 2109 | 1 | https://drive.google.com/file/d/1c7Ffv6EO0Jw9d1Jv-zYWNMmnoVrdI2-C |
 | 0006 | P | IMG_0415 | 05/23/20 2115 | 2 | https://drive.google.com/file/d/13W3kV7PQtq8QfoENrHeWIomwIdyNvFFc |
 | 0007 | V | IMG_0416 | 05/23/20 2118 | 0 | https://drive.google.com/file/d/1jJh0rG2KUtEhvqw-0FEoZ6lBXsnkyjBO |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
@@ -9199,14 +9206,14 @@ me as I was walking. I probably owe Rybak an apology. At the same time, I haven'
 _______________________________________________________________________________________________________________
 | Index Type  Name      Date   Time   Focus                (URL/Uniform Resource Locator)                     |
 |---/----|------|----------\------\-----|--------------------\-------------|------------/---------------------|
-| 0001 | P | IMG_0418 | ‎05/‎23/‎20 ‏‎2209 | 0 | https://drive.google.com/file/d/1o0EN-_zJ2NFMpIJ62TEXt_ZzhTpIcP-J |
-| 0002 | P | IMG_0419 | ‎05/‎23/‎20 ‏‎2227 | _ | https://drive.google.com/file/d/1ylXx3-_yqXO1aZgxs591WCkw97aGNXoJ |
-| 0003 | P | IMG_0420 | ‎05/‎23/‎20 ‏‎2227 | _ | https://drive.google.com/file/d/1aotzEtVIzOWZpHNGBGAiKMu4ptd83RUV |
-| 0004 | P | IMG_0421 | ‎05/‎23/‎20 ‏‎2234 | _ | https://drive.google.com/file/d/10EMq8WVC0i1JeBunE1kL6-gKe7wEB2Ah |
-| 0005 | P | IMG_0422 | ‎05/‎23/‎20 ‏‎2246 | _ | https://drive.google.com/file/d/1soT3MzZ0kZa_wmIj-EhXtiKL5zuAZ-hr |
-| 0006 | P | IMG_0423 | ‎05/‎23/‎20 ‏‎2246 | _ | https://drive.google.com/file/d/1k_X9QtxzjRZGVPVUHaA-gZLoPST5Bdmc |
-| 0007 | P | IMG_0424 | ‎05/‎23/‎20 ‏‎2246 | _ | https://drive.google.com/file/d/1GBjx1ErbzNXOxJo0Uqa8TZ1YnJbhZJVe |
-| 0008 | P | IMG_0425 | ‎05/‎23/‎20 ‏‎‏‎2247 | _ | https://drive.google.com/file/d/1o4a0TPY-FMDgRisNjd20VWvHv2sPVBVP |
+| 0001 | P | IMG_0418 | 05/23/20 2209 | 0 | https://drive.google.com/file/d/1o0EN-_zJ2NFMpIJ62TEXt_ZzhTpIcP-J |
+| 0002 | P | IMG_0419 | 05/23/20 2227 | _ | https://drive.google.com/file/d/1ylXx3-_yqXO1aZgxs591WCkw97aGNXoJ |
+| 0003 | P | IMG_0420 | 05/23/20 2227 | _ | https://drive.google.com/file/d/1aotzEtVIzOWZpHNGBGAiKMu4ptd83RUV |
+| 0004 | P | IMG_0421 | 05/23/20 2234 | _ | https://drive.google.com/file/d/10EMq8WVC0i1JeBunE1kL6-gKe7wEB2Ah |
+| 0005 | P | IMG_0422 | 05/23/20 2246 | _ | https://drive.google.com/file/d/1soT3MzZ0kZa_wmIj-EhXtiKL5zuAZ-hr |
+| 0006 | P | IMG_0423 | 05/23/20 2246 | _ | https://drive.google.com/file/d/1k_X9QtxzjRZGVPVUHaA-gZLoPST5Bdmc |
+| 0007 | P | IMG_0424 | 05/23/20 2246 | _ | https://drive.google.com/file/d/1GBjx1ErbzNXOxJo0Uqa8TZ1YnJbhZJVe |
+| 0008 | P | IMG_0425 | 05/23/20 2247 | _ | https://drive.google.com/file/d/1o4a0TPY-FMDgRisNjd20VWvHv2sPVBVP |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0001]: Precision Periodontics. All I did was take a picture of the mailbox, pretty sure I never went any   |
 | closer than that. Otherwise, I would've taken pictures. [0002]: Picture taken at night of a bunch of trees  |
@@ -9223,18 +9230,18 @@ I took pictures of that. Then, like a WILD man...? I was in real quick, then I c
 _______________________________________________________________________________________________________________
 | Index Type  Name      Date   Time   Focus                (URL/Uniform Resource Locator)                     |
 |---/----|------|----------\------\-----|--------------------\-------------|------------/---------------------|
-| 0001 | P | IMG_0426 | ‎05/‎23/‎20 ‏‎‏‎2303 | 1 | https://drive.google.com/file/d/1JHKgCHT7kgT3cLiAJw1qbk2auIT5EZIt |
-| 0002 | P | IMG_0427 | ‎05/‎23/‎20 ‏‎‏‎2304 | 1 | https://drive.google.com/file/d/1WFAOMoUl8H0e22r4Q2vo0hEc0JgxGBoz |
+| 0001 | P | IMG_0426 | 05/23/20 2303 | 1 | https://drive.google.com/file/d/1JHKgCHT7kgT3cLiAJw1qbk2auIT5EZIt |
+| 0002 | P | IMG_0427 | 05/23/20 2304 | 1 | https://drive.google.com/file/d/1WFAOMoUl8H0e22r4Q2vo0hEc0JgxGBoz |
 | 0003 | V | IMG_0428 | 05/23/20 2314 | 0 | https://drive.google.com/file/d/1uyWjou_6Yadc-RKI3kIqvV7PtIJZekk5 |
 | 0004 | P | IMG_0429 | 05/23/29 2314 | 2 | https://drive.google.com/file/d/1YlOSkwqNxHNOKHo-JKqKiCp-iaPYetqt |
 | 0005 | V | IMG_0430 | 05/23/20 2316 | 1 | https://youtu.be/7ZjLXsW-USc (unaltered/FBI corrupted below entry)|
 | 0005A| V | IMG_0430 | 05/23/20 2316 | 1 | https://drive.google.com/file/d/1kuaybwEfIUYTd06wf76WRHIBZtdtphBV |
-| 0006 | P | IMG_0431 | ‎05/‎23/‎20 ‏‎‏‎2320 | 2 | https://drive.google.com/file/d/1yfQd_p5XBCLVtt9Uoryac49BPopGvu3O |
+| 0006 | P | IMG_0431 | 05/23/20 2320 | 2 | https://drive.google.com/file/d/1yfQd_p5XBCLVtt9Uoryac49BPopGvu3O |
 | 0007 | V |*IMG_0432 | 05/23/20 2323 |*0 | https://drive.google.com/file/d/1K16SXHJhaFeive21taFWquLioLSEjc6i |
-| 0008 | P | IMG_0433 | ‎05/‎23/‎20 ‏‎‏‎2325 | 0 | https://drive.google.com/file/d/1eU83YqoKOlgpqcPImmey3DuIljwaZmGi |
-| 0009 | P | IMG_0434 | ‎05/‎23/‎20 ‏‎‏‎2325 | 0 | https://drive.google.com/file/d/1rNCcFKCxH2QVdaW3moQbtYYFTCFGVzpd |
-| 0010 | P | IMG_0435 | ‎05/‎23/‎20 ‏‎‏‎2328 | 0 | https://drive.google.com/file/d/17qBZGnwK3TEQUNHlExOzBnSA9Me_Atqf |
-| 0011 | P | IMG_0436 | ‎05/‎23/‎20 ‏‎‏‎2329 | 0 | https://drive.google.com/file/d/17DDVj9j29oa0HMMEc_DXZv1kYNu2wfzy |
+| 0008 | P | IMG_0433 | 05/23/20 2325 | 0 | https://drive.google.com/file/d/1eU83YqoKOlgpqcPImmey3DuIljwaZmGi |
+| 0009 | P | IMG_0434 | 05/23/20 2325 | 0 | https://drive.google.com/file/d/1rNCcFKCxH2QVdaW3moQbtYYFTCFGVzpd |
+| 0010 | P | IMG_0435 | 05/23/20 2328 | 0 | https://drive.google.com/file/d/17qBZGnwK3TEQUNHlExOzBnSA9Me_Atqf |
+| 0011 | P | IMG_0436 | 05/23/20 2329 | 0 | https://drive.google.com/file/d/17DDVj9j29oa0HMMEc_DXZv1kYNu2wfzy |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0001, 0002]: Main Street Grille/House across the street, [0003,0004]: Van Patten Golf Course/Jonesville.   |
 | [0005]: Ranting while I'm walking into town from Carlton/Main St. Not real sure why I made it all the way   |
@@ -9351,22 +9358,22 @@ Went all the way down Ushers road and found some VERIZON FIOS "INFRACTIONS". (VE
 _______________________________________________________________________________________________________________
 | Index Type  Name      Date   Time   Focus                (URL/Uniform Resource Locator)                     |
 |---/----|------|----------\------\-----|--------------------\-------------|------------/---------------------|
-| 0001 | P | IMG_0437 | ‎05/‎23/‎20 ‏‎‏‎2332 | 0 | https://drive.google.com/file/d/1f_bCTTUwcncWfVWFI4GgeoDAkmVwx-eX |
-| 0002 | P | IMG_0438 | ‎05/‎23/‎20 ‏‎‏‎2332 | 0 | https://drive.google.com/file/d/1IIr21Z94r9YNMhciVKr47jlwqrXETPk8 |
-| 0003 | P | IMG_0439 | ‎05/‎23/‎20 ‏‎‏‎2333 | 0 | https://drive.google.com/file/d/19SeWplJxmZ8X0t1lkKxIqTHzXAeOBTem |
-| 0004 | P | IMG_0440 | ‎05/‎23/‎20 ‏‎‏‎2339 | 0 | https://drive.google.com/file/d/1OXsTi4B0fwproUMHJYEnGGav0toGGyAY |
-| 0005 | P |*IMG_0441 | ‎05/‎23/‎20 ‏‎‏‎2339 | 0 | https://drive.google.com/file/d/1mfVdLqrSMN1bpCyFtK4Iu9wPnBAEmVYs |
-| 0006 | P | IMG_0442 | ‎05/‎23/‎20 ‏‎‏‎2339 | 0 | https://drive.google.com/file/d/1rmRrmNMu0-FJuuP1Xc0K6aCMYop5N5Vq |
+| 0001 | P | IMG_0437 | 05/23/20 2332 | 0 | https://drive.google.com/file/d/1f_bCTTUwcncWfVWFI4GgeoDAkmVwx-eX |
+| 0002 | P | IMG_0438 | 05/23/20 2332 | 0 | https://drive.google.com/file/d/1IIr21Z94r9YNMhciVKr47jlwqrXETPk8 |
+| 0003 | P | IMG_0439 | 05/23/20 2333 | 0 | https://drive.google.com/file/d/19SeWplJxmZ8X0t1lkKxIqTHzXAeOBTem |
+| 0004 | P | IMG_0440 | 05/23/20 2339 | 0 | https://drive.google.com/file/d/1OXsTi4B0fwproUMHJYEnGGav0toGGyAY |
+| 0005 | P |*IMG_0441 | 05/23/20 2339 | 0 | https://drive.google.com/file/d/1mfVdLqrSMN1bpCyFtK4Iu9wPnBAEmVYs |
+| 0006 | P | IMG_0442 | 05/23/20 2339 | 0 | https://drive.google.com/file/d/1rmRrmNMu0-FJuuP1Xc0K6aCMYop5N5Vq |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0001, 0002, 0003]: Jonesville Cemetery. Wasn't quite ready to go spelunking the cemetery grounds in utter  |
 | darkness, cause that's moronic. [0004, 0005, 0006]: Burning Bush substation, clearly the white fence gives  | 
 | quite an amazing camouflage, cause you can barely see that thing. [0005/IMG_0441]: Not exactly sure why but | 
 | this particular image was kept from being uploaded to my Google Drive account.
 |-------------------------------------------------------------------------------------------------------------|
-| 0007 | P | IMG_0443 | ‎05/‎23/‎20 ‏‎2357 | 0 | https://drive.google.com/file/d/1d4U_CbDqZCQYDaFKsVDhnah2sk7GTVET |
-| 0008 | P | IMG_0444 | ‎05/‎23/‎20 ‏‎2357 | 0 | https://drive.google.com/file/d/18yhgrBqZMNpmtrwU1xs9g-FosXJcbUa1 |
-| 0009 | P | IMG_0445 | ‎05/‎23/‎20 ‏‎2357 | 2 | https://drive.google.com/file/d/1mLIfSI1htx_jts6gOomS5aos70nmqbcF |
-| 0010 | P | IMG_0446 | ‎05/‎23/‎20 ‏‎2357 | 0 | https://drive.google.com/file/d/1hZqArWA8Juvw1WySSD1J5gfx9xGALq9Z |
+| 0007 | P | IMG_0443 | 05/23/20 2357 | 0 | https://drive.google.com/file/d/1d4U_CbDqZCQYDaFKsVDhnah2sk7GTVET |
+| 0008 | P | IMG_0444 | 05/23/20 2357 | 0 | https://drive.google.com/file/d/18yhgrBqZMNpmtrwU1xs9g-FosXJcbUa1 |
+| 0009 | P | IMG_0445 | 05/23/20 2357 | 2 | https://drive.google.com/file/d/1mLIfSI1htx_jts6gOomS5aos70nmqbcF |
+| 0010 | P | IMG_0446 | 05/23/20 2357 | 0 | https://drive.google.com/file/d/1hZqArWA8Juvw1WySSD1J5gfx9xGALq9Z |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0007, 0008, 0009, 0010]: I believe this is all legacy equipment for where Bell Atlantic used to have the   | 
 | phone lines come in. The box on the ground is an underground cable station. They get destroyed in accidents |
@@ -9374,11 +9381,11 @@ ________________________________________________________________________________
 | can be tapped by a phone technician without a lot of effort. I don't know how that's done, but I"m sure its | 
 | something that a KGB agent might've done back when they were very popular.                                  |
 |-------------------------------------------------------------------------------------------------------------|
-| 0011 | P | IMG_0447 | ‎05/‎23/‎20 ‏‎2359 | 0 | https://drive.google.com/file/d/1R-6g3k3ZIaIM6pvoJPFmCDdKy6N2cpAD |
-| 0012 | P |*IMG_0448 | ‎05/‎23/‎20 ‏‎2359 | 0 | https://drive.google.com/file/d/1ob_d2qtZi5hyo7ROD3CuAh7ehejFKsy3 |
-| 0013 | P | IMG_0449 | ‎05/‎23/‎20 ‏‎2359 | 0 | https://drive.google.com/file/d/1CzPZ5M59yWuwguyYVVu921CHFDHA1c3y |
+| 0011 | P | IMG_0447 | 05/23/20 2359 | 0 | https://drive.google.com/file/d/1R-6g3k3ZIaIM6pvoJPFmCDdKy6N2cpAD |
+| 0012 | P |*IMG_0448 | 05/23/20 2359 | 0 | https://drive.google.com/file/d/1ob_d2qtZi5hyo7ROD3CuAh7ehejFKsy3 |
+| 0013 | P | IMG_0449 | 05/23/20 2359 | 0 | https://drive.google.com/file/d/1CzPZ5M59yWuwguyYVVu921CHFDHA1c3y |
 | 0014 | P | IMG_0453 | 05/23/20 2359 | 3 | https://drive.google.com/file/d/1W6gJhjCKDtbuq9lTnQPzJZereAnga3zT |
-| 0015 | P | IMG_0455 | ‎05/‎24/‎20 ‏‎0000 | 1 | https://drive.google.com/file/d/1Tu5ft89sJ_tR6RayQ79bSOk7F_QxsbOK |
+| 0015 | P | IMG_0455 | 05/24/20 0000 | 1 | https://drive.google.com/file/d/1Tu5ft89sJ_tR6RayQ79bSOk7F_QxsbOK |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0011, 0012, 0013, 0014, 0015]: Wood Dale Drive junction location. The Country Knolls development gets FIOS |
 | otherwise, there wouldn't be a spooled up bundled of fiber optic cable sitting right here on the ground. It |
@@ -9387,12 +9394,12 @@ ________________________________________________________________________________
 | Also, [0012/IMG_0448] was kept from being uploaded to my Google Drive account. That's illegal, and it is    |
 | EXTREMELY OBVIOUS who would be trying to HIDE THIS PARTICULAR PICTURE I TOOK. Ya know...? Verizon.          |
 |-------------------------------------------------------------------------------------------------------------|
-| 0016 | P | IMG_0456 | ‎05/‎24/‎20 ‏‎0001 | 0 | https://drive.google.com/file/d/12VV2ObukK_3DXED23Nsi1GxMbzkm9aLN |
-| 0017 | P | IMG_0457 | ‎05/‎24/‎20 ‏‎0002 | 0 | https://drive.google.com/file/d/1EabOp3qnFkaRR_GYmStsJUkbugud1zom |
-| 0018 | P |*IMG_0458 | ‎05/‎24/‎20 ‏‎0003 | 0 | https://drive.google.com/file/d/115TRiUsJS55zya6qyVv1ZaQZ3lVUpGkh |
-| 0019 | P |*IMG_0459 | ‎05/‎24/‎20 ‏‎0003 | 0 | https://drive.google.com/file/d/1kWVkx2wsxyQOxihEI-oHTwVEQbKFcVnW |
-| 0020 | P | IMG_0460 | ‎05/‎24/‎20 ‏‎0004 | 1 | https://drive.google.com/file/d/1d0sTQLvJSuobxgKw5j4FVVDnhBqxXdzo |
-| 0021 | P | IMG_0461 | ‎05/‎24/‎20 ‏‎0005 | 0 | https://drive.google.com/file/d/14LiGWkW4hTZvk6JfkfFyPZyIhxGEBK-_ |
+| 0016 | P | IMG_0456 | 05/24/20 0001 | 0 | https://drive.google.com/file/d/12VV2ObukK_3DXED23Nsi1GxMbzkm9aLN |
+| 0017 | P | IMG_0457 | 05/24/20 0002 | 0 | https://drive.google.com/file/d/1EabOp3qnFkaRR_GYmStsJUkbugud1zom |
+| 0018 | P |*IMG_0458 | 05/24/20 0003 | 0 | https://drive.google.com/file/d/115TRiUsJS55zya6qyVv1ZaQZ3lVUpGkh |
+| 0019 | P |*IMG_0459 | 05/24/20 0003 | 0 | https://drive.google.com/file/d/1kWVkx2wsxyQOxihEI-oHTwVEQbKFcVnW |
+| 0020 | P | IMG_0460 | 05/24/20 0004 | 1 | https://drive.google.com/file/d/1d0sTQLvJSuobxgKw5j4FVVDnhBqxXdzo |
+| 0021 | P | IMG_0461 | 05/24/20 0005 | 0 | https://drive.google.com/file/d/14LiGWkW4hTZvk6JfkfFyPZyIhxGEBK-_ |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0016,0017,0020]: Convert 360 exterior. [0018,0019]: Convert 360: directory listing. (these were kept from  |
 | being uploaded to my Google Drive account, indicating that someone is making decisions FOR me not realizing | 
@@ -9500,7 +9507,7 @@ of money but aren't very skilled at what they do. (← I am definitely roasting 
 than I do. I'm doing it because they get paid a lot of money and they STILL suck at what they do compared to me.)
 
 |------------------------------------------------------------------------------------------------------------|
-| What both Spectrum/Verizon call ‘hard labor'                                                               |
+| What both Spectrum/Verizon call 'hard labor'                                                               |
 |------------------------------------------------------------------------------------------------------------|
 | 1) 2021 0207 Buffer Overflow | https://youtu.be/H4MlJnMh9Q0 | This video is indicative of hardware hacking |
 | 2) 2019-10-21-11-44-32       | https://youtu.be/zs0C_ig-4CQ | Apology @ WNYT : I was incorrect             |
@@ -10101,8 +10108,8 @@ ________________________________________________________________________________
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0001/OLD ENTRANCE TO ASTOIA VUCETICS GARAGE]: Overgrown vegetation + non-use makes it hard to see.     |
 | This is adjacent to KENNETH YATES' uncle's property. It is DIRECTLY across street from 1769 US-9, Zack  |
-| Karel's "residence". Maybe Zack DOES live there. However, Zack's ‘HOUSE' used to be a ‘DOCTORS OFFICE'. |
-| [0002/1769 US-9 parking]: Where PATIENTS of the ‘DOCTORS OFFICE' once parked. Stays relatively unused.  |
+| Karel's "residence". Maybe Zack DOES live there. However, Zack's 'HOUSE' used to be a 'DOCTORS OFFICE'. |
+| [0002/1769 US-9 parking]: Where PATIENTS of the 'DOCTORS OFFICE' once parked. Stays relatively unused.  |
 | [0003/MR. YATES]: Where KENNETH YATES' uncle (can't remember his name...), lives.                       |
 | [0004/DENNIS + CAROL YATES RESIDENCE]: Technically my neighbors over the last 35 years...               |
 | Well, not technically. OFFICIALLY my neighbor for the last 35 years.                                    |
@@ -10509,7 +10516,7 @@ Well, think again, ya fucks. That's like 2 or 3 fallacious statements right ther
 That's like a fuckin' megafallacy.
 "@)
  
-$Book.AddSection(5,"Excerpt [~] Now that's what I call ‘Alliteration'",@"
+$Book.AddSection(5,"Excerpt [~] Now that's what I call 'Alliteration'",@"
 Nah. I'm not calling the people at the sub shop stupid fucks, nor the readers. 
 I'm calling the morons at Verizon... 
 ...who drive, float, and fuck around, in their fuckin' federal phallus faceted fuckmobiles...
@@ -10673,7 +10680,7 @@ Me     : Ok, cool.
 ___________________________________________________________________________________________________________
 | Index   Name     Date    Time   Focus                (URL/Uniform Resource Locator)                     |
 |---/--------|---------\------\-----|--------------------\-------------|------------/---------------------|
-| 0001 | IMG_0508 | ‎05/‎24/‎20 ‏‎1925 | 0 | https://drive.google.com/file/d/1CywfAKtQQy7wm_6kBE442dk8wlN0GcCF |
+| 0001 | IMG_0508 | 05/24/20 1925 | 0 | https://drive.google.com/file/d/1CywfAKtQQy7wm_6kBE442dk8wlN0GcCF |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0001]: I took this picture several moments AFTER speaking with Eric Catricala, and this is actually    |
 | where Matchless Stove and Chimney MOVED to. [PS: the censorship is being applied from here on out...]   |
@@ -10946,7 +10953,7 @@ Items marked with ASTERISK may not have been accidental, or are suspicious.
 ( 5) - Cell tower 1
 ( 6 + 8..10 + 13..17 + 19..23 ) - Not exactly a whole lot goin' on.
 ( 7) - Cell Tower Reference | Crown          | Site ID # 8077228 | FCC Registration # 1009721
-(11) – Does not make a whole lot of sense that this ‘accidental' picture was taken, not sure why.
+(11) – Does not make a whole lot of sense that this 'accidental' picture was taken, not sure why.
 (18) – Possibility that the blurriness in this picture is masking something.
 (12) - Last inspected | June 14th, 2019
 (24) - Cell Tower Reference | American Tower | Site ID #  307091 | FCC Registration # 1003986
@@ -11468,7 +11475,7 @@ ANYBODY TO DO... HUH. WEIRD. Well, it could be because the police would rather H
     | That's why I have to insult people.                                                                   | 
     |                                                                                                       |
     | That is, absolutely fucking amazing, isn't it...? Man. So much stolen money, that some douchebag      | 
-    | with `$0.00 can actually PAY PEOPLE LIKE LAURA HUGHES/FBI/ETC... to ignore all that ‘nonsense' I       |
+    | with `$0.00 can actually PAY PEOPLE LIKE LAURA HUGHES/FBI/ETC... to ignore all that 'nonsense' I       |
     | just said, cause BRUCE fuckin' TANSKI, he's such a fuckin' AMAZING GUY... right...?                   |
     |                                                                                                       |
     | Like, I'm fuckin' absolutely IMPRESSED.                                                               |
@@ -11713,7 +11720,7 @@ The COOL thing is, that I knew SCOTT SALVADORE sorta let the cat outta the bag, 
 my house like a few months beforehand, and SCOTT said something that caused me to KNOW WITH SHEER CERTAINTY, 
 that SOMEBODY was actively surveilling me, with at LEAST 1x microphone. 
 
-SCOTT even said ‘you're a naughty boy bro' and, JOHN PICKETT might be the reason. 
+SCOTT even said 'you're a naughty boy bro' and, JOHN PICKETT might be the reason. 
 These dudes probably watch JUST to get a glimpse of what I'm like...
 "@)
  
@@ -12026,8 +12033,8 @@ never seen before. People are gonna say "OooOOoOOooOohhHhhhhHh you have a sixth 
 
 Yeah fuckface. I do. I might not have a pencildick...? 
 But- I don't even NEED one, dude. 
-*tapping chest* I'm MICHAEL COOK... And, I'm gonna continue to ‘accidentally' fuck up every bad guys' day/life...
-‘Accidentally' SHOULD piss all of em off. "Dude keeps ACCIDENTALLY screwing everything up dude...? WTF~!"
+*tapping chest* I'm MICHAEL COOK... And, I'm gonna continue to 'accidentally' fuck up every bad guys' day/life...
+'Accidentally' SHOULD piss all of em off. "Dude keeps ACCIDENTALLY screwing everything up dude...? WTF~!"
 
 Yeah cause … if I say it was all intentionally well thought out ahead of time, then I had a way of premeditating 
 ALL of that shit that didn't even go to plan.
@@ -12212,7 +12219,7 @@ If it was a pencil, like Ryan Ward's fuckin' dick, and he JUST sharpened it, the
 As far as I can tell though, you can't sharpen a dildo.
 
 So, this dude may have had an "edge" NEAR me... but, never really had an "edge" ON, IN, or INSIDE OF me.
-Cause I fuckin'... ‘accidentally' caught him on video, and this dumbass motherfucker was probably calling ME
+Cause I fuckin'... 'accidentally' caught him on video, and this dumbass motherfucker was probably calling ME
 a dumbass motherfucker at the same time... 
 
 Just a pair of dumbass motherfuckers lookin' at one another, calling each OTHER a dumbass motherfucker...
@@ -12233,7 +12240,7 @@ Unreal.
 Confused...? Well, now NOBODY even knows what the fuck is goin' on... 
 So, who the hell knows what...?
 Somebody DOES know something, but, how...?
-Somethin' went down, but whether it was a couple of very conveniently timed ‘accidents', 
+Somethin' went down, but whether it was a couple of very conveniently timed 'accidents', 
 OR... someone manipulated a bunch of people to reveal a DEADLY SECRET...?
 
 The secret's out, motherfucker. 
@@ -12251,7 +12258,7 @@ Pretty sure they're BOTH serial killers, a team.
 After I recorded Kid 1 on video showing a "physical reaction" which caused me believe that he... 
 ...had remote access to my device (had NO service)... I just kept the camera rolling. 
 
-While I didn't accidentally trip or anything like that, and Kid 1 never had a sharp lookin' ‘dildo' in his 
+While I didn't accidentally trip or anything like that, and Kid 1 never had a sharp lookin' 'dildo' in his 
 hands, at least not from what I was able to see. He could've had one in his pocket or something. I had a 
 suspicion that they weren't gonna use a gun or anything with bullets. They don't like the easy way, they 
 love stabbing people to death. 
@@ -12625,9 +12632,9 @@ I survived because a little birdie saved my fuckin' life and gave me some hints 
 
 As for Schelling, his objective, was to murder me... BUT- because he didn't know what I LOOKED like, AND, too 
 much time had gone by for him to make the correlation between the event near Key Bank, and the event at Zappone... 
-he wasn't able to readily identify me at all. And therefore, the entire team was blindsided on ‘accident' again.
+he wasn't able to readily identify me at all. And therefore, the entire team was blindsided on 'accident' again.
 
-Uh-oh. There I go again... fuckin', ‘accidentally' fucking up every bad guys day/life...
+Uh-oh. There I go again... fuckin', 'accidentally' fucking up every bad guys day/life...
 
 Scott Schelling referenced something that I said into my device that wasn't recording anything. That's how I know
 these fucks were tracking me and trying to kill me. I can't say that THEY ALL do this... But he is one of the 
@@ -12823,7 +12830,7 @@ _____________________________________________________________________
 Nah, I wasn't involved in a disturbance at Key Bank. The closest thing I can think of...
 - nearly being struck near (Key Bank/146+9) AFTER leaving the Lowes parking lot @ ~ (05/26/20 0100)
 - running at vehicles near (Key Bank/146+9)trying to get someone to call 911 since my (2) attempts failed
-- stating into my phone near (Key Bank/146+9) ‘you idiots didn't know I had a second cell phone/mac address'
+- stating into my phone near (Key Bank/146+9) 'you idiots didn't know I had a second cell phone/mac address'
 _________________________________________________________________________________________
 | (1) CRIMINAL OFFENSE | ATTEMPTED VEHICULAR MANSLAUGHTER IN THE FIRST DEGREE | FELONY  |
 | (2) CRIMINAL OFFENSE | ATTEMPTED MURDER                 IN THE FIRST DEGREE | FELONY  |
@@ -12948,7 +12955,7 @@ ________________________________________________________________________________
 | US-9 across from Matchless Stove & Chimney. [0004]: Pole where mailbox for 1774 SHOULD be, but isn't.       |
 | Ya know? Could very well be the case, that someone's throat got sliced open.                                |
 | Then, after that person was killed, they said "Make yourself at home", so, they just started chillin' out   | 
-| here. Could be wrong about that, but maybe not. People don't typically say ‘make yourself at home' AFTER    |
+| here. Could be wrong about that, but maybe not. People don't typically say 'make yourself at home' AFTER    |
 | they've been killed... Anyway, this is the exact place where I would LATER move the folding Sandwich board  | 
 | sign from the embroidery shop, cause I was more than suspecting that Karel was doing some shit he shouldn't | 
 | be doing.                                                                                                   |
@@ -13277,7 +13284,7 @@ I told Leavey that I was looking for patterns. I didn't think to tell him that I
 felt like there might be information on it that MIGHT be related to the attack SOMEHOW. Either the attack
 against (ME), or the attack against my (FATHER), or even (BOTH). While I was up in those woods, I was making
 recordings talking about John Pickett, and bangin' his wife the whole time. I really didn't have any intent
-to find this woman, and charm my way into her pants, so she could have a legitimate orgasm... NEVER MET THE ‘
+to find this woman, and charm my way into her pants, so she could have a legitimate orgasm... NEVER MET THE '
 LADY. I was just saying it to piss this dude off cause I think he was involved in this shit happening to me. 
 
 Not Daniel, the guy that lived on Cemetery Road, like less than a mile from my house. John. Different guy.
@@ -13961,8 +13968,8 @@ Multiple objects need to exist within reality, in order for TIME or SPACE to hav
 
 Here is the "Ghost Car" stuff again.
 ___________________________________________________________________________________________________________
-| 0001 | IMG_0552 | ‎05/‎24/‎20 ‏‎2159 | 3 | https://drive.google.com/file/d/1zNC_LckOws3yXsJThY4ZrdW1o1jgBmJX |
-| 0002 | IMG_0553 | ‎05/‎24/‎20 ‏‎2159 | 3 | https://drive.google.com/file/d/1OYLrWTKvkISFaCMENCpXh7TBqQ5HqTae |
+| 0001 | IMG_0552 | 05/24/20 2159 | 3 | https://drive.google.com/file/d/1zNC_LckOws3yXsJThY4ZrdW1o1jgBmJX |
+| 0002 | IMG_0553 | 05/24/20 2159 | 3 | https://drive.google.com/file/d/1OYLrWTKvkISFaCMENCpXh7TBqQ5HqTae |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
 | [0001]: Ghost Sedan/No plate - The scariest, most terrifying thing I have ever fuckin caught on camera. |
 |     ____________________________________________________________________________________________        |
@@ -14667,8 +14674,8 @@ NSA Girl : Dude, I work at the NSA.
            What do you think I mean...?
 Me       : ...both?
 NSA Girl : Nah, you asked me why a civilian isn't allowed to compliment us that much...
-           Then I told you ‘classified'
-           ...now you're like flirting with me, trying to use ‘security clearance' as innuendo.
+           Then I told you 'classified'
+           ...now you're like flirting with me, trying to use 'security clearance' as innuendo.
            Do you know how many times people try that shit, bro...?
 Me       : A lot...?
 NSA Girl : Yeah.
@@ -14781,7 +14788,7 @@ A WAY less cool version of the Sopranos, except, at the county, state, or even f
 
 Typically when RYAN WARD might be FUCKING with a cousin of his, he's gonna take a lot of pride in the fact 
 that I'm just his annoying cousin who's dad was murdered in 1995, so he ASSUMED that I'd never actually 
-notice or detect the ‘feeling' that he was behind all of that... but he had a lot of help.
+notice or detect the 'feeling' that he was behind all of that... but he had a lot of help.
 
 What I just said should confuse people immeasurably. Why would he take PRIDE in doing these things...?
 It is simply because he WANTED to get CAUGHT and he was ROOTING for me, because... 
@@ -15171,7 +15178,7 @@ I don't know if this guy knows this or not... but this guy may have lived up the
            Michael Zurlo is one of those people, I am absolutely certain of it.
            Allowing the FRAUDULENT ACTIVITIES to go unimpeded, means that taxpayers are wasting their money.
            Because I'll tell ya, taxpayers will stop paying their taxes if this shit is caught, and Zurlo doesn't DO
-           anything about it except "Accept a report, tell those people ‘alright got it.' and then throw that report
+           anything about it except "Accept a report, tell those people 'alright got it.' and then throw that report
            in the trash." (← What ZURLO is DOING)
            Taxpayers may as well just light another `$1T on fire.
     Brown: Exactly. 
@@ -15205,7 +15212,7 @@ I don't know if this guy knows this or not... but this guy may have lived up the
            Then, that means it's not crazy at all. 
            YOU are.
     Brown: Duly noted.
-    Me   : Yeah, but the reason why I think that is because of the multiple recordings of this ‘device', 
+    Me   : Yeah, but the reason why I think that is because of the multiple recordings of this 'device', 
            which I attempted to share with the soldiers at Stratton Air National Guard.
     Brown: So, even if the CIA did send something like that, why would they send one after YOU...?
     Me   : I don't really know, isn't that YOUR job...? 
@@ -15528,7 +15535,7 @@ I don't know if this guy knows this or not... but this guy may have lived up the
            But, the farther apart you can spread your ass cheeks, the faster you'll get to the top.
            It's more than just lifestyle... it's their way of life.
     Brown: Wow.
-           So maybe they just can't HELP lunging at you, and punching you in the face on ‘accident'...
+           So maybe they just can't HELP lunging at you, and punching you in the face on 'accident'...
            ...after running your mouth like that...?
            ...cause they do that too...?
     Me   : Exactly.
@@ -15673,7 +15680,7 @@ I don't know if this guy knows this or not... but this guy may have lived up the
            These people can LITERALLY piss all over the Constitution, and the American flag.
            But, any citizen who tries to do that TOO, will be told "THATS NOT PATRIOTIC, YA FUCKIN' DOUCHBAG~!"
            And, if they do this in front of the SAME NUMBER OF PEOPLE, they're gettin' hauled off to jail.
-           So, the term ‘American Democracy' is just a meaningless phrase that carries no weight.
+           So, the term 'American Democracy' is just a meaningless phrase that carries no weight.
            Now, imagine if JAMES COMEY's job, was to IGNORE ALL CRIMINAL INVESTIGATIONS into ANYBODY in the 
            GOVERNMENT. So like, a FORMER PRESIDENT GEORGE W. BUSH, or whatever.
     Brown: Ehhh... 
@@ -15941,7 +15948,7 @@ I don't know if this guy knows this or not... but this guy may have lived up the
            Or, trying to hurt you...?
     Me   : Hm.
            Honestly, I just ASSUME that they're cock smokers.
-    Brown: *chuckles* Lol, ‘cock smokers'...?
+    Brown: *chuckles* Lol, 'cock smokers'...?
     Me   : Yeah.
            It's like, the English, suckin' on some fags, which is a nickname for cigarettes.
            And, they smoke an entire pack of fags.
@@ -15967,7 +15974,7 @@ I don't know if this guy knows this or not... but this guy may have lived up the
            ...from an NFRASTRUCTURE EMPLOYEE THAT SOLD IT TO US...
            ...and then I FLASHED THE FIRMWARE FROM LIGHTWEIGHT CONTROL ACCESS MODE...
            ...TO STANDALONE ACCESS MODE...
-           ...then I used the ‘WEB INTERFACE', to configure the fucking thing SOMETIME IN 2018... 
+           ...then I used the 'WEB INTERFACE', to configure the fucking thing SOMETIME IN 2018... 
            And, since NO ONE ELSE WHO WORKS AT COMPUTER ANSWERS KNOWS HOW TO DO THAT...?
            ...they NEVER CHANGED THE CONFIGURATION...
            ...the EMPLOYEES AT COMPUTER ANSWERS...
@@ -16049,12 +16056,12 @@ I don't know if this guy knows this or not... but this guy may have lived up the
            Pretty sure they'll care WHEN it happens to them...?
            But until then...?
            They won't.
-           They think "MONEY MAKES THE WORLD GO ‘ROUND"
+           They think "MONEY MAKES THE WORLD GO 'ROUND"
            Nah, it actually doesn't.
            Morons think that.
            Scientists, teachers, engineers, and physicists...?
-           They know that GRAVITY makes the world go ‘round.
-           Anyway, I TOLD my stepfather (who thinks MONEY MAKES THE WORLD GO ‘ROUND)...
+           They know that GRAVITY makes the world go 'round.
+           Anyway, I TOLD my stepfather (who thinks MONEY MAKES THE WORLD GO 'ROUND)...
            ...about this BLUE TRUCK that was STALKING ME...
            He stood there and pretended like he CARED alright, but then he said "Why would someone want to hurt YOU?"
            I told him, it's because of my work.
@@ -16457,7 +16464,7 @@ I don't know if this guy knows this or not... but this guy may have lived up the
            So then, ERIC CATRICALA had to roll up his sleeves and say...
            Eric : Sometimes, when you want something done, you gotta do it yourself...
            ...then, he too, will ALSO fuck up that job.
-           It perplexes this dude how many times I've ‘accidentally' slipped right by.
+           It perplexes this dude how many times I've 'accidentally' slipped right by.
     Brown: So, you think he had something to do with these guys trying to kill ya...?
     Me   : Well, I don't know for sure. 
            I mean, I did accidentally take a picture of the Boomer McCloud Plaza IMMEDIATELY before I started
@@ -17722,7 +17729,7 @@ EXCEPTIONS where things I observed made no fucking sense, at all.
 If I sign up for a FACEBOOK account, does that give Mark Zuckerberg the right to own any 
 pictures I upload to the platform...? 
 
-Well, apparently it does. (← DOESN'T MAKE MUCH SENSE, IF AMERICA IS ‘FREE')
+Well, apparently it does. (← DOESN'T MAKE MUCH SENSE, IF AMERICA IS 'FREE')
 What is ALSO not so forthright, is that FACEBOOK is NOT a public forum.
 
 Users do NOT have the right to post whatever they feel like, as EVERYTHING is graded. 
@@ -17755,7 +17762,7 @@ Oh. So, some of them can just hear what EVERYBODY has to say and go:
 
  /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 	    
-Master : OooOooOhHh, I had ‘your idea' a REAL long time ago, bub.
+Master : OooOooOhHh, I had 'your idea' a REAL long time ago, bub.
          You belong to me.
          Now, shut the fuck up, and get your ass back to work.
 
@@ -17864,7 +17871,7 @@ Person1 : Yeah.
           Bill Maher, talkshow host/informed citizen, reports newsworthy stories/p.c. opinions
           George Carlin, deceased famous comedian, still educated people using comedy
           Stephen Colbert, comedian, reports newsworthy opinions/stories
-          Louis ‘awesome SOB' C.K., comedian, educated people using comedy, swears a lot
+          Louis 'awesome SOB' C.K., comedian, educated people using comedy, swears a lot
           Rachel Ray, really top notch chef, has her own show
           Hillary Clinton, former first lady, senator, still more credible than the 2 below
           George W. Bush, former president of the United States, possibly committed treason on 9/11/2001
@@ -17888,7 +17895,7 @@ Then... there's an actual fuckin' cooking show host.
 I could have probably added some cartoon characters in there SOMEWHERE...
 
 Then, idk man. 
-But, that is what I call the ‘Order of Credibility'
+But, that is what I call the 'Order of Credibility'
 
 Many of those people are basically tied, by the way.
 Obama, is on that list, because he's a fuckin' badass. 
@@ -18301,7 +18308,7 @@ That's when the magic happens. Google's software engineering "place" switches fr
 to 3rd place material again.
 
 That's Bill Gate's legacy right there... 
-The company is still very active, throws elbows ‘n shit...
+The company is still very active, throws elbows 'n shit...
 ...has a motto "No nonsense allowed".
 
 Satya Nadella runs the show now. Doin' a great job.
@@ -18617,7 +18624,7 @@ Suggesting descriptive parallels or analogies, is a constructive form of disrupt
  
 $Book.AddSection(6,"Disruption",@"
 I realize Warren worked his ass off and was considerate of other people's feelings, and didn't like 
-the idea of being ‘disruptive' so be played the safe game. So did Bill Gates.
+the idea of being 'disruptive' so be played the safe game. So did Bill Gates.
 Mr. Gates wasn't ALWAYS playing the safe game, however. 
 The safe game, is where you don't do anything to upset ANYBODY.
 So your opinion is never fully stated out loud, therefore, you won't know if an idea of yours 
@@ -18678,7 +18685,7 @@ Someone had a better idea. Fucked him up too.
 Elon's success is representative of that.
 I'm not making a literal comparison there either, but it is a good analogy. 
 
-When people try to tell me ‘if you were so smart, you'd be rich by now', there are other factors 
+When people try to tell me 'if you were so smart, you'd be rich by now', there are other factors 
 to consider. So like, morons will think intelligence is why people get rich, but what happened to 
 Aaron Swartz? Aaron Swartz was more involved in programming and was smarter than Mark Zuckerberg...
 Mark might even AGREE with me on that, too.
@@ -18700,8 +18707,8 @@ of PURPOSE. All of those guys were intelligent too, but that doesn't resolve a s
 Because, other factors that aren't based around intelligence would include:
     (1) being considerate of the popular kids or the conventional ideas (oil/car companies)
     (2) being respectable and caring about other people's feelings 
-    (3) knowing the ‘right' people
-    (4) having the ‘right' opportunities
+    (3) knowing the 'right' people
+    (4) having the 'right' opportunities
 
 Ask any rich bastard out there, "Did you become rich because of your intelligence...?"
 An honest one will say "Well, there were other factors."
@@ -20039,7 +20046,7 @@ Reprogramming society is gonna take some really tough words, otherwise, events l
 Buffalo, NY or Uvalde, TX, 
 ...MANY MORE OF THOSE EVENTS ARE BOUND TO HAPPEN.
 
-The thing about the ‘fear of being executed', is that it's supposed to cause some people to stop being a 
+The thing about the 'fear of being executed', is that it's supposed to cause some people to stop being a 
 fucking demonic fuckface, right...? But- they get comfortable when they have so much money and control, that 
 they can throw a literal stack of cash at someone, to get that person to shut the fuck up.
 
@@ -20241,7 +20248,7 @@ Yeah. That's why it's important to be able to tell someone, RUPERT MURDOCK is ju
 Anyone with enough money can throw some money at somebody, they'll fuckin feel it. Why? 
 Cause the dude has so much money that he likes to spend some just to fuck with people.
 
-When I say ‘fuck with people', what I mean is, this dude has successfully convinced so many people, that 
+When I say 'fuck with people', what I mean is, this dude has successfully convinced so many people, that 
 TUCKER CARLSON and Sean Hannity get paid over `$100M per year, cause they're intelligent, or because they have 
 the best ratings on the network.
 Well... Think again. 
@@ -20279,7 +20286,7 @@ They show up, they say shit, it doesn't need to be accurate, that means he's COO
 
 Weird right...? 
 A guy like Ted Cruz (senator from Texas), isn't even gay, but for a cool `$500M from Exxon Mobil...?
-...he will ‘go through the motions'.
+...he will 'go through the motions'.
 
 There are plenty of other people just like Ted Cruz, that I haven't even mentioned, but they don't
 take it even REMOTELY as far as Ted god damn Cruz does.
@@ -20561,8 +20568,8 @@ $Book.AddSection(7,"Familiar with the Technology (1)",@"
 I'm Very Familiar With The Technology
 Used to be, that there were fleets of vehicles and dudes/dudettes that drove around, using radios to find trouble, 
 and then…? Telling the trouble they found, that there would be additional trouble for them… if they didn't freeze, 
-put their hands in the air, maybe they even threw in the occasional ‘wave em around like you just don't care'… just 
-to be an extra amount of ‘prick'.
+put their hands in the air, maybe they even threw in the occasional 'wave em around like you just don't care'… just 
+to be an extra amount of 'prick'.
 I would do that. Anyone reading this, knows that I would. 
 Guy tryin' to flush stacks of cash down the toilet…? 
 
@@ -20621,7 +20628,7 @@ Me       : Nah man...
 Somebody : Yeah, well... fuck you ANYWAY, bro.
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
-At any rate, I've noticed that every time the police come to ‘offer help'…?
+At any rate, I've noticed that every time the police come to 'offer help'…?
 There's always some type of [sanity check*] involved.
 
 Which, I understand, because you wanna make sure that if someone says "drones disguised as birds", that it's a 
@@ -21184,7 +21191,7 @@ But, this will only be a reality for people after me and many others that like t
 killer police officer who ALSO, thinks that it would be a good idea to have these things… BUT- works a lot harder 
 to prevent them from becoming a reality (such as TROOPER RUFFAS), than they do about SUPPORTING the ideas where 
 they use more brain power and become slightly less useless (like TROOPER RUFFAS).
-It isn't a blanket ‘fuck you' to all cops… just the ones like TROOPER RUFFAS.
+It isn't a blanket 'fuck you' to all cops… just the ones like TROOPER RUFFAS.
 I'm just saying, it would be nice if cops didn't have to DRIVE their own VEHICLE, nor SPEND MONEY ON GAS, 
 nor lie about not knowing how to charge a phone to pull pictures or video from… because, as if their job wasn't
 already fucking easy enough...? It would be a standard thing that the academy would teach all recruits.
@@ -21450,7 +21457,7 @@ ______________
  Realistically, if NYSEG and T-Mobile get free power… who's generating the most profit there?
  The answer is, both companies are ripping everyone off.
  Not even remotely kidding.
- I try to curtail the talk about eliminating the concept of ‘money'... because… it is easy for these dickheads to 
+ I try to curtail the talk about eliminating the concept of 'money'... because… it is easy for these dickheads to 
  just forget to turn the meter on, because… they aren't paying each other anything at all… are they.
 
  The problem with transmission of power over power lines, is that power gets dissipated by about 80% over the     
@@ -21459,7 +21466,7 @@ ______________
  However, batteries and solar panels could reduce the carbon footprint quite immensely… as well as eliminate the
  need for people to be dependent on an energy grid where the GRID ITSELF uses 80% of the fucking power.
  Combine that with LoS technologies for fiber optics, and you could have an infrastructure that works cohesively, 
- in order to combat wasted heat or energy. An example of where they use other techniques of ‘biodiversity' to help 
+ in order to combat wasted heat or energy. An example of where they use other techniques of 'biodiversity' to help 
  condition the surrounding air/combat wasted heat/energy, is in Germany… where they use these natural habitats that
  exist on rooftops, that have plants/greenhouse moisture which helps to reduce dependence on air conditioning.
 
@@ -21487,7 +21494,7 @@ Perhaps you want to come right out of the gate, and explain the final end goal o
 NOW familiar with the technology…
 People have to ask "Don't we have that already…?"
 The answer is, yeah, but they think I'm nuts…
-Prior to the last 18 months, never saw myself as a ‘genius'…
+Prior to the last 18 months, never saw myself as a 'genius'…
 However, starting to think that maybe I have been all this time, and didn't know it
 Because... I couldn't possibly be correct about all of the things I've said… unless I am… right? (← FALLACY)
 So… if there IS a way that I could possibly be correct about all of the things I've said… and then people that 
@@ -21730,7 +21737,7 @@ a REMOTE ACCESS TROJAN on a network that's SUPPOSED to be SECURE for PATIENT CON
 Things like that. 
 
 (So, Eaglesoft and Patterson can blow me… *recant*) they should have an SQL syste...
-...not a whole ‘put documents in folders that anyone can publicly access…' (They had nothing to do with the WAY
+...not a whole 'put documents in folders that anyone can publicly access…' (They had nothing to do with the WAY
 their system was set up or inadequately prepared by a system engineer)
 
 Maybe they didn't realize how insecure it is, for 10 of the computers in the building to each have the username
@@ -22454,7 +22461,7 @@ Totally fucking serious about that, there may in fact be, ULTERIOR MOTIVES for t
 "@)
  
 $Book.AddSection(8,"Bigger Picture",@"
-Situations where former senator Hillary Rodham ‘Who gives a shit...?' Clinton managed to get herself arrested, 
+Situations where former senator Hillary Rodham 'Who gives a shit...?' Clinton managed to get herself arrested, 
 and prosecuted and then imprisoned by the Federal Bureau of Investigation, like she SHOULD'VE been back in 
 July 2016... well, that didn't happen at all. 
 But- a REVERSAL OF LOGIC needs to happen a lot more often, so she wound up being in prison for...
@@ -22832,12 +22839,12 @@ ________________________________________________________________
 | 2001-2008 | Commanding Officer | 1st Battalion, 6th Marines  |
 | 22nd Marine Expeditionary Unit |          Iraq & Afghanistan |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-- Led forces in ‘War on Terror' in (Iraq/Afghanistan) between 2001-2008
+- Led forces in 'War on Terror' in (Iraq/Afghanistan) between 2001-2008
 - Promoted to:
   Colonel             (10/08/01)
   Brigadier General   (07/01/07)
   Major General       (03/05/11)
-- Has (first/third) hand experience with ‘Collateral Murder'
+- Has (first/third) hand experience with 'Collateral Murder'
 
 Why...? Cause they were really there for the poppy production. 
 
@@ -22866,7 +22873,7 @@ that their leader sent so many of them to die, and they all died believing this 
 
 But, that is the sick fucking game that these people play. 
 Noble soldiers that served in the war- they'll read all of this, and some of them will get so fucking upset 
-with me for making these ‘baseless' accusations in their eyes, right...? 
+with me for making these 'baseless' accusations in their eyes, right...? 
 
 But then they should watch "Collateral Murder", and then consider that they may have thousands more of these
 classified files that they never knew existed.
@@ -23878,7 +23885,7 @@ really sure why I give this lady a hard time to be fair. She deserves plenty of 
 pretty pissed about JULIEN ASSANGE's situation. 
 
 She is, without a doubt a lot more intelligent than my own mother... because ya know, my mother isn't even 
-TRYING to get me killed, but she's almost done so ‘accidentally' my entire life. My mother didn't realize 
+TRYING to get me killed, but she's almost done so 'accidentally' my entire life. My mother didn't realize 
 that my father knew he was being hunted in October 1995, so, my mother fails to accept this, but... she has 
 LITERALLY already gotten my father killed. There's no use in even talking to her about it. She is so far in
 denial that it is a lost cause to talk to her about WHAT I REMEMBER my father and mother arguing about when I 
@@ -24825,7 +24832,7 @@ Apple iPhone 8+.
 "@)
  
 $Book.AddSection(8,"Review [~] The Week",@"
-As mentioned in chapter "The ‘Week'", I walked to (SANG/Stratton Air National Guard) on 05/22/20. 
+As mentioned in chapter "The 'Week'", I walked to (SANG/Stratton Air National Guard) on 05/22/20. 
 I walked there because I had a feeling that someone was trying to kill me, earlier that day. 
 They actually told me the equivalent of "Fuck you dude, we don't care." and then they called the police,
 so that they would really teach me a lesson for going to a MILITARY BASE, to tell them that SOMEONE WAS 
@@ -24840,7 +24847,7 @@ Glad that you guys are doing such an AMAZING JOB protecting citizens.
 
 Guard 1 : Call the police.
 Me      : Sure, cause if someone is using drones to conduct military operations against YOUR FELLOW citizens...
-          ...then the police will say ‘Go to a military base. Fuck off now.'...
+          ...then the police will say 'Go to a military base. Fuck off now.'...
           ...wicked helpful suggestion, pal.
 Guard 1 : Call the FBI, then... I don't know.
 Me      : Yeah, I have done that a few times too.
@@ -24873,7 +24880,7 @@ About an hour and a half later, I recorded (2) additional instances of this "dro
 Anyone listening to the recordings will be able to discern no bird on earth sounds like what I recorded.
 - It is an extremely advanced drone. 
   SO advanced, that no one country is in ANY position to validate its existence.
-- It is alien based. I say ‘alien based' because they have been showing up in the news quite often. 
+- It is alien based. I say 'alien based' because they have been showing up in the news quite often. 
   "The thing is moving 20 knots to the west.", "It is moving against the wind" -US Navy/2019
   https://youtu.be/ZBtMbBPzqHY (← Aliens | Maybe not, though)
 
@@ -24886,7 +24893,7 @@ This thing saved my life on May 26th, 2020.
 What if I could join forces with this drone, and just, mess up every bad guy's day...?
 Sucks, that I don't know who would've made something so cool, and unique.
 
-It seemed like it might've been malicious AT FIRST, when I ran into it on May 21st-22nd 2020 (see The ‘Week')
+It seemed like it might've been malicious AT FIRST, when I ran into it on May 21st-22nd 2020 (see The 'Week')
 However, it's probably possible that it's just like any other tool... it can be dangerous or helpful.
 It allowed me to understand: 
 - (2) 25-30 year old, EXTREMELY GAY LOOKING BROTHERS white males wearing glasses, hats, backpacks
@@ -25024,7 +25031,7 @@ Not one time has it ever happened, so, maybe in the year 3302, they'll find out:
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 3302 : Oh, Michael C. Cook born in 1985.
-3302 : Recorded this fuckin' ‘bird' and spent the rest of his life...
+3302 : Recorded this fuckin' 'bird' and spent the rest of his life...
        ...trying to get someone else to listen to the recording. 
        It appears as if this dude made first contact with alien life forms.
 
@@ -25399,7 +25406,7 @@ Even IF THE POLICE WITNESS THIS PARTICULAR RICH BRAT THAT I KEEP CALLING OUT...
 
 Those men/women of law enforcement that swore an oath to serve and protect people...?
 They will actually pretend that they didn't see that shit...
-Wow. That happens to be ‘How America currently works'. (← Do I really believe this? No. I KNOW this.)
+Wow. That happens to be 'How America currently works'. (← Do I really believe this? No. I KNOW this.)
         
 Am I exaggerating here...? 
 Or, will the police actually ignore this rich brat murdering people in cold blood...?
@@ -25649,7 +25656,7 @@ The movie starts off with a scene where tons of cop cars are literally surroundi
 Arnold Shwarzenegger shows up as Jack fuckin' god damn Slater... Walking on the tops of a bunch of cop cars,
 where all the cops are being big pussies cause Jack the Ripper has the kids up on the roof.
 
-Jack tells the chief and the Lieutenant Governor, to ‘suck a fuckin' dick, bro...' he's goin' in...
+Jack tells the chief and the Lieutenant Governor, to 'suck a fuckin' dick, bro...' he's goin' in...
 Good Jack (Slater) faces off against Evil Jack (the Ripper), and tells him to let the kid go.
 Evil Jack starts laughing maniacally, and tells him, somethin' a fuckin crazy bastard would say...
 ...then Good Jack tosses a grenade at the kids feet...
@@ -25798,7 +25805,7 @@ Jack  : No, you don't understand...
         ...or any of the training that I spent YEARS accumulating at the academy...
         ...and without a single SHRED OF PROOF, TESTIMONY, or EVIDENCE...?
         ...you just POINT YOUR FINGER...
-        ...and say ‘THE BAD GUYS ARE IN THERE'!?!
+        ...and say 'THE BAD GUYS ARE IN THERE'!?!
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
@@ -25806,7 +25813,7 @@ Because this is exactly how Sara DeRusso from the New York State Troopers in TRO
 by making an UNLAWFUL AND UNCONSTITUTIONAL ARREST... literally acted JUST LIKE DANNY MADDIGAN DID, in this scene.
 
 Jack decides to go knock on the door, and realizes that there actually is something SHADY about the dude with the
-glass eye. Jack realizes "Alright, the fuck face that I just said ‘How are you going to snap your fingers, if I rip 
+glass eye. Jack realizes "Alright, the fuck face that I just said 'How are you going to snap your fingers, if I rip 
 off both of your (fuckin') thumbs...?'", is suspiciously wearing a glass eye that Danny pointed out. So, it's on.
 
 Anyway, Jack Slater is later approached by agent Practice, basically the same thing as Robert Messines.
@@ -25867,7 +25874,7 @@ Jack  : HEY...
 Some time passes, then suddenly, the glass-eyed fuckbag causes Jack the Ripper to come back from the movie world.
 Jack the Ripper tries to kill the REAL Arnold Shwarzenegger at the premiere of Jack Slater IV who's in the balcony.
 Jack Slater saves his life by trying to get this fuckin douchebag Jack the Ripper... and when people try to arrest 
-Jack, they realize it's Arnold fuckin' Shwarzegger HIMSELF, and they're like ‘OH WE'RE SO TERRIBLY SORRY, WE 
+Jack, they realize it's Arnold fuckin' Shwarzegger HIMSELF, and they're like 'OH WE'RE SO TERRIBLY SORRY, WE 
 THOUGHT YOU WERE A LUNATIC FOR SOME REASON', but then he's like "NAH, NOT A LUNATIC, THAT OTHER GUY IS, GOTTA GO."
 
 Then, they face off on the fuckin balcony of the building, cause Jack kicks the fuckin door down, and knows that
@@ -25969,7 +25976,7 @@ The movie starts off with a scene where tons of cop cars are literally surroundi
 Arnold Shwarzenegger shows up as Jack fuckin' god damn Slater... Walking on the tops of a bunch of cop cars,
 where all the cops are being big pussies cause Jack the Ripper has the kids up on the roof.
 
-Jack tells the chief and the Lieutenant Governor, to ‘suck a fuckin' dick, bro...' he's goin' in...
+Jack tells the chief and the Lieutenant Governor, to 'suck a fuckin' dick, bro...' he's goin' in...
 Good Jack (Slater) faces off against Evil Jack (the Ripper), and tells him to let the kid go.
 Evil Jack starts laughing maniacally, and tells him, somethin' a fuckin crazy bastard would say...
 ...then Good Jack tosses a grenade at the kids feet...
@@ -26118,7 +26125,7 @@ Jack  : No, you don't understand...
         ...or any of the training that I spent YEARS accumulating at the academy...
         ...and without a single SHRED OF PROOF, TESTIMONY, or EVIDENCE...?
         ...you just POINT YOUR FINGER...
-        ...and say ‘THE BAD GUYS ARE IN THERE'!?!
+        ...and say 'THE BAD GUYS ARE IN THERE'!?!
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
@@ -26126,7 +26133,7 @@ Because this is exactly how Sara DeRusso from the New York State Troopers in TRO
 by making an UNLAWFUL AND UNCONSTITUTIONAL ARREST... literally acted JUST LIKE DANNY MADDIGAN DID, in this scene.
 
 Jack decides to go knock on the door, and realizes that there actually is something SHADY about the dude with the
-glass eye. Jack realizes "Alright, the fuck face that I just said ‘How are you going to snap your fingers, if I rip 
+glass eye. Jack realizes "Alright, the fuck face that I just said 'How are you going to snap your fingers, if I rip 
 off both of your (fuckin') thumbs...?'", is suspiciously wearing a glass eye that Danny pointed out. So, it's on.
 
 Anyway, Jack Slater is later approached by agent Practice, basically the same thing as Robert Messines.
@@ -26187,7 +26194,7 @@ Jack  : HEY...
 Some time passes, then suddenly, the glass-eyed fuckbag causes Jack the Ripper to come back from the movie world.
 Jack the Ripper tries to kill the REAL Arnold Shwarzenegger at the premiere of Jack Slater IV who's in the balcony.
 Jack Slater saves his life by trying to get this fuckin douchebag Jack the Ripper... and when people try to arrest 
-Jack, they realize it's Arnold fuckin' Shwarzegger HIMSELF, and they're like ‘OH WE'RE SO TERRIBLY SORRY, WE 
+Jack, they realize it's Arnold fuckin' Shwarzegger HIMSELF, and they're like 'OH WE'RE SO TERRIBLY SORRY, WE 
 THOUGHT YOU WERE A LUNATIC FOR SOME REASON', but then he's like "NAH, NOT A LUNATIC, THAT OTHER GUY IS, GOTTA GO."
 
 Then, they face off on the fuckin balcony of the building, cause Jack kicks the fuckin door down, and knows that
@@ -26688,7 +26695,7 @@ Then everybody will join in, and start tellin' me:
 
 Someone : Listen here, ya fuck...~! 
           *points at Dan* That dude said you're not even allowed to LOOK at us...?
-          Or even TALK to us, or even SAY ‘hello'... 
+          Or even TALK to us, or even SAY 'hello'... 
           So, *shakin' head* I don't know what the hell you think you're doin' buddy...?
           But, you need to knock it off, bub...
 Me      : Look buddy, my cool factor is too high to even be written correctly.
@@ -27547,7 +27554,7 @@ One side...? A bunch of unruly cunts who are treated exactly like royalty, who h
 balls. No conscious either, just... a lot of estrogen every single day, it clouds their judgement. They ALSO 
 shove wicked big dildos up their ass all day - except, that's not a crime, totally legal. When you force people 
 to erase their conscious, you wind up being like Sean Hannity, who has to brush his teeth with RUPERT MURDOCK's 
-hairy nutsack. That's not a crime either, but sooner or later he'll have too many ‘jizz-on-the-chin' situations, 
+hairy nutsack. That's not a crime either, but sooner or later he'll have too many 'jizz-on-the-chin' situations, 
 people will start to catch on.
       
 On the other...? Guys like Edward Snowden, JULIEN ASSANGE... and then, me. Why do these guys pop up so often...? 
@@ -27685,7 +27692,7 @@ they will write a letter to their god damn congressman, saying this, that and th
 realize that sending letters to congressmen is also a waste of time. 
 
 Why...? Cause. They're just as helpless as the rest of us. Not saying that they don't try, but someone 
-‘swapped out' the entire government, and now it's all for show. Hidden government behind the scenes, giving 
+'swapped out' the entire government, and now it's all for show. Hidden government behind the scenes, giving 
 everybody a middle finger every day. Looks like a real government, acts like one too... but how come the `$30T 
 keeps going up, and none of it is getting paid...? Well, it's because the feds are really good at tricking people. 
 They are so good at it that they can even trick themselves too.
@@ -27848,7 +27855,7 @@ Here's a look at General McKenzie's (resume/history)... it's worth noting that h
 Expendables movie with Sylvester Stallone. 
 "@)
  
-$Book.AddSection(8,"Excerpt [~] General Kenneth F. ‘top-shelf commander' McKenzie Jr.",@"
+$Book.AddSection(8,"Excerpt [~] General Kenneth F. 'top-shelf commander' McKenzie Jr.",@"
 Kenneth F. McKenzie Jr. | Birmingham, AL | USMC (top-shelf) General [Retired]
 _______________________________________________________________
 | 1979 : Naval Reserve Officers Training Corps at The Citadel |
@@ -27867,12 +27874,12 @@ ________________________________________________________________
 | 2001-2008 | Commanding Officer | 1st Battalion, 6th Marines  |
 | 22nd Marine Expeditionary Unit |          Iraq & Afghanistan |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-- Led forces in ‘War on Terror' in (Iraq/Afghanistan) between 2001-2008
+- Led forces in 'War on Terror' in (Iraq/Afghanistan) between 2001-2008
 - Promoted to:
   Colonel             (10/08/01)
   Brigadier General   (07/01/07)
   Major General       (03/05/11)
-- Has (first/third) hand experience with ‘Collateral Murder'
+- Has (first/third) hand experience with 'Collateral Murder'
 ________________________________________________________________
 | 2008 | Military Secretary | National Military Command Center |
 | Deputy Director of Operations |   Pentagon, Washington, D.C. |
@@ -28301,7 +28308,7 @@ so many of the things he highlighted... could very well be charged with crimes..
 GWB and Michael Hayden, among others. That is of course, IF everybody collectively gives a flying fuck.
 "@)
  
-$Book.AddSection(8,"Excerpt [~] Communist outpost in the heart of a ‘democracy'",@"
+$Book.AddSection(8,"Excerpt [~] Communist outpost in the heart of a 'democracy'",@"
 The problem is, I think that the part of America that USED to have integrity, died on September 11, 2001, 
 in Washington DC, and Manhattan. I am MOST POSITIVE, that BARACK OBAMA IS NOT THE GUY that I should be MAD at,
 because Edward Snowden hasn't been given a trial. 
@@ -28316,7 +28323,7 @@ GWB might say "Nah, they don't." But, he's lied before...
 Snowden was attempting to tell people that there's something SERIOUSLY fucking wrong, with the direction 
 that the country is being pulled into. Why...? George W. Bush established or extended and enhanced the 
 Department of Homeland Security, I don't know what their actual purpose is, other than to be a constant 
-fuckin' question mark. Their existence looks like a communist outpost in the heart of a ‘democracy'. 
+fuckin' question mark. Their existence looks like a communist outpost in the heart of a 'democracy'. 
 "If you SEE something, say something." 
 
 Well, ok. I'm fuckin' sayin' something over and over again, but I think some morons can't fuckin' read.
@@ -28543,7 +28550,7 @@ Girl : I mean, if a guy's gonna wind up havin' jizz on his face, that's pretty g
 Me   : Can't believe we're talking about jizz, whether it's REAL or FAKE. 
        This conversation is pretty nutty...
 Girl : *chuckles* Heh. 
-       You said ‘nutty' lol.
+       You said 'nutty' lol.
 Me   : You probably wanna-
 Girl : Suck your dick right now? 
        Absolutely.
@@ -28586,9 +28593,9 @@ Or, "Wish I could write like this guy..."
 
 But it just takes practice, and being able to discern fact from fiction.
 When the government spins fiction as fact...? 
-It makes itself liable or susceptible to the ol' ‘jizz-on-the-chin' phenomenon.
+It makes itself liable or susceptible to the ol' 'jizz-on-the-chin' phenomenon.
 And from what I've seen, they don't like it when someone calls them out in an all too effective way.
-Might even look ‘accidental'...
+Might even look 'accidental'...
 "@)
  
 $Book.AddSection(8,"Skit [~] Jeopardy! Champion, Ken Jennings",@"
@@ -28599,7 +28606,7 @@ Peter Jennings was on TV practically ALL DAY LONG on September 11, 2001.
 Giving everybody and their mother, the bad news about the twin towers.
 
 But this is about how Ken Jennings basically dominated the show "Jeopardy!" for like, *checks watch* 3 months.
-The truth is, this dude was a real smart bastard. He just kept getting the correct answers by ‘accident'.
+The truth is, this dude was a real smart bastard. He just kept getting the correct answers by 'accident'.
 Not even remotely kidding, this dude answered so many questions correctly with no possible fuckin' way that 
 he was cheating. Not at all. He also holds the record for the highest average correct responses per game in
 Jeopardy! history (for those contestants with at least 300 correct responses) with 35.9 during his original run 
@@ -28816,10 +28823,10 @@ his own "resume" and then put it right here.
 
 So, look... here's some ADDITIONAL PEOPLE, that have LIED…
 _________________________________________________________________________________________________________________  
-| William & Hillary Rodham Clinton | James ‘Chokin and strokin' Comey |  Andrew ‘Don't touch me, Grandpa' Cuomo | 
-| Matt ‘Today Show' Lauer | Bill ‘doin it live' O'Reilly | OJ ‘The Juice' Simpson | Mario Batali | Larry Nassar | 
+| William & Hillary Rodham Clinton | James 'Chokin and strokin' Comey |  Andrew 'Don't touch me, Grandpa' Cuomo | 
+| Matt 'Today Show' Lauer | Bill 'doin it live' O'Reilly | OJ 'The Juice' Simpson | Mario Batali | Larry Nassar | 
   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-(^ ALL of them lied to people while ‘resting on their laurels', because APPEARING to be credible is all that 
+(^ ALL of them lied to people while 'resting on their laurels', because APPEARING to be credible is all that 
 matters. That means they can lie about whatever they feel like, any time they want to, and even go so far as to
 KILL people, and nobody will ever know, or even care. See: https://en.wikipedia.org/wiki/Clinton_Body_Count)
 
@@ -28827,13 +28834,13 @@ Louis CK, didn't fuckin' lie. He gets paid to make people laugh their asses off,
 about masturbating in front of a couple female comedians. Oh well. They probably should've communicated the
 truth about how they felt, when he was like "Hey, you two mind if I just *pointing thumb*... crank' on my pud?"
 
-Cause hey, maybe the guy was about to release his movie ‘I Love You, Daddy'... 
+Cause hey, maybe the guy was about to release his movie 'I Love You, Daddy'... 
 So, the (2) female comedians who weren't offended enough to (file charges/make accusations) BEFOREHAND...
 Ah, they had a prime opportunity to REALLY fuck this dude over…
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
   
-Female1 : Dude's releasing a movie called ‘I Love You, Daddy'...? 
+Female1 : Dude's releasing a movie called 'I Love You, Daddy'...? 
           Nuh-uh, I don't think so.
 Female2 : Yeah, a few YEARS ago, this dude LITERALLY asked us if it was OK to start crankin' on his pud... 
           ...and when we said SURE, then he did.
@@ -28918,7 +28925,7 @@ Let him who have understanding reckon, the number of the beast…
 For it is a human number…
 Its number…? Is six hundred and sixty six." –Number of the Beast/Iron Maiden
 
-People who will literally kill innocent people and then classify a video... like ‘Collateral Murder', and 
+People who will literally kill innocent people and then classify a video... like 'Collateral Murder', and 
 that's why JULIEN ASSANGE is in prison. Maybe I'm quoting the wrong Iron Maiden song and I should've selected
 "Hallowed be thy name", which is an epic tale about INJUSTICE.
     
@@ -28940,7 +28947,7 @@ Over and over, you would think that they could get enough of this...?
 But, so long as they call ME the nut job, they're gonna be fillin' that asshole over and over.
     
 And, that's why this is America.
-People in my own family that might be calling me a ‘nut job'…? 
+People in my own family that might be calling me a 'nut job'…? 
 They probably do this too. (← Why PRINCIPLE OVER PERSONALITY > OPERATING ON YOUR ASSUMPTIONS)
 
 I can't tell certain people that the National Security Agency had many of my phone conversations tapped.
@@ -28972,7 +28979,7 @@ Or whether the twin towers were demolished by treasonists… I mean, c'mon… wh
 I'll tell ya. A lot of people fuckin' care alright, AND, Al Gore probably cares the MOST... 
 ...cause he spent like, 20 fuckin' years telling people that we're driving straight into a brick wall...
 ...in a piece of shit vehicle that Bob Lutz drew a fuckin' line through somewhere...
-...that vehicle being called ‘climate change'.
+...that vehicle being called 'climate change'.
     
 Amazingly, the adverse effect of the collapse of the towers was to tell the constitution to fuck off...
 ...and then control people with technology.
@@ -29023,7 +29030,7 @@ drug dealer, because they're literally everywhere.
     
 People having their 4th amendment rights violated, sounds like it would be a newsworthy story...
 It is. That's why they all keep it off of the media and news. Sometimes, they are allowed to run a story 
-about it. Key word being ‘allowed'.
+about it. Key word being 'allowed'.
     
 That's how these people have an argument with me "OoOoOhHh, if they enabled GPS trackers n shit, then they'd 
 be able to arrest everybody..." They won't. The reason is simply because, too many people like Trooper Borden, 
@@ -29357,7 +29364,7 @@ IC3 : *chuckles* A man named Michael T. Niehaus, from Microsoft.
 Jim : I know who that is. He's a legend. He made-
 IC3 : Business Desktop Deployment, the Microsoft Deployment Toolkit, and System Center Configuration Manager…
 Jim : So, this kid literally went right to the top brass at Microsoft and impressed the daylights out of em, huh…?
-IC3 : Heh. It's almost like this kid kept ‘accidentally' finding the most perfect way to make a name for himself… 
+IC3 : Heh. It's almost like this kid kept 'accidentally' finding the most perfect way to make a name for himself… 
       …and a fair number of people got pretty fuckin' jealous.
 Jim : This guy would make a GREAT addition to the team man… especially if he knows all the stuff you said he does.
 IC3 : Jim. 
@@ -29477,7 +29484,7 @@ For instance,
 - Why does he call himself the Eye of Sauron…?
 - Why do the employees call him that, instead of shill boy from Tanzania…?
 - Does he fuckin swing from vine to vine like Tarzan, when he feels like going full out, beast mode…?
-- Does he ever use CREATINE with his workout supplements, or is he more of a ‘shake-weight' type of dude…?
+- Does he ever use CREATINE with his workout supplements, or is he more of a 'shake-weight' type of dude…?
 - Is George W. Bush more of a shake-weight type of dude, OR, 
   does he wait to shake when he's gotta take a fuckin leak…?
 
@@ -29611,7 +29618,7 @@ to throw ESPIOPNAGE ACT of 1917 charges in my face at SOME POINT IN TIME… HOWE
 If I just CASUALLY say something like that in this DOCUMENT, and the FILE DATE happens to be like, YEARS
 BEFORE they decide to DO something that fuckin' ridiculous…?
 
-It's gonna have the whole ‘jizz-on-the-chin' aspect to it. Because, I'm just some fuckin' loser that has
+It's gonna have the whole 'jizz-on-the-chin' aspect to it. Because, I'm just some fuckin' loser that has
 a really MINOR track record when compared to mobsters, gangsters, murderers, lifetime criminals…
 …I'm just a guy that has had autism his whole life, and had his father killed as a child, who somehow had
 an inkling that he was being watched and surveilled on, by foreign intelligence.
@@ -29730,7 +29737,7 @@ I'll ask that question again, who is it they're protecting my limiting my freedo
 Well, if I can SEE a correlation to a COMMERCIAL PRODUCT, or SERVICE...
 Then a corporation is overriding my rights.
 
-What I mean is, if other people put as much thought into the ‘bigger picture', they may actually lose their mind.
+What I mean is, if other people put as much thought into the 'bigger picture', they may actually lose their mind.
 More people probably should, it's probably natural for people to experience ways to deal with the impossible.
 Like Noam Chomsky says, if people were bright at all, they'd stop filtering people that say controversial 
 stuff, and just allow them more exposure. It'd have the reverse effect if they did that, but the fact that 
@@ -29802,9 +29809,9 @@ Not saying that Jon Oliver is by any means necessary not doing plenty of that al
 I'm just sayin', read this whole damn thing all over again. Then tell me... 
     
 Exxon Mobil did more than just clobber Ted Cruz with their massive cash-penis...
-...but I'm pretty sure they had something to do with the ‘diesel fires/thermite'...
+...but I'm pretty sure they had something to do with the 'diesel fires/thermite'...
 
-In WTC 1, 2, and 7. I put ‘diesel fires' in quotes cause I really think that only a moron would ever believe 
+In WTC 1, 2, and 7. I put 'diesel fires' in quotes cause I really think that only a moron would ever believe 
 that shit. Not a genuine intelligent person, but someone that might believe anything people tell them.
 
 Lining a building full of 1) thermite and 2) explosives, because they 3) had inside knowledge from the CIA, 
@@ -30116,7 +30123,7 @@ called "royalty". As far as I can tell, America does not HAVE royalty, except it
 But hey, if their child dies from a drug overdose, because some moron sold them shit laced with fentanyl or
 whatever... They won't care until it's THEIR kid in the fuckin' coffin.
 
-I'm not even going to deposit a word like ‘aw' because I would get pissed off if I were in their shoes, 
+I'm not even going to deposit a word like 'aw' because I would get pissed off if I were in their shoes, 
 reading what I write... cause they will want to blame me somehow. Only at that point, when someone special 
 has their kid die from a drug overdose, or shot to death by some lunatic in a rampage... will these things 
 that could be resolved by compassion and understanding... actually be a serious thing. Until then, nobody 
@@ -30132,7 +30139,7 @@ invalidated, and then Richard goes to prison. Has all of his assets frozen, take
 in a jail cell like JULIEN ASSANGE. 
 
 The people at the prison will be tempted to give him a taste of his own medicine, in all likelihood.
-The people in prison don't fuck around, either. They might ‘accidentally' inject him with a lethal injection 
+The people in prison don't fuck around, either. They might 'accidentally' inject him with a lethal injection 
 before he ever makes it into a prison cell... and I think that is the real reason why he isn't there already.
 
 Because, just like Richard Sackler didn't know that the drugs he distributed were THAT addictive...?
@@ -30409,7 +30416,7 @@ Nobody really asks me how I got addicted to those drugs, anyway.
 Well, it's cause a greedy cocksucker spammed the market with Oxycontin, Hydrocodone, and Percocet, after
 the US started getting a very steady supply from Afghanistan. Not to mention, I have degenerative spine
 disease, which means that every once in a while (2) things happen... 1) a disc will SLIP, MAD PAINFUL, and 
-2) the bones in my spine constantly ‘crack', or ‘pop'.
+2) the bones in my spine constantly 'crack', or 'pop'.
 
 Now, despite the fact that I got myself off of all that shit, Eric Schakenberg...? 
 Probably forgets all of that, AND, probably thinks that Pegasus/Phantom doesn't fuckin' exist.
@@ -31074,7 +31081,7 @@ Me    : Bill, go take a Midol already, will ya...?
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 Little did I realize, that Bill was actually full of adrenaline, and he grabbed an aluminum baseball bat out 
-of ‘fear' and decided to hit the side of his trailer in ‘fear' and then RUN ONTO MY PROPERTY and charge at 
+of 'fear' and decided to hit the side of his trailer in 'fear' and then RUN ONTO MY PROPERTY and charge at 
 me, without taking a single moment to reflect on how many crimes this man was in the middle of committing~!
 This dude got pretty fuckin' close, and I was just standing there thinking:
 
@@ -31227,7 +31234,7 @@ ________________________________________________________________________________
 | 07) I was actually impressed, cause I really thought he was having a MENTAL EPISODE to say those words.      |
 | 08) I was so impressed, that I walked onto my porch, and was ABOUT to go inside and call 911, when BILL MOAK | 
 |     said something to get my attention, and then he smacked the side of HIS TRAILER, with the BASEBALL BAT   | 
-|     that he SUPPOSEDLY grabbed in ‘fear', when in reality he grabbed it in ‘frustration' because he just…    | 
+|     that he SUPPOSEDLY grabbed in 'fear', when in reality he grabbed it in 'frustration' because he just…    | 
 |     "made an explicitly stated threat to kill me from inside his house through his kitchen window to ME, as  | 
 |     I was standing ON MY FRONT LAWN…" BILL MOAK HAD NO SENSE OF FEAR AT ALL, THEY ALL LIED.                  |
 | 09) I walked down the steps because I was about to rip the baseball bat from his hands and beat him to death | 
@@ -31380,7 +31387,7 @@ Me     : Alright, well, when can I see a real doctor...?
  \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 I told him about how a couple dudes tried to kill me, and without even asking if I had proof or whatever, 
-he expedites his ‘diagnosis'. What I've come to find, is that MOST DOCTORS commit MEDICAL FRAUD. 
+he expedites his 'diagnosis'. What I've come to find, is that MOST DOCTORS commit MEDICAL FRAUD. 
 
 They don't even CARE if you catch them in the act, because they're not getting paid a lot if they know 
 that OBAMACARE/AFFORDABLE CARE ACT insurance is covering the visit. This BILL actually caused a SEVERE 
@@ -31623,8 +31630,8 @@ But it's also against the laws of physics too...
 So if you go ahead and do that...? Well, now you're REAL fucked, dude.
 
 I think that Eric Schnakenberg probably took that entire story literally. I think a lot of people were 
-SUPPOSEDLY ‘worried about my mental health' which was doing just fine, believe it or not. The people that 
-were ‘worried about my mental health' need to worry about ‘going to prison soon'.
+SUPPOSEDLY 'worried about my mental health' which was doing just fine, believe it or not. The people that 
+were 'worried about my mental health' need to worry about 'going to prison soon'.
 
 I just had a traumatic run in with a fuckin' rogue-FBI man who has a hobby that he does in his off time, 
 that just so happens to be a lot like Dexter from Showtime. I really don't know if he uses the saran wrap 
@@ -31722,7 +31729,7 @@ given system.
 
 I have no doubt that SOME people at Microsoft, Google, Facebook, Apple, etc., they leak information.
 When I say that they "leak information", what I mean is that they will say "WHOOPS, MY BAD BRO..." and then,
-‘accidentally' send somebody a list of stolen credit card numbers, or database logins/passwords, and then
+'accidentally' send somebody a list of stolen credit card numbers, or database logins/passwords, and then
 they're basically COMPLICIT with stuff that inevitably becomes SOLORIGATE. SOLORIGATE is also known as the 
 2020 FEDERAL DATA BREACH - https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach
 
@@ -31954,7 +31961,7 @@ I really don't think WNYT is doing anything shady. I think that's the issue with
 SAY something that's probably not very ACCURATE, right...? And then people won't pay any attention to the 
 thing I recorded in the VIDEO that is pretty fuckin' spot on. That's ok. It allows me to just keep doing it
 right in plain sight, practically undetected. I say practically because it probably doesn't FEEL like I keep
-‘accidentally' recording additional evidence.
+'accidentally' recording additional evidence.
 
 In the video, (1) guy looks right at me, and I think he knows who was attacking my cable modem over and over.
 I'd really like to get a COURT SUBPOENA for that dude who was texting somebody, and looking RIGHT AT ME, 
@@ -32593,7 +32600,7 @@ The point is, I could've allowed myself to be totally, randomly arrested, by bei
 this dude assumed I would be, and then...? Pirrone would've wasted NO time at all tryin' to pump me in the 
 butt, cause he has that kind of vibe. I'm all set on that, though.
 
-Yeh, I don't do the whole ‘allowing myself to be pumped in the butt, like Ted Cruz' thing, so...
+Yeh, I don't do the whole 'allowing myself to be pumped in the butt, like Ted Cruz' thing, so...
 I saw Catricala standing there, basically lookin' at me like he's Johnny Sacks, and I'm Tony Soprano.
 *chuckles* Heh. Bet you can't get me now, buddy.
 Catricala just stood there, lookin' at me, shakin' his head...
@@ -33302,7 +33309,7 @@ Then, I saw a black DODGE DART parked in the CAPTAIN's spot, cause I can read si
 ______________________________________________________________________________________________________________
 | Side point |/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\_|
 |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-| Earlier on 06/01/20, DJ Thompson processed my ‘unlawful arrest' and processed me at the Halfmoon Sheriff   | 
+| Earlier on 06/01/20, DJ Thompson processed my 'unlawful arrest' and processed me at the Halfmoon Sheriff   | 
 | Substation. On the way there, he was using his personal device to send a text message to somebody like     | 
 | JAMES LEONARD, I would assume. These guys didn't actually give a shit that I had an ALIBI.                 |
 |                                                                                                            |
@@ -33720,7 +33727,7 @@ pussy that ever lived, right...? Well, that is exactly what I'm doing... but als
 
 Maybe someday he'll stop committing medical fraud, and maybe even grow a pair of nuts. MAYBE, he could stop 
 being a such a whiny little lying bitch. But, I doubt he'll ever make that decision. Till then...? He's gonna 
-drive that Audi so carefully, that ANY little bump in the road he manages to hit...? ‘FUCK, hit a pothole...'
+drive that Audi so carefully, that ANY little bump in the road he manages to hit...? 'FUCK, hit a pothole...'
 
 Guys like him are big pussies, is basically what I'm saying. 
 Born to BE one...? Never gonna stop being one till he kicks the bucket, I guess.
@@ -34130,7 +34137,7 @@ Well, he really likes the way that sounds, and NOW his pants are wet, so OF COUR
 
 Dude would earn my respect if someone at Apple who was an actual expert, assisted me in extracting the 
 fucking video on my disabled iPhone. But amazingly, some jizz-lipped fuckin' cuntface, is gonna tell me 
-‘that's impossible'... Meanwhile that `$3T that Apple is worth looks more and more suspicious.
+'that's impossible'... Meanwhile that `$3T that Apple is worth looks more and more suspicious.
 
 Nobody drawing the connection I'm making here. I could literally say the sentence over and over again... 
 And for some reason, some jizz-lipped fuckin' cuntface, isn't gonna hear the theme I'm making across this 
@@ -34229,7 +34236,7 @@ profusely. Because, they're probably terrified of doing that.
 So is really anybody else. 
 It is a suicide mission. No shit. 
 
-But that's what it means to ‘serve your country', you're willing to fly over, and stomp the ever living 
+But that's what it means to 'serve your country', you're willing to fly over, and stomp the ever living 
 shit out of a man that just mows down innocent civilians in Ukraine. 
 
 I'd be assisting Zelensky beat the fuck out of a tyrant, one who had something to do with a bunch 
@@ -34357,7 +34364,7 @@ Her : Yeah. *softening up* Guess that IS what it means...
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-Not gonna use a tactic like ‘manipulation', when someone is cooperating. 
+Not gonna use a tactic like 'manipulation', when someone is cooperating. 
 But if a girl is talking back to me in a submissive way like above...? 
 Not only do I know they're telling me the truth... but apparently they are getting closer to me.
 That means she probably wants to cob on my knob.
@@ -34474,7 +34481,7 @@ Me       : Yeah. I know. But, questions abound.
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
           
-Sometimes I do ask myself ‘What the hell ARE these organizations doing? 
+Sometimes I do ask myself 'What the hell ARE these organizations doing? 
 ...other than eatin' fuckin' donuts and using the USA-PATRIOT Act...
 ...to funnel cash into certain people's pockets...? 
 I'm not trying to provide myself with false assurances, though I am positive that they're doing plenty. 
@@ -35601,7 +35608,7 @@ ________________________________________________________________________________
            You heard me, Robin, like Robin and Batman.
     Me   : TROOPER BORDEN has made a number of slip ups. 
            I'm not callin' the guy out for no reason. 
-           06/18/20 is when I  first officially met this ‘Robin'... 
+           06/18/20 is when I  first officially met this 'Robin'... 
 "@)
  
 $Book.AddSection(8,"Excerpt [~] Trooper Borden",@"
@@ -36021,7 +36028,7 @@ they've made... right? But they fuckin' definitely can. And they can even lie ab
 	
 Some people will reason with themselves, "there's no way they could or would do that..."        (<- that's a FALLACY)
 Right, there's no way that morons constantly say stuff like that either.                        (<- that's a FALLACY)
-Oh wait, yeah there is... an invalid circle of logic where someone has ‘faith' that Apple isn't doing that.
+Oh wait, yeah there is... an invalid circle of logic where someone has 'faith' that Apple isn't doing that.
 They're worth `$3T. There's no way they would lie to people, you're right.                       (<- that's a FALLACY)
 There's 3 trillion ways that they could lie to people.
 It is supposed to be UNLIKELY, that's what people SHOULD say. 
@@ -36644,8 +36651,8 @@ Buying Twitter caused Tesla's stock to plummet, because... Elon keeps gobbling u
 try to manipulate him via his stocks.
 
 However, EVERY TIME THEY DO THAT, they realize how fuckin' stupid that is, cause they just LOSE even more money. 
-Guys like Elon, may be disliked by the ‘masters'... I call them ‘masters' because they're ‘ignorant old men 
-like Bob Lutz'. Elon is disliked by these ‘masters', because he is set out to make so many other people look
+Guys like Elon, may be disliked by the 'masters'... I call them 'masters' because they're 'ignorant old men 
+like Bob Lutz'. Elon is disliked by these 'masters', because he is set out to make so many other people look
 incompetent and lazy.
 
 And, he's doing a fuckin' fantastic job at that by the way. These masters are losing control of the country due
@@ -36658,7 +36665,7 @@ society in ways where people say "If that was wrong, then they'd be in prison fo
 
 A fallacy is just someone proving that they would fuckin' suck ass at programming. Like a screen door on a 
 submarine, but with their logic. Some people actually kill other US citizens via something that looks 
-‘accidental', and when you tell the police about it, oh well. They were involved, they wanted you dead.
+'accidental', and when you tell the police about it, oh well. They were involved, they wanted you dead.
 
 Whenever you appear to be doing well and you're being somebody's LOYAL SERVANT, they will not give you a hard 
 time at all, because you are no fucking threat to someone that has made you content. However, the moment that 
@@ -37067,7 +37074,7 @@ Zuckerberg : Fuck this guy, man...
 APT29      : Oh, he's being a real DICK now, eh...?
 Zuckerberg : Yep.
              I don't like it, I know that he's onto me, and I think that he's gotta sign off.
-APT29      : Whaddya mean by ‘sign off...?'
+APT29      : Whaddya mean by 'sign off...?'
 Zuckerberg : Bro, what do you think I mean...?
 APT29      : Like, you want him to disconnect from the server...?
 Zuckerberg : Nah, I want him to never speak again.
@@ -37419,8 +37426,8 @@ Me        : Yeah, I'll consider it.
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
-People that don't ask to see evidence, they have to start wrapping the word ‘evidence' with ‘air quotes'.
-When someone wraps enough phrases with ‘air quotes', it will actually start to piss me off. 
+People that don't ask to see evidence, they have to start wrapping the word 'evidence' with 'air quotes'.
+When someone wraps enough phrases with 'air quotes', it will actually start to piss me off. 
 
 "Air quotes" aren't heard by the normal person, but it's when people "phrase" things as if they "hypothetically" 
 exist, rather than "actually" exist. I'm not going to hurt someone based on whether they believe my story, because 
@@ -37702,13 +37709,13 @@ I've gone to all of them for help, I think the problem is too large,
 
 As for SHAEMUS LEAVEY, he is not on that list of people I've tried to get help from and couldn't, at all.
 
-I gather that when people TRY to say ‘you've done all this such and such, what does that tell ya?'
+I gather that when people TRY to say 'you've done all this such and such, what does that tell ya?'
 Well, it tells me that these guys are gonna "kill a lot of additional, unsuspecting people, very easily". 
 That's ALL it tells me. I know people think I'm being dramatic. I'm not, I've literally seen these fucks with my 
 own eyes, and recorded it on video, they are fucking dangerous, and they've been getting away with killing a lot 
 of people, and there's nothing that anybody can do...? Because it's too evil to be false.
 
-When people TRY to tell me ‘You've done all this such and such, what's that tell ya?' 
+When people TRY to tell me 'You've done all this such and such, what's that tell ya?' 
 It'll probably tell a normal, regular, every-day citizen, that this story SOUNDS NUTS.
 Therefore, it HAS TO BE nuts. (← FALLACY)
 But that's an ASSUMED FALLACY.
@@ -37842,7 +37849,7 @@ Me    : Hold up.
         I gotta go grab a baseball bat for ya...
 Sales : Heh, what for...?
 Me    : Oh, you'll find out.
-        Gonna teach you ‘how it's done'.
+        Gonna teach you 'how it's done'.
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
@@ -38590,7 +38597,7 @@ It's because the police actually lack any INCENTIVE to arrest some "Rich Brat" t
 away with it over and over.
 
 If anything, the police are given an incentive to ignore that kids activities.
-Why...? It's too dangerous. What if the ‘"Rich Brat" gets mad at them...? 
+Why...? It's too dangerous. What if the '"Rich Brat" gets mad at them...? 
 Then THEY gotta worry about that "Rich Brat", killin' THEM.
 
 But, if it's just some random person out there, that's fine. 
@@ -38807,7 +38814,7 @@ It's called (Pegasus/Phantom) by the NSO Group.
 The people he called were the Federal Counter-Terrorism Intelligence Agency
 This guy called em, and said: 
 Borden : Hey, do the (police/military) have access to a program that can track people's phones...?
-Those people didn't realize that the Russians were watching them as they said ‘no' 
+Those people didn't realize that the Russians were watching them as they said 'no' 
 That's why Solorigate also goes by the name of:
 "@)
  
@@ -38886,7 +38893,7 @@ Considering how much RESISTANCE I've been facing...?
 - That is the ONLY REASON I don't have better pictures
 
 Even after I was able to catch these demonic cocksuckers? The FBI, allowed some fuckface to disable my device.
-- When the police say ‘grumble grumble, you're fuckin' annoying me kid, you sound nuts'... 
+- When the police say 'grumble grumble, you're fuckin' annoying me kid, you sound nuts'... 
 - I gotta fuckin' wake up grandpa SOMEHOW... Cause he's a little fuckin' slow lately. 
 - Doesn't respond to being called an (idiot/lazy/cocky/none of that), and to be fair, I don't blame him.
 - He despises when someone without a badge actually does a better job than his ass... 
@@ -39648,7 +39655,7 @@ That makes me an exception, because she'll allow me to be that observant after a
 
 Then that doesn't make anybody special at all, even if that process IS illegal.
 At some point, people are gonna read all of this...?
-And it's gonna ‘click' for them too.
+And it's gonna 'click' for them too.
 "@)
  
 $Book.AddSection(9,"Role Reversal",@"
@@ -40103,7 +40110,7 @@ But if we had, he would've lost at the same intensity that David Bishop did, at 
 
 Anyway, this is where Terri brought me and I stayed for several days AFTER my father was 
 (murdered/executed) in October 1995. I say "executed" because it would take a REALLY LONG TIME, 
-for me to ‘accidentally' discover that there might be more to the story than Joe Pugelise caught onto.
+for me to 'accidentally' discover that there might be more to the story than Joe Pugelise caught onto.
 
 I had a feeling that when I was attempting to upload pictures from when I walked around 
 (Clifton Park/Halfmoon) and Waterford on my 35th birthday, that 
@@ -41067,7 +41074,7 @@ They may very well COMMIT a CRIME just like on AUDIT THE AUDIT.
 
 Not each of those videos shows an officer of the law committing a CRIME per se, but-
 Sometimes there will be an officer that has a PERFECTLY INTACT SET OF MORALS, AND ETHICS, that SEES their
-teammates committing IMMORAL/UNETHICAL shit, and then they have to say shit like ‘EVERYBODY STAND DOWN'...
+teammates committing IMMORAL/UNETHICAL shit, and then they have to say shit like 'EVERYBODY STAND DOWN'...
 
 [False 911 Call Leads to HUGE Lawsuit]: https://www.youtube.com/watch?v=6id-R6oPDH4 
 I'll paraphrase the above video link.
@@ -41631,7 +41638,7 @@ ever see me. She was taking a leap of faith, I doubt she cares about her patient
 Not long after that, I asked Dr. Schnakenberg to write me a prescription for the SAME EXACT CONDITION that my 
 SON has. ADHD. Weird thing is...? This dude had NO PROBLEM writing a prescription for my kid. Not for me. 
 Me...? Needing the same thing...? Instead of doing illicit drugs...? Oh man, nah. No fuckin' way, buddy. 
-Nuh-uh bro. He's a doctor that praises the whole ‘holistic' doctor approach. But- he'll prescribe SUBOXONE. 
+Nuh-uh bro. He's a doctor that praises the whole 'holistic' doctor approach. But- he'll prescribe SUBOXONE. 
 
 So, if YOU are like ME, and YOU get yourself OFF of that medicine...? Congrats. He still wont write the SINGLE 
 FATHER, who GOT OFF OF SUBOXONE, the same exact medicine that he'll write to the child. How cool is that...? 
@@ -41796,7 +41803,7 @@ were the long list of OBSERVATIONS I had made that caused me to believe theories
 successfully piece together.
 
 If anything, George W. Bush has a lot less to worry about from me, than JOHN PICKETT does.
-Because it's almost like I kept ‘accidentally' running into additional clues, or perhaps it was fate...
+Because it's almost like I kept 'accidentally' running into additional clues, or perhaps it was fate...
 ...that everything would culminate into a stunning realization that someone else agreed with...
 ...because someone who has the world at his fingertips, knows that https://youtu.be/vmDVKwTF2Zc
 ...I was on the right track. And he doesn't want his legacy to be impacted. He didn't do anything.
@@ -43837,7 +43844,7 @@ The reason why they say all of it is a myth, is because:
 1) they're ACTUALLY fuckin' morons
 2) the police that COULD be arresting SOMEBODY for SOMETHING...? 
 
-Some of ‘em are fuckin' morons too.
+Some of 'em are fuckin' morons too.
 
 "News anchors" that are actually actors... 
 They are RICH morons, because RUPERT MURDOCK's is a rich bastard. 
@@ -44088,7 +44095,7 @@ Exactly like what Fox News actually is, and what Murdock does to Hannity.
 When an organization starts to DISTORT the facts, and FORCE details to FIT AN AGENDA, 
 That isn't NEWS.... That's called "PROPOGANDA/a dildo in someone's asshole".
 
-This whole piece, is me ‘altering some facts around', so it's gonna feel like propaganda too.
+This whole piece, is me 'altering some facts around', so it's gonna feel like propaganda too.
 Cause, while there are plenty of FACTS and STORIES being thrown in, I can stand to say that 
 this falls into a category called propaganda. BUT- I'm not pushing this like it's NEWS.
 
@@ -44561,7 +44568,7 @@ government and the economy...
 "@)
  
 $Book.AddSection(10,"Shoutout [+] Theodore Roosevelt: One of the greatest former presidents",@"
-Theodore ‘Teddy' Roosevelt had to deal with monopolies and create policies that needed to be set as an example 
+Theodore 'Teddy' Roosevelt had to deal with monopolies and create policies that needed to be set as an example 
 or a rule. The thing about Teddy Roosevelt, was that Teddy would knock a motherfucker out. 
 I'm not even kidding, he would kick the shit out of somebody if he felt like it, before he was even a president.
 
@@ -44807,7 +44814,7 @@ some shit. Or swearin' like a sailor.
 Once you're somebody like Hillary Clinton though... all bets are off. She... probably swears more than I do.
 
 But, amazingly, they all train themselves to have like hours, where they won't dare say a bad word. 
-Not even a ‘light' one like ‘damn', or ‘hell'. H e double hockey sticks is more like it. 
+Not even a 'light' one like 'damn', or 'hell'. H e double hockey sticks is more like it. 
 Nobody sounds less threatening than when they spell out the good ol' H E double hockey sticks... 
 ...that's what my 4th grade teacher Mrs. Lattimore used to say.
 
@@ -44968,8 +44975,8 @@ Just like Putin. Mutual morons, joining forces, holding hands, giggling like a c
 The nature of egregiousness causes them both to be rather DANGEROUS.
 Trump, and Putin.
 Hannity, and Murdock.
-Carlson, by himself... invited some girl, but she said ‘I'll pass'.
-That's how the ‘Aw~! It's so cute!' comment will get ya if you're a small-dicked bastard like Carlson.
+Carlson, by himself... invited some girl, but she said 'I'll pass'.
+That's how the 'Aw~! It's so cute!' comment will get ya if you're a small-dicked bastard like Carlson.
 
 Anyway, this whole series of people, day in, day out... they both know how to take that to the next level. 
 Sometimes, they don't even have to try. 
@@ -45244,7 +45251,7 @@ Local Fox 1: That's just askin' for way too much dude.
 
 If he's not trying to fit a square peg through a round hole, he's gonna be terrified of books...
 
-To be fair...? He probably can't be bothered with things like a ‘dictionary' or like a ‘book'.
+To be fair...? He probably can't be bothered with things like a 'dictionary' or like a 'book'.
 Sorta impacts someone's ability to have an education opinion, or do research... 
 ...if you give books a middle finger. Dude's just WAY too busy making a god damn fool out of himself.
 Doesn't have any time in his busy schedule to do much else.
@@ -45593,7 +45600,7 @@ Used to be news...? Now it's Not News. Not News. Part of the Not News Network.
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
-Cause then people could say ‘HEY... DID YOU SEE THAT THING ON NOT NEWS...?' 
+Cause then people could say 'HEY... DID YOU SEE THAT THING ON NOT NEWS...?' 
 Then people would start to have these guessing games with each other as to whether some shit they saw on 
 NOT NEWS actually happened, OR, NOT NEWS rick rolled their viewers again.
 
@@ -46066,7 +46073,7 @@ It was at that exact moment where this man saw TUCKER CARLSON's potential...
 "That's it, that's the look, right there..."
 
 The result was that this dude realized he could put Tucker in front of a camera, and millions of people, and this 
-‘unintentionally losing his train of thought'... it'd cause people to feel really bad for him. 
+'unintentionally losing his train of thought'... it'd cause people to feel really bad for him. 
 And, that is the QUALITY that he likes the most about him. 
 
 So, he doesn't respond like this, "Ah, god damnit, Tucker fuckin' lost his train of thought again." 
@@ -46258,7 +46265,7 @@ Nobody cares.
 Only, heh. He's not as dumb as he thinks he is. 
 Maybe he could be convinced, to pressure them into changing the name of their network from FOX NEWS, to 
 NOT NEWS... Then, the war would be over. 
-No more feeling a need to ruminate on some moron that needs a coloring book for a ‘teleprompter'. 
+No more feeling a need to ruminate on some moron that needs a coloring book for a 'teleprompter'. 
 Oh yeah, he knows the definition to a lot of words alright, by SOUND. Not by reading them.
 
 At least in Sean Hannity's case, he can actually help the situation he's in. 
@@ -46406,7 +46413,7 @@ Or, they'll tell me they do NOT believe me, they just start wrapping things in a
 ...and I detect that stuff very easily. Yeah, wrapping things with "air quotes" in a conversation is gonna fuckin...
 ...aggravate the fuck out of someone like me man, cause then it sounds like a "hypothetical" thing.
 
-It's like I could tell some dude who starts doing that, "Hey, what if I like fuck your ‘wife' or ‘girlfriend'?"
+It's like I could tell some dude who starts doing that, "Hey, what if I like fuck your 'wife' or 'girlfriend'?"
 Well, this person might actually think I'm NOT being fuckin' serious. Depends...
 Not gonna just say that to whoever... 
 ...unless they're like making statements I say sound like a "hypothetical" fuckin' situation. 
@@ -46693,7 +46700,7 @@ Bob     : *pissed* Kid, do you even realize how stupid you look on TV...?
 Carlson : *looks away for a moment, Bob has a good point, looks back at Bob*
           You know Bob, you were one of my idols when I was growing up.
 Bob     : *shocked look on face, caught off guard*
-Carlson : Just like my mother always told me, ‘You cant win em all'.
+Carlson : Just like my mother always told me, 'You cant win em all'.
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
       
