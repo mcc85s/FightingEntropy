@@ -42,7 +42,8 @@ Function Update-PowerShell
         [Object] $OS
         [Object] $Release
         [String] $Path
-        [String] $Fullname 
+        [String] $Fullname
+        [UInt32] $Success
         Control()
         {
             ForEach ($Name in "Get-PowerShell","Get-FEOS")
@@ -71,6 +72,14 @@ Function Update-PowerShell
             }
 
             $This.Fullname = "{0}/{1}" -f $This.Path, $This.Release.File
+
+            $This.Execute()
+            
+            Switch ($This.Success)
+            {
+                0 { Write-Error "Installation [!] $($This.Release.Version) MAY have failed, restart PowerShell." }
+                1 { Write-Host  "Installation [+] $($This.Release.Version) was successful, restart PowerShell." }
+            }
         }
         Execute()
         {
@@ -85,8 +94,22 @@ Function Update-PowerShell
             {
                 Debian
                 {
-                    "sudo dpkg -i $($This.Fullname)" | Invoke-Expression
+                    Try
+                    { 
+                        "sudo dpkg -i $($This.Fullname)" | Invoke-Expression
+                        $This.Success = 1
+                    }
+                    Catch 
+                    {
+                        Write-Error "Exception [!] Thrown"
+                        $This.Success = 0
+                    }
                 }
+            }
+            
+            If ($This.Success -eq 1)
+            {
+                Remove-Item $This.Fullname -Verbose
             }
         }
     }
