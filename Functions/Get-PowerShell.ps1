@@ -73,5 +73,5 @@ Function Get-PowerShell
         }
     }
 
-    [Powershell]::New().Releases
+    Return [Powershell]::New().Releases
 }
