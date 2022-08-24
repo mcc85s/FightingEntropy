@@ -70,7 +70,10 @@ Function Update-PowerShell
                 $This.Release = $This.Release[0]
             }
 
-            $This.Fullname = "{0}/{1}" -f $This.Path, $This.Release.Name
+            $This.Fullname = "{0}/{1}" -f $This.Path, $This.Release.File
+        }
+        Execute()
+        {
             If (Test-Path $This.Fullname)
             {
                 Throw "File exists [!] [$($This.Fullname)], remove then try again."
