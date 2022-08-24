@@ -59,6 +59,7 @@ Function Get-PowerShell
         [Version]       $Version
         [String]             $OS
         [Object]           $Arch
+        [String]           $File
         [String]            $URL
         Release([UInt32]$Index,[Object]$Release)
         {
@@ -72,10 +73,15 @@ Function Get-PowerShell
             $This.Type    = @("Stable","Preview")[$Release.Href -match "Preview"]
             $This.Version = [Version][Regex]::matches($Release.Href,"v\d+\.\d+\.\d+").Value.Trim("v")
             $This.URL     = $Release.Href
+            $This.File    = $This.URL | Split-Path -Leaf
         }
         [Object] Architecture([String]$Arch)
         {
             Return [Architecture]$Arch
+        }
+        [String] ToString()
+        {
+            Return $This.File
         }
     }
 
