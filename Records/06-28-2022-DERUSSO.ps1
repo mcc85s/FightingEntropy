@@ -1,14 +1,46 @@
+#
 # [Overview]
 #
 # In this document, I'm going to UNPACK and EXAMINE the unlawful arrest that the NEW YORK STATE POLICE made on
-# 06/28/2022 after my mother provided false testimony to a NEW YORK STATE TROOPER named SARA DERUSSO. However,
+# 06/28/2022 after my mother provided false testimony to a NEW YORK STATE TROOPER named SARA DERUSSO. 
+# 
+# Here are (2) links to the SAME FILE, and it CONSTITUTES as EVIDENCE that the POLICE FUCKING IGNORED, and
+# WHEN THEY IGNORED WHAT I SAID ABOUT IT'S EXISTENCE, they chose to make an UNLAWFUL ARREST WITHOUT A WARRANT.
+# 
+# The ORIGINAL VERSION is located HERE:
+# ________________________________________________________________________________________________________
+# | 06/28/2022 | 06_27_2022_20_54_17 | https://drive.google.com/file/d/1MkHiYnBnRl91Ck-ixcEhE5R1dX7B3Fve |
+# |              Google Drive #1     | https://drive.google.com/file/d/1OP5klekUnQsepIsIj9Js2nFDcj-A8Lip |
+# |              Google Drive #2     | https://drive.google.com/file/d/1y-Iy5iHDt90-nl5nvOiAKNbYk2HPCxKr |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# The 2nd and 3rd entries, are these thing called PICTURES that show that this particular file, was uploaded
+# to my GOOGLE DRIVE ACCOUNT, on 06/28/2022 at 13:02.
+# 
+# This file EXISTED and was UPLOADED, BEFORE *ANY* of the police showed up, at:
+# _______________________________________________
+# | 201D HALFMOON CIRCLE, CLIFTON PARK NY 12065 |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# The EDITED VERSION where it's just the last several minutes and is a LOT LOUDER, is located HERE:
+# ____________________________________________________________________________________________________
+# | 06/28/2022 | Mom Altercation | https://drive.google.com/file/d/18Nrm1b-Ahi_vdtC39JMnNUiYnPDIKwEK |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# THIS is the particular version that the POLICE should be VERY FUCKING CONCERNED WITH LOSING THEIR JOBS OVER.
+# Because I gotta tell ya... it's such a powerful fucking piece of evidence...
+#
+# However, I'm going to go A LOT FUCKING FARTHER THAN THAT, with THIS fuckin' document.
 # I'm going to introduce a concept called BACKSTORY, so that the CONTEXT can be FILLED IN, whereby revealing
-# the notion of PREJUDICE being APPLIED to ME, specifically, by a bunch of fucking morons.
+# the notion of PREJUDICE being APPLIED to ME, specifically, by a bunch of fucking morons in CLIFTON PARK, NY.
 #
 # The reason being, I informed the NYSP and SCSO that I had uploaded this HIGHLY USEFUL SHIT called EVIDENCE,
 # of the ALTERCATION between my MOTHER AND I, BEFORE SHE CALLED 911. This EVIDENCE, UNDERMINES THE CREDIBILITY
 # of BOTH, SARA DERUSSO, as well as FABIENNE S. COOK. Wanna know why...? Uh, because it CONTRADICTS MY MOTHERS
-# FUCKING STATEMENT TO SARA DERUSSO.
+# FUCKING STATEMENT TO SARA DERUSSO. At the END of this document, I've provided a TRANSCRIPTION of the 
+# SHORTER, MUCH LOUDER VERSION of the ARGUMENT that my mother FABIENNE S. COOK and I had, on JUNE 28th, 2022.
+#
+# I'll also go over how many statements she made to SARA DERUSSO that are fucking ABSOLUTELY FALSE.
+# Some of them are just PARTIALLY false, and that can be judged accordingly.
+# However, (1) statement in particular is TOTALLY FALSE, such as "my son took my phone out of my hands as
+# I was attempting to call 911." Ah. That one right there...? That's basically FELONY GRADE PERJURY.
 #
 # That's right. 
 # That's how stupid the police are, sometimes. 
@@ -25,8 +57,8 @@
 # SARA DERUSSO will most likely have her employment with the NEW YORK STATE POLICE, TERMINATED... resultant of
 # this UNLAWFUL ARREST that was made on 06/28/2022. 
 #
-# As for SARA DERUSSO, if what I say comes to pass...?
-# Well, she will NEVER be able to be a police officer EVER again, because...
+# As for SARA DERUSSO, if what I say, comes to pass...?
+# Well, she will NEVER be able to be a police officer, EVER again, because...
 #
 # ...my mother might be going to JAIL or PRISON as a DIRECT RESULT of the EVIDENCE I have.
 # Which means that some bitch lied to some other bitch and then I was illegally arrested without a warrant and 
@@ -45,13 +77,19 @@
 # She may very well be CHARGED and PROSECUTED, and then have a FELONY on her record, because of the WAY in 
 # which MESSINES, BOSCO, and DERUSSO failed to do a PARTICULARLY IMPORTANT THING, called... CORROBORATION, as
 # well as, COLLECTING EVIDENCE.
+# 
+# Here's the reality. Sergeant Bosco, is gonna look like a lazy fuckin' faggot, and people are going to laugh at 
+# him until he reluctantly resigns from his position with the NEW YORK STATE POLICE.
 #
 # So in reality, I know a lot of people think I 1) beat my mother up and 2) choked her out, because... even
 # my mother is involved in what the community and people are saying about me, that I'm INSANE. So, that's what
 # they were TOLD... But, the COOL thing is, they were TOLD a fucking LIE. THAT'S WHY EVIDENCE IS WICKED IMPORTANT.
-#
-# Multiple NEW YORK STATE TROOPERS will be charged with a few felonies for the events that have occurred over
-# the course of the last (2-3) years, but, the situation with SARA DERUSSO has to be taken care of the SOONEST.
+#           ¯¯¯¯             ¯¯¯¯           ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯          
+# Multiple NEW YORK STATE TROOPERS [MAY*] be charged with a [few felonies*] for the events that have occurred over
+# the course of the last (2-3) years, since MAY 26th, 2020. (<- That's when the police had some involvement in a 
+# PREMEDITATED MURDER ATTEMPT, which I will go over in GREAT DETAIL with EVIDENCE OF THAT TOO. 250 exhibits of it.)
+#                                                                                              ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# HOWEVER, the situation with SARA DERUSSO has to be taken care of the SOONEST.
 #
 # A number of OTHER officers that were involved in this UNLAWFUL arrest, they will probably be SUSPENDED, OR...
 # TERMINATED as well. Such as (SCSO DEPUTY/TROOPER) ROBERT MESSINES JR. And perhaps even SGT BOSCO.
@@ -751,7 +789,6 @@
 # 6) Pavel Zaichenko Jr./Computer Answers, and Pavel Zaichenko Sr./Soft N' Cushy Auto Upholstry, are BOTH Russian immigrants.
 # 7) Pavel Zaichenko Jr. has spent the last (3) years minimizing my accomplishments at Computer Answers
 # 8) Pavel Zaichenko Jr. is associated with (COZY BEAR/BERSERK BEAR)
-#
 # __________________________
 # | RUSSIA ATTACKS UKRAINE |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -939,7 +976,7 @@
 # She gets paid to do that. That's why I started to get really pissed off in the paddock.
 #
 # I am fairly certain that the cops who brought me to the fucking hospital, were actually pretty fuckin' terrified of me.
-# Because, I knew that I did NOTHING TO DESERVE WHAT THEY DID TO ME, but you know what...? 
+# Because, I knew that I did NOTHING TO DESERVE WHAT THEY DID TO ME, but you know what...?
 #
 # The hospital sent in 10 security guys to forcibly inject me with some fucking ADAVAN.
 # Cool. Surrounded by morons that actually enjoy the fact that innocent people are gonna get victimized no matter what.
@@ -1033,9 +1070,11 @@
 #
 # MEDICAL FRAUD, occurs when someone is SUPPOSED to do a job and evaluate someone's mental health, but instead they decide to
 # do the same thing that the bald guy did, and suggest that what I'm SAYING or what I KNOW, is CRAZY... BEFORE LOOKING AT MY 
-# EVIDENCE, OR VIDEOS. 
-# 
-# After like over 2+ years of trying to show a LOT OF PEOPLE the 250 exhibits I have...? 
+# EVIDENCE, OR VIDEOS.
+# _______________________________________________________________________________________________________________
+# | 250 Exhibits | https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt) |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# After like, over 2+ years of trying to show a LOT OF PEOPLE the 250 exhibits I have...? 
 # Uh, nobody like, CONTACTS me, and says "Hey, uh, you've got like 250 exhibits to use in a serious lawsuit worth hundreds
 # of millions of dollars...?"
 #
@@ -1058,7 +1097,6 @@
 # 
 # The ONLY ALTERNATIVE is that I continue to be treated like I'm an INSANE PERSON even
 # though I make AUDIO RECORDINGS of myself, and that I SOUND LIKE I HAVE MY SHIT TOGETHER, and that I UNDERSTAND REASON.
-#
 # ____________________________________________________________________________________________________________
 # | 04/04/2022 | Argument with my mother | https://drive.google.com/file/d/1E5ERWMgj8GkznNZ_i0bAwjppkD_sWANd |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -1766,7 +1804,8 @@
 #
 # Because, that's exactly what they're using it to DO in SOME CASES (not ALL), and the fact that I know this shit causes me to 
 # become...
-# AN EXTREMELY HIGH PRIORITY THREAT. Not a threat in the sense that I'm gonna mercilessly slaughter people at a school, but rather...
+# AN EXTREMELY HIGH PRIORITY THREAT. 
+# Not a threat in the sense that I'm gonna mercilessly slaughter people at a school, but rather...
 # ...a threat to their money-making revenue stream.
 # 
 # It's like, if 19 kids and 2 teachers get shot to death at an elementary school, that's fine. Shit happens.
@@ -1794,7 +1833,7 @@
 # He "misspoke", because he does what a lot of cops are TRAINED to do.
 # "Doesn't matter WHO started it..." (<- Uh, yeah it does.)
 # They typically think someone like me is a moron.
-
+#
 # They don't START OUT that way, but ultimately...
 # ...some dude with a badge will pause at a moment in the conversation when I say:
 # "I know what you guys have to do as police officers"...
@@ -1927,7 +1966,6 @@
 # 
 # My MOTHER as well as my neighbor WILLIAM MOAK, they think that ALL THEY DO, is SERVICE MEDICAL EQUIPMENT.
 # But- fun fact. I was attempting to PLAY THE FUCKING AUDIO RECORDING of me having a CONVERSATION with TOM MCCABE.
-# 
 # _______________________________________________________________________________________________
 # | 03/21/2022 | Tom McCabe | https://drive.google.com/file/d/19wWx6cCcjAiREGd89slUMqyo44EGrR-n |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -1955,8 +1993,13 @@
 # think "YEAH RIGHT BUDDY, YOU'VE GOT PROBLEMS~!" 
 # 
 # At least that part is true, I DO have CERTAIN problems, but I don't have problems with knowing the difference
-# between a COINCIDENCE and a NON-COINCIDENTAL COINCIDENCE. That's what PRIVATE INVESTIATORS and REGULAR INVESTIGATORS 
-# are supposed to like, DO... detect patterns and determine intent.
+# between a COINCIDENCE and a NON-COINCIDENTAL COINCIDENCE, or RIGHT and WRONG. 
+# NOR am I DELUSIONAL, or PSYCHOTIC... I'm just a LOT more intelligent than people give me credit for, and as 
+# SOON as they realize that I'm smarter than they are...? They try to give me some fuckin' resistance. Not always
+# the case, but check this out. 
+# 
+# I most certainly understand this KEY THING, called "REASON". That's what PRIVATE INVESTIATORS and REGULAR
+# INVESTIGATORS are supposed to like, DO... detect patterns and determine intent.
 # 
 # So when I'm left with a situation where a guy who sold my mother a shitty surveillance camera has to ask me for help
 # to connect the fucking camera to the network so it would WORK...? Oh man, that dude is gonna flat out tell me that
@@ -2093,7 +2136,7 @@
 # So, if he is INTENTIONALLY avoiding contact with me, it is literally this fucking simple...
 #
 # He is involved with this RING OF CORRUPT PEOPLE that BRUCE TANSKI, JOHN HOFFMAN, ERIC CATRICALA, JOHN PICKETT, and 
-# my AUNT TERRI COOK, even my cousin RYAN "BOOKIE" WARD, are INVOLVED. When I say RING OF CORRUPT PEOPLE, I SPECIFICALLY|
+# my AUNT TERRI COOK, even my cousin RYAN "BOOKIE" WARD, are INVOLVED. When I say RING OF CORRUPT PEOPLE, I SPECIFICALLY
 # MEAN, a [RACKETEER INFLUENCED CRIMINAL ORGANIZATION*].
 #
 # However, the WAY in which this RICO has never been caught, is literally because they know how to play stupid.
@@ -2344,7 +2387,7 @@
 # to PROVIDE, was SUCH A FAILURE ON ALL OF THOSE POLICE OFFICERS PARTS...?
 # ...that they're probably all gonna be suspended and/or terminated.
 # And then my mother will probably do a good 3 months in the Saratoga County Jail, for COMMITTING PERJURY.
-#
+
 Class MP3File
 {
     [String] $Name
@@ -2372,7 +2415,8 @@ Class MP3File
         $This.Date        = $Item.LastWriteTime
         $This.Size        = $Item.Length
         $This.SizeMb      = "{0:n3} MB" -f ($Item.Length/1MB)
-        $This.Url         = "https://drive.google.com/file/d/1MkHiYnBnRl91Ck-ixcEhE5R1dX7B3Fve"
+        $This.Url         = $URL
+        # [Linux/soxi]
         $Sx               = soxi $Item.Fullname | ? Length -gt 0 | % Substring 17
         $This.Channels    = $Sx[1]
         $This.SampleRate  = $Sx[2]
@@ -2393,7 +2437,6 @@ Class MP3File
 #
 # Now, check this shit out.
 # AUDIO FILE information...
-# 
 # ___________________________________________________________________________________
 # | Name        : 2022_06_27_20_54_17.mp3                                           |
 # | FullName    : /home/mcook85/Documents/audio/2022_06_27_20_54_17.mp3             |
@@ -2470,6 +2513,7 @@ Class MP3File
 # SO FUCKING UPSET, that he would PUNCH HOLES INTO THE SHEETROCK because he didn't want to hit my mother.
 # Unbeknownst to my aunt Nancy, that's how much of a raging oblivious cunt my mother was to my father, and she acts like one
 # when she's not around other people. 
+#
 # Now I'm in his shoes, as i'm older, and I have to deal with the same stupid bitch that keeps ignoring what her HUSBAND, and
 # her SON, keep telling her. In other words, my mother is a dumbass.
 #
@@ -2486,7 +2530,7 @@ Class MP3File
 #
 # That's just because most people don't ask questions, they never say "Why would you call her a cunt like that...?"
 # *CHUCKLES* CAUSE SHE ACTS LIKE ONE.
-
+#
 # As for MARK SHEEHAN on 08/31/20, the dude showed up, I explained to him that my mother acts psychotic, and RUNS AWAY in 
 # arguments sometimes, because she thinks that I'm trying to BULLY her. That's NOT what I do.
 # Ever.
@@ -2714,7 +2758,6 @@ Class MP3File
 # _______________________________________________________________________________________________________
 # | 06/28/2022 | Audio Log 16h7m54s | https://drive.google.com/file/d/1MkHiYnBnRl91Ck-ixcEhE5R1dX7B3Fve |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-#
 # The EDITED VERSION where it's just the last several minutes and is a LOT LOUDER, is located HERE:
 # ____________________________________________________________________________________________________
 # | 06/28/2022 | Mom Altercation | https://drive.google.com/file/d/18Nrm1b-Ahi_vdtC39JMnNUiYnPDIKwEK |
@@ -2935,7 +2978,7 @@ Class MP3File
 #       That's it, this is the LAST TIME.
 # Me  : No, no, you're gonna go to prison.
 #       You're gonna go to prison.
-# Her : Alright (<- indicates that she is legitimately admitting guilt.)
+# Her : Alright (<- indicates that she is legitimately admitting guilt for SOMETHING.)
 #       Go ahead, call the cops.
 #       Go ahead. (Weird how she's saying call the cops in the middle of a 911 call that she was SUPPOSEDLY making)
 #       *can't understand what I said*
@@ -2960,20 +3003,356 @@ Class MP3File
 #            to my mother that I know fucking DOESN'T...
 #            There's no comparison. Pamela Sicko loved her kids EXPONENTIALLY MORE than my mother ever loved me, or my dad.
 #            And THAT is the reason why I am in the situation that I'm in.)
-#       I'm restraining you, I'm not hurting you. (<- my hands were around her wrists that whole time. That means HEADLOCK = IMPOSSIBLE)
+#       I'm restraining you, I'm not hurting you. (<- my hands were around her wrists that whole time. 
+#                                                     That means HEADLOCK = IMPOSSIBLE
+#                                                     ALSO, the STATEMENT MEANS MY HANDS WERE NEVER AROUND HER FUCKIN NECK.
+#                                                     WHICH IS WHAT THE FUCKIN MORON NEXT DOOR AND MY STEPFATHER TOLD PEOPLE.)
 # Her : No you ARE hurting me...
 #------------------------------------------------------------------------------------------------------------------------
 # The rest of this is pretty fuckin pointless because I never choked my mother or strangled her. 
 # She made a lot of shit up in her report.
 # The problem is that people like BILL MOAK exist, where the truth doesn't actually matter.
+# But that's why COMPUTERS are easier to TRUST, than PEOPLE, because people like to LIE.
 # If my mother lied about me choking her out...?
+#
 # Oh well, dude.
 # That's your mother right there.
 # Gotta respect everything about her all the time.
-# So, if she tries to drown you in a bathtub... like SOME mothers actually do...?
+# So, if she tries to drown you in a bathtub...? like SOME mothers actually do...?
+#
 # Oh well, dude.
 # That's your mother right there.
 # Gotta respect everything about her all the time.
 # She brought you INTO this world...?
 # And my god, she can even take you OUT of it, too.
-#------------------------------------------------------------------------------------------------------------------------
+# 
+# Does anybody notice how fuckin stupid my (STEPFATHER/BILL MOAK/RICK SMITH)'s mentality is, regarding my mother...?
+# Hm...?
+# They probably DO now, don't they...?
+# That's because I recorded (1) instance out of THOUSANDS, which escalated because she is a demonic cuntface that walks
+# away from problems, INSTEAD OF, RESOLVING THEM.
+# 
+# Lets compare and contrast the STATEMENT SHE MADE against the AUDIO RECORDING.
+# This part is gonna be WICKED FUN, cause SARA DERUSSO is probably gonna lose her fuckin' job.
+# ____________________
+# | Fabienne S. Cook | STATEMENT 
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# My name is Fabienne S. Cook and I am speaking with Trooper DeRusso of my own free will[1].
+# [1] (CORRECT)
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# I was in my bedroom with my door locked because my son Michael C. Cook was yelling at me earlier today,
+# that I did not understand the evidence he had that multiple people in the trailer park were conspiring to 
+# kill him[2].
+# [2] is (PARTIALLY CORRECT), SO- lets DEFUSE the bullshit strategy that SARA DERUSSO WAS USING...
+# ...to COMBINE (INCORRECT) SENTENCES WITH (CORRECT) SENTENCES...
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# [2.1] I was in my bedroom. (CORRECT)
+# [2.2] My bedroom door was locked. (I'm not sure, I don't think it was.)
+# [2.3] I had my door locked BECAUSE my son Michael C. Cook was yelling at me earlier today. 
+#       (^ INCORRECT, I was yelling at her AFTER she came out of her room when I knocked on her door.
+#          cool, right...? SARA DERUSSO is a lazy cunt, right...? Right.)
+# [2.4] My son was yelling at me earlier today (that/BECAUSE) I did not understand the evidence he had that
+#       multiple people in the triler park were conspiring to kill him.
+#       (^ INCORRECT, nah, the 16h7m54s audio recording paints a VERY DIFFERENT PICTURE.)
+#       If some dumb cunt named SARA DERUSSO collected the AUDIO/EVIDENCE of the CONVERSATION, she would've
+#       been able to determine that NO MENTIONING OF ANYBODY IN THE TRAILER PARK WAS MADE. WHAT WAS MENTIONED,
+#       WAS THAT THE SARATOGA COUNTY SHERIFFS OFFICE CONJURED UP ILLEGAL CHARGES IN MAY 2020...
+#       ...as I was referencing the TICKETS that I FOIL REQUESTED from SARATOGA COUNTY RECORDS.
+#       SCSO-2020-003173, SCSO-2020-003177, and SCSO-2020-028501. 
+#       ALL OF THOSE TICKETS, basically stem from the INCIDENT that OCCURRED on MAY 26th, 2020, and FRED RENCH
+#       had to get me ACOD on CRIMINAL MISCHIEF in the 4th degree, instead of the (7) FELONIES that SCSO COMMITTED,
+#       being INVESTIGATED BY ANYBODY. COOL, RIGHT...?
+#       (7) FELONIES (SORT OF) COMMITTED BY: MICHAEL ZURLO, JAMES LEONARD, ERIC CATRICALA, ZACKARY KAREL, and SCOTT SCHELLING.
+#       Though to be CLEAR, my book that I was EDITING and SHOWING MY MOTHER, is A LOT MORE CONCISE than this bitch
+#       SARA DERUSSO'S REPORT, as well as DJ THOMPSON's/MICHAEL SMITH's, as well as SCOTT CARPENTER's.
+#       Yeah. MANY OF THESE REPORTS ARE BEING WRITTEN BY CARELESS MORONS. In some instances it is just someone
+#       who has been HIGHLY MISINFORMED, and DOESN'T CARE IF THEY'RE MISINFORMED. 
+#       REGARDLESS, none of those people are even casually MENTIONED by my mother at all, are they...? Nah.
+#       Which is WHY this RECORDING is so VERY FUCKING MONUMENTALLY IMPORTANT, and that when I call SARA DERUSSO
+#       a fuckin' lazy cunt...? 
+#       It's an opinion of mine, but it is ALSO a FACT. Same goes for my mother and my aunt NANCY SMITH.
+#       LOVE YA MA, AND AUNT NANCY. (Fuck you)
+#       The TIMING of me attempting to show my mother the EVIDENCE of something DIFFERENT THAN WHAT SHE STATED, 
+#       is the MOST INCORRECT THING ABOUT THIS SENTENCE. 
+#       Because the ARGUMENT happened AFTER I knocked on the door. (OH WOW.)
+#       See how much of a CUNT my aunt Nancy Smith is, for not bothering to LISTEN TO THE FUCKING EVIDENCE...?
+#       WEIRD. I sorta OFFERED HER SOME OF THE SHIT I HAD, MULTIPLE TIMES ON JULY 12th, 2022, and she just...
+#       ...didn't realize that she was just being a rotten misinformed bitch to me.
+#       OH WELL.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# While I was laying in my room Michael called me into his room to show me something on his computer[3].
+# [3] (CORRECT)
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# Michael stated that the computer showed proof of the people conspiring to kill him[4].
+# [4] (INCORRECT)
+#     I stated what I just mentioned above, that the SARATOGA COUNTY SHERIFFS OFFICE has some FUCKING MORONS 
+#     RUNNING IT, CONJURING UP CHARGES ANY WHICH WAY THEY FEEL LIKE, WHILE IGNORING THE MURDER ATTEMPT ON MAY 26th,
+#     2020. But- it's strange. You don't really hear my mother saying any of that shit in this report, do you...?
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# I told Michael that I did not understand and I walked out of his room because he was starting to yell again[5].
+# [5] (PARTIALLY CORRECT)
+#     Because YELLING occurred, this caused my mother to FEEL like I did, and my KIDS did, when SHE DID THAT TO ME
+#     RAISING ME. My mother YELLED AT ME QUITE A FUCKING LOT. SHE YELLED AT MY KIDS, TOO. This bitch has yelled
+#     SO MUCH MORE THAN I EVER HAVE...? That she's a FUCKING HYPOCRITE.
+#     What I was attempting to show her was this little thing called SCRIBBLES.
+#     I fuckin' told SPEZIALE on 06/23/2022 about this little exploit, and the book, and Jeff Brown, AND that the
+#     problem would likely recur, but the police ONLY CARE about MINIMIZING an incident, and NOT RESOLVING THE
+#     ROOT CAUSE. Weird.
+# ________________________________________________________________________________________
+# | SCRIBBLES | https://drive.google.com/drive/folders/1wukJYJanYKBfUX34WIhEeoamnsfuTDlg |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# EACH of the pictures in that folder has a LINE OF TEXT that has an EXTRA LINE OF PIXELS, which causes that LINE OF TEXT
+# to be SLIGHTLY TALLER. It is such a MINUTE DETAIL, but that is how EAGLE EYED I HAPPEN TO BE.
+#
+# It just so happens to be the case, that I was able to show my mother this shit on the computer, which is why
+# I wound up using a strategy where I show her particular portions of the letter "S", and how on ONE line, the
+# "S" had an EXTRA LINE OF PIXELS in it, causing it to be slightly DARKER, whereas the S in EVERY OTHER LINE, 
+# did NOT HAVE THAT EXTRA DARKNESS TO IT.
+# 
+# However- uh... there's some dumb fuckin' people on planet earth who aren't able to associate something like THAT,
+# with this particular KEY WORD called "CONTEXT". 
+# CONTEXT - NOUN: the parts of something WRITTEN/SPOKEN that IMMEDIATELY PRECEDE AND/OR FOLLOW a WORD or PASSAGE,
+#           and CLARIFY its MEANING 
+# In other words, the fucking lines of text in each of those pictures...? Someone has been using this EXPLOIT
+# from the CENTRAL INTELLIGENCE AGENCY, or MICROSOFT (not sure), which ALLOWS SOMEONE to COMMUNICATE with the PERSON
+# writing the fucking document.
+# 
+# The MAIN REASON why MOST PEOPLE don't understand what the fuck it is...? 
+# Is because, most people aren't as intelligent as I am.
+# Each of those pictures with that MINUTE DETAIL, is like ME, telling a joke to a mentally challenge person, right...?
+# The mentally challenged person doesn't LAUGH at the joke, because they didn't understand the punchline.
+# It's a fuckin perfect analogy.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+# As I tried to leave the house through the front door, he slammed the door shut so I could not get out and wrapped 
+# his right arm around my throat, putting me in a headlock[6].
+# [6] (INCORRECT, but lets break this one down.)
+# [6.1] I tried to leave the house through the front door. (CORRECT, but she was walking away from my ACCUSATION)
+# [6.2] He slammed the door shut so I could not get out. (CORRECT, but it was because she is HIDING SOMETHING)
+# [6.3] He wrapped his right arm around my throat, putting me into a headlock (INCORRECT, never had my arm around
+#       this bitches throat, or neck. I shut the door, and we STOOD THERE NEXT TO THE DOOR, until she started 
+#       HITTING ME, and then I grabbed her by the WRISTS, and then HELD HER WRISTS UP AGAINST THE WALL NEXT TO 
+#       THE DOOR. Which means, at NO POINT WHATSOEVER, was my mother in a HEADLOCK, nor did I have my HANDS
+#       around her fucking neck. Are we CLEAR here...? I was charged with crimes I didn't commit...? Yeah.)
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# While he had his arm around my throat I tried to keep my chin down[7].
+# [7] (INCORRECT)
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# I began to struggle and he stated the more I fought him the tigher he would make it[8].
+# [8.1] I began to struggle (CORRECT)
+# [8.2] He stated the more I fought him the tighter he would make it. (INCORRECT)
+#       I did say that "EVERY TIME THAT YOU FUCKING SQUIRM..." but I was UNABLE TO FINISH THE SENTENCE.
+#       So that right there, is a matter of OPINION really... but, considering that a number of her statements
+#       have been proven to be INCREDULOUS...?
+#       Really any judge that isn't paid off or understands how justice is SUPPOSED to work, is gonna take this
+#       into consideration.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# As I struggled, he tightened his grip, and then tried to put his leg around my leg and bring me to the floor[9].
+# [9.1] As I struggled, he tightened his grip. (INCORRECT)
+#       Since she's stated that I had her in a HEADLOCK, the statement is INCORRECT.
+#       I had my hands around her WRISTS, and I was definitely keeping a tight grip on those.
+#       Because as I've stated, she was assaulting me, has done so many fucking times, and I always get hurt.
+#       But- she NEVER GETS IN TROUBLE FOR IT.
+# [9.2] Then he tried to put his leg around my leg and bring me to the floor. (CORRECT)
+#       This is a manuver that even the POLICE use, to RESTRAIN a suspect and to place them under ARREST.
+#       LAW ENFORCEMENT 101, "Don't HURT the suspect, but IMMOBILIZE them and then put the handcuffs on."
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# I continued to struggle because I knew if he got me to the floor it was going to be bad[10].
+# [10] (INCORRECT)
+#      My mother knows I wasn't trying to hurt her at all. 
+#      I wasn't bringing her to the floor to hurt this bitch.
+#      It's pretty obvious in the recording, that I was pretty fucking upset about believing that she might've 
+#      had some hand in having my father murdered in 1995, fo the $50K WORKERS COMPENSATION MONEY. 
+#      MONEY IS A PRETTY COMPELLING MOTIVATION TO DO SOMETHING FUCKING SINISTER.
+#      When I told my AUNT NANCY SMITH this shit back on JULY 12th, 2020...
+#      She was literally SO FUCKING OFFENDED... she kicked me out of her house.
+#      But- the COOL thing is, MY MOTHER DIDN'T MENTION ANYTHING ABOUT MY ACCUSATION TO SARA DERUSSO, RIGHT...?
+#      THAT MEANS, SHE WAS COVERING THAT SHIT UP IN HER STATEMENT.
+#      "WHY WOULD YOUR MOTHER COVER THAT UP IN HER STATEMENT...?", is the question that NANCY will probably ask.
+#      Uh, because bitch... my mother is either GOING SENILE, or DEMENTIA, OR... she genuinely had some malicious
+#      intention toward my father, which is WHY THEY GOT INTO THESE SAME HEATED ARGUMENTS IN THE RECORDING.
+#      NOBODY ELSE WOULD KNOW THIS, because it ONLY EVER HAPPENED IN FRONT OF ME.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# I told Michael he was hurting me and I was going to call 911[11].
+# [11] (INCORRECT) Pretty sure I kept telling her that I was gonna have her arrested.
+#                  At no point did she say that she was going to call 911.
+#                  Oh wow, that's a pretty dead giveaway right there, right...?
+#                  She's just CONJURING UP THINGS THAT SHE THOUGHT SHE SAID, but not ACTUALLY said.
+#                  So, my mother is either STUPID, or... she has a SERIOUS PSYCHOLOGICAL ISSUE.
+#                  ONE THAT HAS DIRECTLY IMPACTED ME FOR MY ENTIRE LIFE.
+#                  Cool...? Dumb lazy fuckin' cunts misjudging me left and right...?
+#                  I was traumatized as a fucking child and everybody at school made fun of me...?
+#                  I was molested by my cousin SHAWN BROZOWSKI when I was 4...?
+#                  I was molested by JEFF TRUESELL when I was 7...?
+#                  My father was MURDERED by 3 niggers in OCTOBER 1995 made to look like a FOILED ROBBERY...?
+#                  I had AUTISM SPECTRUM DISORDER MY WHOLE LIFE, and developed PTSD and ANXIETY FROM THIS SHIT...?
+#                  MOM EMOTIONALLY ABANDONED ME AFTER MY FATHER DIED...?
+#                  MOM SCREAMED AND YELLED AT ME ALL THE TIME...?
+#                  I WOUND UP HAVING TO ASSAULT SOME KID NAMED JEFF TRUESELL WITH A BASEBALL BAT, BECAUSE HE KEPT
+#                  BREAKING INTO OUR FUCKING HOUSE, AND I WAS CHARGED WITH A FELONY FOR THAT...?
+#                  THAT FELONY CAUSED PERMANENT DAMAGE TO MY CAPABILITIES IN LIFE...?
+#                  Yeah. All of that shit is true.
+#                  What ISN'T TRUE...? Is that my mother said she was gonna call 911. AND...
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# He tried to get my cell phone away from me but I kept a tight grip[12].
+# [12] (DEFINITELY INCORRECT)
+#      I had my hands around her wrists that whole time, so there's NO WAY that she was able to grab her phone.
+#      Not to mention, she never said that she was going to call 911.
+#      I told HER, that I was gonna call the police and have HER arrested.
+#      Because, I think an official investigator should actually INVESTIGATE HER for CONSPIRACY TO COMMIT MURDER 
+#      TO MICHAEL EDWARD COOK.
+#      BUT ALSO, MY AUNT TERRI COOK as well.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# I begged Michael to let me go and told him I would stop trying to get away[13].
+# [13] (DEFINITELY INCORRECT)
+#      She cried for HELP, but I wasn't HURTING HER, I was RESTRAINING HER.
+#      Her cries for HELP, sound like "HELP, I HAD SOMEONE MURDER MY HUSBAND AND MY SON FOUND OUT~! HELP!"
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# Michael loosened his grip and I was able to get out of the room[14].
+# [14] (CORRECT, because she said "I'M CHILL...")
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# As I was leaving he continued to yell at me[15].
+# [15] (INCORRECT)
+#      It can be heard in the audio recording.
+#      The same exact audio recording that I uploaded before the police even knew about the incident.
+#      It's almost as if some lazy fucks have badges, and made an unlawful arrest and took a bullshit statement.
+#      Oh wait, that IS what it is.
+#      Huh. 
+#      "But I could SWEAR, that if this dude was INNOCENT, they would've COLLECTED that shit, right...?"
+#      Think again.
+#      They didn't do that.
+#      Because, AS SHE WAS LEAVING I went to my PHONE to CALL 911 MYSELF...? 
+#      And, I had NO IDEA that the ENTIRE EVENT WAS ACTUALLY BEING RECORDED.
+#      Because THAT PARTICULAR RECORDING is 16h7m54s, and guess what...?
+#      It contains some shit called CONTEXT, such as what happened the night BEFORE,
+#      AND, what happened earlier that morning.
+#      Was there a shouting match earlier that morning...?
+#      NOPE. Just, me pounding away at the fuckin' keyboard, editing my book.
+#      I was taking plenty of screenshots of this exploit, SCRIBBLES, and those can be found with that DATE,
+#      in the fuckin' link I provided...
+#      Weird, right...?
+#      As for the AUDIO RECORDING, well... TO MY WILD AMAZEMENT, I FUCKING UPLOADED IT TO MY GOOGLE DRIVE
+#      ACCOUNT AS FAST AS I FUCKING COULD... I believe it took like 6 seconds to SAVE the file, and UPLOAD it.
+#      That was an 888MB file by the way. So. Imagine if it was like a slow fucking WIFI link, it would've taken 
+#      just enough time, to be WAY LATER than her 911 call, instead of BEFORE it.
+#      That's fuckin' REALLY COOL to know, huh...?
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# I walked over to my neighbors house as fast as I could and called 911[16].
+# (^ CORRECT) 
+#      But- what is the timestamp for the CALL RECEIVED by 911 dispatch...?
+#      Is it like, CHRONOLOGICALLY AFTER, the TIMESTAMP of my UPLOAD to GOOGLE DRIVE...?
+#      WELL, if that CALL RECEIVED TIME says ANYTHING higher than (06/28/2022 1:02 PM)...?
+#      Then that means that my fuckin evidence came in FIRST PLACE in that rate.
+#      An 888MB audio file that contains 16h7m54s of CONTEXT and the ARGUMENT WE JUST HAD...?
+#      I'm gonna go out on a limb here and suggest that JUDGE JOE FEDORA should see that as 
+#      a DIRECT VIOLATION OF LAW ENFORCEMENT, and RECOMMEND THAT SARA DERUSSO have her employment
+#      TERMINATED.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# My neck and hip are sore from the struggle but I do not need medical assistance[17].
+# (^ Probably correct...?)
+#      But, if the situation was so BAD to warrant my ILLEGAL ARREST...
+#      ...then howcome no medical assitance was required...?
+#      Is it becuse some dumb bitch cried wolf...?
+#      I think it fuckin definitely is the case.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# I would like to press charges against my son Michael for hurting me and would like an order of protection[18].
+# (^ Somewhat correct...?)
+#      For someone that was SUPPOSEDLY HURT, where are the pictures of the BRUISES, and why did she not need
+#      medical assistance...? WELL... it's mainly because my mother wanted to evict me from the house without
+#      having to spend the $750 eviction fee. It's literally that simple. She saw this as a perfect opportunity,
+#      to get rid of the annoying child I've always been, because she's an evil bitch like that.
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# 
+# [CONCLUSION]
+# 
+# I hope that I've raised some AWARENESS as to HOW HONEST OF A PERSON I AM, and HOW MUCH HARDER I WORK THAN THE
+# FUCKING POLICE. Because...? I'm not saying that ALL of the police are LAZY, or MISINFORMED...? But- this is 
+# a FUCKING PATTERN that has developed in both my FATHER'S LIFE... as well as MINE.
+#
+# I do not know what the fucking problem is that people had with ME or my FATHER...?
+# But what I CAN say, is that I learned a LOT from what he used to tell me as a child.
+# A LOT more than my mother ever has.
+# 
+# I look at it like this.
+# My father, nurtured my curiosity because he was a smart dude, AND, he APPLIED HIMSELF.
+# My mother, dropped out of college because it was TOO TOUGH. 
+# She ALSO had to FILE FOR BANKRUPTCY in the 80's with JUDGE MAHONEY.
+# She has NEVER been ATTENTIVE TO DETAIL, I think she even TRIED TO POISON ME when I was 4 or 5 years old,
+# and I got SO FUCKING SICK that she had to BRING ME TO MEDICALL, I THOUGHT I WAS GOING TO DIE.
+# I forgot about ALL of that shit until I found it all in that BOX, that I found the card from Dr. Kite.
+# 
+# Yeah, the thing is, my mother has always played this game where I'll say something I remember, and she'll fuckin'
+# try to say "That didn't happen..."
+# 
+# So like, CAPTAINS PUB, SEBASTIANS, HAROLDS PUB, a bunch of other fuckin BARS that she used to DRAG ME ALONG TO...?
+# My mother liked to go to bars, right...?
+# 
+# And I remember this one time she brought me to HAROLDS PUB on WOLF ROAD, because my mother worked at:
+# __________________________________________________________________
+# | DOBBS INTERNATIONAL | 17 COMPUTER DRIVE EAST, COLONIE NY 12205 |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# ...anyway, she would go to some of these bars after work, and sit around until the TRAFFIC on the
+# NORTHWAY died down. One time, she was talking to some dude at HAROLDS PUB, and he flat out handed me a $50 bill.
+# 
+# Him and my mother were like "Let's see what the boy wants to do with that $50."
+# My mother was like "Let ME have that $50 bucks, honey, so I can spend it on the bills."
+# And I was like "Nah bitch, I wanna spend it on something I fuckin' want..."
+#
+# I didn't SAY those words, but I was like (5) years old at the time, and I had her bring me to:|
+# ______________________________________________________________
+# | TOYS R' US | 17 Clifton Country Rd, Clifton Park, NY 12065 |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# And when she did...? I got myself a fuckin' LUNCHBOX, and SUPER MARIO BROTHERS 2.
+# The COOL thing is, I have no fuckin' clue if I was supposed to get CHANGE or anything like that...
+# But- ma dukes kept whatever was left.
+# Cause that's how my mother has always been... a little shiesty and deceptive.
+# 
+# SUPER MARIO BROTHERS 2 was not quite what I expected it to be, as it felt like a TOTALLY different
+# game than the FIRST game. The ORIGINAL SUPER MARIO BROTHERS 2 was ONLY RELEASED IN JAPAN.
+# Because it was a fucking VERY DIFFICULT GAME TO PLAY...
+# 
+# Japan was REALLY GOOD at making DIFFICULT GAMES...
+# ...not that insightful into how to make the games more FUN TO PLAY, for people in AMERICA.
+# 
+# The SMB2 American release was actually Doki Doki Panic, but rebadged as Super Mario Brothers 2.
+# Anyway... yeah. My mother always thought that I was some dumb kid that didn't remember anything,
+# but I can tell ya, that incident at HAROLDS PUB was back in like 1988 or 1989, when my father 
+# was attending HUDSON VALLEY COMMUNITY COLLEGE with JESSE PICKETT.
+#
+# I remember one time my father brought me to CLASS with him, I don't remember any of the PEOPLE
+# in his CLASS, but I DO distinctly remember him bringing me over to DOBBS INTERNATIONAL immediately
+# after class one time, and I'm fairly certain that is the first time that JESSE PICKETT saw me.
+#
+# I have no earthly idea if this dude has malicious intent toward me, or had something to do with
+# my father being killed, or the conspiracy I believe occurred, but- I do get a feeling that 
+# SOMEONE HAS BEEN FUCKIN WATCHING ME FOR A LONG FUCKING TIME.
+# And, the ATTENTION IS NOT FUCKING GOOD.
+#
+# Because, I believe that the MURDER ATTEMPT on MAY 26th, 2020 was RELATED TO THE CYBERATTACK
+# on JANUARY 15th, 2019 at COMPUTER ANSWERS, and that my FATHER being MURDERED when I was 10 years
+# old on OCTOBER 23rd, 1995, and that SANTA SAMMY CASSARO'S MURDER on AUGUST 1st, 1996...
+# ...they ALL HAVE SOME RELATED THEME. As in, if I'm willing to suspect that my mother had something
+# to do with the CONSPIRACY to COMMIT MURDER to MICHAEL EDWARD COOK...?
+# 
+# Then that means, I AM NOT SOMEONE THAT IS EASILY FOOLED, like MOST OTHER PEOPLE.
+# That ALSO means, that if I SUSPECT SOMETHING, IT IS PROBABLY MORE ACCURATE THAN ANYONE ELSES OPINION.
+# Because, suppose I was OFFERED A JOB TO INVESTIGATE PEOPLE FOR A LIVING, or being a PROGRAMMER that 
+# does that... If I was NEVER ABLE TO DETECT SOME UGLY SINISTER SECRET that my MOTHER WAS HIDING...?
+# 
+# Then, I would make for a fucking lousy investigator, wouldn't I...?
+# and that's the sad reality for guy like MICHAEL ZURLO, and SARA DERUSSO, and many other guys at the
+# SCSO and NYSP. Something is hiding under ALL of their fuckin' noses, OR- they're ALL in on it.
+#
+# However, I know that NEITHER is necessarily the case, but rather, SOME of them are in on it while
+# the REST are not.
+# 
+# But if I tell my mother about shit like that, she's gonna lie to a bunch of people about me.
+# Then, people will have PREJUDICE toward me, and that'll prevent me from achieving ANY MODICUM OF SUCCESS.
+# Because, lets face it.
+# My mother did what she did out of SELF PRESERVATION.
+# Because no loving mother would ever act the way she does.
+# 
+# Even CONNIE OLSEN told me that SOMETHING IS FUCKING WRONG WITH HER.
+# I am FAIRLY CERTAIN, it is because my MOTHER, has a SERIOUS PSYCHOLOGICAL CONDITION that has NEVER 
+# BEEN ADDRESSED, or DIAGNOSED.
+#
+# Because of the way my grandmother ANDREE KIVLEN raised my mother, Richard Kivlen, and Philip Kivlen.
