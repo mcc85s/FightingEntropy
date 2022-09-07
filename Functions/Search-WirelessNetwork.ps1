@@ -27,6 +27,7 @@
 .Example
 #>
 
+
 Class Privelege
 {
     [Object] $Principal
@@ -35,6 +36,7 @@ Class Privelege
     [Object] $Version
     [Bool]   $IsDesktop
     [Object] $Module
+    [String] $Function
     Privelege()
     {
         # Checks the current Windows Identity
@@ -48,27 +50,11 @@ Class Privelege
         # Sets the IsAdmin flag
         $This.IsAdmin   = $True
 
-        # Get execution policy
-        $This.Execution = Get-ExecutionPolicy
-        If ($This.Execution -ne "Bypass")
-        {
-            Try
-            {
-                Set-ExecutionPolicy Bypass -Scope Process -Force
-            }
-            Catch
-            {
-
-            }
-
-            $This.Execution = Get-ExecutionPolicy
-            If ($This.Execution -ne "Bypass")
-            {
-                Throw "Unable to alter the execution policy"
-            }
-        }
-
-        $This.Version = Get-Variable PSVersionTable | % Value
+        $This.Exec()
+    }
+    Requirements()
+    {
+        $This.Version   = Get-Variable PSVersionTable | % Value
         If ($This.Version.PSEdition -ne "Desktop")
         {
             Throw "Must use a Windows PowerShell v5.1 host, in order to use this function."
@@ -85,18 +71,26 @@ Class Privelege
             Throw "[FightingEntropy(π)][!] not installed, visit https://github.com/mcc85s/FightingEntropy" 
         }
     }
+    Exec()
+    {
+        $This.Execution = Get-ExecutionPolicy
+    }
 }
 
 $Srp = [Privelege]::New()
 If ($Srp)
 {
-    $URL      = "{0}/Scripts/Load-WirelessNetwork.ps1?raw=true" -f $Srp.Module.Base
-    $Function = Invoke-RestMethod $URL 
-    If ($Function)
+    If ($Srp.ExecutionPolicy -ne "Bypass")
     {
-        Invoke-Expression $Function
-        Start-Sleep -Seconds 1
-        Load-WirelessNetwork
+        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+    }
+
+    $Srp.Requirements()
+    $Srp.Function = Invoke-RestMethod ("{0}/Scripts/Load-WirelessNetwork.ps1?raw=true" -f $Srp.Module.Base)
+    If ($Srp.Function)
+    {
+        Invoke-Expression $Srp.Function
+        Add-Type -AssemblyName PresentationFramework
     }
 }
 
