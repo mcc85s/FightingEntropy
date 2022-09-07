@@ -37,7 +37,6 @@
           TODO:
 .Example
 
-
 $Deck = Get-Sponsorship -Name "Obtaining a SPONSORSHOP/INVESTMENT"
 
 $Deck.Add(@(
@@ -110,7 +109,8 @@ $Deck.Add(@(
 "    ",
 "/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\",
 "    ",
-"# Set repo base, open a URL array, and load the module FighitngEntropy",
+"# Set repo base, open a URL array, and load the module FightingEntropy",
+"    ",
 "PS Prompt:\> `$Repo  = 'https://github.com/mcc85s/FightingEntropy'",
 "PS Prompt:\> `$List  = @( )",
 "PS Prompt:\> Import-Module FightingEntropy",
