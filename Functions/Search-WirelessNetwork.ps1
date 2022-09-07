@@ -37,7 +37,6 @@ Class Privelege
     [Object] $Version
     [Bool]   $IsDesktop
     [Object] $Module
-    [String] $Function
     Privelege()
     {
         # Checks the current Windows Identity
@@ -64,7 +63,7 @@ Class Privelege
 
         Try
         {
-            Import-Module FightingEntropy -EA 0
+            Import-Module FightingEntropy
             $This.Module = Get-FEModule
         }
         Catch
@@ -87,11 +86,6 @@ If ($Srp)
     }
 
     $Srp.Requirements()
-    $Srp.Function = Invoke-RestMethod ("{0}/Scripts/Load-WirelessNetwork.ps1?raw=true" -f $Srp.Module.Base)
-    If ($Srp.Function)
-    {
-        Invoke-Expression $Srp.Function
-    }
 }
 
 Function Search-WirelessNetwork
