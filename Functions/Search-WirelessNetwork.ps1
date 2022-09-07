@@ -95,6 +95,8 @@ If ($Srp)
     If ($Function)
     {
         Invoke-Expression $Function
+        Start-Sleep -Seconds 1
+        Load-WirelessNetwork
     }
 }
 
