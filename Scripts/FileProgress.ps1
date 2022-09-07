@@ -2,6 +2,7 @@
 # So, if I have a 252GB file that I accidentally deleted, and I wanna know WHEN the program will be done
 # recovering the file...? Voila.
 # Usage at the bottom...
+
 Class FileProgress
 {
     Hidden [Object] $Item
