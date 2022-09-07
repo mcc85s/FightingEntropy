@@ -26,7 +26,8 @@
           TODO:
 .Example
 #>
-
+# Adds type for the PresentationFramework/GUI
+Add-Type -AssemblyName PresentationFramework
 
 Class Privelege
 {
@@ -90,7 +91,6 @@ If ($Srp)
     If ($Srp.Function)
     {
         Invoke-Expression $Srp.Function
-        Add-Type -AssemblyName PresentationFramework
     }
 }
 
