@@ -2,7 +2,6 @@
 # So, if I have a 252GB file that I accidentally deleted, and I wanna know WHEN the program will be done
 # recovering the file...? Voila.
 # Usage at the bottom...
-
 Class FileProgress
 {
     Hidden [Object] $Item
@@ -35,10 +34,38 @@ Class FileProgress
         $Date        = Get-Date
         $Percent     = ($File.Length*100)/$This.Total
         $Remain      = 100-$Percent
-        $Elapsed     = [TimeSpan]($Date-$This.Item.CreationTime)
+        $Elapsed     = [TimeSpan]($Date-$File.CreationTime)
         $Unit        = [TimeSpan]($Elapsed/$Percent)*$Remain
         $End         = $Date + $Unit
-        Return ("({0:n2}%) {1}" -f $Percent, $End.ToString())
+        $Span        = [Timespan]($End-$Date)
+        Return ("({0:n2}%) {1} [{2}]" -f $Percent,$End.ToString("(MM/dd/yy) HH:mm:ss"),$This.Eta($Span))
+    }
+    [String] Eta([Object]$S)
+    {
+        If ($S.Days -gt 0)
+        {
+            Return "{0:d2}d {1:d2}h {2:d2}m {3:d2}s" -f $S.Days, $S.Hours, $S.Minutes, $S.Seconds
+        }
+
+        ElseIf ($S.Days -eq 0 -and $S.Hours -gt 0)
+        {
+            Return "{0:d2}h {1:d2}m {2:d2}s" -f $S.Hours, $S.Minutes, $S.Seconds
+        }
+
+        ElseIf ($S.Days -eq 0 -and $S.Hours -eq 0 -and $S.Minutes -gt 0)
+        {
+            Return "{0:d2}m {1:d2}s" -f $S.Minutes, $S.Seconds
+        }
+
+        ElseIf ($S.Days -eq 0 -and $S.Hours -eq 0 -and $S.Minutes -eq 0 -and $S.Seconds -gt 0)
+        {
+            Return "{0:d2}s" -f $S.Seconds
+        }
+
+        Else
+        {
+            Return $Null
+        }
     }
 }
 
@@ -47,4 +74,4 @@ $Max    = 271540746240
 $File   = [FileProgress]::New($Path,$Max)
 $File.Rate()
 
-# (4.99%) 9/6/2022 5:30:43 PM
+# (86.72%) (09/06/22) 10:30:27 [25m 29s]
