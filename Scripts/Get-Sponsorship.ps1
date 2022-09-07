@@ -36,81 +36,169 @@
           Version - 2021.10.0 - () - Finalized functional version 1.
           TODO:
 .Example
+
+
 $Deck = Get-Sponsorship -Name "Obtaining a SPONSORSHOP/INVESTMENT"
 
 $Deck.Add(@(
-"Suppose I, Michael C. Cook Sr, wanted to get FUNDING for my COMPANY...",
+"Suppose I, Michael C. Cook Sr., wanted to get FUNDING for my COMPANY...",
 "Secure Digits Plus LLC...?",
 "    ",
 "Well...",
-"What could I DO, in order to PROVE,",
+"What could I, Michael C. Cook Sr., DO... in order to PROVE,",
 "that I'm WORTH making a rather SIGNIFICANT INVESTMENT, of like, CAPITAL...?",
 "    ",
 "Ya know, so I don't have to add a MAKE A DONATION button to my work,",
 "Or like,",
-"HARASS PEOPLE or ANNOY the (FBI/NSA/DHS/CIA) for a fuckin' INVESTMENT...?",
+"HARASS PEOPLE or ANNOY the (FBI/NSA/DHS/CIA) for an INVESTMENT...?",
 "    ",
 "Well, for starters, (1) idea comes to mind...",
 "    ",
 "Actually, a couple. Continuing to be a 100% smartass. And then...",
-"USING A PROGRAM I MADE TO COLLECT NEARBY WIFI RADIOS/NETWORKS",
+"Using a PROGRAM that I MADE... to collect nearby WIFI RADIO/NETWORK info...",
 "Not unlike the CENTRAL INTELLIGENCE AGENCY TOOL, in VAULT 7, called 'ELSA'."))
 
 $Deck.Add(@(
-"So, take for instance this URL below...",
-"I'll chunk it out into 'VARIABLES' so that people will be able to SEE...",
-"this 'thing' I started a few years ago, called a GitHub project...",
-"...and with this 'GitHub' project, EVERYONE THAT HAS EVER KNOWN ME...",
-"...will be able to SEE for CERTAIN...",
-"...that I've been WORKING MY ASS OFF FOR THE LAST 3.5 YEARS...",
-"...so that I could have an EDGE over the fuckin' CYBERCRIMINALS.",
+"So, take for instance the utility in this video, right here...",
+"  ____________________________________________________________",
+"  | Wireless Scanning Utility | https://youtu.be/35EabWfh8dQ |",
+"  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯",
 "    ",
-"`$Repo  = 'github.com/mcc85s/FightingEntropy'",
-"`$Trunk = 'blob/main/Functions'",
-"`$Name  = 'Search-WirelessNetwork.ps1'",
+"Well, if you're running Windows 10...? Or 11...?",
+"And, you have a WiFi Adapter in your particular device...?",
+"Buddy, you could TOTALLY launch this utility YOURSELF...~!",
 "    ",
-"Probably doesn't LOOK like a FULL URL quite yet...?",
-"That's cause... it needs to be CONCATENATED... As in, 'assembled'.",
-"`$URL = `$Repo, `$Trunk, `$Name -join '/'",
-"    ",
-"NOW, it'll look like this..."))
+"I'll chunk it out into several instructions."))
 
 $Deck.Add(@(
+"First, gotta make sure that the module is INSTALLED.",
+"Open a PowerShell console in (Administrator) mode.",
+"Then, enter the following commands...",
 "    ",
 "/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\",
 "    ",
-"PS C:\Users\mcadmin> `$URL",
-"    ",
-"github.com/mcc85s/FightingEntropy/blob/main/Functions/Search-WirelessNetwork.ps1",
+"PS Prompt:\> `$URL = 'github.com/mcc85s/FightingEntropy/Install.ps1?raw=true'",
+"PS Prompt:\> Invoke-RestMethod `$URL | Invoke-Expression",
 "    ",
 "\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/",
 "    ",
-"...and then we can LOAD THIS FUNCTION INTO a PowerShell v5.1 HOST LIKE SO...",
+"Now if you ran those (2) commands...? [FightingEntropy(π)] should install itself.",
+"No muss, no fuss. Removal is just as simple, too.",
+"To do that...? Swap the word 'Install' with 'Remove' in the `$URL variable,",
+"and then repeat the same thing.",
+"Boom."))
+
+$Deck.Add(@(
+"Second, until I'm ready to update the version of the module, gotta load up (2)",
+"functions. I'll provide instructions to do that below.",
+"    ",
+"But first, this 'thing' that I started a FEW years ago...?",
+"...its called a 'GitHub' project, and the cybercriminals KNOW that I'm...",
+"...literally calling em all a bunch of morons out of the gate.",
+"    ",
+"With this 'GitHub' project, EVERYONE that has EVER KNOWN ME...",
+"...even those who have never heard of me...",
+"...they could go to it, and then they'd be able to SEE for CERTAIN...",
+"...that I've been WORKING MY TAIL OFF, for the last, like, 3.5 years...",
+"...so that I could have an EDGE over the CYBERCRIMINALS."))
+
+$Deck.Add(@(
+"Since I'm not ready to update the ENTIRE REPOSITORY or VERSIONS yet...",
+"...I'll provide instructions on how to get the GUI I just mentioned...",
+"...to show up on any system that has a WiFi adapter...",
+"...and is running Windows PowerShell v5.1.",
 "    ",
 "/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\",
 "    ",
-"PS C:\Users\mcadmin> Invoke-RestMethod `$URL?raw=true | Invoke-Expression",
+"# Set repo base, open a URL array, and load the module FighitngEntropy",
+"PS Prompt:\> `$Repo  = 'https://github.com/mcc85s/FightingEntropy'",
+"PS Prompt:\> `$List  = @( )",
+"PS Prompt:\> Import-Module FightingEntropy",
 "    ",
-"\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/",
-"    "))
+"\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/"))
+
+$Deck.Add(@(
+"Now that the module is loaded, time to load the (2) functions into memory.",
+"The first loads the WiFi scanner prerequisites...",
+"...the Windows System Runtime types assembly...",
+"...and the custom (CSharp/C#) classes that interface with wlanapi.dll",
+"    ",
+"/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\",
+"    ",
+"# Loads wireless network prerequisites (Function 1 of 2)",
+"    ",
+"PS Prompt:\> `$Trunk = 'blob/main/Scripts'",
+"PS Prompt:\> `$Name  = 'Load-WirelessNetwork.ps1'",
+"PS Prompt:\> `$List += (`$Repo, `$Trunk, `$Name -join '/') + '?raw=true'",
+"    ",
+"\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/"))
+
+$Deck.Add(@(
+"Time to load the GUI and the radio interface.",
+"    ",
+"/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\",
+"    ",
+"# Initializes utility to search for wireless networks (Function 2 of 2)",
+"    ",
+"PS Prompt:\> `$Trunk = 'blob/main/Functions'",
+"PS Prompt:\> `$Name  = 'Search-WirelessNetwork.ps1'",
+"PS Prompt:\> `$List += (`$Repo, `$Trunk, `$Name -join '/') + '?raw=true'",
+"    ",
+"\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/"))
+
+$Deck.Add(@(
+"Now that the URLs are specified, we can now download these functions into memory.",
+"    ",
+"/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\",
+"    ",
+"# Load/Execute link #1",
+"    ",
+"PS Prompt:\> Invoke-RestMethod `$List[0] | Invoke-Expression",
+"    ",
+"# Load/Execute link #2",
+"    ",
+"PS Prompt:\> Invoke-RestMethod `$List[1] | Invoke-Expression",
+"    ",
+"\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/"))
 
 $Deck.Add(@(
 "If you performed the above, and ANY ERRORS SHOW UP...?",
 "...it is because you haven't loaded the function...",
-"...using PowerShell v5.1 on Windows..."
+"...using PowerShell v5.1 on Windows...",
 "...which has the Presentation Framework (for the GUI)...",
 "...and the Windows Runtime Extensions (for the Radios)...",
 "...otherwise, you should be able to perform the following:",
 "    ",
 "/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\",
 "    ",
-"PS C:\Users\mcadmin> Search-WirelessNetwork",
-"    ",
-"<PowerShell starts doin' some really cool shit in the background...>",
-"<A few seconds later, a GUI pops up with info that looks like this...>",
+"# Launch the utility",
+"PS Prompt:\> Search-WirelessNetwork",
 "    ",
 "\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/",
-"    "))
+"    ",
+"At which point...",
+"PowerShell's gonna start doin' some REALLY cool shit in the background...",
+"...basically the equivalent of Jeffrey Snover tellin' red rover to move over...",
+"...then a few seconds later, a GUI will pop up with info that looks like this..."))
+
+$Deck.Add(@(
+"Now, those pictures show the GRAPHICAL USER INTERFACE that is seen in this video...",
+"  ____________________________________________________________",
+"  | Wireless Scanning Utility | https://youtu.be/35EabWfh8dQ |",
+"  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯",
+"Any GOOD network penetration tester will be able to get this SAME INFORMATION...",
+"...by using programs such as Wireshark, Solarwinds, or really, by being skilled...",
+"...at programming and networking, like I am.",
+"However- not all EXPERTS are created EQUALLY.",
+"Nah. Sometimes people call themselves EXPERTS... but they don't know how to create",
+"...their own TOOLS. This should showcase that I'm an ACTUAL EXPERT and that I...",
+"...know how to create my OWN TOOLS. And, SO DO THE CYBERCRIMINALS...",
+"    ",
+"Ultimately...? Some people get paid a LOT OF MONEY and they are NOWHERE CLOSE...",
+"...to being AS SKILLED AS I AM, at:",
+"______________________________________________________________________________",
+"| APPLICATION DEVELOPMENT - VIRTUALIZATION - NETWORK & HARDWARE MAGISTRATION |",
+"¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯"))
 
 $Deck.Draw()
 #>
