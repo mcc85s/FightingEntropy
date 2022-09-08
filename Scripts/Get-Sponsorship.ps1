@@ -76,7 +76,7 @@ $Deck.Add(@(
 "    ",
 "/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\",
 "    ",
-# Installs FightingEntropy",
+"# Installs FightingEntropy",
 "    ",
 "PS Prompt:\> `$URL = 'github.com/mcc85s/FightingEntropy/Install.ps1?raw=true'",
 "PS Prompt:\> Invoke-RestMethod `$URL | Invoke-Expression",
