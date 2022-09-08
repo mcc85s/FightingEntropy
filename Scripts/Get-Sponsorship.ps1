@@ -163,11 +163,9 @@ $Deck.Add(@(
 
 $Deck.Add(@(
 "If you performed the above, and ANY ERRORS SHOW UP...?",
-"...it is because you haven't loaded the function...",
-"...using PowerShell v5.1 on Windows...",
-"...which has the Presentation Framework (for the GUI)...",
-"...and the Windows Runtime Extensions (for the Radios)...",
-"...otherwise, you should be able to perform the following:",
+"...it is because you haven't loaded the function using PowerShell v5.1 on Windows.",
+"And you gotta, cause it has the Presentation Framework (for the GUI)...",
+"...and the Windows Runtime Extensions (for the Radios). Otherwise, now you can...",
 "    ",
 "/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\",
 "    ",
@@ -177,8 +175,7 @@ $Deck.Add(@(
 "    ",
 "\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/",
 "    ",
-"At which point...",
-"PowerShell's gonna start doin' some REALLY cool shit in the background...",
+"At which point PowerShell's gonna start doin' some REALLY cool shit in the background...",
 "...basically the equivalent of Jeffrey Snover tellin' red rover to move over...",
 "...then a few seconds later, a GUI will pop up with info that looks like this..."))
 
