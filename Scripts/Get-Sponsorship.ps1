@@ -76,6 +76,8 @@ $Deck.Add(@(
 "    ",
 "/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\",
 "    ",
+# Installs FightingEntropy",
+"    ",
 "PS Prompt:\> `$URL = 'github.com/mcc85s/FightingEntropy/Install.ps1?raw=true'",
 "PS Prompt:\> Invoke-RestMethod `$URL | Invoke-Expression",
 "    ",
@@ -84,8 +86,7 @@ $Deck.Add(@(
 "Now if you ran those (2) commands...? [FightingEntropy(π)] should install itself.",
 "No muss, no fuss. Removal is just as simple, too.",
 "To do that...? Swap the word 'Install' with 'Remove' in the `$URL variable,",
-"and then repeat the same thing.",
-"Boom."))
+"and then repeat the same thing. Boom."))
 
 $Deck.Add(@(
 "Second, until I'm ready to update the version of the module, gotta load up (2)",
