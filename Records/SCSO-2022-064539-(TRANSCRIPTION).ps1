@@ -83,6 +83,7 @@ Class TranscriptionEntry
 Class Transcription
 {
     [String]       $Name
+    [Object]       $File
     [String]      $Title
     [DateTime]    $Start
     [DateTime]      $End
@@ -93,6 +94,7 @@ Class Transcription
     Transcription([Object]$File,[String]$Title,[String]$URL)
     {
         $This.Name     = $File.Name
+        $This.File     = $File
         $This.Title    = $Title
         $This.Start    = $File.Start
         $This.End      = $File.End
@@ -145,15 +147,15 @@ Class TranscriptionFile
     [DateTime]           $Date
     Hidden [UInt64] $SizeBytes
     [String]             $Size
-    #[UInt32] $Channels
-    #[UInt32] $SampleRate
-    #[String] $Precision
+    [UInt32]         $Channels
+    [UInt32]       $SampleRate
+    [String]        $Precision
     [Object]         $Duration
-    #[Object] $Samples
-    #[Object] $CDDASectors
-    #[String] $FileSize
+    [Object]          $Samples
+    [Object]      $CDDASectors
+    [String]         $FileSize
     [String]          $BitRate
-    #[String] $Encoding
+    [String]         $Encoding
     [Object]            $Start
     [Object]              $End
     TranscriptionFile([Object]$Com)
@@ -164,16 +166,19 @@ Class TranscriptionFile
         $This.Date        = $Item.LastWriteTime
         $This.SizeBytes   = $Item.Length
         $This.Size        = "{0:n3} MB" -f ($This.SizeBytes/1MB)
-        #$This.Channels    = $Sx[1]
-        #$This.SampleRate  = $Sx[2]
-        #$This.Precision   = $Sx[3]
-        # $Tx               = $Sx[4] -Split " = "
-        $This.Duration    = [TimeSpan]$This.Detail($Com,27)
-        #$This.Samples     = $Tx[1]
-        #$This.CDDASectors = $Tx[2]
-        #$This.FileSize    = $Sx[5]
-        $This.BitRate     = $This.Detail($Com,28)
-        #$This.Encoding    = $Sx[7]
+
+        Set-Alias sox "C:\Program Files (x86)\sox-14-4-2\sox.exe"
+        $Sx               = sox --i $Item.Fullname | ? Length -gt 0 | % Substring 17
+        $This.Channels    = $Sx[1]
+        $This.SampleRate  = $Sx[2]
+        $This.Precision   = $Sx[3]
+        $Tx               = $Sx[4] -Split " = "
+        $This.Duration    = [TimeSpan]$Tx[0]
+        $This.Samples     = $Tx[1]
+        $This.CDDASectors = $Tx[2]
+        $This.FileSize    = $Sx[5]
+        $This.BitRate     = $Sx[6]
+        $This.Encoding    = $Sx[7]
         $T                = [Regex]::Matches($Item.Name,"^\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}").Value -Split "_"
         $This.Start       = [DateTime]("{0} {1}" -f ($T[0..2] -join "/"), ($T[3..5] -join ":"))
         $This.End         = $This.Start+$This.Duration
@@ -504,8 +509,54 @@ $T.AE(1,"18:51",":I'm gonna process ya, write you an appearance ticket to come b
 $T.AE(1,"19:17",":<Open radio comm>FOUR ONE THREE EIGHT to SHERIFFS DISPATCH")
 $T.AE(4,"19:23",":<Radio>Sheriffs dispatch")
 $T.AE(1,"19:25",":<Open radio comm>I'll be at the Halfmoon Sheriff Substation...")
-$T.AE(0,"19:27")
+$T.AE(0,"19:27",":Before we go in,")
+$T.AE(1,"19:35",":<Open radio comm><Indiscernable>")
+$T.AE(0,"19:36",":Before we go in, uh- do you mind if I talk with you about the events of May 25th into May 26th, 2020...?")
+$T.AE(1,"19:43",":Sure.")
+$T.AE(0,"19:43",":Alright. SCSO-2020-028501, that's the incident record for SCOTT SCHELLING, JEFFREY KAPLAN, and JOSHUA WELCH.")
+$T.AE(1,"19:55",":Ok.")
+$T.AE(0,"19:58",":On May 25th, 2020, I was walking around and I was making audio recordings with my phone. I made 3 audio recordings, and then I uploaded them at the Computer Answers shop. During the THIRD audio recording, someone attempted to strike me with their vehicle, near the CENTER FOR SECURITY, uh- building. Uh, when I got to the CENTER FOR SECURITY building uh- or I apologize, when I got to COMPUTER ANSWERS, I made some uploads, and then I heard a noise in the woods over behind ERIC CATRICALA's funeral home, so I walked behind there and I took some pictures (that TROOPER BORDEN ASKED ABOUT). And uh- And then I wal- I took a picture of the Boomer-McCloud Plaza, and I started recording a video. And then all of a sudden a suspicious white male came from the Halfmoon Sandwich and Sub Shop side, and uh- he showed up at a pretty suspicious moment, he was following me around. I uh- recorded an interaction on video of me speaking with him, and uh, it is my FIRM ESTIMATION and BELIEF, that he had a PROGRAM that was remotely deployed to my smartphone that was TRACKING ME, and allowing him to uh- see where I was going, and uh- record my uh, the environment, basically committing ESPIONAGE. Anyway, uh, he began- he and I spoke for a moment and I said uh, 'Are you from around here...?', and he said 'I am from around here, but I moved away and came back.' And then I said 'Oh, alright. Well uh- do you know this ERIC CATRICALA guy...?', and he says like 'Uh, no.'. And I say 'Well, uh, did you know he's like throwin' bodies into concrete foundations and stuff...?' And the reason why I said that was because I was tryin' to figure out if this dude was doin' something suspicious, and when I said that to him, uh- he seemed to be pretty inquisitive about it. He's like 'What...? I don't understand...?' Well, I was like 'Alright, well, thanks a lot, I appreciate it.' And then I ran across the street, or I STARTED running across the street (but didn't), and then HE started walking away, and then uh- I rec- I uh- was able to capture an interaction of him checking his smartphone and then I had uhm, a suspicion right there and then that HE was watching me on my device. And he was attempting to murder me, and I believe that HE was coordinating an attack with SOMEONE at the FEDERAL BUREAU OF INVESTIGATION.")
+$T.AE(1,"22:19",":Ok.")
+$T.AE(0,"22:22",":I believe that my COUSIN RYAN WARD, and my AUNT TERRI COOK, uh- were, COMPLICIT with uh- CONSPIRING TO, ATTEMPT TO MURDER ME. And that MICHAEL ZURLO, the COUNTY SHERIFF HEADMASTER, FACILITATED this event.")
+$T.AE(1,"22:37",":Ok.")
+$T.AE(0,"22:38",":The rest of what happened that night, AFTER that moment...?")
+$T.AE(1,"22:42",":The rest that happened, what...?")
+$T.AE(0,"22:44",":Well, that was just the BEGINNING of what happened that night...")
+$T.AE(1,"22:46",":Yup.")
+$T.AE(0,"22:50",":Uh, several moments later, another individual passed me, like, uh- another white male. Basically, al- almost IDENTICAL description, had a backpack with a neon light in it's backpack, it was a satchel type backpack with a mesh, mesh type backpack...")
+$T.AE(1,"23:07",":Mhm.")
+$T.AE(0,"23:08",":And uh- he had a wirele- a bluetooth speaker, and he had walked past me, or he had- it- it- it appeared as if he was trying to walk up to me, uh, without raising any suspicion, or like, distracting me with the music or something, so I think he WAS trying to STAB me or something, and he was trying to get very close. But I had my eyes on him, so I saw BOTH of these guys. Anyway, uh- after... Uh- I don't remember what I said to him, but it wasn't very long at all, and then he walked to the laundromat. Both of those kids went to the laundromat, which is the 24-hour laundromat.")
+$T.AE(1,"23:43",":Yup.")
+$T.AE(0,"23:45",":Uh- one of them was driving a black Dodge. And I can't remember if it was a black Dodge Dart, or a black Dodge Charger. But I found that vehicle at the New York State, uh, Corrections Academy, later, uh- on Fathers Day 2020.")
+$T.AE(0,"24:06",":After these two, got on foot and everything, I was RECORDING them on VIDEO, and, it was like a 20 minute long video, and, this 1 kid got in his black car, and he started driving down the road. And then the OTHER kid, ran out of the laundromat and he said, 'Whats the big idea...?' Well, it was at that moment that I realized that they had some type of program that was remotely watching me, or accessing my device. So they were tracking me for months, they did this when I worked at Computer Answers, I think they're associated with my cousin RYAN WARD, and CHRISTINA CZAIKOWSKI. Uh, look, CHRISTINA CZAIKOWSKI is not my cousin, uh- and I believe that they are responsible for uh- pulling an ARMED ROBBERY of MEGHAN ALEXANDER in STILLWATER, in HILLSIDE TRAILER PARK, back in like 2011 or 2012 I believe... and uh, what they did was they went to uh HER fathers house (Guy Alexander) in SKI MASKS and there were 3 of them. And uh, they held her at GUNPOINT, and then they took all of my cousin THOMAS' MONEY, and I believe that this has something to do with the murder of my father back in 1995. I think the same group of people were involved in this, as well as the murder of SAMMY SANTA CASSARO (in 1996).")
+$T.AE(0,"25:21",":So I think there is a GROUP of CRIMINALS, or uh- a GANG, I think they're working with the RUSSIAN MAFIA, and they have been CLOSELY WATCHING AND MONITORING ME...")
+$T.AE(1,"25:32",":Right.")
+$T.AE(0,"25:33",":And when I worked at Computer Answers, they attacked me with a CYBERATTACK on JANUARY 15th, 2019, and I believe they used that attack by using this program called Pegasus.")
+$T.AE(1,"25:44",":Ok.")
+$T.AE(0,"25:46",":So, uhm- as for the 26th, of May 2020, after uh- the kid started running out of the laundromat...? I believe I ended the recording, and I didn't think I had enough time to upload it at the Computer Answers shop. I uh, attempted to dial 911. When I dialed 911 and hit the send button...?")
+$T.AE(1,"26:08",":Yup.")
+$T.AE(0,"26:09",":The TIMER kept rising, but there was no sound emanating from the device. So, I was unable to reach the dispatch station. Uh, I had a feeling that there was NO COINCIDENCE that I had a couple dudes FOLLOWING me, on foot. The- The one dude drove away in his black Dodge Charger, or uh, it was either a Charger or a Dodge Dart, I can't remember which make/vehicle it was, but uh- I later uhm- uh- he, somehow popped out bakc near Grecian Gardens, so the one dude that drove out towards Walmart must've found some BACK WAY to get, like, on foot, near me, and then they had another vehicle parked in the Lowes Home Improvement parking lot. So they had a PREMEDITATED plan, where they were like following me and expected me where I was gonna go and everything. They followed me, and I- I went- I uh, knew what they were doing, I- wasn't- I- I was, very certain they were attempting to murder mem, and uh- I uh- wasn't gonna run becuase I knew I was gonna run out of steam. I uh- got all the way to CENTER FOR SECURITY, and I di the SAME EXACT THING where I dialed 911 and hit the SEND button, and the TIMER kept rising...")
+$T.AE(0,"27:19",":And, uh- I did this in front of the- view of the camera at CENTER FOR SECURITY. And I told SCOTT SCHELLING about that, later that night. SCOTT SCHELLING never wrote it in ANY of his, uh- any of those notes in his report.")
+$T.AE(1,"27:34",":Ok.")
+$T.AE(0,"27:34",":So I think that SCOTT SCHELLING, uh- went back and destroyed the footage of me dialing 911 at that location.")
+$T.AE(1,"27:42",":Hm... Ok. Alright, lets go inside, and continue while I do my paperwork here, and get ya outta here a little bit quicker.")
+$T.AE(1,"27:51","*Closes driver door")
+$T.AE(1,"28:00","*Opens front passenger door")
+$T.AE(1,"28:02","*Hits the unlock button")
+$T.AE(1,"28:04","*Opens rear passenger door")
+$T.AE(0,"28:05","*Unbuckles seat belt, exits sedan 4138")
+$T.AE(1,"28:11","*Shuts the rear passenger door")
+
 # (00:28:11 -> 00:28:35) # Part 3 - Walking into Halfmoon Town Court
+$T.AE(1,"28:11",":We're gonna head right in those doors, up the stairs, and to the left.")
+$T.AE(1,"28:39","*shuffles with keys to open the office door")
+$T.AE(1,"28:43","*Unlocks the office door")
+$T.AE(1,"28:45","*Opens the office door")
+$T.AE(1,"28:47",":There we go. come right in here, and have a seat.")
+$T.AE(0,"29:01",":Mind if I stand...?")
+$T.AE(1,"29:01",":No, sit down. Relax.")
+$T.AE(0,"29:04","*Sits down")
+
 # (00:28:35 -> 01:03:56) # Part 4 - Michael Sheradin processes my "arrest" order
 # (01:03:56 -> 01:17:58) # Part 5 - Michael Sheradin processes my fingerprints but needs some help
 # (01:17:58 -> 01:30:48) # Part 6 - Michael Sheradin finalizes processing my arrest
