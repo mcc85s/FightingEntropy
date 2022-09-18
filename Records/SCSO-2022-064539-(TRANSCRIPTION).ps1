@@ -15,6 +15,7 @@
 # || Wanna know who gives a shit about that...? NOT KATHERINE SUCHOCKI. Cool.                  || 
 # \\___________________________________________________________________________________________// 
 #  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯  
+
 Class TranscriptionParty
 {
     [UInt32] $Index
@@ -82,18 +83,20 @@ Class TranscriptionEntry
 Class Transcription
 {
     [String]       $Name
+    [String]      $Title
     [DateTime]    $Start
     [DateTime]      $End
     [TimeSpan] $Duration
     [String]        $URL
     [Object]      $Party
     [Object]     $Output
-    Transcription([String]$Name,[String]$End,[String]$Length,[String]$URL)
+    Transcription([Object]$File,[String]$Title,[String]$URL)
     {
-        $This.Name     = $Name
-        $This.End      = [DateTime]$End
-        $This.Duration = [TimeSpan]$Length
-        $This.Start    = $This.End-$This.Duration
+        $This.Name     = $File.Name
+        $This.Title    = $Title
+        $This.Start    = $File.Start
+        $This.End      = $File.End
+        $This.Duration = $File.Duration
         $This.URL      = $URL
         $This.Party    = @( )
         $This.Output   = @( )
@@ -108,7 +111,7 @@ Class Transcription
         $This.Party += [TranscriptionParty]::New($This.Party.Count,$Name)
         Write-Host "Party [+] [$Name] added."
     }
-    AddEntry([UInt32]$Index,[String]$Position,[String]$Note)
+    AddEntry([UInt32]$Index,[Object]$Position,[String]$Note)
     {   
         If ($Index -gt $This.Party.Count)
         {
@@ -135,75 +138,49 @@ Class Transcription
 
 Class TranscriptionFile
 {
-    Hidden [Object] $App
-    Hidden [Object] $Root
-    [String] $Name
-    [String] $FullName
-    [Object] $Date
-    [UInt32] $Size
-    [String] $SizeMB
+    Hidden [Object]       $App
+    Hidden [Object]      $Root
+    [String]             $Name
+    [String]         $FullName
+    [DateTime]           $Date
+    Hidden [UInt64] $SizeBytes
+    [String]             $Size
     #[UInt32] $Channels
     #[UInt32] $SampleRate
     #[String] $Precision
-    #[Object] $Duration
+    [Object]         $Duration
     #[Object] $Samples
     #[Object] $CDDASectors
     #[String] $FileSize
-    #[String] $BitRate
+    [String]          $BitRate
     #[String] $Encoding
-    [Object] $Start
-    [Object] $End
+    [Object]            $Start
+    [Object]              $End
     TranscriptionFile([Object]$Com)
     {
         $This.Name        = $Com.Name
         $This.Fullname    = $Com.Path
-        $This.Date        = $Com.ModifyDate
-        $This.Size        = $Com.Length
-        $This.SizeMb      = "{0:n3} MB" -f ($Com.Length/1MB)
+        $Item             = Get-Item $This.Fullname
+        $This.Date        = $Item.LastWriteTime
+        $This.SizeBytes   = $Item.Length
+        $This.Size        = "{0:n3} MB" -f ($This.SizeBytes/1MB)
         #$This.Channels    = $Sx[1]
         #$This.SampleRate  = $Sx[2]
         #$This.Precision   = $Sx[3]
         # $Tx               = $Sx[4] -Split " = "
-        # $This.Duration    = [Timespan]$Tx[0]
+        $This.Duration    = [TimeSpan]$This.Detail($Com,27)
         #$This.Samples     = $Tx[1]
         #$This.CDDASectors = $Tx[2]
         #$This.FileSize    = $Sx[5]
-        #$This.BitRate     = $Sx[6]
+        $This.BitRate     = $This.Detail($Com,28)
         #$This.Encoding    = $Sx[7]
-        #$This.Start       = $Com.LastWriteTime-$This.Duration
-        #$This.End         = $Item.LastWriteTime
+        $T                = [Regex]::Matches($Item.Name,"^\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}").Value -Split "_"
+        $This.Start       = [DateTime]("{0} {1}" -f ($T[0..2] -join "/"), ($T[3..5] -join ":"))
+        $This.End         = $This.Start+$This.Duration
     }
-}
-
-Class ComFile
-{
-    Hidden [Object]       $Com
-    Hidden [String]   $DevPath
-    [String]             $Type
-    [DateTime]  $LastWriteTime
-    Hidden [Int64]     $Length
-    [String]             $Size
-    Hidden [String]    $Parent
-    Hidden [String] $Extension
-    [String]             $Name
-    [String]         $Fullname
-    [UInt32]            $Count
-    ComFile([Object]$Com)
+    [Object] Detail([Object]$Com,[UInt32]$Var)
     {
-        $This.Com           = $Com
-        $This.DevPath       = $Com.Path
-        $This.Type          = "File"
-        #$This.LastWriteTime = [DateTime]$This.Detail(3)
-        $This.Size          = $This.Detail(2)
-        #$This.GetSize()
-        #$This.Parent        = $Parent
-        $This.Extension     = ($Com.Type -Split " ")[0].ToLower()
-        $This.Name          = "{0}.{1}" -f $Com.Name, $This.Extension
-        $This.Fullname      = "{0}\{1}" -f $This.Parent, $This.Name
-    }
-    [Object] Detail([UInt32]$Var)
-    {
-        Return $This.Com.Parent.GetDetailsOf($This.Com,$Var)
+        Return $Com.Parent.GetDetailsOf($Com,$Var)
     }
     [UInt64] GetSize()
     {
@@ -248,58 +225,137 @@ Class Shell
         $This.Length        = $This.Com.Size
         $This.Parent        = $This.Fullname | Split-Path -Parent 
         $This.Name          = $This.Com.Name
-        #$This.Item          = $This.GetChildItem()
-        #$This.Count         = $This.Item.Count
+        $This.Item          = @($This.Root.Self.GetFolder.Items())
+        $This.Count         = $This.Item.Count
     }
-    [Object] NewFile([Object]$Root,[String]$Parent,[Object]$Object)
+    [Object] GetChildItem([String]$Name)
     {
-        Return [ComFile]::New($Root,$Parent,$Object)
-    }
-    [Object] GetChildItem()
-    {
-        Return @( $This.Root.Self.GetFolder.Items() | % { $This.NewFile($This.Parent,"",$_) } )
+        Return @( $This.Item | ? Name -match $Name | % { [TranscriptionFile]::New($_) } )
     }
 }
 
 $path         = "C:\Users\mcadmin\Documents\Recordings"
-$Base         = [Shell]::new($Path)
-
-
-$shell        = New-Object -ComObject Shell.Application
-
-$Properties   = @(0,1,2,12,13,14,15,16,17,18,19,20,21,22,27,28,36,220,223) # How THOMAS EDISON thought to do everything in life
-$Properties   = @(0..2+12..22+27,28,36,220,223)                            # How NIKOLA TESLA thought to do everything in life
-                                                                           # See the difference...? 
-                                                                           # THOMAS EDISON was fuckin' lazy.
-                                                                           # NIKOLA TESLA was a genius.
-                                                                           # Did THOMAS EDISON develop ALTERNATING CURRENT...?
-                                                                           # Nah. He developed DIRECT CURRENT, which was SLOWER,
-                                                                           # MORE EXPENSIVE, A WASTE OF EVERYONES TIME AND MONEY...
-                                                                           # And then NIKOLA TESLA said "Here, let an expert show you how it's done."
-                                                                           # About 90 years later, everyone on the planet uses ALTERNATING CURRENT...
-                                                                           # Localized power sources use DIRECT CURRENT, such as COMPUTERS and stuff.
-                                                                           # But the POLICE OFTEN THINK EXACTLY LIKE THOMAS EDISON.
-                                                                           # Not like NIKOLA TESLA
-
-
-$Details      = $Properties | % { $ObjDir.GetDetailsOf($ObjDir, $_) }
-
-$Base   = [Shell]$Path
-
-$Base.Com.GetFolder.Items() | ? Name -match 2022_09_16_12_52_40 
-
-$Start  = [DateTime]"09/16/2022 12:52:40"
-$Length = "02:35:33"
-$End    = $Start+[TimeSpan]"02:35:33"
-
-$T = [Transcription]::New("Walmart/Katherine Suchocki order SCSO to arrest me with NO EVIDENCE","09/16/2022 15:28:13","2:35:30")
+$Base         = [Shell]::New($Path)
+$File         = $Base.GetChildItem("Treble")
+$T            = [Transcription]::New($File,
+                                     "Walmart/Katherine Suchocki order SCSO to arrest me with NO EVIDENCE",
+                                     "https://drive.google.com/file/d/1tfiupbdhTcFz0fXcgfxykDFW2d5w1Wyb")
 $T.AddParty("Michael C. Cook Sr.")
 $T.AddParty("Michael Sheradin")
 $T.AddParty("Clayton Brownell")
 $T.AddParty("Michael Whiteacre")
 $T.AddParty("SCSO VARIOUS")
+$T.AddParty("E N V")
 
 # (00:00:00 -> 00:07:59) # Part 1 - Outside (Being arrested via COMPLAINT with NO EVIDENCE PROVIDED)
+
+$T.AE(0,"00:01",":Ok go ahead")
+$T.AE(2,"00:01",":Ok, you're good...?")
+$T.AE(0,"00:02",":Yeah.")
+$T.AE(2,"00:02",":So... uh, we went back to the Walmart, and um... The guy, adamant, he saw you take these things, and he's adamant, he's signed a complaint saying that, uhm, you did. So, uh, we want to prosecute, uh, my partner got a warrant, and you're gonna have to go do a little bit of paperwork with him, and then you'll get an appearance ticket, and then you'll have to go back to court, and tell the court, basically, you know, that you DID steal it, and that you're, you know, you DID pass the point of purchase.")
+$T.AE(0,"00:38",":Well I understand that, but- you know, uh- I gave him my story, I was pretty honest about it-")
+$T.AE(2,"00:44",":I know, I'm giving you any issue with it, that's why I'm telling you you're gonna be out here, we gotta, unfortunately we have to what we have to do, cause he filed a complaint sayin that you usually-")
+$T.AE(0,"00:52",":Am I being arrested...?")
+$T.AE(2,"00:53",":Yeah, you're gonna have to come with us... you'll go with my partner, we'll figure out your bike, I don't wanna lose your bike. Um, we'll figure that out for ya, alright?")
+$T.AE(0,"01:01",":Is there an ULTERIOR MOTIVE for this...?")
+$T.AE(2,"01:04",":No, there really isn't, Mike. You're gonna be out in, you're gonna be out in prolly, I dunno, half hour Mike...?") # <- Yeah there is. 
+$T.AE(0,"01:09",":I understand that.")
+$T.AE(2,"01:10",":A half hour, 45 minutes, give or take.")
+$T.AE(0,"01:12",":However, uh- I think the story isn't matching up.")
+$T.AE(1,"01:15",":The story, what...?")
+$T.AE(0,"01:16",":I think the STORY isn't matching up.")
+$T.AE(1,"01:20",":The stories are matching up...?")
+$T.AE(0,"01:21",":No, what I'm suggesting is that I don't think the STORIES are matching up.") # As in, LAW ENFORCEMENT 101, COLLECT EVIDENCE OF A CRIME. NOT TESTIMONY. EVIDENCE.
+$T.AE(2,"01:24",":Ok.")
+$T.AE(1,"01:24",":Well, uh- I've got the- The story that I've got NOW, with the VIDEO EVIDENCE, is that...") # <- what video evidence...?
+$T.AE(1,"01:29",":YOU went in there, and you took a mouse...")
+$T.AE(0,"01:33",":Right. Two of em.")
+$T.AE(1,"01:33",":and you went over in the toy aisle. Two of em, put one back or whatever you did with it, went over to the toy aisle, put one in your backpack-")
+$T.AE(0,"01:44",":Uh- what- No.")
+$T.AE(1,"01:44",":Ok, and then.")
+$T.AE(0,"01:46",":Did YOU see that...?")
+$T.AE(1,"01:47",":What...?")
+$T.AE(0,"01:17",":Did you SEE me put-")
+$T.AE(1,"01:47",":No, because you're well aware there's no camera coverage in there- but, hold on. Hold on...") # <- When I saw the WHITE KID POINTING AT ME from the HOUSEWARES area, I left the mouse in that aisle. I am ABSOLUTELY CERTAIN that they did NOT send a SINGLE PERSON to that aisle to LOOK for the item. But they had (2) dudes watching me. Hm. I wonder why that is.
+$T.AE(0,"01:53",":I DO have, 2 loss prevention guys that DID see it, ok...?")
+$T.AE(1,"01:58",":No.")
+$T.AE(0,"02:00",":And then you started to exit the store, they stopped you in the vestibule, where there's video, you turned around and went BACK into the store, went BACK over to the toy aisle...")
+$T.AE(1,"02:10",":I was showing them where it was.")
+$T.AE(0,"02:11",":Put it back up there, and said 'There it is right there.'")
+$T.AE(1,"02:13",":There's no video of that.")
+$T.AE(1,"02:15",":Of you putting it back up there, cause there's no video in that aisle.")
+$T.AE(0,"02:19",":No, its-")
+$T.AE(1,"02:18",":But apparently they SAW you.")
+$T.AE(0,"02:21",":But NO they DIDN'T.")
+$T.AE(1,"02:21",":Alright.")
+$T.AE(0,"02:22",":That's what I'm saying, is you might wanna look at the footage again.")
+$T.AE(1,"02:24",":Ok, but THEY signed a complaint.")
+$T.AE(0,"02:26",":I'm recording this interaction.")
+$T.AE(1,"02:29",":That's fine, THEY signed a complaint, I put it in front of the judge...")
+$T.AE(0,"02:32",":Ok.")
+$T.AE(1,"02:33",":Ok, and the judge signed an arrest warrant.")
+$T.AE(0,"02:35",":What is the judges name...?")
+$T.AE(1,"02:37",":Suchocki.")
+$T.AE(0,"02:38",":Katherine Suchocki.") 
+$T.AE(2,"02:40",":Female judge here in town.") # <- Yeah, I just said her first name. I know who she is. She handled the DWAYNE O. COONRADT bullshit 911 call that went to his BUDDY who works as a 911 dispatcher. Oh shit.
+$T.AE(1,"02:44",":We've got to arrest you, based on the JUDGES ORDER...")
+$T.AE(0,"02:45",":Ok.")
+$T.AE(1,"02:46",":The arrest warrant.")
+$T.AE(0,"02:47",":Yup.") # <- A complaint with no evidence that I had the item IN the backpack. Just testimony.
+$T.AE(1,"02:48",":Ok...? And again, all we're gonna do is process you, write you an appearance ticket so you can reappear in the court.")
+$T.AE(0,"02:54",":Right.")
+$T.AE(1,"02:55",":Then out the door you go.")
+$T.AE(0,"02:58",":Ok.")
+$T.AE(1,"02:59",":Ok...? So, you got TWO options here, you can ride your bike down there right now, and meet me, and we'll take care of it, or we can lock it to the guiderail here, you can come with me, and I'll bring you back.")
+$T.AE(0,"03:16",":Guess I don't really have a-")
+$T.AE(2,"03:16",":But you've got a bike lock, you can lock it right to your guardrail.")
+$T.AE(0,"03:19",":I understand I don't have an option, so I'll leave it-") 
+$T.AE(5,"03:20","*REMOTE PARTY SILENCED THE AUDIO RECORDING... NO SERVICE ON MY DEVICE...*")
+$T.AE(1,"03:33",":They signed the complaint, it's not me.")
+$T.AE(0,"03:36",":Right, it's based on hearsay.")
+$T.AE(2,"03:39",":Well, if you can prove that's erroneous...?")
+$T.AE(0,"03:43",":Look, I've been trying to do that.")
+$T.AE(2,"03:43",":I'm just sayin', if you can prove that's err-")
+$T.AE(0,"03:44",":I have a- I been having a PATTERN")
+$T.AE(2,"03:46",":Yeah, but listen-")
+$T.AE(0,"03:47",":Remember July 14th, 2020 you came to my house and the group of people that I live near they had me wrapped around and they were like 'Oh, you're gonna go to jail for stealin' this lady's laptop', there's PREJUDICE from the community.")
+$T.AE(2,"04:00",":And you DIDN'T, you DIDN'T do that, did I...? Did I take you to jail for that...?")
+$T.AE(0,"04:03",":No, you didn't.") # <- The way you phrased it is as if you EXPECTED to take me to jail. That's PREJUDICE.
+$T.AE(2,"04:04",":I didn't, right...? We talked about this.")
+$T.AE(0,"04:05",":You're right.")
+$T.AE(2,"04:05",":But listen, but listen-")
+$T.AE(0,"04:04",":The statement I'm tryin' to make is that there are people in the community that have developed PREJUDICE toward me,")
+$T.AE(2,"04:10",":Ok.") # <- ...that would include from YOU, which I didn't THINK that until I had to TRANSCRIBE this AUDIO...
+$T.AE(0,"04:14",":And the- these guys are making this shit up.")
+$T.AE(2,"04:15",":I understand, but can you listen to me for one minute...?")
+$T.AE(0,"04:16",":Sure...")
+$T.AE(2,"04:16",":Listen, if you can PROVE this is ERRONEOUS, not only will the charges be DISMISSED, you can go after WALMART, for, for uh, for wrongful prosecution, ok...?")
+$T.AE(0,"04:26",":Ok.")
+$T.AE(2,"04:28",":It's CIVIL. It's not CRIMINAL, but it's CIVIL. Ok...?")
+$T.AE(0,"04:29",":Right...")
+$T.AE(2,"04:30",":So... we can do that. We just have to do our job, because-")
+$T.AE(0,"04:33",":Yeah, but I'm being charged with WHAT...?")
+$T.AE(2,"04:35",":Petit Larceny.")
+$T.AE(0,"04:36",":<Indiscernable due to passing traffic>")
+$T.AE(2,"04:38",":Correct. You're not going to jail, you're not gettin' arraigned in front of a judge, today, (GARBLED WORD) of that. You're an appearance ticket, and you're gonna be on your way.") # <- I think Clayton Brownell may have an underlying mental condition because he said "You're an appearance ticket."
+$T.AE(0,"04:39",":Yeah.")
+$T.AE(2,"04:46",":Ok...?")
+$T.AE(0,"04:51",":<Indiscernable due to passing traffic>")
+$T.AE(2,"04:50",":<Indiscernable due to passing traffic> (Family court...?) <something>'s not available with this, anyways.")
+$T.AE(0,"04:53",":Ok, I just")
+$T.AE(2,"04:53",":So you don't even have to worry about that stuff.")
+$T.AE(0,"04:55",":That's not what- I'm not really worried about this particular incid-")
+$T.AE(2,"04:57",":Put it around your frame, buddy, so no one can take your bike.")
+$T.AE(0,"05:00",":Yeah, I know, I'm just")
+$T.AE(2,"05:15",":You ARE gonna have to take your backpack off, though.")
+$T.AE(1,"05:17",":We can just leave it in the front-")
+$T.AE(2,"05:21",":We'll leave it in the front seat, ok...?"),
+$T.AE(1,"05:23",":You don't have anything else in your pockets, or anything like that, right...?")
+$T.AE(0,"05:26",":Well, I DO have a KNIFE on me...")
+$T.AE(1,"05:28",":Ok.")
+$T.AE(2,"05:28",":Can you put it in the backpack...?")
+$T.AE(1,"05:29",":Put it in the backpack.")
+$T.AE(0,"05:36",":<Indiscernable noises and such>")
 #                          "You're aware that there's no surveillance in that aisle" <- You have to PROVE that, not ASSUME that.
 #                          "You walked out of the store, and then went back into the store, went back to the aisle, and then pointed at where you left it."
 #                          Nah. "Did anyone SEE that...?" Nah. Nobody SAW that at all. Which means that I left the item in that aisle when the guys
