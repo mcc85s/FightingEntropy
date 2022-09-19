@@ -253,7 +253,6 @@ $T.AddParty("SCSO VARIOUS")
 $T.AddParty("E N V")
 
 # (00:00:00 -> 00:07:59) # Part 1 - Outside (Being arrested via COMPLAINT with NO EVIDENCE PROVIDED)
-
 $T.AE(0,"00:01",":Ok go ahead")
 $T.AE(2,"00:01",":Ok, you're good...?")
 $T.AE(0,"00:02",":Yeah.")
@@ -355,7 +354,7 @@ $T.AE(2,"04:57",":Put it around your frame, buddy, so no one can take your bike.
 $T.AE(0,"05:00",":Yeah, I know, I'm just")
 $T.AE(2,"05:15",":You ARE gonna have to take your backpack off, though.")
 $T.AE(1,"05:17",":We can just leave it in the front-")
-$T.AE(2,"05:21",":We'll leave it in the front seat, ok...?"),
+$T.AE(2,"05:21",":We'll leave it in the front seat, ok...?")
 $T.AE(1,"05:23",":You don't have anything else in your pockets, or anything like that, right...?")
 $T.AE(0,"05:26",":Well, I DO have a KNIFE on me...")
 $T.AE(1,"05:28",":Ok.")
@@ -408,7 +407,11 @@ $T.AE(0,"07:57",":Yeah.")
 # AKA, violating my rights as a CITIZEN and MAKING ASSUMPTIONS about what was NOT SEEN BY ANYBODY.
 # What I can state with sheer certainty, is that there IS VIDEO FOOTAGE THAT CLEARLY SHOWS THAT NOBODY WENT BACK TO THAT AISLE 
 # BEFORE STOPPING ME IN THE VESTIBULE. Ohhhhhhhhhhh. Shit. Nobody at Walmart Loss Prevention went back to that fucking aisle.
-# Weird. 
+# Weird. But I mean, NOW since MICHAEL SHERIDAN NEVER COLLECTED THE SUPPORTING VIDEO EVIDENCE...
+# NOW, WALMART HAS NO MEANS OF BEING ABLE TO PROVE THAT THEY SENT ANYBODY TO THAT AISLE TO FIND THE ITEM THAT NEVER LEFT THAT AISLE.
+# But, suppose they did. NOW the (2) dudes can just put those SAME EXACT CLOTHES back on, and then like, send a guy to that aisle,
+# and then walk through the aisle and come out the other end, and put their arms up and be like 'Well, fuck, no item that the dude
+# SUPPOSEDLY took, aw shucks...' 
 
 # (00:07:59 -> 00:28:11) # Part 2 - Within (SEDAN 4138/SCSO Michael Sheradin)
 $T.AE(2,"08:00",":Just gotta put your seatbelt on, alright...?")
@@ -734,8 +737,8 @@ $T.AE(1,"42:17",":Ok. So they LIED, it's not HEARSAY, but they lied. Ok.") # So 
 # | Michael Cook   | DOES     INCRIMINATE HIM |     PROVIDED | ARREST WARRANT IS           ORDERED |
 # |                | DOES NOT INCRIMINATE HIM | NOT PROVIDED | ARREST WARRANT IS STILL     ORDERED |
 # |----------------|--------------------------|--------------|-------------------------------------|
-# | Andrew Cuomo   | DOES     INCRIMINATE HIM | NOT PROVIDED | ARREST WARRANT IS       NOT ORDERED |
-# |                | DOES NOT INCRIMINATE HIM | NOT PROVIDED | ARREST WARRANT IS STILL NOT ORDERED |
+# | Andrew Cuomo   | DOES     INCRIMINATE HIM |     PROVIDED | ARREST WARRANT IS       NOT ORDERED |
+# |                | DOES NOT INCRIMINATE HIM |     PROVIDED | ARREST WARRANT IS STILL NOT ORDERED |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 # ____________________________________________________________________________________________________________________________________________
@@ -752,8 +755,126 @@ $T.AE(1,"42:32",":It's not so much that YOU have to PROVE that they lied, THEY h
 $T.AE(0,"42:49",":Right.")
 $T.AE(1,"42:50",":...or signed a complaint...")
 $T.AE(0,"42:49",":But that's what I'm saying...")
-$T.AE(1,"42:52",":...or signed a complaint...")
+$T.AE(1,"42:52",":...I would be have- I would have to be able to prove, IN COURT-")
+$T.AE(0,"42:55",":Right.")
+$T.AE(1,"42:56",":...that you did, what you did.")
+$T.AE(0,"42:58",":So THEY have to come to court and PROVE that I took something.")
+$T.AE(1,"43:00",":That's gonna be up- the ADA has to prove that, yes.")
+$T.AE(0,"43:03",":Ok.")
+$T.AE(1,"43:00",":The ADA has to prove that you did what you (supposedly) did.") # I'm fairly certain that they don't have to do that at all.
+$T.AE(0,"43:07",":Ok.")
+$T.AE(1,"43:09",":Ok...? <pauses> Not us. And that's between HER, and WALMART, and YOU. Not the Sheriffs office.") 
+$T.AE(0,"43:19",":Alright.")
+$T.AE(1,"43:21",":Alright... hold on a second, let me make another phone call.")
+$T.AE(1,"43:32",":You gonna come to court if I write you an appearance ticket...?")
+$T.AE(0,"43:19",":Yeah, I'm not gonna, flee.")
+$T.AE(1,"43:35",":Huh...?")
+$T.AE(0,"43:36",":I'm not gonna flee or whatever")
+$T.AE(1,"43:38",":Ok.")
+$T.AE(5,"43:43",":<phone system>FIVE ONE EIGHT THREE THREE ZERO FIVE FIVE EIGHT THREE")
+$T.AE(1,"43:51",":Hello judge, Deputy Sheriff from the Saratoga County Sheriffs Office, it's uh- Friday the sixteenth at about one-thirty in the afternoon...? Um, I have mister Cook here, he's been very cooperative, it's on your arrest warrant from Wednesday from the larceny out of Walmart <clears throat>, wondering what you wanna do, um- you can give my cell phone a call FIVE ONE EIGHT FOUR FIVE ZERO NINE NINE FOUR EIGHT. FIVE ONE EIGHT FOUR FIVE ZERO NINE NINE FOUR EIGHT, thank you. <hangs up the phone> See what the judge has got to say. More than likely it'll be (1) write you an appearance ticket, and (2) kick you free. <pauses> Alright...")
+$T.AE(1,"44:35","*starts typing away at keyboard")
+$T.AE(0,"44:42",":You know this system is uh- quite corrupt, right...?") # And, he does, because he later mentions something to that effect.
+$T.AE(0,"44:47",":Like, in order to be able to ARREST somebody, a police officer is supposed to be able to CORROBORATE a story. So, if people are providing testimony-") 
+$T.AE(1,"44:54",":If- again- again...")
+$T.AE(0,"44:56",":Right.")
+$T.AE(1,"44:57",":Again... ")
+$T.AE(0,"44:58",":Even if the ADA-")
+$T.AE(1,"44:58",":If it was US, if it was the police, signing the complaint, yeah. In this instance, it is NOT us signing the complaint, it is the WALMART LOSS PREVENTION guy, who signed the complaint. All WE basically did, was file the paperwork.")
+$T.AE(0,"45:17",":Right.")
+$T.AE(1,"45:18",":K...? Just so we, for us-")
+$T.AE(0,"45:19",":What I'm saying, like- but what I'm saying is this... What if WALMART P- LOSS PREVENTION, just says 'Hey, that guy right there...? He stole somethin' from the store.' And then, they do that THOUSANDS OF TIMES to get INNOCENT PEOPLE in trouble. That's what I'm saying, is like, and then, there's a very real possibility-")
+$T.AE(1,"45:37",":Well, at SOME point it's gonna come back to bite em, if they're not doin' their jobs correctly,") # This case IS that "point". That's my point. This case is gonna blow up in their face. I'm CERTAIN OF IT.
+$T.AE(0,"45:41",":Ok, but what I'm saying is, if- the person... that's being ACCUSED... can't PROVE that they're innocent... and then, the party that IS making the accusation, seems to- I dunno.")
+$T.AE(1,"45:59",":Well, that's- that's where the ATTORNEY comes in.")
+$T.AE(0,"46:02",":Right, but if I don't HAVE money for an ATTORNEY, then I have to rely on a PUBLIC DEFENDER-")
+$T.AE(1,"46:04",":Then you should be able to get- you should be able to get the, uh...")
+$T.AE(0,"46:08",":Public defender.")
+$T.AE(1,"46:10",":Public defender.")
+$T.AE(0,"46:08",":Right, the public defenders office...? I seem to have a pretty, uh- hit-or-miss, circumstance with them. I had a FAMILY COURT case back in 2020 until November 4th, 2021.")
+$T.AE(1,"46:24",":Yup.")
+$T.AE(0,"46:25",":Uh- some woman, wrote a petition to the Family Court, which SLANDERED ME a bunch of different ways, it was AT or ABOUT THE TIME that my neighbor tried to hit me with his BASEBALL BAT, and then, ya know HE didn't get in trouble for that, even though I called 911 on him... So, uh- like I have an AUDIO RECORDING of my mother stating that I never went over onto that dude's property shouting obscenities, or that my neighbor grabbed the baseball bat out of FEAR, but you know, uh- even if I SEND the AUDIO RECORDING of my STEPFATHER ADMITTING THAT and my MOTHER ADMITTING THAT, to like, JOHN HILDRETH, the guy that was the uh- the SUPERIOR OFFICER, above James- er, above MARK SHEEHAN- what I'm SAYING, is that PEOPLE CAN COMMIT PERJURY TO ME, even if I LEGALLY CALL 911, and say my neighbor tried to hit me with his baseball bat, and then OTHER PEOPLE can just make up some OTHER BULLSHIT STORY, to get me in trouble. It seems to be a SERIAL case. Ya know...? Someone can try to MURDER ME on MAY 26th, and I call 911, but BOTH of my calls FAIL to make it to the dispatch station, and then someone can call 911 and say that I was jumping in front of their car, and that person could be the person trying to kill me. That's what I'm trying to say.")
+$T.AE(1,"47:40",":Ok.")
+$T.AE(0,"47:42",":And, when I tell SCOTT SCHELLING, JEFFREY KAPLAN, and JOSHUA WELCH, well, SCOTT SCHELLING asked me if he wanted- if I wanted to be arrested and brought to the jail, OR, he would ESCORT ME to my house. So- that's what I'm saying, is uh-")
+$T.AE(0,"48:04",":I mean, like, look at it this way... if I wanna KILL somebody, right...?")
+$T.AE(1,"48:08",":Yup.")
+$T.AE(0,"48:08",":And, I call the police and say 'Yeah, this dude just jumped in front of my car', well...? I'm gonna- and I- if I worked IN the police, and I KNOW these tricks, right? Like these 2 kids DO, and I call the police and say 'Yeah, this kid just jumped in front of my car, and now I hit him. He's on the side of the road.' Well...? They're not gonna get in trouble, are they...?")
+$T.AE(1,"48:34",":<makes exasperated sound> Well...") # Yeah, I think this guy knows I'm not faking this shit, now. Probably has to keep the thought to himself.
+$T.AE(0,"48:36",":Right, dude just ran right in front of my car, and now he's dead. <pauses> Committed suicide, it was an ACCIDENT. I think you know what I'm tryin' to say.")
+$T.AE(1,"48:55","*typing on keyboard")
+$T.AE(0,"49:11",":This is what happened to my dad. <pauses> I dunno, there's something you're thinkin' and you're not verbalizing it, and that's- scaring me.")
+$T.AE(1,"49:27",":You know what I'm thinkin' and I'm not verbalizing it...? Is that what you just said...?") # This is the first time that he's FULLY MIRRORED something I've stated, though it is NOT quite verbatim.
+$T.AE(0,"49:32",":I'm uh- I'm making SPECULATIONS. I'm not ASSUMING that you're hearing me, and droning it out.") # I did at first, but NOW, I'm not thinking that.
+$T.AE(0,"49:38",":I think you're processing some of what I'm saying, but I don't think you know how to REACT to it.") 
+$T.AE(0,"49:50",":Like if I was wearin' a suit right now, and I had like uh- a golden watch, and uh, you know I had, a bunch of stuff that said 'this dude is incredibly rich', I don't even think I'd be here right now...")
+$T.AE(1,"50:02",":Well, <clears throat> ok. Obviously you don't know me, and I don't know you, but I'm only gonna tell you this one time.")
+$T.AE(0,"50:10",":Sure.")
+$T.AE(1,"50:10",":I don't care what you wear, how much money you got, I really don't care.")
+$T.AE(0,"50:16",":Ok.")
+$T.AE(1,"50:16",":What I do, is I enforce the law. Evenly... Equally... Across the board...")
+$T.AE(0,"50:22",":It doesn't SEEM that way.")
+$T.AE(1,"50:22",":Huh...?")
+$T.AE(0,"50:23",":I'm tryin' to tell you crimes that have been happening TO me, and nobody's DOING anything about that.")
+$T.AE(1,"50:29",":Ok.")
+$T.AE(0,"50:22",":But you're telling me- you're telling me that you're-")
+$T.AE(1,"50:31",":But you- you want me to stop this and look into all of this stuff that you're tellin' me about, right now...? Right this second...?")
+$T.AE(0,"50:35",":It would be helpful.")
+$T.AE(1,"50:36",":I've gotta finish this FIRST,")
+$T.AE(0,"50:39",":Ok.")
+$T.AE(1,"50:39",":So that, YOU can be released, so I DON'T hold you ANY LONGER than I should...")
+$T.AE(0,"50:44",":Right.")
+$T.AE(1,"50:45",":Because of YOUR CONSTITUTIONAL RIGHTS...")
+$T.AE(0,"50:47",":Sure, so I mean I respect that. I mean, I do understand.")
+$T.AE(1,"50:50",":...and THEN, I can look into, whatever else, the 19 uh- or the, 2020 incident, and SCOTT SCHILLING, and WELCH, and all the rest of em, but FIRST-")
+$T.AE(0,"51:04",":Ok.")
+$T.AE(1,"51:05",":I need to complete THIS, again, so I don't hold you ANY longer than I have to, and I don't VIOLATE your CONSTITUTIONAL RIGHTS by doing that.")
+$T.AE(0,"51:15",":Ok.")
+$T.AE(1,"51:16",":So, I'm- I AM listening-")
+$T.AE(0,"51:18",":Ok.")
+$T.AE(1,"51:18",":I'm ALSO trying to multitask... <pauses> And again, I- I don't care WHAT you wear, how- HOW important you are, ye- YOU could be the president sittin' there, if you violated the law, and I have what I need, to do my job... I'm gonna do my job.")
+$T.AE(0,"51:35",":Ok.")
+$T.AE(1,"51:36",":Regardless...")
+# ________________________________________________________________________________________
+# | So, just to put it into context...? The man just told me the fuckin' game plan.      |
+# | He literally just told me who's who, what's what, and... that's that.                |
+# | So, if the bad guys are out there, reading this...? That means it's game over, dude. |
+# | Time for you fucks to wave a white flag, cause... you just lost right there.         |
+# | Here's a diagram of what this man just said...                                       |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
+# ________________________________________________________________________________________________________
+# | If you are...      | And you have...             | And HE has...               | You are...          |
+# |--------------------|-----------------------------|-----------------------------|---------------------|
+# |        COOL enough | Broken the law              | What he NEEDS to do his JOB | Fucked, pal.        |
+# |    NOT COOL enough | Broken the law              | What he NEEDS to do his JOB | Still fucked, pal.  |
+# |      the President | Broken the law              | What he NEEDS to do his JOB | STILL fucked, pal.  |
+# | Hillary R. Clinton | Leaked classified docs      | What he NEEDS to do his JOB | Fucked, lady.       |
+# |       Andrew Cuomo | sexually harasses 11 women  | What he NEEDS to do his JOB | REAL fucked, dude.  |
+# |  Julien P. Assange | exposed gov't breaking laws | What he NEEDS to do his JOB | WICKED fucked, pal. |
+# |  Edward J. Snowden | exposed gov't breaking laws | What he NEEDS to do his JOB | WICKED fucked, pal. |
+# |    Michael C. Cook | Doesn't steal something     | What he NEEDS to do his JOB | A douchebag, dude.  |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+# ________________________________________________________________________________________________________
+# | Dude's probably gonna catch wind of this and think that I'm TEASING him, but no. I'm not.            |
+# | I'm just certain that it's gonna come off as if I'm teasing him when I'm being serious.              |
+# | In "LAW ENFORCEMENT 101", cops are supposed to have this attitude. However, uh-                      |
+# | What does an OFFICER OF THE LAW NEED TO DO THEIR JOB...? Evidence. Or an order.                      |
+# | Or like, a pyramid of labyrinthian laden textbooks that outline STATUTES, LAWS, and REGULATIONS...   |
+# | basically a PHD in SARATOGA COUNTY SHERIFFS OFFICE CODE and CONDUCT, which doesn't exist.            |
+# | If you're in an AIRPLANE, and that AIRPLANE is flying over SARATOGA COUNTY... and this dude finds    | 
+# | out that you committed a crime in that airplane...? THEN, you're fucked.                             | 
+# | I am kidding around, here. I am actually teasing this guy a fair amount, not because I'm poking fun  |
+# | at HIM, but I know for a god damn fact that OTHER OFFICERS in HIS UNIT, they THINK OF WAYS TO BREAK  |
+# | THE LAW... legally. Because, why the hell not...? Breaking the law, LEGALLY... is stupid. But, that  |
+# | is ACTUALLY WHAT SOME OF HIS COWORKERS DO.                                                           |
+# | Regardless, IF THIS GUY MEANS WHAT HE SAYS, and SAYS WHAT HE MEANS...? I'll take it.                 |
+# | Because, that mentality means that he DOES HAVE INTEGRITY.                                           |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+
+$T.AE(0,"00:00",":")
+$T.AE(1,"00:00",":")
 # (01:03:56 -> 01:17:58) # Part 5 - Michael Sheradin processes my fingerprints but needs some help
 # (01:17:58 -> 01:30:48) # Part 6 - Michael Sheradin finalizes processing my arrest
 # (01:30:48 -> 01:33:07) # Part 7 - Michael Sheradin issues paperwork, then grabs my belongings from his cruiser. (which was left running that whole time, by the way.)
