@@ -547,11 +547,13 @@ $T.AE(1,"28:04","*Opens rear passenger door")
 $T.AE(0,"28:05","*Unbuckles seat belt, exits sedan 4138")
 $T.AE(1,"28:11","*Shuts the rear passenger door")
 
-# (00:28:11 -> 00:28:35) # Part 3 - Walking into Halfmoon Town Court
+# (00:28:11 -> 00:28:45) # Part 3 - Walking into Halfmoon (Sheriff Substation/Town Court)
 $T.AE(1,"28:11",":We're gonna head right in those doors, up the stairs, and to the left.")
 $T.AE(1,"28:39","*shuffles with keys to open the office door")
 $T.AE(1,"28:43","*Unlocks the office door")
 $T.AE(1,"28:45","*Opens the office door")
+
+# (00:28:35 -> 01:03:56) # Part 4 - Michael Sheradin processes my "arrest" order
 $T.AE(1,"28:47",":There we go. come right in here, and have a seat.")
 $T.AE(0,"29:01",":Mind if I stand...?")
 $T.AE(1,"29:01",":No, sit down. Relax.")
@@ -643,8 +645,115 @@ $T.AE(1,"37:57",":Alright, hold on... <pauses> Let's see... right. And what is t
 $T.AE(0,"38:23",":Yep.")
 $T.AE(1,"38:24",":Is that what it is...?")
 $T.AE(0,"38:25",":Yeah.")
+$T.AE(0,"39:09",":Someone with a lot of money, can watch what I'm doing, watch me whereever I go and whatnot, that gives them more rights than me, right...?")
+$T.AE(1,"39:17",":Well, maybe uh, somebody with a LOT of money can do a LOT of things like that.")
+$T.AE(0,"39:24",":Right")
+$T.AE(1,"39:24",":I'm not one of those people.")
+$T.AE(0,"39:28",":I understand that, I can- I can- I can derive intent. I don't think you have any malicious intent, but I think that you're, um- not paying attention to the details.")
+$T.AE(0,"39:48",":And, not for nothing, but- ")
+$T.AE(5,"39:50","*Windows toast notification")
+$T.AE(1,"39:54",":I'm listenin'")
+$T.AE(0,"39:59",":This is, uh- a pattern. Of behavior. From your department")
+$T.AE(1,"40:03",":Ok.")
+$T.AE(0,"40:11",":And I'm not saying that uh, YOU'RE doing anything, malicious, by any means, but- <clears throat> what's happening is uh, certain things hit the permanent record, and some things don't. So if a couple kids that are part of the police unit that you work with, uh- if they're going around committing crimes, uh they have a means of being able to prevent any of those records from hitting the permanent record. But- hey. Anything can say- Anybody can apparently say whatever, HEARSAY, and then THAT will hit the permanent record.")
+$T.AE(0,"40:47",":So, a couple of guys from loss prevention, CLAIM that they SAW me DO something, I would wager that they probably do this a LOT, where they don't have to PROVIDE any evidence, of uh- what they're signing a statement to.")
+$T.AE(1,"41:02",":Well...")
+$T.AE(0,"41:03",":So that means that a lot of people are getting charged with crimes that AREN'T being proven.")
+$T.AE(1,"41:10","*clears throat")
+$T.AE(0,"41:11",":You can't ask uh- the accused to prove themselves when the supermarket has all the recording footage, and they're not providing ANY recorded footage whatsoever, uh- of someone leaving the store WITH the device or merchandise.")
+$T.AE(1,"41:29",":I'm still listenin'... <pauses> Well... fact is, back to why we're here, once again, uh- THEY signed a complaint, NOT US.") # Maybe he is NOT absent mindedly agreeing with me after all.
+$T.AE(0,"41:39",":Right, I understand that. But if they-") # It is not like I don't understand the situation. I understand the situation TOO WELL...
+$T.AE(1,"41:39",":Ok, so... if I signed the complaint, if it was ME, as a POLICE OFFICER, then I would have EVERYTHING that I need, to support what I was charging.") # I get what he's saying. He isn't getting what I'm saying.
+$T.AE(0,"41:52",":Right, but you're not hearin' me.")
+$T.AE(1,"41:54",":I am hearin' ya.")
+$T.AE(0,"41:54",":They don't ha- They don't have to provide any evidence, they can just make up hearsay, and put it on a piece of paper.")
+$T.AE(1,"42:00",":If they physically SAW it, it's not HEARSAY.")
+$T.AE(0,"42:04",":It IS hearsay.")
+$T.AE(1,"42:05",":How is it hearsay, if they physically saw you do whatever it is they claiming that you're di- you did...? How is that hearsay...?")
+$T.AE(0,"42:11",":So like... <pauses> Like what I was saying, is that- they can just make it up.")
+$T.AE(1,"42:17",":Ok. So they LIED, it's not HEARSAY, but they lied. Ok.") # So he IS actually understanding what I'm saying.
+# _____________________________________________________________________________________________________________________________________________
+# | If I went around telling people that MICHAEL SHERIDAN made this statement WITHOUT SUPPORTING EVIDENCE- it WOULD be HEARSAY.               |
+# | But, BECAUSE I have this AUDIO RECORDING...? It is SUPPORTING EVIDENCE, and NOW, it's not HEARSAY, it's a TRANSCRIPTION.                  |
+# | With the AUDIO RECORDING, it became a literal, 100% truly, qualified, piece of EVIDENCE, a RECORD, that SOMETHING WAS STATED BY A PERSON, |
+# | and that I'm not basing things on HEARSAY.                                                                                                |
+# | I'm basing things on a truly, actual, factual, 100% digital file that EXISTS, and can be PROVIDED to ANYBODY as a REFERENCE of something  |
+# | having HAPPENED, or TAKEN PLACE. Lets draw up a DIAGRAM to make it easier to UNDERSTAND...                                                |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# _________________________________________________
+# | Situation                    | Result         |
+# |------------------------------|----------------|
+# | Without the AUDIO RECORDING =>       HEARSAY  | 
+# | With    the AUDIO RECORDING =>  TRANSCRIPTION |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# ____________________________________________________________________________________________________________________________________________
+# | See the difference in the diagram above...? That's why JUDGE KATHERINE SUCHOCKI (even JOE FEDORA) should consider the DIFFERENCE between |
+# | the TWO SCENARIOS... and drop their case(s) ENTIRELY.                                                                                    |
+# | Because here's how I should PHRASE the situation...                                                                                      |
+# | WALMART, a STORE with HUNDREDS OF CAMERAS... signed an AFFADAVIT with NO SUPPORTING EVIDENCE... when clearly, MICHAEL SHERIDAN was SHOWN |
+# | the FOOTAGE of how I walked back into the same exact aisle that the LOSS PREVENTION GUYS saw me standing in, right...?                   |
+# | But MAGICALLY, the PRODUCT was IN THEIR HANDS, afterward. OOoooOHhhHHHhhhHHhh... that means that the item was in that aisle.             |
+# | Since there is NO EVIDENCE WHATSOEVER to SUGGEST that it EVER LEFT THAT AISLE...? NOBODY SHOULD BE ARRESTING ANYBODY FOR ANYTHING AT ALL |
+# | Oh. Cool.                                                                                                                                |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-# (00:28:35 -> 01:03:56) # Part 4 - Michael Sheradin processes my "arrest" order
+# ____________________________________________________________________________________________________________________________________________
+# | Look, if former NYS governor ANDREW CUOMO can indiscriminately suck random dudes' dicks or vice versa, and then sexually harass females, |
+# | then it stands to reason that there needs to be some pretty powerful evidence on hand that he's GUILTY of (something/being gay).         |
+# | While there's no EVIDENCE of ANDREW CUOMO...                                                                                             |
+# |------------------------------------------------------------------------------------------------------------------------------------------|
+# | 1) being pounded in the butt                                                                                                             |
+# | 2) pounding some dude in the butt                                                                                                        |
+# | 3) blowing some dude                                                                                                                     |
+# | 4) being blown by a dude                                                                                                                 |
+# |------------------------------------------------------------------------------------------------------------------------------------------|
+# | ...it stands to reason that (11) females got GROSSED OUT when ANDREW CUOMO tried to make SEXUAL PROPOSITIONS (for instance, BRITANNY     |
+# | COMMISSO), that those SEXUAL PROPOSITIONS were ALL just SUSPICIOUS ACTIVITY, and that the REASON he didn't get in TROUBLE, is because    |
+# | of how (IMPORTANT/GAY) he is. Because of how (IMPORTANT/GAY) he is, CRAIG APPLE felt really bad that ANDREW CUOMO can't get laid.        |
+# | Therefore, didn't feel like there was a suitable condition where he should be PROSECUTED for SEXUALLY HARASSING (11) women. Nah.         |
+# | It doesn't change the fact that CRAIG APPLE, and MILLIONS of other people know just how (IMPORTANT/GAY) ANDREW CUOMO really is.          |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+# ____________________________________________________________________________________________________________________________________________
+# | There IS EVIDENCE that the LOSS PREVENTION GUYS POINTED AT ME SEVERAL MINUTES PRIOR, from the HOUSEWARES area, THEN, they never sent a   |
+# | guy to that AISLE to LOOK FOR THE ITEM THAT I LEFT THERE. Even if they DID...? Oh wow. They could just hide it and STILL incriminate     |
+# | someone if that's what they felt like doing. Why were they watching me...? Oh. Maybe they (SAW SOMETHING SUSPICIOUS/HAD PREJUDICE)       |
+# | Weird. And then KATHERINE SUCHOCKI authorized an ARREST WARRANT because SHE has PREJUDICE. Just like how ROBERT RYBAK had PREJUDICE and  |
+# | ignored MICHAEL ZURLO having (PREJUDICE/COMMITTING OBSTRUCTION OF JUSTICE) on MAY 26th, 2020... you know...?                             |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+# ____________________________________________________________________________________________________________________________________________
+# | Looks like the JUDGES can (have PREJUDICE/act like a fucking COMMUNIST PARTY). Because with PREJUDICE...? Who cares about EVIDENCE...?   |
+# | NOBODY. Not (1) soul, cares about EVIDENCE when people have DEVELOPED PREJUDICE towards a SPECIFIC INDIVIDUAL. ACTUALLY, here's another  |
+# | diagram of how EVIDENCE works when you're like me, dealing with a long list of lazy fucks, right...?                                     |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+# __________________________________________________________________________________________________
+# | Person         | When the evidence...     | it is...     | Result                              |
+# |----------------|--------------------------|--------------|-------------------------------------|
+# | Michael Cook   | DOES     INCRIMINATE HIM |     PROVIDED | ARREST WARRANT IS           ORDERED |
+# |                | DOES NOT INCRIMINATE HIM | NOT PROVIDED | ARREST WARRANT IS STILL     ORDERED |
+# |----------------|--------------------------|--------------|-------------------------------------|
+# | Andrew Cuomo   | DOES     INCRIMINATE HIM | NOT PROVIDED | ARREST WARRANT IS       NOT ORDERED |
+# |                | DOES NOT INCRIMINATE HIM | NOT PROVIDED | ARREST WARRANT IS STILL NOT ORDERED |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+# ____________________________________________________________________________________________________________________________________________
+# | That's COMMUNISM 101, folks. Fuck how the law typically works. What they have...? Is a PEN, and a SIGNATURE... that's all they need.     |
+# | If JUDGE PAUL PELAGALLI can order me to see (2) doctors that don't even work at the place he ordered me to go to...?                     |
+# | Katherine Suchocki can order an arrest warrant with no evidence to support the reason for the arrest whatsoever.                         |
+# | That's how JUDGES can get down, because facts are fuckin' stupid, folks.                                                                 |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"42:04",":So hearsay and lying sorta falls into the same s- hemisphere, because- they can provide FALSE TESTIMONY and it's never able to be proven. In fact, uh- the fact of the matter is that, uh-")
+$T.AE(1,"42:32",":So then...")
+$T.AE(0,"42:33",":You're saying, that if I can PROVE that I didn't take it, how would I be able to do that...? I don't have access to the CAMERA SYSTEM that they do.")
+$T.AE(1,"42:32",":It's not so much that YOU have to PROVE that they lied, THEY have to PROVE that YOU DID, what they CLAIM YOU DID, just like if I had arrested you-") # You are processing my arrest... there's no "JUST LIKE..."
+$T.AE(0,"42:49",":Right.")
+$T.AE(1,"42:50",":...or signed a complaint...")
+$T.AE(0,"42:49",":But that's what I'm saying...")
+$T.AE(1,"42:52",":...or signed a complaint...")
+
 # (01:03:56 -> 01:17:58) # Part 5 - Michael Sheradin processes my fingerprints but needs some help
 # (01:17:58 -> 01:30:48) # Part 6 - Michael Sheradin finalizes processing my arrest
 # (01:30:48 -> 01:33:07) # Part 7 - Michael Sheradin issues paperwork, then grabs my belongings from his cruiser. (which was left running that whole time, by the way.)
@@ -667,7 +776,7 @@ $T.AE(0,"38:25",":Yeah.")
 # 01:04:14, 0, "If I run into a billionaires bloody knife, and get myself injured badly, you guys are gonna arrest me for that."
 # 01:04:23, 1, "Why would we arrest you for that...?"
 # 01:04:25, 0,, "I'm trying to make a comparison or a metaphor. What you're doing right now is not too different from what I just said."
-# 01:04:49, 0, "OJ Simpson can kill Ron Goldman and his, and uh- Nicole Simpson, and can commit a heinous crime"
+# 01:04:49, 0,, "OJ Simpson can kill Ron Goldman and his, and uh- Nicole Simpson, and can commit a heinous crime"
 
 # [Part 7 - Start 01:33:07]
 # 01:57:12, 3, *enters the Halfmoon Sheriff Substation* (<- timing seems PRETTY FUCKING COINCIDENTAL)
