@@ -872,6 +872,53 @@ $T.AE(1,"51:36",":Regardless...")
 # | Because, that mentality means that he DOES HAVE INTEGRITY.                                           |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
+$T.AE(0,"51:37",":Alright, I believe you.")
+$T.AE(1,"51:40",":And you know, it's nothin' against YOU...<pauses>")
+$T.AE(1,"51:48",":How much did you say you weigh...?")
+$T.AE(0,"51:50",":About 150 pounds.")
+$T.AE(1,"51:51",":150...? Ok.")
+$T.AE(0,"51:53",":The only counterpoint I'm gonna made to what-")
+$T.AE(1,"51:55",":Yup.")
+$T.AE(0,"51:55",":-make to what you just said... I don't think you have anything against me, but- the end result is uh- <sigh> this is, uh-")
+$T.AE(1,"52:04",":Well... you- you're basically, correct in the aspect that I do not- uh, the only thing that I have, is an arrest warrant signed by a sitting judge, here in the town of Halfmoon. Ok...?")
+$T.AE(0,"52:19",":Right.")
+$T.AE(1,"52:20",":Based on the information (hearsay) that they were provided by WALMART... ok...?")
+$T.AE(0,"52:28",":Right.")
+$T.AE(1,"52:28",":Is what she based on, she based the warrant on.") # Every time I hear him repeat this, it makes me laugh. Not his fault, but because of how stupid it is.
+
+# ________________________________________________________________________________________________________________
+# | So if WALMART LOSS PREVENTION GUY typically has EVIDENCE to provide in a COMPLAINT to make it LEGITIMATE...? |
+# | They didn't NEED that this time, nah. It SOUNDS STUPID, right...? But, in THIS case, it isn't cause it's ME. |
+# | It is probably because THEY think I'm stupid, and that MUST mean that since they FEEL like I'm stupid? I am. |
+# | And, they're NOT stupid at all... especially if they don't feel like they are. Nah. So, it is what it is.    |
+# | I'm stupid, they're not, it's over. Argument basically over and done. However, uh- here's the problem.       |
+# | If they didn't NEED EVIDENCE in THIS CASE...? Why would they ever NEED EVIDENCE in ANY case...? Ya know...?  |
+# |--------------------------------------------------------------------------------------------------------------|
+# | Basically, if a judge is handed a COMPLAINT based on HEARSAY, then the WARRANT based on HEARSAY is why I was |
+# | ARRESTED. Because, you know, APPARENTLY I've SUPPOSEDLY been known for stealing things, and have never been  |
+# | caught. Even now. Not caught. Suspected. No evidence. Suspiscion and evidence...? Not equal, dude.           |
+# | Which means that they just see a guy that looks suspicious. That's it. That's (PREJUDICE -> DISCRIMINATION). |
+# |--------------------------------------------------------------------------------------------------------------|
+# | Which means, no evidence led to that WARRANT being written. Just someone making up a story.                  |
+# | That's strange, right...? In a store where many people are caught taking stuff ON VIDEO...? I wasn't caught  | 
+# | taking anything on video... so, if I wasn't caught on video, then they can just say that I took something in |
+# | a complaint, because it FELT like they PRACTICALLY SAW ME, taking something... and THAT'S effectively worth  |
+# | writing a fucking arrest warrant.                                                                            |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"52:32",":The question, that I have here, is this.")
+$T.AE(1,"52:33",":Yup.")
+$T.AE(0,"52:36",":If WALMART can, you know, uh- have me ARRESTED, for this in- particular incident, why am I not able to do that, when people commit more serious crimes to me, and I have EVIDENCE of it...? That's what I'm sayin', saying.")
+$T.AE(1,"52:55",":Well, I can't- I can't answer that question, because I was not there at the time that this happened, so...")
+$T.AE(0,"53:02",":Ok. But- uh, you weren't at WALMART at the time that they made this, complaint.")
+$T.AE(1,"53:10",":Correct, I was. Ok, and you're not, apparently I'm not explaining it correct.")
+$T.AE(0,"55:19",":Or, when they made the complaint, you were there. What I'm saying is that when the incident supposedly occurred-")
+$T.AE(1,"53:28",":Yup.")
+$T.AE(0,"53:28",":You were not there.")
+$T.AE(1,"53:28",":What about it...?")
+$T.AE(0,"53:28",":I guess um, this- we're getting lost in SPECIFICS, here... but- what I'm suggesting is that, if there IS an incident, where uh- a police officer, has arrived, and a crime is reported to them, and no action is taken by the police officer, in support of what I have provided as testimony, and INSTEAD what happens is, three people provide false testimony, to the police officer that shows up, well what happens is that a crime is committed, and then an additional crime is committed, and then, uh- I wind up paying the piper for calling 911. Or, someone has remote access to my phone, and I dial 911 and they prevent the call from making it to the dispatch station, I believe that what's happening is people must think that I'm FABRICATING that, that I called 911, and that I had evidence of it, and I told SCOTT SCHELLING about the evidence of my 911 call being at CENTER FOR SECURITY.")
+$T.AE(0,"54:36",":What I'm saying is that a SERIAL KILLER, is covering their tracks. And, you're going around following uh- the- the- phone call of somebody at WALMART that probably, you know, saw me, and decided to write the statement they did. And they didn't have to prove it.")
+$T.AE(0,"54:55",":So, even, whether I have to prove it in court, or not- what's happening is they can just make up some bullshit, and then get me in trouble.")
 
 $T.AE(0,"00:00",":")
 $T.AE(1,"00:00",":")
