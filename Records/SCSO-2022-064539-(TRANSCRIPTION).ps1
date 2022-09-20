@@ -1003,7 +1003,7 @@ Class Person
     {
         $This.Index       = $Index
         $This.Name        = $Name
-        $This.Description = $Description
+        $This.Description = $Description -join "`n"
     }
 }
 
@@ -1027,46 +1027,46 @@ Class PersonList
 
 $People = [PersonList]::new()
 $People.Add("SCSO Scott Schelling",
-            ("Dude who was the FIRST PERSON ON THE SCENE at the ZAPPONE DEALERSHIP after 2 25-30 year old white males attempted to murder me using PEGASUS/PHANTOM."+
-            "Guy attempted to arrest me because he didn't understand that I tried to call 911 multiple times after almost being killed near COMPUTER ANSWERS."+
-            "Asked me MULTIPLE QUESTIONS at 201D HALFMOON CIRCLE, CLIFTON PARK, NY 12065 at 0155AM and then never wrote any notes about those questions."+
-            "I believe he had some hand in DESTROYING THE EVIDENCE of my 2nd 911 call at CENTER FOR SECURITY that I made at 05/26/20 0010."+
+            ("Dude who was the FIRST PERSON ON THE SCENE at the ZAPPONE DEALERSHIP after 2 25-30 year old white males attempted to murder me using PEGASUS/PHANTOM.",
+            "Guy attempted to arrest me because he didn't understand that I tried to call 911 multiple times after almost being killed near COMPUTER ANSWERS.",
+            "Asked me MULTIPLE QUESTIONS at 201D HALFMOON CIRCLE, CLIFTON PARK, NY 12065 at 0155AM and then never wrote any notes about those questions.",
+            "I believe he had some hand in DESTROYING THE EVIDENCE of my 2nd 911 call at CENTER FOR SECURITY that I made at 05/26/20 0010.",
             "Caused me to believe that SCSO has some DIRTY OFFICERS ON STAFF THAT INDISCRIMINATELY COMMIT CRIMINAL ACTIVITIES and NEVER GET CAUGHT."))
 
 $People.Add("SCSO Mark Sheehan",
-            ("I do not believe that this dude is a MALICIOUS cop, based on multiple interactions, however, on 06/13/20, this man IGNORED my STORY about how "+
-            "my neighbor, WILLIAM MOAK, threatened to kill me from his kitchen window, and then ran onto my property with a baseball bat in his hand out of 'FEAR',"+
-            "except there was no 'out of FEAR' aspect, there was an 'out of FRUSTRATION' aspect where this man attempted to assault me with that baseball bat"+
-            "on my fucking property, and then my STEPFATHER MICHAEL H. STREETER, and JANET MOAK, had to RESTRAIN WILLIAM MOAK from ASSAULTING ME WITH THE BAT..."+
-            "on my fucking property... not HIS... and then (3) people provided FALSE TESTIMONY on a WRITTEN INSTRUMENT, AKA committed PERJURY."+
-            "Also, same guy came to my house on 08/31/20 when I called the police because I suspected that my MOTHER, FABIENNE S. COOK, had something to do"+
-            "with conspiring to murder my father, MICHAEL EDWARD COOK, because she kept WALKING AWAY FROM ME when I talked about my father's murder."+
-            "Here's a link to the AUDIO transcription from JUNE 28th, 2022 that sorta suggests the same fucking thing..."+
+            ("I do not believe that this dude is a MALICIOUS cop, based on multiple interactions, however, on 06/13/20, this man IGNORED my STORY about how ",
+            "my neighbor, WILLIAM MOAK, threatened to kill me from his kitchen window, and then ran onto my property with a baseball bat in his hand out of 'FEAR',",
+            "except there was no 'out of FEAR' aspect, there was an 'out of FRUSTRATION' aspect where this man attempted to assault me with that baseball bat",
+            "on my fucking property, and then my STEPFATHER MICHAEL H. STREETER, and JANET MOAK, had to RESTRAIN WILLIAM MOAK from ASSAULTING ME WITH THE BAT...",
+            "on my fucking property... not HIS... and then (3) people provided FALSE TESTIMONY on a WRITTEN INSTRUMENT, AKA committed PERJURY.",
+            "Also, same guy came to my house on 08/31/20 when I called the police because I suspected that my MOTHER, FABIENNE S. COOK, had something to do",
+            "with conspiring to murder my father, MICHAEL EDWARD COOK, because she kept WALKING AWAY FROM ME when I talked about my father's murder.",
+            "Here's a link to the AUDIO transcription from JUNE 28th, 2022 that sorta suggests the same fucking thing...",
             "https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0831-(Mom%2006-28-2022).ps1 <- Aw. My poor mother committed PERJURY on 06/28/22."))
 
 $People.Add("NYSP Trooper Borden",
-            ("Dude who somehow works with the NEW YORK STATE POLICE, but is incredibly fucking stupid. Doesn't know what ESPIONAGE or PHANTOM/PEGASUS are."+
-            "Dude actually doesn't CARE if I keep calling him STUPID, or that SCSO CLAYTON BROWNELL heard the ENTIRE INTERACTION between us on 06/17/20 at GT Toys."+
-            "Basically, I asked TROOPER BORDEN for an ESCORT to the local FBI FIELD OFFICE or a MILITARY FACILITY because I had EVIDENCE in the EVIDENCE LIST..."+
-            "But he thought that shit was retarded. Evidence is stupid in his eyes, and THAT'S what makes him such a reliable NYSP Trooper."+
-            "Here's a link to the EVIDENCE LIST that TROOPER BORDEN IGNORED..."+
+            ("Dude who somehow works with the NEW YORK STATE POLICE, but is incredibly fucking stupid. Doesn't know what ESPIONAGE or PHANTOM/PEGASUS are.",
+            "Dude actually doesn't CARE if I keep calling him STUPID, or that SCSO CLAYTON BROWNELL heard the ENTIRE INTERACTION between us on 06/17/20 at GT Toys.",
+            "Basically, I asked TROOPER BORDEN for an ESCORT to the local FBI FIELD OFFICE or a MILITARY FACILITY because I had EVIDENCE in the EVIDENCE LIST...",
+            "But he thought that shit was retarded. Evidence is stupid in his eyes, and THAT'S what makes him such a reliable NYSP Trooper.",
+            "Here's a link to the EVIDENCE LIST that TROOPER BORDEN IGNORED...",
             "https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt <- Aw. A lot of morons exist in SARATOGA COUNTY."))
 
 $People.Add("Laura Hughes",
-            ("Some bitch from SARATOGA COUNTY CHILDRENS PROTECTIVE SERVICES who wrote a FRAUDULENT LETTER OF INDICATION on June 18th, 2020"+
-            "Probably never looked at a SINGLE EXHIBIT on this list..."+
+            ("Some bitch from SARATOGA COUNTY CHILDRENS PROTECTIVE SERVICES who wrote a FRAUDULENT LETTER OF INDICATION on June 18th, 2020",
+            "Probably never looked at a SINGLE EXHIBIT on this list...",
             "https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt"))
 
 $People.Add("SCSO Michael Whiteacre",
-            ("Dude who came to my house with SCSO MARK SHEEHAN on 06/18/20 when Laura Hughes was there, asking questions about the 2 dudes on 05/26/20."+
-            "Dude has probably never looked at an entire list of evidence either, so when I paste..."+
-            "https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt"+
-            "...he's gonna have no idea how to look at any of that shit... and that's why he's such a reliable police officer isn't he...?"+
+            ("Dude who came to my house with SCSO MARK SHEEHAN on 06/18/20 when Laura Hughes was there, asking questions about the 2 dudes on 05/26/20.",
+            "Dude has probably never looked at an entire list of evidence either, so when I paste...",
+            "https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt",
+            "...he's gonna have no idea how to look at any of that shit... and that's why he's such a reliable police officer isn't he...?",
             "He will later have a conversation in this transcription that I'll have to UNPACK and EXAMINE in order to POTENTIALLY INCRIMINATE HIM..."))
 
 $People.Add("Heather Corey Mongue",
-            ("Some bitch that I sent an EMAIL to, about WHO I was investigating, SUPPOSEDLY practices law, but needs a MENTAL HANDICAP applied..."+
-            "Probably doesn't understand this exhibit here:"+
+            ("Some bitch that I sent an EMAIL to, about WHO I was investigating, SUPPOSEDLY practices law, but needs a MENTAL HANDICAP applied...",
+            "Probably doesn't understand this exhibit here:",
             "https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD <- Aw. Heather Corey-Mongue was told about this before this FAMILY COURT case."))
 
 $People.Add("SCSO Michael Zurlo",
@@ -1097,15 +1097,156 @@ $People.Add("Sarah Schellinger",
             "Some bitch that was apppointed to be my PUBLIC DEFENDER, but sorta sucked ass at it so badly that I TERMINATED HER in AUGUST 2020.")
 
 $People.Add("John Delong",
-            ("Another public defender that had no right to be my DEFENSE ATTORNEY on 10/5/2021 or 11/4/2021, advised me my TRIAL DATE was on 11/7/2021."+
-            "The case that I'm making is that if I have EVIDENCE OF HAVING TERMINATED SARAH SCHELLINGER in AUGUST 2020..."+
-            "But then, my TERMINATED PUBLIC DEFENDER just so happened to have TRANSFERRED HER CASELOAD TO ANOTHER PUBLIC DEFENDER..."+
-            "How the fuck could she do that with MY SPECIFIC CASE, if I have EVIDENCE of TERMINATING HER, in AUGUST of 2020...?"+
-            "Well, it's because some morons exist in the SARATOGA COUNTY PUBLIC DEFENDERS OFFICE. Are they ALL morons...? Nah. But, SOME of them ARE."+
-            "Because lets look at it like this... If I'm the kid from PET CEMETERY, and my fuckin' cat dies...? I'm gonna go bury my cat."+
-            "However, uh- apparently if you decide to do that to a PUBLIC DEFENDER, they're gonna return from the seventh circle of hell, right...?"+        
-            "And NOW... that fuckin' dead cat that you buried is BACK from the dead. 'How DARE you fire my ass... I'm your FREE LAWYER...'" +
+            ("Another public defender that had no right to be my DEFENSE ATTORNEY on 10/5/2021 or 11/4/2021, advised me my TRIAL DATE was on 11/7/2021.",
+            "The case that I'm making is that if I have EVIDENCE OF HAVING TERMINATED SARAH SCHELLINGER in AUGUST 2020...",
+            "But then, my TERMINATED PUBLIC DEFENDER just so happened to have TRANSFERRED HER CASELOAD TO ANOTHER PUBLIC DEFENDER...",
+            "How the fuck could she do that with MY SPECIFIC CASE, if I have EVIDENCE of TERMINATING HER, in AUGUST of 2020...?",
+            "Well, it's because some morons exist in the SARATOGA COUNTY PUBLIC DEFENDERS OFFICE. Are they ALL morons...? Nah. But, SOME of them ARE.",
+            "Because lets look at it like this... If I'm the kid from PET CEMETERY, and my fuckin' cat dies...? I'm gonna go bury my cat.",
+            "However, uh- apparently if you decide to do that to a PUBLIC DEFENDER, they're gonna return from the seventh circle of hell, right...?",    
+            "And NOW... that fuckin' dead cat that you buried is BACK from the dead. 'How DARE you fire my ass... I'm your FREE LAWYER...'",
             "Now you're REAL fucked, dude... cause. They're gonna HAUNT you for the rest of your days... taunting you from behind mirrors and shit."))
+
+<#
+Index Name                   Description
+----- ----                   -----------
+    0 SCSO Scott Schelling   Dude who was the FIRST PERSON ON THE SCENE at the ZAPPONE DEALERSHIP after 2 25-30 year old white males attempted to murder me 
+    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   using PEGASUS/PHANTOM. Guy attempted to arrest me because he didn't understand that I tried to call 911 multiple times after 
+                             almost being killed near COMPUTER ANSWERS. 
+
+                             Asked me MULTIPLE QUESTIONS at 201D HALFMOON CIRCLE, CLIFTON PARK, NY 12065 at 0155AM and then never wrote any notes about those 
+                             questions. I believe he had some hand in DESTROYING THE EVIDENCE of my 2nd 911 call at CENTER FOR SECURITY that I made at:
+                             05/26/20 0010. Caused me to believe that SCSO has some DIRTY OFFICERS ON STAFF THAT INDISCRIMINATELY COMMIT CRIMINAL ACTIVITIES 
+                             and NEVER GET CAUGHT.
+
+    1 SCSO Mark Sheehan      I do not believe that this dude is a MALICIOUS cop, based on multiple interactions, however, on 06/13/20, this man IGNORED my 
+    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      STORY about how my neighbor, WILLIAM MOAK, threatened to kill me from his kitchen window, and then ran onto my property with a 
+                             baseball bat in his hand out of 'FEAR', except there was no 'out of FEAR' aspect, there was an 'out of FRUSTRATION' aspect where 
+                             this man attempted to assault me with that baseball bat on my fucking property, and then my STEPFATHER MICHAEL H. STREETER, and 
+                             JANET MOAK, had to RESTRAIN WILLIAM MOAK from ASSAULTING ME WITH THE BAT...  on my fucking property... not HIS... and then (3) 
+                             people provided FALSE TESTIMONY on a WRITTEN INSTRUMENT, AKA committed PERJURY.
+
+                             Also, same guy came to my house on 08/31/20 when I called the police because I suspected that my MOTHER, FABIENNE S. COOK, had 
+                             something to do with conspiring to murder my father, MICHAEL EDWARD COOK, because she kept WALKING AWAY FROM ME when I talked 
+                             about my father's murder.
+                             
+                             Here's a link to the AUDIO transcription from JUNE 28th, 2022 that sorta suggests the same fucking thing...
+                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0831-(Mom%2006-28-2022).ps1 
+                             (^ Aw. My poor mother FABIENNE SILVIE KIVLEN-COOK committed PERJURY on 06/28/22.)
+
+                             I don't really have anything against this dude, apparently he works for COHOES POLICE DEPARTMENT last time I checked.
+
+    2 NYSP Trooper Borden    Dude who somehow works with the NEW YORK STATE POLICE, but is incredibly fucking stupid. Doesn't know what ESPIONAGE or PEGASUS
+    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯     or PHANTOM, are. Dude actually doesn't CARE if I keep calling him STUPID, or that SCSO CLAYTON BROWNELL heard the ENTIRE 
+                             INTERACTION between us on 06/17/20 at GT Toys.
+
+                             Basically, I asked TROOPER BORDEN for an ESCORT to the local FBI FIELD OFFICE or a MILITARY FACILITY because I had EVIDENCE in 
+                             the EVIDENCE LIST... But he thought that shit was retarded. Evidence is stupid in his eyes, and THAT'S what makes him such a 
+                             reliable NYSP Trooper.
+
+                             Here's a link to the EVIDENCE LIST that TROOPER BORDEN IGNORED...
+                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt 
+                             (^ Aw. A lot of morons exist in SARATOGA COUNTY.)
+                             
+    3 Laura Hughes           Some bitch from SARATOGA COUNTY CHILDRENS PROTECTIVE SERVICES who wrote a FRAUDULENT LETTER OF INDICATION on June 18th, 2020
+    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯           Probably never looked at a SINGLE EXHIBIT on this list...
+                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt
+
+    4 SCSO Michael Whiteacre Dude who came to my house with SCSO MARK SHEEHAN on 06/18/20 when Laura Hughes was there, asking questions about the 2 dudes 
+    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ on 05/26/20. Dude has probably never looked at an entire list of evidence either, so when I paste...
+                             
+                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt
+                             
+                             ...he's gonna have no idea how to look at any of that shit... and that's why he's such a reliable police officer isn't he...?
+                             He will later have a conversation in this transcription that I'll have to UNPACK and EXAMINE in order to POTENTIALLY 
+                             INCRIMINATE HIM... (which is the polar opposite of how I wrote about him in my book...)
+
+                             Apparently started dating some girl named BRIANNA DYER, who I believe is associated with TATIANA CLEVELAND.
+                             Ya know...? My cousin RYAN "BOOKIE/PENCILDICK" WARD's ex-girlfriend...? There's no way all these people could possibly KNOW
+                             each other, is there...? No fuckin' way, dude... Nah. People...? Knowing each other...? That's preposterous. 
+
+    5 Heather Corey-Mongue   Some bitch that I sent an EMAIL to, about WHO I was investigating, SUPPOSEDLY practices law, but needs a MENTAL HANDICAP 
+    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   applied... Probably doesn't understand this exhibit here:
+
+                             https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD 
+                             (^ Aw. Heather Corey-Mongue was told about this before this FAMILY COURT case. Sorta links MICHAEL EDWARD COOK and
+                             JESSE PICKETT, which means NFRASTRUCTURE. Doh~! Morons all over the place OVERLOOKED THAT FACTOID~!)
+
+    6 SCSO Michael Zurlo     Guy who supposedly runs SARATOGA COUNTY SHERIFFS OFFICE, but ALSO needs a MENTAL HANDICAP applied, commits OBSTRUCTION 
+    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯     OF JUSTICE indiscriminately, and has been OBSERVED BEING INVOLVED IN PROCEDURALLY SMEARING ME IN MULTIPLE RECORDS.
+
+    7 SCSO James Leonard     Plays with his dick in a bathtub all day indiscriminately, and calls that being a COUNTY SHERIFF.
+    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯     Also commits OBSTRUCTION OF JUSTICE indiscriminately, probably WHILE playing with his dick in a bathtub all day.
+                             In the end, who knows...?
+
+    8 Eric Catricala         Supposedly a STATE ASSEMBLYMAN, runs a FUNERAL HOME that is ACROSS THE STREET FROM COMPUTER ANSWERS, lived at:
+    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯         20 ANCHOR DRIVE. Basically friends with the ol' Leonardmeister extraordinaire. Doesn't realize how retarded he looks by
+                             attempting to merge multiple incidents into the same ticket, so May 24th 2020 ~ 7pm, and May 25th 2020 ~ 1130pm, in 
+                             the same ticket doesn't look suspicious at all to either JAMES LEONARD, or SCOTT CARPENTER. Nah. That's cause they're
+                             fuckin' morons that backdated a ticket SCSO-003177 from May 27th, 2020 at 1414, to like, reported on May 24th, 2020.
+                             That's stupid, right...? Well, think again ya fuck. It's not that stupid at all. These clues slipped by EVERYBODY.
+
+    9 Bruce Tanski           Gay bastard who owns the TANSKI CORPORATION and FAIRWAYS OF HALFMOON, commits BANK FRAUD, PAYS PEOPLE like MICHAEL 
+    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯           ZURLO to shut the fuck up alot, and hangs out with JOHN HOFFMAN a lot behind closed door meetings. Probably does the
+                             same exact thing that James Leonard does in his favorite bath tub at 9 MEYER ROAD.
+
+   10 John Hoffman           Gay bastard that my SON and I ran into on MAY 25th, 2020 BEFORE I recorded IMG_0625.mov walking to my aunt TERRI 
+   ¯¯ ¯¯¯¯¯¯¯¯¯¯¯¯           COOK's house, talked about COIN MAGIC. IMG_0625.MOV and IMG_0627.MOV are BOTH in the EXHBIT LIST...
+
+                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt
+
+                             Michael Whiteacre doesn't realize how stupid he looks for not looking into these events on that list.
+
+   11 Terri Cook             Goes around and arrests people's dogs indiscriminately... If your dog is running around without a leash...?
+   ¯¯ ¯¯¯¯¯¯¯¯¯¯             She has to show up and arrest your dog for walking around without one. That means, dog jail.
+                             She used to live at 10 INNISBROOK, worked with law firms and district attorneys in Albany.
+                             
+                             I think she has worked with RUSSIAN INTELLIGENCE and had involvement in: CONSPIRACY TO MURDER MICHAEL EDWARD COOK.
+                             I also talk about her in the EVIDENCE that I told SCOTT SCHELLING I had UPLOADED, at COMPUTER ANSWERS...
+
+                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt
+                             Notice how I keep posting that link...? Well, that's because of how many stupid people exist on planet earth.
+                             I keep trying to provide this shit to the AUTHORITIES...? But, they do what MICHAEL WHITEACRE does, and ignore it.
+
+                             Does anybody understand why I have to INSULT guys like MICHAEL WHITEACRE...? It's cause he isn't DOING HIS JOB.
+
+   12 Thomas Cook            My uncle that doesn't realize that his building that he used to own at 46 STATE STREET, ALBANY, was basically taken 
+   ¯¯ ¯¯¯¯¯¯¯¯¯¯¯            by the KGB, and AUNT TERRI.
+
+                             My uncle did NOTHING as far as I know, in attempting to have me killed for any reason, nor my father.
+                             However, UH- HE OBVIOUSLY TRUSTS PEOPLE THAT ARE A SIGNIFICANT FUCKING THREAT.
+                             
+   13 Paul Pelagalli         Guy who literally ordered me to go see (2) doctors (Berger|Grodin) at SARATOGA COUNTY MENTAL HEALTH, but neither of 
+   ¯¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯         them worked there... Seems to be so oblivious to the notion that DIRTY COPS and SOCIAL SERVICE WORKERS caused him to
+                             REVOKE CUSTODY OF MY FUCKING CHILDREN, and he doesn't understand that I had to work harder than all these people...
+                             ...at compiling this fuckin' evidence list, and searching for a way to CLEAR MY FUCKING NAME.
+
+                             Probably has no idea that the people who CONSPIRED TO MURDER MY FATHER, ATTEMPTED TO DO THE SAME THING TO ME.
+                             Cool...? Cool. That's what happened, broski. Thanks for nothin'.
+
+   14 Sarah Schellinger      Some bitch that was apppointed to be my PUBLIC DEFENDER, but sorta sucked ass at it so badly that I TERMINATED HER 
+   ¯¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      in AUGUST 2020.
+
+   15 John Delong            Another public defender that had no right to be my DEFENSE ATTORNEY on 10/5/2021 or 11/4/2021, advised me my TRIAL 
+   ¯¯ ¯¯¯¯¯¯¯¯¯¯¯            DATE was on 11/7/2021. The case that I'm making is that if I have EVIDENCE OF HAVING TERMINATED SARAH SCHELLINGER 
+                             in AUGUST 2020... 
+                             
+                             But then, my TERMINATED PUBLIC DEFENDER just so happened to have TRANSFERRED HER CASELOAD TO ANOTHER PUBLIC DEFENDER.
+
+                             How the fuck could she do that with MY SPECIFIC CASE, if I have EVIDENCE of TERMINATING HER, in AUGUST of 2020...?
+
+                             Well, it's because some morons exist in the SARATOGA COUNTY PUBLIC DEFENDERS OFFICE. Are they ALL morons...? Nah. 
+                             But, SOME of them ARE. Because lets look at it like this... 
+                             
+                             If I'm the kid from PET CEMETERY, and my fuckin' cat dies...? I'm gonna go bury my cat, and cry like a little bitch.
+
+                             However, uh- apparently if you decide to do that to a PUBLIC DEFENDER, they're gonna return from the seventh circle 
+                             of hell, right...? And NOW... that fuckin' dead cat that I buried...? Cat's BACK from the dead. 
+                             'How DARE you fire my ass... I'm your FREE LAWYER...'
+                             
+                             Now you're REAL fucked, dude... cause. 
+                             They're gonna HAUNT you for the rest of your days... taunting you from behind mirrors and shit.
+#>
 
 # ____________________________________________________________________________________________________________________________________________
 # | With me so far...? Laura Hughes wrote a FRAUDULENT LETTER OF INDICATION on 06/18/20 because she's stupid.                                |
@@ -1345,7 +1486,28 @@ $T.AE(1,"01:12:34",":I don't think you're a shitty person...")
 $T.AE(0,"01:12:38",":Well, everyone else seems to think I am.")
 $T.AE(1,"01:12:41",":Well... again, I'm not everybody else. I don't judge a book by it's cover, or anything.")
 $T.AE(5,"01:12:49","*<indiscernable chatter, clothing and occasional tapping until 01:13:17>")
-$T.AE()
+$T.AE(1,"01:13:17",":<indiscernable> Left little finger again... <more hard to hear chatter>")
+$T.AE(0,"01:13:47",":I used to do this for Fieldprint.")
+$T.AE(1,"01:13:48",":Huh...?")
+$T.AE(0,"01:13:50",":I used to do this for Fieldprint.")
+$T.AE(1,"01:13:53",":What is Field print...?")
+$T.AE(0,"01:13:54",":It's a Federal service that takes peoples' fingerprints.") # I think, not totally positive of that.
+$T.AE(1,"01:13:58",":Oh.")
+$T.AE(0,"01:13:59",":Cause I used to use- do this same thing.")
+$T.AE(1,"01:14:16",":I don't know WHY we're having such a hard time here...") # Taking people's fingerprints is a pain in the ass. (CIA/Express Lane) has high demands.
+$T.AE(0,"01:14:28",":Want me to try to do it...? I used to do this. Go ahead, try it again.")
+$T.AE(1,"01:14:37",":I'm just gonna do this... delete it.")
+$T.AE(0,"01:14:37",":Well, I can-")
+$T.AE(1,"01:14:42",":No match found... right index.")
+$T.AE(0,"01:14:45",":Right index...?")
+$T.AE(1,"01:14:46",":Yep, that's what they're tellin' me...")
+$T.AE(1,"01:15:08",":Try one more time...")
+$T.AE(0,"01:15:20",":Here, let me try.")
+$T.AE(1,"01:15:22",":Alright... whatever.")
+$T.AE(0,"01:15:26",":Ready...?")
+$T.AE(1,"01:15:26",":Yup.") # Dude was probably BORN ready.
+$T.AE(5,"01:15:33","*<indiscernable, clothing shuffling around>")
+# TO BE CONTINUED
 
 # (01:17:58 -> 01:30:48) # Part 6 - Michael Sheradin finalizes processing my arrest
 # (01:30:48 -> 01:33:07) # Part 7 - Michael Sheradin issues paperwork, then grabs my belongings from his cruiser. (which was left running that whole time, by the way.)
