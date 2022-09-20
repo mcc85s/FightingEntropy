@@ -754,6 +754,7 @@ $T.AE(0,"42:33",":You're saying, that if I can PROVE that I didn't take it, how 
 $T.AE(1,"42:32",":It's not so much that YOU have to PROVE that they lied, THEY have to PROVE that YOU DID, what they CLAIM YOU DID, just like if I had arrested you-") # You are processing my arrest... there's no "JUST LIKE..."
 $T.AE(0,"42:49",":Right.")
 $T.AE(1,"42:50",":...or signed a complaint...")
+
 $T.AE(0,"42:49",":But that's what I'm saying...")
 $T.AE(1,"42:52",":...I would be have- I would have to be able to prove, IN COURT-")
 $T.AE(0,"42:55",":Right.")
@@ -918,24 +919,377 @@ $T.AE(0,"53:28",":You were not there.")
 $T.AE(1,"53:28",":What about it...?")
 $T.AE(0,"53:28",":I guess um, this- we're getting lost in SPECIFICS, here... but- what I'm suggesting is that, if there IS an incident, where uh- a police officer, has arrived, and a crime is reported to them, and no action is taken by the police officer, in support of what I have provided as testimony, and INSTEAD what happens is, three people provide false testimony, to the police officer that shows up, well what happens is that a crime is committed, and then an additional crime is committed, and then, uh- I wind up paying the piper for calling 911. Or, someone has remote access to my phone, and I dial 911 and they prevent the call from making it to the dispatch station, I believe that what's happening is people must think that I'm FABRICATING that, that I called 911, and that I had evidence of it, and I told SCOTT SCHELLING about the evidence of my 911 call being at CENTER FOR SECURITY.")
 $T.AE(0,"54:36",":What I'm saying is that a SERIAL KILLER, is covering their tracks. And, you're going around following uh- the- the- phone call of somebody at WALMART that probably, you know, saw me, and decided to write the statement they did. And they didn't have to prove it.")
-$T.AE(0,"54:55",":So, even, whether I have to prove it in court, or not- what's happening is they can just make up some bullshit, and then get me in trouble.")
+$T.AE(0,"54:55",":So, even, whether I have to, prove it in court, or not- what's happening is, they can just make up some bullshit, and then get me in trouble.")
+$T.AE(0,"55:07",":It- it- it's a serial case. One person, can tell the truth, about what happened, and another person, with more quote unquote CREDIBILITY, can say 'Oh, this OTHER story happened. Even though I have NO EVIDENCE OF IT...? I'm SAYING that that's what happened.' and-")
+$T.AE(1,"55:25",":Right.")
+$T.AE(0,"55:25",":-then, you arrest somebody based on THAT.")
+$T.AE(1,"55:30","*entering keys*")
+$T.AE(0,"55:45",":So if George Bush, and the CIA manipulated Osama Bin Laden into attacking the World Trade Center in 1993, so they could get the oil fields in Kuwait...")
+$T.AE(1,"56:00",":Ok.")
+$T.AE(0,"56:01",":Well, what happened is that 8 years later, Osama Bin Laden will attack AGAIN, and the CIA and whoever else, will... line the entire exoskeleton of the Twin Towers as well as World Trade Center 7 with THERMITE and EXPLOSIVE PACKAGES, whereby causing an incident known as 'CONTROLLED DEMOLITION'.")
+$T.AE(0,"56:23",":And then he'll have the National Institute of Standards and Technology say that, uh- the PLANES are the reason why the buildings fell.")
+$T.AE(1,"56:31",":Ok.") # It seems to me that he IS processing what I'm saying. I know he's MULTITASKING... but he's not suggesting that what I'm saying is fuckin' stupid... yet.
+$T.AE(0,"56:33",":The planes are not the reason why those buildings fell. It was an act of SABOTAGE by people in the United States. So that they could have a reason to go fight a war in the middle east.")
+$T.AE(1,"56:45","*entering keys*")
+$T.AE(1,"57:09",":Alright... <long sigh>")
+$T.AE(0,"57:16",":Uvalde Elementary, do you remember that...?")
+$T.AE(1,"57:20","*entering keys*")
+$T.AE(1,"57:50",":What's the zip code up there at mom's...? 12118 or 12065...?")
+$T.AE(0,"57:54",":12065.")
+$T.AE(1,"57:57",":That's what I thought.")
+$T.AE(0,"57:54",":What I'm sayin' is like, I can have evidence, of, like, ME DOING SOMETHING...? That CONTRADICTS the STATEMENT that somebody's making to the police, and you guys never collect that, or take it seriously.")
+$T.AE(1,"58:13",":Ok. What's your <clears throat> What's your social security number...?")
+$T.AE(0,"58:18","*Primary party muted audio recording")
+$T.AE(0,"58:24","*Primary party unmuted audio recording")
+$T.AE(1,"58:25",":<entering keys> Ok.")
+$T.AE(0,"58:32","So, if my mother says that uh, I, uh- had her in a chokehold, and whatever...")
+$T.AE(1,"58:37",":Right.")
+$T.AE(0,"58:38",":And says that to the state police, and then the, state police, attempt to arrest me...?")
+$T.AE(1,"58:44",":Ok...?")
+$T.AE(0,"58:46",":But I have an audio recording of the entire interaction between me and my mother, and she doesn't make any mention, that I think she had something to do with conspiring to murder my father...?")
+$T.AE(1,"58:54",":Ok.")
+$T.AE(0,"58:57","Why is it that my uh- evidence is never collected...? nobody's taking that seriously. If I state that my mother made a FALLACIOUS STATEMENT to the police, on June 28th, 2020 (I meant 2022), and I have an AUDIO RECORDING of what happened that morning...? And they arrest me as soon as I tell that that thing was UPLOADED BEFORE she made her 911 call...? Oh. That's how I know that there's PREJUDICE being applied to me. and you're taking part of it, right now.")
+$T.AE(1,"59:25",":Ok. <pause> Well, I disagree with that, ya know...") # He's not KNOWINGLY doing this, he's TAKING PART of it. ARRESTING someone based on HEARSAY. That's PREJUDICE. Essentially, I'm GUILTY until I prove myself INNOCENT, and even if I PROVE MYSELF INNOCENT, I'm still considered GUILTY. That's PREJUDICE.
+$T.AE(0,"59:29",":I'm sure you do...")
+$T.AE(1,"59:31",":Cause I've tried to explain this to ya several times...") # He does not understand what I'm saying. That's the end of the argument.
+$T.AE(0,"59:34",":But I understand what you're saying... (I obviously understand what he's saying) I don't think you're understanding, what I'm saying...")
+$T.AE(1,"59:38",":I understand EXACTLY what you're saying... ")
 
-$T.AE(0,"00:00",":")
-$T.AE(1,"00:00",":")
+# ___________________________________________________________________________________________________________________________________
+# | I really do not think that he does. When I say PEOPLE have developed PREJUDICE toward me...? What that means is this...         |
+# | If I am INNOCENT of something...? PEOPLE THAT HAVE DEVELOPED PREJUDICE TOWARD ME will AUTOMATICALLY treat as if I am GUILTY.    |
+# | It actually falls under a genre called DISCRIMINATION. That's actually PRETTY DIFFICULT TO PROVE, unless you're ME, & it isn't. |
+# | Therefore, because of the NUMEROUS PEOPLE on this RETARDED WHEEL OF PREJUDICE, it doesn't matter:                               |
+# | _______________________________________________________________                                                                 |
+# | | Whether I'm INNOCENT, OR, whether I can PROVE my INNOCENCE. |                                                                 |
+# | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                                 |
+# | Wanna know why...? That's how PREJUDICE works. If I say (1) thing, and people AUTOMATICALLY assume that there MUST be some      |
+# | other explanation...? In some cases, that's actually PREJUDICE, because they're treating me as if I'm ALREADY GUILTY.           |
+# | It's not LEGAL for people to do this, but people do it anyway, because of how stupid a lot of people in our society really are. |
+# | But- if it happens ENOUGH TIMES...? That's DISCRIMINATION. If it can be PROVEN, reliably, that there is a PATTERN, of this...?  |
+# | That can result in someone's PROFILE being DAMAGED to the point where everything they say is ignored. So if someone attempts    | 
+# | to MURDER SOMEBODY that has EVIDENCE of the MURDER ATTEMPT...? Then this DISCRIMINATION thing will force MICHAEL ZURLO to       |
+# | commit OBSTRUCTION OF JUSTICE. Or, Pelagalli to sentence me to (20) days in the county jail when i've noticed his court sending |
+# | emails for virtual appearances that were all OFFSET by (5) hours. So, appearances for 9AM will be emailed to me as 2PM, and     |
+# | then I will MISS my appearances because some lazy morons failed to do their job correctly, and then they just KEPT DOING THAT.  |
+# |---------------------------------------------------------------------------------------------------------------------------------|
+# | So what I'm suggesting is this:                                                                                                 |
+# | If a JUDGE can ORDER me to a fucking MENTAL HEALTH CLINIC to see (2) doctors that DON'T EVEN WORK THERE...                      |
+# | And then I tell the judge that court order he wrote was WRITTEN IN ERROR...?                                                    |
+# | He's going to SENTENCE ME TO (20) DAYS IN THE SARATOGA COUNTY JAIL for telling him that he wrote an ORDER INCORRECTLY.          |
+# | So, if you think that's stupid...? Well, think again, fuckface. HE made that mistake. THAT MEANS, it's MY FAULT, not HIS...     |
+# | It's just your OPINION that he made a mistake, and you're not even ALLOWED to tell the judge, what your OPINION is, either.     |
+# | Because. It's against the law to tell a judge that they made a mistake, and it is INCREDIBLY OFFENSIVE, too.                    |
+# | If what I'm saying sounds retarded...? Too bad.                                                                                 |
+# | You HAVE to do what I do, and RECORD THE COURT INTERACTION which they MADE ILLEGAL, because a bunch of whiny bitches like       |
+# | NEIL WEINER exist. They don't care about CONSTITUTIONAL RIGHTS or COURTS SENDING WRONG VIRTUAL APPEARANCE TIMES IN EMAILS, nah. |
+# | NEIL WEINER thinks that shit is stupid. But, YOU...? RECORDING A COURT INTERACTION WHERE A JUDGE ADMITS HE MADE A MISTAKE...?   |
+# | That's worth AT LEAST (20) DAYS IN THE COUNTY JAIL, ya fuck. Fuck you for trying to make an official judge look careless.       |
+# | Cause that shit is AGAINST THE LAW, even if it really SHOULDN'T BE. "Fuck your constitutional rights, dude." -Neil Weiner       |
+# | So at that point, I have to talk about how 20 * $285 = $5700 that Judge Paul Pelagalli owes me FOR THAT PARTICULAR MISHAP.      |
+# | But ALSO... lets whip out the SARATOGA COUNTY RETARDED WHEEL OF PREJUDICE courtesy of SARATOGA COUNTY FAMILY COURT:             |
+# |---------------------------------------------------------------------------------------------------------------------------------|
+# | SARATOGA COUNTY RETARDED WHEEL OF PREJUDICE                                                                                     |
+# | EVIDENCE and the INCIDENT that ALL of these RETARDED PEOPLE BELOW, NEVER INVESTIGATED...                                        |
+# | https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt                                     |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+Class Person
+{
+    [UInt32] $Index
+    [String] $Name
+    [String] $Description
+    Person([UInt32]$Index,[String]$Name,[String[]]$Description)
+    {
+        $This.Index       = $Index
+        $This.Name        = $Name
+        $This.Description = $Description
+    }
+}
+
+Class PersonList
+{
+    [Object] $Output
+    PersonList()
+    {
+        $This.Output = @( )
+    }
+    Add([String]$Name,[String[]]$Description)
+    {
+        If ($Name -in $This.Output.Name)
+        {
+            Throw "Person already specified"
+        }
+
+        $This.Output += [Person]::New($This.Output.Count,$Name,$Description)
+    }
+}
+
+$People = [PersonList]::new()
+$People.Add("SCSO Scott Schelling",
+            ("Dude who was the FIRST PERSON ON THE SCENE at the ZAPPONE DEALERSHIP after 2 25-30 year old white males attempted to murder me using PEGASUS/PHANTOM."+
+            "Guy attempted to arrest me because he didn't understand that I tried to call 911 multiple times after almost being killed near COMPUTER ANSWERS."+
+            "Asked me MULTIPLE QUESTIONS at 201D HALFMOON CIRCLE, CLIFTON PARK, NY 12065 at 0155AM and then never wrote any notes about those questions."+
+            "I believe he had some hand in DESTROYING THE EVIDENCE of my 2nd 911 call at CENTER FOR SECURITY that I made at 05/26/20 0010."+
+            "Caused me to believe that SCSO has some DIRTY OFFICERS ON STAFF THAT INDISCRIMINATELY COMMIT CRIMINAL ACTIVITIES and NEVER GET CAUGHT."))
+
+$People.Add("SCSO Mark Sheehan",
+            ("I do not believe that this dude is a MALICIOUS cop, based on multiple interactions, however, on 06/13/20, this man IGNORED my STORY about how "+
+            "my neighbor, WILLIAM MOAK, threatened to kill me from his kitchen window, and then ran onto my property with a baseball bat in his hand out of 'FEAR',"+
+            "except there was no 'out of FEAR' aspect, there was an 'out of FRUSTRATION' aspect where this man attempted to assault me with that baseball bat"+
+            "on my fucking property, and then my STEPFATHER MICHAEL H. STREETER, and JANET MOAK, had to RESTRAIN WILLIAM MOAK from ASSAULTING ME WITH THE BAT..."+
+            "on my fucking property... not HIS... and then (3) people provided FALSE TESTIMONY on a WRITTEN INSTRUMENT, AKA committed PERJURY."+
+            "Also, same guy came to my house on 08/31/20 when I called the police because I suspected that my MOTHER, FABIENNE S. COOK, had something to do"+
+            "with conspiring to murder my father, MICHAEL EDWARD COOK, because she kept WALKING AWAY FROM ME when I talked about my father's murder."+
+            "Here's a link to the AUDIO transcription from JUNE 28th, 2022 that sorta suggests the same fucking thing..."+
+            "https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0831-(Mom%2006-28-2022).ps1 <- Aw. My poor mother committed PERJURY on 06/28/22."))
+
+$People.Add("NYSP Trooper Borden",
+            ("Dude who somehow works with the NEW YORK STATE POLICE, but is incredibly fucking stupid. Doesn't know what ESPIONAGE or PHANTOM/PEGASUS are."+
+            "Dude actually doesn't CARE if I keep calling him STUPID, or that SCSO CLAYTON BROWNELL heard the ENTIRE INTERACTION between us on 06/17/20 at GT Toys."+
+            "Basically, I asked TROOPER BORDEN for an ESCORT to the local FBI FIELD OFFICE or a MILITARY FACILITY because I had EVIDENCE in the EVIDENCE LIST..."+
+            "But he thought that shit was retarded. Evidence is stupid in his eyes, and THAT'S what makes him such a reliable NYSP Trooper."+
+            "Here's a link to the EVIDENCE LIST that TROOPER BORDEN IGNORED..."+
+            "https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt <- Aw. A lot of morons exist in SARATOGA COUNTY."))
+
+$People.Add("Laura Hughes",
+            ("Some bitch from SARATOGA COUNTY CHILDRENS PROTECTIVE SERVICES who wrote a FRAUDULENT LETTER OF INDICATION on June 18th, 2020"+
+            "Probably never looked at a SINGLE EXHIBIT on this list..."+
+            "https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt"))
+
+$People.Add("SCSO Michael Whiteacre",
+            ("Dude who came to my house with SCSO MARK SHEEHAN on 06/18/20 when Laura Hughes was there, asking questions about the 2 dudes on 05/26/20."+
+            "Dude has probably never looked at an entire list of evidence either, so when I paste..."+
+            "https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt"+
+            "...he's gonna have no idea how to look at any of that shit... and that's why he's such a reliable police officer isn't he...?"+
+            "He will later have a conversation in this transcription that I'll have to UNPACK and EXAMINE in order to POTENTIALLY INCRIMINATE HIM..."))
+
+$People.Add("Heather Corey Mongue",
+            ("Some bitch that I sent an EMAIL to, about WHO I was investigating, SUPPOSEDLY practices law, but needs a MENTAL HANDICAP applied..."+
+            "Probably doesn't understand this exhibit here:"+
+            "https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD <- Aw. Heather Corey-Mongue was told about this before this FAMILY COURT case."))
+
+$People.Add("SCSO Michael Zurlo",
+            "Guy who supposedly runs SARATOGA COUNTY SHERIFFS OFFICE, but ALSO needs a MENTAL HANDICAP applied, commits OBSTRUCTION OF JUSTICE indiscriminately")
+
+$People.Add("SCSO James Leonard",
+            "Plays with his dick in a bathtub all day, and calls that being a COUNTY SHERIFF, also commits OBSTRUCTION OF JUSTICE indiscriminately")
+
+$People.Add("Eric Catricala",
+            "Supposedly a STATE ASSEMBLYMAN, runs a FUNERAL HOME that is ACROSS THE STREET FROM COMPUTER ANSWERS, lived at 20 ANCHOR DRIVE")
+
+$People.Add("Bruce Tanski",
+            "Gay bastard who owns the TANSKI CORPORATION and FAIRWAYS OF HALFMOON, commits BANK FRAUD, PAYS PEOPLE like MICHAEL ZURLO to shut the fuck up alot.")
+
+$People.Add("John Hoffman",
+            "Gay bastard that my SON and I ran into on MAY 25th, 2020 BEFORE I recorded IMG_0625.mov walking to my aunt TERRI COOK's house, talked about COIN MAGIC")
+
+$People.Add("Terri Cook",
+            "Goes around and arrests people's dogs indiscriminately... used to live at 10 INNISBROOK, worked with law firms and district attorneys in Albany")
+
+$People.Add("Thomas Cook",
+            "My uncle that doesn't realize that his building that he used to own at 46 STATE STREET, ALBANY, was basically taken by the KGB, and AUNT TERRI.")
+
+$People.Add("Paul Pelagalli",
+            "Guy who literally ordered me to go see (2) doctors (Berger|Grodin) at SARATOGA COUNTY MENTAL HEALTH, but neither of them worked there...")
+
+$People.Add("Sarah Schellinger",
+            "Some bitch that was apppointed to be my PUBLIC DEFENDER, but sorta sucked ass at it so badly that I TERMINATED HER in AUGUST 2020.")
+
+$People.Add("John Delong",
+            ("Another public defender that had no right to be my DEFENSE ATTORNEY on 10/5/2021 or 11/4/2021, advised me my TRIAL DATE was on 11/7/2021."+
+            "The case that I'm making is that if I have EVIDENCE OF HAVING TERMINATED SARAH SCHELLINGER in AUGUST 2020..."+
+            "But then, my TERMINATED PUBLIC DEFENDER just so happened to have TRANSFERRED HER CASELOAD TO ANOTHER PUBLIC DEFENDER..."+
+            "How the fuck could she do that with MY SPECIFIC CASE, if I have EVIDENCE of TERMINATING HER, in AUGUST of 2020...?"+
+            "Well, it's because some morons exist in the SARATOGA COUNTY PUBLIC DEFENDERS OFFICE. Are they ALL morons...? Nah. But, SOME of them ARE."+
+            "Because lets look at it like this... If I'm the kid from PET CEMETERY, and my fuckin' cat dies...? I'm gonna go bury my cat."+
+            "However, uh- apparently if you decide to do that to a PUBLIC DEFENDER, they're gonna return from the seventh circle of hell, right...?"+        
+            "And NOW... that fuckin' dead cat that you buried is BACK from the dead. 'How DARE you fire my ass... I'm your FREE LAWYER...'" +
+            "Now you're REAL fucked, dude... cause. They're gonna HAUNT you for the rest of your days... taunting you from behind mirrors and shit."))
+
+# ____________________________________________________________________________________________________________________________________________
+# | With me so far...? Laura Hughes wrote a FRAUDULENT LETTER OF INDICATION on 06/18/20 because she's stupid.                                |
+# | For the most part, so is everyone else in this list. Because they're too busy having PREJUDICE and NOT HAVING THEIR FACTS STRAIGHT...    |
+# | That when someone attempts to CORRECT their INCORRECT FACTS... they will say 'That's just your opinion, dude. Now fuck off, errand boy.' |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$CPSDATE = "06/18/20"
+
+$Days       = @{ 
+
+    Elapsed = [TimeSpan]([DateTime]"09/20/22"-[DateTime]$CPSDATE)
+    Remain  = [TimeSpan]([DateTime]"11/04/23"-[DateTime]"09/20/22")
+
+}
+
+$Days.Elapsed.Days + $Days.Remain.Days
+
+# ____________________________________________________________________________________________________________________________________________
+# | Earth Days = 1234                                                                                                                        |
+# | 1,234 days that I had custody of my children taken away because a NUMBER OF PEOPLE IN THE COMMUNITY, have developed PREJUDICE toward me. |
+# | and that's mainly because SOMEONE LIKE ME, isn't ALLOWED to tell people how fuckin' stupid they ARE, or SOUND. Because, that's MEAN.     |
+# | Even if I am correct...? The WAY in which I tell someone how fuckin' stupid they are, CANNOT BE 1) MEAN, or 2) INCORRECT.                |
+# |------------------------------------------------------------------------------------------------------------------------------------------|
+# | Ultimately what that means is this...                                                                                                    |
+# | The SARATOGA COUNTY RETARDED WHEEL OF PREJUDICE courtesy of MULTIPLE SARATOGA COUNTY SERVICES...                                         |
+# | They're not going to come right out and say "Well, maybe we ARE retarded after all" or...                                                |
+# | ..."Maybe we took custody of this dude's kids in error", even though I told NYSP Trooper Borden that-                                    |
+# | SOMEONE WAS COMMITTING ESPIONAGE TO ME ON MY IPHONE 8+ and I have MULTIPLE FUCKING EXHIBITS OF THAT.                                     |
+# | And, that's ok. That's why I have a fucking REALLY LARGE ($300M) LAWSUIT to file against SARATOGA COUNTY                                 |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(1,"59:41",":You think I'm doin' this because I'm prejudice, which I'm not.") # Nah, I'm not saying that HE has prejudice, but the JUDGE apparently does.
+$T.AE(0,"59:44",":Nope. That's not what I'm saying. That isn't what I'm saying at all. What I'm saying is that the people that wrote this statement, have prejudice toward me. Because they decided to write this statement that YOU think is PROBABLE CAUSE, but it could be a FIGMENT of their imagination. And then, on the OTHER END of the SPECTRUM, when SOMETHING happens to ME, and I'm NOT making shit up, and I have EVIDENCE to support my, uh- STATEMENT... It's not COLLECTED... ")
+
+# ___________________________________________________________________________________________________________________________________________
+# | But also, the people at WALMART are EXHIBITING that they DEFINITELY have PREJUDICE toward me because why would they be WATCHING ME...?  |
+# | They don't watch EVERYBODY that walks in there, there's no fucking way that they could do that.                                         |
+# | In order to watch EVERYBODY that walks in there, and leaves the store with 1) something or 2) nothing...                                |
+# | ...they'd have to be PREPPED AND READY AHEAD OF TIME. Sorta like a MILITARY OPERATION. Sorta like VIOLATING SOMEONE'S RIGHTS...         |
+# | ...in order to DETERMINE when someone is exhibiting SUSPICIOUS BEHAVIORS. Just like the TWIN TOWERS and WTC 7 were rigged with THERMITE |
+# | and EXPLOSIVES on Tuesday, September 11th, 2001...? These guys at WALMART LOSS PREVENTION saw a reason to WATCH MY EVERY MOVE.          |
+# | How did they know how to prepare for that AHEAD of time...? It's because the SURVEILLANCE SYSTEM probably FLAGGED MY ACTIVITY.          |
+# | That's actually UNCONSTITUTIONAL. The SURVEILLANCE SYSTEM THAT THEY HAVE, has a FACIAL RECOGNITION SOFTWARE that identifies EVERY       | 
+# | individual that walks into the store... and they'll have this cool little BOX that floats above somebody's face as they walk around the |
+# | store. People don't have to be exhibiting ANY SUSPICIOUS ACTIVITY AT ALL, and they can just watch a PARTICULAR INDIVIDUAL WALK IN, and  |
+# | WALK OUT... and then that person can be FLAGGED AS SOMEONE SUSPICIOUS. That's SYSTEMATIC PREJUDICE right there.                         |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(1,"01:00:15",":I'm not sayin' you're makin' ANYTHING up, to be honest with ya, I mean...")
+$T.AE(0,"01:00:19",":Ok. Uh- Thats beside the point. You don't have to SAY that at all, your ACTIONS can prove that.")
+$T.AE(1,"01:00:26","*Silent for 10 seconds")
+$T.AE(0,"01:00:37",":Look, I'm gonna level with you...I'm very aware of the fact that, you know, that you have some DIRTY OFFICERS on your unit. And MICHAEL ZURLO is one of them, and BRUCE TANSKI has been committing BANK FRAUD with JOHN HOFFMAN. And he was investigated by, uh- people in an FBI probe, but the people in the FBI are also si- in on it. So I'm aware that SOME people in your unit are involved, in committing CRIMINAL ACTIVITIES, and, you can keep doing it, uh- THEY can keep doing it, I'm not gonna ASSUME that you're, PART of this ring of people, but- your unit- the people in it, that are complicit, they can continue to perform these activities... and then, you know, you'll process me based on some people at Walmart Loss Prevention, making a, imagined scenario up. But, the REAL scenarios that I've been reporting, to the police, they go un... unaddressed.")
+$T.AE(0,"01:01:33",":So, it leads to incidents such as Uvalde Elementary, where uh- someone winds up taking a gun and shooting 19 kids and 2 teachers, meanwhile Ted Cruz gets a whole bunch of money from ExxonMobil. You know, that's mu- that's bribery, by the way.")
+$T.AE(0,"01:01:50",":Did you kno- do you know what BRIBERY is...? That's a- LAW, right...?")
+$T.AE(1,"01:01:53",":Yup.")
+$T.AE(0,"01:01:50",":You said, you uphold, the law, EQUALLY, right...? <pauses> That's a thing. Is that, that's not, ACCURATE if... Ted Cruz can accept BRIBERY from ExxonMobil, and nobody does anything about it.")
+$T.AE(0,"01:02:12",":Or, well... people DO something about it, they just ALLOW it to happen. So, 19 kids and 2 teachers get shot down, and then- and in another month it'll be another HEINOUS event, and then the month after that'll be another HEINOUS event...")
+$T.AE(0,"01:02:24",":Meanwhile, uh- guys like BRUCE TANSKI, they own FAIRWAYS OF HALFMOON, and they basically tell you guys WHAT TO DO, and THEY can steal money from the bank, and, some od you guys... will HELP. Or, per- if someone makes a phone call saying 'Hey I see SOME suspicious activity', and it has something to do with BRUCE TANSKI...? Oh, well, it's BRUCE TANSKI, so let's just, ignore THAT...")
+$T.AE(1,"01:02:49",":Why's this-")
+$T.AE(0,"01:02:50",":So, the thing I'm alluding to here is that, you're taking action on something rather insignificant and miniscule, in the grand scheme of things... while WORSE things are happening, they're being REPORTED, but- they're not being enforced.")
+$T.AE(1,"01:03:06",":Do me a favor then, if you would, stand in front of that GRAY WALL...")
+$T.AE(5,"01:03:21","*camera shutter making noises*")
+$T.AE(0,"01:03:37",":<Indiscernable, clothing shuffling>")
+$T.AE(1,"01:03:41",":What's that...?")
+$T.AE(0,"01:03:42",":Do I need to continue standing here...?")
+$T.AE(1,"01:03:41",":Uhhhh, nope, I'm gonna have you come over here, so I can take your fingerprints. You got all your fingers...?")
+$T.AE(0,"01:03:48",":Yeh.")
+$T.AE(1,"01:03:51",":Alright, come out here...")
+$T.AE(1,"01:03:54","*Opens door latch")
+
 # (01:03:56 -> 01:17:58) # Part 5 - Michael Sheradin processes my fingerprints but needs some help
+$T.AE(0,"01:03:57",":This is ridiculous. <Indiscernable, clothing shuffling, movement>")
+$T.AE(1,"01:04:05",":C'mon over here...")
+$T.AE(0,"01:04:05",":So if I run into a billionaires knife... and I get it all bloody, you guys are gonna arrest me for that.")
+$T.AE(1,"01:04:11",":Do... do WHAT now...?")
+$T.AE(0,"01:04:13",":If I run into a BILLIONAIRES BLOODY KNIFE, and I get myself hurt and I'm injured badly, you guys are gonna arrest me for that.")
+$T.AE(1,"01:04:23",":Why would we arrest you for that...?")
+$T.AE(0,"01:04:25",":I'm trying to make a, comparison or a metaphor. So what you're- you're- what you're doing right now, is not TOO DIFFERENT, from what I just said.")
+$T.AE(0,"01:04:49",":OJ Simpson can kill Ron Goldman and his, and uh- Nicole Simpson, right...? Dude can commit a HEINOUS CRIME.")
+$T.AE(1,"01:05:17",":Put four fingers out flat...")
+$T.AE(0,"01:05:08",":Where someone innocent gets to be, recorded... ya know...? Well, he was, recorded.")
+$T.AE(1,"01:05:30",":Alright, next right thumb...")
+$T.AE(0,"01:05:38",":Ya know...? George Bush should be like, charged for fuckin' TREASON. Why isn't he...? Or, OJ Simpson should be IN PRISON for murdering his wife and Ron Goldman. Why isn't he...?")
+$T.AE(1,"01:05:53",":Cause they took it to trial, and the jury ACQUITTED him.") # I'm aware of that, I'm asking rhetorical questions that pertain to answers such as 1) MONEY and 2) IMPORTANCE.
+$T.AE(0,"01:05:57",":Right")
+$T.AE(1,"01:05:58",":Because the prosecution could NOT PROVE that he did what he did.")
+$T.AE(0,"01:06:03",":K.") # That is NOT the correct answer. The correct answer is that 1) MONEY OJ Simpson had, and 2) IMPORTANCE of JOHNNY COCHRAN, overrode the evidence. That's it. That's why the PROSECUTION could not "prove" that OJ Simpson did, what he did. A lot of people were PRETTY FUCKING PISSED about the OUTCOME of the trial. but that is the POWER of MONEY, ladies and gentlemen. The truth is fuckin' stupid.
+$T.AE(0,"01:06:19",":Nah, the reason he got away with it is because he was rich enough to do it. He had JOHNNY COCHRAN as his defense. 'If the glove don't fit...? You must acquit.' So what's happening is like, uh- Hillary Clinton can LEAK classified information, and be investigated by the FBI, what I'm saying is that the law enforcement administration, or system, is SELECTIVE about enforcing the law, and so is the justice system.")
+$T.AE(0,"01:06:49",":Uh, if it's somebody that you guys LIKE, they don't ever get in trouble, they can literally KILL people, in COLD BLOOD, and then-")
+$T.AE(1,"01:07:00",":Why is there no match found...? <long sigh>")
+$T.AE(0,"01:07:25",":I'm gonna tell you the REAL REASON why I'm here. You're not arresting me for the mouse, that I didn't steal. You're arresting me because, someone ordered you to do this.")
+$T.AE(1,"01:07:34",":<chuckles> Do you know how stupid that fuckin' sounds...?")
+$T.AE(0,"01:07:38",":Well...")
+$T.AE(1,"01:07:39",":Do you have any idea how dumb that fuckin' sounds...?") # KATHERINE SUCHOCKI ordered the arrest with her WARRANT. It SOUNDS dumb, but it's ACCURATE.
+$T.AE(0,"01:07:38",":Meh, it's spot on.")
+$T.AE(1,"01:07:44",":Nah, I disagree...")
+$T.AE(0,"01:07:46",":Somebody wanted-")
+$T.AE(1,"01:07:46",":And so far you-, you've pretty much basically told me I don't know how to do my job...")
+$T.AE(0,"01:07:51",":Not saying that at all.")
+$T.AE(1,"01:07:51",":Or that I REFUSE to do my job CORRECTLY...")
+$T.AE(0,"01:07:53",":Not saying that at all.")
+$T.AE(1,"01:07:54",":And I'm REALLY taking offense to that...")
+$T.AE(0,"01:07:57",":Well...")
+$T.AE(1,"01:07:54",":K, so... <exasperated sigh>")
+$T.AE(0,"01:07:59",":What I'm saying is uh-")
+$T.AE(1,"01:08:00",":<clears throat> Nobody ORDERED me to do this (except WALMART LOSS PREVENTION, and KATHERINE SUCHOCKI...). This is my job, like I told you BEFORE, I do my job REGARDLESS of WHO YOU ARE.")
+
+# __________________________________________________________
+# | This man does his job REGARDLESS of WHO YOU ARE. So... |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+# ________________________________________________________________________________________________________
+# | If you are...      | And you have...             | And HE has...               | You are...          |
+# |--------------------|-----------------------------|-----------------------------|---------------------|
+# |      the President | Broken the law              | What he NEEDS to do his JOB | Fucked, pal. So...  |
+# |    Michael C. Cook | Doesn't steal something     | What he NEEDS to do his JOB | Fucked, pal. So...  |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+# ______________________________________________________________________________
+# | DON'T PISS THIS DUDE OFF... FOR ANY REASON... WHATSOEVER.                  |
+# | So, if you're in a fuckin' plane, flying over Saratoga County...           |
+# | flying on AIR FORCE ONE for christ sake...                                 |
+# | And, you literally break the law in this dude's jurisdiction...?           |
+# | AND... he finds out that you did it...?                                    |
+# | WELL... if he has what he NEEDS to do his JOB...?                          |
+# | You're fucked. End of the conversation. It's over. Done. Jail time, dude.  |
+# | At the end of the day, don't break the law, and you'll never have to worry |
+# | about THIS particular dude, flying in on a blaze of glory, to arrest you.  |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"01:08:11",":Ok.")
+$T.AE(1,"01:08:11",":Ok...? And I really take offense...") # Believe it or not, this is a GOOD attribute to this dude. Cause someone who IS offended will get pissy about it.
+$T.AE(0,"01:08:15",":But what I'm saying, is there' NO EVIDENCE, that says I did this.")
+$T.AE(1,"01:08:19",":Ok~! I'm gonna- I'm... <sighs>")
+$T.AE(0,"01:08:21",":Even if I- look, what I'm trying to suggest is this... I can be some innocent person, that didn't commit a crime, and someone can write an AFFADAVIT, and basically provide a RECORD of FALSE TESTIMONY on a written instrument.")
+$T.AE(1,"01:08:36",":Do you think people don't do that every day...?") # I'm aware that they do that every day. But it KEEPS HAPPENING TO ME. SPECIFICALLY. JUDGES AND SHIT DOING IT TOO.
+$T.AE(0,"01:08:38",":I'm- I am CERTAIN, that they do it every day.")
+$T.AE(1,"01:08:40",":Ok...? And don't you think my job is to INVESTIGATE and SEE, whatever it is they're claiming somebody did...? Is that my job...?")
+$T.AE(0,"01:08:49",":If you're saying, that YOU investigated this...? What I'm saying is WHAT did you investigate...?")
+$T.AE(1,"01:08:54",":I'm saying, well, number 1 you were in the store, cause I got all the video, number 2, you walked out of the store, went back in the store, and went back to that same aisle, ok...?")
+$T.AE(0,"01:09:05",":I didn't-") # I have provided testimony that LINES UP with that. He's not hearing me. Never did I ARGUE that I was there... 
+$T.AE(1,"01:09:05",":Now...")
+$T.AE(0,"01:09:06",":Ok...?")
+$T.AE(1,"01:09:06",":Ok...?")
+$T.AE(0,"01:09:06",":That's where I- that's where the item was left...")
+$T.AE(1,"01:09:09",":Ok. Whatever. I didn't sign the complaint. I did not sign the complaint.") # Whatever, dude. Whether the ITEM was left there, or not...? Doesn't matter cause... you wouldn't have guys following you for no reason.
+$T.AE(0,"01:09:14",":But-")
+$T.AE(1,"01:09:15",":Walmart, signed the complaint.")
+$T.AE(0,"01:09:17",":I understand that...")
+$T.AE(1,"01:09:18",":Based on a Walmart complaint (which is as trustworty as a US Savings Bond), we take the paperwork, and s- ubmit it to the court.")
+$T.AE(0,"01:09:25",":I understand that.")
+$T.AE(1,"01:09:25",":That is our job.")
+
+# ______________________________________________________________________________________
+# | Analogy: How CREDIBLE is a COMPLAINT from WALMART, without VIDEO...? It isn't.     |
+# |------------------------------------------------------------------------------------|
+# | It is AS CREDIBLE, as a WHORES WORD from a WHOREHOUSE...                           |
+# | So if a WHORE says "I love you", but then she goes and fucks some OTHER DUDE...?   |
+# | That's basically the definition of LOVE right there.                               |
+# |------------------------------------------------------------------------------------|
+# | If that sounds RETARDED...? Too bad. That's just YOUR OPINION, and NOBODY ELSES.   |
+# | The only reason it SOUNDS retarded, is because you're an idiot to think otherwise. |
+# | Legally speaking, you're not even ALLOWED to say that shit sounds RETARDED.        |
+# | So technically, at any fucking moment whatsoever...?                               |
+# | I could LEGALLY be ARRESTED, and charged for having an UNLAWFUL STUPID OPINION...  |
+# | ...for saying all of this.                                                         |
+# | Because, it's ILLEGAL to have an opinion, or draw up clever metaphors/comparisons. |
+# | WAY illegal, dude.                                                                 |
+# |------------------------------------------------------------------------------------|
+# | Cause when she's right in the MIDDLE of being pounded out by some OTHER DUDE...?   |
+# | That's the moment where she's thinkin' about how much she LOVES ya.                |
+# | What a fuckin' sweetheart.                                                         |
+# |------------------------------------------------------------------------------------|
+# | That's how CREDIBLE a COMPLAINT from WALMART actually is, without VIDEO.           |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"01:00:00",":")
+$T.AE(1,"01:00:00",":")
+
 # (01:17:58 -> 01:30:48) # Part 6 - Michael Sheradin finalizes processing my arrest
 # (01:30:48 -> 01:33:07) # Part 7 - Michael Sheradin issues paperwork, then grabs my belongings from his cruiser. (which was left running that whole time, by the way.)
 # (01:33:07 -> ) # Part 8 - I provide an OFFICIAL COMPLAINT to MICHAEL SHERADIN, that is to be ATTACHED to (SCSO-2020-028501 05/26/20 0130-0155)
 
-# [Part 4]
-# 00:51:25 -> 
-# 00:52:22 -> MICHAEL SHERADIN CONFIRMS THAT HE WAS ORDERED TO ARREST ME (later says, do you have any idea how fuckin' stupid that sounds...?)
-# 00:52:59 -> I cannot answer that question because I was not there at the time that this happened, so...
-# 00:53:03 "But uh, you weren't at Walmart at the time they made this complaint."
-# 00:53:10 "Correct. I was." <- Michael Sheradin says "Correct", but has it backwards. What I just said was INCORRECT, and he said CORRECT.
-# 00:53:29 -> 
-# 00:58:14 "What's your- *ahem* What's your social security number...?"
-# 00:58:19 - 58:24 -> insert silence
 
 # [Part 5]
 # 01:04:05, 1, "C'mon over here"
