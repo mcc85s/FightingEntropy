@@ -1257,7 +1257,7 @@ $T.AE(0,"01:09:14",":But-")
 $T.AE(1,"01:09:15",":Walmart, signed the complaint.")
 $T.AE(0,"01:09:17",":I understand that...")
 $T.AE(1,"01:09:18",":Based on a Walmart complaint (which is as trustworty as a US Savings Bond), we take the paperwork, and s- ubmit it to the court.")
-$T.AE(0,"01:09:25",":I understand that.")
+$T.AE(0,"01:09:25",":I understand all that.")
 $T.AE(1,"01:09:25",":That is our job.")
 
 # ______________________________________________________________________________________
@@ -1283,8 +1283,69 @@ $T.AE(1,"01:09:25",":That is our job.")
 # | That's how CREDIBLE a COMPLAINT from WALMART actually is, without VIDEO.           |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$T.AE(0,"01:00:00",":")
-$T.AE(1,"01:00:00",":")
+$T.AE(0,"01:09:25",":I understand all of that.")
+$T.AE(1,"01:09:26",":Then, why do you keep trying to blame ME...")
+$T.AE(0,"01:09:28",":I'm NOT blaming you.")
+$T.AE(1,"01:09:29",":For not doin' my job, and...")
+$T.AE(0,"01:09:31",":What I'm saying that the job you did, wasn't very thorough.")
+$T.AE(1,"01:09:35",":It WAS thorough.")
+$T.AE(0,"01:09:36",":There's NO EVIDENCE that suggest that I did what they did.") # The evidence actually incriminates THEM, if that isn't CLEAR enough.
+$T.AE(1,"01:09:39",":Ok, and again, I'm not pursuing the charges. Walmart is. I am ONLY making the ARREST.") # That's what I have a problem with.
+$T.AE(0,"01:09:46",":Ok.")
+$T.AE(1,"01:09:47",":Based on the judges order.")
+$T.AE(0,"01:09:49",":Hold on, let me make- let me make a statement. To- to make this perfectly clear. If I say, that 2 guys, tried to murder me...")
+$T.AE(1,"01:10:01",":Alright, you got- you gotta get off that, ye- <sigh>") # People are making the TRAUMATIC SITUATION WHERE I STILL HAVE EVIDENCE, seem RIDICULOUS.
+$T.AE(0,"01:10:04",":Why...?")
+$T.AE(1,"01:10:05",":It's- it's TOTALLY irrelevant.") 
+
+# ____________________________________________________________________________________________________________________________________
+# | It isn't IRRELEVANT at all. I have EVIDENCE of that ATTACK, and my statement was NEVER TAKEN.                                    |
+# | People are IGNORING IT, TREATING IT AS IF IT'S FUCKING RIDICULOUS...                                                             |
+# | Meanwhile, WALMART SAYS "fuck this guy. Here's what I say." and THAT is NOT being treated as if it's FUCKING RIDICULOUS AT ALL.  |
+# | That's basically PREJUDICE 101.                                                                                                  |
+# |----------------------------------------------------------------------------------------------------------------------------------|
+# | If WALMART says SOMETHING about somebody and HAS  NO EVIDENCE...? POLICE AND JUDGES (DO     TAKE ACTION/   MANUFACTURE EVIDENCE) |
+# | If I       say  SOMETHING about somebody and HAVE    EVIDENCE...? POLICE AND JUDGES (DO NOT TAKE ACTION/DESTROY+IGNORE EVIDENCE) |
+# |----------------------------------------------------------------------------------------------------------------------------------|
+# | The ONLY reason that people think that whole above diagram might be RIDICULOUS...? Is because they're stupid. That's it.         |
+# | They might be STUPID if they can't determine that my FATHER, MICHAEL EDWARD COOK, had this SAME EXACT PROBLEM with the POLICE... |
+# | Where the POLICE just treated my father as if HE was fucking ridiculous all the time, and then his 911 calls went ignored...     |
+# | So if my father called 911 on October 23rd, 1995...? The police obviously thought that was fucking ridiculous, and thus those    |
+# | calls from his MCI phone card went right into the trash. Certain 911 calls are stupid.                                           |
+# | "Oh, it's Michael Cook calling 911, that is fucking stupid." <- What actually happened to my father, AND ME... but people are    |
+# | FAILING TO TAKE MY STATEMENT AND EVIDENCE SERIOUSLY. That's why I have to resort to calling people fucking stupid.               |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"01:10:07",":It- it IS relevant. Because, eh- something happened to me...? And nobody DOES anything about it. Or, they DID do something about it, but they ignored it.")
+$T.AE(0,"01:10:26",":I can tell um- you're feeling rather insulted, and think that I'm underestimating your ability to do your job, and that's NOT what I'm saying.")
+$T.AE(1,"01:10:35",":You're underme- you're BASICALLY sayin' I'm a crook like the rest of the fuckin' clowns that you're claimin'. And I'm NOT.")
+$T.AE(0,"01:10:42",":No, what I'm saying is, ")
+$T.AE(1,"01:10:42",":My integrity.")
+$T.AE(0,"01:10:44",":Selective.")
+$T.AE(1,"01:10:45",":And I'm not one of em.")
+$T.AE(0,"01:10:46",":Ok.")
+$T.AE(1,"01:10:47",":Ok...? So, basically you're insultin' my integrity, and I REALLY, have an issue with that.")
+$T.AE(0,"01:10:53",":Ok.")
+$T.AE(1,"01:10:53",":Not to be a dick, bud... <clears throat> and it's not y- all- since I picked ya up, you've indicated pretty much, that I don't-")
+$T.AE(0,"01:11:03",":I'm trying to be, very- <indiscernable>-")
+$T.AE(1,"01:11:05",":I get it.")
+$T.AE(0,"01:11:05",":-about what I'm saying, I'm not trying to ruffle your feathers, and I think that's what's happening. You're emotionally reacting to what I'm saying, but you're not processing the words.")
+$T.AE(1,"01:11:11",":Because you're continuing to INSULT my integrity. And THAT'S... <scoffs>")
+$T.AE(0,"01:11:17",":Ok.")
+$T.AE(1,"01:11:18",":Ya know...? And-")
+$T.AE(0,"01:11:20",":Well, if YOU believe that you have integrity, what I'm suggesting is this... after, this is done... will you investigate what happened in multiple incidents...?")
+$T.AE(1,"01:11:28",":Didn't I already tell ya that...? What did I tell ya...?")
+$T.AE(0,"01:11:30",":Ok, well if-")
+$T.AE(1,"01:11:31",":I said I gotta get this done first-")
+$T.AE(0,"01:11:32",":Ok.")
+$T.AE(0,"01:11:33",":So that I'm not holdin' you past your unconstitutional, uh- time...")
+$T.AE(0,"01:11:39",":Sure.")
+$T.AE(0,"01:12:22",":Eh, I dunno. Maybe I deserved to be killed that night. <pauses> I dunno, I think I've been a fuckin', shitty person my whole life, basically.")
+$T.AE(1,"01:12:34",":I don't think you're a shitty person...")
+$T.AE(0,"01:12:38",":Well, everyone else seems to think I am.")
+$T.AE(1,"01:12:41",":Well... again, I'm not everybody else. I don't judge a book by it's cover, or anything.")
+$T.AE(5,"01:12:49","*<indiscernable chatter, clothing and occasional tapping until 01:13:17>")
+$T.AE()
 
 # (01:17:58 -> 01:30:48) # Part 6 - Michael Sheradin finalizes processing my arrest
 # (01:30:48 -> 01:33:07) # Part 7 - Michael Sheradin issues paperwork, then grabs my belongings from his cruiser. (which was left running that whole time, by the way.)
