@@ -1714,7 +1714,243 @@ $T.AE(1,"01:33:07","*Closes substation door")
 #    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
 
-# [Part 7 - Start 01:33:07]
+$T.AE(1,"01:33:29",":Alright, now you were spewin' out numbers earlier...")
+$T.AE(0,"01:33:32",":Yeh.")
+$T.AE(1,"01:33:32",":About a call for service, or a case number...?")
+$T.AE(0,"01:33:34",":I have, uh- a nu- a couple of records, um-")
+$T.AE(1,"01:33:35",":Yep.")
+$T.AE(0,"01:33:39",":I have the records saved as PDF files on my GitHub project.")
+$T.AE(1,"01:33:42",":Ok.")
+$T.AE(0,"01:33:42",":Uh, I can give you an addr- I can give you a link to that.")
+$T.AE(1,"01:33:46",":Oh- we- I can look em up, if they're in there...?")
+$T.AE(0,"01:33:48",":Uh, the individual record numbers are all, uh- I don't know them all-")
+$T.AE(1,"01:33:42",":Ok.")
+$T.AE(0,"01:33:53",":-off the top of my head, but the (1) main record, that's the most important of them all, is ESS SEE ESS OH, TWO ZERO TWO ZERO, ZERO TWO EIGHT, FIVE ZERO ONE.")
+$T.AE(1,"01:34:04",":Ok.")
+$T.AE(0,"01:34:05",":That involves SCOTT SCHELLING, JEFFREY KAPLAN, and JOSHUA WELCH.")
+$T.AE(1,"01:34:10",":And what was, you had a DATE too, MAY somethin'...?")
+$T.AE(0,"01:34:13",":Yup. MAY TWENTY-SIXTH...")
+$T.AE(1,"01:34:15",":Yup")
+$T.AE(0,"01:34:16",":TWO THOUSAND TWENTY")
+
+# ______________________________________________________________________________________________________________________________________________
+# | I may occasionally get pretty pissed off about the way the people in the community treat me, as well as how people talk about me-          |
+# | However, this is the EXACT TYPE OF INTERROGATION I've been WAITING for a POLICE OFFICER to HAVE with ME, since SCSO-2020-028501 0130-0155. |
+# |--------------------------------------------------------------------------------------------------------------------------------------------|
+# | Because the ALLEGATION that I am MAKING, I would like to CONVERT into an ACCUSATION where SCSO SCOTT SCHELLING is either:                  |
+# | CHARGED WITH OBSTRUCTION OF JUSTICE, for destroying the SURVEILLANCE FOOTAGE AT CENTER FOR SECURITY... Or...                               |
+# | He fuckin' spills the beans on who ordered him to do such a thing, OR... someone else at SCSO is INVESTIGATED for doing such a thing.      |
+# |--------------------------------------------------------------------------------------------------------------------------------------------|
+# | That's why I've been REPEATING MYSELF THOUSANDS OF TIMES FOR THE LAST COUPLE OF YEARS. Cool...? Cool.                                      |
+# | If I've INSULTED MICHAEL SHERADIN at all by making this document or any of my audio logs...? IT IS NOT HIM THAT I AM PISSED ABOUT.         |
+# | Nah. It's the DIPSHITS THAT HE WORKS WITH THAT KEPT IGNORING ME AND HIDING THE FUCKING CRIMES THEY COMMITTED SINCE THEN.                   |
+# | Because what I've been ALLEGING is that the CRIMINAL BEHAVIORS that SCSO units have been performing, is ON PAR WITH DEREK CHAUVIN.         |
+# | Oh... THAT'S why my IPHONE 8+ was REMOTELY DISABLED on MAY 27th, 2020.                                                                     |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(1,"01:34:18",":Ok, well, where did all this, take place...?")
+$T.AE(0,"01:34:20",":So, it took place, uh- THAT particular incident...?")
+$T.AE(1,"01:34:24",":Yup.")
+$T.AE(0,"01:34:24",":Took place at the tail end, of the uh, attack. Which was at, uh- He, uh- the call for service arrived at about 130AM. The attack BEGAN, on FOOT, at around midnight.")
+$T.AE(1,"01:34:38",":Mmkay.")
+$T.AE(0,"01:34:39",":Near the Computer Answers shop. So-")
+$T.AE(1,"01:34:41",":On Route 9...?")
+$T.AE(0,"01:34:42",":Yes.")
+$T.AE(1,"01:34:43",":Uh- do you know what the address is there, on Route 9...?")
+$T.AE(0,"01:34:45",":Yup, so it was- between 1597, and uh- 1602 Route 9.")
+$T.AE(1,"01:34:51",":Mmkay.")
+$T.AE(0,"01:34:51",":All the way to, uh- 1780 Route 9.")
+$T.AE(1,"01:34:55",":Okay.")
+$T.AE(0,"01:34:56",":Which is the Z- the Zappone dealership, where they showed up.")
+$T.AE(1,"01:34:59",":Ok. Where WE met...? WE showed up...? Or, the people you're talkin' about...?") 
+
+# __________________________________________________________________________________________________________________________________________
+# | He means SCSO SCHELLING, KAPLAN, WELCH, not my attackers.                                                                              |
+# | But also, this is a COMPLEX QUESTION which I discuss in my book, TOP DECK AWARENESS - NOT NEWS.                                        |
+# | He's not droning on, making false assurances or really any tactic where I would think he's not paying attention at all.                |
+# | He's asking questions that are taking portions of what I'm talking about, and forming a SOPHISTICATED INQUISITION about what happened. |
+# | THAT MEANS, this dude fuckin honestly gives a shit about the story.                                                                    |
+# | Total time taken for (1) police officer to do this...? Lets use some PowerShell mathematics and dateTime objects to get the answer.    |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+Class Incident
+{
+    [String] $Name
+    [DateTime] $Date
+    [Timespan] $Elapsed
+    Incident([String]$Name,[String]$Date)
+    {
+        $This.Name = $Name
+        $This.Date = [DateTime]$Date
+    }
+    SetElapsed([Object]$Start)
+    {
+        If ($Start -ne $This.Date)
+        {
+            $This.Elapsed = $This.Date-$Start
+        }
+        Else
+        {
+            $This.Elapsed = [TimeSpan]::FromSeconds(0)
+        }
+    }
+}
+
+Class IncidentList
+{
+    [Object] $Output
+    IncidentList()
+    {
+        $This.Output = @( )
+    }
+    Add([String]$Name,[String]$Date)
+    {
+        If ($Date -notmatch "\d{2}\/\d{2}\/\d{2} \d{2}\:\d{2}")
+        {
+            Throw "Invalid date entry, must use 'mm/dd/yy HH:MM' format" 
+        }
+
+        $This.Output += [Incident]::New($Name,$Date)
+    }
+    SetElapsed()
+    {
+        If ($This.Output.Count -gt 0)
+        {
+            $This.Output | % { $_.SetElapsed($This.Output[0].Date) }
+        }
+    }
+}
+
+$Incident       = [IncidentList]::New()
+$Incident.Add("Attack began","05/25/20 23:43")
+$Incident.Add("Attack over","05/26/20 01:30")
+$Incident.Add("Now","09/16/22 14:30")
+$Incident.SetElapsed()
+
+<#
+    [SCSO-2020-028501]: https://github.com/mcc85s/FightingEntropy/blob/main/Records/2020-028501%20Cook%20req.pdf
+    Evidence List     : https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt
+
+    Name         Date                  Elapsed
+    ----         ----                  -------
+    Attack began 5/25/2020 11:43:00 PM   0d 00h 00m 00s
+    Attack over  5/26/2020 1:30:00 AM    0d 01h 47m 00s
+    Now          9/16/2022 2:30:00 PM  843d 14h 47m 00s
+
+    Check that shit out. Michael Depresso from the SARATOGA COUNTY PUBLIC DEFENDERS OFFICE should take note of this shit.
+    Why...? Uh, cause doing so will showcase a living example of how far up his own ass, his head is.
+    It'll ALSO illuminate how fuckin' stupid he is. As well as like, other people that work for SARATOGA COUNTY
+    that like, either 1) don't care if they're lied to, or 2) don't know when they're lied to.
+    
+    I guess in life, some people are lazy fucks.
+    Other people are just morons who believe what they're told.
+    But there are rare people such as myself, that can detect when there's a HIDDEN AGENDA that sorta explains
+    how PUBLIC DEFENDERS aren't all that helpful, because they're on the SAME FUCKING TEAM as the DIRTY POLICE.
+
+    You know, when I go around telling people that there are SERIAL KILLERS in the town of Clifton Park/Halfmoon...
+    ...and like, NOBODY SEEMS TO BELIEVE ME...? I have to start calling people fuckin' stupid, repeatedly, over and over,
+    and not let up on calling people fucking morons willy-nilly, because some people were just NOT BORN to be INTELLIGENT.
+    Nor to like, ASK QUESTIONS. That's how I know I'm surrounded by fucking morons.
+#>
+
+$T.AE(0,"01:35:04",":Oh, the- my ATTACKERS showed up around the FIRST address there.")
+$T.AE(1,"01:35:08",":Ok.")
+$T.AE(0,"01:35:09",":Between the first pair of addresses.")
+$T.AE(1,"01:35:08",":Alright...")
+$T.AE(0,"01:35:11",":And then, uh- they followed me for about 90 minutes.")
+$T.AE(1,"01:35:15",":Yup.")
+$T.AE(0,"01:35:16",":Uh-")
+$T.AE(1,"01:35:16",":Yup.")
+$T.AE(0,"01:35:18",":So, the attack BEGAN like, right after midnight...? ") # It actually BEGAN at about 2343, but it wasn't TOTALLY APPARENT to me until 0004 
+$T.AE(1,"01:35:21",":Mhmm.")
+$T.AE(0,"01:35:22",":They followed me, uh- I tried to call 911 at about 1204, the FIRST time. And, uh- that was near the, uh- the Clifton Park Eye Care...? Or uh-")
+$T.AE(1,"01:35:34",":Yup.")
+$T.AE(0,"01:35:34",":-the Halfmoon Sandwich and Sub Shop. And, when I hit the SEND button, and 911... what was happening was, is the TIMER kept rising, there was NO SOUND emanating from the device. So which indicates the- uh- the call failed to complete, or the call was being disrupted. Or my phone was disrupted. I believe, uh- I'll tell you AFTERWARD, what my beliefs are. I'm gonna try to stick to what ACTUALLY happened. Uh- I continue to walk on, and these two individuals, uh- it was just (1) individual at first, both the, the SECOND individual was in a BLACK DODGE CHARGER, or a BLACK DODGE DART, they LEFT the laundromat and was headed SOUTH on Route 9, past Walmart. Um- Then, uh- the SECOND guy who was IN the laundromat, came out, and started yellin' at me, and then he started following me, so I KNEW that he was trying to ATTACK ME, and, the SECOND individual who got in the BLACK CAR...? Managed to find some way to park the car that he was IN, somewhere near like TWIN LAKES or something, and he came out near WILSCOT, or near the place where I FIRST called 911, or, Grecian Gardens")
+$T.AE(1,"01:36:45",":Ok.")
+$T.AE(0,"01:36:46",":And, uh- I had a SUSPICION that they were FOLLOWING me, to- MURDER me. And the REASON why I BELIEVED that, is BECAUSE, I had RECORDED a video of the FIRST individual comin- approaching me from my left.")
+$T.AE(1,"01:36:59",":Mhmm.")
+$T.AE(0,"01:36:59",":Near the Halfmoon Sandwich and Sub Shop. And, uh- he had a PAIR OF GLASSES, he had a BACKPACK with a NEON LIGHT in it, and, uh- like I said, I had a conversation with him, I said, uh- 'Hey, are you from around here...?' and he said uh- 'I am, but I moved away and I came back.' And then I said, 'Well, uh- did you k-, do you know this ERIC CATRICALA guy...?' and he said 'No.' And, uh- then I sa- I- I was tryin' to like, test, like- whether this was- a suspicious person or not, so I said 'Did you know that ERIC CATRICALA puts bodies into concrete foundations...?' And, uh- you know, he didn't- he was caught off guard... And, uh- then he continued to walk on, uh- well I said 'Alright thanks a lot, you've been helpful.' And then he continued to walk on, and then I like, I was inconspicuously recording him, with, my device. With THIS device RIGHT HERE, actually.")
+$T.AE(0,"01:37:56",":I don't typically carry this around with me all the time, but- this PHONE was DISABLED on MAY 27th, 2020")
+$T.AE(1,"01:38:02",":Ok.")
+$T.AE(0,"01:38:03",":And I haven't formatted it, I haven't removed anything from this, uh- I can, at ANY MOMENT, like, CLEAR THIS OUT and use it all over again. But there's FORENSIC EVIDENCE on this device, and I REFUSE to do anything with it, until I can get it off.")
+$T.AE(1,"01:38:16",":Ok.")
+$T.AE(0,"01:38:02",":Forensic evidence is the VIDEO I'm talking about.")
+$T.AE(1,"01:38:16",":Ok.")
+$T.AE(0,"01:38:20",":Uh- the- the individual continued to walk on, past me, and then um, I like, pulled down the TEXT MESSAGE thing, and I was typing something to him because I believe that he had a REMOTE CONNECTION to my device, and he was SPYING on me.")
+
+# ______________________________________________________________________________________________________________________________________________________
+# | I believe I was actually performing a SCREEN CAPTURE of that exact moment, a SCREEN CAPTURE during a VIDEO RECORDING, w/ PEGASUS was on my device. |
+# | To guys like MICHAEL DEPRESSO and SARAH SCHELLINGER... a "SCREEN CAPTURE" is sorta like a "SCREEN SHOT", but a "SCREEN SHOT" is just (1) picture.  |
+# | Whereas a 'SCREEN CAPTURE' is when a VIDEO is being RECORDED of the CONTENT on the fuckin DISPLAY of the DEVICE. Apple doesn't make SHIT PRODUCTS. |
+# | They just happen to have someone in their company that is leaking ZERO DAY VULNERABILITIES FOR A PROFIT... to the NSO GROUP in ISRAEL... which is  |
+# | fucking DANGEROUS.                                                                                                                                 |
+# |                                                                                                                                                    |
+# | That's how I was INCREDIBLY SUSPICIOUS of this fuckin dude, I almost got hit by a car about 20 minutes BEFOREHAND...?                              |
+# | Figured that I had someone spying on me like the little faggot(s) they are.                                                                        |
+# | Ever since 01/15/2019 CVE-2019-8936, I've SORTA been on the lookout for some fagboy extraordinaire to come along,                                  |
+# | prancing along the fuckin' beaten path, looking as if he's got a whole entire 15 inch dildo in his rectal cavity.                                  |
+# |                                                                                                                                                    |
+# | And that's exactly what I recorded in IMG_0647.MOV from 05/25/20 2343 -> 05/26/20 0004... someone matching this exact description.                 |
+# | Actually (2) separate dudes who look like they're BROTHERS, both matching the above description... is what I recorded. in IMG_0647.MOV             |
+# |                                                                                                                                                    |
+# | They are FORMER CUSTOMERS of COMPUTER ANSWERS. But also, it's hard to imagine them ever scoring with Christina Czaikowski with how GAY they look.  |
+# | They were talking about this girl at the computer shop back in 2017 when they sold the shop a WHITE ANDROID SMARTPHONE, as well as a BLUE ANDROID  |
+# | SMARTHONE, so, (2) smartphones sold by (2) queer bastards. I literally used a PHOTO COPIER to like, make a BACKUP COPY... of this kids face, name, |
+# | identity, basically his fuckin ID, because that was our policy, to take SCANS of people's IDS in case the PROPERTY being SOLD to the SHOP was      |
+# | STOLEN. So, this cocksuckers face was actually saved to the COMPUTER ANSWERS database of bought items.                                             |
+# |                                                                                                                                                    |
+# | So, I started a SCREEN RECORDING while I was RECORDING A VIDEO, and had the CAMERA LENS pointed at this QUEER-AUSTIN-EVANS'LOOKIN'-SON-OF-A-BITCH, |
+# | and in the TEXT MESSAGE I basically called him something DERROGATORY and also that I had fucking CAUGHT HIS ASS... That is the EXACT MOMENT when   |
+# | he was standing in front of the CATRICALA FUNERAL HOME, LOOKED AT HIS DEVICE WHILE I WAS RECORDING HIM, and as SOON AS HE DID...? He knows damn    |
+# | well that he was LOOKING AT HIMSELF being recorded on fucking video, BUSTED. <- THAT IS WHY MY DEVICE WAS DISABLED.                                |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"01:38:44",":So, I typed something up to TAUNT him, and uh- when he was in front of the CATRICALA FUNERAL HOME, he LOOKED AT HIS PHONE, and then he LOOKED UP, like, pretty upset with himself, I didn't realize what I recorded on video, but it was INCREDIBLY RARE, I believe that he was using PEGASUS, and that HE, is a SERIAL KILLER, and that HE, is ASSOCIATED with DEPUTY COOPER.")
+$T.AE(1,"01:39:09",":Ok.")
+$T.AE(0,"01:39:10",":And I think he has an OLDER or YOUNGER BROTHER, and they're ASSOCIATED with CHRISTINA CZAIKOWSKI.")
+$T.AE(1,"01:39:09",":Mkay.")
+$T.AE(0,"01:39:22",":Deputy Cooper, uh- I'll- i'll- return in a mo- the point about him, momentarily, uhm- after this FIRST incident, and then I, like, realized what I caught on VIDEO, I was THINKING of ending the recording and UPLOADING it across the street. Uhm, if you wanna know more about THAT event, I've written, uh- an entire CHAPTER in my BOOK, about what happened, and I've put ALL of the documents and everything, but I don't wanna overwhelm you, and overload you with, uh- what happened, I'm trying to stick to THAT record right there, and what happened PRIOR to that.")
+$T.AE(0,"01:39:55",":After he made this expression on his face, you know his body language told me, like `"Yeah, he was like, watchin' me`", uh- I went across the street, and, I- I continued to record the video, I believe, uh- and uh, he like, walked down the street, and like, cut over to like Walmart, or- he didn't cut over to Walmart, he cut over to Mobil station, and then, uh- a minute or two AFTER THAT, a SECOND white male coming from the the OPPOSITE SIDE of Route 9, same direction, was coming from the GRECIAN GARDENS area. And uh- he had the same type of backpack on him...? But he had a wireless bluetooth speaker, and uh- I think he had like a MOBILE BATTERY CHARGER on him too, because it looked like something was- something REALLY HEAVY was in his backpack. So, uhm- he lik, said something to me...? But I wasn't really paying attention to what he was saying, because the music was distracting. I was keeping my eyes on like, BOTH of these individuals, bcause, uh- moments prior, someone in a vehicle appeared to almost strike me, and it didn't look like it was accidental. You know, I could tell if it was ACCIDENTAL, like, if someone sees me at the last second, and they like oversteer, or whatever, someone was GUNNING for me, I had to like, run onto the grass, so it was like, PRETTY INTENTIONAL... At any rate, the SECOND INDIVIDUAL, walks into Wal- the, the laundromat. Once they were in the laundromat, I kinda like, take a look around, and I don't remember EXACTLY what happened, but I remember there was a GIRL in there, and I remember this TALL DUDE was in there, and he was like TEXTING somebody. And, uh- he was probably in there for a few minutes, and I walked away a fair distance, near like the surgery center there, and, uh- eventually the OTHER KID gets into the BLACK CAR, which was either a DODGE CHARGER or a DODGE DART. And then he drives SOUTH on ROUTE 9, towards WALMART, if not PAST that, and the video I was recording recorded that whole entire event with him getting in his car and then driving off.")
+$T.AE(0,"01:42:10",":Uh- at which point, the car, somehow got out of the view of the camera, and then the OTHER kid came out from the LAUNDROMAT, and he's like 'HEY~! WHAT'S THE BIG IDEA...?' or SOMETHING like that, I don't remember exactly what he said, but I knew that like, he was about to chase me, and that's EXACTLY what he did, uh- for a moment I thought about ending the recording and uploading it, but I didn't think I had enough time...? And I had a pretty strong suspicion that this dude was about to kill me. Uh, I didn't see a WEAPON or anything...? But- I believe they were using this PROGRAM, to like, watch me and follow me around, so, uh- I didn't THINK to call 911 until the SECOND kid came back out from the woods, like, near GRECIAN GARDENS. So, thats when I called 911 the FIRST time, uhm- with *THIS DEVICE*... and when I say I called 911, I hit NINE ONE ONE and then I hit the SEND button, and then the TIMER started rising.")
+$T.AE(1,"01:43:10",":Mhmm.")
+$T.AE(0,"01:43:12",":No sound emanating from the device.")
+
+# _________________________________________________________________________________________________________________________________________________
+# | Pretty easy to see how the PHONE companies might've been involved in this MURDER ATTEMPT, considering the things I was POSTING all that week. |
+# | Like, I kept saying SPECTRUM/VERIZON/BELL ATLANTIC, CLASS ACTION LAWSUIT, SHERMAN ANTI-TRUST, and RACKETEER INFLUENCED CRIMINAL ORGANIZATION. |
+# | All that shit sorta goes right together like PEANUT BUTTER and JELLY.                                                                         |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# | Thing #1                         | Thing #2                                       |
+# |----------------------------------|------------------------------------------------|
+# | PEANUT BUTTER                    => JELLY                                         |
+# | THEODORE ROOSEVELT               => KICKING THE SHIT OUT OF MONOPOLIES            |
+# | SHERMAN ANTI-TRUST               => MONOPOLY                                      |
+# | INTERNET NEUTRALITY              => CORPORATIONS OWNING THE INTERNET              |
+# | CORPORATIONS OWNING THE INTERNET => GEORGE ORWELL 1984                            |
+# | GAY GUY INVOLVEMENT              => TIM COOK + APPLE, TANSKI + HOFFMAN + KEY BANK |
+# |__________________________________|________________________________________________|_________________________________________________________
+# | If they were fuckin' INNOCENT, then they WOULDN'T be performing a fucking MAN-IN-THE-MIDDLE attack, and would HOLD THEMSELVES ACCOUNTABLE. |
+# | That's not what I was observing all throughout that entire week. Not saying that gay guys just so happened to be in every direction...?    |
+# | But, I saw a VERY questionable amount of them in certain places that seemed to be MORE than just "coincidental"... ya know...?             |
+# |--------------------------------------------------------------------------------------------------------------------------------------------|
+# | Now, look. I have nothing against homosexuals at all. I just PREFER not to watch them when they do what they do.                           |
+# | A girl and a guy...? That's fine. I'm cool with seeing something like that from time to time.                                              |
+# | A girl and a girl...? That's fine too. Totally legit.                                                                                      |
+# | A guy and another guy...? That's where I draw the line. Not interested in that at all... but-                                              |
+# | sometimes they don't care what I think, and they just show up anyway.                                                                      |
+# |--------------------------------------------------------------------------------------------------------------------------------------------|
+# | Look to my left...? A couple gay guys pounding it out in a fuckin' shadowy alcove... I immediately look away, to respect their privacy.    |
+# | Look to my right...? There's another couple gay guys pounding it out in ANOTHER shadowy alcove. So I'll cup my hand over my eyes and keep  |
+# | movin... but then suddenly, a car will show up and stop right in front of me, and then, guess what happens...?                             |
+# | WELL, multiple gay guys were in that car, and they decided it was time to stop right in front of me, and start pounding it out... but it   |
+# | didn't happen in some shadowy alcove this time, just, right in the open, right on Route 9 for cryin' out loud.                             |
+# | This is all a METAPHOR, for TELECOM COMPANIES being like, in bed with each other, trying to be INCONSPICUOUS about their activites...?     |
+# | But, failing miserably.                                                                                                                    |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"01:43:14",":So, I put 2 and 2 together, with the thing that I recorded on video, and the events of these two guys following me around, and uh- ya know, I was kinda scared shitless, because- I knew what was goin on. You know, uh- few times in my life, I've tried to call 911 or any number, and the phone will do that, but- ya know, it's RARE. But- this happened TWICE in like, FIVE MINUTES. And, you know, it happened, like someone would say 'How do you know they were tryin' to kill ya...?' That's LITERALLY what TROOPER CARTER was tellin' me, was like 'How do you know they were tryin' to kill ya...?' Well, I don't know for SURE that they were trying to kill me, but, there were a number of OTHER coincidences that occurred that night. they had a car parked at the Lowes Home Improvement parking lot, like AHEAD of time. So they were expecting to hit me with their car...? Or like, stab me to death, and then drive away in their SECOND car that they had down the road. the point being, uhm, I got to uh- CENTER FOR SECURITY, and I knew that they had SECURITY CAMERAS, so I did the SAME EXACT THING that I just described...? In front of the CAMERA. About 10 inches from the SCREEN or the LENS or whatever. And then, uh- the same thing happened. They were on the other side of the road, but I knew that they were trying to corner me. And I wasn't uh- giving them that opportunity. There's TWO of them, ONE of me, all they need to do is just BOX ME IN and I'm done. So, I stayed on the OTHER side of the road, I took (3) pictures which I have the LINKS to, uh- and uh- that was- those were the LAST PICTURES I took until my PHONE had just about died. I had turned it off, because, I turned *THIS PHONE* off because I suspected that they were TRACKING ME, and they had a little BEACON on their- um, I don't know if this sounds hard to believe, but I believe that the SOFTWARE they were using, allows them to have like a PINPOINT ACCURACY, like a TELEMETRY LOCATION.")
+$T.AE(1,"01:45:09",":Mhmm.")
+$T.AE()
 # 01:57:12, 3, *enters the Halfmoon Sheriff Substation* (<- timing seems PRETTY FUCKING COINCIDENTAL)
 # 01:57:14, 0, "Michael Whiteacre" 
 # 01:57:35, 0, "Scott was looking for any reason-"
