@@ -2015,8 +2015,8 @@ $T.AE(0,"01:59:41","Uh, well, I specified that uh, NFRASTRUCTURE was involved in
 # | 07/21/89 | 785-3221 JESSE PICKETT | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 $T.AE(3,"01:59:47","Yep, I'm aware")
-$T.AE(1,"01:59:53", "Is this the truth...?")
-$T.AE(3,"01:59:53", "This- this was like, a couple years ago...") 
+$T.AE(1,"01:59:53","Is this the truth...?")
+$T.AE(3,"01:59:53","This- this was like, a couple years ago...") 
 
 # ________________________________________________________________________________________________________________________________
 # | Indicates that IN HIS OPINION, his failure to collect evidence that directly links the former owners of NFRASTRUCTURE to     |
@@ -2043,7 +2043,7 @@ $T.AE(3,"01:59:53", "This- this was like, a couple years ago...")
 $T.AE(1,"01:59:54","Oh.")
 $T.AE(0,"01:59:54","Yeah.")
 $T.AE(3,"01:59:55","Well THIS was, yeah.")
-$T.AE(0,"01:59:57","I was dragged through the mud regarding custody of my children,I was accused of stuff at Family Court... and then people played games with me at family court.")
+$T.AE(0,"01:59:57","I was dragged through the mud regarding custody of my children, I was accused of stuff at Family Court... and then people played games with me at family court.")
 
 # ________________________________________________________________________________________________________________________________
 # | 08/18/20 | Email to HEATHER COREY-MONGUE                                                                                     |
@@ -2091,18 +2091,17 @@ $T.AE(0,"02:00:19","And then MICHAEL WHITEACRE wrote a report about how he was s
 $T.AE(0,"02:00:26","What Michael Whiteacre wrote on the REPORT <SCSO-2020-003688> is that, the reason he was at my house was UNRELEATED to the CPS case.")
 $T.AE(0,"02:00:33","But it fucking definitely WAS related, and he wasn't aware of it.")
 $T.AE(0,"02:00:40","So, what I have come to determine is that I have to be pretty ADAMANT about the story...")
-$T.AE(0,"02:00:45","...because SOMEBODY might have their FACTS incorrect, and then walk in, and ask questions like...")
+$T.AE(0,"02:00:45","...because SOMEBODY might have their FACTS incorrect, and then walk in, and then ask questions like...")
 $T.AE(0,"02:00:53","...why are you talking about a case from a couple years ago, so...")
 $T.AE(3,"02:00:54","Ok.") # Michael Whiteacre admitting that I'm openly insulting his [integrity/due-diligence] to his face.)
 $T.AE(0,"02:00:56","So...")
 $T.AE(3,"02:00:56","Alright.") # Making an admission that he might've fucked up after all. Sounds IDENTICAL to JUDGE PELAGALLI on 4/6/21.)
 $T.AE(0,"02:00:58","The reason why uh, I'm talking about it with you right now, is because...")
 $T.AE(0,"02:01:01","Uh- like I said, I believe that my AUNT TERRI was INVOLVED with the MURDER ATTEMPT on MAY 26th, 2020, and SO WAS SCOTT SCHELLING")
-$T.AE(0,"02:01:13","Because THAT RECORD (SCSO-2020-028501) indicates that uh, SCOTT SCHELLING had me in custody along with JEFFREY KAPLAN")
-$T.AE(0,"02:01:24","AND WROTE NO NOTES ABOUT THE INTERACTION.")
+$T.AE(0,"02:01:13","Because, THAT RECORD (SCSO-2020-028501) indicates that uh, SCOTT SCHELLING had me in custody along with JEFFREY KAPLAN AND WROTE NO NOTES ABOUT THE INTERACTION.")
 $T.AE(3,"02:01:26","Ok.")
 $T.AE(0,"02:01:27","...and then, uh, I had a FEELING that SCOTT SCHELLING was gonna do something BAD to me, and...")
-$T.AE(0,"02:01:33","when he offered me this ULTIMATUM, either I arrest you and bring you to the JAIL with THIS DEVICE right here that I had evidence of calling 911 on...")
+$T.AE(0,"02:01:33","when he offered me this ULTIMATUM, either I arrest you and bring you to the JAIL with THIS DEVICE here that I had evidence of calling 911 on...")
 $T.AE(0,"02:01:44","Or... you can... allow ME to bring you home.")
 $T.AE(3,"02:01:52","Mike, when you told ME about this, didn't I tell you to go to the supervisor...?")
 
@@ -2123,7 +2122,7 @@ $T.AE(3,"02:01:52","Mike, when you told ME about this, didn't I tell you to go t
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 $T.AE(0,"02:01:53","I did.") # It's [hard/impossible] to condense those boxes ABOVE into a single 2 second statement, without causing CONFUSION.
-$T.AE(3,"02:01:54","Ok, cause there's NOTHING WE CAN DO about that.") # I disagree, there certainly is, buddy. You're gonna find out the hard way.
+$T.AE(3,"02:01:54","Ok, cause there's NOTHING WE CAN DO about that.") # I disagree, there certainly is, buddy.
 $T.AE(0,"02:01:58","Well, I think this guy CAN do something about it.")
 $T.AE(1,"02:01:59","Well, I told ya I'd look into it, and see what the deal was, but yeah.")
 $T.AE(3,"02:02:02","Did you reach out to, I believe it was SGT WELCH at the time...?")
@@ -2156,26 +2155,18 @@ $T.AE(0,"02:02:12","Allow me collect my thoughts here, uh-")
 # | 5) Prepare to write me a check for $300M when I file a lawsuit against SCSO.                                  |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$T.AE(1,"02:02:26","Let me look into this, and I'll check with Sergeant Welch, he'll back probably Monday or Tuesday...")
+$T.AE(1,"02:02:26","Let me look into this, and I'll check with Sergeant Welch, he'll back probably Monday or Tuesday... he's not in today.")
 $T.AE(0,"02:02:33","In reference to what happened that night, I did follow up with Sergeant Welch a couple times.") # It's how I obtained records.
 $T.AE(1,"02:02:39","Yep.")
-$T.AE(0,"02:02:42","The case that I'm making here, is that uh- I suspected FOUL PLAY with SCOTT SCHELLING cause he said something...")
+$T.AE(0,"02:02:42","Uh- the case that I'm making here, is that uh- I suspected FOUL PLAY with SCOTT SCHELLING cause he said something...")
 $T.AE(0,"02:02:46","...that he would've ONLY KNOWN... if he had a tap into my phone.") # ESPIONAGE with PEGASUS
-$T.AE(1,"02:02:50","Ok.")
-$T.AE(0,"02:02:51","So I mentioned something to you EARLIER, I won't repeat that, but-")
-$T.AE(0,"02:02:58","I asked JEFF- I asked- uh, when SCOTT SCHELLING made this uh- ULTIMATUM,")
-$T.AE(0,"02:03:04","Either I arrest you and bring you to the jail, with this device that has your 911 calls on it...")
-$T.AE(0,"02:03:08","or... I bring you home.")
-$T.AE(0,"02:03:11","and, when I said 'Well, if you're gonna bri- if you're gonna give me an ULTIMATUM, uh-'")
-$T.AE(0,"02:03:15","'how about THIS GUY, JEFFREY KAPLAN follow you...?'")
-$T.AE(0,"02:03:17","Well, uh- JEFFREY KAPU- JEFFREY KAPLAN, followed SCOTT SCHELLING TO my house,")
-$T.AE(0,"02:03:24","So there's a SECONDARY LOCATION on THAT INCIDENT, and, THAT INCIDENT was LEFT OUT OF MY RECORDS REQUEST.")
-$T.AE(0,"02:03:31","I submitted a FOIL REQUEST for ALL OF THE RECORDS I WAS INVOLVED IN between MAY 19th (2020)...")
-$T.AE(0,"02:03:36","...and SEPTEMBER 4th (2020)")
-$T.AE(0,"02:03:38","So I was able to obtain the record that HE WAS INVOLVED IN, 1 or 2 of them, uh, as well as uh, the record with uh,...")
-$T.AE(0,"02:03:47","The ONE record that I wanted the MOST, was THAT ONE RIGHT THERE, and...")
-$T.AE(0,"02:03:53","...when I got it I realized that there were NO NOTES attached to it, and uh-")
-$T.AE(0,"02:03:58","What I'm noticing is that if I try to call 911 a couple times, and it doesn't make it to the DISPATCH STATION, oh well.")
+$T.AE(1,"02:02:50","Alright.")
+$T.AE(0,"02:02:51","So I mentioned something to you EARLIER, I won't repeat that-")
+$T.AE(0,"02:02:58","but- I asked JEFF- I asked- uh, when SCOTT SCHELLING made this uh- ULTIMATUM, either I arrest you and bring you to the jail, with this device that has your 911 calls on it... or... I bring you home. And, when I said 'Well, if you're gonna bri- if you're gonna give me an ULTIMATUM, uh- 'how about THIS GUY, JEFFREY KAPLAN follow you...?'")
+$T.AE(0,"02:03:17","Well, uh- JEFFREY KAPU- JEFFREY KAPLAN, followed SCOTT SCHELLING TO my house, so there's a SECONDARY LOCATION on THAT INCIDENT, and, THAT INCIDENT was LEFT OUT OF MY RECORDS REQUEST.")
+$T.AE(0,"02:03:31","I submitted a FOIL REQUEST for ALL OF THE RECORDS I WAS INVOLVED IN between MAY 19th (2020) and SEPTEMBER 4th (2020)")
+$T.AE(0,"02:03:38","So I was able to obtain the record that HE WAS INVOLVED IN, 1 or 2 of them, uh, as well as uh, the record with uh... the ONE record that I wanted the MOST, was THAT ONE RIGHT THERE, and...")
+$T.AE(0,"02:03:53","...when I got it I realized that there were NO NOTES attached to it, and uh- what I'm noticing is that if I try to call 911 a couple times, and it doesn't make it to the DISPATCH STATION, oh well.")
 $T.AE(0,"02:04:04","There was a CRIME that was COMMITTED TO ME, but I REPORTED IT TO A POLICE OFFICER, and HE DID NOTHING ABOUT IT.")
 
 # ___________________________________________________________________________________________________________________________________
@@ -2211,7 +2202,7 @@ $T.AE(1,"02:05:24","Can you get em on a THUMBDRIVE...?")
 
 $T.AE(0,"02:05:26","Hey, I have uh- (they're all in the book) an EVIDENCE LIST.")
 $T.AE(0,"02:05:29","I can even give ya, I can write down my uh- GitHub project that's got all of this information.")
-$T.AE(0,"02:06:00","So that's the SITE right there, there's a FOLDER on it that says EVIDENCE") # I meant RECORDS
+$T.AE(0,"02:06:00","So, that's the SITE right there, there's a FOLDER on it that says EVIDENCE") # I meant RECORDS
 $T.AE(0,"02:06:06","Now, some of the LANGUAGE in some of my DOCUMENTS, will... seem... PRETTY OFFENSIVE...")
 $T.AE(0,"02:06:14","I'm gonna come right out and say that, ")
 $T.AE(1,"02:06:14","Is this TEE EIGHTCH YOU BEE...?")
@@ -2222,5 +2213,10 @@ $T.AE(1,"02:06:34","Ok, it's FRIGHTNING ENTROPY")
 $T.AE(0,"02:06:36","Yep- uhm, FIGHTING ENTROPY, capital EFF, if you don't use the capital letters, it won't get to it, but uh-")
 $T.AE(1,"02:06:44","Ok.")
 $T.AE(0,"02:06:45","I can uhm, I could always EMAIL it to you, too, if you want.")
-$T.AE(1,"02:06:49","I'll go in there and take a look... and gonna hurt.") # It won't hurt YOU, it'll probably hurt someone's CREDIBILITY, though.
+$T.AE(1,"02:06:49","I'll go in there and take a look... ain't gonna hurt.") # It won't hurt YOU, it'll probably hurt someone's CREDIBILITY, though.
 $T.AE(0,"02:06:52","So, in uhm- on that website there's a FOLDER that says EVIDENCE") # I misspoke, it's not EVIDENCE, it's called RECORDS
+$T.AE(1,"02:06:56","Yep.")
+$T.AE(0,"02:06:58","And in that folder I have a file named SCSO-2020-028501-(EVIDENCE).txt, and what it has is like videos from the last several years. Of, ME, managing the COMPUTER ANSWERS shop, and uh- uh SUSPICIONS regarding the people that live across the street from me, uh, working with CAPITAL DIGITRONICS, CAPITAL DIGITRONICS provides the RADIO COMMUNICATIONS EQUIPMENT for the STATE POLICE. And then I recorded a couple videos of the STATE POLICE leaving multiple police cruisers running idle unattended outside of the station at the CLIFTON PARK PUBLIC SAFETY BUILDING, and then I recorded a video of me walking to my AUNTS HOUSE, on MAY 25th, 2020 abot 12 HOURS BEFORE THAT EVENT HAPPENED (SCSO-2020-028501), and SOMEBODY was preventing some of my files from making it to my GOOGLE DRIVE account. So, what's happening is, like I have VIDEOS of someone committing some obstruction to my device. So like, if I take a picture of uh- if I take a video of a police officer trying to SHOOT me to death, well, a police officer SOMEWHERE is gonna prevent that FILE from making it to the internet. And, uh- I believe, uh- I don't have- I didn't have a VIDEO of THAT, but the VIDEO that I DID have, that WAS ON THIS DEVICE...? Was, ALMOST AS BAD, and then I SHOWED the video to NEW YORK STATE TROOPER (SHAEMUS) LEAVEY on MAY 27th, 2020 at about NINE A.M., and (5) minutes AFTER I SHOWED IT TO HIM...? My device was REMOTELY DISABLED. (the White Apple iPhone 8+ that I showed him)")
+$T.AE(1,"02:08:23","Hm. Ok.")
+$T.AE(0,"02:08:26","So, I know it's been a couple of years, but I've uh- suspected that there is a RING OF CRIMINALS that work at the FBI, and the STATE POLICE, and the SHERIFFS OFFICE. and I am CERTAIN that MICHAEL ZURLO is involved.")
+$T.AE(1,"02:08:40","Ok. Well, let's get you back over to your bicycle.")
