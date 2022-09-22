@@ -1673,6 +1673,7 @@ $T.AE(5,"01:29:10","*Printer starts printing documents")
 #   \\__//¯¯¯ [Part 7 (01:30:38 -> 01:33:07)]: Sheradin issues paperwork, grabs my stuff from car            ___//¯¯\\
 #    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+
 $T.AE(1,"01:30:38",":Alright, I already gave you back your ID, correct...?")
 $T.AE(0,"01:30:40",":<Indiscernable> Yeah.")
 $T.AE(1,"01:30:42",":Alright, c'mon out here... <Open door> Open right up.")
@@ -1955,47 +1956,95 @@ $T.AE(1,"01:46:38",":Mkay.")
 $T.AE(0,"01:46:41",":And, I spoke to them about this program, the USA-PATRIOT Act THAT NIGHT, after the altercation with my stepfather. The ALTERCATION that occurred with my STEPFATHER, on MAY 19th, 2020, was RESULTANT to, uh- some BLUE TRUCK was STALKING ME, following me around, I was scared shitless. Like, uh- anytime I carry this device around on me, I would see this blue truck. And this started happening after I contacted the FBI in January 2020 (01/27/20). I had contacted the FBI a number of times, because SOMEBODY was attacking my EQUIPMENT (disrupting my ability to do business), and you know my company is based with digital security. Essentially the SAME THING as COMPUTER ANSWERS, BUT- I started doing APPLICATION DEVELOPMENT. Uh- I don't wanna get lost in THOSE details, but- there was a- there was a- suspicious truck following me around, I got into an altercation with my stepfather, because I told him I was worried that I would go missing and never be found. And he LAUGHED at me, and I was so insulted by it, that I wound up, assaulting him. Now, I understand I shouldn't have assaulted him, but I was like 'Hey dad, I'm fuckin' scared shitless I'm gonna get killed', and he's like 'Oh, well, that's STUPID, kid.' You know...? The same type of reaction. So, uh- Anthony Agresta takes a report, and then he suggests that I go to a friends house for the night, and that's what I did. And, uh- I walked all the way to my buddy's house who lives, who- at the time lived at uh- Twin Lakes, and uh- he wasn't home. and, uh- I was scared shitless, so I- dialed 911 to test a theory that I had, and then uh- Anthony Agresta, the same guy that was the location, at my house...?")
 $T.AE(1,"01:48:24",":Yup.")
 $T.AE(0,"01:48:26",":Uh- he responded to that 911 call, I hit 911, and then I like, turned the phone off right afterward. Cause I was testing a theory.")
-# 01:57:12, 3, *enters the Halfmoon Sheriff Substation* (<- timing seems PRETTY FUCKING COINCIDENTAL)
-# 01:57:14, 0, "Michael Whiteacre" 
-# 01:57:35, 0, "Scott was looking for any reason-"
-# 01:58:35, 3, *Interrupts me, UNINTELLIGIBLE
-# 01:58:37, 0, "No."
-# 01:58:38, 3, "Oh. Mike, you've already told all of us this."
-# 01:58:40, 0, "Right."
-# 01:58:41, 3, "What are you looking to do...?" (<- PROSECUTE YOUR ORGANIZATION, that's what I'm looking to do. Ya know...?)
-# 01:58:44, 0, "Well..." (<- It should be pretty fuckin' obvious what I'm lookin' to do, buddy. Ya know...?)
-# 01:58:45, 4, *Multiple officers enter the office*
-# 01:58:46, 3, "Cause we all, like I've read your notes, multiple times that you've left on buildings..."
-# 01:58:51, 3, "I'm not sure what else we can do for ya." (<- Give me $300M when I file a lawsuit against SCSO, and some officers go to prison.)
-# 01:58:54, 3, "Don't you think-"
-# 01:58:55, 0, "<Interrupts M. Whiteacre> The case that I'm trying to make here is that uh-"
-# 01:58:57, 0, "Uh, I think there are some dirty officers on your unit."
-# 01:59:02, 3, "<Knife sound> You've made that aware, you've made us aware of that." 
-# 01:59:04, 0, "Right."
-# 01:59:05, 0, "Well, I'm getting in trouble at Walmart for something I didn't do, people are fabricating things and I'm getting arrested for it."
-# 01:59:15, 0, "And then when something happens to ME, then I tell the story, and it is heard, and <NO ACTION IS TAKEN>" (<- INDICATES PREJUDICE)
-# 01:59:22, 0, "So, what I'm noticing is that the <END RESULT> is, THIS GUY (MICHAEL SHERADIN) IS WRITING DOWN INFORMATION, and I believe that the-"
-# 01:59:30, 0, "and I believe that the event has something to do with the-"
-# 01:59:32, 3, "This is like a FEW YEARS AGO" (<- I know buddy, that's why you should probably remain silent, cause it shows how LAZY YOUR OFFICE IS.)
-# 01:59:34, 0, "Right." (<- I'm basically insulting this dude by AGREEING with his statements.)
-# 01:59:35, 0, "Well, what happened was, is that you showed up on June 19th with Mark Sheehan..."
-# 01:59:41, 3, "Yep."
-# 01:59:41, 0, "Uh, well, I specified that uh, NFRASTRUCTURE was involved in THAT event right there"
+$T.AE(0,"01:48:34",":Uh, Anthony Agresta found me, within like 3 minutes.")
+$T.AE(1,"01:48:37",":Ok.")
+$T.AE(0,"01:48:34",":On Sitterly Road, near 30 Sitterly Road. I mentioned some of this stuff to JOHN HILDRETH in an email. Uh- the point being, there was a suspicious vehicle that was following me around, and suspicious activity that caused me to believe that I was being followed around, so- uh- that night on MAY 26th, 2020 when I was in the Lowes Home Improvement parking lot, these two kids got back into their car, and I was, uh- basically paralyzed with fear, for a good 10 or 20 minutes, tryin' to stay out of view, trying to stay near LIT AREAS, because I was worried that if I went into an UNLIT AREA with my PHONE, regardless of whether it was DEAD or not, that I was gonna get killed.")
+$T.AE(0,"01:49:21",":I eventually walked out onto, uh- Route 146. And, uh- when I did, they pulled out of the Lowes Home Improvement parking lot, and then they tried to hit me, between AUTO ZONE, and uh- ADVANCE AUTO PARTS. And they drove OVER the double yellow line to try to hit me, and they MISSED...? And then, they took a RIGHT onto Route 9 near the Key Bank, headed up Route 9, toward 1769 Route 9.")
+
+# ________________________________________________________________________________________________________________________________________________
+# | I believe that I had powered my device OFF before going into the LOWES parking lot.                                                          |
+# | At some point between EXITING the Lowes Home Improvement parking lot, and geting to the INTERSECTION of (146/9), I turned my device back on. |
+# | It WAS just about DEAD, but it had a sliver of battery life remaining.                                                                       |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+$T.AE(0,"01:49:51",":I said something into my phone, which I believe was RECORDING ME, even though I wasn't hitting the record button. And, SCOTT SCHELLING asked me a question, about what I said. And, it seemed like he had knowledge, of what it was that I said into my device. And it scared the fuckin' shit outta me, because it told me that they had been watching me for some time. This PROGRAM, or somebody in your department, or, maybe it was the FBI, maybe its- maybe it's a GROUP of people that's not- they're made up of uh- Sheriffs, and State Troopers, FBI guys, but- the orginatio- organizations themselves aren't AWARE of this, uh- RICO. Or, GANG.") # RACKETEER INFLUENCED CRIMINAL ORGANIZATION
+$T.AE(0,"01:50:34",":You know, it's like- it's probably not hard to believe, maybe some of the guys that work on your team, are GANG members.")
+$T.AE(1,"01:50:43",":<Indiscernable, I know he looked at me with alarm at this point>")
+$T.AE(0,"01:50:44",":So anyway, side point... I started to think about, uh- why would somebody do all this to me, and uh- the only thing I could come up with is, that it has something to do with my fathers murder in 1995. Because my father had a suspicion that he was gonna wind up getting killed, and then he did, my father was murdered by Zontell Gordon on October 23rd, 1995, and uh, he-, he- made statements that caused me- caused everyone- caused me to believe that he knew what was gonna happen. (3) guys that killed my dad, they, uh- they were all tried for FIRST DEGREE MURDER, but- I don't think the OTHER TWO GUYS that were involved, had any knowledge whatsoever, that the guy who shot my father, uh- he had no intention of letting my father survive.")
+$T.AE(1,"01:51:42",":Hm. What'd you say this guy's name was...?") # Maybe he finds the story somewhat plausible, hence the question. Though, it's still a bit of a STRETCH.
+$T.AE(0,"01:51:44",":Zontell Gordon.")
+$T.AE(1,"01:51:45",":Zontell...?")
+$T.AE(0,"01:51:47",":Yeh, he's- he's in prison.")
+$T.AE(1,"01:51:49",":Zontell Gordon...?")
+$T.AE(0,"01:51:50",":Yep. <pauses> I believe that he was paid to EXECUTE my father.")
+$T.AE(1,"01:51:57",":And, what's your dad's name...?")
+$T.AE(0,"01:51:58",":Michael Edward Cook.")
+$T.AE(1,"01:52:03",":Ok.")
+$T.AE(0,"01:52:06",":So, uhm- what I believe is that uh- this group of CRIMINALS, or uh- call it a MAFIA, I think it's the RUSSIAN MAFIA, but- you know, I don't have ENOUGH to s- ss- specifically suggest as such, uhm <pausing for radio chatter> I believe that my aunt was involved, in his- uh, murder. And I believe that my MOTHER was ALSO involved, in his murder. I didn't think that for like 25 years, but- on June 28th, 2022, about 3 months ago, I got in an argument with my mother, and for some reason, I recorded the entire thing, I didn't realize the phone was recording it, and then uh- the police arrested me AS SOON AS I TOLD THEM ABOUT THE AUDIO RECORDING EXISTING, and I thought that was screwed up. Uh- side point. Um- as for that particular night, uh- I walked all the way from where Key Bank was, and I was trying to flag people down for help. Because, my phone was dead, and, I didn't wanna uh- I didn't wanna risk- I DID try to turn it back on, but I knew that had I turned it back on to try and call 911 again, that, they would just know where I was. So, I walked all the way to uh, like uh, near Zachary Karels house. I saw like a couple of vehicles, driving by, but they were on the other side of the road so I couldn't get attention from them. And uh, I got to this house, uh- 1769 Route 9, apparently a guy named Zackary Karel lives there, and I've been keeping eyes on that residence for a while because it used to be a DOCTORS OFFICE, and then all of a sudden...? Uh, it wasn't a doctors office anymore, it was just, uh- couple cars parked in the driveway, there was a Honda Civic parked in the driveway for like over a year, and I thought it was weird. It was like, at the very least, why not move the vehicle...?")
+$T.AE(1,"01:54:06",":Mhmm.")
+$T.AE(0,"01:54:08",":So, uhm, what I suspected THAT NIGHT, was that the 2 guys that drove up the road...? Were in that house. And, when I was there, uh- I- I was kinda like listening, through the window to try and hear if people were walking around inside, you know...? Were the guys that tried to hit me, and like followed me, in this house...? And I thought they WERE, because they had the AIR CONDITIONER running, and they kept turning it OFF, so...")
+$T.AE(0,"01:54:34",":So, I didn't have a way to call 911. I cut that houses' phone line, because I was PRETTY SURE, that whoever tried to HIT ME was in that house. Then I ALSO cut the ZACH-, the KAK-, the- KAYAK STRAP. You know, cause it was like 'Alright, well, this asshole's gonna like, try to run me over or whatever...? Cut the KAYAK STRAP.' Uh, I later got a charge for CRIMINAL MISCHIEF of, of- CRIMINAL MISCHIEF of the FOURTH DEGREE which uh, was uh- defended by FREDERICK RENCH, but I tried to EXPLAIN to him what happened this entire night. About 5 or 10 minutes later, about 5 minutes later, I made it to the uh- Feiden Appliance Center, and I knew that ZACKARY KAREL, or the PERSON that LIVED IN THAT HOUSE, was working at that building, because they drive a Black Cadillac. And so, I moved the sign across the street to a vacant mailbox pole, for MATCHLESS STOVE AND CHIMNEY. I had taken pictures earlier that night, because I was walking around the area, during the AUDIO RECORDINGS I had recorded EARLIER that night, I thought it was SUSPICIOUS that uh- MATCHLESS STOVE AND CHIMNEY, uh- like, neve rhad any cars parked at it, but the lights are always on. Or whatever, I couldn't remember EXACTLY what it was, but the AUDIO RECORDINGS reveal more DETAILS.")
+$T.AE(1,"01:55:49",":Mhmm.")
+$T.AE(0,"01:55:51",":I uh, wound up walking PAST Matchless Stove and Chimney, and then I got to like the uh- billboard, the LAMAR ADVERTISING billboard, right in front of the Zappone dealership. And, uh- ya know, I was tryin' to get ahold of 911 SOMEHOW, so I went to like, the base of the board there, and there's like an electrical meter. And I pulled out a module, thinkin' that maybe- maybe it could set off an ALARM or something... and then, SCOTT SCHELLING was there within a minute or two. I was like 'Oh yes! Whatever I did got a cop to show up~!' And then, he shows up, and then he's like, shining the flashlight in my face, he's like uh, 'We got a report of somebody jumping in front of vehicles, or whatever' and I said 'Well, uh- I was trying to flag people down for help. I was trying to call 911.' And he's like 'You didn't call 911, caus eif you did we would've- we would've gotten the call.'")
+$T.AE(0,"01:56:42",":He was actually pretty snippy with me, and uh- I convinced him, of WHO I WAS, and a moment or two after he showed up, uh- JEFFREY KAPLAN and JOSHUA WELCH showed up. And, uh- whatever I said caused SCOTT SCHELLING to like, be the COOL guy. And then JEFFREY KAPLAN showed up, and he was kinda like, bein' the bad cop. Good cop, bad cop. Joshua Welch was just kinda like observing from the distance.")
+$T.AE(3,"01:57:12","*enters the Halfmoon Sheriff Substation*") # Timing seems PRETTY FUCKING COINCIDENTAL
+$T.AE(0,"01:57:14",":Michael Whiteacre")
+$T.AE(0,"01:57:19",":And, uh- what happened was, uh- I explained what was going on, I told him that uh- a couple guys were following me, I tried to call 911 a couple times, and neither one of my calls made it to the DISPATCH STATION, and uh- as soon as I told him that, uh- he realized that I was the guy that walked to STRATTON AIR NATIONAL GUARD a few nights beforehand. The events between MAY 19th, and MAY 26th, are ALL in a CHAPTER in my BOOK called 'The Week'.Uh- I won't go into FULL detail about ALL of it, but what I WILL say, is this. Uh, that interaction right there, SCOTT SCHELLING asked for my ID, and then when I SHOWED him the ID, he didn't need to run it. And then as soon as he looked at it, he wasn't running the ID and JEFF KAPLAN said to him 'Well, why aren't you runnin' it...?' and SCOTT SCHELLING said, 'Well, this is the guy that walked to STRATTON 3 nights ago.' And then all of a sudden the roles reversed, so JEFF KAPLAN was the GOOD COP, and then SCOTT SCHELLING started to be a dick.")
+$T.AE(0,"01:58:35",":Scott was looking for any reason-")
+$T.AE(3,"01:58:35",":<Interrupts me>, Did you read the police report...?")
+$T.AE(0,"01:58:37",":No.")
+$T.AE(3,"01:58:38",":Oh. Mike, you've already told all of us this.") # Haven't told THIS guy, dude.
+$T.AE(0,"01:58:40",":Right.")
+$T.AE(3,"01:58:41",":What, what are you looking for...?") # PROSECUTE YOUR ORGANIZATION, that's what I'm looking to do. Ya know...?
+$T.AE(0,"01:58:44",":Well...") # It should be pretty fuckin' obvious what I'm lookin' to do, buddy. Ya know...?
+$T.AE(4,"01:58:45","*Multiple officers enter the office*")
+$T.AE(3,"01:58:46",":Cause we all, like I've read your notes, multiple times that you've left on buildings... and, I'm not sure what else we can do for ya.") # Give me $300M when I file a lawsuit against SCSO, and some officers go to prison.)
+$T.AE(3,"01:58:54",":Don't you think-")
+$T.AE(0,"01:58:55","<Interrupts M. Whiteacre> The case that I'm trying to make here is that uh-")
+$T.AE(0,"01:58:57",":Uh, I think there are some dirty officers on your unit.")
+$T.AE(3,"01:59:02",":<Knife sound> You've made that aware, you've made us aware of that." )
+$T.AE(0,"01:59:04",":Right. Well, I'm getting in trouble at Walmart, for something I didn't do, and people are basically fabricating things, and I'm getting arrested for it. And then when some things happen to ME, uh- then I tell the story, it is heard, and NO ACTION IS TAKEN.") # That's PREJUDICE
+$T.AE(0,"01:59:22",":So, what I'm noticing is that the END RESULT is, THIS GUY (MICHAEL SHERADIN) IS WRITING DOWN INFORMATION, and I believe that the-")
+$T.AE(0,"01:59:30",":and I believe that the event has something to do with the-")
+$T.AE(3,"01:59:32","This is like a FEW YEARS AGO") # I know buddy, that's why you should probably remain silent, cause it shows how LAZY YOUR OFFICE IS.
+$T.AE(0,"01:59:34","Right.") # I'm basically insulting this dude by AGREEING with his statements.
+$T.AE(0,"01:59:35","Well, what happened was, is that you showed up on June 19th with Mark Sheehan...")
+$T.AE(3,"01:59:41","Yep.")
+$T.AE(0,"01:59:41","Uh, well, I specified that uh, NFRASTRUCTURE was involved in THAT event right there")
+
 # ________________________________________________________________________________________________________________________________
 # | 07/21/89 | 785-3221 JESSE PICKETT | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-# 01:59:47, 3, "Yep, I'm aware <that I was TOO LAZY to collect the EVIDENCE you just posted right there and then LAURA HUGHES 
-#               wrote a letter of indication that led to you losing custody of your children>. I <fuckin' DEFINITELY> remember that."
-# 01:59:53, 1, "Is this the truth...?"
-# 01:59:53, 3, "This- this was like, a couple years ago..." (<- Indicates that IN HIS OPINION, his failure to collect evidence that
-#              directly links the former owners of NFRASTRUCTURE to ESPIONAGE TOOLS is really NOTHING to be TOO concerned with,
-#              whereby downplaying the SEVERITY of MICHAEL WHITEACRE's LAZINESS to COLLECT EVIDENCE and stuff like that. Ya know...?)
-# 01:59:54  1, "Oh."
-# 01:59:54, 0, "Yeah."
-# 01:59:55, 3, "Well THIS was, yeah."
-# 01:59:57, 0, "I was dragged through the mud regarding custody of my children, 
-# 01:59:59, 0, "I was accused of stuff at Family Court..."
-# 02:00:01, 0, "And then people played games with me at family court."
+$T.AE(3,"01:59:47","Yep, I'm aware")
+$T.AE(1,"01:59:53", "Is this the truth...?")
+$T.AE(3,"01:59:53", "This- this was like, a couple years ago...") 
+
+# ________________________________________________________________________________________________________________________________
+# | Indicates that IN HIS OPINION, his failure to collect evidence that directly links the former owners of NFRASTRUCTURE to     |
+# | ESPIONAGE TOOLS is really NOTHING to be TOO concerned with, whereby downplaying the SEVERITY of MICHAEL WHITEACRE's LAZINESS |
+# | to COLLECT EVIDENCE and stuff like that. Ya know...?                                                                         |
+# |                                                                                                                              |
+# | While MICHAEL WHITACRES demeanor and words doesn't indicate MALICIOUS INTENT...?                                             |
+# | His INACTION certainly fucking does.                                                                                         |
+# | If he's aware that I IMPLICATED NFRASTRUCTURE, and then SCSO COOPER had to SWOOP IN LIKE A DOUCHEBAG VERSIN OF BATMAN...     |
+# | it means that I had some bitch write a letter of indication that led to me losing custody of my children for BEING CORRECT.  |
+# | It ALSO means that I have YOU to thank for, you know, being TOO LAZY to collect the EVIDENCE I just posted above. Ya know?   |
+# | It's not really an OPINION so much as it's like this:                                                                        |
+# |------------------------------------------------------------------------------------------------------------------------------|
+# | VICTIM : Mr. police officer, a crime happened to me...                                                                       |
+# | COP    : Crimes happen all the time dude, grow the fuck up.                                                                  |
+# |          You'll be fine.                                                                                                     |
+# |          Just drink your milk, buy gas, and pay your bills.                                                                  |
+# |          I really, am not even remotely concerned about this SUPPOSED crime that you say happened to ya.                     |
+# |          Really, there's not much more we can do for ya at this point, cause... shit happened so long ago.                   |
+# |------------------------------------------------------------------------------------------------------------------------------|
+# | I don't think MICHAEL WHITEACRE realizes how stupid he sounds right now, but his rhetoric sounds like this dialog above.     |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(1,"01:59:54","Oh.")
+$T.AE(0,"01:59:54","Yeah.")
+$T.AE(3,"01:59:55","Well THIS was, yeah.")
+$T.AE(0,"01:59:57","I was dragged through the mud regarding custody of my children,I was accused of stuff at Family Court... and then people played games with me at family court.")
+
 # ________________________________________________________________________________________________________________________________
 # | 08/18/20 | Email to HEATHER COREY-MONGUE                                                                                     |
 # |          | https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0818-(Heather%20Corey-Mongue%20Email).pdf        |
@@ -2006,11 +2055,13 @@ $T.AE(0,"01:48:26",":Uh- he responded to that 911 call, I hit 911, and then I li
 # | That's how you sound. Ya know...? Dildos being in one's asshole is a METAPHOR for YOU not doing YOUR fucking job. So...      |
 # | Shut the fuck up, and stop interrupting me and Michael Sheradin. Thanks.                                                     |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-# 02:00:04, 0, "They didn't send me uh- my APPEARANCES with the CORRECT TIME, so..."
-# 02:00:12, 0, "What I'm suggesting is that uh, <you're fuckin' LAZY bruh =)>..."
-# 02:00:14, 0, "I believe that THAT event was RELATED to my fathers murder in 1995 <Me, doing Michael Whiteacre's job, since he's not doing it>"
-# 02:00:19, 1, "Ok."
-# 02:00:19, 0, "And then MICHAEL WHITEACRE wrote a report about how he was showing up because OLIVER ROBINSON made a complaint, uh-"
+
+$T.AE(0,"02:00:04","They didn't send me uh- my APPEARANCES with the CORRECT TIME, so...")
+$T.AE(0,"02:00:12","What I'm suggesting is that uh, <you're fuckin' LAZY bruh =)>...")
+$T.AE(0,"02:00:14","I believe that THAT event was RELATED to my fathers murder in 1995 <Me, doing Michael Whiteacre's job, since he's not doing it>")
+$T.AE(1,"02:00:19","Ok.")
+$T.AE(0,"02:00:19","And then MICHAEL WHITEACRE wrote a report about how he was showing up because OLIVER ROBINSON made a complaint, uh-")
+
 # _____________________________________________________________________________________________________________________________________
 # | I had SUBMITTED this thing called a fuckin' TICKET, for a MOBILE HOTSPOT, so like my CHILDREN, could like, do their SCHOOLWORK... |
 # | ...with this person called the RECEPTIONIST, who was at the FRONT DESK, of 5 CHELSEA PLACE, cause I went to IMS on the CAMPUS...  |
@@ -2036,23 +2087,25 @@ $T.AE(0,"01:48:26",":Uh- he responded to that 911 call, I hit 911, and then I li
 # | And I believe that she DELETED THAT TICKET. IF SHE DIDN'T...? Then, THAT is the EVIDENCE that MICHAEL WHITEACRE should GO BACK IN |
 # | TIME, to CORRECT the fucking job that he did INCORRECTLY. Ya know? "This was a COUPLE YEARS AGO" (<- indicates how lazy he is)    |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-# 02:00:26, 0, "What Michael Whiteacre wrote on the REPORT <SCSO-2020-003688> is that, the reason he was at my house was UNRELEATED to the CPS case."
-# 02:00:33, 0, "But it fucking definitely WAS related, and he wasn't aware of it."
-# 02:00:40, 0, "So, what I have come to determine is that I have to be pretty ADAMANT about the story..."
-# 02:00:45, 0, "...because SOMEBODY might have their FACTS incorrect, and then walk in, and ask questions like..."
-# 02:00:53, 0, "...why are you talking about a case from a couple years ago, so..."
-# 02:00:54, 3, "Ok." (<- Michael Whiteacre admitting that I'm openly insulting his [integrity/due-diligence] to his face.)
-# 02:00:56, 0, "So..."
-# 02:00:56, 3, "Alright." (<- Making an admission that he might've fucked up after all. Sounds IDENTICAL to JUDGE PELAGALLI on 4/6/21.)
-# 02:00:58, 0, "The reason why uh, I'm talking about it with you right now, is because..."
-# 02:01:01, 0, "Uh- like I said, I believe that my AUNT TERRI was INVOLVED with the MURDER ATTEMPT on MAY 26th, 2020, and SO WAS SCOTT SCHELLING"
-# 02:01:13, 0, "Because THAT RECORD (SCSO-2020-028501) indicates that uh, SCOTT SCHELLING had me in custody along with JEFFREY KAPLAN"
-# 02:01:24, 0, "AND WROTE NO NOTES ABOUT THE INTERACTION."
-# 02:01:26, 3, "Ok."
-# 02:01:27, 0, "...and then, uh, I had a FEELING that SCOTT SCHELLING was gonna do something BAD to me, and..."
-# 02:01:33, 0, "when he offered me this ULTIMATUM, either I arrest you and bring you to the JAIL with THIS DEVICE right here that I had evidence of calling 911 on..."
-# 02:01:44, 0, "Or... you can... allow ME to bring you home."
-# 02:01:52, 3, "Mike, when you told ME about this, didn't I tell you to go to the supervisor...?"
+
+$T.AE(0,"02:00:26","What Michael Whiteacre wrote on the REPORT <SCSO-2020-003688> is that, the reason he was at my house was UNRELEATED to the CPS case.")
+$T.AE(0,"02:00:33","But it fucking definitely WAS related, and he wasn't aware of it.")
+$T.AE(0,"02:00:40","So, what I have come to determine is that I have to be pretty ADAMANT about the story...")
+$T.AE(0,"02:00:45","...because SOMEBODY might have their FACTS incorrect, and then walk in, and ask questions like...")
+$T.AE(0,"02:00:53","...why are you talking about a case from a couple years ago, so...")
+$T.AE(3,"02:00:54","Ok.") # Michael Whiteacre admitting that I'm openly insulting his [integrity/due-diligence] to his face.)
+$T.AE(0,"02:00:56","So...")
+$T.AE(3,"02:00:56","Alright.") # Making an admission that he might've fucked up after all. Sounds IDENTICAL to JUDGE PELAGALLI on 4/6/21.)
+$T.AE(0,"02:00:58","The reason why uh, I'm talking about it with you right now, is because...")
+$T.AE(0,"02:01:01","Uh- like I said, I believe that my AUNT TERRI was INVOLVED with the MURDER ATTEMPT on MAY 26th, 2020, and SO WAS SCOTT SCHELLING")
+$T.AE(0,"02:01:13","Because THAT RECORD (SCSO-2020-028501) indicates that uh, SCOTT SCHELLING had me in custody along with JEFFREY KAPLAN")
+$T.AE(0,"02:01:24","AND WROTE NO NOTES ABOUT THE INTERACTION.")
+$T.AE(3,"02:01:26","Ok.")
+$T.AE(0,"02:01:27","...and then, uh, I had a FEELING that SCOTT SCHELLING was gonna do something BAD to me, and...")
+$T.AE(0,"02:01:33","when he offered me this ULTIMATUM, either I arrest you and bring you to the JAIL with THIS DEVICE right here that I had evidence of calling 911 on...")
+$T.AE(0,"02:01:44","Or... you can... allow ME to bring you home.")
+$T.AE(3,"02:01:52","Mike, when you told ME about this, didn't I tell you to go to the supervisor...?")
+
 # _________________________________________________________________________________________________________________________________________
 # | Yeah, I went and spoke to JOSHUA WELCH, and when I did, he told me the incident number for 05/23/20 SCSO-027797 which was the         |
 # | WRONG INCIDENT, THAT was related to the INCIDENT where SCOTT SCHELLING responded to a CALL FROM ROTTERDAM POLICE.                     |
@@ -2068,15 +2121,17 @@ $T.AE(0,"01:48:26",":Uh- he responded to that 911 call, I hit 911, and then I li
 # | request. Ya know...? Basically, IN ORDER FOR ME TO HAVE THE FUCKING RECORD, SCSO-2020-028501...? I HAD TO DO MICHAEL WHITACRES JOB.   |
 # | I ALREADY SUBMITTED A RECORDS REQUEST WAY BACK ON 09/04/20 and it DID NOT HAVE THE FUCKING RECORD I WAS LOOKING FOR. Cool..? Cool.    |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-# 02:01:53, 0, "I did." (<- It's [hard/impossible] to condense those boxes ABOVE into a single 2 second statement, without causing CONFUSION.)
-# 02:01:54, 3, "Ok, cause there's NOTHING WE CAN DO about that." (<- I disagree, there certainly is, buddy. You're gonna find out the hard way.)
-# 02:01:58, 0, "Well, I think this guy CAN do something about it."
-# 02:01:59, 1, "Well, I told ya I'd look into it, and see what the deal was, but yeah."
-# 02:02:02, 3, "Did you reach out to, I believe it was SGT WELCH at the time...?"
-# 02:02:05, 0, "Yes." (<- mentioned in the box above, it's how I got the record for the ZAPPONE DEALERSHIP incident.)
-# 02:02:06, 3, "Did you reach out to him...?"
-# 02:02:06, 0, "I did. So, uhm..."
-# 02:02:12, 0, "Allow me collect my thoughts here, uh-" 
+
+$T.AE(0,"02:01:53","I did.") # It's [hard/impossible] to condense those boxes ABOVE into a single 2 second statement, without causing CONFUSION.
+$T.AE(3,"02:01:54","Ok, cause there's NOTHING WE CAN DO about that.") # I disagree, there certainly is, buddy. You're gonna find out the hard way.
+$T.AE(0,"02:01:58","Well, I think this guy CAN do something about it.")
+$T.AE(1,"02:01:59","Well, I told ya I'd look into it, and see what the deal was, but yeah.")
+$T.AE(3,"02:02:02","Did you reach out to, I believe it was SGT WELCH at the time...?")
+$T.AE(0,"02:02:05","Yes.") # Mentioned in the box above, it's how I got the record for the ZAPPONE DEALERSHIP incident.
+$T.AE(3,"02:02:06","Did you reach out to him...?")
+$T.AE(0,"02:02:06","I did. So, uhm...")
+$T.AE(0,"02:02:12","Allow me collect my thoughts here, uh-")
+
 # _________________________________________________________________________________________________________________
 # | I had no way to compress all of that into a single statement. I was thinking of all this shit above.          |
 # | MICHAEL WHITEACRE's questions DISTRACTED me, so I was unable to make the CORRELATIONS and provide             | 
@@ -2086,6 +2141,9 @@ $T.AE(0,"01:48:26",":Uh- he responded to that 911 call, I hit 911, and then I li
 # |---------------------------------------------------------------------------------------------------------------|
 # | Top Deck Awareness - Not News - Used to be news...? Now it's Not News. Not News. Part of the Not News Network |
 # | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_0823_TDA_Not_News.pdf                           |
+# |---------------------------------------------------------------------------------------------------------------|
+# | Here's a guy from SCSO that LITERALLY asked me to clue him in on this book I was writing back on...           |
+# | 06/23/2022 | SCSO SPEZIALE | https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6                |
 # |---------------------------------------------------------------------------------------------------------------|
 # | Ya know, I mean, maybe MICHAEL WHITEACRE should like, read that fuckin' book sometime... it's FREE.           |
 # | I know that 750 pages is a lot to read...? But, I made damn certain to make it (INTERESTING/ENTERTAINING).    |
@@ -2097,46 +2155,50 @@ $T.AE(0,"01:48:26",":Uh- he responded to that 911 call, I hit 911, and then I li
 # | 4) Stop providing resistance.                                                                                 |
 # | 5) Prepare to write me a check for $300M when I file a lawsuit against SCSO.                                  |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-# 02:02:26, 1, "Let me look into this, and I'll check with Sergeant Welch, he'll back probably Monday or Tuesday..."
-# 02:02:33, 0, "In reference to what happened that night, I did follow up with Sergeant Welch a couple times." (It's how I obtained records.)
-# 02:02:39, 1, "Yep."
-# 02:02:42, 0, "The case that I'm making here, is that uh- I suspected FOUL PLAY with SCOTT SCHELLING cause he said something..."
-# 02:02:46, 0, "...that he would've ONLY KNOWN... if he had a tap into my phone." (<- ESPIONAGE with PEGASUS)
-# 02:02:50, 1, "Ok."
-# 02:02:51, 0, "So I mentioned something to you EARLIER, I won't repeat that, but-"
-# 02:02:58, 0, "I asked JEFF- I asked- uh, when SCOTT SCHELLING made this uh- ULTIMATUM,"
-# 02:03:04, 0, "Either I arrest you and bring you to the jail, with this device that has your 911 calls on it..."
-# 02:03:08, 0, "or... I bring you home."
-# 02:03:11, 0, "and, when I said 'Well, if you're gonna bri- if you're gonna give me an ULTIMATUM, uh-'"
-# 02:03:15, 0, "'how about THIS GUY, JEFFREY KAPLAN follow you...?'"
-# 02:03:17, 0, "Well, uh- JEFFREY KAPU- JEFFREY KAPLAN, followed SCOTT SCHELLING TO my house,"
-# 02:03:24, 0, "So there's a SECONDARY LOCATION on THAT INCIDENT, and, THAT INCIDENT was LEFT OUT OF MY RECORDS REQUEST."
-# 02:03:31, 0, "I submitted a FOIL REQUEST for ALL OF THE RECORDS I WAS INVOLVED IN between MAY 19th (2020)..."
-# 02:03:36, 0, "...and SEPTEMBER 4th (2020)"
-# 02:03:38, 0, "So I was able to obtain the record that HE WAS INVOLVED IN, 1 or 2 of them, uh, as well as uh, the record with uh,..."
-# 02:03:47, 0, "The ONE record that I wanted the MOST, was THAT ONE RIGHT THERE, and..."
-# 02:03:53, 0, "...when I got it I realized that there were NO NOTES attached to it, and uh-"
-# 02:03:58, 0, "What I'm noticing is that if I try to call 911 a couple times, and it doesn't make it to the DISPATCH STATION, oh well."
-# 02:04:04, 0, "There was a CRIME that was COMMITTED TO ME, but I REPORTED IT TO A POLICE OFFICER, and HE DID NOTHING ABOUT IT."
+
+$T.AE(1,"02:02:26","Let me look into this, and I'll check with Sergeant Welch, he'll back probably Monday or Tuesday...")
+$T.AE(0,"02:02:33","In reference to what happened that night, I did follow up with Sergeant Welch a couple times.") # It's how I obtained records.
+$T.AE(1,"02:02:39","Yep.")
+$T.AE(0,"02:02:42","The case that I'm making here, is that uh- I suspected FOUL PLAY with SCOTT SCHELLING cause he said something...")
+$T.AE(0,"02:02:46","...that he would've ONLY KNOWN... if he had a tap into my phone.") # ESPIONAGE with PEGASUS
+$T.AE(1,"02:02:50","Ok.")
+$T.AE(0,"02:02:51","So I mentioned something to you EARLIER, I won't repeat that, but-")
+$T.AE(0,"02:02:58","I asked JEFF- I asked- uh, when SCOTT SCHELLING made this uh- ULTIMATUM,")
+$T.AE(0,"02:03:04","Either I arrest you and bring you to the jail, with this device that has your 911 calls on it...")
+$T.AE(0,"02:03:08","or... I bring you home.")
+$T.AE(0,"02:03:11","and, when I said 'Well, if you're gonna bri- if you're gonna give me an ULTIMATUM, uh-'")
+$T.AE(0,"02:03:15","'how about THIS GUY, JEFFREY KAPLAN follow you...?'")
+$T.AE(0,"02:03:17","Well, uh- JEFFREY KAPU- JEFFREY KAPLAN, followed SCOTT SCHELLING TO my house,")
+$T.AE(0,"02:03:24","So there's a SECONDARY LOCATION on THAT INCIDENT, and, THAT INCIDENT was LEFT OUT OF MY RECORDS REQUEST.")
+$T.AE(0,"02:03:31","I submitted a FOIL REQUEST for ALL OF THE RECORDS I WAS INVOLVED IN between MAY 19th (2020)...")
+$T.AE(0,"02:03:36","...and SEPTEMBER 4th (2020)")
+$T.AE(0,"02:03:38","So I was able to obtain the record that HE WAS INVOLVED IN, 1 or 2 of them, uh, as well as uh, the record with uh,...")
+$T.AE(0,"02:03:47","The ONE record that I wanted the MOST, was THAT ONE RIGHT THERE, and...")
+$T.AE(0,"02:03:53","...when I got it I realized that there were NO NOTES attached to it, and uh-")
+$T.AE(0,"02:03:58","What I'm noticing is that if I try to call 911 a couple times, and it doesn't make it to the DISPATCH STATION, oh well.")
+$T.AE(0,"02:04:04","There was a CRIME that was COMMITTED TO ME, but I REPORTED IT TO A POLICE OFFICER, and HE DID NOTHING ABOUT IT.")
+
 # ___________________________________________________________________________________________________________________________________
 # | Well, he DID do something about it, and so did MICHAEL ZURLO.                                                                   |
 # | They both committed OBSTRUCTION OF JUSTICE: DESTRUCTION OF EVIDENCE, and charged me with CRIMINAL MISCHIEF OF THE FOURTH DEGREE |
 # | Pretty cool, huh...?                                                                                                            |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-# 02:04:07, 0, "And then, I suspected that the POLICE OFFICER in SPECIFIC, uh, HAD UH- SOME NEFARIOUS INTENT, and then..."
-# 02:04:16, 0, "And then, when he brought me back to my house, JEFFREY KAPLAN was remained in HIS VEHICLE, uh-"
-# 02:04:24, 0, "And then, SCOTT SCHELLING came (around his car) to let me OUT, and he ASKED ME MULTIPLE QUESTIONS."
-# 02:04:28, 0, "The QUESTIONS that he asked me, (are in the book, CHAPTER - THE WEEK)", were..."
-# 02:04:32, 0, "(Schelling) So you made 911 calls...?"
-# 02:04:33, 0, "And I said 'Yes, if you GO TO CENTER FOR SECURITY, THEY SHOULD BE ABLE TO CORROBORATE THAT STORY or the EVIDENCE.'"
-# 02:04:40, 0, "Well, uh... I think that SCOTT SCHELLING went there, and DESTROYED the evidence."
-# 02:04:44, 0, "And then ALSO, uh- I told him that I UPLOADED THE AUDIO RECORDINGS AT COMPUTER ANSWERS and he seemed to be INCREDIBLY, uh..."
-# 02:04:55, 0, "...CONCERNED about that. Cause I think that SOMEBODY had an AUDIO TAP to my phone."
-# 02:05:05, 0, "And, I think that, uh- the REASON he never COLLECTED any of the EVIDENCE from my phone, uh-"
-# 02:05:12, 0, "...indicates MALICIOUS INTENT. And that I think it was an ORDER FROM HIS SUPERVISOR." (<- not JOSHUA WELCH... MICHAEL ZURLO.)
-# 02:05:18, 1, "Alright."
-# 02:05:19, 0, "I have ALL OF THE EXHIBITS and the PICTURES, as well as uh, the DATE THEY WERE TAKEN..."
-# 02:05:24, 1, "Can you get em on a THUMBDRIVE...?"
+
+$T.AE(0,"02:04:07","And then, I suspected that the POLICE OFFICER in SPECIFIC, uh, HAD UH- SOME NEFARIOUS INTENT, and then...")
+$T.AE(0,"02:04:16","And then, when he brought me back to my house, JEFFREY KAPLAN was remained in HIS VEHICLE, uh-")
+$T.AE(0,"02:04:24","And then, SCOTT SCHELLING came (around his car) to let me OUT, and he ASKED ME MULTIPLE QUESTIONS.")
+$T.AE(0,"02:04:28","The QUESTIONS that he asked me, (are in the book, CHAPTER - THE WEEK), were...")
+$T.AE(0,"02:04:32","(Schelling) So you made 911 calls...?")
+$T.AE(0,"02:04:33","And I said 'Yes, if you GO TO CENTER FOR SECURITY, THEY SHOULD BE ABLE TO CORROBORATE THAT STORY or the EVIDENCE.'")
+$T.AE(0,"02:04:40","Well, uh... I think that SCOTT SCHELLING went there, and DESTROYED the evidence.")
+$T.AE(0,"02:04:44","And then ALSO, uh- I told him that I UPLOADED THE AUDIO RECORDINGS AT COMPUTER ANSWERS and he seemed to be INCREDIBLY, uh...")
+$T.AE(0,"02:04:55","...CONCERNED about that. Cause I think that SOMEBODY had an AUDIO TAP to my phone.")
+$T.AE(0,"02:05:05","And, I think that, uh- the REASON he never COLLECTED any of the EVIDENCE from my phone, uh-")
+$T.AE(0,"02:05:12","...indicates MALICIOUS INTENT. And that I think it was an ORDER FROM HIS SUPERVISOR.") # Not JOSHUA WELCH... MICHAEL ZURLO.
+$T.AE(1,"02:05:18","Alright.")
+$T.AE(0,"02:05:19","I have ALL OF THE EXHIBITS and the PICTURES, as well as uh, the DATE THEY WERE TAKEN...")
+$T.AE(1,"02:05:24","Can you get em on a THUMBDRIVE...?")
+
 # _____________________________________________________________________________________________________________________
 # | They are ALL in my book, Top Deck Awareness - Not News as well as a FILE on my GitHub project in a file named...  |
 # | https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt                       |
@@ -2146,18 +2208,19 @@ $T.AE(0,"01:48:26",":Uh- he responded to that 911 call, I hit 911, and then I li
 # | of my 911 calls that FAILED TO MAKE IT TO THE DISPATCH STATION... So... Those were ALL UPLOADED IMMEDIATELY AFTER |
 # | SCOTT SCHELLING DROPPED ME OFF AT THE SECONDARY LOCATION IN THAT TICKET, SCSO-2020-028501.                        |
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-# 02:05:26, 0, "Hey, I have uh- (they're all in the book) an EVIDENCE LIST."
-# 02:05:29, 0, "I can even give ya, I can write down my uh- GitHub project that's got all of this information."
-# 02:06:00, 0, "So that's the SITE right there, there's a FOLDER on it that says EVIDENCE" (I meant RECORDS)
-# 02:06:06, 0, "Now, some of the LANGUAGE in some of my DOCUMENTS, will... seem... PRETTY OFFENSIVE..."
-# 02:06:14, 0, "I'm gonna come right out and say that, "
-# 02:06:14, 1, "Is this 'THUB'...?"
-# 02:06:17, 0, "Yes."
-# 02:06:24, 1, "... dot com, EM SEE SEE EIGHT ESS ESS"
-# 02:06:28, 0, "EM SEE SEE EIGHT FIVE ESS"
-# 02:06:34, 1, "Ok, it's FRIGHTNING ENTROPY"
-# 02:06:36, 0, "Yep- uhm, FIGHTING ENTROPY, capital EFF, if you don't use the capital letters, it won't get to it, but uh-"
-# 02:06:44, 1, "Ok."
-# 02:06:45, 0, "I can uhm, I could always EMAIL it to you, too, if you want."
-# 02:06:49, 1, "I'll go in there and take a look... and gonna hurt." (<- It won't hurt YOU, it'll probably hurt someone's CREDIBILITY, though.)
-# 02:06:52, 0, "So, in uhm- on that website there's a FOLDER that says EVIDENCE (<- I misspoke, it's not EVIDENCE, it's called RECORDS)"
+
+$T.AE(0,"02:05:26","Hey, I have uh- (they're all in the book) an EVIDENCE LIST.")
+$T.AE(0,"02:05:29","I can even give ya, I can write down my uh- GitHub project that's got all of this information.")
+$T.AE(0,"02:06:00","So that's the SITE right there, there's a FOLDER on it that says EVIDENCE") # I meant RECORDS
+$T.AE(0,"02:06:06","Now, some of the LANGUAGE in some of my DOCUMENTS, will... seem... PRETTY OFFENSIVE...")
+$T.AE(0,"02:06:14","I'm gonna come right out and say that, ")
+$T.AE(1,"02:06:14","Is this TEE EIGHTCH YOU BEE...?")
+$T.AE(0,"02:06:17","Yes.")
+$T.AE(1,"02:06:24","... dot com, EM SEE SEE EIGHT ESS ESS")
+$T.AE(0,"02:06:28","EM SEE SEE EIGHT FIVE ESS")
+$T.AE(1,"02:06:34","Ok, it's FRIGHTNING ENTROPY")
+$T.AE(0,"02:06:36","Yep- uhm, FIGHTING ENTROPY, capital EFF, if you don't use the capital letters, it won't get to it, but uh-")
+$T.AE(1,"02:06:44","Ok.")
+$T.AE(0,"02:06:45","I can uhm, I could always EMAIL it to you, too, if you want.")
+$T.AE(1,"02:06:49","I'll go in there and take a look... and gonna hurt.") # It won't hurt YOU, it'll probably hurt someone's CREDIBILITY, though.
+$T.AE(0,"02:06:52","So, in uhm- on that website there's a FOLDER that says EVIDENCE") # I misspoke, it's not EVIDENCE, it's called RECORDS
