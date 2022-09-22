@@ -69,14 +69,13 @@ Class TranscriptionEntry
         $This.Position = $Time.Position
         $This.Type     = Switch -Regex ($Note)
         {
-            "^\*{1}" { "Action"    }
-            "^\:{1}" { "Statement" }
+            "^\*{1}" { "Action" } "^\:{1}" { "Statement" } "^\#{1}" { "Note" }
         }
         $This.Note     = $Note.Substring(1)
     }
     [String] ToString()
     {
-        Return "[{0}] <{1}> {2}" -f $This.Time,$This.Party.Initial, $This.Note
+        Return "[{0}] <{1}> {2}" -f $This.Time, $This.Party.Initial, $This.Note
     }
 }
 
@@ -251,8 +250,14 @@ $T.AddParty("Clayton Brownell")
 $T.AddParty("Michael Whiteacre")
 $T.AddParty("SCSO VARIOUS")
 $T.AddParty("E N V")
+$T.AddParty("Katherine Suchocki")
 
-# (00:00:00 -> 00:07:59) # Part 1 - Outside (Being arrested via COMPLAINT with NO EVIDENCE PROVIDED)
+#    ____    ____________________________________________________________________________________________________        
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+#   \\__//¯¯¯ [Part 1 (00:00:00 -> 00:07:59)]: Outside (Being arrested via COMPLAINT w/out EVIDENCE)         ___//¯¯\\
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+
 $T.AE(0,"00:01",":Ok go ahead")
 $T.AE(2,"00:01",":Ok, you're good...?")
 $T.AE(0,"00:02",":Yeah.")
@@ -400,20 +405,39 @@ $T.AE(2,"07:43",":We're gonna walk right over here, Mike. The second car.")
 $T.AE(2,"07:56",":In and out, okay bud...?")
 $T.AE(0,"07:57",":Yeah.")
 
-# "You're aware that there's no surveillance in that aisle" <- You have to PROVE that, not ASSUME that.
-# "You walked out of the store, and then went back into the store, went back to the aisle, and then pointed at where you left it."
-# Nah. "Did anyone SEE that...?" Nah. Nobody SAW that at all. Which means that I left the item in that aisle when the guys
-# from "loss prevention" pointed at me. Oh. So that's how I know that the LAW MEN and WALMART are CUTTING CORNERS.
-# AKA, violating my rights as a CITIZEN and MAKING ASSUMPTIONS about what was NOT SEEN BY ANYBODY.
-# What I can state with sheer certainty, is that there IS VIDEO FOOTAGE THAT CLEARLY SHOWS THAT NOBODY WENT BACK TO THAT AISLE 
-# BEFORE STOPPING ME IN THE VESTIBULE. Ohhhhhhhhhhh. Shit. Nobody at Walmart Loss Prevention went back to that fucking aisle.
-# Weird. But I mean, NOW since MICHAEL SHERIDAN NEVER COLLECTED THE SUPPORTING VIDEO EVIDENCE...
-# NOW, WALMART HAS NO MEANS OF BEING ABLE TO PROVE THAT THEY SENT ANYBODY TO THAT AISLE TO FIND THE ITEM THAT NEVER LEFT THAT AISLE.
-# But, suppose they did. NOW the (2) dudes can just put those SAME EXACT CLOTHES back on, and then like, send a guy to that aisle,
-# and then walk through the aisle and come out the other end, and put their arms up and be like 'Well, fuck, no item that the dude
-# SUPPOSEDLY took, aw shucks...' 
+# _____________________________________________________________________________________________________________________________________
+# | "You're aware that there's no surveillance in that aisle" <- You have to PROVE that, not ASSUME that.                             |
+# | "You walked out of the store, and then went back into the store, went back to the aisle, and then pointed at where you left it."  |
+# | Nah. "Did anyone SEE that...?" Nah. Nobody SAW that at all.                                                                       |
+# | Which means that I left the item in that aisle when the guy from "loss prevention" pointed at me. Oh.                             |
+# | So that's how I know that the LAW MEN and WALMART are CUTTING CORNERS.                                                            |
+# | AKA, violating my CONSTITUTIONAL RIGHTS as a CITIZEN and MAKING ASSUMPTIONS about what was NOT SEEN BY ANYBODY.                   |
+# |-----------------------------------------------------------------------------------------------------------------------------------|
+# | What I can state with sheer certainty, is that there IS VIDEO FOOTAGE THAT CLEARLY SHOWS THAT NOBODY WENT BACK TO THAT AISLE      |
+# | BEFORE STOPPING ME IN THE VESTIBULE. Ohhhhhhhhhhh. Shit. Nobody at Walmart Loss Prevention went back to that fucking aisle.       |
+# | That's fuckin' weird, right...? But I mean, NOW since MICHAEL SHERIDAN NEVER COLLECTED THE SUPPORTING VIDEO EVIDENCE... as in,    |
+# | MICHAEL SHERIDAN probably did not say "Hey, put this fuckin evidence on a thumbdrive or email it to me right now so that it can"  |
+# | be entered with a SPECIFIC HASH CODE with a TIME and DATE that is UNABLE TO BE ALTERED BY ANYBODY AFTER I LEAVE TO GET A WARRANT. |
+# | That's the part that I think MICHAEL SHERADIN did not do AT ALL.                                                                  |
+# |-----------------------------------------------------------------------------------------------------------------------------------|
+# | NOW WALMART HAS NO MEANS OF BEING ABLE TO PROVE THAT THEY SENT ANYBODY TO THAT AISLE TO FIND THE ITEM THAT NEVER LEFT THAT AISLE. |
+# | But, suppose they did. NOW the (2) dudes can just put those SAME EXACT CLOTHES back on, and then like, send a guy to that aisle,  |
+# | and then walk through the aisle and come out the other end, and put their arms up and be like 'Well, fuck, no item that the dude  |
+# | SUPPOSEDLY took, aw shucks...' The fact of the matter is this... LAW ENFORCEMENT and the JUSTICE SYSTEM is SO CORRUPT, that they  |
+# | don't actually have to PROVE a god damn thing. Otherwise, I wouldn't have been ARRESTED. Nope.                                    |
+# |-----------------------------------------------------------------------------------------------------------------------------------|
+# | Seems like I'm making a pretty big fuckin' deal about a fucking item that costs $18.88 right...? That's what morons will assume.  |
+# | Nah, the point is a manner of PRINCIPLE about WHAT I'M BEING ACCUSED OF WITHOUT FUCKING EVIDENCE. It will CONTINUE TO HAPPEN TO   |
+# | ME, because I know for a fucking fact that the police are working EXTRA HARD with the fuckin' justice system to just look for any |
+# | possible means to incriminate ANYBODY for ANY fucking reason whatsoever. That's because some of them are FUCKING STUPID.          |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-# (00:07:59 -> 00:28:11) # Part 2 - Within (SEDAN 4138/SCSO Michael Sheradin)
+#    ____    ____________________________________________________________________________________________________
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
+#   \\__//¯¯¯ [Part 2 (00:07:59 -> 00:28:11)]: Within (SEDAN 4138/SCSO Michael Sheradin)                     ___//¯¯\\
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+
 $T.AE(2,"08:00",":Just gotta put your seatbelt on, alright...?")
 $T.AE(2,"08:07",":Just gotta put your seatbelt on.")
 $T.AE(0,"08:09","*Enters rear of SCSO 4138")
@@ -550,13 +574,23 @@ $T.AE(1,"28:04","*Opens rear passenger door")
 $T.AE(0,"28:05","*Unbuckles seat belt, exits sedan 4138")
 $T.AE(1,"28:11","*Shuts the rear passenger door")
 
-# (00:28:11 -> 00:28:45) # Part 3 - Walking into Halfmoon (Sheriff Substation/Town Court)
+#    ____    ____________________________________________________________________________________________________
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
+#   \\__//¯¯¯ [Part 3 (00:28:11 -> 00:28:45)]: Walking into Halfmoon (Sheriff Substation/Town Court)         ___//¯¯\\
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+
 $T.AE(1,"28:11",":We're gonna head right in those doors, up the stairs, and to the left.")
 $T.AE(1,"28:39","*shuffles with keys to open the office door")
 $T.AE(1,"28:43","*Unlocks the office door")
 $T.AE(1,"28:45","*Opens the office door")
 
-# (00:28:35 -> 01:03:56) # Part 4 - Michael Sheradin processes my "arrest" order
+#    ____    ____________________________________________________________________________________________________
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
+#   \\__//¯¯¯ [Part 4  (00:28:35 -> 01:03:56)]: Michael Sheradin processes my "arrest" order                 ___//¯¯\\
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+
 $T.AE(1,"28:47",":There we go. come right in here, and have a seat.")
 $T.AE(0,"29:01",":Mind if I stand...?")
 $T.AE(1,"29:01",":No, sit down. Relax.")
@@ -754,7 +788,6 @@ $T.AE(0,"42:33",":You're saying, that if I can PROVE that I didn't take it, how 
 $T.AE(1,"42:32",":It's not so much that YOU have to PROVE that they lied, THEY have to PROVE that YOU DID, what they CLAIM YOU DID, just like if I had arrested you-") # You are processing my arrest... there's no "JUST LIKE..."
 $T.AE(0,"42:49",":Right.")
 $T.AE(1,"42:50",":...or signed a complaint...")
-
 $T.AE(0,"42:49",":But that's what I'm saying...")
 $T.AE(1,"42:52",":...I would be have- I would have to be able to prove, IN COURT-")
 $T.AE(0,"42:55",":Right.")
@@ -1318,7 +1351,12 @@ $T.AE(0,"01:03:48",":Yeh.")
 $T.AE(1,"01:03:51",":Alright, come out here...")
 $T.AE(1,"01:03:54","*Opens door latch")
 
-# (01:03:56 -> 01:17:58) # Part 5 - Michael Sheradin processes my fingerprints but needs some help
+#    ____    ____________________________________________________________________________________________________
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
+#   \\__//¯¯¯ [Part 5 (01:03:56 -> 01:17:58)]: Sheradin processes my fingerprints but needs help             ___//¯¯\\
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+
 $T.AE(0,"01:03:57",":This is ridiculous. <Indiscernable, clothing shuffling, movement>")
 $T.AE(1,"01:04:05",":C'mon over here...")
 $T.AE(0,"01:04:05",":So if I run into a billionaires knife... and I get it all bloody, you guys are gonna arrest me for that.")
@@ -1507,21 +1545,174 @@ $T.AE(1,"01:15:22",":Alright... whatever.")
 $T.AE(0,"01:15:26",":Ready...?")
 $T.AE(1,"01:15:26",":Yup.") # Dude was probably BORN ready.
 $T.AE(5,"01:15:33","*<indiscernable, clothing shuffling around>")
-# TO BE CONTINUED
+$T.AE(0,"01:15:47",":Yeah, hold on, try it again.")
+$T.AE(1,"01:15:51",":Alright...")
+$T.AE(0,"01:16:14",":There ya go.")
+$T.AE(1,"01:16:15",":Nah, it says it's a... it said it was a different finger... <indiscernable> It wants the right ring finger.")
+$T.AE(0,"01:16:23",":Oh, the right ring finger, sorry. I thought that was uh- (little finger/pinky)")
+$T.AE(1,"01:16:38",":What was this one, no match found... left index.")
+$T.AE(1,"01:16:52",":Insufficient roll. <pauses> I dunno, try it one more time.")
+$T.AE(1,"01:17:02",":Too dark. Don't push down as hard.")
+$T.AE(0,"01:17:06",":Ok.")
+$T.AE(1,"01:17:14",":<Indiscernable, noises> Alright, beautiful. Alright.")
+$T.AE(1,"01:17:24",":Alright, that takes care of that. Now, if you want <indiscernable> sign that these are your fingerprints. <indiscernable> Hold on.")
+$T.AE(1,"01:17:37",":Alright, that's all you're signing is that these are your fingerprints that I just took.")
+$T.AE(1,"01:17:44",":Alright... Have a seat back in there. <Opens latch> Get ya outta here <indiscernable>.")
+$T.AE(1,"01:17:55","*Closes door latch")
 
-# (01:17:58 -> 01:30:48) # Part 6 - Michael Sheradin finalizes processing my arrest
-# (01:30:48 -> 01:33:07) # Part 7 - Michael Sheradin issues paperwork, then grabs my belongings from his cruiser. (which was left running that whole time, by the way.)
-# (01:33:07 -> ) # Part 8 - I provide an OFFICIAL COMPLAINT to MICHAEL SHERADIN, that is to be ATTACHED to (SCSO-2020-028501 05/26/20 0130-0155)
+#    ____    ____________________________________________________________________________________________________
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
+#   \\__//¯¯¯ [Part 6 (01:17:58 -> 01:30:48)]: Sheradin finalizes processing my arrest                       ___//¯¯\\
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
 
+$T.AE(1,"01:19:39",":Hello judge, deputy sheriff from Saratoga County Sheriffs Office. Today is *checks watch* Friday the SIXTEENTH of SEPTEMBER...? At about 10 after 2. I was tryin' to get ahold of judge Suchocki, uh- she's not answerin' her phone, I've called several times, I have Michael Cook here on a warrant and I was looking to HOPEFULLY release him on an appearance ticket, my number's FIVE ONE EIGHT FOUR FIVE ZERO NINE NINE FOUR EIGHT. Thank you.")
+# ________________________________________________________________________________________________________________________________
+# | I mean, just imagine if this dipshit MICHAEL ZURLO did the same fucking thing for me, right...?                              |
+# | Called my ass to discuss the events of SCSO-2020-028501...? But, that's fuckin' stupid...                                    |
+# | cause why would this dude ever think to call me back regarding a night where I was almost killed to death...?                |
+# | Ya know...? Multiple 911 calls not making it to the dispatch station...? MAYBE, maybe... pretending it didn't happen         |
+# | doesn't incriminate him at all, and therefore, calling ME delusional...? Rather than EVER HAVING A CONVERSATION ABOUT IT...? |
+# | Maybe it just means he's WAY too busy doin' some shit, being the top notch Saratoga County Sheriff that he is.               |
+# |------------------------------------------------------------------------------------------------------------------------------|
+# | Michael Zurlo: Hello, Michael Cook, headmaster sheriff from Saratoga County Sheriffs Office.                                 |
+# |                Today is it-doesn't-actually-fuckin'-matterday, and it doesn't matter what fuckin' time it is...              |
+# |                I was just calling you to tell you what a stupid son-of-a-bitch you are...?                                   |
+# |                You suck at life...? Your mother...?                                                                          |
+# |                Everything about you is fuckin' stupid, including how you look, and you're a real dumb motherfucker...        |
+# |                You vain son-of-a-bitch...                                                                                    |
+# |                Stop throwing my name all over the fuckin' place.                                                             |
+# |                I'm busy.                                                                                                     |
+# |                Fuck off.                                                                                                     |
+# |------------------------------------------------------------------------------------------------------------------------------|
+# | Ya know...? I'd respect the dude a whole lot more if he at least left me a message on my voicemail that said that.           |
+# | Then, I would have this story to tell about how Michael Zurlo literally left a voicemail that told me to fuck off.           |
+# | He and I both know that Michael Zurlo would LOVE to leave me a voicemail just like that...? But then, at the same time, it'd |
+# | be a real stupid idea because he and I both know that it would make him look like an ASSHOLE, and therefore... it's stupid.  |
+# | Doesn't change the fact that he does, in fact, feel that way toward me. Why...? Cause he's killed a lot of people. So...     |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+$T.AE(1,"01:20:09",":Alright, hopefully the judge calls me back... <pauses> One of em... <pauses> Alright, here's your ID.")
+$T.AE(0,"01:20:26",":Thank you.")
+$T.AE(0,"01:20:27",":Yep. <pauses> Do you believe that there's serial killers here, in uh- in town...?")
+$T.AE(1,"01:20:32",":There MIGHT be some in the county, somewhere... They're all over the place...")
+$T.AE(0,"01:20:26",":There're some of em in, your uh- unit.")
+$T.AE(1,"01:20:51","*Keyboard -> tappity tap, tap, tapperoo, dude.")
+$T.AE(1,"01:21:32",":C'mon judge... <indiscernable>")
+$T.AE(0,"01:21:50",":What's Deputy Pirrone's first name, do you know...?")
+$T.AE(1,"01:21:52",":Anthony.") # (Traffic Safety/Scrotum chin/Shoulder-phone) cop the 5th, Anthony Pirrone was stalking me on June 17th, 2020 at Boomer McCloud Plaza.
 
-# [Part 5]
-# 01:04:05, 1, "C'mon over here"
-# 01:04:06, 0, "So, if I run into a billionaires knife and get it all bloody, you're gonna arrest me for that."
-# 01:04:12, 1, "Do what now...?"
-# 01:04:14, 0, "If I run into a billionaires bloody knife, and get myself injured badly, you guys are gonna arrest me for that."
-# 01:04:23, 1, "Why would we arrest you for that...?"
-# 01:04:25, 0,, "I'm trying to make a comparison or a metaphor. What you're doing right now is not too different from what I just said."
-# 01:04:49, 0,, "OJ Simpson can kill Ron Goldman and his, and uh- Nicole Simpson, and can commit a heinous crime"
+# ____________________________________________________________________________________________________________________________________
+# | About shoulder-phone cop the 5th, AKA "Anthony Pirrone"...                                                                       |
+# | I'm gonna tell ya a short story about this dude. Looks like the type of dude who could EVISCERATE a set of bag-pipes in          |
+# | his Scottish Kilt... with his fuckin' eyebrows. Probably sounds IMPOSSIBLE...? But this man knows how to get it done.            |
+# | The ONLY reason I would ever suggest or state as such...? Is because I told this dude how fuckin lazy he was on June 1st, 2020   |
+# | when DJ Thompson was processing my arrest over the fucking kayak strap that Zachary Karel, bleeding from between his legs, filed |
+# | an arrestable complaint over... but made no fucking mention of the PHONE LINE being cut at all.                                  |
+# |                                                                                                                                  |
+# | Also, the police (like CAPTAIN SHELLEY ZEITSKE) are so fuckin' retarded, that they see NOTHING SUSPICIOUS about how this dipshit |
+# | offset the time that I cut the from MY ALIBI (SCSO-2020-028501 @ 05/26/20 0130) to (SCSO-2020-003173 @ 05/27/20 1212 but,        |
+# | occuring way back on 05/26/20 0545). Look- the only reason that what I just said LOOKS stupid...? Is because, that's just your   |
+# | opinion. Who cares if the police never have their facts straight, or commit obstruction of justice...? Nobody. Not (1) soul.     |
+# |                                                                                                                                  |
+# | Now, because of how fuckin stupid JAMES LEONARD truly is... you have to do what I do, and whip out the fuckin' forensic level    |
+# | analysis kit from hell. It requires multiple hail mary's, several adult virgins, and a hallway of vampires that drink blood like |
+# | count fuckin' dracula... to summon the wisdom of a GENIUS, and determine that SCSO has some fuckin' OBLIVIOUS MORONS on staff.   |
+# |                                                                                                                                  |
+# | There's no other explanation, i'm afraid. James Leonard looks like a fuckin moronic individual that huffs paint thinner or       |
+# | glue...? And then shows up in his SCSO uniform dragging innocent people around like a fuckin' rag doll on a minimap...           |
+# | ...like in the web browser for Google fucking maps. If that sounds stupid...? oh well. You're stupid, not him. Nah.              |
+# | Its fucking ILLEGAL to call someone like ERIC CATRICALA, or JAMES LEONARD... fucking stupid.                                     |
+# |                                                                                                                                  |
+# | The punishment for choosing to do such a thing...? Is death. Or, some bullshit charge where an oral admission is stapled to a    |
+# | false report. Whereby causing a fucking moron to receive his full pension and benefits, for not knowing he has BRAIN DAMAGE...   |
+# |                                                                                                                                  |
+# | If friends don't let friends drive drunk...?                                                                                     |
+# | Then, cop friends don't let cop friends continue being cops, when they act like they have brain damage every day.                |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"01:21:53",":Anthony Pirrone...? I think he's a bad dude.")
+$T.AE(0,"01:21:57","*clothing shuffling around")
+$T.AE(0,"01:22:00",":If you're not gonna say anything, <Indiscernable, clothing shuffling around>")
+$T.AE(0,"01:22:15",":Yeah, I think Anthony Pirrone uses that program, that I was talking about. And I think that he, uh- was involved with uh- Eric Catricala. Doing something shady to me on June 18th, 2020. Or June 17th, 2020.")
+$T.AE(1,"01:22:35",":What's the name of the program...?")
+$T.AE(0,"01:22:37",":PEGASUS.")
+$T.AE(1,"01:22:38",":PEGASUS...?")
+$T.AE(0,"01:22:39",":Yeah.")
+$T.AE(1,"01:23:06","*Phone ringing*")
+$T.AE(1,"01:23:12",":Hello...?")
+$T.AE(6,"01:23:14",":<Indiscernable> Sheriff...?")
+$T.AE(1,"01:23:15",":Yes...? Judge, how are ya...?")
+$T.AE(6,"01:23:17",":<Indiscernable>")
+$T.AE(1,"01:23:18",":Yup. Oh~! Oh, I'm sorry.")
+$T.AE(6,"01:23:20",":<Indiscernable>")
+$T.AE(1,"01:23:24",":Alright, so, uhh- ok. I'll do that, 6 o'clock...?")
+$T.AE(6,"01:23:20",":<Indiscernable>")
+$T.AE(1,"01:23:29",":Ok. I'll make that happen, thank you~!")
+$T.AE(6,"01:23:31",":<Indiscernable>")
+$T.AE(1,"01:23:32",":Bye. <pauses> Judge says issue an appearance ticket for ya. Let me get this typed up... outta here.")
+$T.AE(0,"01:23:43",":You're willing to stick around and talk to me about a number of incidents...?")
+$T.AE(1,"01:23:48",":Yeah.")
+$T.AE(1,"01:23:51","*Keyboard -> tappity tap, tap, tapperoo, dude.")
+$T.AE(0,"01:25:14",":Yeah, I spoke to, Mr. Gurney about this a couple years ago. Cause I came here looking to request records.")
+$T.AE(1,"01:25:25",":Yeah.")
+$T.AE(0,"01:25:27",":Uh- Mr. Gurney.")
+$T.AE(1,"01:25:28",":Gurney...?")
+$T.AE(0,"01:25:28",":Yeah, I don't know his first name. G. Gurney.")
+$T.AE(1,"01:25:32",":He came here looking for records...?")
+$T.AE(0,"01:25:34",":No, I did.")
+$T.AE(1,"01:25:36",":Oh.")
+$T.AE(0,"01:25:34",":Back in 2020.")
+$T.AE(1,"01:25:37",":Ok.")
+$T.AE(1,"01:25:40","*Keyboard -> tappity tap, tap, tapperoo, dude.")
+$T.AE(1,"01:27:03",":<sighs> This isn't right... <Makes a sound like a kid whose sandcastle just got washed away> Alright...")
+$T.AE(1,"01:27:16","*Keyboard -> tappity tap, tap, tapperoo, dude.")
+$T.AE(5,"01:29:10","*Printer starts printing documents")
+
+#    ____    ____________________________________________________________________________________________________
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
+#   \\__//¯¯¯ [Part 7 (01:30:38 -> 01:33:07)]: Sheradin issues paperwork, grabs my stuff from car            ___//¯¯\\
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+$T.AE(1,"01:30:38",":Alright, I already gave you back your ID, correct...?")
+$T.AE(0,"01:30:40",":<Indiscernable> Yeah.")
+$T.AE(1,"01:30:42",":Alright, c'mon out here... <Open door> Open right up.")
+$T.AE(1,"01:30:55",":Ok, so this is what we call an appearance ticket. It's got YOUR name up here, I know I used mom's address, this is for petit (PEH-TEE <- proper pronunciation) larceny, alright...? You gotta come back here on... 09/28/2022 at 6PM at night. K...? There's the charge that WALMART had filed against you.")
+$T.AE(0,"01:31:14",":Ok.")
+$T.AE(1,"01:31:14",":Ok...? There's all of that, lets get your stuff out of my car, so that you are free to go. You wanna throw that out, or you done with that...? Or you takin' it with ya...?")
+$T.AE(0,"01:31:20",":Um-")
+$T.AE(1,"01:31:24",":The oatmeal stuff...?")
+$T.AE(0,"01:31:25",":I don't need it, I'll throw it out.")
+$T.AE(1,"01:31:27",":If you're done with it, that's fine. If you wanna keep it...? Keep it~!")
+$T.AE(0,"01:31:29",":I'm more concerned with uh- the incident I was talking with-")
+$T.AE(1,"01:31:32",":Yep~!")
+$T.AE(0,"01:31:33",":You're, tellin' me that you'll look into all this stuff...?")
+$T.AE(1,"01:31:35",":Yeah.")
+$T.AE(0,"01:31:35",":This is a serious case.")
+$T.AE(1,"01:31:37",":Yeah, I will. I will, let's get your- I just wanna take your stuff outta the car so you can't say that I'm holdin' you here-")
+$T.AE(0,"01:31:42",":Ok.")
+$T.AE(1,"01:31:42",":-cause your stuff is locked up.")
+$T.AE(0,"01:31:43",":Alright, sure.")
+$T.AE(1,"01:31:45",":So... Yeah, we'll go grab it, and...")
+$T.AE(5,"01:31:45","*Walking to sedan 4138")
+$T.AE(1,"01:32:18",":Here's your sweatshirt and your backpack. Alright...? You've got your cell phone and your ID, right...?")
+$T.AE(0,"01:32:25",":Yep.")
+$T.AE(1,"01:32:26",":Alright, you wanna go back inside...?")
+$T.AE(0,"01:32:27",":Yes.")
+$T.AE(1,"01:32:27",":Alright.")
+$T.AE(1,"01:32:31","*closes door")
+$T.AE(1,"01:32:34",":Just so we're clear, you ARE free to go anytime you want.") # 
+$T.AE(0,"01:32:38",":I get it.")
+$T.AE(1,"01:32:39",":Okay. Alright.")
+$T.AE(0,"01:32:42",":<Indiscernable, chatter>")
+$T.AE(1,"01:32:58","*Opens substation door")
+$T.AE(1,"01:33:00",":<Indiscernable, chatter>")
+$T.AE(1,"01:33:07","*Closes substation door")
+
+#    ____    ____________________________________________________________________________________________________
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
+#   \\__//¯¯¯ [Part 8 (01:33:07 -> )]: I make an OFFICIAL STATEMENT for (SCSO-2020-028501)                   ___//¯¯\\
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
 
 # [Part 7 - Start 01:33:07]
 # 01:57:12, 3, *enters the Halfmoon Sheriff Substation* (<- timing seems PRETTY FUCKING COINCIDENTAL)
