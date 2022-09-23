@@ -16,6 +16,15 @@
 # \\___________________________________________________________________________________________// 
 #  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯  
 
+# $Content = @'
+# // _____________________________________________________________________________________________________
+# // | This is what you could refer to as a "PERSON" that is in the AUDIO RECORDING                      |
+# // | A "PERSON" is someone that exists in REAL LIFE, and just so happens to be IN the AUDIO RECORDING. |
+# // | A "PERSON" is someone that some dipshit like MIKE DEPRESSO would "TALK TO" about stuff like       |
+# // | "EVIDENCE", such as the "AUDIO FILE"... ya know...? "AIR QUOTES" are things that wind up pissing  |
+# // | off people such as "CARELESS MORONS" like MIKE DEPRESSO, or NYSP SERGEANT BOSCO.                  |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
 Class TranscriptionParty
 {
     [UInt32] $Index
@@ -35,6 +44,11 @@ Class TranscriptionParty
     }
 }
 
+# // _________________________________________________________________________________
+# // | This is what you could refer to as a PIECE of EVIDENCE, like an ALIBI, sorta. |
+# // | This strange object here is otherwise known as a DATE and TIME.               |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
 Class TranscriptionTime
 {
     [Object]     $Date
@@ -43,7 +57,7 @@ Class TranscriptionTime
     TranscriptionTime([Object]$Start,[String]$Position)
     {
         $This.Position = [TimeSpan]$Position
-        $Real          = ($Start+$This.Position).ToString() -Split " "
+        $Real          = ($Start+$This.Position).ToString("MM/dd/yyyy hh:mm:ss") -Split " "
         $This.Date     = $Real[0]
         $This.Time     = $Real[1]
     }
@@ -53,6 +67,34 @@ Class TranscriptionTime
     }
 }
 
+# // _________________________________________________________________________________________________
+# // | Well, this is basically an individual line meant to reproduce what a "PARTY" goes right ahead |
+# // | and "SAYS" in a piece of "EVIDENCE" like an "AUDIO RECORDING", so that "CARELESS MORONS" like |
+# // | SERGEANT BOSCO and MIKE DEPRESSO can "UNDERSTAND" when/where they "GOOFED UP"... whoops~!     |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+Class TranscriptionEntryLine
+{
+    [UInt32] $Rank
+    [String] $Line
+    TranscriptionEntryLine([UInt32]$Rank,[String]$Line)
+    {
+        $This.Rank = $Rank
+        $This.Line = $Line
+    }
+    [String] ToString()
+    {
+        Return $This.Line
+    }
+}
+
+# // _______________________________________________________________________________________________
+# // | This is a thing called an individual "ENTRY" which contains either (1) or (1+) "UTTERANCES" |
+# // | that a "PARTY" went right ahead and just casually "SAID" in a piece of "EVIDENCE" like an   |
+# // | "AUDIO RECORDING", and I gotta tell ya, "CARELESS MORONS" don't seem to "UNDERSTAND" how    |
+# // | these things being overlooked are the reason why "CARELESS MORONS" eventually "GET FIRED".  | 
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
 Class TranscriptionEntry
 {
     [UInt32] $Index
@@ -61,7 +103,7 @@ Class TranscriptionEntry
     [Object] $Time
     [Object] $Position
     [String] $Type
-    [String] $Note
+    [Object] $Content
     TranscriptionEntry([UInt32]$Index,[Object]$Person,[Object]$Time,[String]$Note)
     {
         $This.Index    = $Index
@@ -73,13 +115,49 @@ Class TranscriptionEntry
         {
             "^\*{1}" { "Action" } "^\:{1}" { "Statement" } "^\#{1}" { "Note" }
         }
-        $This.Note     = $Note.Substring(1)
+        $This.Content  = @( )
+
+        $Note = $Note.Substring(1)
+        If ($Note.Length -le 80)
+        {
+            $This.Content += [TranscriptionEntryLine]::New(0,$Note)
+        }
+        Else
+        {
+            $Chars = [Char[]]$Note
+            $Block = ""
+            ForEach ($X in 0..($Chars.Count-1))
+            {
+                If ($X -ne 0 -and $X % 80 -eq 0)
+                {
+                    $This.Content += [TranscriptionEntryLine]::New($This.Content.Count,$Block)
+                    $Block = ""
+                }
+
+                $Block += $Chars[$X]
+            }
+
+            If ($Block -ne "")
+            {
+                $This.Content += [TranscriptionEntryLine]::New($This.Content.Count,$Block)
+            }
+        }
     }
     [String] ToString()
     {
-        Return "[{0}] <{1}> {2}" -f $This.Time, $This.Party.Initial, $This.Note
+        Return "[{0}] <{1}> {2}{3}" -f $This.Time, $This.Party.String, $This.Content[0], @($Null,"...")[$This.Content.Count -gt 1]
     }
 }
+
+# // ____________________________________________________________________________________________________________
+# // | This is basically what you could call a line-by-line, utterance-by-utterance description of the "WORDS"  |
+# // | that someone "SAYS" during an "AUDIO RECORDING" that constitutes as this stuff called "EVIDENCE", and    |
+# // | my god, sometimes "CARELESS MORONS" like NYSP TROOPER BOSCO, or MIKE DEPRESSO...? They don't know what   |
+# // | the hell this thing really is... I mean, they DO when they're trying to ARREST or PROSECUTE SOMEBODY...? |
+# // | But that's the ONLY TIME that they know what this actually is, or means. Any other time, it sure as hell |
+# // | looks like it's CHINESE or HEIROGLYPHICS... and, you can't blame THEM, for being IGNORANT, and not       |
+# // | knowing how to read CHINESE or HEIROGLYPHICS... Nah. That's actually pretty ADVANCED STUFF right there.  |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 Class Transcription
 {
@@ -144,8 +222,7 @@ Class Transcription
             $Position = "00:$Position"
         }
         $Person       = $This.Party[$Index]
-        $Time         = [TranscriptionTime]::New($This.Start,$Position)
-        $This.Output += [TranscriptionEntry]::New($This.Output.Count,$Person,$Time,$Note)
+        $This.Output += [TranscriptionEntry]::New($This.Output.Count,$Person,$This.Tx($Position),$Note)
         Write-Host "Entry [+] [$Position] added"
     }
     Ae([UInt32]$Index,[String]$Position,[String]$Note)
@@ -158,9 +235,43 @@ Class Transcription
     }
     [Object[]] GetOutput()
     {
-        Return $This.Output | Select-Object Index, Party, Time, Position, Note
+        $T            = $This
+        $Swap         = @{ }
+
+        $Swap.Add(0,"Index Party  Time     Position Content")
+        $Swap.Add(1,"----- -----  -------- -------- -------")
+
+        ForEach ($X in 0..($This.Output.Count-1))
+        {
+            $I        = $This.Output[$X]
+            $Line     = ("{0:d5} {1} {2} {3} {4}" -f $I.Index, $I.Party, $I.Time, $I.Position, $I.Content[0])
+            $Swap.Add($Swap.Count,$Line)
+            If ($I.Content.Count -eq 2)
+            {
+                $Swap.Add($Swap.Count,("{0}{1}" -f (@(" ") * 31 -join ''), $I.Content[1]))
+            }
+            If ($I.Content.Count -gt 2)
+            {
+                ForEach ($J in 1..($I.Content.Count-1))
+                {
+                    $Swap.Add($Swap.Count,("{0}{1}" -f (@(" ") * 31 -join ''), $I.Content[$J]))
+                }
+            }
+        }
+        Return @($Swap[0..($Swap.Count-1)])
     }
 }
+
+# // ___________________________________________________________________________________________________
+# // | This is essentially the METADATA of a piece of AUDIO EVIDENCE, it includes the ACTUAL FILE,     |
+# // | it's ATTRIBUTES, as well as like, how valuable the information within it is, for reproducing    |
+# // | this thing that TROOPER BOSCO and SCSO JAMES LEONOARD really suck dick at understanding or      |
+# // | making sense of, otherwise known as an "ALIBI". So if the file was ORIGINALLY STARTED at        |
+# // | like 09/16/2022 12:52:40 PM ...? Then if this fucking file isn't ALTERED in any way, it will    |
+# // | actually coordinate itself with OTHER PIECES of EVIDENCE, such as RADIO COMMUNICATIONS, or      |
+# // | PHONE CALLS, or literally people within the AUDIO FILE stating what TIME and DATE it was taken. |
+# // | TROOPER BOSCO, MIKE DEPRESSO, and JAMES LEONARD should really study this shit at some point.    |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 Class TranscriptionFile
 {
@@ -223,6 +334,26 @@ Class TranscriptionFile
     }
 }
 
+# // _______________________________________________________________________________________________
+# // | This is the end all, be all, portion of windows that touches on a sacred thing called       | 
+# // | "New-Object -ComObject Shell.Application"                                                   |
+# // |---------------------------------------------------------------------------------------------|
+# // | This thing I just described...? It reaches into the OPERATING SYSTEM, on WINDOWS, made      |
+# // | by MICROSOFT (where the world's best software engineering has always taken place...)        |
+# // | whereby allowing someone who is a PROGRAMMER and knows how to PROGRAM with it, to tell      |
+# // | guys like TROOPER BOSCO, MIKE DEPRESSO, or JAMES LEONOARD to STEP ASIDE ya lazy fuck,       |
+# // | because an ACTUAL EXPERT just showed up and they know more than YOU DO, about the job.      |
+# // |---------------------------------------------------------------------------------------------|
+# // | Case in point -> Elon Musk + SpaceX, worlds FIRST REFILLABLE ROCKET (Falcon/Starship)       |
+# // | Case in point -> Elon Musk + Tesla, worlds FASTEST PRODUCTION VEHICLE (Tesla Model S Plaid) |
+# // | Case in point -> William Gates + Paul Allen, Windows 95/98/NT/2000/ME/XP/Vista/7/8/10/11    |
+# // | Ya know...? Sometimes programmers have to realize how many fucking morons exist, and        |
+# // | then program a way to tell them how fuckin' (stupid/incompetent) they are.                  |
+# // |---------------------------------------------------------------------------------------------|
+# // | This class below is able to reach into the "FILE SYSTEM" and get:                           |
+# // | "FORENSIC LEVEL FILE ATTRIBUTES" such as TIME, DATE, SIZE, LENGTH, NAME, PATH, etc.         |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
 Class Shell
 {
     Hidden [Object]      $App
@@ -263,12 +394,14 @@ Class Shell
     }
 }
 
+($Content -Split "`n" | % { "    $_" }) -join "`n" | Set-Clipboard
+
 $path         = "C:\Users\mcadmin\Documents\Recordings"
 $Base         = [Shell]::New($Path)
 $File         = $Base.GetChildItem("Treble")
 $T            = [Transcription]::New($File,
                                      "Walmart/Katherine Suchocki order SCSO to arrest me with NO EVIDENCE",
-                                     "https://drive.google.com/file/d/1tfiupbdhTcFz0fXcgfxykDFW2d5w1Wyb")
+                                     "https://drive.google.com/file/d/1b-maRc4oqOxQVIq--NVzRYJ-rmbCx55D")
 $T.AddParty("Michael C. Cook Sr.")
 $T.AddParty("Michael Sheradin")
 $T.AddParty("Clayton Brownell")
@@ -277,7 +410,6 @@ $T.AddParty("SCSO VARIOUS")
 $T.AddParty("E N V")
 $T.AddParty("Katherine Suchocki")
 $T.PartyAssemble()
-
 
 #    ____    ____________________________________________________________________________________________________        
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
@@ -2247,87 +2379,3 @@ $T.AE(0,"02:06:58",":And in that folder I have a file named SCSO-2020-028501-(EV
 $T.AE(1,"02:08:23",":Hm. Ok.")
 $T.AE(0,"02:08:26",":So, I know it's been a couple of years, but I've uh- suspected that there is a RING OF CRIMINALS that work at the FBI, and the STATE POLICE, and the SHERIFFS OFFICE. and I am CERTAIN that MICHAEL ZURLO is involved.")
 $T.AE(1,"02:08:40",":Ok. Well, let's get you back over to your bicycle.")
-
-Class OutputEntryLine
-{
-    [UInt32] $Rank
-    [String] $Content
-    OutputEntryLine([UInt32]$Rank,[String]$Line)
-    {
-        $This.Rank    = $Rank
-        $This.Content = $Line
-    }
-}
-
-Class OutputEntry
-{
-    [UInt32] $Index
-    [String] $Party
-    [String] $Time
-    [String] $Position
-    [Object] $Content
-    OutputEntry([Object]$Entry)
-    {
-        $This.Index    = $Entry.Index
-        $This.Party    = $Entry.Party
-        $This.Time     = $Entry.Time
-        $This.Position = $Entry.Position
-        $This.Content  = @( )
-
-        If ($Entry.Note.Length -le 80)
-        {
-            $This.Content += [OutputEntryLine]::New(0,$Entry.Note)
-        }
-        Else
-        {
-            $Chars = [Char[]]$Entry.Note
-            $Block = ""
-            ForEach ($X in 0..($Chars.Count-1))
-            {
-                If ($X -ne 0 -and $X % 80 -eq 0)
-                {
-                    $This.Content += [OutputEntryLine]::New($This.Content.Count,$Block)
-                    $Block = ""
-                }
-
-                $Block += $Chars[$X]
-            }
-        }
-    }
-}
-
-Class TranscriptionOutput
-{
-    [Object] $InputObject
-    [Object] $Party
-    [Object] $Output
-    TranscriptionOutput([Object]$InputObject)
-    {
-        $This.InputObject = $InputObject
-        $This.Party       = [OutputParty]($InputObject.Party | Select-Object -Unique | Sort-Object Index)
-        $This.Output      = @( )
-
-        $Swap             = @{ }
-        ForEach ($X in 0..($InputObject.Count-1))
-        {
-            $Swap.Add($Swap.Count,[OutputEntry]$InputObject[$X])
-        }
-
-        $IDepth            = ([String]$Swap.Count).Length
-
-        $PDepth            = ([String]$)
-        $Hash             = @{ }
-        ForEach ($X in 0..($Swap.Count-1))
-        {
-            "{0:d$IDepth} {1}"
-            If ($Swap[$X].Content.Count -gt 1)
-            {
-
-            }
-        }
-    }
-    GetOutput()
-    {
-        $Swap[0..($Swap.Count-1)]
-    }
-}
