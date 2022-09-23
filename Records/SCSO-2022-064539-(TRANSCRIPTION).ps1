@@ -3,7 +3,7 @@
 # || Call for Service [SCSO-2022-064539]                                                       || 
 # || Audio recording of the entire interaction between me and the                              || 
 # || SARATOGA COUNTY SHERIFFS OFFICE on: 09/16/2022                                            || 
-# || https://drive.google.com/file/d/1tfiupbdhTcFz0fXcgfxykDFW2d5w1Wyb                         || 
+# || https://drive.google.com/file/d/1b-maRc4oqOxQVIq--NVzRYJ-rmbCx55D                         || 
 # || To SUMMARIZE the CONTENT of this RECORDING...?                                            || 
 # || KATHERINE SUCHOCKI AUTHORIZED AN ARREST WARRANT WITH NO EVIDENCE OF ME COMMITTING A CRIME || 
 # || NO EVIDENCE means, just "testimony", in a fucking SUPERMARKET with HUNDREDS OF CAMERAS.   || 
@@ -21,15 +21,17 @@ Class TranscriptionParty
     [UInt32] $Index
     [String] $Name
     [String] $Initial
+    [String] $String
     TranscriptionParty([UInt32]$Index,[String]$Name)
     {
         $This.Index   = $Index
         $This.Name    = $Name
         $This.Initial = ($Name -Split " " | % { $_[0] }) -join ''
+        $This.String  = $Null
     }
     [String] ToString()
     {
-        Return $This.Initial
+        Return $This.String
     }
 }
 
@@ -111,6 +113,25 @@ Class Transcription
 
         $This.Party += [TranscriptionParty]::New($This.Party.Count,$Name)
         Write-Host "Party [+] [$Name] added."
+    }
+    PartyAssemble()
+    {
+        $MaxIndex     = ($This.Party.Index)[-1].Length
+        $MaxInitial   = ($This.Party.Initial | Sort-Object Length )[-1].Length
+        ForEach ($X in 0..($This.Party.Count-1))
+        {
+            $P        = $This.Party[$X]
+            $R        = $Null
+            If ($P.Intial.Length -lt $MaxInitial)
+            {
+                $R    = "{0}{1}" -f $P.Initial, (@(" ") * ($MaxInitial - $P.Initial.Length) -join '')
+            }
+            Else
+            {
+                $R    = $P.Initial
+            }
+            $P.String = "{0:d$MaxIndex}/{1}" -f $P.Index, $R
+        }
     }
     AddEntry([UInt32]$Index,[Object]$Position,[String]$Note)
     {   
@@ -255,6 +276,8 @@ $T.AddParty("Michael Whiteacre")
 $T.AddParty("SCSO VARIOUS")
 $T.AddParty("E N V")
 $T.AddParty("Katherine Suchocki")
+$T.PartyAssemble()
+
 
 #    ____    ____________________________________________________________________________________________________        
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
@@ -2113,7 +2136,7 @@ $T.AE(3,"02:01:52",":Mike, when you told ME about this, didn't I tell you to go 
 # | Yeah, I went and spoke to JOSHUA WELCH, and when I did, he told me the incident number for 05/23/20 SCSO-027797 which was the         |
 # | WRONG INCIDENT, THAT was related to the INCIDENT where SCOTT SCHELLING responded to a CALL FROM ROTTERDAM POLICE.                     |
 # | It is STRANGE how STRATTON AIR NATIONAL GUARD would GO RIGHT AHEAD... and call the ROTTERDAM POLICE... ya know...? Weird.             | 
-# | ME -> NOT IN ROTTERDAM -> IN SCOTIA -> AT STRATTON AIR NATIONAL GUARD AT LIKE 11 or 12 o'clock -> TOLD THEM ABOUT AUDIO I RECORDED -> |
+# | ME -> NOT IN ROTTERDAM -> IN GLENVILLE AT STRATTON AIR NATIONAL GUARD AT LIKE 11 or 12 o'clock -> TOLD THEM ABOUT AUDIO I RECORDED -> |
 # | ROTTERDAM POLICE CALLS SCSO -> SCSO SENDS SCOTT SCHELLING TO MY HOUSE -> SCOTT SCHELLING WRITES DOWN MOM'S LICENSE PLATE -> FUCKS OFF |
 # |---------------------------------------------------------------------------------------------------------------------------------------|
 # | 02/02/21 | CAPT. JEFFREY BRON | https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8                                     |
@@ -2224,3 +2247,87 @@ $T.AE(0,"02:06:58",":And in that folder I have a file named SCSO-2020-028501-(EV
 $T.AE(1,"02:08:23",":Hm. Ok.")
 $T.AE(0,"02:08:26",":So, I know it's been a couple of years, but I've uh- suspected that there is a RING OF CRIMINALS that work at the FBI, and the STATE POLICE, and the SHERIFFS OFFICE. and I am CERTAIN that MICHAEL ZURLO is involved.")
 $T.AE(1,"02:08:40",":Ok. Well, let's get you back over to your bicycle.")
+
+Class OutputEntryLine
+{
+    [UInt32] $Rank
+    [String] $Content
+    OutputEntryLine([UInt32]$Rank,[String]$Line)
+    {
+        $This.Rank    = $Rank
+        $This.Content = $Line
+    }
+}
+
+Class OutputEntry
+{
+    [UInt32] $Index
+    [String] $Party
+    [String] $Time
+    [String] $Position
+    [Object] $Content
+    OutputEntry([Object]$Entry)
+    {
+        $This.Index    = $Entry.Index
+        $This.Party    = $Entry.Party
+        $This.Time     = $Entry.Time
+        $This.Position = $Entry.Position
+        $This.Content  = @( )
+
+        If ($Entry.Note.Length -le 80)
+        {
+            $This.Content += [OutputEntryLine]::New(0,$Entry.Note)
+        }
+        Else
+        {
+            $Chars = [Char[]]$Entry.Note
+            $Block = ""
+            ForEach ($X in 0..($Chars.Count-1))
+            {
+                If ($X -ne 0 -and $X % 80 -eq 0)
+                {
+                    $This.Content += [OutputEntryLine]::New($This.Content.Count,$Block)
+                    $Block = ""
+                }
+
+                $Block += $Chars[$X]
+            }
+        }
+    }
+}
+
+Class TranscriptionOutput
+{
+    [Object] $InputObject
+    [Object] $Party
+    [Object] $Output
+    TranscriptionOutput([Object]$InputObject)
+    {
+        $This.InputObject = $InputObject
+        $This.Party       = [OutputParty]($InputObject.Party | Select-Object -Unique | Sort-Object Index)
+        $This.Output      = @( )
+
+        $Swap             = @{ }
+        ForEach ($X in 0..($InputObject.Count-1))
+        {
+            $Swap.Add($Swap.Count,[OutputEntry]$InputObject[$X])
+        }
+
+        $IDepth            = ([String]$Swap.Count).Length
+
+        $PDepth            = ([String]$)
+        $Hash             = @{ }
+        ForEach ($X in 0..($Swap.Count-1))
+        {
+            "{0:d$IDepth} {1}"
+            If ($Swap[$X].Content.Count -gt 1)
+            {
+
+            }
+        }
+    }
+    GetOutput()
+    {
+        $Swap[0..($Swap.Count-1)]
+    }
+}
