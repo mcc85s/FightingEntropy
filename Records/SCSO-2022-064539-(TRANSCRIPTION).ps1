@@ -16,7 +16,6 @@
 # \\___________________________________________________________________________________________// 
 #  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯  
 
-# $Content = @'
 # // _____________________________________________________________________________________________________
 # // | This is what you could refer to as a "PERSON" that is in the AUDIO RECORDING                      |
 # // | A "PERSON" is someone that exists in REAL LIFE, and just so happens to be IN the AUDIO RECORDING. |
@@ -411,31 +410,66 @@ $T.AddParty("E N V")
 $T.AddParty("Katherine Suchocki")
 $T.PartyAssemble()
 
-#    ____    ____________________________________________________________________________________________________        
-#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-#   \\__//¯¯¯ [Part 1 (00:00:00 -> 00:07:59)]: Outside (Being arrested via COMPLAINT w/out EVIDENCE)         ___//¯¯\\
-#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+# _____________________________________________________________________________________________________________
+# |¯-¯-¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯|
+# | [Part 1 (00:00:00 -> 00:07:59)]: Outside (Being arrested via COMPLAINT w/out EVIDENCE)                    |
+# |__    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __   |
+# /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+#     ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    
 
 $T.AE(0,"00:01",":Ok go ahead")
 $T.AE(2,"00:01",":Ok, you're good...?")
 $T.AE(0,"00:02",":Yeah.")
 $T.AE(2,"00:02",":So... uh, we went back to the Walmart, and um... The guy, adamant, he saw you take these things, and he's adamant, he's signed a complaint saying that, uhm, you did. So, uh, we want to prosecute, uh, my partner got a warrant, and you're gonna have to go do a little bit of paperwork with him, and then you'll get an appearance ticket, and then you'll have to go back to court, and tell the court, basically, you know, that you DID steal it, and that you're, you know, you DID pass the point of purchase.")
+
+# 0003
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I am certain that there is NO EVIDENCE to suggest that I had anything from the store, in my possession.           |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"00:38",":Well I understand that, but- you know, uh- I gave him my story, I was pretty honest about it-")
 $T.AE(2,"00:44",":I know, I'm not giving you any issue with it, that's why I'm telling you you're gonna be out here, we gotta, unfortunately we have to what we have to do, cause he filed a complaint sayin that you usually-")
+
+# 0005
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | You ARE giving me an issue with it, hence why you’re about to “ARREST” me                                         |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"00:52",":Am I being arrested...?")
 $T.AE(2,"00:53",":Yeah, you're gonna have to come with us... you'll go with my partner, we'll figure out your bike, I don't wanna lose your bike. Um, we'll figure that out for ya, alright?")
 $T.AE(0,"01:01",":Is there an ULTERIOR MOTIVE for this...?")
-$T.AE(2,"01:04",":No, there really isn't, Mike. You're gonna be out in, you're gonna be out in prolly, I dunno, half hour Mike...?") # <- Yeah there is. 
+$T.AE(2,"01:04",":No, there really isn't, Mike. You're gonna be out in, you're gonna be out in prolly, I dunno, half hour Mike...?") 
+
+# 00009
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Yeah, there IS an ulterior motive for this, so Clayton Brownell doesn’t know he’s lying to me                     |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:09",":I understand that.")
 $T.AE(2,"01:10",":A half hour, 45 minutes, give or take.")
 $T.AE(0,"01:12",":However, uh- I think the story isn't matching up.")
 $T.AE(1,"01:15",":The story, what...?")
 $T.AE(0,"01:16",":I think the STORY isn't matching up.")
 $T.AE(1,"01:20",":The stories are matching up...?")
-$T.AE(0,"01:21",":No, what I'm suggesting is that I don't think the STORIES are matching up.") # As in, LAW ENFORCEMENT 101, COLLECT EVIDENCE OF A CRIME. NOT TESTIMONY. EVIDENCE.
+$T.AE(0,"01:21",":No, what I'm suggesting is that I don't think the STORIES are matching up.")
 $T.AE(2,"01:24",":Ok.")
-$T.AE(1,"01:24",":Well, uh- I've got the- The story that I've got NOW, with the VIDEO EVIDENCE, is that...") # <- what video evidence...?
+$T.AE(1,"01:24",":Well, uh- I've got the- The story that I've got NOW, with the VIDEO EVIDENCE, is that...") 
+
+# 00018
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | There is NO video evidence that suggests that the item I was SUSPECTED of having in my possession, was IN my      |
+# | possession. None. Nada. Zero. Zilch. The reason that I know this is the case, is because I left the item in the   |
+# | toy aisle. So, this reference to the VIDEO EVIDENCE is a RED HERRING.                                             |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"01:29",":YOU went in there, and you took a mouse...")
 $T.AE(0,"01:33",":Right. Two of em.")
 $T.AE(1,"01:33",":and you went over in the toy aisle. Two of em, put one back or whatever you did with it, went over to the toy aisle, put one in your backpack-")
@@ -443,8 +477,26 @@ $T.AE(0,"01:44",":Uh- what- No.")
 $T.AE(1,"01:44",":Ok, and then.")
 $T.AE(0,"01:46",":Did YOU see that...?")
 $T.AE(1,"01:47",":What...?")
-$T.AE(0,"01:17",":Did you SEE me put-")
-$T.AE(1,"01:47",":No, because you're well aware there's no camera coverage in there- but, hold on. Hold on...") # <- When I saw the WHITE KID POINTING AT ME from the HOUSEWARES area, I left the mouse in that aisle. I am ABSOLUTELY CERTAIN that they did NOT send a SINGLE PERSON to that aisle to LOOK for the item. But they had (2) dudes watching me. Hm. I wonder why that is.
+$T.AE(0,"01:47",":Did you SEE me put-")
+$T.AE(1,"01:47",":No, because you're well aware there's no camera coverage in there- but, hold on. Hold on...") 
+
+# 00027
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | You’re making the assumption that I’m well aware there’s no camera coverage in there.                             |
+# | Cops aren’t supposed to make assumptions like that at all. But apparently, that is what this guy did.             |
+# |                                                                                                                   |
+# | What I can say is that when I saw (2) dudes walking by several moments BEFOREHAND in the HOUSEWARES area, they    |
+# | were BOTH LOOKING AT ME and the WHITE KID with longer hair was POINTING AT ME. I realized that I was being        |
+# | watched for some unspecified reason, and THAT IS WHY I LEFT THE MOUSE THAT I WAS ACCUSED OF HAVING IN MY          |
+# | POSSESSION, IN THE TOY AISLE, and THEN I RETURNED THE LOGITECH MOUSE.                                             |
+# |                                                                                                                   |
+# | I really should not be making ASSUMPTIONS here, but I am SPECULATING that the “STAFF” did NOT “SEND” a “SINGLE    |
+# | PERSON” to that toy aisle to “LOOK” for the “ITEM”. Nah. But- I knew they had (2) dudes watching me. Hm. I wonder |
+# | why that is. I’ll return to this point, momentarily.                                                              |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:53",":I DO have, 2 loss prevention guys that DID see it, ok...?")
 $T.AE(1,"01:58",":No.")
 $T.AE(0,"02:00",":And then you started to exit the store, they stopped you in the vestibule, where there's video, you turned around and went BACK into the store, went BACK over to the toy aisle...")
@@ -456,6 +508,45 @@ $T.AE(0,"02:19",":No, its-")
 $T.AE(1,"02:18",":But apparently they SAW you.")
 $T.AE(0,"02:21",":But NO they DIDN'T.")
 $T.AE(1,"02:21",":Alright.")
+
+# 00038
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | They were recording video of me with their personal smart phone. In fact, the PICTURE of ME that SHERIDAN SHOWED  |
+# | ME, near STEWARTS on GUIDEBOARD ROAD, and said “Is this you…?” WELL, that INDICATES that they were in fact,       |
+# | (taking pictures/recording) me, (at/walking through) the store.                                                   |
+# |                                                                                                                   |
+# | Maybe they weren’t recording a video of me at all, I’m not totally certain of that. But, if they were…? It’d be   |
+# | a compelling thing to look for in the video footage. It’s not something you’d wanna OVERLOOK at all.              |
+# |                                                                                                                   |
+# | What I can say is this. In either case, it is easy to speculate that they could’ve been recording video of me     |
+# | walking back to that SAME AISLE, you know, one that I MAGICALLY remembered where to return to, also overlooked…   |
+# |                                                                                                                   |
+# | Anyway, if they WERE doing that, then they could have easily PROVIDED IT TO SCSO SHERIDAN instead of FILING A     |
+# | COMPLAINT. Because with VIDEO FOOTAGE LIKE THAT…? THEN, they would’ve had this shit called EVIDENCE of a “CRIME”. |
+# |                                                                                                                   |
+# | However, uh- the reason why I keep saying there’s no VIDEO of me putting an item I was suspected of having in my  |
+# | possession, onto a store shelf, is because… EVEN IF THEY WERE RECORDING VIDEO FOOTAGE OF ME WITH THEIR PERSONAL   |
+# | DEVICES…? Well, that VIDEO FOOTAGE of me WALKING BACK TO THAT AISLE wasn’t provided for a SPECIFIC REASON.        |
+# |                                                                                                                   |
+# | That SPECIFIC REASON is because they had no way to IMPLICATE ME doing what they merely SUSPECTED me of doing.     |
+# | Wanna know why…? Because the item wasn’t in my possession.                                                        |
+# |                                                                                                                   |
+# | So, if the VIDEO they were RECORDING (or SHOULD HAVE BEEN RECORDING) doesn’t implicate a SUSPECT AT ALL…?         |
+# | THEN IT’S TIME TO MAKE A FUCKING COMPLAINT… where PERJURY OCCURS. Ya know…?                                       |
+# | The reason why it’s RARE for people to beat these cases, is because apparently you have to be like me, and show   |
+# | the POLICE/PROSECUTORS/JUDGES, that they’re either 1) INCOMPETENT/CARELESS/LAZY, OR 2) SELECTIVELY OBSERVANT.     |
+# |                                                                                                                   |
+# | The FIRST case is people being morons as usual. However, the SECOND case, it is actually known as “PREJUDICE”.    |
+# |                                                                                                                   |
+# | The way I look at it is like this… if a DIRTY POLICE OFFICER can put THEIR thumb on the scale during a DRUG BUST, |
+# | in order to INCREASE THE SEVERITY OF THE CHARGES, and the JUSTICE SYSTEM can put THEIR thumb on the scale of      |
+# | justice in order to maximize the PENALTY of those CHARGES…? It’s possible for WALMART LOSS PREVENTION to put      |
+# | THEIR thumb on the scale or obstructing the camera coverage in order to incriminate any particular customer for   |
+# | any fucking reason whatsoever. Cool…? Cool.                                                                       |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"02:22",":That's what I'm saying, is you might wanna look at the footage again.")
 $T.AE(1,"02:24",":Ok, but THEY signed a complaint.")
 $T.AE(0,"02:26",":I'm recording this interaction.")
@@ -465,11 +556,20 @@ $T.AE(1,"02:33",":Ok, and the judge signed an arrest warrant.")
 $T.AE(0,"02:35",":What is the judges name...?")
 $T.AE(1,"02:37",":Suchocki.")
 $T.AE(0,"02:38",":Katherine Suchocki.") 
-$T.AE(2,"02:40",":Female judge here in town.") # <- Yeah, I just said her first name. I know who she is. She handled the DWAYNE O. COONRADT bullshit 911 call that went to his BUDDY who works as a 911 dispatcher. Oh shit.
+$T.AE(2,"02:40",":Female judge here in town.") 
+
+# 00048
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Yeah, I just said her first name, I know who she is. Her family owns a farm on Harris Road (I believe), and she   |
+# | handled the DWAYNE O. COONRADT bullshit 911 call that went to his BUDDY who works as a 911 dispatcher.            |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"02:44",":We've got to arrest you, based on the JUDGES ORDER...")
 $T.AE(0,"02:45",":Ok.")
 $T.AE(1,"02:46",":The arrest warrant.")
-$T.AE(0,"02:47",":Yup.") # <- A complaint with no evidence that I had the item IN the backpack. Just testimony.
+$T.AE(0,"02:47",":Yup.")
 $T.AE(1,"02:48",":Ok...? And again, all we're gonna do is process you, write you an appearance ticket so you can reappear in the court.")
 $T.AE(0,"02:54",":Right.")
 $T.AE(1,"02:55",":Then out the door you go.")
@@ -479,6 +579,29 @@ $T.AE(0,"03:16",":Guess I don't really have a-")
 $T.AE(2,"03:16",":But you've got a bike lock, you can lock it right to your guardrail.")
 $T.AE(0,"03:19",":I understand I don't have an option, so I'll leave it-") 
 $T.AE(5,"03:20","*REMOTE PARTY MUTED THE MICROPHONE ON MY DEVICE")
+
+# 00061
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I did not insert this silence at this time/place in the recording.                                                |
+# | Someone from (1) of the following AGENCIES are doing this to my recordings…                                       |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 1) CENTRAL INTELLIGENCE AGENCY                                                                                    |
+# | 2) CYBERSECURITY INFRASTRUCTURE AGENCY/NATIONAL SECURITY AGENCY                                                   |
+# | 3) FEDERAL BUREAU OF INVESTIGATION                                                                                |
+# | 4) NEW YORK STATE POLICE                                                                                          |
+# | 5) DEPARTMENT OF HOMELAND SECURITY                                                                                |
+# | 6) SECRET SERVICE                                                                                                 |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | I really hope that whoever’s doin’ this shit to my RECORDINGS, are from one of these agencies, and that it isn’t  |
+# | just another classic case of me being SPIED ON by people from some OTHER COUNTRY, being a dick-faced clown boy    |
+# | extraordinaire, specializing in the holy sacred art, of fellating other dudes.                                    |
+# |                                                                                                                   |
+# | Just a fuckin’ balls-to-the-wall, no-holds-barred, non-stop, jam-packed, action-adventure throw down hoe-down…    |
+# | of someone being a demonic cocksucker… remotely silencing the microphone on my device willy-nilly. Ya know…?      |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(5,"03:32","*REMOTE PARTY UNMUTED THE MICROPHONE ON MY DEVICE")
 $T.AE(1,"03:33",":They signed the complaint, it's not me.")
 $T.AE(0,"03:36",":Right, it's based on hearsay.")
@@ -489,12 +612,28 @@ $T.AE(0,"03:44",":I have a- I been having a PATTERN")
 $T.AE(2,"03:46",":Yeah, but listen-")
 $T.AE(0,"03:47",":Remember July 14th, 2020 you came to my house and the group of people that I live near they had me wrapped around and they were like 'Oh, you're gonna go to jail for stealin' this lady's laptop', there's PREJUDICE from the community.")
 $T.AE(2,"04:00",":And you DIDN'T, you DIDN'T do that, did I...? Did I take you to jail for that...?")
-$T.AE(0,"04:03",":No, you didn't.") # <- The way you phrased it is as if you EXPECTED to take me to jail. That's PREJUDICE.
+
+# 00071
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | The way you phrased it is as if you EXPECTED to take me to jail. That's PREJUDICE, my dude.                       |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(0,"04:03",":No, you didn't.") 
 $T.AE(2,"04:04",":I didn't, right...? We talked about this.")
 $T.AE(0,"04:05",":You're right.")
 $T.AE(2,"04:05",":But listen, but listen-")
 $T.AE(0,"04:04",":The statement I'm tryin' to make is that there are people in the community that have developed PREJUDICE toward me,")
-$T.AE(2,"04:10",":Ok.") # <- ...that would include from YOU, which I didn't THINK that until I had to TRANSCRIBE this AUDIO...
+$T.AE(2,"04:10",":Ok.") 
+
+# 00077
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | ...that would include from YOU, which I didn't THINK that until I had to TRANSCRIBE this AUDIO…                   |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"04:14",":And the- these guys are making this shit up.")
 $T.AE(2,"04:15",":I understand, but can you listen to me for one minute...?")
 $T.AE(0,"04:16",":Sure...")
@@ -526,6 +665,22 @@ $T.AE(2,"05:28",":Can you put it in the backpack...?")
 $T.AE(1,"05:29",":Put it in the backpack.")
 $T.AE(0,"05:36",":<Indiscernable noises and such>")
 $T.AE(5,"05:39","*REMOTE PARTY MUTED THE MICROPHONE ON MY DEVICE")
+
+# 00108
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I did not insert this silence at this time/place in the recording.                                                |
+# | Someone from (1) of the following AGENCIES are doing this to my recordings…                                       |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 1) CENTRAL INTELLIGENCE AGENCY                                                                                    |
+# | 2) CYBERSECURITY INFRASTRUCTURE AGENCY/NATIONAL SECURITY AGENCY                                                   |
+# | 3) FEDERAL BUREAU OF INVESTIGATION                                                                                |
+# | 4) NEW YORK STATE POLICE                                                                                          |
+# | 5) DEPARTMENT OF HOMELAND SECURITY                                                                                |
+# | 6) SECRET SERVICE                                                                                                 |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(5,"06:16","*REMOTE PARTY UNMUTED THE MICROPHONE ON MY DEVICE")
 $T.AE(2,"06:17",":No, I know, I know and you've never given me a problem, so, no worries, alright...? Like I said it's gonna be quick and easy. You'll be out before you know it, alright...?")
 $T.AE(2,"06:40",":Where are ya stayin' right now...? Are ya in the woods?")
@@ -539,6 +694,46 @@ $T.AE(4,"06:51",":<checking pockets> Is this change...?")
 $T.AE(0,"06:53",":Yeah.")
 $T.AE(2,"06:55",":Just verify his change, bud. Don't take it out, just make sure it's change.")
 $T.AE(0,"07:06",":People have been remotely interacting with my device, it happens a lot. They've been doin this for the last couple years. They tried to murder me on May 26th, 2020")
+
+# 00121
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I just told SCSO Clayton Brownell the SAME THING that I said to TROOPER BORDEN on 06/17/2020 at GT Toys, which    |
+# | SCSO Clayton Brownell was actually THERE, in THAT PARTICULAR INCIDENT. At GT Toys… after he almost shot me to     |
+# | death outside of WALMART, on ROUTE 9, and I gave him the SLIP… I wrote about this entire interaction in my book:  |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | TOP DECK AWARENESS – NOT NEWS: Used to be news…? Now it’s Not News. Not News. Part of the Not News Network        |
+# | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_0823_TDA_Not_News.pdf                               |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Unbeknownst to CLAYTON BROWNELL…? Uh, (ERIC CATRICALA/20 ANCHOR DRIVE) was being WICKED GAY that day, alongside   |
+# | ANTHONY PIRRONE, as DEPUTY PIRRONE in SUV 4130 was being WICKED GAY too, waiting in the Boomer-McCloud Plaza with |
+# | his fuckin’ shake in his hand while I went to TRICKSHOT BILLIARDS and spoke with JULIE.                           |
+# |                                                                                                                   |
+# | Wanna know why I’m calling these dudes WICKED GAY…? Well, here’s why. They’re fuckin’ stupid, that’s why.         |
+# | Minutes before I spoke to JULIE at TRICKSHOT BILLIARDS, (JULIE IS TIM BERLIN’s GIRLFRIEND…), I went to CENTER FOR |
+# | SECURITY requesting the SURVEILLANCE FOOTAGE that day, and as I was leaving I told them that the FBI recorded our |
+# | interaction, because… they were like, following me THAT DAY after I went to the SHEN DISTRICT OFFICE.             |
+# |                                                                                                                   |
+# | SCSO SCOTT SCHELLING was TOLD about this 911 call that I made in front of the camera there at the SECONDARY       |
+# | LOCATION on this fuckin’ ticket from 05/26/20 0130-0155:                                                          |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | SCSO-2020-028501    | https://github.com/mcc85s/FightingEntropy/blob/main/Records/2020-028501%20Cook%20req.pdf    |
+# | 911 call screenshot | https://drive.google.com/file/d/1w0Q6lhLYH9ACwQfUosucUE9x5-uAsNzI                           |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Now, on 06/17/2020 when CLAYTON BROWNELL had attempted to STOP me outside of WALMART that day…?                   |
+# |                                                                                                                   |
+# | I had this SAME EVIDENCE that INCRIMINATES PEOPLE AT SCSO, such as JAMES LEONARD, MICHAEL ZURLO, SCOTT SCHELLING, |
+# | and ANTHONY PIRRONE... as well as ERIC CATRICALA. But- TROOPER BORDEN was a lazy dicked douchebag about it that   |
+# | fuckin’ day, and had no idea that the MILITARY AS WELL AS THE POLICE DEFINITELY HAVE ACCESS TO A PROGRAM THAT CAN |
+# | REMOTELY ACCESS A DEVICE, and it’s called PEGASUS/PHANTOM. Cool…? Cool. I had a long list of lazy cunts misjudge  |
+# | me, and when I fuckin’ tell the police about it over and over again…? They pay no mind to it.                     |
+# |                                                                                                                   |
+# | ERIC CATRICALA had his buddy JAMES LEONARD attempting to CATCH ME IN A TRAP where I would be BROUGHT TO JAIL…     | 
+# | because of the EXHIBIT LIST I HAD ON HAND THAT DAY AT GT TOYS…                                                    |
+# | https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt                       |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"07:19",":Yeah, I think Michael Zurlo attempted-")
 $T.AE(1,"07:21",":Good...?")
 $T.AE(4,"07:21",":Yep.")
@@ -564,38 +759,180 @@ $T.AE(2,"07:43",":We're gonna walk right over here, Mike. The second car.")
 $T.AE(2,"07:56",":In and out, okay bud...?")
 $T.AE(0,"07:57",":Yeah.")
 
-# _____________________________________________________________________________________________________________________________________
-# | "You're aware that there's no surveillance in that aisle" <- You have to PROVE that, not ASSUME that.                             |
-# | "You walked out of the store, and then went back into the store, went back to the aisle, and then pointed at where you left it."  |
-# | Nah. "Did anyone SEE that...?" Nah. Nobody SAW that at all.                                                                       |
-# | Which means that I left the item in that aisle when the guy from "loss prevention" pointed at me. Oh.                             |
-# | So that's how I know that the LAW MEN and WALMART are CUTTING CORNERS.                                                            |
-# | AKA, violating my CONSTITUTIONAL RIGHTS as a CITIZEN and MAKING ASSUMPTIONS about what was NOT SEEN BY ANYBODY.                   |
-# |-----------------------------------------------------------------------------------------------------------------------------------|
-# | What I can state with sheer certainty, is that there IS VIDEO FOOTAGE THAT CLEARLY SHOWS THAT NOBODY WENT BACK TO THAT AISLE      |
-# | BEFORE STOPPING ME IN THE VESTIBULE. Ohhhhhhhhhhh. Shit. Nobody at Walmart Loss Prevention went back to that fucking aisle.       |
-# | That's fuckin' weird, right...? But I mean, NOW since MICHAEL SHERIDAN NEVER COLLECTED THE SUPPORTING VIDEO EVIDENCE... as in,    |
-# | MICHAEL SHERIDAN probably did not say "Hey, put this fuckin evidence on a thumbdrive or email it to me right now so that it can"  |
-# | be entered with a SPECIFIC HASH CODE with a TIME and DATE that is UNABLE TO BE ALTERED BY ANYBODY AFTER I LEAVE TO GET A WARRANT. |
-# | That's the part that I think MICHAEL SHERADIN did not do AT ALL.                                                                  |
-# |-----------------------------------------------------------------------------------------------------------------------------------|
-# | NOW WALMART HAS NO MEANS OF BEING ABLE TO PROVE THAT THEY SENT ANYBODY TO THAT AISLE TO FIND THE ITEM THAT NEVER LEFT THAT AISLE. |
-# | But, suppose they did. NOW the (2) dudes can just put those SAME EXACT CLOTHES back on, and then like, send a guy to that aisle,  |
-# | and then walk through the aisle and come out the other end, and put their arms up and be like 'Well, fuck, no item that the dude  |
-# | SUPPOSEDLY took, aw shucks...' The fact of the matter is this... LAW ENFORCEMENT and the JUSTICE SYSTEM is SO CORRUPT, that they  |
-# | don't actually have to PROVE a god damn thing. Otherwise, I wouldn't have been ARRESTED. Nope.                                    |
-# |-----------------------------------------------------------------------------------------------------------------------------------|
-# | Seems like I'm making a pretty big fuckin' deal about a fucking item that costs $18.88 right...? That's what morons will assume.  |
-# | Nah, the point is a manner of PRINCIPLE about WHAT I'M BEING ACCUSED OF WITHOUT FUCKING EVIDENCE. It will CONTINUE TO HAPPEN TO   |
-# | ME, because I know for a fucking fact that the police are working EXTRA HARD with the fuckin' justice system to just look for any |
-# | possible means to incriminate ANYBODY for ANY fucking reason whatsoever. That's because some of them are FUCKING STUPID.          |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00145
+# _________________________________________________________________________________________________________________
+# | "You're aware that there's no surveillance in that aisle" ← YOU have to PROVE that, not ASSUME that.          |
+# |---------------------------------------------------------------------------------------------------------------|
+# | "You walked out of the store",           | [Technically correct, I never left the vestibule]                  |
+# | "and then went back into the store",     | [Technically correct, I never left the vestibule]                  |
+# | "went back to the aisle",                | [Correct]                                                          |
+# | "and then pointed at where you left it." | [Incorrect], that's not what happened at all.                      |
+# |---------------------------------------------------------------------------------------------------------------|
+# | "Did anyone SEE that...?" Nah. Nobody SAW that at all.                                                        |
+# |                                                                                                               |
+# | Which means that I left the item in that aisle when the guy from "loss prevention" pointed at me. Oh.         |
+# |                                                                                                               |
+# | So, that's how I know that the LAW MEN and WALMART are CUTTING CORNERS.                                       |
+# | AKA, violating my CONSTITUTIONAL RIGHTS as a CITIZEN and MAKING ASSUMPTIONS about what was SEEN BY PEOPLE.    |
+# |                                                                                                               |
+# | What I can SPECULATE with a HIGH DEGREE OF PROBABILITY, is that there probably is NO VIDEO FOOTAGE that shows |
+# | either of THOSE EMPLOYEES, or really ANY EMPLOYEE, going to that TOY AISLE, BEFORE STOPPING ME IN THE         |
+# | VESTIBULE. Wanna know how UNCONSTITUTIONAL it is, for WALMART to ASSUME that an ITEM that belongs to THEM is  |
+# | in a SUSPECT'S BACKPACK...? EXTREMELY UNCONSTITUTIONAL. Because, WALMART SELLS A LOT OF STUFF.                |
+# | What if everything in my backpack is something they sell at the store...?                                     |
+# |---------------------------------------------------------------------------------------------------------------|
+# | Toothpaste...? We sell that shit, dude... that's another charge right there.                                  |
+# | Toothbrush...? Holy fuck, dude. We DEFINITELY sell those too.                                                 |
+# | Washcloth...? Dude, you are FUCKED with these items we just found...                                          |
+# | Deodorant...? That's, an additional charge right there.                                                       |
+# | Socks...? We sell a SHITLOAD of those, buddy. You're basically fucked, right there.                           |
+# | Lenovo Thinkpad L420 from like fuckin' 2009...? That was like a $900 laptop back in 2009, we sell that too.   |
+# |---------------------------------------------------------------------------------------------------------------|
+# | Get the picture, as to how IMPORTANT it is, FOR NO ONE WHATSOEVER, to ALLOW WALMART to COMMIT UNLAWFUL SEARCH |
+# | AND SEIZURE...? Because, frankly, that's like GRAND LARCENY at that point. Things that a person WALKED INTO   |
+# | THE STORE WITH, somehow being used to incriminate someone for a crime. At which point, it'd be a FELONY.      |
+# |                                                                                                               |
+# | Now, I AM being PRETTY OBTUSE here. They're not gonna try to incriminate somebody when the toothpaste is      |
+# | nearly gone, and the deodorant doesn't have the fuckin’ plastic cap thing... However, at the same time...?    |
+# |                                                                                                               |
+# | Once they have somebody in CUSTODY, they COULD, THEORETICALLY, swap BRAND NEW ITEMS from the SALES FLOOR into |
+# | the backpack, and then throw the god damn book at that person. I have NO FUCKING DOUBT, that they will do     | 
+# | this to SOME PEOPLE, and judges like KATHERINE SUCHOCKI will allow them to get away with it, too.             |
+# |                                                                                                               |
+# | Regardless, the point being is this. I'm rather confident that nobody at Walmart Loss Prevention went back to |
+# | that fucking aisle, to check for the item. They set a TRAP, and though I walked into this TRAP, they've got   |
+# | nothing but TESTIMONY, and HEARSAY. There's no DIRECT KNOWLEDGE at all. It is ONE MANS WORD versus ANOTHER.   |
+# |                                                                                                               |
+# | That's fuckin' weird, right...? But I mean, NOW since MICHAEL SHERIDAN NEVER COLLECTED THE SUPPORTING VIDEO   | 
+# | EVIDENCE... as in, MICHAEL SHERIDAN probably did not say "Hey, put this fuckin’ evidence on a thumbdrive or   |
+# | email it to me right now, so that it can be entered into an EVIDENCE VAULT with a SPECIFIC HASH CODE with a   |
+# | TIME and DATE that is UNABLE TO BE ALTERED BY ANYBODY AFTER I LEAVE TO GET A WARRANT."                        |
+# |                                                                                                               |
+# | That's the part where I believe, (MICHAEL SHERIDAN/KATHERINE SOCHOCKI) failed to do their jobs CORRECTLY.     |
+# | I’m not ACCUSING MICHAEL SHERIDAN of failing to do that…?                                                     |
+# | I’m ALLEGING that MICHAEL SHERIDAN failed to do this, based on what he later tells me in the transcription.   |
+# |                                                                                                               |
+# | WARRANTS NEED EVIDENCE TO BE SUBMITTED TO A COURT, not just SUSPICIONS, COMPLAINTS, and HEARSAY.              |
+# | Otherwise, that’s not a COURT... that’s TYRANNY AND OPPRESSION at play.                                       |
+# | Because, ABSOLUTE POWER CORRUPTS ABSOLUTELY.                                                                  |
+# |                                                                                                               |
+# | NOW, since the evidence WAS LIKELY NOT SUBMITTED AT THE TIME THE WARRANT WAS OBTAINED…?                       |
+# | WALMART HAS NO MEANS OF BEING ABLE TO PROVE THAT THEY SENT ANYBODY TO THAT AISLE TO FIND THE ITEM THAT NEVER  | 
+# | LEFT THAT AISLE. But, suppose they DID...                                                                     |
+# |---------------------------------------------------------------------------------------------------------------|
+# | Davion Wade : Alright dude, look.                                                                             |
+# |               We gotta fuckin' put the same fuckin' clothes back on, cause...                                 |
+# |               ...we need to submit NEW video evidence of us going back through that aisle...                  |
+# |               ...and then when we send a guy to walk through it, he's gotta look up at the camera...?         |
+# |               ...and hold his hands out, and basically shrug, so that it sends the message:                   |
+# |               "I couldn't find the god damn mouse, bruh. Wtf."                                                |
+# | Walmart     : Excellent.                                                                                      |
+# |               That's a fuckin' killer plan, dude.                                                             |
+# |               Make it so.                                                                                     |
+# |               Let's waste no time at all, and exact our revenge upon this fuckfaced douchebag...              |
+# |               While he was a loyal little bitch boy who worked for us back in 2011 when his daughter          |
+# |               was born...? Fuck this dude, bro.                                                               |
+# |               He sucked ass at stocking the fucking paper aisles, and didn't like when Duane would crack      |
+# |               the fuckin' whip, and say "you better work HARDER and FASTER you lazy fuck~!"                   |
+# | Davion Wade : Jeez...                                                                                         |
+# |               That sounds pretty fuckin' rough though, dude...                                                |
+# | Walmart     : Listen here ya fuck...                                                                          |
+# |               *shakes head* You BETTER not have ANY EMPATHY for this dude, whatsoever.                        |
+# |               He literally outperformed so many people at stocking things at night, but it's whatever.        |
+# |               Anybody can do that.                                                                            |
+# |               We REFUSED to give him some PAID LEAVE back around 11/01/2011 because he's a fuck boy.          |
+# |               So what if his daughter was born that day and the mother had a hard time getting around…?       |
+# |               Oh well, dude, everybody’s mother goes through that.                                            |
+# |               He had to watch his son Michael C. Cook Jr. during the day, and then work here at night.        |
+# |               You are NOT ALLOWED TO HAVE ANY EMPATHY for this son of a bitch, whatsoever.                    |
+# |               Throw the whole god damn book at the dude, or you're fired Davion Wade...                       |
+# | Davion Wade : Well, I guess I better fucking do what I was just TOLD to do...                                 |
+# | Walmart     : That's fuckin' right, dude.                                                                     |
+# |               *shaking fist* You BETTER do it.                                                                |
+# |               Or else...                                                                                      |
+# |---------------------------------------------------------------------------------------------------------------|
+# | And then, that's EXACTLY what DAVION WADE decided to do. Case closed.                                         |
+# | NOW the (2) dudes can just put those SAME EXACT CLOTHES back on and then like, send a guy to that aisle, and  |
+# | then walk through the aisle and come out the other end, and put their arms up and be like:                    |
+# | 'Well, fuck, no item that the dude SUPPOSEDLY took, aw shucks...'                                             |
+# |---------------------------------------------------------------------------------------------------------------|
+# | The fact of the matter is this... LAW ENFORCEMENT and the JUSTICE SYSTEM is SO CORRUPT, that they don't have  |
+# | to PROVE a god damn thing, because... here is how AMERICA works.                                              |
+# |---------------------------------------------------------------------------------------------------------------|
+# | People are told that "YOU ARE INNOCENT UNTIL PROVEN GUILTY", but- that's BULLSHIT.                            |
+# | People who "know that" will ASSUME "YOU ARE GUILTY UNTIL PROVEN INNOCENT", but- that's ALSO BULLSHIT.         |
+# | People like me KNOW FOR CERTAIN "YOU ARE GUILTY, AND CANNOT PROVE YOUR INNOCENCE, SO FUCK YOU." ← CORRECT.    |
+# |---------------------------------------------------------------------------------------------------------------|
+# | Otherwise, I wouldn't have been ARRESTED. Nope.                                                               |
+# | Seems like I'm making a pretty big fuckin' deal about a fucking item that costs $18.88 right...?              |
+# | That's what MORONS will assume... Nah, the point is a manner of PRINCIPLE about UNCONSTITUTIONAL BEHAVIORS.   |
+# | Walmart is a VERY BIG VIOLATOR of people's CONSTITUTIONAL RIGHTS, and GENERATES A PROFIT OFF OF IT.           |
+# |                                                                                                               |
+# | Because EVERY TV, SMARTPHONE, TABLET, LAPTOP that they sell...?                                               |
+# | They all come with a MICROPHONE and WIFI ADAPTER, which ALLOWS someone to COMMIT ESPIONAGE TO THEIR CUSTOMERS |
+# | Here's a link to a VIDEO of ME, having an INTERVIEW at COMPUTER ANSWERS, about WEEPING ANGEL                  |
+# |---------------------------------------------------------------------------------------------------------------|
+# | 03/21/18 | WTEN ALERT DESK, WEEPING ANGEL REVERSE ENGINEERED BY HACKERS | https://youtu.be/bPdWt7kcd3M        |
+# | 09/15/19 | EXTENSION OF THAT ABOVE REPORT                               | https://youtu.be/-jkDPv9H6BQ        |
+# |---------------------------------------------------------------------------------------------------------------|
+# | “Weeping Angel”, from WikiLeaks, was the reason Andrew Banas and MANY OTHER REPORTERS reported this story,    |
+# | “HACKERS USING YOUR SMARTTV TO STEAL INFORMATION/MONEY”… WEEPING ANGEL, as explained in my book:              |
+# |---------------------------------------------------------------------------------------------------------------|
+# | Top Deck Awareness - Not News                                                                                 |
+# | [Chapter 7: USA-PATRIOT Act of 2001 and Surveillance Capitalism]                                              |
+# | _______________________________________________________________                                  ____________ |
+# | | Vault 7 [06] Weeping Angel/Willow) [~] SmartTV's mic & WiFi |                                  | 04/21/17 | |
+# | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                  ¯¯¯¯¯¯¯¯¯¯¯¯ |
+# | This is a hacking tool co-developed by the (CIA/MI5) used to exploit a series of smart TVs for the purpose of |
+# | COVERT INTELLIGENCE GATHERING. Once installed in suitable televisions with a USB stick, the hacking tool      | 
+# | enables those televisions' built-in microphones and possibly video cameras to record their surroundings,      |
+# | while the TVs FALSELY APPEAR TO BE OFF. (As in, the TV will have a RED LED ILLUMINATED but it is STILL ON...) |
+# |                                                                                                               |
+# | The recorded data is then either STORED LOCALLY into the television's MEMORY ...OR... sent over the INTERNET  |
+# | to the CIA. (Or any other spy agency. Or any corporation. Or Facebook. Or the Secret Service. Or WALMART…)    |
+# |                                                                                                               |
+# | Allegedly both the CIA and MI5 agencies collaborated to develop that malware and coordinated their work in    |
+# | Joint Development Workshops. As of this part 6 publication, "Weeping Angel" is the second major CIA hacking   |
+# | tool which notably references the British television show, Doctor Who, alongside "Sonic Screwdriver" in       |
+# | "Dark Matter".                                                                                                |
+# |---------------------------------------------------------------------------------------------------------------|
+# | That’s how fuckin’ intelligent I am. I know when I’m being LIED TO, by someone who thinks I’m fuckin’ STUPID. |
+# |                                                                                                               |
+# | The point I'll make is this. These above videos...? They're PISSING SOME RICH BASTARDS OFF. Wanna know why?   |
+# | It's because I know what the fuck is going on around me, and I'm more aware than the ACTUAL POLICE.           |
+# |                                                                                                               |
+# | I'm more aware than the ACTUAL PEOPLE AT SPECTRUM AND VERIZON. So when someone thinks I'm talking out of my   |
+# | ass, I have to whip out the ROLODEX of VIDEO CONTENT where I am CORRECT YEARS AGO, and INSULTED SOMEBODY COOL |
+# | and then that COOL PERSON has to have their FRIENDS TANK MY FUCKING CONTENT WHERE I WAS CORRECT... because of |
+# | how GREEDY/STUPID/GAY/LAME/FUCKBOY/RETARDED/SLOW/IGNORANT/MORONIC some people truly are.                      |
+# |                                                                                                               |
+# | I actually ENJOY making fun of stupid people, especially when they have a BADGE, GAVEL, MASTERS DEGREE, or    |
+# | even a DOCTORATE. Showing people who have MASTERS DEGREES how fuckin' stupid they are is something that       |
+# | PISSES THEM OFF REALLY BADLY, because they really can't help the fact that I'm CORRECT.                       |
+# |                                                                                                               |
+# | I might be OFFENSIVE, however, AMERICA’s FOUNDING FATHERS were also considered OFFENSIVE cause they didn’t    |
+# | wanna pay for the BULLSHIT BRITISH TEA TAX. And, being able to tell some lazy fucks that don’t have their     |
+# | fuckin’ facts straight, means you gotta be willing to tell those highly respected people how fuckin’ stupid   |
+# | they are, which means YOU HAVE TO OFFEND THEM.                                                                |
+# |                                                                                                               |
+# | OFFEND THEM via a means of PROVING HOW FUCKIN' STUPID THEY ARE. That'll NEVER BE POPULAR, AT ALL. Nah.        |
+# | What WILL be popular is being a loyal little bitch boy that asks some rich bastard EVERY DAY...               |
+# | “How would you you like me to suck your dick today, boss man…?” Just like SEAN HANNITY does.                  |
+# | At which point…? Boom. That person will get HUNDREDS to THOUSANDS of likes and positive ratings. Cool.        |
+# |                                                                                                               |
+# | WHAT I'M BEING ACCUSED OF WITHOUT FUCKING EVIDENCE. It will CONTINUE TO HAPPEN TO ME, because I know for a    |
+# | fucking fact that the police are working EXTRA HARD with the fuckin' justice system to just look for any      |
+# | possible means to incriminate ANYBODY for ANY fucking reason whatsoever.                                      |
+# |                                                                                                               |
+# | That's because some of them are FUCKING STUPID.                                                               |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-#    ____    ____________________________________________________________________________________________________
-#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
-#   \\__//¯¯¯ [Part 2 (00:07:59 -> 00:28:11)]: Within (SEDAN 4138/SCSO Michael Sheradin)                     ___//¯¯\\
-#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+# ____________________________________________________________________________________________________________    
+# |¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ |    
+# | [Part 2 (00:07:59 -> 00:28:11)]: Within (SEDAN 4138/SCSO Michael Sheradin)                               |
+# |    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    |    
+# ¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯    
+#   ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯      
 
 $T.AE(2,"08:00",":Just gotta put your seatbelt on, alright...?")
 $T.AE(2,"08:07",":Just gotta put your seatbelt on.")
@@ -630,7 +967,7 @@ $T.AE(0,"10:50","*sighs")
 $T.AE(1,"10:51",":We're clear to get it done and when we are I'll bring you back.")
 $T.AE(0,"10:56",":Listen man, I need help from somebody in your department, and I think you're the person I need help from.")
 $T.AE(1,"11:03",":<Opened radio comm> 4138 Sheriffs Office")
-$T.AE(0,"11:07",":<Radio> Sheriffs dispatch")
+$T.AE(5,"11:07",":<Radio> Sheriffs dispatch")
 $T.AE(1,"11:09",":<Opened radio comm> I have that male on an arrest warrant in the Town of Halfmoon station for processing.")
 $T.AE(1,"11:35",":Michael C. <Radio> DEE OH BEE is ZERO FIVE TWO FOUR EIGHT FIVE")
 $T.AE(0,"12:03",":You know, uh- this is a serial case with uh- your department. Uh- probably.")
@@ -643,22 +980,114 @@ $T.AE(0,"12:41",":Well, uh- the report that uh- Mark Sheehan wrote, uh stated th
 $T.AE(1,"12:49",":Went over to their lot and did what...?")
 $T.AE(0,"12:51",":Shouting obscenities to them on their property, and on their lot. They all lied. And they- ugh, it doesn't make much sense here")
 $T.AE(0,"13:12",":What I'm saying is that people can make up some bullshit about me, and then, you guys ACTUALLY DO STUFF...")
-$T.AE(1,"13:21",":Well, <chears throat> here again... I mean, you were in the store, they claim that they SAW you do it, uhm, and they signed the complaint, not us. Not the police, the loss prevention people down here.")
+$T.AE(1,"13:21",":Well, <clears throat> here again... I mean, you were in the store, they claim that they SAW you do it, uhm, and they signed the complaint, not us. Not the police, the loss prevention people down here.")
 $T.AE(0,"13:39",":Right...")
 $T.AE(1,"13:40",":Signed a complaint. We then take it and put it in front of the judge, and if the judge thinks there's enough there, then they issue the warrant.")
+
+# 00194
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | So, if there IS NOT ENOUGH THERE, can a judge STILL issue a warrant, out of PREJUDICE…? Apparently they (can/do). |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"13:51",":If they did that based on HEARSAY, without providing EVIDENCE, right...? That's what you're telling me.")
 $T.AE(1,"13:58",":No, what I'm tellin' you is, THEY DID IT ON (DIRECT KNOWLEDGE/IMAGINATION/HEARSAY)")
+
+# 00196
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | In this case, DIRECT KNOWLEDGE = (IMAGINATION/HEARSAY/LYING)                                                      |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"14:02",":Right but what I'm saying, is THAT direct knowledge, is HEARSAY.")
 $T.AE(1,"14:06",":How is it HEARSAY if he signed a complaint, saying he SAW you do it...?")
 $T.AE(1,"14:10",":How is that HEARSAY...?")
-$T.AE(0,"14:10",":Because an employee can just SAY that. That's what you're telling me. That's what that AFFA- AFFADAVIT, is.")
+$T.AE(0,"14:10",":Because an employee can just SAY that. That's what you're telling me. That's what that AFFI- AFFIDAVIT, is.")
 $T.AE(0,"14:19",":There's no- The- There's a video- there's video footage throughout the whole entire store. Nobody saw me DO anything, they've made it up, they were doing this as a form of PREJUDICE, that's what I'm telling you.")
+
+# 00201
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | In fact, the prior case where DWAYNE O. COONRADT had me arrested for DISORDERLY CONDUCT…?                         |
+# | Involving the SAME EXACT JUDGE…?                                                                                  |
+# | It has now become a PATTERN where the case can be made, that KATHERINE SUCHOCKI is acting out of PREJUDICE.       |
+# |                                                                                                                   |
+# | Here’s how PREJUDICE works. No one will EVER ADMIT that they have PREJUDICE toward someone. Nah.                  |
+# | So, you can’t just WALK UP TO SOMEBODY and ASK THEM, “Hey, do you seem to think that MICHAEL C. COOK dude is a    |
+# | fuckin’ DOUCHEBAG…?” Because, that’s stupid. You have to CATCH PEOPLE in the ACT, and that means that their       |
+# | ACTIONS speak louder than their WORDS.                                                                            |
+# |                                                                                                                   |
+# | In fact, I can make the case that EVERYBODY IN THIS RECORDING, SAYS (1) thing, but DOES (1) OTHER thing.          |
+# | That would include CLAYTON BROWNELL. In HIS case, I haven’t detected things happening out of MALICE, but rather…  |
+# | SOCIETAL EXPECTATIONS, and REPUTATION. That’s just it. People have essentially SMEARED MY REPUTATION, because I’m |
+# | surrounded by lazy fucks that aren’t doing their job at all, and they’re ignoring everything I fuckin’ say.       |
+# |                                                                                                                   |
+# | That’s called PREJUDICE.                                                                                          |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"14:32",":Ok. And if there's some way that you can PROVE that...?")
 $T.AE(0,"14:37",":How am I gonna PROVE it, they- they- they're not even- they don't have to prove that I TOOK anything from the store.")
 $T.AE(1,"14:42",":They signed the complaint, not me.")
 $T.AE(0,"14:44",":Right, but what I'm saying is that they don't have to PROVE anything.")
 $T.AE(1,"14:47",":Yeah, they DO.")
-$T.AE(0,"14:51",":They don't have any FOOTAGE of it, and you're ARRESTING me. It's ALL based on HEARSAY, you took an AFFADAVIT based on HEARSAY.") # Even though they recorded a video of me using their personal smart phones... Ohhhhhh.
+
+# 00206
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | They don’t have to prove anything at all.                                                                         |
+# | Katherine Suchocki will ask me if I understand the charges, I’ll only be able to say YES or NO, and then I’ll be  |
+# | asked “How do you plead…?” and I’ll say NOT GUILTY.                                                               |
+# |                                                                                                                   |
+# | THEN, they’ll say “if you cannot afford an attorney, we will appoint a (public defender/prosecutor) for you.”     |
+# | At which point, the PUBLIC DEFENDER they appoint will sound EXACTLY LIKE A PROSECUTOR...                          |
+# | ...because that’s what they are…                                                                                  |
+# | They’re not there to defend you at all. They are there to PROSECUTE YOU.                                          |
+# | Then, they’ll tell you that you’re basically a fuckin’ douchebag, you’re guilty, and ignore (any/all) evidence.   |
+# |                                                                                                                   |
+# | I’ll get to court, the court will say:                                                                            |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Court           : You, Michael C. Fuckin’ Cook…?                                                                  |
+# |                   You’re a fuckin’ douchebag…                                                                     |
+# | Me              : No, I’m not.                                                                                    |
+# | Court           : The EVIDENCE that is NOT HERE AT ALL, says that you fuckin’ DEFINITELY are, dude.               |
+# |                   So…                                                                                             |
+# | Public Defender : Yeah, dude.                                                                                     |
+# |                   YOU are a REAL piece of shit.                                                                   |
+# | Court           : We’re all in agreement here, right…?                                                            |
+# |                   This dude is a flat-out, total fuckin’ douchebag-and-a-half, right…?                            |
+# | Public Defender : Yep.                                                                                            |
+# | Everybody else  : Yeah, fuck that guy for being such a douchebag.                                                 |
+# | Me              : I’m NOT a douchebag at all.                                                                     |
+# | Court           : Buddy, everybody else thinks somethin’ WAY different.                                           |
+# |                   And THAT MEANS, you are fuckin’ wrong as hell, dude.                                            |
+# | Me              : I AM NOT ACTUALLY A DOUCHEBAG, AND I HAVE EVIDENCE THAT I AM INNOCENT.                          |
+# | Court           : Yeah, well… we’re not convinced of that.                                                        |
+# | Me              : I have the EVIDENCE, right fuckin’ here, dude.                                                  |
+# | Court           : That’s not real evidence.                                                                       |
+# |                   If it was REAL evidence, it would’ve been SUBMITTED TO THE COURTROOM ALREADY…                   |
+# | Public Defender : Besides, I would’ve told you if it was legal, or good evidence.                                 |
+# |                   That evidence fuckin’ sucks ass, dude.                                                          |
+# |                   Ya fuckin’ douchebag.                                                                           |
+# |                   You are fuckin’ WAY guilty, dude.                                                               |
+# | Court           : Yeah.                                                                                           |
+# |                   As a direct result of how much of a fuckin’ lame ass douchebag you (are/always have been)…?     |
+# |                   Here’s an OUTRAGEOUS punishment for a crime that never happened, a fine you have to pay.        |
+# |                   Fuck you, ya fuckin’ douchebag.                                                                 |
+# |                   People like YOU make me fuckin’ sick…                                                           |
+# |                   Now, get this douchebag outta here…                                                             |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | And that is, effectively, the AMERICAN JUSTICE SYSTEM 101.                                                        |
+# |                                                                                                                   |
+# | So, they don’t have to prove a fucking thing. If anything…? You have to pull money out of thin air and hire a     |
+# | REAL LAWYER, and tell the court that you have EVIDENCE that proves your innocence. At which point, they can’t     |
+# | ignore that… Nah.                                                                                                 |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(0,"14:51",":They don't have any FOOTAGE of it, and you're ARRESTING me. It's ALL based on HEARSAY, you took an AFFIDAVIT based on HEARSAY.") # Even though they recorded a video of me using their personal smart phones... Ohhhhhh.
 $T.AE(1,"14:56",":Ok.")
 $T.AE(0,"15:03",":Right...?")
 $T.AE(1,"15:03",":No.")
@@ -667,12 +1096,32 @@ $T.AE(1,"15:08",":Me-")
 $T.AE(0,"15:08",":You know this- what happened on June 28th 2020 (2022*) was that my mother and I had an argument that morning...")
 $T.AE(1,"15:13",":Yup.")
 $T.AE(0,"15:15",":And uh, she failed to tell the police an accurate statement about what happened between me and her. And then the POLICE attempted to arrest me before reading me my miranda rights, you know this is a case of like police officers ignoring what I say. And, not- Taking action on STORIES rather than EVIDENCE.")
-$T.AE(0,"15:37",":And that's what that AFFADAVIT is, cause if they had EVIDENCE of me TAKING something, I would've been on video surveillance.")
+$T.AE(0,"15:37",":And that's what that AFFIDAVIT is, cause if they had EVIDENCE of me TAKING something, I would've been on video surveillance.")
 $T.AE(1,"15:42",":Ok, so... Let me make sure I got what you're sayin', straight here...")
 $T.AE(0,"15:46",":Sure...")
 $T.AE(1,"15:47",":<clears throat> So if you SEE somebody take a baseball bat to your car...")
 $T.AE(0,"15:52",":Yeah, right.")
-$T.AE(1,"15:52",":Right...? And, YOU call the police-") # This is exactly what happened to me on June 13th, 2020. Basically the police minimized my 911 call and ignored the dent on the SIDE of BILL MOAKS HOUSE that he LEFT with his BASEBALL BAT... and then MARK SHEEHAN WROTE DOWN a FICTIONAL STORY of what fucking happened. My 911 call...? It was told to fuck off. The dent on the side of WILLIAM MOAKS HOUSE which CONTRADICTS HIS FUCKING STORY...? Ignored. That's what the police at SARATOGA COUNTY SHERIFFS OFFICE do.
+$T.AE(1,"15:52",":Right...? And, YOU call the police-")
+
+# 00221
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | This is exactly what happened to me on June 13th, 2020 [SCSO-2020-003564].                                        |
+# | Basically the police minimized my 911 call and ignored the dent on the SIDE of BILL MOAKS HOUSE that he LEFT with |
+# | his BASEBALL BAT... and then MARK SHEEHAN WROTE DOWN a FICTIONAL STORY of what fuckin' happened.                  |
+# |                                                                                                                   |
+# | My 911 call...? That shit was stupid, and it was told to fuck off.                                                |
+# |                                                                                                                   |
+# | As long as my fuckfaced stepfather gets to the police officer FIRST, and says I'm having a MENTAL EPISODE...?     |
+# | MARK SHEEHAN will IGNORE the DENT on the SIDE of WILLIAM MOAK'S HOUSE that HE JUST MADE WITH HIS BASEBALL BAT.    |
+# |                                                                                                                   |
+# | ...which CONTRADICTED (BILL MOAK/JANET MOAK/MICHAEL STREETER)'s FUCKING STORY...                                  |
+# | MARK SHEEHAN thought that shit was stupid, though. So, it was ignored.                                            |
+# |                                                                                                                   |
+# | That's what the police at SARATOGA COUNTY SHERIFFS OFFICE do, and IT IS AN OBVIOUS FUCKING PATTERN, NOW.          |
+# |___________________________________________________________________________________________________________________|	
+
 $T.AE(0,"15:56",":That's DIFFERENT, that's EVIDENCE, leaving it behind on the car. There's NO EVIDENCE of me TAKING anything.")
 $T.AE(1,"16:03",":But you're claiming SO AND SO DID IT, right...?") # Like I did in a 911 call on 06/13/2020.
 $T.AE(0,"16:06",":Right...") # June 13th, 2020. Basically this dude is telling me my 911 call was fucking stupid. Because that's exactly what happened. SCSO said that my call, was fucking stupid. Because BILL MOAK is a fuckin WICKED COOL DUDE, in the eyes of the SHERIFFS OFFICE.
@@ -685,8 +1134,23 @@ $T.AE(0,"17:06",":Yeah, he ran up to the-")
 $T.AE(1,"17:07",":Support your story...?")
 $T.AE(0,"17:08",":No.")
 $T.AE(1,"17:09",":Oh.")
-$T.AE(0,"17:09",":He was one of the people trying to hold my neighbor back. What I'm saying is there's PREJUDICE being APPLIED TO ME. Like right now, you're taking a report based on somebody saying that they SAW me DO something, but there's no EVIDENCE of it. And then when I'm in trouble, I can't get HELP because I will SAY SOMETHING and it falls on DEAF EARS.") # <- Exactly what happened to my father before he was MURDERED.
-$T.AE(0,"17:32",":Might not fall on deaf ears, but- there's, ya know, if I worked in the loss prevention pre- ah, I dunno it doesn't really make much sense. I used to work at Computer Answers and I was trying to tell people that my employer was STEALING MONEY from the company, and NOBODY OFFERED ME A CHANCE TO SIGN A AFFADAVIT, or a DISCLAIMER or whatever.")
+
+# 00233
+# ___________________________________________________________________________________________________
+# | 08/14/21 | Michael Streeter | https://youtu.be/fOSawZTj_L                                       |
+# | 04/04/22 | Fabienne S. Cook | https://drive.google.com/file/d/1E5ERWMgj8GkznNZ_i0bAwjppkD_sWANd |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"17:09",":He was one of the people trying to hold my neighbor back. What I'm saying is there's PREJUDICE being APPLIED TO ME. Like right now, you're taking a report based on somebody saying that they SAW me DO something, but there's no EVIDENCE of it. And then when I'm in trouble, I can't get HELP because I will SAY SOMETHING and it falls on DEAF EARS.")
+
+# 00234
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Exactly what happened to my father before he was MURDERED.                                                        |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(0,"17:32",":Might not fall on deaf ears, but- there's, ya know, if I worked in the loss prevention pre- ah, I dunno it doesn't really make much sense. I used to work at Computer Answers and I was trying to tell people that my employer was STEALING MONEY from the company, and NOBODY OFFERED ME A CHANCE TO SIGN A AFFIDAVIT, or a DISCLAIMER or whatever.")
 $T.AE(0,"18:23",":I'm gonna be honest. It just seems like people don't CARE about anything I say.")
 $T.AE(0,"18:42",":And then you're bringing me before a judge.")
 $T.AE(1,"18:45",":What...? No, I'm not bringing you before the judge. I told you what was gonna happen...")
@@ -714,15 +1178,128 @@ $T.AE(1,"23:07",":Mhm.")
 $T.AE(0,"23:08",":And uh- he had a wirele- a bluetooth speaker, and he had walked past me, or he had- it- it- it appeared as if he was trying to walk up to me, uh, without raising any suspicion, or like, distracting me with the music or something, so I think he WAS trying to STAB me or something, and he was trying to get very close. But I had my eyes on him, so I saw BOTH of these guys. Anyway, uh- after... Uh- I don't remember what I said to him, but it wasn't very long at all, and then he walked to the laundromat. Both of those kids went to the laundromat, which is the 24-hour laundromat.")
 $T.AE(1,"23:43",":Yup.")
 $T.AE(0,"23:45",":Uh- one of them was driving a black Dodge. And I can't remember if it was a black Dodge Dart, or a black Dodge Charger. But I found that vehicle at the New York State, uh, Corrections Academy, later, uh- on Fathers Day 2020.")
-$T.AE(0,"24:06",":After these two, got on foot and everything, I was RECORDING them on VIDEO, and, it was like a 20 minute long video, and, this 1 kid got in his black car, and he started driving down the road. And then the OTHER kid, ran out of the laundromat and he said, 'Whats the big idea...?' Well, it was at that moment that I realized that they had some type of program that was remotely watching me, or accessing my device. So they were tracking me for months, they did this when I worked at Computer Answers, I think they're associated with my cousin RYAN WARD, and CHRISTINA CZAIKOWSKI. Uh, look, CHRISTINA CZAIKOWSKI is not my cousin, uh- and I believe that they are responsible for uh- pulling an ARMED ROBBERY of MEGHAN ALEXANDER in STILLWATER, in HILLSIDE TRAILER PARK, back in like 2011 or 2012 I believe... and uh, what they did was they went to uh HER fathers house (Guy Alexander) in SKI MASKS and there were 3 of them. And uh, they held her at GUNPOINT, and then they took all of my cousin THOMAS' MONEY, and I believe that this has something to do with the murder of my father back in 1995. I think the same group of people were involved in this, as well as the murder of SAMMY SANTA CASSARO (in 1996).")
+
+# 00262
+# ____________________________________________________________________________________________
+# | 07/12/22 | Captains Kids, Black Dodge Dart - NYS/DVA-2450 | https://youtu.be/crAWUlZOjFo |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"24:06",":After these two, uh- like, got on foot and everything, I was RECORDING them on VIDEO, and, it was like a 20 minute long video, and, this uh- (1) kid got in his black car, and he started driving down the road. And then the OTHER kid, ran out of the laundromat and he said, 'Whats the big idea...?' Well, it was at that moment that I realized that they had some type of program that was remotely watching me, or accessing my device. So they were tracking me for months, they did this when I worked at Computer Answers, I think they're associated with my cousin RYAN WARD, and CHRISTINA CZAIKOWSKI. Uh, look, CHRISTINA CZAIKOWSKI is not my cousin, uh- and I believe that they are responsible for uh- pulling an ARMED ROBBERY of MEGHAN ALEXANDER in STILLWATER, in HILLSIDE TRAILER PARK, back in like 2011 or 2012 I believe...")
+
+# 00263
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Sean Lyons was somehow involved in that HILLSIDE TRAILER PARK EVENT, I believe, whether it was INVESTIGATING it,  |
+# | or PERPETRATING it, or BOTH. He is INVOLVED in MULTIPLE INCIDENTS from 2020.                                      |
+# |                                                                                                                   |
+# | Such as:                                                                                                          |
+# | 1) SCSO-2020-002998,                                                                                              |
+# | 2) he was at the HALFMOON SHERIFF SUBSTATION on 06/01/20 when DJ THOMPSON processed my arrest [SCSO-2020-003173], |
+# | 2) an incident on 06/22/20 with NYSP BORDEN at 201D Halfmoon Circle, when I gave BORDEN [NYS/DVA-2450],           |
+# | 3) an incident on 07/14/20 with ANTHONY AGRESTA, and multiple NYSP officers at 1602 Route 9, COMPUTER ANSWERS     |
+# | 4) he was one of my coaches at SHENENDEHOWA HIGH SCHOOL EAST/WEST                                                 |
+# | 5) he was a common visitor of COOK’S DELI                                                                         |
+# | 6) he was occasionally able to say “HEY BRO, I CAN LIKE, GO INTO EVIDENCE LOCKERS AND REMOVE DRUGS N STUFF…”      |
+# |___________________________________________________________________________________________________________________|	
+
+$T.AE(0,"24:57",":And uh, what they did was, they went to uh HER fathers house (Guy Alexander) in SKI MASKS and there were 3 of them. And uh, they held her at GUNPOINT, and then they took all of my cousin THOMAS' MONEY, and I believe that this has something to do with the murder of my father back in 1995. I think the same group of people were involved in this, as well as the murder of SAMMY SANTA CASSARO (in 1996).")
+
+# 00264
+# ________________________________________________________________________________________________________
+# | 08/14/99 | Francine Vero/Cassaro | https://drive.google.com/file/d/1s_7zUKMtHIRSPKK7PrdCZIu6alXOhbG9 | 
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
 $T.AE(0,"25:21",":So I think there is a GROUP of CRIMINALS, or uh- a GANG, I think they're working with the RUSSIAN MAFIA, and they have been CLOSELY WATCHING AND MONITORING ME...")
 $T.AE(1,"25:32",":Right.")
 $T.AE(0,"25:33",":And when I worked at Computer Answers, they attacked me with a CYBERATTACK on JANUARY 15th, 2019, and I believe they used that attack by using this program called Pegasus.")
+
+# 00267
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | The CORRELATION that I am making is that there is some sort of LINK between FRANCINE VERO, and COMPUTER ANSWERS,  |
+# | as well as the RUSSIAN MAFIA, and (LAWYERS/JUDGES/POLICE OFFICERS/HACKERS) working together, like…                |
+# | maybe something that NFRASTRUCTURE would be involved with. A RACKETEER INFLUENCED CRIMINAL ORGANIZATION/GANG.     |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 07/21/89 | 785-3221 | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf    |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | One that BRUCE TANSKI would just so happen to be involved with…                                                   |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 01/31/18 | https://www.timesunion.com/news/article/Tanski-named-as-co-conspirator-as-former-12541203.php          |
+# | 01/30/20 | https://www.timesunion.com/news/article/Tanski-will-not-face-charges-as-business-partner-15016249.php  | 
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"25:44",":Ok.")
 $T.AE(0,"25:46",":So, uhm- as for the 26th, of May 2020, after uh- the kid started running out of the laundromat...? I believe I ended the recording, and I didn't think I had enough time to upload it at the Computer Answers shop. I uh, attempted to dial 911. When I dialed 911 and hit the send button...?")
 $T.AE(1,"26:08",":Yup.")
-$T.AE(0,"26:09",":The TIMER kept rising, but there was no sound emanating from the device. So, I was unable to reach the dispatch station. Uh, I had a feeling that there was NO COINCIDENCE that I had a couple dudes FOLLOWING me, on foot. The- The one dude drove away in his black Dodge Charger, or uh, it was either a Charger or a Dodge Dart, I can't remember which make/vehicle it was, but uh- I later uhm- uh- he, somehow popped out bakc near Grecian Gardens, so the one dude that drove out towards Walmart must've found some BACK WAY to get, like, on foot, near me, and then they had another vehicle parked in the Lowes Home Improvement parking lot. So they had a PREMEDITATED plan, where they were like following me and expected me where I was gonna go and everything. They followed me, and I- I went- I uh, knew what they were doing, I- wasn't- I- I was, very certain they were attempting to murder mem, and uh- I uh- wasn't gonna run becuase I knew I was gonna run out of steam. I uh- got all the way to CENTER FOR SECURITY, and I di the SAME EXACT THING where I dialed 911 and hit the SEND button, and the TIMER kept rising...")
+$T.AE(0,"26:09",":The TIMER kept rising, but there was no sound emanating from the device.")
+
+# 00271
+# ______________________________________________________________________________________________________
+# | 05/26/20 | Post-911 Screenshot | https://drive.google.com/file/d/18xllhtJW6XZhxJOZXWtesywn-Ph37KK9 |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(0,"26:13",":So, I was unable to reach the dispatch station. Uh, I had a feeling that there was NO COINCIDENCE that I had a couple dudes FOLLOWING me, on foot. The- The one dude drove away in his black Dodge Charger, or uh, it was either a Charger or a Dodge Dart, I can't remember which make/vehicle it was, but uh- I later uhm- uh- he, somehow popped out back near, uh, Grecian Gardens. So the one dude that drove out towards Walmart, must've found some BACK WAY to get, like, on foot, near me. And then they had another vehicle, parked in the Lowe's Home Improvement parking lot.")
+
+# 00272
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Like, right there TATIANA CLEVELAND and SAMANTHA CAINE used to park THEIR car when they each worked there.        |
+# | The COOL thing is, I mentioned BOTH, 1) RYAN WARD and 2) TATIANA CLEVELAND in the fuckin’ audio recording I       |
+# | uploaded at 11:29 PM, at COMPUTER ANSWERS.                                                                        |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(0,"26:48",":So they had a PREMEDITATED plan, where they were like following me and expected me where I was gonna go and everything. They followed me, and I- I went- I uh, knew what they were doing, I- wasn't- I- I was, very certain they were attempting to murder mem, and uh- I uh- wasn't gonna run becuase I knew I was gonna run out of steam. I uh- got all the way to CENTER FOR SECURITY, and I did the SAME EXACT THING where I dialed 911 and hit the SEND button, and the TIMER kept rising...")
 $T.AE(0,"27:19",":And, uh- I did this in front of the- view of the camera at CENTER FOR SECURITY. And I told SCOTT SCHELLING about that, later that night. SCOTT SCHELLING never wrote it in ANY of his, uh- any of those notes in his report.")
+
+# 00274
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | But, do you know what STUPID MOTHERFUCKER decided to like, VERY CAREFULLY SCREW THAT UP…?                         |
+# |                                                                                                                   |
+# | Oh, the ERIC CATRICALA incident. Makes total sense when SCSO-2020-003173 and SCSO-2020-003177 are handled by the  |
+# | SAME FUCKING MORON… JAMES LEONARD… when you’re a fucking moron. It doesn’t make any sense at all if you’re NOT a  |
+# | fucking moron, like ERIC CATRICALA and JAMES LEONARD fucking happen to be.                                        |
+# |                                                                                                                   |
+# | Here’s how fuckin’ stupid this son of a bitch JAMES LEONARD actually is.                                          |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 05/26/20 0130 | SCSO-2020-028501 – The attack, started @ 05/25/20 2343 | 1597 Route 9, Clifton Park, NY           |
+# |               |                                ended   @ 05/26/20 0130 | 1780 Route 9, Clifton Park, NY           |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 05/27/20 0900 | NYSP-S.LEAVEY    – I show the video of the dipshits attempting to attack me, that I began to      |
+# |               |                    record IMMEDIATELY AFTER TAKING THIS PICTURE… IMG_0646.HEIC                    |
+# |               |                    https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD              |
+# |          0905 | IPHONE DISABLED  - My white iPhone 8+ that I sent to LOUIS ROSSMAN’s repair shop in NYC, 02/14/21 |
+# |               |                    was REMOTELY DISABLED by this SOFTWARE known as PEGASUS/PHANTOM                |
+# |               | ASURION CONTRACT – Just in case people MISREAD what I JUST WROTE…? I’m an ACTUAL EXPERT.          |
+# |               |                    https://youtu.be/i3qn1CZ-5WM                                                   |
+# |               |                    Allow me to RESTATE what I said. I am an EXPERT and I am CERTAIN that my PHONE |
+# |               |                    was REMOTELY DISABLED because of PHANTOM/PEGASUS. Cool…? Cool.                 |
+# |               |                    I never incorrectly entered my pin number 10 times, nah. I have a LAWSUIT to   |
+# |               |                    FILE against the APPLE CORPORATION and it is the LARGEST LAWSUIT IN HISTORY.   |
+# |               |                    As in the LAWSUIT is SO LARGE, that it will cost Apple $3 Trillion dollars.    |
+# |               |                    I’M PRETTY SURE THAT GUYS LIKE LOUIS ROSSMAN WILL EVENTUALLY REALIZE HOW       |
+# |               |                    FUCKIN’ SERIOUS I AM, that APPLE CORPORATION committed OBSTRUCTION OF JUSTICE. |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 05/27/20 1212 | SCSO-2020-003173 – ZACKARY KAREL                       | 1769 Route 9, Clifton Park, NY           |
+# |          1414 | SCSO-2020-003177 – ERIC CATRICALA                      | 1597 Route 9, Clifton Park, NY           |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | I think what’s going on HERE, is that there are some stupid motherfuckers in the world who might be a FUNERAL     |
+# | HOME OWNER as well as a NEW YORK STATE ASSEMBLYMAN…? And then, some additional dumb motherfucker running SCSO.    |
+# |                                                                                                                   |
+# | They probably don’t see it that way…? But- when the EVIDENCE that I HAD, somehow gets DESTROYED and then          |
+# | JAMES LEONARD IMMEDIATELY WRITES (2) TICKETS that have the STARTING LOCATION of the ATTACK, as well as the ENDING |
+# | LOCATION where ZACKARY KAREL lives…? I have to assume that this dude, doesn’t realize how fucking stupid he is.   |
+# |                                                                                                                   |
+# | And neither does really anybody else at SCSO, for that matter. Otherwise…? Why was this not SEEN or DETECTED by   |
+# | ANY of the POLICE OFFICERS, for instance, MICHAEL FUCKING WHITEACRE…? It’s a GOOD FUCKING QUESTION.               |
+# |                                                                                                                   |
+# | It’s mainly because of a concept I talk about in a skit called “Sky High Stacks”                                  |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"27:34",":Ok.")
 $T.AE(0,"27:34",":So I think that SCOTT SCHELLING, uh- went back and destroyed the footage of me dialing 911 at that location.")
 $T.AE(1,"27:42",":Hm... Ok. Alright, lets go inside, and continue while I do my paperwork here, and get ya outta here a little bit quicker.")
@@ -733,22 +1310,24 @@ $T.AE(1,"28:04","*Opens rear passenger door")
 $T.AE(0,"28:05","*Unbuckles seat belt, exits sedan 4138")
 $T.AE(1,"28:11","*Shuts the rear passenger door")
 
-#    ____    ____________________________________________________________________________________________________
-#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
-#   \\__//¯¯¯ [Part 3 (00:28:11 -> 00:28:45)]: Walking into Halfmoon (Sheriff Substation/Town Court)         ___//¯¯\\
-#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+# ____________________________________________________________________________________________________________    
+# |¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ |    
+# | [Part 3 (00:28:11 -> 00:28:45)]: Walking into Halfmoon (Sheriff Substation/Town Court)                   |
+# |    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    |    
+# ¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯    
+#   ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯      
 
 $T.AE(1,"28:11",":We're gonna head right in those doors, up the stairs, and to the left.")
 $T.AE(1,"28:39","*shuffles with keys to open the office door")
 $T.AE(1,"28:43","*Unlocks the office door")
 $T.AE(1,"28:45","*Opens the office door")
 
-#    ____    ____________________________________________________________________________________________________
-#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
-#   \\__//¯¯¯ [Part 4  (00:28:35 -> 01:03:56)]: Michael Sheradin processes my "arrest" order                 ___//¯¯\\
-#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
+# ____________________________________________________________________________________________________________    
+# |¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ |    
+# | [Part 4 (00:28:35 -> 01:03:56)]: Michael Sheradin processes my 'arrest' order                            |
+# |    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    __    |    
+# ¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯    
+#   ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯    ¯¯      
 
 $T.AE(1,"28:47",":There we go. come right in here, and have a seat.")
 $T.AE(0,"29:01",":Mind if I stand...?")
@@ -793,13 +1372,52 @@ $T.AE(0,"33:35",":I'm sure you have, but-")
 $T.AE(1,"33:36",":I have.")
 $T.AE(0,"33:38",":How rare, is it...?")
 $T.AE(1,"33:41",":Well that's- it IS rare... but normally, uh... <pauses> What am I doin' here...")
-$T.AE(0,"33:53",":I'm sayin' is, like what you're doing right now...? Is taking HEARSAY, and havin' me arrested, for an AFFADAVIT, that they wrote (signed). And NOBODY'S offering ME an AFFADAVIT for ANY of the things I keep experiencing. So what I'm suggesting is that EVERYBODY seems to be MORE IMPORTANT than me. I think uh- maybe I DESERVED to have my father murdered when I was a 10 year old kid, and then my mother EMOTIONALLY ABANDONED ME, and didn't like RAISE ME or TEACH ME, like HOW TO LIVE MY LIFE...?")
-$T.AE(1,"34:27",":Yup.") # <- He's absent mindedly agreeing with me. 
+$T.AE(0,"33:53",":I'm sayin' is, like what you're doing right now...? Is taking HEARSAY, and havin' me arrested, for an AFFIDAVIT, that they wrote (signed). And NOBODY'S offering ME an AFFIDAVIT for ANY of the things I keep experiencing. So what I'm suggesting is that EVERYBODY seems to be MORE IMPORTANT than me. I think uh- maybe I DESERVED to have my father murdered when I was a 10 year old kid, and then my mother EMOTIONALLY ABANDONED ME, and didn't like RAISE ME or TEACH ME, like HOW TO LIVE MY LIFE...?")
+
+# 00331
+# __________________________________________________________
+# | 05/23/20 | Virtual Tour | https://youtu.be/HT4p28bRhqc |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$T.AE(1,"34:27",":Yup.") 
+
+# 00332
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | He is absent mindedly agreeing with me, right now.                                                                |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"34:26",":And then people develop PREJUDICE toward me, because you know, I must've done SOMETHING to deserve having my DAD killed. That's how people treat me.")
 $T.AE(0,"34:41",":I'm not trying to give you a guilt trip or whatever... But- <indiscernable, phone shifting in pocket> 2 guys that work at Walmart, can just FABRICATE something.")
 $T.AE(0,"34:55",":And then you're handing me PAPERWORK to arrest me.")
 $T.AE(0,"34:59",":But hey~! A couple guys can attempt to MURDER ME, and I can have EVIDENCE OF IT, I can show it to TROOPER LEAVEY, like I did on MAY 27th, 2020. And uh, MICHAEL ZURLO, your SUPERIOR, he can FACILITATE an ATTEMPTED MURDER and then like, cover it up and his tracks. And then, FUDGE ALL THE RECORDS AT THE RECORDS OFFICE. That's what's been happening. I have RECORDS on my GitHub project, and I've bene putting it all together. You guys have CRIMINALS in your department.")
-$T.AE(1,"35:26",":Ok.") # <- Dude SEEMS pretty vacant or absent minded, or PREOCCUPIED. He's only responding to CERTAIN PHRASES. "You guys have criminals in your department." -> "Ok."
+$T.AE(1,"35:26",":Ok.") 
+
+# 00337
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Dude SEEMS pretty vacant or absent minded, or PREOCCUPIED. He's only responding to CERTAIN PHRASES.               |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Me  : You guys have criminals in your department.                                                                 |
+# | Him : Ok.                                                                                                         |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | ^ This is an indication of someone that SEEMS to be running on AUTO-PILOT.                                        |
+# | But, it could be because he IS multitasking.                                                                      |
+# |                                                                                                                   |
+# | At this point, I can’t really be RUDE to this guy, he’s done nothing to DESERVE that sort of treatment.           |
+# | If anything, this dude is doing a pretty spot on job of remaining respectful, however- false agreements ARE       |
+# | somewhat disrespectful as well. The point being, I will HAVE to REPEAT myself, and making someone repeat          |
+# | themselves has varying aspects to it, so if he isn’t multitasking at all, THAT IS A SIGN OF DISRESPECT.           |
+# |                                                                                                                   |
+# | However, if he’s forming COMPLEX QUESTIONS that are taking components of statements I’m making…?                  |
+# | That’s not a sign of DISRESPECT at all, that’s a sign of them looking for CLARIFICATION or making sure they       |
+# | UNDERSTAND what they’re being told.                                                                               |
+# |                                                                                                                   |
+# | Like, Arongen’s slogan is “To Understand”.                                                                        |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"35:28",":Hang on a second, just let me make this quick phone call up to our dispatch, they were lookin' for me.") 
 $T.AE(1,"35:45",":Hello, Michael here. <other end> I do. <other end> I have everything. Yeah, well they just handed it to me this morning. So... <other end> Oh, it did, hot off the press. Hot~! So, alright...? <other end> Nope, it's not even, I don't believe it's in the justice yet, nope. So...")
 $T.AE(0,"36:14",":DHS...?")
@@ -807,8 +1425,25 @@ $T.AE(1,"36:18",":Yeah, ok. Thanks. Bye. What's that...?")
 $T.AE(0,"36:22",":Was that related to me...? That call...? I dunno.")
 $T.AE(1,"36:27",":Do what now...?")
 $T.AE(0,"36:28",":I thought you said something about DHS.")
-$T.AE(1,"36:30",":No, no, no, no, no, no, no. No, no, no, no. No <slight chuckle> Heh, DHS has got nothin' to do with THIS...") # They should be INTERESTED in the EVENTS OF 05/25/20 -> 05/26/20.
-$T.AE(0,"36:37",":Yeah, I know. DHS, and uh- the NSA, the CIA, and the FBI have been keeping tabs on me, and sending you guys around to SMEAR me.") # Pretty fuckin' sure of it... unless I'm wrong.
+$T.AE(1,"36:30",":No, no, no, no, no, no, no. No, no, no, no. No <slight chuckle> Heh, DHS has got nothin' to do with THIS...") 
+
+# 00345
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Maybe not the PETIT LARCENY I didn’t commit. However, they’d be INTERESTED in the EVENTS OF 05/25/20 → 05/26/20.  |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(0,"36:37",":Yeah, I know. DHS, and uh- the NSA, the CIA, and the FBI have been keeping tabs on me, and sending you guys around to SMEAR me.") 
+
+# 00346
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I’m not totally convinced of that, but his reaction is very telling that he’s not putting much thought into what  |
+# | I’m saying to him, OR, he is just distracted.                                                                     |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"36:49",":Ok. Liste- I've gotta ask you some questions... How tall are ya...?")
 $T.AE(0,"36:52",":FIVE ELEVEN")
 $T.AE(1,"36:53",":How much you weigh, around...")
@@ -858,7 +1493,16 @@ $T.AE(0,"41:03",":So that means that a lot of people are getting charged with cr
 $T.AE(1,"41:10","*clears throat")
 $T.AE(0,"41:11",":You can't ask uh- the accused to prove themselves when the supermarket has all the recording footage, and they're not providing ANY recorded footage whatsoever, uh- of someone leaving the store WITH the device or merchandise.")
 $T.AE(1,"41:29",":I'm still listenin'... <pauses> Well... fact is, back to why we're here, once again, uh- THEY signed a complaint, NOT US.") # Maybe he is NOT absent mindedly agreeing with me after all.
-$T.AE(0,"41:39",":Right, I understand that. But if they-") # It is not like I don't understand the situation. I understand the situation TOO WELL...
+$T.AE(0,"41:39",":Right, I understand that. But if they-") 
+
+# 00395
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Maybe he is NOT absent mindedly agreeing with me after all.                                                       |
+# | It is not like I don't understand the situation. I understand the situation TOO WELL…                             |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"41:39",":Ok, so... if I signed the complaint, if it was ME, as a POLICE OFFICER, then I would have EVERYTHING that I need, to support what I was charging.") # I get what he's saying. He isn't getting what I'm saying.
 $T.AE(0,"41:52",":Right, but you're not hearin' me.")
 $T.AE(1,"41:54",":I am hearin' ya.")
@@ -867,79 +1511,97 @@ $T.AE(1,"42:00",":If they physically SAW it, it's not HEARSAY.")
 $T.AE(0,"42:04",":It IS hearsay.")
 $T.AE(1,"42:05",":How is it hearsay, if they physically saw you do whatever it is they claiming that you're di- you did...? How is that hearsay...?")
 $T.AE(0,"42:11",":So like... <pauses> Like what I was saying, is that- they can just make it up.")
-$T.AE(1,"42:17",":Ok. So they LIED, it's not HEARSAY, but they lied. Ok.") # So he IS actually understanding what I'm saying.
-# _____________________________________________________________________________________________________________________________________________
-# | If I went around telling people that MICHAEL SHERIDAN made this statement WITHOUT SUPPORTING EVIDENCE- it WOULD be HEARSAY.               |
-# | But, BECAUSE I have this AUDIO RECORDING...? It is SUPPORTING EVIDENCE, and NOW, it's not HEARSAY, it's a TRANSCRIPTION.                  |
-# | With the AUDIO RECORDING, it became a literal, 100% truly, qualified, piece of EVIDENCE, a RECORD, that SOMETHING WAS STATED BY A PERSON, |
-# | and that I'm not basing things on HEARSAY.                                                                                                |
-# | I'm basing things on a truly, actual, factual, 100% digital file that EXISTS, and can be PROVIDED to ANYBODY as a REFERENCE of something  |
-# | having HAPPENED, or TAKEN PLACE. Lets draw up a DIAGRAM to make it easier to UNDERSTAND...                                                |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-# _________________________________________________
-# | Situation                    | Result         |
-# |------------------------------|----------------|
-# | Without the AUDIO RECORDING =>       HEARSAY  | 
-# | With    the AUDIO RECORDING =>  TRANSCRIPTION |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-# ____________________________________________________________________________________________________________________________________________
-# | See the difference in the diagram above...? That's why JUDGE KATHERINE SUCHOCKI (even JOE FEDORA) should consider the DIFFERENCE between |
-# | the TWO SCENARIOS... and drop their case(s) ENTIRELY.                                                                                    |
-# | Because here's how I should PHRASE the situation...                                                                                      |
-# | WALMART, a STORE with HUNDREDS OF CAMERAS... signed an AFFADAVIT with NO SUPPORTING EVIDENCE... when clearly, MICHAEL SHERIDAN was SHOWN |
-# | the FOOTAGE of how I walked back into the same exact aisle that the LOSS PREVENTION GUYS saw me standing in, right...?                   |
-# | But MAGICALLY, the PRODUCT was IN THEIR HANDS, afterward. OOoooOHhhHHHhhhHHhh... that means that the item was in that aisle.             |
-# | Since there is NO EVIDENCE WHATSOEVER to SUGGEST that it EVER LEFT THAT AISLE...? NOBODY SHOULD BE ARRESTING ANYBODY FOR ANYTHING AT ALL |
-# | Oh. Cool.                                                                                                                                |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+$T.AE(1,"42:17",":Ok. So they LIED, it's not HEARSAY, but they lied. Ok.")
 
-# ____________________________________________________________________________________________________________________________________________
-# | Look, if former NYS governor ANDREW CUOMO can indiscriminately suck random dudes' dicks or vice versa, and then sexually harass females, |
-# | then it stands to reason that there needs to be some pretty powerful evidence on hand that he's GUILTY of (something/being gay).         |
-# | While there's no EVIDENCE of ANDREW CUOMO...                                                                                             |
-# |------------------------------------------------------------------------------------------------------------------------------------------|
-# | 1) being pounded in the butt                                                                                                             |
-# | 2) pounding some dude in the butt                                                                                                        |
-# | 3) blowing some dude                                                                                                                     |
-# | 4) being blown by a dude                                                                                                                 |
-# |------------------------------------------------------------------------------------------------------------------------------------------|
-# | ...it stands to reason that (11) females got GROSSED OUT when ANDREW CUOMO tried to make SEXUAL PROPOSITIONS (for instance, BRITANNY     |
-# | COMMISSO), that those SEXUAL PROPOSITIONS were ALL just SUSPICIOUS ACTIVITY, and that the REASON he didn't get in TROUBLE, is because    |
-# | of how (IMPORTANT/GAY) he is. Because of how (IMPORTANT/GAY) he is, CRAIG APPLE felt really bad that ANDREW CUOMO can't get laid.        |
-# | Therefore, didn't feel like there was a suitable condition where he should be PROSECUTED for SEXUALLY HARASSING (11) women. Nah.         |
-# | It doesn't change the fact that CRAIG APPLE, and MILLIONS of other people know just how (IMPORTANT/GAY) ANDREW CUOMO really is.          |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# ____________________________________________________________________________________________________________________________________________
-# | There IS EVIDENCE that the LOSS PREVENTION GUYS POINTED AT ME SEVERAL MINUTES PRIOR, from the HOUSEWARES area, THEN, they never sent a   |
-# | guy to that AISLE to LOOK FOR THE ITEM THAT I LEFT THERE. Even if they DID...? Oh wow. They could just hide it and STILL incriminate     |
-# | someone if that's what they felt like doing. Why were they watching me...? Oh. Maybe they (SAW SOMETHING SUSPICIOUS/HAD PREJUDICE)       |
-# | Weird. And then KATHERINE SUCHOCKI authorized an ARREST WARRANT because SHE has PREJUDICE. Just like how ROBERT RYBAK had PREJUDICE and  |
-# | ignored MICHAEL ZURLO having (PREJUDICE/COMMITTING OBSTRUCTION OF JUSTICE) on MAY 26th, 2020... you know...?                             |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# ____________________________________________________________________________________________________________________________________________
-# | Looks like the JUDGES can (have PREJUDICE/act like a fucking COMMUNIST PARTY). Because with PREJUDICE...? Who cares about EVIDENCE...?   |
-# | NOBODY. Not (1) soul, cares about EVIDENCE when people have DEVELOPED PREJUDICE towards a SPECIFIC INDIVIDUAL. ACTUALLY, here's another  |
-# | diagram of how EVIDENCE works when you're like me, dealing with a long list of lazy fucks, right...?                                     |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# __________________________________________________________________________________________________
-# | Person         | When the evidence...     | it is...     | Result                              |
-# |----------------|--------------------------|--------------|-------------------------------------|
-# | Michael Cook   | DOES     INCRIMINATE HIM |     PROVIDED | ARREST WARRANT IS           ORDERED |
-# |                | DOES NOT INCRIMINATE HIM | NOT PROVIDED | ARREST WARRANT IS STILL     ORDERED |
-# |----------------|--------------------------|--------------|-------------------------------------|
-# | Andrew Cuomo   | DOES     INCRIMINATE HIM |     PROVIDED | ARREST WARRANT IS       NOT ORDERED |
-# |                | DOES NOT INCRIMINATE HIM |     PROVIDED | ARREST WARRANT IS STILL NOT ORDERED |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# ____________________________________________________________________________________________________________________________________________
-# | That's COMMUNISM 101, folks. Fuck how the law typically works. What they have...? Is a PEN, and a SIGNATURE... that's all they need.     |
-# | If JUDGE PAUL PELAGALLI can order me to see (2) doctors that don't even work at the place he ordered me to go to...?                     |
-# | Katherine Suchocki can order an arrest warrant with no evidence to support the reason for the arrest whatsoever.                         |
-# | That's how JUDGES can get down, because facts are fuckin' stupid, folks.                                                                 |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00405
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | So he IS actually understanding what I'm saying.                                                                  |                       
+# |                                                                                                                   |
+# | If I went around telling people that MICHAEL SHERIDAN made this statement WITHOUT SUPPORTING EVIDENCE- it WOULD   |
+# | be HEARSAY. But, BECAUSE I have this AUDIO RECORDING...? It is SUPPORTING EVIDENCE, and NOW, it's not HEARSAY,    |
+# | it's a TRANSCRIPTION.                                                                                             |
+# |                                                                                                                   |
+# | With the AUDIO RECORDING, it became a literal, 100% truly, qualified, piece of EVIDENCE, a RECORD, that SOMETHING |
+# | WAS STATED BY A PERSON, and that I'm not basing things on HEARSAY.                                                |
+# |                                                                                                                   |
+# | I'm basing things on a truly, actual, factual, 100% digital file that EXISTS, and can be PROVIDED to ANYBODY as a |
+# | REFERENCE of something having HAPPENED, or TAKEN PLACE. Let's draw up a DIAGRAM to make it easier to UNDERSTAND.  |
+# | ____________________________________________________                                                              |
+# | | Situation                       | Result         |                                                              |
+# | |---------------------------------|----------------|                                                              |
+# | | AUDIO RECORDING DOES NOT EXIST  => HEARSAY       |                                                              |
+# | | AUDIO RECORDING DOES     EXIST  => TRANSCRIPTION |                                                              |
+# | | TOE-MAY-TOE                     => TOE-MAH-TOE   |                                                              |
+# | | POE-TAY-TOE                     => POE-TAH-TOE   |                                                              |
+# | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                              |
+# | See the difference in the diagram above...? That's why JUDGE KATHERINE SUCHOCKI (even JOE FEDORA) should consider |
+# | the DIFFERENCE between the TWO SCENARIOS... and drop their case(s) ENTIRELY.                                      |
+# |                                                                                                                   |
+# | Because here's how I should PHRASE the situation...                                                               |
+# |                                                                                                                   |
+# | WALMART, a STORE with HUNDREDS OF CAMERAS...                                                                      |
+# | signed an AFFIDAVIT with NO SUPPORTING EVIDENCE... when clearly, MICHAEL SHERIDAN was SHOWN the FOOTAGE of how I  |
+# | walked back into the same exact aisle that the LOSS PREVENTION GUYS saw me standing in, right...?                 |
+# |                                                                                                                   |
+# | But MAGICALLY, the PRODUCT was IN THEIR HANDS, afterward. OOoooOHhhHHHhhhHHhh... that means that the item was in  |
+# | that aisle. Since there is NO EVIDENCE WHATSOEVER to SUGGEST that it EVER LEFT THAT AISLE...? NOBODY SHOULD BE    |
+# | ARRESTING ANYBODY FOR ANYTHING AT ALL. Oh. Cool.                                                                  |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Look, if former NYS governor ANDREW CUOMO can indiscriminately suck random dudes' dicks or vice versa, and then   |
+# | sexually harass females, then it stands to reason that there needs to be some pretty powerful evidence on hand    |
+# | that he's GUILTY of (something/being gay). While there's no EVIDENCE of ANDREW CUOMO...                           |
+# | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
+# | 1) being pounded in the butt, 2) pounding some dude in the butt, 3) blowing some dude, 4) being blown by a dude   |                                                                                          
+# |- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
+# | ...it stands to reason that (11) females got GROSSED OUT when ANDREW CUOMO tried to make SEXUAL PROPOSITIONS (for |
+# | instance, BRITANNY COMMISSO), that those SEXUAL PROPOSITIONS were ALL just SUSPICIOUS ACTIVITY, and that the      | 
+# | REASON he didn't get in TROUBLE, is because of how (IMPORTANT/GAY) he is.                                         |
+# |                                                                                                                   |
+# | Because of how (IMPORTANT/GAY) he is, CRAIG APPLE felt really bad that ANDREW CUOMO can't get laid.               |
+# | Therefore, didn't feel like there was a suitable condition where he should be PROSECUTED for SEXUALLY HARASSING   |
+# | (11) women. Nah.                                                                                                  |
+# |                                                                                                                   |	
+# | It doesn't change the fact that CRAIG APPLE, and MILLIONS of other people know...                                 |
+# | ...just how (IMPORTANT/GAY) ANDREW CUOMO really is.                                                               |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | There IS EVIDENCE that the LOSS PREVENTION GUYS POINTED AT ME SEVERAL MINUTES PRIOR, from the HOUSEWARES area,    |
+# | THEN, they never sent a guy to that AISLE to LOOK FOR THE ITEM THAT I LEFT THERE. Even if they DID...? Oh wow.    |
+# |                                                                                                                   |
+# | They could just hide it and STILL incriminate someone if that's what they felt like doing.                        |
+# | Why were they watching me...? Oh. Maybe they (SAW SOMETHING SUSPICIOUS/HAD PREJUDICE)                             |
+# | Weird. And then KATHERINE SUCHOCKI authorized an ARREST WARRANT because SHE has PREJUDICE.                        |
+# | Just like how ROBERT RYBAK had PREJUDICE and ignored MICHAEL ZURLO having (PREJUDICE/COMMITTING OBSTRUCTION OF    |
+# | JUSTICE) on MAY 26th, 2020... you know...?                                                                        |
+# |                                                                                                                   |
+# | Looks like the JUDGES can (have PREJUDICE/act like a fucking COMMUNIST PARTY).                                    |
+# | Because with PREJUDICE...? Who cares about EVIDENCE...? NOBODY.                                                   |
+# | Not (1) soul, cares about EVIDENCE when people have DEVELOPED PREJUDICE towards a SPECIFIC INDIVIDUAL.            |
+# | ACTUALLY, here's another diagram of how EVIDENCE works when you're like me...                                     |
+# | ...dealing with a long list of lazy fucks, right...?                                                              |
+# | __________________________________________________________________________________________________                |
+# | | Person         | When the evidence...     | it is...     | Result                              |                |
+# | |----------------|--------------------------|--------------|-------------------------------------|                |
+# | | Michael Cook   | DOES     INCRIMINATE HIM |     PROVIDED | ARREST WARRANT IS           ORDERED |                |
+# | |                | DOES NOT INCRIMINATE HIM | NOT PROVIDED | ARREST WARRANT IS STILL     ORDERED |                |
+# | |----------------|--------------------------|--------------|-------------------------------------|                |
+# | | Andrew Cuomo   | DOES     INCRIMINATE HIM |     PROVIDED | ARREST WARRANT IS       NOT ORDERED |                |
+# | |                | DOES NOT INCRIMINATE HIM |     PROVIDED | ARREST WARRANT IS STILL NOT ORDERED |                |
+# | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                |
+# | That's COMMUNISM 101, folks. Fuck how the law typically works. What they have...? Is a PEN, and a SIGNATURE...    |
+# | and that's ALL they need.                                                                                         |
+# |                                                                                                                   |
+# | If JUDGE PAUL PELAGALLI can order me to see (2) doctors that don't even work at the place he ordered me to go     |
+# | to...? Katherine Suchocki can order an arrest warrant with no evidence to support the reason for the arrest.      |
+# |                                                                                                                   |
+# | And if you think THAT is STUPID...? YOU'RE the one that's stupid, not THEM.                                       |
+# | That's just your opinion. In their opinion, it isn't stupid at all, but YOU, and everyone else...? All are.       |
+# | Legally speaking, judges aren't ALLOWED to legally be called stupid. If you call a judge stupid...?               |
+# | THAT's fuckin' stupid, and that means YOU’RE stupid, and that’s the end of the conversation.                      |
+# |                                                                                                                   |
+# | That's how JUDGES can get down, because facts are fuckin' stupid, folks.                                          |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"42:04",":So hearsay and lying sorta falls into the same s- hemisphere, because- they can provide FALSE TESTIMONY and it's never able to be proven. In fact, uh- the fact of the matter is that, uh-")
 $T.AE(1,"42:32",":So then...")
@@ -954,7 +1616,15 @@ $T.AE(1,"42:56",":...that you did, what you did.")
 $T.AE(0,"42:58",":So THEY have to come to court and PROVE that I took something.")
 $T.AE(1,"43:00",":That's gonna be up- the ADA has to prove that, yes.")
 $T.AE(0,"43:03",":Ok.")
-$T.AE(1,"43:00",":The ADA has to prove that you did what you (supposedly) did.") # I'm fairly certain that they don't have to do that at all.
+$T.AE(1,"43:00",":The ADA has to prove that you did what you (supposedly) did.")
+
+# 00417
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I'm fairly certain that they don't have to do that at all.                                                        |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"43:07",":Ok.")
 $T.AE(1,"43:09",":Ok...? <pauses> Not us. And that's between HER, and WALMART, and YOU. Not the Sheriffs office.") 
 $T.AE(0,"43:19",":Alright.")
@@ -967,7 +1637,15 @@ $T.AE(1,"43:38",":Ok.")
 $T.AE(5,"43:43",":<phone system>FIVE ONE EIGHT THREE THREE ZERO FIVE FIVE EIGHT THREE")
 $T.AE(1,"43:51",":Hello judge, Deputy Sheriff from the Saratoga County Sheriffs Office, it's uh- Friday the sixteenth at about one-thirty in the afternoon...? Um, I have mister Cook here, he's been very cooperative, it's on your arrest warrant from Wednesday from the larceny out of Walmart <clears throat>, wondering what you wanna do, um- you can give my cell phone a call FIVE ONE EIGHT FOUR FIVE ZERO NINE NINE FOUR EIGHT. FIVE ONE EIGHT FOUR FIVE ZERO NINE NINE FOUR EIGHT, thank you. <hangs up the phone> See what the judge has got to say. More than likely it'll be (1) write you an appearance ticket, and (2) kick you free. <pauses> Alright...")
 $T.AE(1,"44:35","*starts typing away at keyboard")
-$T.AE(0,"44:42",":You know this system is uh- quite corrupt, right...?") # And, he does, because he later mentions something to that effect.
+$T.AE(0,"44:42",":You know this system is uh- quite corrupt, right...?")
+
+# 00432
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | And, he does, because he later mentions something to that effect.                                                 |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"44:47",":Like, in order to be able to ARREST somebody, a police officer is supposed to be able to CORROBORATE a story. So, if people are providing testimony-") 
 $T.AE(1,"44:54",":If- again- again...")
 $T.AE(0,"44:56",":Right.")
@@ -977,7 +1655,15 @@ $T.AE(1,"44:58",":If it was US, if it was the police, signing the complaint, yea
 $T.AE(0,"45:17",":Right.")
 $T.AE(1,"45:18",":K...? Just so we, for us-")
 $T.AE(0,"45:19",":What I'm saying, like- but what I'm saying is this... What if WALMART P- LOSS PREVENTION, just says 'Hey, that guy right there...? He stole somethin' from the store.' And then, they do that THOUSANDS OF TIMES to get INNOCENT PEOPLE in trouble. That's what I'm saying, is like, and then, there's a very real possibility-")
-$T.AE(1,"45:37",":Well, at SOME point it's gonna come back to bite em, if they're not doin' their jobs correctly,") # This case IS that "point". That's my point. This case is gonna blow up in their face. I'm CERTAIN OF IT.
+$T.AE(1,"45:37",":Well, at SOME point it's gonna come back to bite em, if they're not doin' their jobs correctly-") 
+
+# 00442
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | This case IS that "point". That's my point. This case is gonna blow up in their face. I'm CERTAIN OF IT.          |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"45:41",":Ok, but what I'm saying is, if- the person... that's being ACCUSED... can't PROVE that they're innocent... and then, the party that IS making the accusation, seems to- I dunno.")
 $T.AE(1,"45:59",":Well, that's- that's where the ATTORNEY comes in.")
 $T.AE(0,"46:02",":Right, but if I don't HAVE money for an ATTORNEY, then I have to rely on a PUBLIC DEFENDER-")
@@ -992,12 +1678,36 @@ $T.AE(0,"47:42",":And, when I tell SCOTT SCHELLING, JEFFREY KAPLAN, and JOSHUA W
 $T.AE(0,"48:04",":I mean, like, look at it this way... if I wanna KILL somebody, right...?")
 $T.AE(1,"48:08",":Yup.")
 $T.AE(0,"48:08",":And, I call the police and say 'Yeah, this dude just jumped in front of my car', well...? I'm gonna- and I- if I worked IN the police, and I KNOW these tricks, right? Like these 2 kids DO, and I call the police and say 'Yeah, this kid just jumped in front of my car, and now I hit him. He's on the side of the road.' Well...? They're not gonna get in trouble, are they...?")
-$T.AE(1,"48:34",":<makes exasperated sound> Well...") # Yeah, I think this guy knows I'm not faking this shit, now. Probably has to keep the thought to himself.
+$T.AE(1,"48:34",":<makes exasperated sound> Well...") 
+
+# 00457
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Yeah, I think this guy knows I'm not faking this shit, now. Probably has to keep the thought to himself.          |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"48:36",":Right, dude just ran right in front of my car, and now he's dead. <pauses> Committed suicide, it was an ACCIDENT. I think you know what I'm tryin' to say.")
 $T.AE(1,"48:55","*typing on keyboard")
 $T.AE(0,"49:11",":This is what happened to my dad. <pauses> I dunno, there's something you're thinkin' and you're not verbalizing it, and that's- scaring me.")
-$T.AE(1,"49:27",":You know what I'm thinkin' and I'm not verbalizing it...? Is that what you just said...?") # This is the first time that he's FULLY MIRRORED something I've stated, though it is NOT quite verbatim.
-$T.AE(0,"49:32",":I'm uh- I'm making SPECULATIONS. I'm not ASSUMING that you're hearing me, and droning it out.") # I did at first, but NOW, I'm not thinking that.
+$T.AE(1,"49:27",":You know what I'm thinkin' and I'm not verbalizing it...? Is that what you just said...?") 
+
+# 00461
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | This is the first time that he's FULLY MIRRORED something I've stated, though it is NOT quite verbatim.           |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(0,"49:32",":I'm uh- I'm making SPECULATIONS. I'm not ASSUMING that you're hearing me, and droning it out.") 
+
+# 00462
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I did at first, but NOW, I'm not thinking that.                                                                   |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"49:38",":I think you're processing some of what I'm saying, but I don't think you know how to REACT to it.") 
 $T.AE(0,"49:50",":Like if I was wearin' a suit right now, and I had like uh- a golden watch, and uh, you know I had, a bunch of stuff that said 'this dude is incredibly rich', I don't even think I'd be here right now...")
 $T.AE(1,"50:02",":Well, <clears throat> ok. Obviously you don't know me, and I don't know you, but I'm only gonna tell you this one time.")
@@ -1027,43 +1737,76 @@ $T.AE(0,"51:18",":Ok.")
 $T.AE(1,"51:18",":I'm ALSO trying to multitask... <pauses> And again, I- I don't care WHAT you wear, how- HOW important you are, ye- YOU could be the president sittin' there, if you violated the law, and I have what I need, to do my job... I'm gonna do my job.")
 $T.AE(0,"51:35",":Ok.")
 $T.AE(1,"51:36",":Regardless...")
-# ________________________________________________________________________________________
-# | So, just to put it into context...? The man just told me the fuckin' game plan.      |
-# | He literally just told me who's who, what's what, and... that's that.                |
-# | So, if the bad guys are out there, reading this...? That means it's game over, dude. |
-# | Time for you fucks to wave a white flag, cause... you just lost right there.         |
-# | Here's a diagram of what this man just said...                                       |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-# ________________________________________________________________________________________________________
-# | If you are...      | And you have...             | And HE has...               | You are...          |
-# |--------------------|-----------------------------|-----------------------------|---------------------|
-# |        COOL enough | Broken the law              | What he NEEDS to do his JOB | Fucked, pal.        |
-# |    NOT COOL enough | Broken the law              | What he NEEDS to do his JOB | Still fucked, pal.  |
-# |      the President | Broken the law              | What he NEEDS to do his JOB | STILL fucked, pal.  |
-# | Hillary R. Clinton | Leaked classified docs      | What he NEEDS to do his JOB | Fucked, lady.       |
-# |       Andrew Cuomo | sexually harasses 11 women  | What he NEEDS to do his JOB | REAL fucked, dude.  |
-# |  Julien P. Assange | exposed gov't breaking laws | What he NEEDS to do his JOB | WICKED fucked, pal. |
-# |  Edward J. Snowden | exposed gov't breaking laws | What he NEEDS to do his JOB | WICKED fucked, pal. |
-# |    Michael C. Cook | Doesn't steal something     | What he NEEDS to do his JOB | A douchebag, dude.  |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# ________________________________________________________________________________________________________
-# | Dude's probably gonna catch wind of this and think that I'm TEASING him, but no. I'm not.            |
-# | I'm just certain that it's gonna come off as if I'm teasing him when I'm being serious.              |
-# | In "LAW ENFORCEMENT 101", cops are supposed to have this attitude. However, uh-                      |
-# | What does an OFFICER OF THE LAW NEED TO DO THEIR JOB...? Evidence. Or an order.                      |
-# | Or like, a pyramid of labyrinthian laden textbooks that outline STATUTES, LAWS, and REGULATIONS...   |
-# | basically a PHD in SARATOGA COUNTY SHERIFFS OFFICE CODE and CONDUCT, which doesn't exist.            |
-# | If you're in an AIRPLANE, and that AIRPLANE is flying over SARATOGA COUNTY... and this dude finds    | 
-# | out that you committed a crime in that airplane...? THEN, you're fucked.                             | 
-# | I am kidding around, here. I am actually teasing this guy a fair amount, not because I'm poking fun  |
-# | at HIM, but I know for a god damn fact that OTHER OFFICERS in HIS UNIT, they THINK OF WAYS TO BREAK  |
-# | THE LAW... legally. Because, why the hell not...? Breaking the law, LEGALLY... is stupid. But, that  |
-# | is ACTUALLY WHAT SOME OF HIS COWORKERS DO.                                                           |
-# | Regardless, IF THIS GUY MEANS WHAT HE SAYS, and SAYS WHAT HE MEANS...? I'll take it.                 |
-# | Because, that mentality means that he DOES HAVE INTEGRITY.                                           |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00491
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | So, just to put it into context...? The man just told me the fuckin' game plan.                                   |
+# | He literally just told me who's who, what's what, and... that's that.                                             |
+# |                                                                                                                   |
+# | So, if the bad guys out there are reading this...? That means it's game over, dude.                               |
+# | Time for you fucks to wave a white flag, cause... you just lost right there.                                      |
+# | Here's a diagram of what this man just said...                                                                    |
+# | ________________________________________________________________________________________________________          |
+# | | If you are...      | And you have...             | And HE has...               | You are...          |          |
+# | |--------------------|-----------------------------|-----------------------------|---------------------|          |
+# | |        COOL enough | Broken the law              | What he NEEDS to do his JOB | Fucked, pal.        |          |
+# | |    NOT COOL enough | Broken the law              | What he NEEDS to do his JOB | Still fucked, pal.  |          |
+# | |      the President | Broken the law              | What he NEEDS to do his JOB | STILL fucked, pal.  |          |
+# | | Hillary R. Clinton | Leaked classified docs      | What he NEEDS to do his JOB | Fucked, lady.       |          |
+# | |       Andrew Cuomo | sexually harasses 11 women  | What he NEEDS to do his JOB | REAL fucked, dude.  |          |
+# | |  Julien P. Assange | exposed gov't breaking laws | What he NEEDS to do his JOB | WICKED fucked, pal. |          |
+# | |  Edward J. Snowden | exposed gov't breaking laws | What he NEEDS to do his JOB | WICKED fucked, pal. |          |
+# | |    Michael C. Cook | Doesn't steal something     | What he NEEDS to do his JOB | A douchebag, dude.  |          |
+# | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯          |
+# | Dude's probably gonna catch wind of this and think that I'm TEASING him, but no. I'm not.                         |
+# | I'm it's gonna come off as if I'm teasing him, when I'm being serious.                                            |
+# |                                                                                                                   |
+# | In "LAW ENFORCEMENT 101", cops are supposed to have this attitude. However, uh-                                   |
+# |                                                                                                                   |
+# | What does an OFFICER OF THE LAW NEED TO DO THEIR JOB...? Evidence. Or an order.                                   |
+# | Or like, a pyramid of labyrinthian laden textbooks that outline STATUTES, LAWS, and REGULATIONS...                |
+# | ...basically a PHD in SARATOGA COUNTY SHERIFFS OFFICE CODE and CONDUCT, which doesn't exist.                      |
+# |                                                                                                                   |
+# | The point is...? If you're in an AIRPLANE, and that AIRPLANE is flying over SARATOGA COUNTY, and this dude finds  |
+# | out that you committed a crime in that airplane...? Then, you're basically FUCKED, dude. So, you better not do    |
+# | ANYTHING ILLEGAL, ever. Otherwise, this dude will fucking hunt you down until you're caught. So...                |
+# |                                                                                                                   |
+# | I am kidding around, here. I am actually teasing this guy a fair amount, not because I'm poking fun at HIM, but I |
+# | know for a god damn fact that OTHER OFFICERS THINK THIS WAY, but also, (YOUNGER/OTHER) OFFICERS in HIS UNIT, as   |
+# | well as OUTSIDE OF HIS UNIT...? Many of them THINK OF WAYS TO BREAK THE LAW... legally.                           |
+# |                                                                                                                   |
+# | If you don't believe me...? Contact this number... 518-884-4796, ask to talk with MIKE DEPRESSO, and tell him:    |
+# | "Hey, this fuckin' guy says that the POLICE BREAK THE FUCKING LAW A LOT... is this true...?"                      |
+# | Well, the dipshit whose phone number I pasted...? He will say that the police ALWAYS have PROBABLE CAUSE...       |
+# |                                                                                                                   |
+# | But, that's because of how fuckin' stupid guys like him actually sound when they ignore shit like 'EVIDENCE'.     |
+# |                                                                                                                   |
+# | If you don't feel like calling the most highly seasoned expert level (public defender/prosecutor) in existence?   |
+# | Watch this...                                                                                                     |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | The Shield - The Crimes of Vic Mackey | https://youtu.be/U9vw_skWQGo                                              |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | MIKE DEPRESSO will fuckin' say "OoooOOOhHhhHhHhhoOohhhh, that's a FICTIONAL SHOW, douchebag..."                   |
+# | And, he'd be correct. However, uh- tell him that VIC MACKEY, and DEREK CHAUVIN have a LOT in common...            |
+# | At which point, MIKE DEPRESSO is gonna have to shut the fuck up in order to not sound like a total fuckin’ moron. |
+# |                                                                                                                   |
+# | That's why this stuff called 'EVIDENCE' is pretty fucking important, and it SEPARATES when a POLICE OFFICER has   |
+# | PROBABLE CAUSE in order to MAKE AN ARREST, versus a POLICE OFFICER that STANDS TO BE CHARGED WITH A CRIME.        |
+# |                                                                                                                   |
+# | Guys like MIKE DEPRESSO don't like to work that hard, and that is why they will PRETEND like that EVIDENCE...?    |
+# | It's fuckin' stupid. And, so is anyone that records a video of a police officer breaking the law.                 |
+# |                                                                                                                   |
+# | MIKE DEPRESSO does not want to admit that he KNOWS that police officers BREAK THE LAW ALL THE TIME.               |
+# | Because, some of them get BALLSY and start to think "Why the hell not...?"                                        |
+# | Mike Depresso actually encourages the police to break the law, LEGALLY... and that's why he's stupid.             |
+# |                                                                                                                   |	
+# | But, that is ACTUALLY WHAT SOME OF MICHAEL SHERIDAN's COWORKERS DO, breaking the law LEGALLY.                     |
+# |                                                                                                                   |
+# | Regardless, IF THIS GUY MEANS WHAT HE SAYS, and SAYS WHAT HE MEANS...? I'll take it.                              |
+# | Because, that mentality means that he DOES HAVE INTEGRITY.                                                        |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 $T.AE(0,"51:37",":Alright, I believe you.")
 $T.AE(1,"51:40",":And you know, it's nothin' against YOU...<pauses>")
@@ -1077,27 +1820,32 @@ $T.AE(1,"52:04",":Well... you- you're basically, correct in the aspect that I do
 $T.AE(0,"52:19",":Right.")
 $T.AE(1,"52:20",":Based on the information (hearsay) that they were provided by WALMART... ok...?")
 $T.AE(0,"52:28",":Right.")
-$T.AE(1,"52:28",":Is what she based on, she based the warrant on.") # Every time I hear him repeat this, it makes me laugh. Not his fault, but because of how stupid it is.
+$T.AE(1,"52:28",":Is what she based on, she based the warrant on.")
 
-# ________________________________________________________________________________________________________________
-# | So if WALMART LOSS PREVENTION GUY typically has EVIDENCE to provide in a COMPLAINT to make it LEGITIMATE...? |
-# | They didn't NEED that this time, nah. It SOUNDS STUPID, right...? But, in THIS case, it isn't cause it's ME. |
-# | It is probably because THEY think I'm stupid, and that MUST mean that since they FEEL like I'm stupid? I am. |
-# | And, they're NOT stupid at all... especially if they don't feel like they are. Nah. So, it is what it is.    |
-# | I'm stupid, they're not, it's over. Argument basically over and done. However, uh- here's the problem.       |
-# | If they didn't NEED EVIDENCE in THIS CASE...? Why would they ever NEED EVIDENCE in ANY case...? Ya know...?  |
-# |--------------------------------------------------------------------------------------------------------------|
-# | Basically, if a judge is handed a COMPLAINT based on HEARSAY, then the WARRANT based on HEARSAY is why I was |
-# | ARRESTED. Because, you know, APPARENTLY I've SUPPOSEDLY been known for stealing things, and have never been  |
-# | caught. Even now. Not caught. Suspected. No evidence. Suspiscion and evidence...? Not equal, dude.           |
-# | Which means that they just see a guy that looks suspicious. That's it. That's (PREJUDICE -> DISCRIMINATION). |
-# |--------------------------------------------------------------------------------------------------------------|
-# | Which means, no evidence led to that WARRANT being written. Just someone making up a story.                  |
-# | That's strange, right...? In a store where many people are caught taking stuff ON VIDEO...? I wasn't caught  | 
-# | taking anything on video... so, if I wasn't caught on video, then they can just say that I took something in |
-# | a complaint, because it FELT like they PRACTICALLY SAW ME, taking something... and THAT'S effectively worth  |
-# | writing a fucking arrest warrant.                                                                            |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00504
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Every time I hear him repeat this, it makes me laugh. Not his fault, but because of how stupid it is.             |
+# |                                                                                                                   |
+# | So if WALMART LOSS PREVENTION GUY typically has EVIDENCE to provide in a COMPLAINT to make it LEGITIMATE...?      |
+# | They didn't NEED that this time, nah. It SOUNDS STUPID, right...? But, in THIS case, it isn't cause it's ME.      |
+# | It is probably because THEY think I'm stupid, and that MUST mean that since they FEEL like I'm stupid? I am.      |
+# | And, they're NOT stupid at all... especially if they don't feel like they are. Nah. So, it is what it is.         |
+# | I'm stupid, they're not, it's over. Argument basically over and done. However, uh- here's the problem.            |
+# | If they didn't NEED EVIDENCE in THIS CASE...? Why would they ever NEED EVIDENCE in ANY case...? Ya know...?       |
+# |                                                                                                                   |
+# | Basically, if a judge is handed a COMPLAINT based on HEARSAY, then the WARRANT based on HEARSAY is why I was      |
+# | ARRESTED. Because, you know, APPARENTLY I've SUPPOSEDLY been known for stealing things, and have never been       |
+# | caught. Even now. Not caught. Suspected. No evidence. Suspicion and evidence...? Not equal, dude.                 |
+# | Which means that they just see a guy that looks suspicious. That's it. That's (PREJUDICE → DISCRIMINATION).       |
+# |                                                                                                                   |
+# | Which means, no evidence led to that WARRANT being written. Just someone making up a story.                       |
+# | That's strange, right...? In a store where many people are caught taking stuff ON VIDEO...? I wasn't caught       |
+# | taking anything on video... so, if I wasn't caught on video, then they can just say that I took something in      |
+# | a complaint, because it FELT like they PRACTICALLY SAW ME, taking something... and THAT'S effectively worth       |
+# | writing a fucking arrest warrant.                                                                                 |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"52:32",":The question, that I have here, is this.")
 $T.AE(1,"52:33",":Yup.")
@@ -1120,7 +1868,16 @@ $T.AE(0,"55:45",":So if George Bush, and the CIA manipulated Osama Bin Laden int
 $T.AE(1,"56:00",":Ok.")
 $T.AE(0,"56:01",":Well, what happened is that 8 years later, Osama Bin Laden will attack AGAIN, and the CIA and whoever else, will... line the entire exoskeleton of the Twin Towers as well as World Trade Center 7 with THERMITE and EXPLOSIVE PACKAGES, whereby causing an incident known as 'CONTROLLED DEMOLITION'.")
 $T.AE(0,"56:23",":And then he'll have the National Institute of Standards and Technology say that, uh- the PLANES are the reason why the buildings fell.")
-$T.AE(1,"56:31",":Ok.") # It seems to me that he IS processing what I'm saying. I know he's MULTITASKING... but he's not suggesting that what I'm saying is fuckin' stupid... yet.
+$T.AE(1,"56:31",":Ok.") 
+
+# 00526
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | It seems to me that he IS processing what I'm saying.                                                             |
+# | I know he's MULTITASKING... but he's not suggesting that what I'm saying is fuckin' stupid... yet.                |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"56:33",":The planes are not the reason why those buildings fell. It was an act of SABOTAGE by people in the United States. So that they could have a reason to go fight a war in the middle east.")
 $T.AE(1,"56:45","*entering keys*")
 $T.AE(1,"57:09",":Alright... <long sigh>")
@@ -1141,352 +1898,147 @@ $T.AE(1,"58:44",":Ok...?")
 $T.AE(0,"58:46",":But I have an audio recording of the entire interaction between me and my mother, and she doesn't make any mention, that I think she had something to do with conspiring to murder my father...?")
 $T.AE(1,"58:54",":Ok.")
 $T.AE(0,"58:57","Why is it that my uh- evidence is never collected...? nobody's taking that seriously. If I state that my mother made a FALLACIOUS STATEMENT to the police, on June 28th, 2020 (I meant 2022), and I have an AUDIO RECORDING of what happened that morning...? And they arrest me as soon as I tell that that thing was UPLOADED BEFORE she made her 911 call...? Oh. That's how I know that there's PREJUDICE being applied to me. and you're taking part of it, right now.")
-$T.AE(1,"59:25",":Ok. <pause> Well, I disagree with that, ya know...") # He's not KNOWINGLY doing this, he's TAKING PART of it. ARRESTING someone based on HEARSAY. That's PREJUDICE. Essentially, I'm GUILTY until I prove myself INNOCENT, and even if I PROVE MYSELF INNOCENT, I'm still considered GUILTY. That's PREJUDICE.
+$T.AE(1,"59:25",":Ok. <pause> Well, I disagree with that, ya know...") 
+
+# 00547
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | He's not KNOWINGLY doing this, he's TAKING PART of it. ARRESTING someone based on HEARSAY. That's PREJUDICE.      |
+# | Essentially, I'm GUILTY until I prove myself INNOCENT, and even if I PROVE MYSELF INNOCENT,                       |
+# | I'm still considered GUILTY. That's PREJUDICE.                                                                    |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"59:29",":I'm sure you do...")
-$T.AE(1,"59:31",":Cause I've tried to explain this to ya several times...") # He does not understand what I'm saying. That's the end of the argument.
+$T.AE(1,"59:31",":Cause I've tried to explain this to ya several times...") 
+
+# 00549
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | He does not understand what I'm saying. That's the end of the argument.                                           |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"59:34",":But I understand what you're saying... (I obviously understand what he's saying) I don't think you're understanding, what I'm saying...")
 $T.AE(1,"59:38",":I understand EXACTLY what you're saying... ")
 
-# ___________________________________________________________________________________________________________________________________
-# | I really do not think that he does. When I say PEOPLE have developed PREJUDICE toward me...? What that means is this...         |
-# | If I am INNOCENT of something...? PEOPLE THAT HAVE DEVELOPED PREJUDICE TOWARD ME will AUTOMATICALLY treat as if I am GUILTY.    |
-# | It actually falls under a genre called DISCRIMINATION. That's actually PRETTY DIFFICULT TO PROVE, unless you're ME, & it isn't. |
-# | Therefore, because of the NUMEROUS PEOPLE on this RETARDED WHEEL OF PREJUDICE, it doesn't matter:                               |
-# | _______________________________________________________________                                                                 |
-# | | Whether I'm INNOCENT, OR, whether I can PROVE my INNOCENCE. |                                                                 |
-# | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                                 |
-# | Wanna know why...? That's how PREJUDICE works. If I say (1) thing, and people AUTOMATICALLY assume that there MUST be some      |
-# | other explanation...? In some cases, that's actually PREJUDICE, because they're treating me as if I'm ALREADY GUILTY.           |
-# | It's not LEGAL for people to do this, but people do it anyway, because of how stupid a lot of people in our society really are. |
-# | But- if it happens ENOUGH TIMES...? That's DISCRIMINATION. If it can be PROVEN, reliably, that there is a PATTERN, of this...?  |
-# | That can result in someone's PROFILE being DAMAGED to the point where everything they say is ignored. So if someone attempts    | 
-# | to MURDER SOMEBODY that has EVIDENCE of the MURDER ATTEMPT...? Then this DISCRIMINATION thing will force MICHAEL ZURLO to       |
-# | commit OBSTRUCTION OF JUSTICE. Or, Pelagalli to sentence me to (20) days in the county jail when i've noticed his court sending |
-# | emails for virtual appearances that were all OFFSET by (5) hours. So, appearances for 9AM will be emailed to me as 2PM, and     |
-# | then I will MISS my appearances because some lazy morons failed to do their job correctly, and then they just KEPT DOING THAT.  |
-# |---------------------------------------------------------------------------------------------------------------------------------|
-# | So what I'm suggesting is this:                                                                                                 |
-# | If a JUDGE can ORDER me to a fucking MENTAL HEALTH CLINIC to see (2) doctors that DON'T EVEN WORK THERE...                      |
-# | And then I tell the judge that court order he wrote was WRITTEN IN ERROR...?                                                    |
-# | He's going to SENTENCE ME TO (20) DAYS IN THE SARATOGA COUNTY JAIL for telling him that he wrote an ORDER INCORRECTLY.          |
-# | So, if you think that's stupid...? Well, think again, fuckface. HE made that mistake. THAT MEANS, it's MY FAULT, not HIS...     |
-# | It's just your OPINION that he made a mistake, and you're not even ALLOWED to tell the judge, what your OPINION is, either.     |
-# | Because. It's against the law to tell a judge that they made a mistake, and it is INCREDIBLY OFFENSIVE, too.                    |
-# | If what I'm saying sounds retarded...? Too bad.                                                                                 |
-# | You HAVE to do what I do, and RECORD THE COURT INTERACTION which they MADE ILLEGAL, because a bunch of whiny bitches like       |
-# | NEIL WEINER exist. They don't care about CONSTITUTIONAL RIGHTS or COURTS SENDING WRONG VIRTUAL APPEARANCE TIMES IN EMAILS, nah. |
-# | NEIL WEINER thinks that shit is stupid. But, YOU...? RECORDING A COURT INTERACTION WHERE A JUDGE ADMITS HE MADE A MISTAKE...?   |
-# | That's worth AT LEAST (20) DAYS IN THE COUNTY JAIL, ya fuck. Fuck you for trying to make an official judge look careless.       |
-# | Cause that shit is AGAINST THE LAW, even if it really SHOULDN'T BE. "Fuck your constitutional rights, dude." -Neil Weiner       |
-# | So at that point, I have to talk about how 20 * $285 = $5700 that Judge Paul Pelagalli owes me FOR THAT PARTICULAR MISHAP.      |
-# | But ALSO... lets whip out the SARATOGA COUNTY RETARDED WHEEL OF PREJUDICE courtesy of SARATOGA COUNTY FAMILY COURT:             |
-# |---------------------------------------------------------------------------------------------------------------------------------|
-# | SARATOGA COUNTY RETARDED WHEEL OF PREJUDICE                                                                                     |
-# | EVIDENCE and the INCIDENT that ALL of these RETARDED PEOPLE BELOW, NEVER INVESTIGATED...                                        |
-# | https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt                                     |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00551
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I really do not think that he does. When I say PEOPLE have developed PREJUDICE toward me...?                      |
+# | What that means is this...                                                                                        |
+# |                                                                                                                   |
+# | If I am INNOCENT of something...? PEOPLE THAT HAVE DEVELOPED PREJUDICE TOWARD ME will AUTOMATICALLY treat as if I |
+# | am GUILTY. It actually falls under a genre called DISCRIMINATION. That's actually PRETTY DIFFICULT TO PROVE,      | 
+# | unless you're ME, then it really isn't...                                                                         |
+# |                                                                                                                   |
+# | Therefore, because of the NUMEROUS PEOPLE on this RETARDED WHEEL OF PREJUDICE, it doesn't matter:                 |
+# | _______________________________________________________________                                                   |
+# | | Whether I'm INNOCENT, OR, whether I can PROVE my INNOCENCE. |                                                   |
+# | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                   |
+# | Wanna know why...? That's how PREJUDICE works.                                                                    |
+# | If I say (1) thing, and people AUTOMATICALLY assume that there MUST be some other explanation...?                 |
+# |                                                                                                                   |
+# | In some cases, that's actually PREJUDICE, because they're treating me as if I'm ALREADY GUILTY.                   |
+# | It's not LEGAL for people to do this, but people do it anyway, because of how stupid a lot of people in our       |
+# | society really are.                                                                                               |
+# |                                                                                                                   |
+# | But- if it happens ENOUGH TIMES...? That's DISCRIMINATION.                                                        |
+# | If it can be PROVEN, reliably, that there is a PATTERN, of this...?                                               |
+# |                                                                                                                   |
+# | That can result in someone's PROFILE being DAMAGED to the point where everything they say is ignored.             |
+# |                                                                                                                   |
+# | So, if someone attempts to MURDER SOMEBODY that has EVIDENCE of the MURDER ATTEMPT...?                            |
+# | Then this DISCRIMINATION thing will force MICHAEL ZURLO to commit OBSTRUCTION OF JUSTICE like he did on 05/27/20. |
+# | Or, PAUL PELAGALLI to sentence me to (20) days in the county jail when i've noticed his court sending emails for  |
+# | virtual appearances that were all OFFSET by (5) hours.                                                            |
+# |                                                                                                                   |
+# | So, appearances for 9AM will be emailed to me as 2PM, and then I will MISS my appearances because some morons     |
+# | failed to do their job correctly, and then they just KEPT DOING THAT.                                             |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | So what I'm suggesting is this:                                                                                   |
+# | If a JUDGE can ORDER me to a fucking MENTAL HEALTH CLINIC to see (2) doctors that DON'T EVEN WORK THERE...        |
+# |                                                                                                                   |	
+# | And then I tell the judge that court order he wrote was WRITTEN IN ERROR...?                                      |
+# | He's going to SENTENCE ME TO (20) DAYS IN THE SARATOGA COUNTY JAIL for telling him that he wrote an ORDER         |
+# | INCORRECTLY. And, if YOU think that's fuckin' STUPID...? Well, think again, fuckface.                             |
+# | It's NOT stupid at all, ESPECIALLY if it was a JUDGE that did that.                                               |
+# | Judges NEVER make mistakes, ever. It's just, never happened at ANY POINT IN HISTORY.                              |
+# |                                                                                                                   |
+# | If HE made that mistake...? THAT MEANS, it's MY FAULT, not HIS...                                                 |
+# | Nah, it was the cut of my jib that distracted the man from writing a court order correctly the FIRST time.        |
+# | So, if anything, that's worth (20) days in jail.                                                                  |
+# |                                                                                                                   |
+# | It's just your OPINION that he made a mistake, and you're not even ALLOWED to tell the judge, what your OPINION   |
+# | is, either. Because. It's against the law to tell a judge that they made a mistake. It is INCREDIBLY OFFENSIVE,   |
+# | too.                                                                                                              |
+# |                                                                                                                   |
+# | If what I'm saying sounds retarded...? That's too bad. YOU'RE retarded.                                           |
+# |                                                                                                                   |
+# | You HAVE to do what I do, and RECORD THE COURT INTERACTION which they MADE ILLEGAL, because a bunch of whiny      |
+# | bitches like NEIL WEINER and MIKE DEPRESSO, exist. They don't care about CONSTITUTIONAL RIGHTS or COURTS SENDING  |
+# | WRONG VIRTUAL APPEARANCE TIMES IN EMAILS, nah. In their eyes, your CONSTITUTIONAL RIGHTS are fuckin' stupid, and  |
+# | so are YOU... So...                                                                                               |
+# |                                                                                                                   |
+# | NEIL WEINER thinks that shit is stupid. But, YOU...? RECORDING A COURT INTERACTION WHERE A JUDGE ADMITS HE MADE A |
+# | MISTAKE...? That's worth AT LEAST (20) DAYS IN THE COUNTY JAIL, ya fuck. Fuck you for trying to make an official  |
+# | judge look careless. That is ACTUALLY, LEGITIMATELY, ACTUALlY, FACTUALLY, against the fucking law.                |
+# |                                                                                                                   |
+# | Yeah, that shit is AGAINST THE LAW, even if it really SHOULDN'T BE.                                               |
+# | "Fuck YOU Michael C. Cook Sr....? AND your CONSTITUTIONAL RIGHTS, dude. You make me fuckin' sick." -Neil Weiner   |
+# |                                                                                                                   |
+# | So, at that point, even though I did a pretty good job of illustrating the RIDICULOUS NATURE of this ENTIRE       |
+# | FUCKING SCENARIO called SARATOGA COUNTY FAMILY COURT...? I still have to DRIVE THE POINT AS FAR HOME AS POSSIBLE, |
+# | and say stuff like 20 days * $285 dollars = $5700 dollars that (FAMILY COURT/Judge Paul Pelagalli) owes me, FOR   |
+# | THAT PARTICULAR MISHAP, otherwise it'll be a MUCH LARGER LAWSUIT to the tune of $300M.                            |
+# |                                                                                                                   |
+# | So, let's whip out the SARATOGA COUNTY RETARDED WHEEL OF PREJUDICE courtesy of SARATOGA COUNTY FAMILY COURT:      |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | SARATOGA COUNTY RETARDED WHEEL OF PREJUDICE                                                                       |
+# | EVIDENCE and the INCIDENT that ALL of these RETARDED PEOPLE BELOW, NEVER INVESTIGATED...                          |
+# | https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt                       |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-Class Person
-{
-    [UInt32] $Index
-    [String] $Name
-    [String] $Description
-    Person([UInt32]$Index,[String]$Name,[String[]]$Description)
-    {
-        $This.Index       = $Index
-        $This.Name        = $Name
-        $This.Description = $Description -join "`n"
-    }
-}
+$T.AE(1,"59:41",":You think I'm doin' this because I'm prejudice, which I'm not.") 
 
-Class PersonList
-{
-    [Object] $Output
-    PersonList()
-    {
-        $This.Output = @( )
-    }
-    Add([String]$Name,[String[]]$Description)
-    {
-        If ($Name -in $This.Output.Name)
-        {
-            Throw "Person already specified"
-        }
+# 00552
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Nah, I'm not saying that HE has prejudice, but the JUDGE apparently does.                                         |
+# |___________________________________________________________________________________________________________________|
 
-        $This.Output += [Person]::New($This.Output.Count,$Name,$Description)
-    }
-}
-
-$People = [PersonList]::new()
-$People.Add("SCSO Scott Schelling",
-            ("Dude who was the FIRST PERSON ON THE SCENE at the ZAPPONE DEALERSHIP after 2 25-30 year old white males attempted to murder me using PEGASUS/PHANTOM.",
-            "Guy attempted to arrest me because he didn't understand that I tried to call 911 multiple times after almost being killed near COMPUTER ANSWERS.",
-            "Asked me MULTIPLE QUESTIONS at 201D HALFMOON CIRCLE, CLIFTON PARK, NY 12065 at 0155AM and then never wrote any notes about those questions.",
-            "I believe he had some hand in DESTROYING THE EVIDENCE of my 2nd 911 call at CENTER FOR SECURITY that I made at 05/26/20 0010.",
-            "Caused me to believe that SCSO has some DIRTY OFFICERS ON STAFF THAT INDISCRIMINATELY COMMIT CRIMINAL ACTIVITIES and NEVER GET CAUGHT."))
-
-$People.Add("SCSO Mark Sheehan",
-            ("I do not believe that this dude is a MALICIOUS cop, based on multiple interactions, however, on 06/13/20, this man IGNORED my STORY about how ",
-            "my neighbor, WILLIAM MOAK, threatened to kill me from his kitchen window, and then ran onto my property with a baseball bat in his hand out of 'FEAR',",
-            "except there was no 'out of FEAR' aspect, there was an 'out of FRUSTRATION' aspect where this man attempted to assault me with that baseball bat",
-            "on my fucking property, and then my STEPFATHER MICHAEL H. STREETER, and JANET MOAK, had to RESTRAIN WILLIAM MOAK from ASSAULTING ME WITH THE BAT...",
-            "on my fucking property... not HIS... and then (3) people provided FALSE TESTIMONY on a WRITTEN INSTRUMENT, AKA committed PERJURY.",
-            "Also, same guy came to my house on 08/31/20 when I called the police because I suspected that my MOTHER, FABIENNE S. COOK, had something to do",
-            "with conspiring to murder my father, MICHAEL EDWARD COOK, because she kept WALKING AWAY FROM ME when I talked about my father's murder.",
-            "Here's a link to the AUDIO transcription from JUNE 28th, 2022 that sorta suggests the same fucking thing...",
-            "https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0831-(Mom%2006-28-2022).ps1 <- Aw. My poor mother committed PERJURY on 06/28/22."))
-
-$People.Add("NYSP Trooper Borden",
-            ("Dude who somehow works with the NEW YORK STATE POLICE, but is incredibly fucking stupid. Doesn't know what ESPIONAGE or PHANTOM/PEGASUS are.",
-            "Dude actually doesn't CARE if I keep calling him STUPID, or that SCSO CLAYTON BROWNELL heard the ENTIRE INTERACTION between us on 06/17/20 at GT Toys.",
-            "Basically, I asked TROOPER BORDEN for an ESCORT to the local FBI FIELD OFFICE or a MILITARY FACILITY because I had EVIDENCE in the EVIDENCE LIST...",
-            "But he thought that shit was retarded. Evidence is stupid in his eyes, and THAT'S what makes him such a reliable NYSP Trooper.",
-            "Here's a link to the EVIDENCE LIST that TROOPER BORDEN IGNORED...",
-            "https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt <- Aw. A lot of morons exist in SARATOGA COUNTY."))
-
-$People.Add("Laura Hughes",
-            ("Some bitch from SARATOGA COUNTY CHILDRENS PROTECTIVE SERVICES who wrote a FRAUDULENT LETTER OF INDICATION on June 18th, 2020",
-            "Probably never looked at a SINGLE EXHIBIT on this list...",
-            "https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt"))
-
-$People.Add("SCSO Michael Whiteacre",
-            ("Dude who came to my house with SCSO MARK SHEEHAN on 06/18/20 when Laura Hughes was there, asking questions about the 2 dudes on 05/26/20.",
-            "Dude has probably never looked at an entire list of evidence either, so when I paste...",
-            "https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt",
-            "...he's gonna have no idea how to look at any of that shit... and that's why he's such a reliable police officer isn't he...?",
-            "He will later have a conversation in this transcription that I'll have to UNPACK and EXAMINE in order to POTENTIALLY INCRIMINATE HIM..."))
-
-$People.Add("Heather Corey Mongue",
-            ("Some bitch that I sent an EMAIL to, about WHO I was investigating, SUPPOSEDLY practices law, but needs a MENTAL HANDICAP applied...",
-            "Probably doesn't understand this exhibit here:",
-            "https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD <- Aw. Heather Corey-Mongue was told about this before this FAMILY COURT case."))
-
-$People.Add("SCSO Michael Zurlo",
-            "Guy who supposedly runs SARATOGA COUNTY SHERIFFS OFFICE, but ALSO needs a MENTAL HANDICAP applied, commits OBSTRUCTION OF JUSTICE indiscriminately")
-
-$People.Add("SCSO James Leonard",
-            "Plays with his dick in a bathtub all day, and calls that being a COUNTY SHERIFF, also commits OBSTRUCTION OF JUSTICE indiscriminately")
-
-$People.Add("Eric Catricala",
-            "Supposedly a STATE ASSEMBLYMAN, runs a FUNERAL HOME that is ACROSS THE STREET FROM COMPUTER ANSWERS, lived at 20 ANCHOR DRIVE")
-
-$People.Add("Bruce Tanski",
-            "Gay bastard who owns the TANSKI CORPORATION and FAIRWAYS OF HALFMOON, commits BANK FRAUD, PAYS PEOPLE like MICHAEL ZURLO to shut the fuck up alot.")
-
-$People.Add("John Hoffman",
-            "Gay bastard that my SON and I ran into on MAY 25th, 2020 BEFORE I recorded IMG_0625.mov walking to my aunt TERRI COOK's house, talked about COIN MAGIC")
-
-$People.Add("Terri Cook",
-            "Goes around and arrests people's dogs indiscriminately... used to live at 10 INNISBROOK, worked with law firms and district attorneys in Albany")
-
-$People.Add("Thomas Cook",
-            "My uncle that doesn't realize that his building that he used to own at 46 STATE STREET, ALBANY, was basically taken by the KGB, and AUNT TERRI.")
-
-$People.Add("Paul Pelagalli",
-            "Guy who literally ordered me to go see (2) doctors (Berger|Grodin) at SARATOGA COUNTY MENTAL HEALTH, but neither of them worked there...")
-
-$People.Add("Sarah Schellinger",
-            "Some bitch that was apppointed to be my PUBLIC DEFENDER, but sorta sucked ass at it so badly that I TERMINATED HER in AUGUST 2020.")
-
-$People.Add("John Delong",
-            ("Another public defender that had no right to be my DEFENSE ATTORNEY on 10/5/2021 or 11/4/2021, advised me my TRIAL DATE was on 11/7/2021.",
-            "The case that I'm making is that if I have EVIDENCE OF HAVING TERMINATED SARAH SCHELLINGER in AUGUST 2020...",
-            "But then, my TERMINATED PUBLIC DEFENDER just so happened to have TRANSFERRED HER CASELOAD TO ANOTHER PUBLIC DEFENDER...",
-            "How the fuck could she do that with MY SPECIFIC CASE, if I have EVIDENCE of TERMINATING HER, in AUGUST of 2020...?",
-            "Well, it's because some morons exist in the SARATOGA COUNTY PUBLIC DEFENDERS OFFICE. Are they ALL morons...? Nah. But, SOME of them ARE.",
-            "Because lets look at it like this... If I'm the kid from PET CEMETERY, and my fuckin' cat dies...? I'm gonna go bury my cat.",
-            "However, uh- apparently if you decide to do that to a PUBLIC DEFENDER, they're gonna return from the seventh circle of hell, right...?",    
-            "And NOW... that fuckin' dead cat that you buried is BACK from the dead. 'How DARE you fire my ass... I'm your FREE LAWYER...'",
-            "Now you're REAL fucked, dude... cause. They're gonna HAUNT you for the rest of your days... taunting you from behind mirrors and shit."))
-
-<#
-Index Name                   Description
------ ----                   -----------
-    0 SCSO Scott Schelling   Dude who was the FIRST PERSON ON THE SCENE at the ZAPPONE DEALERSHIP after 2 25-30 year old white males attempted to murder me 
-    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   using PEGASUS/PHANTOM. Guy attempted to arrest me because he didn't understand that I tried to call 911 multiple times after 
-                             almost being killed near COMPUTER ANSWERS. 
-
-                             Asked me MULTIPLE QUESTIONS at 201D HALFMOON CIRCLE, CLIFTON PARK, NY 12065 at 0155AM and then never wrote any notes about those 
-                             questions. I believe he had some hand in DESTROYING THE EVIDENCE of my 2nd 911 call at CENTER FOR SECURITY that I made at:
-                             05/26/20 0010. Caused me to believe that SCSO has some DIRTY OFFICERS ON STAFF THAT INDISCRIMINATELY COMMIT CRIMINAL ACTIVITIES 
-                             and NEVER GET CAUGHT.
-
-    1 SCSO Mark Sheehan      I do not believe that this dude is a MALICIOUS cop, based on multiple interactions, however, on 06/13/20, this man IGNORED my 
-    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      STORY about how my neighbor, WILLIAM MOAK, threatened to kill me from his kitchen window, and then ran onto my property with a 
-                             baseball bat in his hand out of 'FEAR', except there was no 'out of FEAR' aspect, there was an 'out of FRUSTRATION' aspect where 
-                             this man attempted to assault me with that baseball bat on my fucking property, and then my STEPFATHER MICHAEL H. STREETER, and 
-                             JANET MOAK, had to RESTRAIN WILLIAM MOAK from ASSAULTING ME WITH THE BAT...  on my fucking property... not HIS... and then (3) 
-                             people provided FALSE TESTIMONY on a WRITTEN INSTRUMENT, AKA committed PERJURY.
-
-                             Also, same guy came to my house on 08/31/20 when I called the police because I suspected that my MOTHER, FABIENNE S. COOK, had 
-                             something to do with conspiring to murder my father, MICHAEL EDWARD COOK, because she kept WALKING AWAY FROM ME when I talked 
-                             about my father's murder.
-                             
-                             Here's a link to the AUDIO transcription from JUNE 28th, 2022 that sorta suggests the same fucking thing...
-                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0831-(Mom%2006-28-2022).ps1 
-                             (^ Aw. My poor mother FABIENNE SILVIE KIVLEN-COOK committed PERJURY on 06/28/22.)
-
-                             I don't really have anything against this dude, apparently he works for COHOES POLICE DEPARTMENT last time I checked.
-
-    2 NYSP Trooper Borden    Dude who somehow works with the NEW YORK STATE POLICE, but is incredibly fucking stupid. Doesn't know what ESPIONAGE or PEGASUS
-    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯     or PHANTOM, are. Dude actually doesn't CARE if I keep calling him STUPID, or that SCSO CLAYTON BROWNELL heard the ENTIRE 
-                             INTERACTION between us on 06/17/20 at GT Toys.
-
-                             Basically, I asked TROOPER BORDEN for an ESCORT to the local FBI FIELD OFFICE or a MILITARY FACILITY because I had EVIDENCE in 
-                             the EVIDENCE LIST... But he thought that shit was retarded. Evidence is stupid in his eyes, and THAT'S what makes him such a 
-                             reliable NYSP Trooper.
-
-                             Here's a link to the EVIDENCE LIST that TROOPER BORDEN IGNORED...
-                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt 
-                             (^ Aw. A lot of morons exist in SARATOGA COUNTY.)
-                             
-    3 Laura Hughes           Some bitch from SARATOGA COUNTY CHILDRENS PROTECTIVE SERVICES who wrote a FRAUDULENT LETTER OF INDICATION on June 18th, 2020
-    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯           Probably never looked at a SINGLE EXHIBIT on this list...
-                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt
-
-    4 SCSO Michael Whiteacre Dude who came to my house with SCSO MARK SHEEHAN on 06/18/20 when Laura Hughes was there, asking questions about the 2 dudes 
-    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ on 05/26/20. Dude has probably never looked at an entire list of evidence either, so when I paste...
-                             
-                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt
-                             
-                             ...he's gonna have no idea how to look at any of that shit... and that's why he's such a reliable police officer isn't he...?
-                             He will later have a conversation in this transcription that I'll have to UNPACK and EXAMINE in order to POTENTIALLY 
-                             INCRIMINATE HIM... (which is the polar opposite of how I wrote about him in my book...)
-
-                             Apparently started dating some girl named BRIANNA DYER, who I believe is associated with TATIANA CLEVELAND.
-                             Ya know...? My cousin RYAN "BOOKIE/PENCILDICK" WARD's ex-girlfriend...? There's no way all these people could possibly KNOW
-                             each other, is there...? No fuckin' way, dude... Nah. People...? Knowing each other...? That's preposterous. 
-
-    5 Heather Corey-Mongue   Some bitch that I sent an EMAIL to, about WHO I was investigating, SUPPOSEDLY practices law, but needs a MENTAL HANDICAP 
-    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   applied... Probably doesn't understand this exhibit here:
-
-                             https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD 
-                             (^ Aw. Heather Corey-Mongue was told about this before this FAMILY COURT case. Sorta links MICHAEL EDWARD COOK and
-                             JESSE PICKETT, which means NFRASTRUCTURE. Doh~! Morons all over the place OVERLOOKED THAT FACTOID~!)
-
-    6 SCSO Michael Zurlo     Guy who supposedly runs SARATOGA COUNTY SHERIFFS OFFICE, but ALSO needs a MENTAL HANDICAP applied, commits OBSTRUCTION 
-    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯     OF JUSTICE indiscriminately, and has been OBSERVED BEING INVOLVED IN PROCEDURALLY SMEARING ME IN MULTIPLE RECORDS.
-
-    7 SCSO James Leonard     Plays with his dick in a bathtub all day indiscriminately, and calls that being a COUNTY SHERIFF.
-    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯     Also commits OBSTRUCTION OF JUSTICE indiscriminately, probably WHILE playing with his dick in a bathtub all day.
-                             In the end, who knows...?
-
-    8 Eric Catricala         Supposedly a STATE ASSEMBLYMAN, runs a FUNERAL HOME that is ACROSS THE STREET FROM COMPUTER ANSWERS, lived at:
-    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯         20 ANCHOR DRIVE. Basically friends with the ol' Leonardmeister extraordinaire. Doesn't realize how retarded he looks by
-                             attempting to merge multiple incidents into the same ticket, so May 24th 2020 ~ 7pm, and May 25th 2020 ~ 1130pm, in 
-                             the same ticket doesn't look suspicious at all to either JAMES LEONARD, or SCOTT CARPENTER. Nah. That's cause they're
-                             fuckin' morons that backdated a ticket SCSO-003177 from May 27th, 2020 at 1414, to like, reported on May 24th, 2020.
-                             That's stupid, right...? Well, think again ya fuck. It's not that stupid at all. These clues slipped by EVERYBODY.
-
-    9 Bruce Tanski           Gay bastard who owns the TANSKI CORPORATION and FAIRWAYS OF HALFMOON, commits BANK FRAUD, PAYS PEOPLE like MICHAEL 
-    ¯ ¯¯¯¯¯¯¯¯¯¯¯¯           ZURLO to shut the fuck up alot, and hangs out with JOHN HOFFMAN a lot behind closed door meetings. Probably does the
-                             same exact thing that James Leonard does in his favorite bath tub at 9 MEYER ROAD.
-
-   10 John Hoffman           Gay bastard that my SON and I ran into on MAY 25th, 2020 BEFORE I recorded IMG_0625.mov walking to my aunt TERRI 
-   ¯¯ ¯¯¯¯¯¯¯¯¯¯¯¯           COOK's house, talked about COIN MAGIC. IMG_0625.MOV and IMG_0627.MOV are BOTH in the EXHBIT LIST...
-
-                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt
-
-                             Michael Whiteacre doesn't realize how stupid he looks for not looking into these events on that list.
-
-   11 Terri Cook             Goes around and arrests people's dogs indiscriminately... If your dog is running around without a leash...?
-   ¯¯ ¯¯¯¯¯¯¯¯¯¯             She has to show up and arrest your dog for walking around without one. That means, dog jail.
-                             She used to live at 10 INNISBROOK, worked with law firms and district attorneys in Albany.
-                             
-                             I think she has worked with RUSSIAN INTELLIGENCE and had involvement in: CONSPIRACY TO MURDER MICHAEL EDWARD COOK.
-                             I also talk about her in the EVIDENCE that I told SCOTT SCHELLING I had UPLOADED, at COMPUTER ANSWERS...
-
-                             https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt
-                             Notice how I keep posting that link...? Well, that's because of how many stupid people exist on planet earth.
-                             I keep trying to provide this shit to the AUTHORITIES...? But, they do what MICHAEL WHITEACRE does, and ignore it.
-
-                             Does anybody understand why I have to INSULT guys like MICHAEL WHITEACRE...? It's cause he isn't DOING HIS JOB.
-
-   12 Thomas Cook            My uncle that doesn't realize that his building that he used to own at 46 STATE STREET, ALBANY, was basically taken 
-   ¯¯ ¯¯¯¯¯¯¯¯¯¯¯            by the KGB, and AUNT TERRI.
-
-                             My uncle did NOTHING as far as I know, in attempting to have me killed for any reason, nor my father.
-                             However, UH- HE OBVIOUSLY TRUSTS PEOPLE THAT ARE A SIGNIFICANT FUCKING THREAT.
-                             
-   13 Paul Pelagalli         Guy who literally ordered me to go see (2) doctors (Berger|Grodin) at SARATOGA COUNTY MENTAL HEALTH, but neither of 
-   ¯¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯         them worked there... Seems to be so oblivious to the notion that DIRTY COPS and SOCIAL SERVICE WORKERS caused him to
-                             REVOKE CUSTODY OF MY FUCKING CHILDREN, and he doesn't understand that I had to work harder than all these people...
-                             ...at compiling this fuckin' evidence list, and searching for a way to CLEAR MY FUCKING NAME.
-
-                             Probably has no idea that the people who CONSPIRED TO MURDER MY FATHER, ATTEMPTED TO DO THE SAME THING TO ME.
-                             Cool...? Cool. That's what happened, broski. Thanks for nothin'.
-
-   14 Sarah Schellinger      Some bitch that was apppointed to be my PUBLIC DEFENDER, but sorta sucked ass at it so badly that I TERMINATED HER 
-   ¯¯ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯      in AUGUST 2020.
-
-   15 John Delong            Another public defender that had no right to be my DEFENSE ATTORNEY on 10/5/2021 or 11/4/2021, advised me my TRIAL 
-   ¯¯ ¯¯¯¯¯¯¯¯¯¯¯            DATE was on 11/7/2021. The case that I'm making is that if I have EVIDENCE OF HAVING TERMINATED SARAH SCHELLINGER 
-                             in AUGUST 2020... 
-                             
-                             But then, my TERMINATED PUBLIC DEFENDER just so happened to have TRANSFERRED HER CASELOAD TO ANOTHER PUBLIC DEFENDER.
-
-                             How the fuck could she do that with MY SPECIFIC CASE, if I have EVIDENCE of TERMINATING HER, in AUGUST of 2020...?
-
-                             Well, it's because some morons exist in the SARATOGA COUNTY PUBLIC DEFENDERS OFFICE. Are they ALL morons...? Nah. 
-                             But, SOME of them ARE. Because lets look at it like this... 
-                             
-                             If I'm the kid from PET CEMETERY, and my fuckin' cat dies...? I'm gonna go bury my cat, and cry like a little bitch.
-
-                             However, uh- apparently if you decide to do that to a PUBLIC DEFENDER, they're gonna return from the seventh circle 
-                             of hell, right...? And NOW... that fuckin' dead cat that I buried...? Cat's BACK from the dead. 
-                             'How DARE you fire my ass... I'm your FREE LAWYER...'
-                             
-                             Now you're REAL fucked, dude... cause. 
-                             They're gonna HAUNT you for the rest of your days... taunting you from behind mirrors and shit.
-#>
-
-# ____________________________________________________________________________________________________________________________________________
-# | With me so far...? Laura Hughes wrote a FRAUDULENT LETTER OF INDICATION on 06/18/20 because she's stupid.                                |
-# | For the most part, so is everyone else in this list. Because they're too busy having PREJUDICE and NOT HAVING THEIR FACTS STRAIGHT...    |
-# | That when someone attempts to CORRECT their INCORRECT FACTS... they will say 'That's just your opinion, dude. Now fuck off, errand boy.' |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-$CPSDATE = "06/18/20"
-
-$Days       = @{ 
-
-    Elapsed = [TimeSpan]([DateTime]"09/20/22"-[DateTime]$CPSDATE)
-    Remain  = [TimeSpan]([DateTime]"11/04/23"-[DateTime]"09/20/22")
-
-}
-
-$EarthDays = $Days.Elapsed.Days + $Days.Remain.Days
-
-# ____________________________________________________________________________________________________________________________________________
-# | $Earth Days = 1234                                                                                                                        |
-# | 1,234 days that I had custody of my children taken away because a NUMBER OF PEOPLE IN THE COMMUNITY, have developed PREJUDICE toward me. |
-# | and that's mainly because SOMEONE LIKE ME, isn't ALLOWED to tell people how fuckin' stupid they ARE, or SOUND. Because, that's MEAN.     |
-# | Even if I am correct...? The WAY in which I tell someone how fuckin' stupid they are, CANNOT BE 1) MEAN, or 2) INCORRECT.                |
-# |------------------------------------------------------------------------------------------------------------------------------------------|
-# | Ultimately what that means is this...                                                                                                    |
-# | The SARATOGA COUNTY RETARDED WHEEL OF PREJUDICE courtesy of MULTIPLE SARATOGA COUNTY SERVICES...                                         |
-# | They're not going to come right out and say "Well, maybe we ARE retarded after all" or...                                                |
-# | ..."Maybe we took custody of this dude's kids in error", even though I told NYSP Trooper Borden that-                                    |
-# | SOMEONE WAS COMMITTING ESPIONAGE TO ME ON MY IPHONE 8+ and I have MULTIPLE FUCKING EXHIBITS OF THAT.                                     |
-# | And, that's ok. That's why I have a fucking REALLY LARGE ($300M) LAWSUIT to file against SARATOGA COUNTY                                 |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-$T.AE(1,"59:41",":You think I'm doin' this because I'm prejudice, which I'm not.") # Nah, I'm not saying that HE has prejudice, but the JUDGE apparently does.
 $T.AE(0,"59:44",":Nope. That's not what I'm saying. That isn't what I'm saying at all. What I'm saying is that the people that wrote this statement, have prejudice toward me. Because they decided to write this statement that YOU think is PROBABLE CAUSE, but it could be a FIGMENT of their imagination. And then, on the OTHER END of the SPECTRUM, when SOMETHING happens to ME, and I'm NOT making shit up, and I have EVIDENCE to support my, uh- STATEMENT... It's not COLLECTED... ")
 
-# ___________________________________________________________________________________________________________________________________________
-# | But also, the people at WALMART are EXHIBITING that they DEFINITELY have PREJUDICE toward me because why would they be WATCHING ME...?  |
-# | They don't watch EVERYBODY that walks in there, there's no fucking way that they could do that.                                         |
-# | In order to watch EVERYBODY that walks in there, and leaves the store with 1) something or 2) nothing...                                |
-# | ...they'd have to be PREPPED AND READY AHEAD OF TIME. Sorta like a MILITARY OPERATION. Sorta like VIOLATING SOMEONE'S RIGHTS...         |
-# | ...in order to DETERMINE when someone is exhibiting SUSPICIOUS BEHAVIORS. Just like the TWIN TOWERS and WTC 7 were rigged with THERMITE |
-# | and EXPLOSIVES on Tuesday, September 11th, 2001...? These guys at WALMART LOSS PREVENTION saw a reason to WATCH MY EVERY MOVE.          |
-# | How did they know how to prepare for that AHEAD of time...? It's because the SURVEILLANCE SYSTEM probably FLAGGED MY ACTIVITY.          |
-# | That's actually UNCONSTITUTIONAL. The SURVEILLANCE SYSTEM THAT THEY HAVE, has a FACIAL RECOGNITION SOFTWARE that identifies EVERY       | 
-# | individual that walks into the store... and they'll have this cool little BOX that floats above somebody's face as they walk around the |
-# | store. People don't have to be exhibiting ANY SUSPICIOUS ACTIVITY AT ALL, and they can just watch a PARTICULAR INDIVIDUAL WALK IN, and  |
-# | WALK OUT... and then that person can be FLAGGED AS SOMEONE SUSPICIOUS. That's SYSTEMATIC PREJUDICE right there.                         |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00553
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | But also, the people at WALMART are EXHIBITING that they DEFINITELY have PREJUDICE toward me because why would    |
+# | they be WATCHING ME...? They don't watch EVERYBODY that walks in there, there's no fucking way that they could do |
+# | that.                                                                                                             |
+# |                                                                                                                   |
+# | In order to watch EVERYBODY that walks in there, and leaves the store with 1) something or 2) nothing...          |
+# | ...they'd have to be PREPPED AND READY AHEAD OF TIME. Sorta like a MILITARY OPERATION.                            |
+# |                                                                                                                   |
+# | Sorta like VIOLATING SOMEONE'S RIGHTS...                                                                          |
+# | ...in order to DETERMINE when someone is exhibiting SUSPICIOUS BEHAVIORS.                                         |
+# |                                                                                                                   |
+# | Just like the TWIN TOWERS and WTC 7 were rigged with THERMITE and EXPLOSIVES on Tuesday, September 11th, 2001...? |
+# | These guys at WALMART LOSS PREVENTION saw a reason to WATCH MY EVERY MOVE.                                        |
+# |                                                                                                                   |
+# | How did they know how to prepare for that AHEAD of time...?                                                       |
+# | Well, it's because the SURVEILLANCE SYSTEM probably FLAGGED MY ACTIVITY.                                          |
+# |                                                                                                                   |
+# | That's actually UNCONSTITUTIONAL. The SURVEILLANCE SYSTEM THAT THEY HAVE, has a FACIAL RECOGNITION SOFTWARE that  |
+# | identifies EVERY individual that walks into the store... and they'll have this cool little BOX that floats above  |
+# | somebody's face as they walk around the store.                                                                    |
+# |                                                                                                                   |
+# | People don't have to be exhibiting ANY SUSPICIOUS ACTIVITY AT ALL, and they can just watch a PARTICULAR           |
+# | INDIVIDUAL WALK IN, and WALK OUT... and then that person can be FLAGGED AS SOMEONE SUSPICIOUS.                    |
+# | That's SYSTEMATIC PREJUDICE right there.                                                                          |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(1,"01:00:15",":I'm not sayin' you're makin' ANYTHING up, to be honest with ya, I mean...")
 $T.AE(0,"01:00:19",":Ok. Uh- Thats beside the point. You don't have to SAY that at all, your ACTIONS can prove that.")
@@ -1528,17 +2080,46 @@ $T.AE(1,"01:05:17",":Put four fingers out flat...")
 $T.AE(0,"01:05:08",":Where someone innocent gets to be, recorded... ya know...? Well, he was, recorded.")
 $T.AE(1,"01:05:30",":Alright, next right thumb...")
 $T.AE(0,"01:05:38",":Ya know...? George Bush should be like, charged for fuckin' TREASON. Why isn't he...? Or, OJ Simpson should be IN PRISON for murdering his wife and Ron Goldman. Why isn't he...?")
-$T.AE(1,"01:05:53",":Cause they took it to trial, and the jury ACQUITTED him.") # I'm aware of that, I'm asking rhetorical questions that pertain to answers such as 1) MONEY and 2) IMPORTANCE.
+$T.AE(1,"01:05:53",":Cause they took it to trial, and the jury ACQUITTED him.")
+
+# 00587
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I'm aware of that, I'm asking rhetorical questions that pertain to answers such as 1) MONEY and 2) IMPORTANCE.    |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:05:57",":Right")
 $T.AE(1,"01:05:58",":Because the prosecution could NOT PROVE that he did what he did.")
-$T.AE(0,"01:06:03",":K.") # That is NOT the correct answer. The correct answer is that 1) MONEY OJ Simpson had, and 2) IMPORTANCE of JOHNNY COCHRAN, overrode the evidence. That's it. That's why the PROSECUTION could not "prove" that OJ Simpson did, what he did. A lot of people were PRETTY FUCKING PISSED about the OUTCOME of the trial. but that is the POWER of MONEY, ladies and gentlemen. The truth is fuckin' stupid.
+$T.AE(0,"01:06:03",":K.") 
+
+# 00590
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | That is NOT the correct answer.                                                                                   |
+# | The correct answer is that 1) MONEY OJ Simpson had, and 2) IMPORTANCE of JOHNNY COCHRAN, overrode the evidence.   |
+# |                                                                                                                   |
+# | That's it. That's why the PROSECUTION could not "prove" that OJ Simpson did, what he did.                         |
+# | A lot of people were PRETTY FUCKING PISSED about the OUTCOME of the trial. but that is the POWER of MONEY, ladies | 
+# | and gentlemen. The truth is fuckin' stupid.                                                                       |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:06:19",":Nah, the reason he got away with it is because he was rich enough to do it. He had JOHNNY COCHRAN as his defense. 'If the glove don't fit...? You must acquit.' So what's happening is like, uh- Hillary Clinton can LEAK classified information, and be investigated by the FBI, what I'm saying is that the law enforcement administration, or system, is SELECTIVE about enforcing the law, and so is the justice system.")
 $T.AE(0,"01:06:49",":Uh, if it's somebody that you guys LIKE, they don't ever get in trouble, they can literally KILL people, in COLD BLOOD, and then-")
 $T.AE(1,"01:07:00",":Why is there no match found...? <long sigh>")
 $T.AE(0,"01:07:25",":I'm gonna tell you the REAL REASON why I'm here. You're not arresting me for the mouse, that I didn't steal. You're arresting me because, someone ordered you to do this.")
 $T.AE(1,"01:07:34",":<chuckles> Do you know how stupid that fuckin' sounds...?")
 $T.AE(0,"01:07:38",":Well...")
-$T.AE(1,"01:07:39",":Do you have any idea how dumb that fuckin' sounds...?") # KATHERINE SUCHOCKI ordered the arrest with her WARRANT. It SOUNDS dumb, but it's ACCURATE.
+$T.AE(1,"01:07:39",":Do you have any idea how dumb that fuckin' sounds...?") 
+
+# 00597
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | KATHERINE SUCHOCKI ordered the arrest with her WARRANT. It SOUNDS dumb, but it's ACCURATE.                        |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:07:38",":Meh, it's spot on.")
 $T.AE(1,"01:07:44",":Nah, I disagree...")
 $T.AE(0,"01:07:46",":Somebody wanted-")
@@ -1552,40 +2133,65 @@ $T.AE(1,"01:07:54",":K, so... <exasperated sigh>")
 $T.AE(0,"01:07:59",":What I'm saying is uh-")
 $T.AE(1,"01:08:00",":<clears throat> Nobody ORDERED me to do this (except WALMART LOSS PREVENTION, and KATHERINE SUCHOCKI...). This is my job, like I told you BEFORE, I do my job REGARDLESS of WHO YOU ARE.")
 
-# __________________________________________________________
-# | This man does his job REGARDLESS of WHO YOU ARE. So... |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# ________________________________________________________________________________________________________
-# | If you are...      | And you have...             | And HE has...               | You are...          |
-# |--------------------|-----------------------------|-----------------------------|---------------------|
-# |      the President | Broken the law              | What he NEEDS to do his JOB | Fucked, pal. So...  |
-# |    Michael C. Cook | Doesn't steal something     | What he NEEDS to do his JOB | Fucked, pal. So...  |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-# ______________________________________________________________________________
-# | DON'T PISS THIS DUDE OFF... FOR ANY REASON... WHATSOEVER.                  |
-# | So, if you're in a fuckin' plane, flying over Saratoga County...           |
-# | flying on AIR FORCE ONE for christ sake...                                 |
-# | And, you literally break the law in this dude's jurisdiction...?           |
-# | AND... he finds out that you did it...?                                    |
-# | WELL... if he has what he NEEDS to do his JOB...?                          |
-# | You're fucked. End of the conversation. It's over. Done. Jail time, dude.  |
-# | At the end of the day, don't break the law, and you'll never have to worry |
-# | about THIS particular dude, flying in on a blaze of glory, to arrest you.  |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00609
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | This man does his job REGARDLESS of WHO YOU ARE. So...                                                            |
+# | ________________________________________________________________________________________________________          |
+# | | If you are...      | And you have...             | And HE has...               | You are...          |          |
+# | |--------------------|-----------------------------|-----------------------------|---------------------|          |
+# | |      the President | Broken the law              | What he NEEDS to do his JOB | Fucked, pal. So...  |          |
+# | |    Michael C. Cook | Doesn't steal something     | What he NEEDS to do his JOB | Fucked, pal. So...  |          |
+# | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯          |
+# | DON'T PISS THIS DUDE OFF... FOR ANY REASON, WHATSOEVER.                                                           |
+# |                                                                                                                   |
+# | So, if you're in a fuckin' plane, flying over Saratoga County...?                                                 |
+# | You could be flying on AIR FORCE ONE for christ sake...                                                           |
+# |                                                                                                                   |
+# | And, you literally break the law in this dude's jurisdiction...?                                                  |
+# | AND... he finds out that you did it...?                                                                           |
+# | WELL... if he has what he NEEDS to do his JOB...?                                                                 |
+# | You're fucked. End of the conversation. It's over. Done. Jail time, dude.                                         |
+# | At the end of the day, don't break the law, and you'll never have to worry                                        |
+# | about THIS particular dude, flying in on a blaze of glory, to arrest you.                                         |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 $T.AE(0,"01:08:11",":Ok.")
-$T.AE(1,"01:08:11",":Ok...? And I really take offense...") # Believe it or not, this is a GOOD attribute to this dude. Cause someone who IS offended will get pissy about it.
+$T.AE(1,"01:08:11",":Ok...? And I really take offense...") 
+
+# 00612
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Believe it or not, this is a GOOD attribute to this dude. Cause someone who IS offended will get pissy about it.  |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:08:15",":But what I'm saying, is there' NO EVIDENCE, that says I did this.")
 $T.AE(1,"01:08:19",":Ok~! I'm gonna- I'm... <sighs>")
-$T.AE(0,"01:08:21",":Even if I- look, what I'm trying to suggest is this... I can be some innocent person, that didn't commit a crime, and someone can write an AFFADAVIT, and basically provide a RECORD of FALSE TESTIMONY on a written instrument.")
-$T.AE(1,"01:08:36",":Do you think people don't do that every day...?") # I'm aware that they do that every day. But it KEEPS HAPPENING TO ME. SPECIFICALLY. JUDGES AND SHIT DOING IT TOO.
+$T.AE(0,"01:08:21",":Even if I- look, what I'm trying to suggest is this... I can be some innocent person, that didn't commit a crime, and someone can write an AFFIDAVIT, and basically provide a RECORD of FALSE TESTIMONY on a written instrument.")
+$T.AE(1,"01:08:36",":Do you think people don't do that every day...?") 
+
+# 00616
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I'm aware that they do that every day. But it KEEPS HAPPENING TO ME. SPECIFICALLY. JUDGES AND SHIT DOING IT TOO.  |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:08:38",":I'm- I am CERTAIN, that they do it every day.")
 $T.AE(1,"01:08:40",":Ok...? And don't you think my job is to INVESTIGATE and SEE, whatever it is they're claiming somebody did...? Is that my job...?")
 $T.AE(0,"01:08:49",":If you're saying, that YOU investigated this...? What I'm saying is WHAT did you investigate...?")
 $T.AE(1,"01:08:54",":I'm saying, well, number 1 you were in the store, cause I got all the video, number 2, you walked out of the store, went back in the store, and went back to that same aisle, ok...?")
-$T.AE(0,"01:09:05",":I didn't-") # I have provided testimony that LINES UP with that. He's not hearing me. Never did I ARGUE that I was there... 
+$T.AE(0,"01:09:05",":I didn't-") 
+
+# 00621
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I have provided testimony that LINES UP with that. He's not hearing me. Never did I ARGUE that I was there...     |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"01:09:05",":Now...")
 $T.AE(0,"01:09:06",":Ok...?")
 $T.AE(1,"01:09:06",":Ok...?")
@@ -1598,28 +2204,31 @@ $T.AE(1,"01:09:18",":Based on a Walmart complaint (which is as trustworty as a U
 $T.AE(0,"01:09:25",":I understand all that.")
 $T.AE(1,"01:09:25",":That is our job.")
 
-# ______________________________________________________________________________________
-# | Analogy: How CREDIBLE is a COMPLAINT from WALMART, without VIDEO...? It isn't.     |
-# |------------------------------------------------------------------------------------|
-# | It is AS CREDIBLE, as a WHORES WORD from a WHOREHOUSE...                           |
-# | So if a WHORE says "I love you", but then she goes and fucks some OTHER DUDE...?   |
-# | That's basically the definition of LOVE right there.                               |
-# |------------------------------------------------------------------------------------|
-# | If that sounds RETARDED...? Too bad. That's just YOUR OPINION, and NOBODY ELSES.   |
-# | The only reason it SOUNDS retarded, is because you're an idiot to think otherwise. |
-# | Legally speaking, you're not even ALLOWED to say that shit sounds RETARDED.        |
-# | So technically, at any fucking moment whatsoever...?                               |
-# | I could LEGALLY be ARRESTED, and charged for having an UNLAWFUL STUPID OPINION...  |
-# | ...for saying all of this.                                                         |
-# | Because, it's ILLEGAL to have an opinion, or draw up clever metaphors/comparisons. |
-# | WAY illegal, dude.                                                                 |
-# |------------------------------------------------------------------------------------|
-# | Cause when she's right in the MIDDLE of being pounded out by some OTHER DUDE...?   |
-# | That's the moment where she's thinkin' about how much she LOVES ya.                |
-# | What a fuckin' sweetheart.                                                         |
-# |------------------------------------------------------------------------------------|
-# | That's how CREDIBLE a COMPLAINT from WALMART actually is, without VIDEO.           |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00631
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Analogy: How CREDIBLE is a COMPLAINT from WALMART, without VIDEO...?                                              |
+# | It isn't.                                                                                                         |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | It is AS CREDIBLE, as a WHORES WORD from a WHOREHOUSE...                                                          |
+# | So if a WHORE says "I love you", but then she goes and fucks some OTHER DUDE...?                                  |
+# | That's basically the definition of LOVE right there.                                                              |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | If that sounds RETARDED...? Too bad. That's just YOUR OPINION, and NOBODY ELSES.                                  |
+# | The only reason it SOUNDS retarded, is because you're an idiot to think otherwise.                                |
+# |                                                                                                                   |
+# | Legally speaking, you're not even ALLOWED to say that shit sounds RETARDED.                                       |
+# | So technically, at any fucking moment whatsoever...?                                                              |
+# | I could LEGALLY be ARRESTED, and charged for having an UNLAWFUL STUPID OPINION for sayin' all this.               |
+# | Because, it's ILLEGAL to have an opinion, or draw up clever metaphors/comparisons. WAY illegal, dude.             |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Cause when she's right in the MIDDLE of being pounded out by some OTHER DUDE...?                                  |
+# | That's the moment where she's thinkin' about how much she LOVES ya.                                               |
+# | What a fuckin' sweetheart.                                                                                        |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | That's how CREDIBLE a COMPLAINT from WALMART actually is, without VIDEO.                                          |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"01:09:25",":I understand all of that.")
 $T.AE(1,"01:09:26",":Then, why do you keep trying to blame ME...")
@@ -1627,32 +2236,69 @@ $T.AE(0,"01:09:28",":I'm NOT blaming you.")
 $T.AE(1,"01:09:29",":For not doin' my job, and...")
 $T.AE(0,"01:09:31",":What I'm saying that the job you did, wasn't very thorough.")
 $T.AE(1,"01:09:35",":It WAS thorough.")
-$T.AE(0,"01:09:36",":There's NO EVIDENCE that suggest that I did what they did.") # The evidence actually incriminates THEM, if that isn't CLEAR enough.
-$T.AE(1,"01:09:39",":Ok, and again, I'm not pursuing the charges. Walmart is. I am ONLY making the ARREST.") # That's what I have a problem with.
+$T.AE(0,"01:09:36",":There's NO EVIDENCE that suggest that I did what they did.") 
+
+# 00638
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | The evidence actually incriminates THEM, if that isn't CLEAR enough.                                              |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(1,"01:09:39",":Ok, and again, I'm not pursuing the charges. Walmart is. I am ONLY making the ARREST.") 
+
+# 00639
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | That's what I have a problem with.                                                                                |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:09:46",":Ok.")
 $T.AE(1,"01:09:47",":Based on the judges order.")
 $T.AE(0,"01:09:49",":Hold on, let me make- let me make a statement. To- to make this perfectly clear. If I say, that 2 guys, tried to murder me...")
-$T.AE(1,"01:10:01",":Alright, you got- you gotta get off that, ye- <sigh>") # People are making the TRAUMATIC SITUATION WHERE I STILL HAVE EVIDENCE, seem RIDICULOUS.
+$T.AE(1,"01:10:01",":Alright, you got- you gotta get off that, ye- <sigh>") 
+
+# 00643
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | People are making the TRAUMATIC SITUATION WHERE I STILL HAVE EVIDENCE, seem RIDICULOUS.                           |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:10:04",":Why...?")
 $T.AE(1,"01:10:05",":It's- it's TOTALLY irrelevant.") 
 
-# ____________________________________________________________________________________________________________________________________
-# | It isn't IRRELEVANT at all. I have EVIDENCE of that ATTACK, and my statement was NEVER TAKEN.                                    |
-# | People are IGNORING IT, TREATING IT AS IF IT'S FUCKING RIDICULOUS...                                                             |
-# | Meanwhile, WALMART SAYS "fuck this guy. Here's what I say." and THAT is NOT being treated as if it's FUCKING RIDICULOUS AT ALL.  |
-# | That's basically PREJUDICE 101.                                                                                                  |
-# |----------------------------------------------------------------------------------------------------------------------------------|
-# | If WALMART says SOMETHING about somebody and HAS  NO EVIDENCE...? POLICE AND JUDGES (DO     TAKE ACTION/   MANUFACTURE EVIDENCE) |
-# | If I       say  SOMETHING about somebody and HAVE    EVIDENCE...? POLICE AND JUDGES (DO NOT TAKE ACTION/DESTROY+IGNORE EVIDENCE) |
-# |----------------------------------------------------------------------------------------------------------------------------------|
-# | The ONLY reason that people think that whole above diagram might be RIDICULOUS...? Is because they're stupid. That's it.         |
-# | They might be STUPID if they can't determine that my FATHER, MICHAEL EDWARD COOK, had this SAME EXACT PROBLEM with the POLICE... |
-# | Where the POLICE just treated my father as if HE was fucking ridiculous all the time, and then his 911 calls went ignored...     |
-# | So if my father called 911 on October 23rd, 1995...? The police obviously thought that was fucking ridiculous, and thus those    |
-# | calls from his MCI phone card went right into the trash. Certain 911 calls are stupid.                                           |
-# | "Oh, it's Michael Cook calling 911, that is fucking stupid." <- What actually happened to my father, AND ME... but people are    |
-# | FAILING TO TAKE MY STATEMENT AND EVIDENCE SERIOUSLY. That's why I have to resort to calling people fucking stupid.               |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00645
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | It isn't IRRELEVANT at all. I have EVIDENCE of that ATTACK, and my statement was NEVER TAKEN.                     |
+# | People are IGNORING IT, TREATING IT AS IF IT'S FUCKING RIDICULOUS...                                              |
+# | Meanwhile, WALMART SAYS "Fuck this guy. Here's what I say."                                                       |
+# | THAT is NOT being treated as if it's FUCKING RIDICULOUS AT ALL.                                                   |
+# | That's basically PREJUDICE 101.                                                                                   |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | If this party  | And they                            | Then police + judges | As well as...                       |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | WALMART        | make an accusation with NO EVIDENCE | WILL     TAKE ACTION | MANUFACTURE/FABRICATE EVIDENCE      | 
+# | I              | make an accusation with    EVIDENCE | WILL NOT TAKE ACTION | DESTROY and/or IGNORE EVIDENCE      |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | The ONLY reason that people think that whole above diagram might be RIDICULOUS...? Is because they're stupid.     |
+# | That's it. That's... the end of the conversation, actually.                                                       |
+# |                                                                                                                   |
+# | They might be STUPID if they can't determine that my FATHER, MICHAEL EDWARD COOK, had this SAME EXACT PROBLEM w/  |
+# | the POLICE... Where the POLICE just treated my father as if HE was fucking ridiculous all the time, and then his  |
+# | 911 calls went ignored...                                                                                         |
+# |                                                                                                                   |
+# | So, if my father called 911 on October 23rd, 1995...?                                                             |
+# | The police obviously thought that was fucking ridiculous, and thus those calls from his MCI phone card went right |
+# | into the trash. Certain 911 calls are stupid.                                                                     |
+# |                                                                                                                   |
+# | "Oh, it's Michael Cook calling 911, that is fucking stupid."                                                      |
+# | (^ What actually happened to my father, AND ME... but people are FAILING TO TAKE MY STATEMENT+EVIDENCE SERIOUSLY. |
+# | That's why I have to resort to calling people fuckin' stupid.                                                     |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"01:10:07",":It- it IS relevant. Because, eh- something happened to me...? And nobody DOES anything about it. Or, they DID do something about it, but they ignored it.")
 $T.AE(0,"01:10:26",":I can tell um- you're feeling rather insulted, and think that I'm underestimating your ability to do your job, and that's NOT what I'm saying.")
@@ -1688,10 +2334,26 @@ $T.AE(0,"01:13:47",":I used to do this for Fieldprint.")
 $T.AE(1,"01:13:48",":Huh...?")
 $T.AE(0,"01:13:50",":I used to do this for Fieldprint.")
 $T.AE(1,"01:13:53",":What is Field print...?")
-$T.AE(0,"01:13:54",":It's a Federal service that takes peoples' fingerprints.") # I think, not totally positive of that.
+$T.AE(0,"01:13:54",":It's a Federal service that takes peoples' fingerprints.") 
+
+# 00680
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I think, not totally positive of that.                                                                            |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"01:13:58",":Oh.")
 $T.AE(0,"01:13:59",":Cause I used to use- do this same thing.")
-$T.AE(1,"01:14:16",":I don't know WHY we're having such a hard time here...") # Taking people's fingerprints is a pain in the ass. (CIA/Express Lane) has high demands.
+$T.AE(1,"01:14:16",":I don't know WHY we're having such a hard time here...") 
+
+# 00683
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Taking people's fingerprints is a pain in the ass. (CIA/Express Lane) has high demands.                           |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:14:28",":Want me to try to do it...? I used to do this. Go ahead, try it again.")
 $T.AE(1,"01:14:37",":I'm just gonna do this... delete it.")
 $T.AE(0,"01:14:37",":Well, I can-")
@@ -1702,7 +2364,15 @@ $T.AE(1,"01:15:08",":Try one more time...")
 $T.AE(0,"01:15:20",":Here, let me try.")
 $T.AE(1,"01:15:22",":Alright... whatever.")
 $T.AE(0,"01:15:26",":Ready...?")
-$T.AE(1,"01:15:26",":Yup.") # Dude was probably BORN ready.
+$T.AE(1,"01:15:26",":Yup.") 
+
+# 00694
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Dude was probably BORN ready.                                                                                     |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(5,"01:15:33","*<indiscernable, clothing shuffling around>")
 $T.AE(0,"01:15:47",":Yeah, hold on, try it again.")
 $T.AE(1,"01:15:51",":Alright...")
@@ -1726,30 +2396,53 @@ $T.AE(1,"01:17:55","*Closes door latch")
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
 
 $T.AE(1,"01:19:39",":Hello judge, deputy sheriff from Saratoga County Sheriffs Office. Today is *checks watch* Friday the SIXTEENTH of SEPTEMBER...? At about 10 after 2. I was tryin' to get ahold of judge Suchocki, uh- she's not answerin' her phone, I've called several times, I have Michael Cook here on a warrant and I was looking to HOPEFULLY release him on an appearance ticket, my number's FIVE ONE EIGHT FOUR FIVE ZERO NINE NINE FOUR EIGHT. Thank you.")
-# ________________________________________________________________________________________________________________________________
-# | I mean, just imagine if this dipshit MICHAEL ZURLO did the same fucking thing for me, right...?                              |
-# | Called my ass to discuss the events of SCSO-2020-028501...? But, that's fuckin' stupid...                                    |
-# | cause why would this dude ever think to call me back regarding a night where I was almost killed to death...?                |
-# | Ya know...? Multiple 911 calls not making it to the dispatch station...? MAYBE, maybe... pretending it didn't happen         |
-# | doesn't incriminate him at all, and therefore, calling ME delusional...? Rather than EVER HAVING A CONVERSATION ABOUT IT...? |
-# | Maybe it just means he's WAY too busy doin' some shit, being the top notch Saratoga County Sheriff that he is.               |
-# |------------------------------------------------------------------------------------------------------------------------------|
-# | Michael Zurlo: Hello, Michael Cook, headmaster sheriff from Saratoga County Sheriffs Office.                                 |
-# |                Today is it-doesn't-actually-fuckin'-matterday, and it doesn't matter what fuckin' time it is...              |
-# |                I was just calling you to tell you what a stupid son-of-a-bitch you are...?                                   |
-# |                You suck at life...? Your mother...?                                                                          |
-# |                Everything about you is fuckin' stupid, including how you look, and you're a real dumb motherfucker...        |
-# |                You vain son-of-a-bitch...                                                                                    |
-# |                Stop throwing my name all over the fuckin' place.                                                             |
-# |                I'm busy.                                                                                                     |
-# |                Fuck off.                                                                                                     |
-# |------------------------------------------------------------------------------------------------------------------------------|
-# | Ya know...? I'd respect the dude a whole lot more if he at least left me a message on my voicemail that said that.           |
-# | Then, I would have this story to tell about how Michael Zurlo literally left a voicemail that told me to fuck off.           |
-# | He and I both know that Michael Zurlo would LOVE to leave me a voicemail just like that...? But then, at the same time, it'd |
-# | be a real stupid idea because he and I both know that it would make him look like an ASSHOLE, and therefore... it's stupid.  |
-# | Doesn't change the fact that he does, in fact, feel that way toward me. Why...? Cause he's killed a lot of people. So...     |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+# 00710
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I mean, just imagine if this dipshit MICHAEL ZURLO did the same fucking thing for me, right...?                   |
+# | Called my ass to discuss the events of SCSO-2020-028501...? But, that's fuckin' stupid...                         |
+# |                                                                                                                   |
+# | Cause why would this dude ever think to call me back regarding a night where I was almost killed to death...?     |
+# | Ya know...? Multiple 911 calls not making it to the dispatch station...?                                          |
+# |                                                                                                                   |
+# | MAYBE, maybe... pretending it didn't happen doesn't incriminate him at all.                                       |
+# | Therefore, calling ME delusional...? Rather than EVER HAVING A CONVERSATION ABOUT IT...?                          |
+# |                                                                                                                   |
+# | Maybe it just means he's WAY too busy doin' some shit, being the top notch Saratoga County Sheriff that he is.    |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | M. Zurlo : Hello, Michael Cook, headmaster sheriff from Saratoga County Sheriffs Office.                          |
+# |            Today is it-doesn't-actually-fuckin'-matterday, and it doesn't matter what fuckin' time it is...       |
+# |            I was just calling you to tell you what a stupid son-of-a-bitch you are...?                            |
+# |            You suck at life...? Your mother...?                                                                   |
+# |            Everything about you is fuckin' stupid, including how you look, and you're a real dumb motherfucker... |
+# |            You vain son-of-a-bitch...                                                                             |
+# |            Stop throwing my name all over the fuckin' place.                                                      |
+# |            I'm busy.                                                                                              |
+# |            Fuck off.                                                                                              |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Ya know...? I'd respect the dude a lot more if he at least left me a message on my voicemail that said that.      |
+# | Then, I'd have this story to tell about how Michael Zurlo literally left a voicemail that told me to fuck off.    |
+# |                                                                                                                   |
+# | He and I both know that Michael Zurlo would LOVE to leave me a voicemail just like that...?                       |
+# | But then, at the same time, it'd be a real stupid idea because he and I both know that it would make him look     |
+# | like an ASSHOLE, and therefore... it's stupid.                                                                    |
+# |                                                                                                                   |
+# | Doesn't change the fact that he does, in fact, feel that way toward me. Why...?                                   |
+# | Cause he's killed a lot of people. But, lets not talk about that because it's a rather MORBID subject.            |
+# |                                                                                                                   |
+# | Then again, maybe he'd leave a message more like this...                                                          |                                             |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | M. Zurlo : I fuckin' hate everything about you, dude...                                                           |
+# |            <pauses>                                                                                               |
+# |            Keep up the good work...~!                                                                             |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Cause that would CONFUSE really anybody, right...?                                                                |
+# | Dude started out by saying he fuckin' hates EVERYTHING about me...                                                |
+# | ...and then immediately said "Keep up the good work~!"                                                            |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"01:20:09",":Alright, hopefully the judge calls me back... <pauses> One of em... <pauses> Alright, here's your ID.")
 $T.AE(0,"01:20:26",":Thank you.")
 $T.AE(0,"01:20:27",":Yep. <pauses> Do you believe that there's serial killers here, in uh- in town...?")
@@ -1758,36 +2451,54 @@ $T.AE(0,"01:20:26",":There're some of em in, your uh- unit.")
 $T.AE(1,"01:20:51","*Keyboard -> tappity tap, tap, tapperoo, dude.")
 $T.AE(1,"01:21:32",":C'mon judge... <indiscernable>")
 $T.AE(0,"01:21:50",":What's Deputy Pirrone's first name, do you know...?")
-$T.AE(1,"01:21:52",":Anthony.") # (Traffic Safety/Scrotum chin/Shoulder-phone) cop the 5th, Anthony Pirrone was stalking me on June 17th, 2020 at Boomer McCloud Plaza.
+$T.AE(1,"01:21:52",":Anthony.")
 
-# ____________________________________________________________________________________________________________________________________
-# | About shoulder-phone cop the 5th, AKA "Anthony Pirrone"...                                                                       |
-# | I'm gonna tell ya a short story about this dude. Looks like the type of dude who could EVISCERATE a set of bag-pipes in          |
-# | his Scottish Kilt... with his fuckin' eyebrows. Probably sounds IMPOSSIBLE...? But this man knows how to get it done.            |
-# | The ONLY reason I would ever suggest or state as such...? Is because I told this dude how fuckin lazy he was on June 1st, 2020   |
-# | when DJ Thompson was processing my arrest over the fucking kayak strap that Zachary Karel, bleeding from between his legs, filed |
-# | an arrestable complaint over... but made no fucking mention of the PHONE LINE being cut at all.                                  |
-# |                                                                                                                                  |
-# | Also, the police (like CAPTAIN SHELLEY ZEITSKE) are so fuckin' retarded, that they see NOTHING SUSPICIOUS about how this dipshit |
-# | offset the time that I cut the from MY ALIBI (SCSO-2020-028501 @ 05/26/20 0130) to (SCSO-2020-003173 @ 05/27/20 1212 but,        |
-# | occuring way back on 05/26/20 0545). Look- the only reason that what I just said LOOKS stupid...? Is because, that's just your   |
-# | opinion. Who cares if the police never have their facts straight, or commit obstruction of justice...? Nobody. Not (1) soul.     |
-# |                                                                                                                                  |
-# | Now, because of how fuckin stupid JAMES LEONARD truly is... you have to do what I do, and whip out the fuckin' forensic level    |
-# | analysis kit from hell. It requires multiple hail mary's, several adult virgins, and a hallway of vampires that drink blood like |
-# | count fuckin' dracula... to summon the wisdom of a GENIUS, and determine that SCSO has some fuckin' OBLIVIOUS MORONS on staff.   |
-# |                                                                                                                                  |
-# | There's no other explanation, i'm afraid. James Leonard looks like a fuckin moronic individual that huffs paint thinner or       |
-# | glue...? And then shows up in his SCSO uniform dragging innocent people around like a fuckin' rag doll on a minimap...           |
-# | ...like in the web browser for Google fucking maps. If that sounds stupid...? oh well. You're stupid, not him. Nah.              |
-# | Its fucking ILLEGAL to call someone like ERIC CATRICALA, or JAMES LEONARD... fucking stupid.                                     |
-# |                                                                                                                                  |
-# | The punishment for choosing to do such a thing...? Is death. Or, some bullshit charge where an oral admission is stapled to a    |
-# | false report. Whereby causing a fucking moron to receive his full pension and benefits, for not knowing he has BRAIN DAMAGE...   |
-# |                                                                                                                                  |
-# | If friends don't let friends drive drunk...?                                                                                     |
-# | Then, cop friends don't let cop friends continue being cops, when they act like they have brain damage every day.                |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00719
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | (Traffic Safety/Scrotum chin/Shoulder-phone) cop the 5th, Anthony Pirrone was stalking me on 06/17/20 at:         |
+# | Boomer McCloud Plaza.                                                                                             |
+# |                                                                                                                   |
+# | Maybe it's time to talk about shoulder-phone cop the 5th, AKA Anthony "Scrotum Chin" Pirrone...                   |
+# | I'm gonna tell ya a short story about this dude.                                                                  |
+# |                                                                                                                   |
+# | Looks like the type of dude who could EVISCERATE a set of bag-pipes in his Scottish Kilt... with his fuckin'      |
+# | eyebrows. Probably sounds IMPOSSIBLE...? But this man knows how to get it done.                                   |
+# |                                                                                                                   |
+# | The ONLY reason I would ever suggest or state as such...?                                                         |
+# | Is because I told this dude how fuckin lazy he was on 06/01/20 when DJ Thompson was processing my arrest over the |
+# | fucking kayak strap that Zachary Karel, bleeding from between his legs, filed an arrestable complaint over... but |
+# | made no fucking mention of the PHONE LINE being cut at all.                                                       |
+# |                                                                                                                   |
+# | Also, the police (like CAPTAIN SHELLEY ZEITSKE) are so fuckin' retarded, that they see NOTHING SUSPICIOUS about   |
+# | how this dipshit offset the time that I cut the from MY ALIBI (SCSO-2020-028501 @ 05/26/20 0130)...               |
+# | ...to (SCSO-2020-003173 @ 05/27/20 1212 but, occuring way back on 05/26/20 0545).                                 |
+# |                                                                                                                   |
+# | Look- the only reason that what I just said LOOKS stupid...? Is because, that's just your opinion.                |                               
+# |                                                                                                                   |
+# | Who cares if the police never have their facts straight, or commit OBSTRUCTION OF JUSTICE...?                     |
+# | Nobody. Not (1) soul.                                                                                             |
+# |                                                                                                                   |
+# | Now, because of how fuckin’ stupid JAMES LEONARD truly is... you have to do what I do, and whip out the fuckin'   |
+# | forensic level analysis kit from hell. It requires multiple hail Mary’s, several adult virgins, and a hallway of  |
+# | vampires that drink blood like Count fuckin' Dracula... to summon the wisdom of a GENIUS, and determine that SCSO |
+# | has some fuckin' OBLIVIOUS MORONS on staff.                                                                       |
+# |                                                                                                                   |
+# | There's no other explanation, I'm afraid. James Leonard looks like a fuckin’ moronic individual that huffs paint  |
+# | thinner or glue...? And then shows up in his SCSO uniform dragging innocent people around like a fuckin' rag doll |
+# | on a minimap... like in the web browser for Google fucking maps.                                                  |
+# |                                                                                                                   |
+# | If that sounds stupid...? That just means that YOU’RE stupid… and, he isn’t. Nah.                                 |
+# | It’s actually fuckin’ ILLEGAL to call someone like ERIC CATRICALA, or JAMES LEONARD... fuckin’ stupid.            |
+# |                                                                                                                   |
+# | The punishment for choosing to do such a thing...? Is death. Or, some bullshit charge where an oral admission is  |
+# | stapled to a false report. Whereby causing a fucking moron to receive his full pension and benefits, for not      |
+# | knowing he has BRAIN DAMAGE...                                                                                    |
+# |                                                                                                                   |
+# | If friends don't let friends drive drunk...?                                                                      |
+# | Then, cop friends don't let cop friends continue being cops, when they act like they have brain damage every day. |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"01:21:53",":Anthony Pirrone...? I think he's a bad dude.")
 $T.AE(0,"01:21:57","*clothing shuffling around")
@@ -1860,7 +2571,7 @@ $T.AE(1,"01:32:26",":Alright, you wanna go back inside...?")
 $T.AE(0,"01:32:27",":Yes.")
 $T.AE(1,"01:32:27",":Alright.")
 $T.AE(1,"01:32:31","*closes door")
-$T.AE(1,"01:32:34",":Just so we're clear, you ARE free to go anytime you want.") # 
+$T.AE(1,"01:32:34",":Just so we're clear, you ARE free to go anytime you want.")
 $T.AE(0,"01:32:38",":I get it.")
 $T.AE(1,"01:32:39",":Okay. Alright.")
 $T.AE(0,"01:32:42",":<Indiscernable, chatter>")
@@ -1870,7 +2581,7 @@ $T.AE(1,"01:33:07","*Closes substation door")
 
 #    ____    ____________________________________________________________________________________________________
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___
-#   \\__//¯¯¯ [Part 8 (01:33:07 -> )]: I make an OFFICIAL STATEMENT for (SCSO-2020-028501)                   ___//¯¯\\
+#   \\__//¯¯¯ [Part 8 (01:33:07 -> 02:08:40)]: I make an OFFICIAL STATEMENT for (SCSO-2020-028501)           ___//¯¯\\
 #    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//
 #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯
 
@@ -1893,20 +2604,31 @@ $T.AE(0,"01:34:13",":Yup. MAY TWENTY-SIXTH...")
 $T.AE(1,"01:34:15",":Yup")
 $T.AE(0,"01:34:16",":TWO THOUSAND TWENTY")
 
-# ______________________________________________________________________________________________________________________________________________
-# | I may occasionally get pretty pissed off about the way the people in the community treat me, as well as how people talk about me-          |
-# | However, this is the EXACT TYPE OF INTERROGATION I've been WAITING for a POLICE OFFICER to HAVE with ME, since SCSO-2020-028501 0130-0155. |
-# |--------------------------------------------------------------------------------------------------------------------------------------------|
-# | Because the ALLEGATION that I am MAKING, I would like to CONVERT into an ACCUSATION where SCSO SCOTT SCHELLING is either:                  |
-# | CHARGED WITH OBSTRUCTION OF JUSTICE, for destroying the SURVEILLANCE FOOTAGE AT CENTER FOR SECURITY... Or...                               |
-# | He fuckin' spills the beans on who ordered him to do such a thing, OR... someone else at SCSO is INVESTIGATED for doing such a thing.      |
-# |--------------------------------------------------------------------------------------------------------------------------------------------|
-# | That's why I've been REPEATING MYSELF THOUSANDS OF TIMES FOR THE LAST COUPLE OF YEARS. Cool...? Cool.                                      |
-# | If I've INSULTED MICHAEL SHERADIN at all by making this document or any of my audio logs...? IT IS NOT HIM THAT I AM PISSED ABOUT.         |
-# | Nah. It's the DIPSHITS THAT HE WORKS WITH THAT KEPT IGNORING ME AND HIDING THE FUCKING CRIMES THEY COMMITTED SINCE THEN.                   |
-# | Because what I've been ALLEGING is that the CRIMINAL BEHAVIORS that SCSO units have been performing, is ON PAR WITH DEREK CHAUVIN.         |
-# | Oh... THAT'S why my IPHONE 8+ was REMOTELY DISABLED on MAY 27th, 2020.                                                                     |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00808
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I may occasionally get pretty pissed off about the way the people in the community treat me, as well as how       |
+# | people talk about me- however, this is the EXACT TYPE OF INTERROGATION I've been WAITING for a POLICE OFFICER to  |
+# | HAVE with ME, since SCSO-2020-028501 0130-0155.                                                                   |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Because the ALLEGATION that I am MAKING, I would like to CONVERT into an ACCUSATION where SCSO SCOTT SCHELLING is |
+# | either:                                                                                                           |
+# |                                                                                                                   |
+# | CHARGED WITH OBSTRUCTION OF JUSTICE, for destroying the SURVEILLANCE FOOTAGE AT CENTER FOR SECURITY... Or...      |
+# | He fuckin' spills the beans on who ordered him to do such a thing, OR... someone else at SCSO is INVESTIGATED for |
+# | doing such a thing.                                                                                               |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | That's why I've been REPEATING MYSELF THOUSANDS OF TIMES FOR THE LAST COUPLE OF YEARS. Cool...? Cool.             |
+# | If I've INSULTED MICHAEL SHERADIN at all by making this document or any of my audio logs...? IT IS NOT HIM THAT I |
+# | AM PISSED ABOUT.                                                                                                  |
+# |                                                                                                                   |
+# | Nah. It's the DIPSHITS THAT HE WORKS WITH THAT KEPT IGNORING ME AND HIDING THE FUCKING CRIMES THEY COMMITTED      |
+# | SINCE THEN. Because what I've been ALLEGING is that the CRIMINAL BEHAVIORS that SCSO units have been performing,  |
+# | is ON PAR WITH DEREK CHAUVIN.                                                                                     |
+# |                                                                                                                   |
+# | Oh... THAT'S why my IPHONE 8+ was REMOTELY DISABLED on MAY 27th, 2020.                                            |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(1,"01:34:18",":Ok, well, where did all this, take place...?")
 $T.AE(0,"01:34:20",":So, it took place, uh- THAT particular incident...?")
@@ -1924,94 +2646,19 @@ $T.AE(1,"01:34:55",":Okay.")
 $T.AE(0,"01:34:56",":Which is the Z- the Zappone dealership, where they showed up.")
 $T.AE(1,"01:34:59",":Ok. Where WE met...? WE showed up...? Or, the people you're talkin' about...?") 
 
-# __________________________________________________________________________________________________________________________________________
-# | He means SCSO SCHELLING, KAPLAN, WELCH, not my attackers.                                                                              |
-# | But also, this is a COMPLEX QUESTION which I discuss in my book, TOP DECK AWARENESS - NOT NEWS.                                        |
-# | He's not droning on, making false assurances or really any tactic where I would think he's not paying attention at all.                |
-# | He's asking questions that are taking portions of what I'm talking about, and forming a SOPHISTICATED INQUISITION about what happened. |
-# | THAT MEANS, this dude fuckin honestly gives a shit about the story.                                                                    |
-# | Total time taken for (1) police officer to do this...? Lets use some PowerShell mathematics and dateTime objects to get the answer.    |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-Class Incident
-{
-    [String] $Name
-    [DateTime] $Date
-    [Timespan] $Elapsed
-    Incident([String]$Name,[String]$Date)
-    {
-        $This.Name = $Name
-        $This.Date = [DateTime]$Date
-    }
-    SetElapsed([Object]$Start)
-    {
-        If ($Start -ne $This.Date)
-        {
-            $This.Elapsed = $This.Date-$Start
-        }
-        Else
-        {
-            $This.Elapsed = [TimeSpan]::FromSeconds(0)
-        }
-    }
-}
-
-Class IncidentList
-{
-    [Object] $Output
-    IncidentList()
-    {
-        $This.Output = @( )
-    }
-    Add([String]$Name,[String]$Date)
-    {
-        If ($Date -notmatch "\d{2}\/\d{2}\/\d{2} \d{2}\:\d{2}")
-        {
-            Throw "Invalid date entry, must use 'mm/dd/yy HH:MM' format" 
-        }
-
-        $This.Output += [Incident]::New($Name,$Date)
-    }
-    SetElapsed()
-    {
-        If ($This.Output.Count -gt 0)
-        {
-            $This.Output | % { $_.SetElapsed($This.Output[0].Date) }
-        }
-    }
-}
-
-$Incident       = [IncidentList]::New()
-$Incident.Add("Attack began","05/25/20 23:43")
-$Incident.Add("Attack over","05/26/20 01:30")
-$Incident.Add("Now","09/16/22 14:30")
-$Incident.SetElapsed()
-
-<#
-    [SCSO-2020-028501]: https://github.com/mcc85s/FightingEntropy/blob/main/Records/2020-028501%20Cook%20req.pdf
-    Evidence List     : https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt
-
-    Name         Date                  Elapsed
-    ----         ----                  -------
-    Attack began 5/25/2020 11:43:00 PM   0d 00h 00m 00s
-    Attack over  5/26/2020 1:30:00 AM    0d 01h 47m 00s
-    Now          9/16/2022 2:30:00 PM  843d 14h 47m 00s
-
-    Check that shit out. Michael Depresso from the SARATOGA COUNTY PUBLIC DEFENDERS OFFICE should take note of this shit.
-    Why...? Uh, cause doing so will showcase a living example of how far up his own ass, his head is.
-    It'll ALSO illuminate how fuckin' stupid he is. As well as like, other people that work for SARATOGA COUNTY
-    that like, either 1) don't care if they're lied to, or 2) don't know when they're lied to.
-    
-    I guess in life, some people are lazy fucks.
-    Other people are just morons who believe what they're told.
-    But there are rare people such as myself, that can detect when there's a HIDDEN AGENDA that sorta explains
-    how PUBLIC DEFENDERS aren't all that helpful, because they're on the SAME FUCKING TEAM as the DIRTY POLICE.
-
-    You know, when I go around telling people that there are SERIAL KILLERS in the town of Clifton Park/Halfmoon...
-    ...and like, NOBODY SEEMS TO BELIEVE ME...? I have to start calling people fuckin' stupid, repeatedly, over and over,
-    and not let up on calling people fucking morons willy-nilly, because some people were just NOT BORN to be INTELLIGENT.
-    Nor to like, ASK QUESTIONS. That's how I know I'm surrounded by fucking morons.
-#>
+# 00823
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | He means SCSO SCHELLING, KAPLAN, WELCH, not my attackers.                                                         |
+# | But also, this is a COMPLEX QUESTION which I discuss in my book, TOP DECK AWARENESS - NOT NEWS.                   |
+# | He's not droning on, making false assurances or really any tactic where I would think he's not paying attention   |
+# | at all.                                                                                                           |
+# |                                                                                                                   |
+# | He's asking questions that are taking portions of what I'm talking about, and forming a SOPHISTICATED INQUISITION |
+# | about what happened. THAT MEANS, this dude fuckin honestly gives a shit about the story. Total time taken for (1) |
+# | police officer to do this...? Lets use some PowerShell mathematics and dateTime objects to get the answer...      |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"01:35:04",":Oh, the- my ATTACKERS showed up around the FIRST address there.")
 $T.AE(1,"01:35:08",":Ok.")
@@ -2021,7 +2668,15 @@ $T.AE(0,"01:35:11",":And then, uh- they followed me for about 90 minutes.")
 $T.AE(1,"01:35:15",":Yup.")
 $T.AE(0,"01:35:16",":Uh-")
 $T.AE(1,"01:35:16",":Yup.")
-$T.AE(0,"01:35:18",":So, the attack BEGAN like, right after midnight...? ") # It actually BEGAN at about 2343, but it wasn't TOTALLY APPARENT to me until 0004 
+$T.AE(0,"01:35:18",":So, the attack BEGAN like, right after midnight...? ") 
+
+# 00832
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | It actually BEGAN at about 2343, but it wasn't TOTALLY APPARENT to me until 0004.                                 |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"01:35:21",":Mhmm.")
 $T.AE(0,"01:35:22",":They followed me, uh- I tried to call 911 at about 1204, the FIRST time. And, uh- that was near the, uh- the Clifton Park Eye Care...? Or uh-")
 $T.AE(1,"01:35:34",":Yup.")
@@ -2038,32 +2693,48 @@ $T.AE(0,"01:38:02",":Forensic evidence is the VIDEO I'm talking about.")
 $T.AE(1,"01:38:16",":Ok.")
 $T.AE(0,"01:38:20",":Uh- the- the individual continued to walk on, past me, and then um, I like, pulled down the TEXT MESSAGE thing, and I was typing something to him because I believe that he had a REMOTE CONNECTION to my device, and he was SPYING on me.")
 
-# ______________________________________________________________________________________________________________________________________________________
-# | I believe I was actually performing a SCREEN CAPTURE of that exact moment, a SCREEN CAPTURE during a VIDEO RECORDING, w/ PEGASUS was on my device. |
-# | To guys like MICHAEL DEPRESSO and SARAH SCHELLINGER... a "SCREEN CAPTURE" is sorta like a "SCREEN SHOT", but a "SCREEN SHOT" is just (1) picture.  |
-# | Whereas a 'SCREEN CAPTURE' is when a VIDEO is being RECORDED of the CONTENT on the fuckin DISPLAY of the DEVICE. Apple doesn't make SHIT PRODUCTS. |
-# | They just happen to have someone in their company that is leaking ZERO DAY VULNERABILITIES FOR A PROFIT... to the NSO GROUP in ISRAEL... which is  |
-# | fucking DANGEROUS.                                                                                                                                 |
-# |                                                                                                                                                    |
-# | That's how I was INCREDIBLY SUSPICIOUS of this fuckin dude, I almost got hit by a car about 20 minutes BEFOREHAND...?                              |
-# | Figured that I had someone spying on me like the little faggot(s) they are.                                                                        |
-# | Ever since 01/15/2019 CVE-2019-8936, I've SORTA been on the lookout for some fagboy extraordinaire to come along,                                  |
-# | prancing along the fuckin' beaten path, looking as if he's got a whole entire 15 inch dildo in his rectal cavity.                                  |
-# |                                                                                                                                                    |
-# | And that's exactly what I recorded in IMG_0647.MOV from 05/25/20 2343 -> 05/26/20 0004... someone matching this exact description.                 |
-# | Actually (2) separate dudes who look like they're BROTHERS, both matching the above description... is what I recorded. in IMG_0647.MOV             |
-# |                                                                                                                                                    |
-# | They are FORMER CUSTOMERS of COMPUTER ANSWERS. But also, it's hard to imagine them ever scoring with Christina Czaikowski with how GAY they look.  |
-# | They were talking about this girl at the computer shop back in 2017 when they sold the shop a WHITE ANDROID SMARTPHONE, as well as a BLUE ANDROID  |
-# | SMARTHONE, so, (2) smartphones sold by (2) queer bastards. I literally used a PHOTO COPIER to like, make a BACKUP COPY... of this kids face, name, |
-# | identity, basically his fuckin ID, because that was our policy, to take SCANS of people's IDS in case the PROPERTY being SOLD to the SHOP was      |
-# | STOLEN. So, this cocksuckers face was actually saved to the COMPUTER ANSWERS database of bought items.                                             |
-# |                                                                                                                                                    |
-# | So, I started a SCREEN RECORDING while I was RECORDING A VIDEO, and had the CAMERA LENS pointed at this QUEER-AUSTIN-EVANS'LOOKIN'-SON-OF-A-BITCH, |
-# | and in the TEXT MESSAGE I basically called him something DERROGATORY and also that I had fucking CAUGHT HIS ASS... That is the EXACT MOMENT when   |
-# | he was standing in front of the CATRICALA FUNERAL HOME, LOOKED AT HIS DEVICE WHILE I WAS RECORDING HIM, and as SOON AS HE DID...? He knows damn    |
-# | well that he was LOOKING AT HIMSELF being recorded on fucking video, BUSTED. <- THAT IS WHY MY DEVICE WAS DISABLED.                                |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00847
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I believe I was actually performing a SCREEN CAPTURE of that exact moment, a SCREEN CAPTURE during a VIDEO        |
+# | RECORDING, w/ PEGASUS was on my device.                                                                           |
+# |                                                                                                                   |
+# | To guys like MICHAEL DEPRESSO and SARAH SCHELLINGER... a "SCREEN CAPTURE" is sorta like a "SCREEN SHOT", but a    |
+# | "SCREEN SHOT" is just (1) picture.                                                                                |
+# |                                                                                                                   |
+# | Whereas a 'SCREEN CAPTURE' is when a VIDEO is being RECORDED of the CONTENT on the fuckin DISPLAY of the DEVICE.  |
+# | Apple doesn't make SHIT PRODUCTS.                                                                                 |
+# |                                                                                                                   |
+# | They just happen to have someone in their company that is leaking ZERO DAY VULNERABILITIES FOR A PROFIT... to the |
+# | NSO GROUP in ISRAEL... which is fucking DANGEROUS.                                                                |
+# |                                                                                                                   |
+# | That's how I was INCREDIBLY SUSPICIOUS of this fuckin dude, I almost got hit by a car about 20 minutes            |
+# | BEFOREHAND...? Figured that I had someone spying on me like the little jizz-lipped fudge packers that they are.   |
+# |                                                                                                                   |
+# | Ever since 01/15/2019 CVE-2019-8936, I've SORTA been on the lookout for some fagboy extraordinaire to come along, |
+# | prancing along the fuckin' beaten path, looking as if he's got a whole entire 15 inch dildo in his rectal cavity. |
+# |                                                                                                                   |
+# | And that's exactly what I recorded in IMG_0647.MOV from 05/25/20 2343 -> 05/26/20 0004... someone matching this   |
+# | exact description. Actually (2) separate dudes being WICKED gay in unison, who look like they're BROTHERS, both   |
+# | matching the above description... is what I recorded in IMG_0647.MOV, as I said, being WICKED gay in unison.      |
+# |                                                                                                                   |
+# | They are FORMER CUSTOMERS of COMPUTER ANSWERS. But also, it's hard to imagine them ever scoring with Christina    |
+# | Czaikowski with how GAY they look.                                                                                |
+# |                                                                                                                   |
+# | They were talking about this girl at the computer shop back in 2017 when they sold the shop a WHITE ANDROID       |
+# | SMARTPHONE, as well as a BLUE ANDROID SMARTHONE, so, (2) smartphones sold by (2) queer bastards. I literally used |
+# | a PHOTO COPIER to like, make a BACKUP COPY... of this kids face, name, identity, basically his fuckin ID, because |
+# | that was our policy, to take SCANS of people's IDS in case the PROPERTY being SOLD to the SHOP was STOLEN.        |
+# |                                                                                                                   |
+# | So, this cocksuckers face was actually saved to the COMPUTER ANSWERS database of bought items.                    |
+# |                                                                                                                   |
+# | So, I started a SCREEN RECORDING while I was RECORDING A VIDEO, and had the CAMERA LENS pointed at this           |
+# | QUEER-AUSTIN-EVANS'LOOKIN'-SON-OF-A-BITCH, and in the TEXT MESSAGE I basically called him something DERROGATORY   |
+# | and also that I had fucking CAUGHT HIS ASS... That is the EXACT MOMENT when he was standing in front of the       |
+# | CATRICALA FUNERAL HOME, LOOKED AT HIS DEVICE WHILE I WAS RECORDING HIM, and as SOON AS HE DID...? He knows damn   |
+# | well that he was LOOKING AT HIMSELF being recorded on fucking video, BUSTED. THAT IS WHY MY DEVICE WAS DISABLED.  |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 $T.AE(0,"01:38:44",":So, I typed something up to TAUNT him, and uh- when he was in front of the CATRICALA FUNERAL HOME, he LOOKED AT HIS PHONE, and then he LOOKED UP, like, pretty upset with himself, I didn't realize what I recorded on video, but it was INCREDIBLY RARE, I believe that he was using PEGASUS, and that HE, is a SERIAL KILLER, and that HE, is ASSOCIATED with DEPUTY COOPER.")
 $T.AE(1,"01:39:09",":Ok.")
@@ -2075,38 +2746,68 @@ $T.AE(0,"01:42:10",":Uh- at which point, the car, somehow got out of the view of
 $T.AE(1,"01:43:10",":Mhmm.")
 $T.AE(0,"01:43:12",":No sound emanating from the device.")
 
-# _________________________________________________________________________________________________________________________________________________
-# | Pretty easy to see how the PHONE companies might've been involved in this MURDER ATTEMPT, considering the things I was POSTING all that week. |
-# | Like, I kept saying SPECTRUM/VERIZON/BELL ATLANTIC, CLASS ACTION LAWSUIT, SHERMAN ANTI-TRUST, and RACKETEER INFLUENCED CRIMINAL ORGANIZATION. |
-# | All that shit sorta goes right together like PEANUT BUTTER and JELLY.                                                                         |
-# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-# | Thing #1                         | Thing #2                                       |
-# |----------------------------------|------------------------------------------------|
-# | PEANUT BUTTER                    => JELLY                                         |
-# | THEODORE ROOSEVELT               => KICKING THE SHIT OUT OF MONOPOLIES            |
-# | SHERMAN ANTI-TRUST               => MONOPOLY                                      |
-# | INTERNET NEUTRALITY              => CORPORATIONS OWNING THE INTERNET              |
-# | CORPORATIONS OWNING THE INTERNET => GEORGE ORWELL 1984                            |
-# | GAY GUY INVOLVEMENT              => TIM COOK + APPLE, TANSKI + HOFFMAN + KEY BANK |
-# |__________________________________|________________________________________________|_________________________________________________________
-# | If they were fuckin' INNOCENT, then they WOULDN'T be performing a fucking MAN-IN-THE-MIDDLE attack, and would HOLD THEMSELVES ACCOUNTABLE. |
-# | That's not what I was observing all throughout that entire week. Not saying that gay guys just so happened to be in every direction...?    |
-# | But, I saw a VERY questionable amount of them in certain places that seemed to be MORE than just "coincidental"... ya know...?             |
-# |--------------------------------------------------------------------------------------------------------------------------------------------|
-# | Now, look. I have nothing against homosexuals at all. I just PREFER not to watch them when they do what they do.                           |
-# | A girl and a guy...? That's fine. I'm cool with seeing something like that from time to time.                                              |
-# | A girl and a girl...? That's fine too. Totally legit.                                                                                      |
-# | A guy and another guy...? That's where I draw the line. Not interested in that at all... but-                                              |
-# | sometimes they don't care what I think, and they just show up anyway.                                                                      |
-# |--------------------------------------------------------------------------------------------------------------------------------------------|
-# | Look to my left...? A couple gay guys pounding it out in a fuckin' shadowy alcove... I immediately look away, to respect their privacy.    |
-# | Look to my right...? There's another couple gay guys pounding it out in ANOTHER shadowy alcove. So I'll cup my hand over my eyes and keep  |
-# | movin... but then suddenly, a car will show up and stop right in front of me, and then, guess what happens...?                             |
-# | WELL, multiple gay guys were in that car, and they decided it was time to stop right in front of me, and start pounding it out... but it   |
-# | didn't happen in some shadowy alcove this time, just, right in the open, right on Route 9 for cryin' out loud.                             |
-# | This is all a METAPHOR, for TELECOM COMPANIES being like, in bed with each other, trying to be INCONSPICUOUS about their activites...?     |
-# | But, failing miserably.                                                                                                                    |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00856
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Pretty easy to see how the PHONE companies might've been involved in this MURDER ATTEMPT, considering the things  |
+# | I was POSTING all that week.                                                                                      |
+# |                                                                                                                   |
+# | Like, I kept saying SPECTRUM/VERIZON/BELL ATLANTIC, CLASS ACTION LAWSUIT, SHERMAN ANTI-TRUST, and RACKETEER       |
+# | INFLUENCED CRIMINAL ORGANIZATION. All that shit sorta goes right together like PEANUT BUTTER and JELLY.           |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Thing #1                         | Thing #2                                                                       |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | PEANUT BUTTER                    => JELLY                                                                         |
+# | THEODORE ROOSEVELT               => KICKING THE SHIT OUT OF MONOPOLIES                                            |
+# | SHERMAN ANTI-TRUST               => MONOPOLY                                                                      |
+# | INTERNET NEUTRALITY              => CORPORATIONS OWNING THE INTERNET                                              |
+# | CORPORATIONS OWNING THE INTERNET => GEORGE ORWELL 1984                                                            |
+# | GAY GUY INVOLVEMENT              => TIM COOK + APPLE, TANSKI + HOFFMAN + KEY BANK                                 |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | If they were fuckin' INNOCENT, then they WOULDN'T be performing a fucking MAN-IN-THE-MIDDLE attack, and would     |
+# | HOLD THEMSELVES ACCOUNTABLE.                                                                                      |
+# |                                                                                                                   |
+# | That's not what I was observing all throughout that entire week.                                                  |
+# | Not saying that gay guys just so happened to be in every direction...?                                            |
+# |                                                                                                                   |
+# | But, I saw a VERY questionable amount of them in certain places that seemed to be MORE than just "coincidental".  |
+# | Ya know...?                                                                                                       |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Now, look. I have nothing against homosexuals at all. I just PREFER not to watch them when they do what they do.  |
+# | A girl and a guy...? That's fine. I'm cool with seeing something like that from time to time.                     |
+# | A girl and a girl...? That's fine too. Totally legit.                                                             |
+# | A guy and another guy...? That's where I draw the line. Not interested in that at all... but-                     |
+# | sometimes they don't care what I think, and they just show up anyway.                                             |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Look to my left...? A couple gay guys pounding it out in a fuckin' shadowy alcove...                              |
+# | I immediately look away, to respect their privacy.                                                                |
+# |                                                                                                                   |
+# | Look to my right...? There's another couple gay guys pounding it out in ANOTHER shadowy alcove.                   |
+# | So, I'll cup my hand over my eyes and keep movin'.                                                                |
+# |                                                                                                                   |
+# | But then, suddenly, I’ll see a car in the distance… getting closer and closer... and then, guess what happens...? |
+# |                                                                                                                   |
+# | WELL, multiple gay guys who continue to insist on showing me a thing or two… were in that car.                    |
+# | And, like a bunch of clowns getting out of their little clown car at a circus…?                                   |
+# | That’s what they do. They all get out, one after another, and they make damn certain that I see em, too.          |
+# | Deliberately, being the key observation.                                                                          |
+# |                                                                                                                   |
+# | The reason why they make damn certain I see what’s goin’ on, is cause they decided it was time to up the fuckin’  |
+# | ante like NEVER BEFORE… because they saw a golden opportunity to drive right up to me, stop the fuckin’ car, get  |
+# | out of the fuckin’ thing right in front of me, and then they just started pounding it out...                      |
+# |                                                                                                                   |
+# | Suffice to say, it really isn’t my cup of tea, as I’ve stated. But, do they give a shit what I think…? Nah.       |
+# | They were working overtime to spite me… So, because it didn't happen in some shadowy alcove this time…?           |
+# | It’s a lot harder to fuckin’ IGNORE…                                                                              |
+# |                                                                                                                   |
+# | They know how fuckin’ stupid the situation is, but- they don’t care.                                              |
+# | They just, started goin' at it right out in the open… right on Route 9 for cryin' out loud.                       |
+# |                                                                                                                   |
+# | Now look, obviously this isn’t something that happens in real life. HOWEVER, uh- this is all a perfect METAPHOR,  |
+# | for TELECOM COMPANIES (like VERIZON and SPECTRUM) being like, in bed with each other (just as gay, too), trying   |
+# | to be INCONSPICUOUS about their FIBER OPTIC CABLE activities...? But, failing miserably.                          |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"01:43:14",":So, I put 2 and 2 together, with the thing that I recorded on video, and the events of these two guys following me around, and uh- ya know, I was kinda scared shitless, because- I knew what was goin on. You know, uh- few times in my life, I've tried to call 911 or any number, and the phone will do that, but- ya know, it's RARE. But- this happened TWICE in like, FIVE MINUTES. And, you know, it happened, like someone would say 'How do you know they were tryin' to kill ya...?' That's LITERALLY what TROOPER CARTER was tellin' me, was like 'How do you know they were tryin' to kill ya...?' Well, I don't know for SURE that they were trying to kill me, but, there were a number of OTHER coincidences that occurred that night. they had a car parked at the Lowes Home Improvement parking lot, like AHEAD of time. So they were expecting to hit me with their car...? Or like, stab me to death, and then drive away in their SECOND car that they had down the road. the point being, uhm, I got to uh- CENTER FOR SECURITY, and I knew that they had SECURITY CAMERAS, so I did the SAME EXACT THING that I just described...? In front of the CAMERA. About 10 inches from the SCREEN or the LENS or whatever. And then, uh- the same thing happened. They were on the other side of the road, but I knew that they were trying to corner me. And I wasn't uh- giving them that opportunity. There's TWO of them, ONE of me, all they need to do is just BOX ME IN and I'm done. So, I stayed on the OTHER side of the road, I took (3) pictures which I have the LINKS to, uh- and uh- that was- those were the LAST PICTURES I took until my PHONE had just about died. I had turned it off, because, I turned *THIS PHONE* off because I suspected that they were TRACKING ME, and they had a little BEACON on their- um, I don't know if this sounds hard to believe, but I believe that the SOFTWARE they were using, allows them to have like a PINPOINT ACCURACY, like a TELEMETRY LOCATION.")
 $T.AE(1,"01:45:09",":Mhmm.")
@@ -2120,16 +2821,29 @@ $T.AE(1,"01:48:37",":Ok.")
 $T.AE(0,"01:48:34",":On Sitterly Road, near 30 Sitterly Road. I mentioned some of this stuff to JOHN HILDRETH in an email. Uh- the point being, there was a suspicious vehicle that was following me around, and suspicious activity that caused me to believe that I was being followed around, so- uh- that night on MAY 26th, 2020 when I was in the Lowes Home Improvement parking lot, these two kids got back into their car, and I was, uh- basically paralyzed with fear, for a good 10 or 20 minutes, tryin' to stay out of view, trying to stay near LIT AREAS, because I was worried that if I went into an UNLIT AREA with my PHONE, regardless of whether it was DEAD or not, that I was gonna get killed.")
 $T.AE(0,"01:49:21",":I eventually walked out onto, uh- Route 146. And, uh- when I did, they pulled out of the Lowes Home Improvement parking lot, and then they tried to hit me, between AUTO ZONE, and uh- ADVANCE AUTO PARTS. And they drove OVER the double yellow line to try to hit me, and they MISSED...? And then, they took a RIGHT onto Route 9 near the Key Bank, headed up Route 9, toward 1769 Route 9.")
 
-# ________________________________________________________________________________________________________________________________________________
-# | I believe that I had powered my device OFF before going into the LOWES parking lot.                                                          |
-# | At some point between EXITING the Lowes Home Improvement parking lot, and geting to the INTERSECTION of (146/9), I turned my device back on. |
-# | It WAS just about DEAD, but it had a sliver of battery life remaining.                                                                       |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00867
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I believe that I had powered my device OFF before going into the LOWES parking lot.                               |
+# | At some point between EXITING the Lowes Home Improvement parking lot, and geting to the INTERSECTION of (146/9),  |
+# | I turned my device back on.                                                                                       |
+# | It WAS just about DEAD, but it had a sliver of battery life remaining.                                            |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:49:51",":I said something into my phone, which I believe was RECORDING ME, even though I wasn't hitting the record button. And, SCOTT SCHELLING asked me a question, about what I said. And, it seemed like he had knowledge, of what it was that I said into my device. And it scared the fuckin' shit outta me, because it told me that they had been watching me for some time. This PROGRAM, or somebody in your department, or, maybe it was the FBI, maybe its- maybe it's a GROUP of people that's not- they're made up of uh- Sheriffs, and State Troopers, FBI guys, but- the orginatio- organizations themselves aren't AWARE of this, uh- RICO. Or, GANG.") # RACKETEER INFLUENCED CRIMINAL ORGANIZATION
 $T.AE(0,"01:50:34",":You know, it's like- it's probably not hard to believe, maybe some of the guys that work on your team, are GANG members.")
 $T.AE(1,"01:50:43",":<Indiscernable, I know he looked at me with alarm at this point>")
 $T.AE(0,"01:50:44",":So anyway, side point... I started to think about, uh- why would somebody do all this to me, and uh- the only thing I could come up with is, that it has something to do with my fathers murder in 1995. Because my father had a suspicion that he was gonna wind up getting killed, and then he did, my father was murdered by Zontell Gordon on October 23rd, 1995, and uh, he-, he- made statements that caused me- caused everyone- caused me to believe that he knew what was gonna happen. (3) guys that killed my dad, they, uh- they were all tried for FIRST DEGREE MURDER, but- I don't think the OTHER TWO GUYS that were involved, had any knowledge whatsoever, that the guy who shot my father, uh- he had no intention of letting my father survive.")
-$T.AE(1,"01:51:42",":Hm. What'd you say this guy's name was...?") # Maybe he finds the story somewhat plausible, hence the question. Though, it's still a bit of a STRETCH.
+$T.AE(1,"01:51:42",":Hm. What'd you say this guy's name was...?") 
+
+# 00872
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Maybe he finds the story somewhat plausible, hence the question. Though, it's still a bit of a STRETCH.           |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:51:44",":Zontell Gordon.")
 $T.AE(1,"01:51:45",":Zontell...?")
 $T.AE(0,"01:51:47",":Yeh, he's- he's in prison.")
@@ -2145,16 +2859,48 @@ $T.AE(0,"01:54:34",":So, I didn't have a way to call 911. I cut that houses' pho
 $T.AE(1,"01:55:49",":Mhmm.")
 $T.AE(0,"01:55:51",":I uh, wound up walking PAST Matchless Stove and Chimney, and then I got to like the uh- billboard, the LAMAR ADVERTISING billboard, right in front of the Zappone dealership. And, uh- ya know, I was tryin' to get ahold of 911 SOMEHOW, so I went to like, the base of the board there, and there's like an electrical meter. And I pulled out a module, thinkin' that maybe- maybe it could set off an ALARM or something... and then, SCOTT SCHELLING was there within a minute or two. I was like 'Oh yes! Whatever I did got a cop to show up~!' And then, he shows up, and then he's like, shining the flashlight in my face, he's like uh, 'We got a report of somebody jumping in front of vehicles, or whatever' and I said 'Well, uh- I was trying to flag people down for help. I was trying to call 911.' And he's like 'You didn't call 911, caus eif you did we would've- we would've gotten the call.'")
 $T.AE(0,"01:56:42",":He was actually pretty snippy with me, and uh- I convinced him, of WHO I WAS, and a moment or two after he showed up, uh- JEFFREY KAPLAN and JOSHUA WELCH showed up. And, uh- whatever I said caused SCOTT SCHELLING to like, be the COOL guy. And then JEFFREY KAPLAN showed up, and he was kinda like, bein' the bad cop. Good cop, bad cop. Joshua Welch was just kinda like observing from the distance.")
-$T.AE(3,"01:57:12","*enters the Halfmoon Sheriff Substation*") # Timing seems PRETTY FUCKING COINCIDENTAL
+$T.AE(3,"01:57:12","*enters the Halfmoon Sheriff Substation*") 
+
+# 00888
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Timing seems PRETTY FUCKING COINCIDENTAL...                                                                       |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:57:14",":Michael Whiteacre")
 $T.AE(0,"01:57:19",":And, uh- what happened was, uh- I explained what was going on, I told him that uh- a couple guys were following me, I tried to call 911 a couple times, and neither one of my calls made it to the DISPATCH STATION, and uh- as soon as I told him that, uh- he realized that I was the guy that walked to STRATTON AIR NATIONAL GUARD a few nights beforehand. The events between MAY 19th, and MAY 26th, are ALL in a CHAPTER in my BOOK called 'The Week'.Uh- I won't go into FULL detail about ALL of it, but what I WILL say, is this. Uh, that interaction right there, SCOTT SCHELLING asked for my ID, and then when I SHOWED him the ID, he didn't need to run it. And then as soon as he looked at it, he wasn't running the ID and JEFF KAPLAN said to him 'Well, why aren't you runnin' it...?' and SCOTT SCHELLING said, 'Well, this is the guy that walked to STRATTON 3 nights ago.' And then all of a sudden the roles reversed, so JEFF KAPLAN was the GOOD COP, and then SCOTT SCHELLING started to be a dick.")
 $T.AE(0,"01:58:35",":Scott was looking for any reason-")
 $T.AE(3,"01:58:35",":<Interrupts me>, Did you read the police report...?")
 $T.AE(0,"01:58:37",":No.")
-$T.AE(3,"01:58:38",":Oh. Mike, you've already told all of us this.") # Haven't told THIS guy, dude.
+$T.AE(3,"01:58:38",":Oh. Mike, you've already told all of us this.") 
+
+# 00894
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Haven't told THIS guy, dude.                                                                                      |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:58:40",":Right.")
-$T.AE(3,"01:58:41",":What, what are you looking for...?") # PROSECUTE YOUR ORGANIZATION, that's what I'm looking to do. Ya know...?
-$T.AE(0,"01:58:44",":Well...") # It should be pretty fuckin' obvious what I'm lookin' to do, buddy. Ya know...?
+$T.AE(3,"01:58:41",":What, what are you looking for...?") 
+
+# 00896
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | PROSECUTE YOUR ORGANIZATION, that's what I'm looking to do. Ya know...?                                           |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(0,"01:58:44",":Well...") 
+
+# 00897
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | It should be pretty fuckin' obvious what I'm lookin' to do, buddy. Ya know...?                                    |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(4,"01:58:45","*Multiple officers enter the office*")
 $T.AE(3,"01:58:46",":Cause we all, like I've read your notes, multiple times that you've left on buildings... and, I'm not sure what else we can do for ya.") # Give me $300M when I file a lawsuit against SCSO, and some officers go to prison.)
 $T.AE(3,"01:58:54",":Don't you think-")
@@ -2164,56 +2910,95 @@ $T.AE(3,"01:59:02",":<Knife sound> You've made that aware, you've made us aware 
 $T.AE(0,"01:59:04",":Right. Well, I'm getting in trouble at Walmart, for something I didn't do, and people are basically fabricating things, and I'm getting arrested for it. And then when some things happen to ME, uh- then I tell the story, it is heard, and NO ACTION IS TAKEN.") # That's PREJUDICE
 $T.AE(0,"01:59:22",":So, what I'm noticing is that the END RESULT is, THIS GUY (MICHAEL SHERADIN) IS WRITING DOWN INFORMATION, and I believe that the-")
 $T.AE(0,"01:59:30",":and I believe that the event has something to do with the-")
-$T.AE(3,"01:59:32",":This is like a FEW YEARS AGO") # I know buddy, that's why you should probably remain silent, cause it shows how LAZY YOUR OFFICE IS.
-$T.AE(0,"01:59:34",":Right.") # I'm basically insulting this dude by AGREEING with his statements.
+$T.AE(3,"01:59:32",":This is like a FEW YEARS AGO") 
+
+# 00907
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I know buddy, that's why you should probably remain silent, cause it shows how LAZY YOUR OFFICE IS.               |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(0,"01:59:34",":Right.") 
+
+# 00908
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I'm basically insulting this dude by AGREEING with his statements.                                                |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"01:59:35",":Well, what happened was, is that you showed up on June 19th with Mark Sheehan...")
 $T.AE(3,"01:59:41",":Yep.")
 $T.AE(0,"01:59:41",":Uh, well, I specified that uh, NFRASTRUCTURE was involved in THAT event right there")
 
-# ________________________________________________________________________________________________________________________________
-# | 07/21/89 | 785-3221 JESSE PICKETT | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00911
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | 07/21/89 | 785-3221 | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf    |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(3,"01:59:47",":Yep, I'm aware")
 $T.AE(1,"01:59:53",":Is this the truth...?")
 $T.AE(3,"01:59:53",":This- this was like, a couple years ago...") 
 
-# ________________________________________________________________________________________________________________________________
-# | Indicates that IN HIS OPINION, his failure to collect evidence that directly links the former owners of NFRASTRUCTURE to     |
-# | ESPIONAGE TOOLS is really NOTHING to be TOO concerned with, whereby downplaying the SEVERITY of MICHAEL WHITEACRE's LAZINESS |
-# | to COLLECT EVIDENCE and stuff like that. Ya know...?                                                                         |
-# |                                                                                                                              |
-# | While MICHAEL WHITACRES demeanor and words doesn't indicate MALICIOUS INTENT...?                                             |
-# | His INACTION certainly fucking does.                                                                                         |
-# | If he's aware that I IMPLICATED NFRASTRUCTURE, and then SCSO COOPER had to SWOOP IN LIKE A DOUCHEBAG VERSIN OF BATMAN...     |
-# | it means that I had some bitch write a letter of indication that led to me losing custody of my children for BEING CORRECT.  |
-# | It ALSO means that I have YOU to thank for, you know, being TOO LAZY to collect the EVIDENCE I just posted above. Ya know?   |
-# | It's not really an OPINION so much as it's like this:                                                                        |
-# |------------------------------------------------------------------------------------------------------------------------------|
-# | VICTIM : Mr. police officer, a crime happened to me...                                                                       |
-# | COP    : Crimes happen all the time dude, grow the fuck up.                                                                  |
-# |          You'll be fine.                                                                                                     |
-# |          Just drink your milk, buy gas, and pay your bills.                                                                  |
-# |          I really, am not even remotely concerned about this SUPPOSED crime that you say happened to ya.                     |
-# |          Really, there's not much more we can do for ya at this point, cause... shit happened so long ago.                   |
-# |------------------------------------------------------------------------------------------------------------------------------|
-# | I don't think MICHAEL WHITEACRE realizes how stupid he sounds right now, but his rhetoric sounds like this dialog above.     |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00914
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Indicates that IN HIS OPINION, his failure to collect evidence that directly links the former owners of           |
+# | NFRASTRUCTURE to ESPIONAGE TOOLS is really NOTHING to be TOO concerned with, whereby downplaying the SEVERITY of  |
+# | MICHAEL WHITEACRE's LAZINESS to COLLECT EVIDENCE and stuff like that. Ya know...?                                 |
+# |                                                                                                                   |
+# | While MICHAEL WHITACRES demeanor and words doesn't indicate MALICIOUS INTENT...?                                  |
+# | His INACTION certainly fucking does.                                                                              |
+# | If he's aware that I IMPLICATED NFRASTRUCTURE, and then SCSO COOPER had to SWOOP IN LIKE A DOUCHEBAG VERSIN OF    |
+# | BATMAN, it means that I had some bitch write a letter of indication that led to me losing custody of my children  |
+# | for BEING CORRECT. That means I have been PENALIZED FOR BEING CORRECT/RIGHT. That means there's a fuckin MORON    |
+# | that has to be ROASTED and HUMILIATED, so that they realize that they fucked with the WRONG INDIVIDUAL. Ya know?  |
+# |                                                                                                                   |
+# | It ALSO means that I have YOU to thank for, you know, being TOO LAZY to collect the EVIDENCE I just posted above. |
+# | Ya know? It's not really an OPINION so much as it's like this:                                                    |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | VICTIM : Mr. police officer, a crime happened to me...                                                            |
+# | COP    : Crimes happen all the time dude, grow the fuck up.                                                       |
+# |          You'll be fine.                                                                                          |
+# |          Just drink your milk, buy gas, and pay your bills.                                                       |
+# |          I really, am not even remotely concerned about this SUPPOSED crime that you say happened to ya.          |
+# |          Really, there's not much more we can do for ya at this point, cause... shit happened so long ago.        |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | I don't think MICHAEL WHITEACRE realizes how stupid he sounds right now, but...                                   |
+# | that is EXACTLY what his rhetoric sounds like this dialog above.                                                  |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(1,"01:59:54",":Oh.")
 $T.AE(0,"01:59:54",":Yeah.")
 $T.AE(3,"01:59:55",":Well THIS was, yeah.")
 $T.AE(0,"01:59:57",":I was dragged through the mud regarding custody of my children, I was accused of stuff at Family Court... and then people played games with me at family court.")
 
-# ________________________________________________________________________________________________________________________________
-# | 08/18/20 | Email to HEATHER COREY-MONGUE                                                                                     |
-# |          | https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0818-(Heather%20Corey-Mongue%20Email).pdf        |
-# | 02/01/21 | Family Court (Appearances off by 5 hours)   | https://drive.google.com/file/d/1lxynSuFw8S4qMtMusEkB4SK4CDvIh1s9   |
-# | 04/06/21 | Weiner + Schellinger + Pelagalli being lazy | https://drive.google.com/file/d/1CYflcm7kEawNP2jz_osXmtMJF1KL06Uc   |
-# | <See how I collected this shit called EVIDENCE...? Try it sometime Mr. Whiteacre. You might not SOUND like a careless moron. |
-# | "I've read your notes multiple times, had a dildo in my asshole, and did nothing about those notes I read multiple times..." |
-# | That's how you sound. Ya know...? Dildos being in one's asshole is a METAPHOR for YOU not doing YOUR fucking job. So...      |
-# | Shut the fuck up, and stop interrupting me and Michael Sheradin. Thanks.                                                     |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00918
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | 08/18/20 | Email to HEATHER COREY-MONGUE                                                                          |
+# | https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0818-(Heather%20Corey-Mongue%20Email).pdf        |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 02/01/21 | Family Court (Appearances off by 5 hours)                                                              |
+# | https://drive.google.com/file/d/1lxynSuFw8S4qMtMusEkB4SK4CDvIh1s9                                                 |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 04/06/21 | Weiner + Schellinger + Pelagalli being lazy                                                            |
+# | https://drive.google.com/file/d/1CYflcm7kEawNP2jz_osXmtMJF1KL06Uc                                                 |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | See how I collected this shit called EVIDENCE...?                                                                 |
+# | Try it sometime Mr. Whiteacre... You might not SOUND like a careless moron.                                       |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | "I've read your notes multiple times, had a dildo in my asshole, and did nothing about those notes I read         |
+# | multiple times..."                                                                                                |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | That's how you sound. Ya know...? Dildos being in one's asshole is a METAPHOR for YOU not doing YOUR fucking job. |
+# | So... Shut the fuck up, and stop interrupting me and Michael Sheradin. Thanks.                                    |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"02:00:04",":They didn't send me uh- my APPEARANCES with the CORRECT TIME, so...")
 $T.AE(0,"02:00:12",":What I'm suggesting is that uh, <you're fuckin' LAZY bruh =)>...")
@@ -2221,40 +3006,65 @@ $T.AE(0,"02:00:14",":I believe that THAT event was RELATED to my fathers murder 
 $T.AE(1,"02:00:19",":Ok.")
 $T.AE(0,"02:00:19",":And then MICHAEL WHITEACRE wrote a report about how he was showing up because OLIVER ROBINSON made a complaint, uh-")
 
-# _____________________________________________________________________________________________________________________________________
-# | I had SUBMITTED this thing called a fuckin' TICKET, for a MOBILE HOTSPOT, so like my CHILDREN, could like, do their SCHOOLWORK... |
-# | ...with this person called the RECEPTIONIST, who was at the FRONT DESK, of 5 CHELSEA PLACE, cause I went to IMS on the CAMPUS...  |
-# | ...and I kept getting some fuckin' MORONS pointing me in directions to do stuff I couldn't do.                                    |
-# |-----------------------------------------------------------------------------------------------------------------------------------|
-# | IMS : Sign into the account and submit a ticket.                                                                                  |
-# | Me  : Can't, cause I don't have the device.                                                                                       |
-# | IMS : Ok, GO GET THE DEVICE and come back.                                                                                        |
-# | Me  : Fine.                                                                                                                       |
-# | <I go get the device and come back.>                                                                                              |
-# | Me  : Here, I have the device.                                                                                                    |
-# | IMS : We're closed now, you're gonna have to fuck off, and come back tomorrow.                                                    |
-# | Me  : Ya know, that's pretty rude...                                                                                              |
-# | IMS : Oh well, dude. I have a dildo I have to get to, alright...? So, grow up.                                                    |
-# | Me  : I am trying to get INTERNET ACCESS so my kids can do their schoolwork.                                                      |
-# | IMS : *checks watch* Dildo time is more important. Come back tomorrow.                                                            |
-# |-----------------------------------------------------------------------------------------------------------------------------------|
-# | In hindsight, I didn't realize how RUDE I was being, walking back and forth to the IMS office on campus, to get my kids internet. |
-# | To do their schoolwork and shit. Ya know...? The school resource officer, Mr. Muller directed me to go there...? But- MAYBE...    |
-# | MAYBE... I was RUDE in the WAY that I WALKED TO THE SCHOOL CAMPUS MULTIPLE TIMES... And that means...? No help.                   |
-# | So, that's when I went to the fuckin' DISTRICT OFFICE and SUBMITTED A TICKET FROM THERE. And, then I later GAVE THAT NUMBER TO    |
-# | OLIVER ROBINSON and his ASSISTANT, and WHEN I GAVE THEM THAT NUMBER, that woman IMMEDIATELY exited the CONFERENCE ROOM...         |
-# | And I believe that she DELETED THAT TICKET. IF SHE DIDN'T...? Then, THAT is the EVIDENCE that MICHAEL WHITEACRE should GO BACK IN |
-# | TIME, to CORRECT the fucking job that he did INCORRECTLY. Ya know? "This was a COUPLE YEARS AGO" (<- indicates how lazy he is)    |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00923
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I had SUBMITTED this thing called a fuckin' TICKET, for a MOBILE HOTSPOT, so like my CHILDREN, could like, do     |
+# | their SCHOOLWORK... with this person called the RECEPTIONIST, who was at the FRONT DESK, of 5 CHELSEA PLACE,      |
+# | cause I went to IMS on the CAMPUS... and I kept getting some fuckin' MORONS pointing me in directions to do stuff |
+# | I couldn't do.                                                                                                    |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | IMS : Sign into the account and submit a ticket.                                                                  |
+# | Me  : Can't, cause I don't have the device.                                                                       |
+# | IMS : Ok, GO GET THE DEVICE and come back.                                                                        |
+# | Me  : Fine.                                                                                                       |
+# | <I go get the device and come back.>                                                                              |
+# | Me  : Here, I have the device.                                                                                    |
+# | IMS : We're closed now, you're gonna have to fuck off, and come back tomorrow.                                    |
+# | Me  : Ya know, that's pretty rude...                                                                              |
+# | IMS : Oh well, dude. I have a dildo I have to get to, alright...? So, grow up.                                    |
+# | Me  : I am trying to get INTERNET ACCESS so my kids can do their schoolwork.                                      |
+# | IMS : *checks watch* Dildo time is more important. Come back tomorrow.                                            |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | In hindsight, I didn't realize how RUDE I was being, walking back and forth to the IMS office on campus, to get   |
+# | my kids internet. To do their schoolwork and shit. Ya know...? The school resource officer, Mr. Muller directed   |
+# | me to go there...? But- MAYBE... MAYBE...                                                                         |
+# | ...I was RUDE in the WAY that I WALKED TO THE SCHOOL CAMPUS MULTIPLE TIMES... And that means...? No help.         |
+# |                                                                                                                   |
+# | So, that's when I went to the fuckin' DISTRICT OFFICE and SUBMITTED A TICKET FROM THERE.                          |
+# | And, then I later GAVE THAT NUMBER TO OLIVER ROBINSON and his ASSISTANT, and WHEN I GAVE THEM THAT NUMBER, that   |
+# | woman IMMEDIATELY exited the CONFERENCE ROOM...                                                                   |
+# |                                                                                                                   |
+# | And I believe that she DELETED THAT TICKET. IF SHE DIDN'T...?                                                     |
+# | Then, THAT is the EVIDENCE that MICHAEL WHITEACRE should GO BACK IN TIME, to CORRECT the fucking job that he did  |
+# | INCORRECTLY. Ya know? "This was a COUPLE YEARS AGO" (<- indicates how lazy he is)                                 |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"02:00:26",":What Michael Whiteacre wrote on the REPORT <SCSO-2020-003688> is that, the reason he was at my house was UNRELEATED to the CPS case.")
 $T.AE(0,"02:00:33",":But it fucking definitely WAS related, and he wasn't aware of it.")
 $T.AE(0,"02:00:40",":So, what I have come to determine is that I have to be pretty ADAMANT about the story...")
 $T.AE(0,"02:00:45",":...because SOMEBODY might have their FACTS incorrect, and then walk in, and then ask questions like...")
 $T.AE(0,"02:00:53",":...why are you talking about a case from a couple years ago, so...")
-$T.AE(3,"02:00:54",":Ok.") # Michael Whiteacre admitting that I'm openly insulting his [integrity/due-diligence] to his face.)
+$T.AE(3,"02:00:54",":Ok.") 
+
+# 00929
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Michael Whiteacre admitting that I'm openly insulting his [integrity/due-diligence] to his face.                  |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"02:00:56",":So...")
-$T.AE(3,"02:00:56",":Alright.") # Making an admission that he might've fucked up after all. Sounds IDENTICAL to JUDGE PELAGALLI on 4/6/21.)
+$T.AE(3,"02:00:56",":Alright.") 
+
+# 00931
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Making an admission that he might've fucked up after all. Sounds IDENTICAL to JUDGE PELAGALLI on 4/6/21.          |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"02:00:58",":The reason why uh, I'm talking about it with you right now, is because...")
 $T.AE(0,"02:01:01",":Uh- like I said, I believe that my AUNT TERRI was INVOLVED with the MURDER ATTEMPT on MAY 26th, 2020, and SO WAS SCOTT SCHELLING")
 $T.AE(0,"02:01:13",":Because, THAT RECORD (SCSO-2020-028501) indicates that uh, SCOTT SCHELLING had me in custody along with JEFFREY KAPLAN AND WROTE NO NOTES ABOUT THE INTERACTION.")
@@ -2264,61 +3074,117 @@ $T.AE(0,"02:01:33",":when he offered me this ULTIMATUM, either I arrest you and 
 $T.AE(0,"02:01:44",":Or... you can... allow ME to bring you home.")
 $T.AE(3,"02:01:52",":Mike, when you told ME about this, didn't I tell you to go to the supervisor...?")
 
-# _________________________________________________________________________________________________________________________________________
-# | Yeah, I went and spoke to JOSHUA WELCH, and when I did, he told me the incident number for 05/23/20 SCSO-027797 which was the         |
-# | WRONG INCIDENT, THAT was related to the INCIDENT where SCOTT SCHELLING responded to a CALL FROM ROTTERDAM POLICE.                     |
-# | It is STRANGE how STRATTON AIR NATIONAL GUARD would GO RIGHT AHEAD... and call the ROTTERDAM POLICE... ya know...? Weird.             | 
-# | ME -> NOT IN ROTTERDAM -> IN GLENVILLE AT STRATTON AIR NATIONAL GUARD AT LIKE 11 or 12 o'clock -> TOLD THEM ABOUT AUDIO I RECORDED -> |
-# | ROTTERDAM POLICE CALLS SCSO -> SCSO SENDS SCOTT SCHELLING TO MY HOUSE -> SCOTT SCHELLING WRITES DOWN MOM'S LICENSE PLATE -> FUCKS OFF |
-# |---------------------------------------------------------------------------------------------------------------------------------------|
-# | 02/02/21 | CAPT. JEFFREY BRON | https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8                                     |
-# |---------------------------------------------------------------------------------------------------------------------------------------|
-# | Yeah, so what MICHAEL WHITEACRE doesn't realize, is that I've had to CHASE THIS FUCKING RECORD DOWN and basically INTERROGATE CAPT.   |
-# | JEFFREY BROWN, who's like, above ALL these guys... including JOSHUA WELCH. Not that JOSHUA WELCH was UNHELPFUL, because he told me... |
-# | "Yeh, I remember, that incident in front of Zappone, I was there." (<- That's how I obtained this RECORD that wasn't in my RECORDS    |
-# | request. Ya know...? Basically, IN ORDER FOR ME TO HAVE THE FUCKING RECORD, SCSO-2020-028501...? I HAD TO DO MICHAEL WHITACRES JOB.   |
-# | I ALREADY SUBMITTED A RECORDS REQUEST WAY BACK ON 09/04/20 and it DID NOT HAVE THE FUCKING RECORD I WAS LOOKING FOR. Cool..? Cool.    |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00940
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Yeah, I went and spoke to JOSHUA WELCH, and when I did, he told me the incident number for 05/23/20 SCSO-027797   |
+# | which was the WRONG INCIDENT, THAT was related to the INCIDENT where SCOTT SCHELLING responded to a CALL FROM     |
+# | ROTTERDAM POLICE.                                                                                                 |
+# |                                                                                                                   |
+# | It is STRANGE how STRATTON AIR NATIONAL GUARD would GO RIGHT AHEAD... and call the ROTTERDAM POLICE...            |
+# | Ya know...? Weird.                                                                                                |
+# |                                                                                                                   |
+# | ME -> NOT IN ROTTERDAM -> IN GLENVILLE AT STRATTON AIR NATIONAL GUARD AT LIKE 11 or 12 o'clock -> TOLD THEM ABOUT |
+# | AUDIO I RECORDED -> ROTTERDAM POLICE CALLS SCSO -> SCSO SENDS SCOTT SCHELLING TO MY HOUSE -> SCOTT SCHELLING      |
+# | WRITES DOWN MOM'S LICENSE PLATE -> SCOTT SCHELLING FUCKS OFF -> I RECORD (2) ADDITIONAL ENTRIES OF THE "BIRD"     |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 02/02/21 | CAPT. JEFFREY BRON | https://drive.google.com/file/d/1JECZXhwpXFO5B8fvFnLftESp578PFVF8                 |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Yeah, so what MICHAEL WHITEACRE doesn't realize, is that I've had to CHASE THIS FUCKING RECORD DOWN and basically |
+# | INTERROGATE CAPT. JEFFREY BROWN, who's like, above ALL these guys, including JOSHUA WELCH. Not that J. WELCH was  |
+# | UNHELPFUL, because he told me...                                                                                  |
+# |                                                                                                                   |
+# | "Yeh, I remember, that incident in front of Zappone, I was there."                                                |
+# | That's how I obtained this RECORD that wasn't in my RECORDS request. Ya know...? Basically, IN ORDER FOR ME TO    |
+# | HAVE THE FUCKING RECORD, SCSO-2020-028501...? I HAD TO DO MICHAEL WHITACRES JOB.                                  |
+# |                                                                                                                   |
+# | I ALREADY SUBMITTED A RECORDS REQUEST WAY BACK ON 09/04/20 and it DID NOT HAVE THE FUCKING RECORD I WAS LOOKING   |
+# | FOR. Cool..? Cool.                                                                                                |
+# |___________________________________________________________________________________________________________________|
 
-$T.AE(0,"02:01:53",":I did.") # It's [hard/impossible] to condense those boxes ABOVE into a single 2 second statement, without causing CONFUSION.
-$T.AE(3,"02:01:54",":Ok, cause there's NOTHING WE CAN DO about that.") # I disagree, there certainly is, buddy.
+$T.AE(0,"02:01:53",":I did.") 
+
+# 00941
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | It's [hard/impossible] to condense those boxes ABOVE into a single 2 second statement, without causing CONFUSION. |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(3,"02:01:54",":Ok, cause there's NOTHING WE CAN DO about that.") 
+
+# 00942
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I disagree, there certainly is, buddy.                                                                            |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"02:01:58",":Well, I think this guy CAN do something about it.")
 $T.AE(1,"02:01:59",":Well, I told ya I'd look into it, and see what the deal was, but yeah.")
 $T.AE(3,"02:02:02",":Did you reach out to, I believe it was SGT WELCH at the time...?")
-$T.AE(0,"02:02:05",":Yes.") # Mentioned in the box above, it's how I got the record for the ZAPPONE DEALERSHIP incident.
+$T.AE(0,"02:02:05",":Yes.") 
+
+# 00946
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Mentioned in the box above, it's how I got the record for the ZAPPONE DEALERSHIP incident.                        |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(3,"02:02:06",":Did you reach out to him...?")
 $T.AE(0,"02:02:06",":I did. So, uhm...")
 $T.AE(0,"02:02:12",":Allow me collect my thoughts here, uh-")
 
-# _________________________________________________________________________________________________________________
-# | I had no way to compress all of that into a single statement. I was thinking of all this shit above.          |
-# | MICHAEL WHITEACRE's questions DISTRACTED me, so I was unable to make the CORRELATIONS and provide             | 
-# | my step-by-step guide on: How to perform PROPER (LAW ENFORCEMENT/INVESTIGATION).                              |
-# | It's why I wrote this thing called a BOOK. I did mention that I wrote this thing called a BOOK...             |
-# | Ya know...? A BOOK is a LOT MORE than just some NOTES... It's like a 750-fucking-page BOOK.                   |
-# |---------------------------------------------------------------------------------------------------------------|
-# | Top Deck Awareness - Not News - Used to be news...? Now it's Not News. Not News. Part of the Not News Network |
-# | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_0823_TDA_Not_News.pdf                           |
-# |---------------------------------------------------------------------------------------------------------------|
-# | Here's a guy from SCSO that LITERALLY asked me to clue him in on this book I was writing back on...           |
-# | 06/23/2022 | SCSO SPEZIALE | https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6                |
-# |---------------------------------------------------------------------------------------------------------------|
-# | Ya know, I mean, maybe MICHAEL WHITEACRE should like, read that fuckin' book sometime... it's FREE.           |
-# | I know that 750 pages is a lot to read...? But, I made damn certain to make it (INTERESTING/ENTERTAINING).    |
-# | Cause, that'd be SOMETHING he could like, DO... ya know...?                                                   |
-# |---------------------------------------------------------------------------------------------------------------|
-# | 1) Read a book sometime.                                                                                      |
-# | 2) Learn how to perform law enforcement correctly.                                                            |
-# | 3) Discover that I outperform people at being intelligent quite often.                                        |
-# | 4) Stop providing resistance.                                                                                 |
-# | 5) Prepare to write me a check for $300M when I file a lawsuit against SCSO.                                  |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00949
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I had no way to compress all of that into a single statement. I was thinking of all this shit above.              |
+# | MICHAEL WHITEACRE's questions DISTRACTED me, so I was unable to make the CORRELATIONS and provide                 | 
+# | my step-by-step guide on: How to perform PROPER (LAW ENFORCEMENT/INVESTIGATION).                                  |
+# | It's why I wrote this thing called a BOOK. I did mention that I wrote this thing called a BOOK...                 |
+# | Ya know...? A BOOK is a LOT MORE than just some NOTES... It's like a 750-fucking-page BOOK.                       |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Top Deck Awareness - Not News - Used to be news...? Now it's Not News. Not News. Part of the Not News Network     |
+# | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_0823_TDA_Not_News.pdf                               |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Here's a guy from SCSO that LITERALLY asked me to clue him in on this book I was writing back on...               |
+# | 06/23/2022 | SCSO SPEZIALE | https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6                    |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Ya know, I mean, maybe MICHAEL WHITEACRE should like, read that fuckin' book sometime... it's FREE.               |
+# | I know that 750 pages is a lot to read...? But, I made damn certain to make it (INTERESTING/ENTERTAINING).        |
+# | Cause, that'd be SOMETHING he could like, DO... ya know...?                                                       |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | 1) Read a book sometime.                                                                                          |
+# | 2) Learn how to perform law enforcement correctly.                                                                |
+# | 3) Discover that I outperform people at being intelligent quite often.                                            |
+# | 4) Stop providing resistance.                                                                                     |
+# | 5) Prepare to write me a check for $300M when I file a lawsuit against SCSO.                                      |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(1,"02:02:26",":Let me look into this, and I'll check with Sergeant Welch, he'll back probably Monday or Tuesday... he's not in today.")
-$T.AE(0,"02:02:33",":In reference to what happened that night, I did follow up with Sergeant Welch a couple times.") # It's how I obtained records.
+$T.AE(0,"02:02:33",":In reference to what happened that night, I did follow up with Sergeant Welch a couple times.") 
+
+# 00951
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | It's how I obtained records.                                                                                      |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"02:02:39",":Yep.")
 $T.AE(0,"02:02:42",":Uh- the case that I'm making here, is that uh- I suspected FOUL PLAY with SCOTT SCHELLING cause he said something...")
-$T.AE(0,"02:02:46",":...that he would've ONLY KNOWN... if he had a tap into my phone.") # ESPIONAGE with PEGASUS
+$T.AE(0,"02:02:46",":...that he would've ONLY KNOWN... if he had a tap into my phone.") 
+
+# 00954
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | ESPIONAGE with PEGASUS                                                                                            |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"02:02:50",":Alright.")
 $T.AE(0,"02:02:51",":So I mentioned something to you EARLIER, I won't repeat that-")
 $T.AE(0,"02:02:58",":but- I asked JEFF- I asked- uh, when SCOTT SCHELLING made this uh- ULTIMATUM, either I arrest you and bring you to the jail, with this device that has your 911 calls on it... or... I bring you home. And, when I said 'Well, if you're gonna bri- if you're gonna give me an ULTIMATUM, uh- 'how about THIS GUY, JEFFREY KAPLAN follow you...?'")
@@ -2328,11 +3194,14 @@ $T.AE(0,"02:03:38",":So I was able to obtain the record that HE WAS INVOLVED IN,
 $T.AE(0,"02:03:53",":...when I got it I realized that there were NO NOTES attached to it, and uh- what I'm noticing is that if I try to call 911 a couple times, and it doesn't make it to the DISPATCH STATION, oh well.")
 $T.AE(0,"02:04:04",":There was a CRIME that was COMMITTED TO ME, but I REPORTED IT TO A POLICE OFFICER, and HE DID NOTHING ABOUT IT.")
 
-# ___________________________________________________________________________________________________________________________________
-# | Well, he DID do something about it, and so did MICHAEL ZURLO.                                                                   |
-# | They both committed OBSTRUCTION OF JUSTICE: DESTRUCTION OF EVIDENCE, and charged me with CRIMINAL MISCHIEF OF THE FOURTH DEGREE |
-# | Pretty cool, huh...?                                                                                                            |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# 00962
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | Well, he DID do something about it, and so did MICHAEL ZURLO.                                                     |
+# | They both committed OBSTRUCTION OF JUSTICE: DESTRUCTION OF EVIDENCE, and charged me with CRIMINAL MISCHIEF OF THE |
+# | FOURTH DEGREE. Pretty cool, huh...?                                                                               |
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"02:04:07",":And then, I suspected that the POLICE OFFICER in SPECIFIC, uh, HAD UH- SOME NEFARIOUS INTENT, and then...")
 $T.AE(0,"02:04:16",":And then, when he brought me back to my house, JEFFREY KAPLAN was remained in HIS VEHICLE, uh-")
@@ -2349,7 +3218,10 @@ $T.AE(1,"02:05:18",":Alright.")
 $T.AE(0,"02:05:19",":I have ALL OF THE EXHIBITS and the PICTURES, as well as uh, the DATE THEY WERE TAKEN...")
 $T.AE(1,"02:05:24",":Can you get em on a THUMBDRIVE...?")
 
+# 00975
 # _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | They are ALL in my book, Top Deck Awareness - Not News as well as a FILE on my GitHub project in a file named...  |
 # | https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt                       |
 # |-------------------------------------------------------------------------------------------------------------------|
@@ -2357,11 +3229,19 @@ $T.AE(1,"02:05:24",":Can you get em on a THUMBDRIVE...?")
 # | MURDER ATTEMPT, [1597/1602 US-9] 05/25/20 2343 -> [1780 US-9] 05/26/20 0130. The VERY LAST ONE is the SCREENSHOT  |
 # | of my 911 calls that FAILED TO MAKE IT TO THE DISPATCH STATION... So... Those were ALL UPLOADED IMMEDIATELY AFTER |
 # | SCOTT SCHELLING DROPPED ME OFF AT THE SECONDARY LOCATION IN THAT TICKET, SCSO-2020-028501.                        |
-# ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+# |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"02:05:26",":Hey, I have uh- (they're all in the book) an EVIDENCE LIST.")
 $T.AE(0,"02:05:29",":I can even give ya, I can write down my uh- GitHub project that's got all of this information.")
-$T.AE(0,"02:06:00",":So, that's the SITE right there, there's a FOLDER on it that says EVIDENCE") # I meant RECORDS
+$T.AE(0,"02:06:00",":So, that's the SITE right there, there's a FOLDER on it that says EVIDENCE") 
+
+# 00978
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I meant RECORDS.                                                                                                  |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(0,"02:06:06",":Now, some of the LANGUAGE in some of my DOCUMENTS, will... seem... PRETTY OFFENSIVE...")
 $T.AE(0,"02:06:14",":I'm gonna come right out and say that, ")
 $T.AE(1,"02:06:14",":Is this TEE EIGHTCH YOU BEE...?")
@@ -2372,8 +3252,24 @@ $T.AE(1,"02:06:34",":Ok, it's FRIGHTNING ENTROPY")
 $T.AE(0,"02:06:36",":Yep- uhm, FIGHTING ENTROPY, capital EFF, if you don't use the capital letters, it won't get to it, but uh-")
 $T.AE(1,"02:06:44",":Ok.")
 $T.AE(0,"02:06:45",":I can uhm, I could always EMAIL it to you, too, if you want.")
-$T.AE(1,"02:06:49",":I'll go in there and take a look... ain't gonna hurt.") # It won't hurt YOU, it'll probably hurt someone's CREDIBILITY, though.
-$T.AE(0,"02:06:52",":So, in uhm- on that website there's a FOLDER that says EVIDENCE") # I misspoke, it's not EVIDENCE, it's called RECORDS
+$T.AE(1,"02:06:49",":I'll go in there and take a look... ain't gonna hurt.") 
+
+# 00989
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | It won't hurt YOU, it'll probably hurt someone's CREDIBILITY, though.                                             |
+# |___________________________________________________________________________________________________________________|
+
+$T.AE(0,"02:06:52",":So, in uhm- on that website there's a FOLDER that says EVIDENCE") 
+
+# 00990
+# _____________________________________________________________________________________________________________________
+# | Problem                                                                                                           |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I misspoke, it's not EVIDENCE, it's called RECORDS.                                                               |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"02:06:56",":Yep.")
 $T.AE(0,"02:06:58",":And in that folder I have a file named SCSO-2020-028501-(EVIDENCE).txt, and what it has is like videos from the last several years. Of, ME, managing the COMPUTER ANSWERS shop, and uh- uh SUSPICIONS regarding the people that live across the street from me, uh, working with CAPITAL DIGITRONICS, CAPITAL DIGITRONICS provides the RADIO COMMUNICATIONS EQUIPMENT for the STATE POLICE. And then I recorded a couple videos of the STATE POLICE leaving multiple police cruisers running idle unattended outside of the station at the CLIFTON PARK PUBLIC SAFETY BUILDING, and then I recorded a video of me walking to my AUNTS HOUSE, on MAY 25th, 2020 abot 12 HOURS BEFORE THAT EVENT HAPPENED (SCSO-2020-028501), and SOMEBODY was preventing some of my files from making it to my GOOGLE DRIVE account. So, what's happening is, like I have VIDEOS of someone committing some obstruction to my device. So like, if I take a picture of uh- if I take a video of a police officer trying to SHOOT me to death, well, a police officer SOMEWHERE is gonna prevent that FILE from making it to the internet. And, uh- I believe, uh- I don't have- I didn't have a VIDEO of THAT, but the VIDEO that I DID have, that WAS ON THIS DEVICE...? Was, ALMOST AS BAD, and then I SHOWED the video to NEW YORK STATE TROOPER (SHAEMUS) LEAVEY on MAY 27th, 2020 at about NINE A.M., and (5) minutes AFTER I SHOWED IT TO HIM...? My device was REMOTELY DISABLED. (the White Apple iPhone 8+ that I showed him)")
 $T.AE(1,"02:08:23",":Hm. Ok.")
