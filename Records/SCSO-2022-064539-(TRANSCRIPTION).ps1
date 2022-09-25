@@ -16,399 +16,408 @@
 # \\___________________________________________________________________________________________// 
 #  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯  
 
-# // _____________________________________________________________________________________________________
-# // | This is what you could refer to as a "PERSON" that is in the AUDIO RECORDING                      |
-# // | A "PERSON" is someone that exists in REAL LIFE, and just so happens to be IN the AUDIO RECORDING. |
-# // | A "PERSON" is someone that some dipshit like MIKE DEPRESSO would "TALK TO" about stuff like       |
-# // | "EVIDENCE", such as the "AUDIO FILE"... ya know...? "AIR QUOTES" are things that wind up pissing  |
-# // | off people such as "CARELESS MORONS" like MIKE DEPRESSO, or NYSP SERGEANT BOSCO.                  |
-# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // _____________________________________________________________________________________________________
+    # // | This is what you could refer to as a "PERSON" that is in the AUDIO RECORDING                      |
+    # // | A "PERSON" is someone that exists in REAL LIFE, and just so happens to be IN the AUDIO RECORDING. |
+    # // | A "PERSON" is someone that some dipshit like MIKE DEPRESSO would "TALK TO" about stuff like       |
+    # // | "EVIDENCE", such as the "AUDIO FILE"... ya know...? "AIR QUOTES" are things that wind up pissing  |
+    # // | off people such as "CARELESS MORONS" like MIKE DEPRESSO, or NYSP SERGEANT BOSCO.                  |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-Class TranscriptionParty
-{
-    [UInt32] $Index
-    [String] $Name
-    [String] $Initial
-    [String] $String
-    TranscriptionParty([UInt32]$Index,[String]$Name)
+    Class TranscriptionParty
     {
-        $This.Index   = $Index
-        $This.Name    = $Name
-        $This.Initial = ($Name -Split " " | % { $_[0] }) -join ''
-        $This.String  = $Null
-    }
-    [String] ToString()
-    {
-        Return $This.String
-    }
-}
-
-# // _________________________________________________________________________________
-# // | This is what you could refer to as a PIECE of EVIDENCE, like an ALIBI, sorta. |
-# // | This strange object here is otherwise known as a DATE and TIME.               |
-# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-Class TranscriptionTime
-{
-    [Object]     $Date
-    [Object]     $Time
-    [Object] $Position
-    TranscriptionTime([Object]$Start,[String]$Position)
-    {
-        $This.Position = [TimeSpan]$Position
-        $Real          = ($Start+$This.Position).ToString("MM/dd/yyyy hh:mm:ss") -Split " "
-        $This.Date     = $Real[0]
-        $This.Time     = $Real[1]
-    }
-    [String] ToString()
-    {
-        Return $This.Time
-    }
-}
-
-# // _________________________________________________________________________________________________
-# // | Well, this is basically an individual line meant to reproduce what a "PARTY" goes right ahead |
-# // | and "SAYS" in a piece of "EVIDENCE" like an "AUDIO RECORDING", so that "CARELESS MORONS" like |
-# // | SERGEANT BOSCO and MIKE DEPRESSO can "UNDERSTAND" when/where they "GOOFED UP"... whoops~!     |
-# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-Class TranscriptionEntryLine
-{
-    [UInt32] $Rank
-    [String] $Line
-    TranscriptionEntryLine([UInt32]$Rank,[String]$Line)
-    {
-        $This.Rank = $Rank
-        $This.Line = $Line
-    }
-    [String] ToString()
-    {
-        Return $This.Line
-    }
-}
-
-# // _______________________________________________________________________________________________
-# // | This is a thing called an individual "ENTRY" which contains either (1) or (1+) "UTTERANCES" |
-# // | that a "PARTY" went right ahead and just casually "SAID" in a piece of "EVIDENCE" like an   |
-# // | "AUDIO RECORDING", and I gotta tell ya, "CARELESS MORONS" don't seem to "UNDERSTAND" how    |
-# // | these things being overlooked are the reason why "CARELESS MORONS" eventually "GET FIRED".  | 
-# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-Class TranscriptionEntry
-{
-    [UInt32] $Index
-    [Object] $Party
-    [Object] $Date
-    [Object] $Time
-    [Object] $Position
-    [String] $Type
-    [Object] $Content
-    TranscriptionEntry([UInt32]$Index,[Object]$Person,[Object]$Time,[String]$Note)
-    {
-        $This.Index    = $Index
-        $This.Party    = $Person
-        $This.Date     = $Time.Date
-        $This.Time     = $Time.Time
-        $This.Position = $Time.Position
-        $This.Type     = Switch -Regex ($Note)
+        [UInt32] $Index
+        [String] $Name
+        [String] $Initial
+        [String] $String
+        TranscriptionParty([UInt32]$Index,[String]$Name)
         {
-            "^\*{1}" { "Action" } "^\:{1}" { "Statement" } "^\#{1}" { "Note" }
+            $This.Index   = $Index
+            $This.Name    = $Name
+            $This.Initial = ($Name -Split " " | % { $_[0] }) -join ''
+            $This.String  = $Null
         }
-        $This.Content  = @( )
-
-        $Note = $Note.Substring(1)
-        If ($Note.Length -le 80)
+        [String] ToString()
         {
-            $This.Content += [TranscriptionEntryLine]::New(0,$Note)
+            Return $This.String
         }
-        Else
+    }
+
+    # // _________________________________________________________________________________
+    # // | This is what you could refer to as a PIECE of EVIDENCE, like an ALIBI, sorta. |
+    # // | This strange object here is otherwise known as a DATE and TIME.               |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class TranscriptionTime
+    {
+        [Object]     $Date
+        [Object]     $Time
+        [Object] $Position
+        TranscriptionTime([Object]$Start,[String]$Position)
         {
-            $Chars = [Char[]]$Note
-            $Block = ""
-            ForEach ($X in 0..($Chars.Count-1))
+            $This.Position = [TimeSpan]$Position
+            $Real          = ($Start+$This.Position).ToString("MM/dd/yyyy hh:mm:ss") -Split " "
+            $This.Date     = $Real[0]
+            $This.Time     = $Real[1]
+        }
+        [String] ToString()
+        {
+            Return $This.Time
+        }
+    }
+
+    # // _________________________________________________________________________________________________
+    # // | Well, this is basically an individual line meant to reproduce what a "PARTY" goes right ahead |
+    # // | and "SAYS" in a piece of "EVIDENCE" like an "AUDIO RECORDING", so that "CARELESS MORONS" like |
+    # // | SERGEANT BOSCO and MIKE DEPRESSO can "UNDERSTAND" when/where they "GOOFED UP"... whoops~!     |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class TranscriptionEntryLine
+    {
+        [UInt32] $Rank
+        [String] $Line
+        TranscriptionEntryLine([UInt32]$Rank,[String]$Line)
+        {
+            $This.Rank = $Rank
+            $This.Line = $Line
+        }
+        [String] ToString()
+        {
+            Return $This.Line
+        }
+    }
+
+    # // _______________________________________________________________________________________________
+    # // | This is a thing called an individual "ENTRY" which contains either (1) or (1+) "UTTERANCES" |
+    # // | that a "PARTY" went right ahead and just casually "SAID" in a piece of "EVIDENCE" like an   |
+    # // | "AUDIO RECORDING", and I gotta tell ya, "CARELESS MORONS" don't seem to "UNDERSTAND" how    |
+    # // | these things being overlooked are the reason why "CARELESS MORONS" eventually "GET FIRED".  | 
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class TranscriptionEntry
+    {
+        [UInt32] $Index
+        [Object] $Party
+        [Object] $Date
+        [Object] $Time
+        [Object] $Position
+        [String] $Type
+        [Object] $Content
+        TranscriptionEntry([UInt32]$Index,[Object]$Person,[Object]$Time,[String]$Note)
+        {
+            $This.Index    = $Index
+            $This.Party    = $Person
+            $This.Date     = $Time.Date
+            $This.Time     = $Time.Time
+            $This.Position = $Time.Position
+            $This.Type     = Switch -Regex ($Note)
             {
-                If ($X -ne 0 -and $X % 80 -eq 0)
-                {
-                    $This.Content += [TranscriptionEntryLine]::New($This.Content.Count,$Block)
-                    $Block = ""
-                }
-
-                $Block += $Chars[$X]
+                "^\*{1}" { "Action" } "^\:{1}" { "Statement" } "^\#{1}" { "Note" }
             }
+            $This.Content  = @( )
 
-            If ($Block -ne "")
+            $Note = $Note.Substring(1)
+            If ($Note.Length -le 80)
             {
-                $This.Content += [TranscriptionEntryLine]::New($This.Content.Count,$Block)
-            }
-        }
-    }
-    [String] ToString()
-    {
-        Return "[{0}] <{1}> {2}{3}" -f $This.Time, $This.Party.String, $This.Content[0], @($Null,"...")[$This.Content.Count -gt 1]
-    }
-}
-
-# // ____________________________________________________________________________________________________________
-# // | This is basically what you could call a line-by-line, utterance-by-utterance description of the "WORDS"  |
-# // | that someone "SAYS" during an "AUDIO RECORDING" that constitutes as this stuff called "EVIDENCE", and    |
-# // | my god, sometimes "CARELESS MORONS" like NYSP TROOPER BOSCO, or MIKE DEPRESSO...? They don't know what   |
-# // | the hell this thing really is... I mean, they DO when they're trying to ARREST or PROSECUTE SOMEBODY...? |
-# // | But that's the ONLY TIME that they know what this actually is, or means. Any other time, it sure as hell |
-# // | looks like it's CHINESE or HEIROGLYPHICS... and, you can't blame THEM, for being IGNORANT, and not       |
-# // | knowing how to read CHINESE or HEIROGLYPHICS... Nah. That's actually pretty ADVANCED STUFF right there.  |
-# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-Class Transcription
-{
-    [String]       $Name
-    [Object]       $File
-    [String]      $Title
-    [DateTime]    $Start
-    [DateTime]      $End
-    [TimeSpan] $Duration
-    [String]        $URL
-    [Object]      $Party
-    [Object]     $Output
-    Transcription([Object]$File,[String]$Title,[String]$URL)
-    {
-        $This.Name     = $File.Name
-        $This.File     = $File
-        $This.Title    = $Title
-        $This.Start    = $File.Start
-        $This.End      = $File.End
-        $This.Duration = $File.Duration
-        $This.URL      = $URL
-        $This.Party    = @( )
-        $This.Output   = @( )
-    }
-    AddParty([String]$Name)
-    {
-        If ($Name -in $This.Party.Name)
-        {
-            Throw "Party [!] [$Name] already specified"
-        }
-
-        $This.Party += [TranscriptionParty]::New($This.Party.Count,$Name)
-        Write-Host "Party [+] [$Name] added."
-    }
-    PartyAssemble()
-    {
-        $MaxIndex     = ($This.Party.Index)[-1].Length
-        $MaxInitial   = ($This.Party.Initial | Sort-Object Length )[-1].Length
-        ForEach ($X in 0..($This.Party.Count-1))
-        {
-            $P        = $This.Party[$X]
-            $R        = $Null
-            If ($P.Intial.Length -lt $MaxInitial)
-            {
-                $R    = "{0}{1}" -f $P.Initial, (@(" ") * ($MaxInitial - $P.Initial.Length) -join '')
+                $This.Content += [TranscriptionEntryLine]::New(0,$Note)
             }
             Else
             {
-                $R    = $P.Initial
-            }
-            $P.String = "{0:d$MaxIndex}/{1}" -f $P.Index, $R
-        }
-    }
-    AddEntry([UInt32]$Index,[Object]$Position,[String]$Note)
-    {   
-        If ($Index -gt $This.Party.Count)
-        {
-            Throw "Party [!] [$Index] is out of bounds"
-        }
-        If ($Position -match "^\d{2}\:\d{2}$")
-        {
-            $Position = "00:$Position"
-        }
-        $Person       = $This.Party[$Index]
-        $This.Output += [TranscriptionEntry]::New($This.Output.Count,$Person,$This.Tx($Position),$Note)
-        Write-Host "Entry [+] [$Position] added"
-    }
-    Ae([UInt32]$Index,[String]$Position,[String]$Note)
-    {
-        $This.AddEntry($Index,$Position,$Note)
-    }
-    [Object] Tx([String]$Position)
-    {
-        Return [TranscriptionTime]::New($This.Start,$Position)
-    }
-    [Object[]] GetOutput()
-    {
-        $T            = $This
-        $Swap         = @{ }
-
-        $Swap.Add(0,"Index Party  Time     Position Content")
-        $Swap.Add(1,"----- -----  -------- -------- -------")
-
-        ForEach ($X in 0..($This.Output.Count-1))
-        {
-            $I        = $This.Output[$X]
-            $Line     = ("{0:d5} {1} {2} {3} {4}" -f $I.Index, $I.Party, $I.Time, $I.Position, $I.Content[0])
-            $Swap.Add($Swap.Count,$Line)
-            If ($I.Content.Count -eq 2)
-            {
-                $Swap.Add($Swap.Count,("{0}{1}" -f (@(" ") * 31 -join ''), $I.Content[1]))
-            }
-            If ($I.Content.Count -gt 2)
-            {
-                ForEach ($J in 1..($I.Content.Count-1))
+                $Chars = [Char[]]$Note
+                $Block = ""
+                ForEach ($X in 0..($Chars.Count-1))
                 {
-                    $Swap.Add($Swap.Count,("{0}{1}" -f (@(" ") * 31 -join ''), $I.Content[$J]))
+                    If ($X -ne 0 -and $X % 80 -eq 0)
+                    {
+                        $This.Content += [TranscriptionEntryLine]::New($This.Content.Count,$Block)
+                        $Block = ""
+                    }
+
+                    $Block += $Chars[$X]
+                }
+
+                If ($Block -ne "")
+                {
+                    $This.Content += [TranscriptionEntryLine]::New($This.Content.Count,$Block)
                 }
             }
         }
-        Return @($Swap[0..($Swap.Count-1)])
-    }
-}
-
-# // ___________________________________________________________________________________________________
-# // | This is essentially the METADATA of a piece of AUDIO EVIDENCE, it includes the ACTUAL FILE,     |
-# // | it's ATTRIBUTES, as well as like, how valuable the information within it is, for reproducing    |
-# // | this thing that TROOPER BOSCO and SCSO JAMES LEONOARD really suck dick at understanding or      |
-# // | making sense of, otherwise known as an "ALIBI". So if the file was ORIGINALLY STARTED at        |
-# // | like 09/16/2022 12:52:40 PM ...? Then if this fucking file isn't ALTERED in any way, it will    |
-# // | actually coordinate itself with OTHER PIECES of EVIDENCE, such as RADIO COMMUNICATIONS, or      |
-# // | PHONE CALLS, or literally people within the AUDIO FILE stating what TIME and DATE it was taken. |
-# // | TROOPER BOSCO, MIKE DEPRESSO, and JAMES LEONARD should really study this shit at some point.    |
-# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-Class TranscriptionFile
-{
-    Hidden [Object]       $App
-    Hidden [Object]      $Root
-    [String]             $Name
-    [String]         $FullName
-    [DateTime]           $Date
-    Hidden [UInt64] $SizeBytes
-    [String]             $Size
-    [UInt32]         $Channels
-    [UInt32]       $SampleRate
-    [String]        $Precision
-    [Object]         $Duration
-    [Object]          $Samples
-    [Object]      $CDDASectors
-    [String]         $FileSize
-    [String]          $BitRate
-    [String]         $Encoding
-    [Object]            $Start
-    [Object]              $End
-    TranscriptionFile([Object]$Com)
-    {
-        $This.Name        = $Com.Name
-        $This.Fullname    = $Com.Path
-        $Item             = Get-Item $This.Fullname
-        $This.Date        = $Item.LastWriteTime
-        $This.SizeBytes   = $Item.Length
-        $This.Size        = "{0:n3} MB" -f ($This.SizeBytes/1MB)
-
-        Set-Alias sox "C:\Program Files (x86)\sox-14-4-2\sox.exe"
-        $Sx               = sox --i $Item.Fullname | ? Length -gt 0 | % Substring 17
-        $This.Channels    = $Sx[1]
-        $This.SampleRate  = $Sx[2]
-        $This.Precision   = $Sx[3]
-        $Tx               = $Sx[4] -Split " = "
-        $This.Duration    = [TimeSpan]$Tx[0]
-        $This.Samples     = $Tx[1]
-        $This.CDDASectors = $Tx[2]
-        $This.FileSize    = $Sx[5]
-        $This.BitRate     = $Sx[6]
-        $This.Encoding    = $Sx[7]
-        $T                = [Regex]::Matches($Item.Name,"^\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}").Value -Split "_"
-        $This.Start       = [DateTime]("{0} {1}" -f ($T[0..2] -join "/"), ($T[3..5] -join ":"))
-        $This.End         = $This.Start+$This.Duration
-    }
-    [Object] Detail([Object]$Com,[UInt32]$Var)
-    {
-        Return $Com.Parent.GetDetailsOf($Com,$Var)
-    }
-    [UInt64] GetSize()
-    {
-        $Swap = Switch -Regex ($This.Size)
+        [String] ToString()
         {
-            Default { " " } bytes { " bytes" }
-
+            Return "[{0}] <{1}> {2}{3}" -f $This.Time, 
+                                           $This.Party.String, 
+                                           $This.Content[0], 
+                                           @($Null,"...")[$This.Content.Count -gt 1]
         }
-        
-        Return $This.Size -Replace $Swap,"" | Invoke-Expression
     }
-}
 
-# // _______________________________________________________________________________________________
-# // | This is the end all, be all, portion of windows that touches on a sacred thing called       | 
-# // | "New-Object -ComObject Shell.Application"                                                   |
-# // |---------------------------------------------------------------------------------------------|
-# // | This thing I just described...? It reaches into the OPERATING SYSTEM, on WINDOWS, made      |
-# // | by MICROSOFT (where the world's best software engineering has always taken place...)        |
-# // | whereby allowing someone who is a PROGRAMMER and knows how to PROGRAM with it, to tell      |
-# // | guys like TROOPER BOSCO, MIKE DEPRESSO, or JAMES LEONOARD to STEP ASIDE ya lazy fuck,       |
-# // | because an ACTUAL EXPERT just showed up and they know more than YOU DO, about the job.      |
-# // |---------------------------------------------------------------------------------------------|
-# // | Case in point -> Elon Musk + SpaceX, worlds FIRST REFILLABLE ROCKET (Falcon/Starship)       |
-# // | Case in point -> Elon Musk + Tesla, worlds FASTEST PRODUCTION VEHICLE (Tesla Model S Plaid) |
-# // | Case in point -> William Gates + Paul Allen, Windows 95/98/NT/2000/ME/XP/Vista/7/8/10/11    |
-# // | Ya know...? Sometimes programmers have to realize how many fucking morons exist, and        |
-# // | then program a way to tell them how fuckin' (stupid/incompetent) they are.                  |
-# // |---------------------------------------------------------------------------------------------|
-# // | This class below is able to reach into the "FILE SYSTEM" and get:                           |
-# // | "FORENSIC LEVEL FILE ATTRIBUTES" such as TIME, DATE, SIZE, LENGTH, NAME, PATH, etc.         |
-# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ____________________________________________________________________________________________________________
+    # // | This is basically what you could call a line-by-line, utterance-by-utterance description of the "WORDS"  |
+    # // | that someone "SAYS" during an "AUDIO RECORDING" that constitutes as this stuff called "EVIDENCE", and    |
+    # // | my god, sometimes "CARELESS MORONS" like NYSP TROOPER BOSCO, or MIKE DEPRESSO...? They don't know what   |
+    # // | the hell this thing really is... I mean, they DO when they're trying to ARREST or PROSECUTE SOMEBODY...? |
+    # // | But that's the ONLY TIME that they know what this actually is, or means. Any other time, it sure as hell |
+    # // | looks like it's CHINESE or HEIROGLYPHICS... and, you can't blame THEM, for being IGNORANT, and not       |
+    # // | knowing how to read CHINESE or HEIROGLYPHICS... Nah. That's actually pretty ADVANCED STUFF right there.  |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-Class Shell
-{
-    Hidden [Object]      $App
-    Hidden [Object]     $Root
-    Hidden [Object]      $Com
-    Hidden [String]  $DevPath
-    [String]            $Type
-    [DateTime] $LastWriteTime
-    [Int64]           $Length
-    Hidden [String]   $Parent
-    [String]            $Name
-    [String]        $Fullname
-    [Object]            $Item
-    [UInt32]           $Count
-    Shell([String]$Path)
+    Class Transcription
     {
-        If (!(Test-Path $Path))
+        [String]       $Name
+        [Object]       $File
+        [String]      $Title
+        [DateTime]    $Start
+        [DateTime]      $End
+        [TimeSpan] $Duration
+        [String]        $URL
+        [Object]      $Party
+        [Object]     $Output
+        Transcription([Object]$File,[String]$Title,[String]$URL)
         {
-            Throw "Invalid path"
+            $This.Name     = $File.Name
+            $This.File     = $File
+            $This.Title    = $Title
+            $This.Start    = $File.Start
+            $This.End      = $File.End
+            $This.Duration = $File.Duration
+            $This.URL      = $URL
+            $This.Party    = @( )
+            $This.Output   = @( )
         }
+        AddParty([String]$Name)
+        {
+            If ($Name -in $This.Party.Name)
+            {
+                Throw "Party [!] [$Name] already specified"
+            }
 
-        $This.Fullname      = $Path
-        $This.App           = New-Object -ComObject Shell.Application
-        $This.Root          = $This.App.Namespace($Path)
-        $This.Com           = $This.Root.Self
-        $This.DevPath       = $This.Com.Path
-        $This.Type          = @("File","Folder")[[UInt32]$This.Com.IsFolder]
-        $This.LastWriteTime = $This.Com.ModifyDate
-        $This.Length        = $This.Com.Size
-        $This.Parent        = $This.Fullname | Split-Path -Parent 
-        $This.Name          = $This.Com.Name
-        $This.Item          = @($This.Root.Self.GetFolder.Items())
-        $This.Count         = $This.Item.Count
+            $This.Party += [TranscriptionParty]::New($This.Party.Count,$Name)
+            Write-Host "Party [+] [$Name] added."
+        }
+        PartyAssemble()
+        {
+            $MaxIndex     = ($This.Party.Index)[-1].Length
+            $MaxInitial   = ($This.Party.Initial | Sort-Object Length )[-1].Length
+            ForEach ($X in 0..($This.Party.Count-1))
+            {
+                $P        = $This.Party[$X]
+                $R        = $Null
+                If ($P.Intial.Length -lt $MaxInitial)
+                {
+                    $R    = "{0}{1}" -f $P.Initial, (@(" ") * ($MaxInitial - $P.Initial.Length) -join '')
+                }
+                Else
+                {
+                    $R    = $P.Initial
+                }
+                $P.String = "{0:d$MaxIndex}/{1}" -f $P.Index, $R
+            }
+        }
+        AddEntry([UInt32]$Index,[Object]$Position,[String]$Note)
+        {   
+            If ($Index -gt $This.Party.Count)
+            {
+                Throw "Party [!] [$Index] is out of bounds"
+            }
+            If ($Position -match "^\d{2}\:\d{2}$")
+            {
+                $Position = "00:$Position"
+            }
+            $Person       = $This.Party[$Index]
+            $This.Output += [TranscriptionEntry]::New($This.Output.Count,$Person,$This.Tx($Position),$Note)
+            Write-Host "Entry [+] [$Position] added"
+        }
+        Ae([UInt32]$Index,[String]$Position,[String]$Note)
+        {
+            $This.AddEntry($Index,$Position,$Note)
+        }
+        [Object] Tx([String]$Position)
+        {
+            Return [TranscriptionTime]::New($This.Start,$Position)
+        }
+        [Object[]] GetOutput()
+        {
+            $T            = $This
+            $Swap         = @{ }
+
+            $Swap.Add(0,"Index Party  Time     Position Content")
+            $Swap.Add(1,"----- -----  -------- -------- -------")
+
+            ForEach ($X in 0..($This.Output.Count-1))
+            {
+                $I        = $This.Output[$X]
+                $Line     = ("{0:d5} {1} {2} {3} {4}" -f $I.Index, $I.Party, $I.Time, $I.Position, $I.Content[0])
+                $Swap.Add($Swap.Count,$Line)
+                If ($I.Content.Count -eq 2)
+                {
+                    $Swap.Add($Swap.Count,("{0}{1}" -f (@(" ") * 31 -join ''), $I.Content[1]))
+                }
+                If ($I.Content.Count -gt 2)
+                {
+                    ForEach ($J in 1..($I.Content.Count-1))
+                    {
+                        $Swap.Add($Swap.Count,("{0}{1}" -f (@(" ") * 31 -join ''), $I.Content[$J]))
+                    }
+                }
+            }
+            Return @($Swap[0..($Swap.Count-1)])
+        }
     }
-    [Object] GetChildItem([String]$Name)
+
+    # // ___________________________________________________________________________________________________
+    # // | This is essentially the METADATA of a piece of AUDIO EVIDENCE, it includes the ACTUAL FILE,     |
+    # // | it's ATTRIBUTES, as well as like, how valuable the information within it is, for reproducing    |
+    # // | this thing that TROOPER BOSCO and SCSO JAMES LEONOARD really suck dick at understanding or      |
+    # // | making sense of, otherwise known as an "ALIBI". So if the file was ORIGINALLY STARTED at        |
+    # // | like 09/16/2022 12:52:40 PM ...? Then if this fucking file isn't ALTERED in any way, it will    |
+    # // | actually coordinate itself with OTHER PIECES of EVIDENCE, such as RADIO COMMUNICATIONS, or      |
+    # // | PHONE CALLS, or literally people within the AUDIO FILE stating what TIME and DATE it was taken. |
+    # // | TROOPER BOSCO, MIKE DEPRESSO, and JAMES LEONARD should really study this shit at some point.    |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class TranscriptionFile
     {
-        Return @( $This.Item | ? Name -match $Name | % { [TranscriptionFile]::New($_) } )
+        Hidden [Object]       $App
+        Hidden [Object]      $Root
+        [String]             $Name
+        [String]         $FullName
+        [DateTime]           $Date
+        Hidden [UInt64] $SizeBytes
+        [String]             $Size
+        [UInt32]         $Channels
+        [UInt32]       $SampleRate
+        [String]        $Precision
+        [Object]         $Duration
+        [Object]          $Samples
+        [Object]      $CDDASectors
+        [String]         $FileSize
+        [String]          $BitRate
+        [String]         $Encoding
+        [Object]            $Start
+        [Object]              $End
+        TranscriptionFile([Object]$Com)
+        {
+            $This.Name        = $Com.Name
+            $This.Fullname    = $Com.Path
+            $Item             = Get-Item $This.Fullname
+            $This.Date        = $Item.LastWriteTime
+            $This.SizeBytes   = $Item.Length
+            $This.Size        = "{0:n3} MB" -f ($This.SizeBytes/1MB)
+
+            # // __________________________________________________________________________________________
+            # // | I will have to create a script or function that installs Sound Exchange (SoX) with the |
+            # // | MP3 libraries and stuff in order for this to work for this particular file.            |
+            # // | However, uh- I can't do ALL of the work for the INVESTIGATORS/POLICE/LAWYERS/etc.      |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            Set-Alias sox "C:\Program Files (x86)\sox-14-4-2\sox.exe"
+            $Sx               = sox --i $Item.Fullname | ? Length -gt 0 | % Substring 17
+            $This.Channels    = $Sx[1]
+            $This.SampleRate  = $Sx[2]
+            $This.Precision   = $Sx[3]
+            $Tx               = $Sx[4] -Split " = "
+            $This.Duration    = [TimeSpan]$Tx[0]
+            $This.Samples     = $Tx[1]
+            $This.CDDASectors = $Tx[2]
+            $This.FileSize    = $Sx[5]
+            $This.BitRate     = $Sx[6]
+            $This.Encoding    = $Sx[7]
+            $T                = [Regex]::Matches($Item.Name,"^\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}").Value -Split "_"
+            $This.Start       = [DateTime]("{0} {1}" -f ($T[0..2] -join "/"), ($T[3..5] -join ":"))
+            $This.End         = $This.Start+$This.Duration
+        }
+        [Object] Detail([Object]$Com,[UInt32]$Var)
+        {
+            Return $Com.Parent.GetDetailsOf($Com,$Var)
+        }
+        [UInt64] GetSize()
+        {
+            $Swap = Switch -Regex ($This.Size)
+            {
+                Default { " " } bytes { " bytes" }
+
+            }
+            
+            Return $This.Size -Replace $Swap,"" | Invoke-Expression
+        }
     }
-}
+
+    # // _______________________________________________________________________________________________
+    # // | This is the end all, be all, portion of windows that touches on a sacred thing called       | 
+    # // | "New-Object -ComObject Shell.Application"                                                   |
+    # // |---------------------------------------------------------------------------------------------|
+    # // | This thing I just described...? It reaches into the OPERATING SYSTEM, on WINDOWS, made      |
+    # // | by MICROSOFT (where the world's best software engineering has always taken place...)        |
+    # // | whereby allowing someone who is a PROGRAMMER and knows how to PROGRAM with it, to tell      |
+    # // | guys like TROOPER BOSCO, MIKE DEPRESSO, or JAMES LEONOARD to STEP ASIDE ya lazy fuck,       |
+    # // | because an ACTUAL EXPERT just showed up and they know more than YOU DO, about the job.      |
+    # // |---------------------------------------------------------------------------------------------|
+    # // | Case in point -> Elon Musk + SpaceX, worlds FIRST REFILLABLE ROCKET (Falcon/Starship)       |
+    # // | Case in point -> Elon Musk + Tesla, worlds FASTEST PRODUCTION VEHICLE (Tesla Model S Plaid) |
+    # // | Case in point -> William Gates + Paul Allen, Windows 95/98/NT/2000/ME/XP/Vista/7/8/10/11    |
+    # // | Ya know...? Sometimes programmers have to realize how many fucking morons exist, and        |
+    # // | then program a way to tell them how fuckin' (stupid/incompetent) they are.                  |
+    # // |---------------------------------------------------------------------------------------------|
+    # // | This class below is able to reach into the "FILE SYSTEM" and get:                           |
+    # // | "FORENSIC LEVEL FILE ATTRIBUTES" such as TIME, DATE, SIZE, LENGTH, NAME, PATH, etc.         |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class Shell
+    {
+        Hidden [Object]      $App
+        Hidden [Object]     $Root
+        Hidden [Object]      $Com
+        Hidden [String]  $DevPath
+        [String]            $Type
+        [DateTime] $LastWriteTime
+        [Int64]           $Length
+        Hidden [String]   $Parent
+        [String]            $Name
+        [String]        $Fullname
+        [Object]            $Item
+        [UInt32]           $Count
+        Shell([String]$Path)
+        {
+            If (!(Test-Path $Path))
+            {
+                Throw "Invalid path"
+            }
+
+            $This.Fullname      = $Path
+            $This.App           = New-Object -ComObject Shell.Application
+            $This.Root          = $This.App.Namespace($Path)
+            $This.Com           = $This.Root.Self
+            $This.DevPath       = $This.Com.Path
+            $This.Type          = @("File","Folder")[[UInt32]$This.Com.IsFolder]
+            $This.LastWriteTime = $This.Com.ModifyDate
+            $This.Length        = $This.Com.Size
+            $This.Parent        = $This.Fullname | Split-Path -Parent 
+            $This.Name          = $This.Com.Name
+            $This.Item          = @($This.Root.Self.GetFolder.Items())
+            $This.Count         = $This.Item.Count
+        }
+        [Object] GetChildItem([String]$Name)
+        {
+            Return @( $This.Item | ? Name -match $Name | % { [TranscriptionFile]::New($_) } )
+        }
+    }
 
 ($Content -Split "`n" | % { "    $_" }) -join "`n" | Set-Clipboard
 
-$path         = "C:\Users\mcadmin\Documents\Recordings"
-$Base         = [Shell]::New($Path)
-$File         = $Base.GetChildItem("Treble")
-$T            = [Transcription]::New($File,
-                                     "Walmart/Katherine Suchocki order SCSO to arrest me with NO EVIDENCE",
-                                     "https://drive.google.com/file/d/1b-maRc4oqOxQVIq--NVzRYJ-rmbCx55D")
-$T.AddParty("Michael C. Cook Sr.")
-$T.AddParty("Michael Sheradin")
-$T.AddParty("Clayton Brownell")
-$T.AddParty("Michael Whiteacre")
-$T.AddParty("SCSO VARIOUS")
-$T.AddParty("E N V")
-$T.AddParty("Katherine Suchocki")
-$T.PartyAssemble()
+    $Path         = "C:\Users\mcadmin\Documents\Recordings"
+    $Base         = [Shell]::New($Path)
+    $File         = $Base.GetChildItem("Treble")
+    $T            = [Transcription]::New($File,
+                                        "Walmart/Katherine Suchocki order SCSO to arrest me with NO EVIDENCE",
+                                        "https://drive.google.com/file/d/1b-maRc4oqOxQVIq--NVzRYJ-rmbCx55D")
+    $T.AddParty("Michael C. Cook Sr.")
+    $T.AddParty("Michael Sheradin")
+    $T.AddParty("Clayton Brownell")
+    $T.AddParty("Michael Whiteacre")
+    $T.AddParty("SCSO VARIOUS")
+    $T.AddParty("E N V")
+    $T.AddParty("Katherine Suchocki")
+    $T.PartyAssemble()
 
 # _____________________________________________________________________________________________________________
 # |¯-¯-¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯ ¯|
@@ -424,7 +433,7 @@ $T.AE(2,"00:02",":So... uh, we went back to the Walmart, and um... The guy, adam
 
 # 0003
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I am certain that there is NO EVIDENCE to suggest that I had anything from the store, in my possession.           |
 # |___________________________________________________________________________________________________________________|
@@ -434,7 +443,7 @@ $T.AE(2,"00:44",":I know, I'm not giving you any issue with it, that's why I'm t
 
 # 0005
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | You ARE giving me an issue with it, hence why you’re about to “ARREST” me                                         |
 # |___________________________________________________________________________________________________________________|
@@ -446,7 +455,7 @@ $T.AE(2,"01:04",":No, there really isn't, Mike. You're gonna be out in, you're g
 
 # 00009
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Yeah, there IS an ulterior motive for this, so Clayton Brownell doesn’t know he’s lying to me                     |
 # |___________________________________________________________________________________________________________________|
@@ -463,7 +472,7 @@ $T.AE(1,"01:24",":Well, uh- I've got the- The story that I've got NOW, with the 
 
 # 00018
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |-------------------------------------------------------------------------------------------------------------------|
 # | There is NO video evidence that suggests that the item I was SUSPECTED of having in my possession, was IN my      |
 # | possession. None. Nada. Zero. Zilch. The reason that I know this is the case, is because I left the item in the   |
@@ -482,7 +491,7 @@ $T.AE(1,"01:47",":No, because you're well aware there's no camera coverage in th
 
 # 00027
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | You’re making the assumption that I’m well aware there’s no camera coverage in there.                             |
 # | Cops aren’t supposed to make assumptions like that at all. But apparently, that is what this guy did.             |
@@ -511,7 +520,7 @@ $T.AE(1,"02:21",":Alright.")
 
 # 00038
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | They were recording video of me with their personal smart phone. In fact, the PICTURE of ME that SHERIDAN SHOWED  |
 # | ME, near STEWARTS on GUIDEBOARD ROAD, and said “Is this you…?” WELL, that INDICATES that they were in fact,       |
@@ -560,7 +569,7 @@ $T.AE(2,"02:40",":Female judge here in town.")
 
 # 00048
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Yeah, I just said her first name, I know who she is. Her family owns a farm on Harris Road (I believe), and she   |
 # | handled the DWAYNE O. COONRADT bullshit 911 call that went to his BUDDY who works as a 911 dispatcher.            |
@@ -582,7 +591,7 @@ $T.AE(5,"03:20","*REMOTE PARTY MUTED THE MICROPHONE ON MY DEVICE")
 
 # 00061
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I did not insert this silence at this time/place in the recording.                                                |
 # | Someone from (1) of the following AGENCIES are doing this to my recordings…                                       |
@@ -615,7 +624,7 @@ $T.AE(2,"04:00",":And you DIDN'T, you DIDN'T do that, did I...? Did I take you t
 
 # 00071
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | The way you phrased it is as if you EXPECTED to take me to jail. That's PREJUDICE, my dude.                       |
 # |___________________________________________________________________________________________________________________|
@@ -629,7 +638,7 @@ $T.AE(2,"04:10",":Ok.")
 
 # 00077
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | ...that would include from YOU, which I didn't THINK that until I had to TRANSCRIBE this AUDIO…                   |
 # |___________________________________________________________________________________________________________________|
@@ -668,7 +677,7 @@ $T.AE(5,"05:39","*REMOTE PARTY MUTED THE MICROPHONE ON MY DEVICE")
 
 # 00108
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I did not insert this silence at this time/place in the recording.                                                |
 # | Someone from (1) of the following AGENCIES are doing this to my recordings…                                       |
@@ -697,7 +706,7 @@ $T.AE(0,"07:06",":People have been remotely interacting with my device, it happe
 
 # 00121
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I just told SCSO Clayton Brownell the SAME THING that I said to TROOPER BORDEN on 06/17/2020 at GT Toys, which    |
 # | SCSO Clayton Brownell was actually THERE, in THAT PARTICULAR INCIDENT. At GT Toys… after he almost shot me to     |
@@ -986,7 +995,7 @@ $T.AE(1,"13:40",":Signed a complaint. We then take it and put it in front of the
 
 # 00194
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | So, if there IS NOT ENOUGH THERE, can a judge STILL issue a warrant, out of PREJUDICE…? Apparently they (can/do). |
 # |___________________________________________________________________________________________________________________|
@@ -996,7 +1005,7 @@ $T.AE(1,"13:58",":No, what I'm tellin' you is, THEY DID IT ON (DIRECT KNOWLEDGE/
 
 # 00196
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | In this case, DIRECT KNOWLEDGE = (IMAGINATION/HEARSAY/LYING)                                                      |
 # |___________________________________________________________________________________________________________________|
@@ -1009,7 +1018,7 @@ $T.AE(0,"14:19",":There's no- The- There's a video- there's video footage throug
 
 # 00201
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | In fact, the prior case where DWAYNE O. COONRADT had me arrested for DISORDERLY CONDUCT…?                         |
 # | Involving the SAME EXACT JUDGE…?                                                                                  |
@@ -1036,7 +1045,7 @@ $T.AE(1,"14:47",":Yeah, they DO.")
 
 # 00206
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | They don’t have to prove anything at all.                                                                         |
 # | Katherine Suchocki will ask me if I understand the charges, I’ll only be able to say YES or NO, and then I’ll be  |
@@ -1105,7 +1114,7 @@ $T.AE(1,"15:52",":Right...? And, YOU call the police-")
 
 # 00221
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | This is exactly what happened to me on June 13th, 2020 [SCSO-2020-003564].                                        |
 # | Basically the police minimized my 911 call and ignored the dent on the SIDE of BILL MOAKS HOUSE that he LEFT with |
@@ -1145,7 +1154,7 @@ $T.AE(0,"17:09",":He was one of the people trying to hold my neighbor back. What
 
 # 00234
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Exactly what happened to my father before he was MURDERED.                                                        |
 # |___________________________________________________________________________________________________________________|
@@ -1188,7 +1197,7 @@ $T.AE(0,"24:06",":After these two, uh- like, got on foot and everything, I was R
 
 # 00263
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Sean Lyons was somehow involved in that HILLSIDE TRAILER PARK EVENT, I believe, whether it was INVESTIGATING it,  |
 # | or PERPETRATING it, or BOTH. He is INVOLVED in MULTIPLE INCIDENTS from 2020.                                      |
@@ -1216,7 +1225,7 @@ $T.AE(0,"25:33",":And when I worked at Computer Answers, they attacked me with a
 
 # 00267
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | The CORRELATION that I am making is that there is some sort of LINK between FRANCINE VERO, and COMPUTER ANSWERS,  |
 # | as well as the RUSSIAN MAFIA, and (LAWYERS/JUDGES/POLICE OFFICERS/HACKERS) working together, like…                |
@@ -1244,7 +1253,7 @@ $T.AE(0,"26:13",":So, I was unable to reach the dispatch station. Uh, I had a fe
 
 # 00272
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Like, right there TATIANA CLEVELAND and SAMANTHA CAINE used to park THEIR car when they each worked there.        |
 # | The COOL thing is, I mentioned BOTH, 1) RYAN WARD and 2) TATIANA CLEVELAND in the fuckin’ audio recording I       |
@@ -1256,7 +1265,7 @@ $T.AE(0,"27:19",":And, uh- I did this in front of the- view of the camera at CEN
 
 # 00274
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | But, do you know what STUPID MOTHERFUCKER decided to like, VERY CAREFULLY SCREW THAT UP…?                         |
 # |                                                                                                                   |
@@ -1383,7 +1392,7 @@ $T.AE(1,"34:27",":Yup.")
 
 # 00332
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | He is absent mindedly agreeing with me, right now.                                                                |
 # |___________________________________________________________________________________________________________________|
@@ -1396,7 +1405,7 @@ $T.AE(1,"35:26",":Ok.")
 
 # 00337
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Dude SEEMS pretty vacant or absent minded, or PREOCCUPIED. He's only responding to CERTAIN PHRASES.               |
 # |-------------------------------------------------------------------------------------------------------------------|
@@ -1429,7 +1438,7 @@ $T.AE(1,"36:30",":No, no, no, no, no, no, no. No, no, no, no. No <slight chuckle
 
 # 00345
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Maybe not the PETIT LARCENY I didn’t commit. However, they’d be INTERESTED in the EVENTS OF 05/25/20 → 05/26/20.  |
 # |___________________________________________________________________________________________________________________|
@@ -1438,7 +1447,7 @@ $T.AE(0,"36:37",":Yeah, I know. DHS, and uh- the NSA, the CIA, and the FBI have 
 
 # 00346
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I’m not totally convinced of that, but his reaction is very telling that he’s not putting much thought into what  |
 # | I’m saying to him, OR, he is just distracted.                                                                     |
@@ -1497,7 +1506,7 @@ $T.AE(0,"41:39",":Right, I understand that. But if they-")
 
 # 00395
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Maybe he is NOT absent mindedly agreeing with me after all.                                                       |
 # | It is not like I don't understand the situation. I understand the situation TOO WELL…                             |
@@ -1515,7 +1524,7 @@ $T.AE(1,"42:17",":Ok. So they LIED, it's not HEARSAY, but they lied. Ok.")
 
 # 00405
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | So he IS actually understanding what I'm saying.                                                                  |                       
 # |                                                                                                                   |
@@ -1620,7 +1629,7 @@ $T.AE(1,"43:00",":The ADA has to prove that you did what you (supposedly) did.")
 
 # 00417
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I'm fairly certain that they don't have to do that at all.                                                        |
 # |___________________________________________________________________________________________________________________|
@@ -1641,7 +1650,7 @@ $T.AE(0,"44:42",":You know this system is uh- quite corrupt, right...?")
 
 # 00432
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | And, he does, because he later mentions something to that effect.                                                 |
 # |___________________________________________________________________________________________________________________|
@@ -1659,7 +1668,7 @@ $T.AE(1,"45:37",":Well, at SOME point it's gonna come back to bite em, if they'r
 
 # 00442
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | This case IS that "point". That's my point. This case is gonna blow up in their face. I'm CERTAIN OF IT.          |
 # |___________________________________________________________________________________________________________________|
@@ -1682,7 +1691,7 @@ $T.AE(1,"48:34",":<makes exasperated sound> Well...")
 
 # 00457
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Yeah, I think this guy knows I'm not faking this shit, now. Probably has to keep the thought to himself.          |
 # |___________________________________________________________________________________________________________________|
@@ -1694,7 +1703,7 @@ $T.AE(1,"49:27",":You know what I'm thinkin' and I'm not verbalizing it...? Is t
 
 # 00461
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | This is the first time that he's FULLY MIRRORED something I've stated, though it is NOT quite verbatim.           |
 # |___________________________________________________________________________________________________________________|
@@ -1703,7 +1712,7 @@ $T.AE(0,"49:32",":I'm uh- I'm making SPECULATIONS. I'm not ASSUMING that you're 
 
 # 00462
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I did at first, but NOW, I'm not thinking that.                                                                   |
 # |___________________________________________________________________________________________________________________|
@@ -1740,7 +1749,7 @@ $T.AE(1,"51:36",":Regardless...")
 
 # 00491
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | So, just to put it into context...? The man just told me the fuckin' game plan.                                   |
 # | He literally just told me who's who, what's what, and... that's that.                                             |
@@ -1824,7 +1833,7 @@ $T.AE(1,"52:28",":Is what she based on, she based the warrant on.")
 
 # 00504
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Every time I hear him repeat this, it makes me laugh. Not his fault, but because of how stupid it is.             |
 # |                                                                                                                   |
@@ -1872,7 +1881,7 @@ $T.AE(1,"56:31",":Ok.")
 
 # 00526
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | It seems to me that he IS processing what I'm saying.                                                             |
 # | I know he's MULTITASKING... but he's not suggesting that what I'm saying is fuckin' stupid... yet.                |
@@ -1902,7 +1911,7 @@ $T.AE(1,"59:25",":Ok. <pause> Well, I disagree with that, ya know...")
 
 # 00547
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | He's not KNOWINGLY doing this, he's TAKING PART of it. ARRESTING someone based on HEARSAY. That's PREJUDICE.      |
 # | Essentially, I'm GUILTY until I prove myself INNOCENT, and even if I PROVE MYSELF INNOCENT,                       |
@@ -1914,7 +1923,7 @@ $T.AE(1,"59:31",":Cause I've tried to explain this to ya several times...")
 
 # 00549
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | He does not understand what I'm saying. That's the end of the argument.                                           |
 # |___________________________________________________________________________________________________________________|
@@ -1924,7 +1933,7 @@ $T.AE(1,"59:38",":I understand EXACTLY what you're saying... ")
 
 # 00551
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I really do not think that he does. When I say PEOPLE have developed PREJUDICE toward me...?                      |
 # | What that means is this...                                                                                        |
@@ -2004,7 +2013,7 @@ $T.AE(1,"59:41",":You think I'm doin' this because I'm prejudice, which I'm not.
 
 # 00552
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Nah, I'm not saying that HE has prejudice, but the JUDGE apparently does.                                         |
 # |___________________________________________________________________________________________________________________|
@@ -2013,7 +2022,7 @@ $T.AE(0,"59:44",":Nope. That's not what I'm saying. That isn't what I'm saying a
 
 # 00553
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | But also, the people at WALMART are EXHIBITING that they DEFINITELY have PREJUDICE toward me because why would    |
 # | they be WATCHING ME...? They don't watch EVERYBODY that walks in there, there's no fucking way that they could do |
@@ -2084,7 +2093,7 @@ $T.AE(1,"01:05:53",":Cause they took it to trial, and the jury ACQUITTED him.")
 
 # 00587
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I'm aware of that, I'm asking rhetorical questions that pertain to answers such as 1) MONEY and 2) IMPORTANCE.    |
 # |___________________________________________________________________________________________________________________|
@@ -2095,7 +2104,7 @@ $T.AE(0,"01:06:03",":K.")
 
 # 00590
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | That is NOT the correct answer.                                                                                   |
 # | The correct answer is that 1) MONEY OJ Simpson had, and 2) IMPORTANCE of JOHNNY COCHRAN, overrode the evidence.   |
@@ -2115,7 +2124,7 @@ $T.AE(1,"01:07:39",":Do you have any idea how dumb that fuckin' sounds...?")
 
 # 00597
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | KATHERINE SUCHOCKI ordered the arrest with her WARRANT. It SOUNDS dumb, but it's ACCURATE.                        |
 # |___________________________________________________________________________________________________________________|
@@ -2135,7 +2144,7 @@ $T.AE(1,"01:08:00",":<clears throat> Nobody ORDERED me to do this (except WALMAR
 
 # 00609
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | This man does his job REGARDLESS of WHO YOU ARE. So...                                                            |
 # | ________________________________________________________________________________________________________          |
@@ -2162,7 +2171,7 @@ $T.AE(1,"01:08:11",":Ok...? And I really take offense...")
 
 # 00612
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Believe it or not, this is a GOOD attribute to this dude. Cause someone who IS offended will get pissy about it.  |
 # |___________________________________________________________________________________________________________________|
@@ -2174,7 +2183,7 @@ $T.AE(1,"01:08:36",":Do you think people don't do that every day...?")
 
 # 00616
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I'm aware that they do that every day. But it KEEPS HAPPENING TO ME. SPECIFICALLY. JUDGES AND SHIT DOING IT TOO.  |
 # |___________________________________________________________________________________________________________________|
@@ -2187,7 +2196,7 @@ $T.AE(0,"01:09:05",":I didn't-")
 
 # 00621
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I have provided testimony that LINES UP with that. He's not hearing me. Never did I ARGUE that I was there...     |
 # |___________________________________________________________________________________________________________________|
@@ -2206,7 +2215,7 @@ $T.AE(1,"01:09:25",":That is our job.")
 
 # 00631
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Analogy: How CREDIBLE is a COMPLAINT from WALMART, without VIDEO...?                                              |
 # | It isn't.                                                                                                         |
@@ -2240,7 +2249,7 @@ $T.AE(0,"01:09:36",":There's NO EVIDENCE that suggest that I did what they did."
 
 # 00638
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | The evidence actually incriminates THEM, if that isn't CLEAR enough.                                              |
 # |___________________________________________________________________________________________________________________|
@@ -2249,7 +2258,7 @@ $T.AE(1,"01:09:39",":Ok, and again, I'm not pursuing the charges. Walmart is. I 
 
 # 00639
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | That's what I have a problem with.                                                                                |
 # |___________________________________________________________________________________________________________________|
@@ -2261,7 +2270,7 @@ $T.AE(1,"01:10:01",":Alright, you got- you gotta get off that, ye- <sigh>")
 
 # 00643
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | People are making the TRAUMATIC SITUATION WHERE I STILL HAVE EVIDENCE, seem RIDICULOUS.                           |
 # |___________________________________________________________________________________________________________________|
@@ -2271,7 +2280,7 @@ $T.AE(1,"01:10:05",":It's- it's TOTALLY irrelevant.")
 
 # 00645
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | It isn't IRRELEVANT at all. I have EVIDENCE of that ATTACK, and my statement was NEVER TAKEN.                     |
 # | People are IGNORING IT, TREATING IT AS IF IT'S FUCKING RIDICULOUS...                                              |
@@ -2338,7 +2347,7 @@ $T.AE(0,"01:13:54",":It's a Federal service that takes peoples' fingerprints.")
 
 # 00680
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I think, not totally positive of that.                                                                            |
 # |___________________________________________________________________________________________________________________|
@@ -2349,7 +2358,7 @@ $T.AE(1,"01:14:16",":I don't know WHY we're having such a hard time here...")
 
 # 00683
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Taking people's fingerprints is a pain in the ass. (CIA/Express Lane) has high demands.                           |
 # |___________________________________________________________________________________________________________________|
@@ -2368,7 +2377,7 @@ $T.AE(1,"01:15:26",":Yup.")
 
 # 00694
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Dude was probably BORN ready.                                                                                     |
 # |___________________________________________________________________________________________________________________|
@@ -2399,7 +2408,7 @@ $T.AE(1,"01:19:39",":Hello judge, deputy sheriff from Saratoga County Sheriffs O
 
 # 00710
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I mean, just imagine if this dipshit MICHAEL ZURLO did the same fucking thing for me, right...?                   |
 # | Called my ass to discuss the events of SCSO-2020-028501...? But, that's fuckin' stupid...                         |
@@ -2455,7 +2464,7 @@ $T.AE(1,"01:21:52",":Anthony.")
 
 # 00719
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | (Traffic Safety/Scrotum chin/Shoulder-phone) cop the 5th, Anthony Pirrone was stalking me on 06/17/20 at:         |
 # | Boomer McCloud Plaza.                                                                                             |
@@ -2606,7 +2615,7 @@ $T.AE(0,"01:34:16",":TWO THOUSAND TWENTY")
 
 # 00808
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I may occasionally get pretty pissed off about the way the people in the community treat me, as well as how       |
 # | people talk about me- however, this is the EXACT TYPE OF INTERROGATION I've been WAITING for a POLICE OFFICER to  |
@@ -2648,7 +2657,7 @@ $T.AE(1,"01:34:59",":Ok. Where WE met...? WE showed up...? Or, the people you're
 
 # 00823
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | He means SCSO SCHELLING, KAPLAN, WELCH, not my attackers.                                                         |
 # | But also, this is a COMPLEX QUESTION which I discuss in my book, TOP DECK AWARENESS - NOT NEWS.                   |
@@ -2672,7 +2681,7 @@ $T.AE(0,"01:35:18",":So, the attack BEGAN like, right after midnight...? ")
 
 # 00832
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | It actually BEGAN at about 2343, but it wasn't TOTALLY APPARENT to me until 0004.                                 |
 # |___________________________________________________________________________________________________________________|
@@ -2695,7 +2704,7 @@ $T.AE(0,"01:38:20",":Uh- the- the individual continued to walk on, past me, and 
 
 # 00847
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I believe I was actually performing a SCREEN CAPTURE of that exact moment, a SCREEN CAPTURE during a VIDEO        |
 # | RECORDING, w/ PEGASUS was on my device.                                                                           |
@@ -2748,7 +2757,7 @@ $T.AE(0,"01:43:12",":No sound emanating from the device.")
 
 # 00856
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Pretty easy to see how the PHONE companies might've been involved in this MURDER ATTEMPT, considering the things  |
 # | I was POSTING all that week.                                                                                      |
@@ -2817,13 +2826,22 @@ $T.AE(0,"01:46:41",":And, I spoke to them about this program, the USA-PATRIOT Ac
 $T.AE(1,"01:48:24",":Yup.")
 $T.AE(0,"01:48:26",":Uh- he responded to that 911 call, I hit 911, and then I like, turned the phone off right afterward. Cause I was testing a theory.")
 $T.AE(0,"01:48:34",":Uh, Anthony Agresta found me, within like 3 minutes.")
+
+# 00864
+# _____________________________________________________________________________________________________________________
+# | Note                                                                                                              |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I talk about this PARTICULAR EVENT regarding ANTHONY AGRESTA, at LENGTH in my book,                               |
+# | [Chapter 2 - Psychological Manipulation: Identifying a PATTERN]                                                   |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"01:48:37",":Ok.")
 $T.AE(0,"01:48:34",":On Sitterly Road, near 30 Sitterly Road. I mentioned some of this stuff to JOHN HILDRETH in an email. Uh- the point being, there was a suspicious vehicle that was following me around, and suspicious activity that caused me to believe that I was being followed around, so- uh- that night on MAY 26th, 2020 when I was in the Lowes Home Improvement parking lot, these two kids got back into their car, and I was, uh- basically paralyzed with fear, for a good 10 or 20 minutes, tryin' to stay out of view, trying to stay near LIT AREAS, because I was worried that if I went into an UNLIT AREA with my PHONE, regardless of whether it was DEAD or not, that I was gonna get killed.")
 $T.AE(0,"01:49:21",":I eventually walked out onto, uh- Route 146. And, uh- when I did, they pulled out of the Lowes Home Improvement parking lot, and then they tried to hit me, between AUTO ZONE, and uh- ADVANCE AUTO PARTS. And they drove OVER the double yellow line to try to hit me, and they MISSED...? And then, they took a RIGHT onto Route 9 near the Key Bank, headed up Route 9, toward 1769 Route 9.")
 
 # 00867
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I believe that I had powered my device OFF before going into the LOWES parking lot.                               |
 # | At some point between EXITING the Lowes Home Improvement parking lot, and geting to the INTERSECTION of (146/9),  |
@@ -2835,11 +2853,47 @@ $T.AE(0,"01:49:51",":I said something into my phone, which I believe was RECORDI
 $T.AE(0,"01:50:34",":You know, it's like- it's probably not hard to believe, maybe some of the guys that work on your team, are GANG members.")
 $T.AE(1,"01:50:43",":<Indiscernable, I know he looked at me with alarm at this point>")
 $T.AE(0,"01:50:44",":So anyway, side point... I started to think about, uh- why would somebody do all this to me, and uh- the only thing I could come up with is, that it has something to do with my fathers murder in 1995. Because my father had a suspicion that he was gonna wind up getting killed, and then he did, my father was murdered by Zontell Gordon on October 23rd, 1995, and uh, he-, he- made statements that caused me- caused everyone- caused me to believe that he knew what was gonna happen. (3) guys that killed my dad, they, uh- they were all tried for FIRST DEGREE MURDER, but- I don't think the OTHER TWO GUYS that were involved, had any knowledge whatsoever, that the guy who shot my father, uh- he had no intention of letting my father survive.")
+
+# 00871
+# _____________________________________________________________________________________________________________________
+# | Note                                                                                                              |
+# |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+# | I'm CONVINCED that my (FATHER/MICHAEL EDWARD COOK)'s MURDER... NOR A FOILED ROBBERY.                              |
+# | IT WAS AN EXECUTION, as in it was:                                                                                |
+# |                                                                                                                   |
+# | 1) WAS NOT (DRUG RELATED)                                                                                         |
+# | 2) WAS NOT (MONEY RELATED)                                                                                        |
+# | 3) WAS NOT A FOILED ROBBERY                                                                                       |
+# | 4) WAS AN EXECUTION                                                                                               |
+# | 5) WAS RELATED TO SAMMY SANTA CASSARO’s murder                                                                    |
+# | 6) WAS RELATED TO THE ATTEMPTED MURDER against me for the 90 minutes prior to SCSO-2020-028501                    |
+# | 7) ^ ALL ESPIONAGE RELATED                                                                                        |
+# | 4) INVOLVED THE GANG THAT ZONTELL GORDON WORKED WITH, AS WELL AS...                                               |
+# | 5) THE RUSSIAN MAFIA + KGB...                                                                                     |
+# | 6) ALSO INVOLVED TERRI COOK, AND MY MOTHER FABIENNE SILVIE KIVLEN COOK,                                           |
+# |    https://drive.google.com/file/d/1HTxwq0HkUF4c3iqnN7GE3o6bFon9_s9w                                              |
+# | 7) IT WAS PREMEDITATED/PLANNED OUT                                                                                |
+# | 8) INVOLVES OTHER PEOPLE THAT WERE NEVER INCRIMINATED OR SUSPECTED                                                |
+# |    ____________________________________________________________________________________________                   |
+# |    | SARATOGA SPRINGS JUSTICE FRANCINE VERO                                                   |                   |
+# |    | https://drive.google.com/file/d/1s_7zUKMtHIRSPKK7PrdCZIu6alXOhbG9                        |                   |
+# |    |------------------------------------------------------------------------------------------|                   |
+# |    | NFRASTRUCTURE/JESSE PICKETT/DANIEL PICKETT/JOHN PICKETT                                  |                   |
+# |    | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf |                   |
+# |    |------------------------------------------------------------------------------------------|                   |
+# |    | PAVEL ZAICHENKO SENIOR                                                                   |                   |
+# |    | SOFT N' CUSHY AUTO UPHOLSTERY                                                            |                   |
+# |    |------------------------------------------------------------------------------------------|                   |
+# |    | CAPITAL DIGITRONICS (NOT TOM MCCABE, but SOMEONE ELSE, someone at 203D Halfmoon Circle)  |                   |
+# |    | https://drive.google.com/file/d/19wWx6cCcjAiREGd89slUMqyo44EGrR-n                        |                   |
+# |    |__________________________________________________________________________________________|                   |
+# |___________________________________________________________________________________________________________________|
+
 $T.AE(1,"01:51:42",":Hm. What'd you say this guy's name was...?") 
 
 # 00872
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Maybe he finds the story somewhat plausible, hence the question. Though, it's still a bit of a STRETCH.           |
 # |___________________________________________________________________________________________________________________|
@@ -2863,9 +2917,82 @@ $T.AE(3,"01:57:12","*enters the Halfmoon Sheriff Substation*")
 
 # 00888
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-# | Timing seems PRETTY FUCKING COINCIDENTAL...                                                                       |
+# | Timing seems PRETTY FUCKING COINCIDENTAL... as in POTENTIALLY INDICATIVE, of someone listening to my statement.   |
+# | Doesn’t NECESSARILY mean that…? But- what if that fuckin’ substation has the microphone or audio tap, and this    |
+# | dude just so happened to walk in right while I was talking about this incident…? I am UNCERTAIN of that.          |
+# |                                                                                                                   |
+# | Allow me to explain how fucking stupid it would be, for ANYBODY, to ASK MICHAEL WHITEACRE…                        |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Anybody   : Hey, were you like, spying on the HALFMOON SHERIFF SUBSTATION…?                                       |
+# | Whiteacre : What…? Me…? No way, bro.                                                                              |
+# | Anybody   : Alright… this fuckin’ guy seems to think that you WERE cause you like… ya know,                       |
+# |             walked in at a pretty fuckin’ COINCIDENTAL MOMENT after all…                                          |
+# | Whiteacre : Nah, that’s fuckin’ stupid, dude.                                                                     |
+# |             What would I have to GAIN, by spying on the HALFMOON SHERIFF SUBSTATION…?                             |
+# | Anybody   : Well, I don’t know.                                                                                   |
+# |             It DOES seem to be pretty COINCIDENTAL though…                                                        |
+# | Whiteacre : Yeah, well…                                                                                           |
+# |             Do I fuckin’ LOOK like the type of dude that would go around, spying on my coworkers…?                |
+# | Anybody   : Nah, you don’t.                                                                                       |
+# | Whiteacre : That’s right.                                                                                         |
+# |             **thinking** Wow, I fuckin’ cannot believe how EASY it is, to just LIE to people. IT’S SO STUPID~!    |
+# |-------------------------------------------------------------------------------------------------------------------|
+# | Catch my fuckin’ drift…? People like to LIE A LOT. I’m not suggesting that this is CONCRETE EVIDENCE that this    |
+# | guy is most DEFINITELY spying on the office, and walked in at the perfect moment, HOWEVER- his ACTIONS and        |
+# | STATEMENTS in the remaining conversation…?                                                                        |
+# |                                                                                                                   |
+# | They were enough to cause me to be rather SUSPICIOUS of that, after all.                                          |
+# | And that’s saying something, because I had a rather respectable opinion about him when I wrote my book.           |
+# | One point I’m making is that AT ANY MOMENT, additional observations can CHANGE SUSPICIONS TOWARD PEOPLE.          |
+# |                                                                                                                   |
+# | Most people in AMERICAN SOCIETY (or in general), they will make these SPECULATIONS that so-and-so WOULDN’T THINK  | 
+# | or DO something in particular, when in reality, most people actually suck ass at being ACCURATE with those        |
+# | SPECULATIONS. Basically what I’m saying is, people will ESTIMATE someone elses decision (PROXY) without actually  |
+# | presenting that person with a given scenario, and most people are HIGHLY INACCURATE when they do this.            |
+# |                                                                                                                   |
+# | The point is this... I’m not going to make speculations OR assumptions about MICHAEL WHITEACRE, because without   |
+# | CONCRETE EVIDENCE of something…? You can’t just go around like WALMART does, and have someone ARRESTED for being  |
+# | in a COINCIDENTAL CIRCUMSTANCE or SITUATION… without EVIDENCE or PROOF.                                           |
+# |                                                                                                                   |
+# | Oh shit. I’m literally turning the fuckin’ tables on this whole arrest that KATHERINE SUCHOCKI authorized, huh…?  |
+# | Well, the truth is, I’m not quite convinced that MICHAEL WHITEACRE has any malicious intent.                      |
+# |                                                                                                                   |
+# | However, the sad reality is this simple… 99% of the people in society will read what I’m writing here, and they   |
+# | will IMMEDIATELY SAY THAT I MUST BE PSYCHOTIC for saying everything I just did. Wanna know why…? It’s because     |
+# | most people are stupid. I don’t mean that in a BAD way, but I mean it in a way where most people are just not     |
+# | able to ask themselves questions where they SERIOUSLY CONSIDER whether my OUTLANDISH COMMENT has any ACCURACY.    |
+# |                                                                                                                   |
+# | The reason for THAT is because, MOST PEOPLE THINK WHAT MOST OTHER PEOPLE THINK. SO IF SOMEONE IS POPULAR OR COOL, |
+# | THEN THAT MEANS… most people will think stuff like “there’s NO WAY that a COOL/POPULAR person would EVER”:        |
+# | 1) say/do bad stuff, 2) watch child porn, 3) fart/poop, 4) lie/cheat/steal, 5) masturbate, etc.                   |
+# |                                                                                                                   |
+# | Now, because of how POPULAR/COOL someone is…? It causes people to develop what’s called SOCIAL BLIND SPOTS. Yeah. |
+# | Someone who’s WICKED COOL and HIGHLY RESPECTED…? In most people’s minds, there’s NO WAY that they do ANY of that  |
+# | shit… but that’s because a lot of people REALLY ARE THAT STUPID. JARED FOGEL is a fucking PERFECT EXAMPLE, of     |
+# | someone that was RICH, FAMOUS, and considered HIGHLY SUCCESSFUL…? But the man had a really fucking DARK TWISTED   | 
+# | SECRET… he liked to watch little kids strip down and then offer them money to have sex with them. And then some   |
+# | parents would allow themselves to be “BOUGHT” to allow their 13 year old daughter to have sex with JARED FOGEL.   |
+# |                                                                                                                   |
+# | Yeah, I’m not making that shit up at all. That shit was DEFINITELY REAL, and he’s just (1) fucking guy.           |
+# | Compound the notion that JARED FOGEL did this shit for YEARS, and was NEVER CAUGHT, until eventually he was…      |
+# | ...by a factor of 7 billion human beings. Now you have the ICEBERG in the OCEAN mentality, to avoid another RMS   |
+# | TITANIC situation. The METAPHOR is this, 3-5% of an iceberg is above the water, the rest is beneath the surface.  |
+# |                                                                                                                   |
+# | Everybody poops, farts, says bad words, does SOME bad shit… however, that bad shit may not necessarily be         |
+# | WATCHING CHILD PORN, or having sex with underage girls like JARED FOGEL…? Well, EVERYBODY ON THE FUCKIN’ PLANET   |
+# | LIES. Which is why IT IS PRETTY IMPORTANT TO CATCH PEOPLE IN THE ACT INSTEAD OF ASKING THEM or ACCUSING THEM…     |
+# | without evidence. Know what I’m sayin’…?                                                                          |
+# |                                                                                                                   |
+# | Most people never come to these conclusions that I have, which is what puts me in the 1% category of people, that |
+# | fall within the GENIUS category.                                                                                  |
+# |                                                                                                                   |
+# | Every single human being that has EVER LIVED… has lied at some point in their lifetime, and does SOMETHING bad.   |
+# | Look at MATT LAUER, BILL O’REILLY, ANDREW CUOMO, BILL CLINTON, DONALD TRUMP, etc. so forth.                       |
+# | Yeah. Most people lack the capacity, to SUSPECT PEOPLE THAT HAVE A REPUTATION TO UPHOLD.                          |
+# |                                                                                                                   |
+# | This is why PSYCHOLOGICAL MANIPULATION is VERY FUCKING HANDY in DERIVING INTENT, as well as PATTERN ANALYSIS.     |
 # |___________________________________________________________________________________________________________________|
 
 $T.AE(0,"01:57:14",":Michael Whiteacre")
@@ -2877,7 +3004,7 @@ $T.AE(3,"01:58:38",":Oh. Mike, you've already told all of us this.")
 
 # 00894
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Haven't told THIS guy, dude.                                                                                      |
 # |___________________________________________________________________________________________________________________|
@@ -2887,7 +3014,7 @@ $T.AE(3,"01:58:41",":What, what are you looking for...?")
 
 # 00896
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | PROSECUTE YOUR ORGANIZATION, that's what I'm looking to do. Ya know...?                                           |
 # |___________________________________________________________________________________________________________________|
@@ -2896,7 +3023,7 @@ $T.AE(0,"01:58:44",":Well...")
 
 # 00897
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | It should be pretty fuckin' obvious what I'm lookin' to do, buddy. Ya know...?                                    |
 # |___________________________________________________________________________________________________________________|
@@ -2914,7 +3041,7 @@ $T.AE(3,"01:59:32",":This is like a FEW YEARS AGO")
 
 # 00907
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I know buddy, that's why you should probably remain silent, cause it shows how LAZY YOUR OFFICE IS.               |
 # |___________________________________________________________________________________________________________________|
@@ -2923,7 +3050,7 @@ $T.AE(0,"01:59:34",":Right.")
 
 # 00908
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I'm basically insulting this dude by AGREEING with his statements.                                                |
 # |___________________________________________________________________________________________________________________|
@@ -2934,7 +3061,7 @@ $T.AE(0,"01:59:41",":Uh, well, I specified that uh, NFRASTRUCTURE was involved i
 
 # 00911
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | 07/21/89 | 785-3221 | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf    |
 # |___________________________________________________________________________________________________________________|
@@ -2945,7 +3072,7 @@ $T.AE(3,"01:59:53",":This- this was like, a couple years ago...")
 
 # 00914
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Indicates that IN HIS OPINION, his failure to collect evidence that directly links the former owners of           |
 # | NFRASTRUCTURE to ESPIONAGE TOOLS is really NOTHING to be TOO concerned with, whereby downplaying the SEVERITY of  |
@@ -2979,7 +3106,7 @@ $T.AE(0,"01:59:57",":I was dragged through the mud regarding custody of my child
 
 # 00918
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | 08/18/20 | Email to HEATHER COREY-MONGUE                                                                          |
 # | https://github.com/mcc85s/FightingEntropy/blob/main/Records/2022_0818-(Heather%20Corey-Mongue%20Email).pdf        |
@@ -3008,7 +3135,7 @@ $T.AE(0,"02:00:19",":And then MICHAEL WHITEACRE wrote a report about how he was 
 
 # 00923
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I had SUBMITTED this thing called a fuckin' TICKET, for a MOBILE HOTSPOT, so like my CHILDREN, could like, do     |
 # | their SCHOOLWORK... with this person called the RECEPTIONIST, who was at the FRONT DESK, of 5 CHELSEA PLACE,      |
@@ -3050,7 +3177,7 @@ $T.AE(3,"02:00:54",":Ok.")
 
 # 00929
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Michael Whiteacre admitting that I'm openly insulting his [integrity/due-diligence] to his face.                  |
 # |___________________________________________________________________________________________________________________|
@@ -3060,7 +3187,7 @@ $T.AE(3,"02:00:56",":Alright.")
 
 # 00931
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Making an admission that he might've fucked up after all. Sounds IDENTICAL to JUDGE PELAGALLI on 4/6/21.          |
 # |___________________________________________________________________________________________________________________|
@@ -3076,7 +3203,7 @@ $T.AE(3,"02:01:52",":Mike, when you told ME about this, didn't I tell you to go 
 
 # 00940
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Yeah, I went and spoke to JOSHUA WELCH, and when I did, he told me the incident number for 05/23/20 SCSO-027797   |
 # | which was the WRONG INCIDENT, THAT was related to the INCIDENT where SCOTT SCHELLING responded to a CALL FROM     |
@@ -3107,7 +3234,7 @@ $T.AE(0,"02:01:53",":I did.")
 
 # 00941
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | It's [hard/impossible] to condense those boxes ABOVE into a single 2 second statement, without causing CONFUSION. |
 # |___________________________________________________________________________________________________________________|
@@ -3116,7 +3243,7 @@ $T.AE(3,"02:01:54",":Ok, cause there's NOTHING WE CAN DO about that.")
 
 # 00942
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I disagree, there certainly is, buddy.                                                                            |
 # |___________________________________________________________________________________________________________________|
@@ -3128,7 +3255,7 @@ $T.AE(0,"02:02:05",":Yes.")
 
 # 00946
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Mentioned in the box above, it's how I got the record for the ZAPPONE DEALERSHIP incident.                        |
 # |___________________________________________________________________________________________________________________|
@@ -3139,7 +3266,7 @@ $T.AE(0,"02:02:12",":Allow me collect my thoughts here, uh-")
 
 # 00949
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I had no way to compress all of that into a single statement. I was thinking of all this shit above.              |
 # | MICHAEL WHITEACRE's questions DISTRACTED me, so I was unable to make the CORRELATIONS and provide                 | 
@@ -3169,7 +3296,7 @@ $T.AE(0,"02:02:33",":In reference to what happened that night, I did follow up w
 
 # 00951
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | It's how I obtained records.                                                                                      |
 # |___________________________________________________________________________________________________________________|
@@ -3180,7 +3307,7 @@ $T.AE(0,"02:02:46",":...that he would've ONLY KNOWN... if he had a tap into my p
 
 # 00954
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | ESPIONAGE with PEGASUS                                                                                            |
 # |___________________________________________________________________________________________________________________|
@@ -3196,7 +3323,7 @@ $T.AE(0,"02:04:04",":There was a CRIME that was COMMITTED TO ME, but I REPORTED 
 
 # 00962
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | Well, he DID do something about it, and so did MICHAEL ZURLO.                                                     |
 # | They both committed OBSTRUCTION OF JUSTICE: DESTRUCTION OF EVIDENCE, and charged me with CRIMINAL MISCHIEF OF THE |
@@ -3220,7 +3347,7 @@ $T.AE(1,"02:05:24",":Can you get em on a THUMBDRIVE...?")
 
 # 00975
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | They are ALL in my book, Top Deck Awareness - Not News as well as a FILE on my GitHub project in a file named...  |
 # | https://github.com/mcc85s/FightingEntropy/blob/main/Records/SCSO-2020-028501-(EVIDENCE).txt                       |
@@ -3237,7 +3364,7 @@ $T.AE(0,"02:06:00",":So, that's the SITE right there, there's a FOLDER on it tha
 
 # 00978
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I meant RECORDS.                                                                                                  |
 # |___________________________________________________________________________________________________________________|
@@ -3256,7 +3383,7 @@ $T.AE(1,"02:06:49",":I'll go in there and take a look... ain't gonna hurt.")
 
 # 00989
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | It won't hurt YOU, it'll probably hurt someone's CREDIBILITY, though.                                             |
 # |___________________________________________________________________________________________________________________|
@@ -3265,7 +3392,7 @@ $T.AE(0,"02:06:52",":So, in uhm- on that website there's a FOLDER that says EVID
 
 # 00990
 # _____________________________________________________________________________________________________________________
-# | Problem                                                                                                           |
+# | Note                                                                                                              |
 # |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 # | I misspoke, it's not EVIDENCE, it's called RECORDS.                                                               |
 # |___________________________________________________________________________________________________________________|
