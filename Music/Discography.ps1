@@ -1,3 +1,4 @@
+
 Class Record
 {
     [UInt32] $Index
@@ -14,7 +15,7 @@ Class Record
         $This.Artist = $Artist
         $This.Name   = $Name
         $This.Year   = $Year
-        $This.Label  = "{0} - {1} {2}" -f $This.Artist, $This.Year, $This.Name
+        $This.Label  = "{0} - [{1}] {2}" -f $This.Artist, $This.Year, $This.Name
         $This.Hash   = $Url
         $This.URL    = "https://youtu.be/{0}" -f $Url
         $This.File   = $Null
@@ -102,7 +103,7 @@ Class Discography
                 {
                     $This.Output | ? Label -eq $File.Name
                 }
-                {$_.Hash -in $List.Hash}
+                {$_.Hash -in $Check.Hash}
                 {
                     $This.Output | ? Hash -eq $File.Hash
                 }
@@ -117,23 +118,18 @@ Class Discography
     }
     Download()
     {
-        $List = $This.Output | ? {!$_.File -and $_.Hash}
+        $List  = $This.Output | ? {!$_.File -and $_.Hash}
+        Set-Alias youtube-dl "$($This.Base)\Downloads\youtube-dl.exe"
 
         ForEach ($Disc in $List)
         {
-            $Exec = "(python3 $(which youtube-dl) -x --audio-format mp3 {0})" -f $Disc.URL
-            $Time = [System.Diagnostics.Stopwatch]::StartNew()
-            Invoke-Expression $Exec
-            $Job  = Get-Job | Select-Object -Last 1
-            Do 
-            {
-                Write-Host "[$($Time.Elapsed)]"
-                Start-Sleep 10
-            } 
-            Until ($Job.State -ne "Running")
-
-            $File = Get-ChildItem /home/mcook85 *.mp3 | ? Name -match $Disc.Hash
+            $Time = [DateTime]::Now
+            Write-Host "Downloading [~] $($Disc.Label)"
+            youtube-dl -x --audio-format mp3 $Disc.URL
+            $File = Get-ChildItem $This.Base *.mp3 | ? Name -match $Disc.Hash
             $Disc.Setfile($File)
+            $X    = @("Failed [!]","Downloaded [+]")[[UInt32](Test-Path $File)]
+            Write-Host "$X $($Disc.Label) [$([TimeSpan]([DateTime]::Now-$Time))]"
         }
     }
     Rename()
