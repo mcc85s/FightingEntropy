@@ -3488,6 +3488,7 @@ Function Get-EventLogProject
         [Uint32] $Total
         [UInt32] $Percent
         [String] $String
+        [String] $Output
         Percent([UInt32]$Index,[UInt32]$Step,[Uint32]$Total)
         {
             $This.Index   = $Index
@@ -3503,7 +3504,14 @@ Function Get-EventLogProject
         }
         [String] ToString()
         {
-            Return $This.String
+            If ($This.Output)
+            {
+                Return $This.Output
+            }
+            Else
+            {
+                Return $This.String
+            }
         }
     }
 
@@ -3560,7 +3568,7 @@ Function Get-EventLogProject
             $This.Status = $This.Slot[$This.Percent]
             If ($This.Percent -ne 0)
             {
-                $This.Status = "{0} [{1}]" -f $This.Status, $This.Remain()
+                $This.Status.Output = "{0} [{1}]" -f $This.Status.String, $This.Remain()
             }
         }
         SetStatus([Object]$Percent)
@@ -6618,9 +6626,10 @@ While (!$Test)
     Clear-Host
     $Count           = @([System.IO.Directory]::EnumerateFiles($Target)).Count
     $Percent         = $P.Slot | ? Step -gt $Count | Select-Object -First 1
-    $P.Status        = $Percent
-    $P.Percent       = $Percent.Percent
-    $Percent.String  = "{0} [{1}]" -f $Percent.String, $P.Remain()
+    If ($P.Percent -ne $Percent.Percent)
+    {
+        $P.SetStatus($Percent)
+    }
     Write-Theme -Title "Running [~] $($Slot.Name)" -InputObject @(
     "Index Status           Complete",
     "----- ------           --------";
@@ -6635,10 +6644,6 @@ $Slot.Status.Finalize()
 Write-Theme "Complete [~] $($Slot.Name) [$($Slot.Status)]" @(10,2,15,0)
 
 $Sync.Control.DisposeThreadSlot("ExportEventLogs")
-
-
-
-
 
 # // | Master File (Probably needs to run at the end instead, to include time information)
 $Sync.Project.SaveMaster()
