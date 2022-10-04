@@ -1406,7 +1406,84 @@ $Record.AddResponder("Michael Whitacre","<UNSPECIFIED>")
 # ¯¯¯¯¯¯¯¯¯¯¯¯¯
 
 $Record.AddNarrative(@"
+I had been leaving documents with the people at the school.
+For numerous reasons.
 
+One reason in particular, is that someone was committing espionage to me, and literally writing off all of my evidence.
+They still do this, too.
+
+The truth is, people really are morons.
+That's why some woman wrote a letter of indication that led to my children being taken from me.
+She didn't see this video.
+_______________________________________________________________
+| 05/23/20 1200 | Virtual Tour | https://youtu.be/HT4p28bRhqc |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Neither has anyone from the school.
+Neither has anyone from my family, probably.
+Neither has anyone from my community, probably.
+If people HAVE seen this video, then they should see PRETTY FUCKIN CLEARLY, that I was being an EXCELLENT DAD, 
+to my fuckin' kids.
+
+I was even going so far as to WALK TO THE CAMPUS MULTIPLE TIMES, after Mr. Muller, the school resource officer,
+suggested that I go there, right...? And then, that's exactly what I did.
+
+The problem is, "What if EVERYBODY is a fuckin' moron, and I'm not...?"
+That's actually what was going on.
+
+It'll look nearly identical to me having lost my mind and stuff, and that's why it sounded HARSH when I went
+to the district office talking about how my RESIDENCE was being SPIED ON...
+Right...?
+
+These people never bothered to watch this video, either.
+_____________________________________________________________________
+| 03/18/18 | Andrew Banas, SmartTV's | https://youtu.be/bPdWt7kcd3M |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Here's the REAL REASON why reporters such as HIM, were reporting that story...
+
+HACKERS HAD REVERSE ENGINEERED A TOOL MADE BY THE CENTRAL INTELLIGENCE AGENCY TO ALLOW SMART TV'S TO BECOME
+EAVESDROPPING TOOLS IN ORDER TO STEAL PEOPLE'S INFORMATION, MONEY, IDEAS, INTELLECTUAL PROPERTY, ET CETERA.
+
+Guess what TOOL it was...?
+WEEPING ANGEL from VAULT 7, covered by JULIEN ASSANGE from WIKILEAKS.
+Yeah.
+
+When I say that people are fuckin' morons...?
+It's ALWAYS ACCURATE.
+It's NEVER INACCURATE, when I call someone a fucking moron.
+It is 100% consistently, on point, if I think someone is a FUCKING MORON...?
+It's because I'm more intelligent than most people, and I made a determination that someone is fuckin' stupid.
+
+The problem is that some people have a VAGINA between their legs, and they don't really CARE for how those
+HARSH WORDS make them FEEL. So, if someone is a fucking complete brain dead moron that doesn't listen to someone
+that has their fucking facts straight...? It's gonna cause those people to feel DISTURBED by the TRUTH.
+
+Aw.
+I am so terribly sorry for causing someone to bawl themselves over such a traumatic event...
+
+It's ok if I was traumatized by my father having been murdered in cold blood, when I was in Mrs. Kinnaws 5th grade class at Skano.
+I obviously did something to deserve that.
+
+It's ALSO ok if I was BULLIED and BEATEN and MISLABELED at the fucking school for the entire 13 years I attended SHENENDEHOWA.
+Traumatized there too, no big deal, no worries...
+
+It's ALSO ok if I was ALMOST killed, on 05/26/20...
+...outside of the place I used to WORK in order to support my CHILDREN and my MOTHER for (3) years...
+...until a VERY SOPHISTICATED CYBERATTACK disrupted my relationship with the company.
+That's, probably illegal for me to be attacked by something THAT sophisticated...
+
+I can take it because I'm a MAN, and that means that I have to put up with SO MUCH MORE ABUSE...
+Meanwhile, if I tell some people at the district office that I've had about enough of the laziness factor at
+SHENENDEHOWA CENTRAL SCHOOL DISTRICT...
+
+...oh boy.
+That was really traumatic for like (5) people, to see some dude spouting about how he submitted a TICKET for a fuckin'
+WIRELESS HOT SPOT like a few days beforehand, and for some reason they were still PROCESSING THE TICKET...
+Which means that my CHILDREN weren't able to do their school work...
+Oh nos.
+
+How many stupid fuckin' people work at 5 CHELSEA PLACE...?
+Well, not nearly as many as the number of them who work at 6010 County Farm Road, Ballson Spa, NY 12020.
+Nah.
 "@)
 
 
@@ -1445,10 +1522,161 @@ $Record = $List.Output | ? Name -eq $Name
 ("SCSO-2020-040452 (7).JPG","https://drive.google.com/file/d/1CzN8beW0ZZdX090YOw2mEJIdCZC04PGW"),
 ("SCSO-2020-040452 (8).JPG","https://drive.google.com/file/d/1HvTGMksppPjm2DbP15TznxUefIsOMSXl"),
 ("SCSO-2020-040452 (9).JPG","https://drive.google.com/file/d/18lqeF2KZGTcP_y8stv8I7Vgj1eO3p9-N"),
-("SCSO-2020-040452 (10).JPG","https://drive.google.com/file/d/1_VkPwS0UaoxPymS5rTYN3pKBSGtksw2E") | % { 
+("SCSO-2020-040452 (10).JPG","https://drive.google.com/file/d/1_VkPwS0UaoxPymS5rTYN3pKBSGtksw2E") | % {
     
     $Record.AddEntry($_[0],$_[1])
 }
+
+# _____________
+# | Narrative |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Record.AddNarrative(@"
+DEBORAH ORTON is the AUNT of a guy I first serviced at the ALBANY COMPUTER ANSWERS SHOP.
+JONPAUL STRUYS, who like, told me that he was at the CHARLOTTESVILLE, NC situation.
+
+This guy originally seemed pretty cool, basically ALL of the guys that work at the ALBANY STORE, kept selling this
+dude some shit that was not gonna work for what he was attempting to do. Period.
+
+It's like this.
+If I tell people what the hell someone is trying to do, don't second guess me.
+That's how things ALWAYS WERE at COMPUTER ANSWERS.
+
+Does somebody wanna do some COOL SHIT with TAILSOS so that if for any reason whatsoever, he wants to unplug a drive,
+and destroy any of the files that were in that session...?
+Yeah, somebody was trying to do just that, and the guys kept selling him some shit that wouldn't work for what he was
+attempting to do.
+
+Classic PAVEL ZAICHENKO @ COMPUTER ANSWERS 101, 
+"Sell the customer some shit that they don't need, in order to make more money." -PAVEL ZAICHENKO
+
+Anyway, I went to DEBORAH ORTON's house one day, because I hadn't spoken to JONPAUL in a while.
+He and I had an argument at some point, and I said some shit to him that he probably didn't forget.
+This was AFTER he had his ALIENWARE LAPTOP STOLEN from PRICE CHOPPER in ALBANY, and then MIRACULOUSLY...?
+...I managed to help this dude get his fuckin' laptop back.
+
+So, here's the reality...
+________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Who          | What                                          |
+|______________|_______________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| I            | Look out for other people                     |
+| Other people | Forget that shit or even screw me over        |
+|______________|_______________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+So, if I GET SOME GUY HIS LAPTOP BACK, he will basically FORGET ABOUT THAT
+Or, if I SAVE SOME DUDE'S LIFE, he will basically tell me WHATEVER DUDE, ANYBODY COULD DO THAT...
+Or, if I GET MYSELF CLEAN FROM DRUGS and RECOVER FROM MY ADDICTION, everyone else will say SO WHAT, YOU SUCK ASS BRO.
+Or, if I HAVE TO KICK IN SOME GIRLS BATHROOM DOOR CAUSE SHE GOT HIGH DURING RECOVERY, she'll TREAT ME LIKE I'M PSYCHO
+Or, if I LEAVE THE HIGHEST SALES RECORD AT COMPUTER ANSWERS, the owner(s) will PRETEND THAT SHIT NEVER HAPPENED.
+Or, if I LOAN MY BUDDY 500 BUCKS, he will NEVER PAY ME BACK
+
+That's the "How people have always treated me" breakdown.
+It's why I have no problem calling people fuckin morons left and right.
+People are fuckin' stupid.
+
+DEBORAH ORTON was no exception, she was nice when I came to talk to her about JONPAUL, he had moved out, she said
+"So you're the COMPUTER GUY, RIGHT...?"
+And I said "Yeah."
+She asked me to fix her laptop, and then I went home, and basically had the thing fixed, THAT NIGHT, which was
+JUNE 29th, 2020. I tried to CALL her on the PHONE NUMBER she gave me, but the number was DISCONNECTED.
+
+So, from JUNE 29th, 2020 to JULY 13th, 2020, I went to this ladys house at least (4) or (5) times, and each time that I 
+went back there, her door was wide open and the TELEVISION was on. So either, she was in the BATHROOM or she was AVOIDING
+HER DOOR for some NEFARIOUS REASON.
+
+But also... this woman literally went to COMPUTER ANSWERS, and DWAYNE GAVE HER MY PERSONAL INFORMATION.
+THAT'S WHY THE WOMAN WAS AT MY FUCKING HOUSE.
+
+Oh. So DWAYNE is a fuckin' cocksucker that gives out people's personal information, right...? 
+Yeah, he is.
+He didn't think to contact me and say "HEY, THAT LADY CAME BY, SUCH-AND-SUCH"
+But also...? I gave this lady my phone number. She never called it.
+Not one time did this lady call that number.
+
+The problem with the device was this simple.
+SHE SPILLED SOMETHING LIQUID ONTO THE KEYBOARD, and it shorted the VIDEO as well as the KEYBOARD and some other component.
+I did replace the SCREEN, but then when I got a POWER ADAPTER FOR IT, by trading (DWAYNE/EVAN) my stick of DDR4 from my
+dead ASUS Q504UA LAPTOP, well... Dwayne took the liberty to tell this lady 1) where I lived, and 2) not my phone number.
+
+That's pretty fuckin' shady, right...?
+Wrong.
+The police at SCSO, don't really care about what's RIGHT or WRONG.
+What THEY care about, is WHO is making the complaint.
+That's what THEY fucking care about.
+
+So if it's someone being almost killed outside of COMPUTER ANSWERS...?
+That's ridiculous.
+But, if it's SOMEBODY WICKED IMPORTANT...?
+Oh my fucking god, dude... they are the most skilled police officers in the world when that's the case.
+
+They'll COVER SHIT UP if need be, they'll IGNORE EVIDENCE OF A CRIME HAVING BEEN COMMITTED, and then tell whoever called 911...
+...that they're under arrest for throwing themselves in front of a passing car.
+
+I'm not fucking exaggerating here, that is what SCOTT SCHELLING literally tried to do.
+If it sounds retarded...? Check this shit out.
+
+When this lady was at my house, (2) calls came in.
+That's what it means when a DUPLICATE CALL comes in.
+The NEIGHBORS, WILLIAM MOAK and JANET MOAK, were giving the dispatcher a PLAY-BY-PLAY SYNOPSIS of what was happening.
+The woman basically knocked on my door, I came to the door, and then this lady demands her laptop back without even
+giving me a single opportunity to explain what the fucking problem was. Nor that I had gone to her house.
+
+Nope. Wanna know why...?
+It's because people are fuckin' stupid, that's why.
+
+At some point, the neighbors came outside and I was outside, and then I had multiple people holding me down saying stuff
+like "YOU'RE GONNA GO TO JAIL, YOU SCUMBAG PIECE OF SHIT~!"
+
+However, that's because 100% of those people that have this retarded mentality, they don't realize how powerful FACTS are.
+So then eventually, when the NYSP Trooper Girls and Clayton Brownell showed up...?
+
+Well, I explained the situation pretty fuckin' clearly, and then all of the people who committed perjury on 06/13/20, who
+were ALSO making DUPLICATE 911 calls to the SCSO DISPATCH STATION...
+...who were also pretty fuckin' retarded their entire lives...
+...who think facts are fuckin' stupid since that's what they were raised to think...
+...the facts won out in this case, and they don't always win out.
+
+The facts were as follows:
+1) On 06/29/20, I went to talk to JONPAUL STRUYS
+2) DEBORAH ORTON told me he no longer lived there
+3) I said alright, tell him I said hello,
+4) she asked me if i'm the computer guy,
+5) I said "Yeah"
+6) She asked me to look at her laptop,
+7) I asked her for the WIFI password so I could connect to the internet and find the cost of the part
+8) She gave it to me and I connected and found what I needed,
+9) I gave her my phone number and she gave me hers,
+10) I went home and literally had the work completed THAT NIGHT, and tried to call her back,
+11) Her number was disconnected,
+12) the following day, I went to return the laptop or get a power charger, to make sure that the laptop worked
+13) she wasn't home, so I went to computer answers and traded the stick of DDR4 for a blue-tipped HP laptop charger
+14) I found out that the laptop had OTHER PROBLEMS, because it SHORTED the screen out that I installed...
+15) I was pretty pissed about that
+16) I tried to contact this lady multiple times
+17) I left my house for a couple of days and walked all around downtown Troy
+18) I had her laptop with me the entire way, I stopped at her house to return the device, she wasn't there
+19) I uploaded a version of Write-Theme to my Facebook account on July 5th, 2020 from her Wifi network...
+20) Nobody gave a shit about any of those details for like (2) weeks
+21) Lady shows up at my house demanding her shit back without like, paying me for wasting my time or my screen,
+22) I have a retarded mob of people who just DESPISE ME FOR NO REASON holding me down and telling me i'm goin to jail
+23) The police finally arrive and that doesn't happen
+24) Clayton Brownell understood that I wasn't going to give the woman her laptop back in PIECES or PARTS
+25) He asked me how long would it take to REASSEMBLE
+26) He gave me about an hour which was a lot more than I really needed
+27) I gave the lady her device back and the incident was closed out
+28) I had a pretty SHITTY TASTE IN MY MOUTH BECAUSE OF DWAYNE COONRADT GIVING MY FUCKING INFORMATION AWAY
+29) I went to COMPUTER ANSWERS the following day and he called the police on me when I was there
+30) it wasn't an SCSO record or they didn't include it in my records request
+31) Bill Moak is still bitter about how I didn't go to jail that day...
+32) Both of the 911 calls came from Longitude 42.872322, Latitude -73.768301
+32) https://www.google.com/maps/@42.872322,-73.768301,17z
+33) That's basically where Bill Moak's trailer is, believe it or not.
+34) Same dude that called 911 on me with his wife or whatever, happened to be the same guy
+    who tried to hit me with his baseball bat a month prior, and Mark Sheehan allowed him to do that.
+    That's why I get upset with people, it's literally because people are fucking BRAIN DEAD.
+"@)
 
 #    ____    ____________________________________________________________________________________________________        
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
@@ -1488,6 +1716,86 @@ $Record = $List.Output | ? Name -eq $Name
     $Record.AddEntry($_[0],$_[1])
 }
 
+
+# _____________
+# | Narrative |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Record.AddNarrative(@"
+I was having an argument with my stepfather and my mother about how many things were happening to me, right...?
+But they thought that I was just being psychotic.
+Again.
+It's not ME being psychotic, so much as it's people being oblivious fucking morons.
+
+Here's the COOL thing, is that these RECORDS paint my STEPFATHER as a DRUNK.
+That's not a real cool way to do business when you want the police to help you.
+
+It's one thing if you're just an annoying prick that's always correct and you somehow manage to piss
+off some police officers who probably leave skid marks in their fuckin underwear every fuckin' day...
+
+It's a totally different thing if you keep calling them while you're DRUNK.
+
+That's my stepfather, Michael Harry Streeter, drinks every fucking day...?
+Bitches about everybody else...?
+Never takes accountability for his mistakes or failings...?
+Lies to himself in the mirror...?
+Can't get laid...?
+Has to teach my children to RESENT me rather than to have a stern talking to his buddy JOHN PEAK, about
+the piece of shit car he sold me. That's what the argument was about.
+
+My stepfather was totally cool with me being almost killed.
+So was my mother.
+They think I'm making ALL of that shit up.
+I know for a fucking absolute fact, that my children know I'm not.
+
+The problem exists in people that don't actually give a shit.
+It didn't happen to them, the numerous problems I have seem to be my fault somehow...?
+But- that's because retards have taken over the world in large numbers.
+
+They don't respond real well to being told what's FACT versus what's FICTION...?
+They don't like being CORRECTED...?
+They don't like being ACCURATE...?
+They operate on what FEELS correct, which is typically fucking wrong...
+And then they rest on their LAURELS, and that's how it is.
+
+I tried to show the police that showed up in this incident, the NUMEROUS THINGS IN MY FATHER'S COLLECTION
+OF ITEMS, DOCUMENTS, NOTEBOOKS, REPORTS, RECEIPTS, RECORDS, things that would normally be helpful in an 
+"INVESTIGATION". Gotta put that word in AIR QUOTES, because, man...
+
+The (1) state trooper that day said "This looks like a FEDERAL CASE you've got on your hands..."
+Yep. It IS a federal case. Would you care to connect me with the nearest federal agent that's open to
+EXPLICIT COMMUNICATION...? Or, are we gonna just ignore the stack of evidence I've got here that
+implicates certain people. Particularly JOHN HOFFMAN and JESSE PICKETT...?
+
+They said "Everybody has stuff like that, dude... You're just NOT THAT SPECIAL..."
+
+I said "Alright, so, the event has been deescalated, you boys have a good night being useless fucks."
+
+And then they left.
+Not for nothin', but CAMERON MISSENIS was in his SCSO DEPUTY UNIFORM in this particular ticket.
+Pretty cool, huh...?
+
+He was basically riding shotgun with PAUL ZURLO in THIS INCIDENT, as well as an incident on 07/17/20.
+CAMERON MISSENIS is the son of ROBERT MISSENIS, who I worked with in 2014 in Troy.
+So, the fact of the matter is, he's shown up as a NEW YORK STATE TROOPER in this incident report.
+Wasn't in his NYSP UNIFORM, and SHOWED UP AT THE SAME EXACT TIME AS ANTHONY AGRESTA and PAUL ZURLO.
+Didn't show up at the same time as the NYSP boys who were ACTUALLY in their UNIFORMS.
+Nah.
+
+The only reason that sounds like a trivial, useless detail, is because morons are misreporting police
+records. If they misreport records, what happens is that they just continue to pretend like it never
+happened. They get their full paychecks. They might even get a raise or a promotion when they do this
+over and over. They can never actually be wrong, or considered incorrect, because that's just an 
+opinion.
+
+So if you have a PHOTO of a guy that's in his SCSO UNIFORM, but is reported as a NYSP TROOPER...?
+They still won't care... They'll call you stupid for even indicating that it's an SCSO uniform.
+Maybe they have a black version of the NYSP uniform, and I'm being an asshole for thinking that 
+the STAR on his uniform was actually a DEPUTY star. Ya know...?
+
+That's how stupid some of these police officers actually are.
+"@)
+
 #    ____    ____________________________________________________________________________________________________        
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
 #   \\__//¯¯¯ SCSO-2020-049517                                                                               ___//¯¯\\   
@@ -1524,6 +1832,36 @@ $Record = $List.Output | ? Name -eq $Name
     $Record.AddEntry($_[0],$_[1])
 }
 
+# _____________
+# | Narrative |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Record.AddNarrative(@"
+While I don't remember the exact details of this incident, what I can say is that it was virtually 
+identical to the incident on 07/14/20, where I was arguing with my stepfather, and he's just, being
+a total dickface as usual.
+
+They're making the case that I'm out of control.
+I'm perfectly well within control, they're just being ignorant and oblivious as usual.
+
+These things don't mix real well when someone who's NOT ignorant NOR oblivious and CARES about
+having their facts straight, has to abide by what I call 'RETARD LAW'.
+
+'RETARD LAW', is basically a series of unwritten laws that make no fucking sense, unless
+you're retarded, then they make perfect sense.
+
+Being RICH doesn't EXCLUDE some people from being in this criteria of people.
+Being IMPORTANT doesn't EXCLUDE some people either.
+Being HIGHLY RESPECTED causes SOME people to be FAR MORE LIKELY, to be included in this group...
+The end result is that people who are 1) oblivious, 2) distracted, and 3) don't care about having
+their facts straight...?
+
+They're probably already following 'RETARD LAW' already, and they didn't even know.
+And, if you TELL somebody that they're following 'RETARD LAW'...?
+That's TOO INSULTING, even if it's fucking TRUE.
+Yeah.
+"@)
+
 #    ____    ____________________________________________________________________________________________________        
 #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
 #   \\__//¯¯¯ SCSO-2020-053053                                                                               ___//¯¯\\   
@@ -1557,6 +1895,54 @@ $Record = $List.Output | ? Name -eq $Name
     $Record.AddEntry($_[0],$_[1])
 }
 
+# _____________
+# | Narrative |
+# ¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+$Record.AddNarrative(@"
+My mother started acting rather STRANGE whenever I would start talking about my father's murder.
+
+In fact, I began to suspect that she had my father murdered somehow, for the 50K workers compensation package.
+The problem is, this is a really controversial thing to think.
+Does anyone else think this is PLAUSIBLE...?
+
+Well, I don't know.
+I really don't think that anyone knows my mother as well as I do.
+And I mean that very literally.
+Even her own mother.
+Even my aunts and uncles.
+Even my children.
+Nobody knows my mother as well as I do, except maybe my stepfather...
+...but even then, he obviously wasn't around when my father and mother used to have arguments where
+my father would be SO FRUSTRATED BY MY MOTHER...
+...that he literally punched holes into the sheetrock walls.
+
+My mother LOVES to downplay a number of the things I remember from when I was a kid.
+She's an asshole like that.
+
+I remember my father talking about meeting up with other women that weren't my mother.
+My stepfather's ex-wife, Beatrice, is one of those women that my father hooked up with.
+
+Regardless, my mother and father did NOT have a real happy marriage at all.
+My mother worked during the DAY, my father worked at NIGHT.
+
+My mother is hiding some sort of secret in reference to my father, and though this particular 
+incident would remain MOSTLY FORGOTTEN...?
+
+It is literally the same argument that I had with her on 06/28/22 which led to her providing
+false testimony to a police officer named SARA DERUSSO.
+
+So, here's the reality.
+If the police go to make an INVALID ARREST...?
+And, you try to run back into your house because they're performing UNLAWFUL SEARCH AND SEIZURE...?
+They have a right to kill and and even lie about it.
+They can drag you through the mud...?
+They can ignore the evidence you uploaded before that 911 call...?
+They can even get help from the public defenders office, because as long as somebody is charged
+with a crime...? It doesn't matter if there's ANY EVIDENCE of that crime having been committed.
+
+ALL THAT MATTERS, is that SOMEBODY SAID SOMETHING, and that's what LAW ENFORCEMENT is all about.
+"@)
 <#
 ______________________________
 | What the output looks like |
