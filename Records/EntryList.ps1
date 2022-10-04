@@ -55,6 +55,7 @@ Class EntryList
 
 $List = [EntryList]::New("Not News Pictures","D:\Users\mcadmin\Pictures\2022\10032022")
 
+
 $List.Set("2004 Pontiac Grand Prix (1).jpg",    "https://drive.google.com/file/d/1y_i8R6l7EOkvxFzgf_W3jP3cg1u4F9xo")
 $List.Set("capdigsvcarea.jpg",                  "https://drive.google.com/file/d/1Q2LKG5QWDHWDghuWFVUYKkXdje2ldU4q")
 $List.Set("Catricala (1).jpg",                  "https://drive.google.com/file/d/1GEm-mKSjgV72818UB7MguM8f-Zum4Mqw")
@@ -132,6 +133,8 @@ $List.Set("SCSO-2020-028501 (1).JPG",           "https://drive.google.com/file/d
 $List.Set("SCSO-2020-028501 (2).JPG",           "https://drive.google.com/file/d/1fxb8zTS2v19W5_iIjA3jaGxEaYpFROdO")
 $List.Set("SCSO-2020-028501 (3).JPG",           "https://drive.google.com/file/d/1R14NXV0ziULhhv3tCfzxBuH-TDYv0iWy")
 $List.Set("SCSO-2020-028501 (4).JPG",           "https://drive.google.com/file/d/1XvlYs2OHS0j6jbV5kYqhyYPb5JomMGH-")
+$List.Set("SCSO-2020-028501 (5).JPG",           "https://drive.google.com/file/d/1ghOYtzKZxUYnY4qQp1ZexcQtT2KxZZDk")
+$List.Set("SCSO-2020-028501 (6).JPG",           "https://drive.google.com/file/d/1ukn4TLWoXdH-hFeDBOqyMujxxOXyZf2M")
 
 <#
 Index Name                               Url
@@ -185,33 +188,35 @@ Index Name                               Url
    46 SCSO-2020-028501 (2).JPG           https://drive.google.com/file/d/1fxb8zTS2v19W5_iIjA3jaGxEaYpFROdO
    47 SCSO-2020-028501 (3).JPG           https://drive.google.com/file/d/1R14NXV0ziULhhv3tCfzxBuH-TDYv0iWy
    48 SCSO-2020-028501 (4).JPG           https://drive.google.com/file/d/1XvlYs2OHS0j6jbV5kYqhyYPb5JomMGH-
-   49 SCSO-2020-028501-CORRECTED (1).jpg https://drive.google.com/file/d/1a4K323ZRoz6SkKUPCjR2ycM-AY5YpIAV
-   50 SCSO-2020-040452 (1).JPG           https://drive.google.com/file/d/1xfJ2mYvxptHLldugAXjhEdASRJpWIzIK
-   51 SCSO-2020-040452 (10).JPG          https://drive.google.com/file/d/1_VkPwS0UaoxPymS5rTYN3pKBSGtksw2E
-   52 SCSO-2020-040452 (2).JPG           https://drive.google.com/file/d/1Tg6cFXH5dKEL8XaYYOG_YlvaOsDQcTWW
-   53 SCSO-2020-040452 (3).JPG           https://drive.google.com/file/d/1U6CAQBk3f__piiQSSjPeInnKr8ao4wkj
-   54 SCSO-2020-040452 (4).JPG           https://drive.google.com/file/d/1sbOUEgjK9AqrRrDRYa1EkU-ErkTXqURa
-   55 SCSO-2020-040452 (5).JPG           https://drive.google.com/file/d/1gy68TFdZtye5l6beMmZBiUTYVXlJKe-i
-   56 SCSO-2020-040452 (6).JPG           https://drive.google.com/file/d/1w9bTxJKvT5MUWmmqgIYY0DfayD5LOlSI
-   57 SCSO-2020-040452 (7).JPG           https://drive.google.com/file/d/1CzN8beW0ZZdX090YOw2mEJIdCZC04PGW
-   58 SCSO-2020-040452 (8).JPG           https://drive.google.com/file/d/1HvTGMksppPjm2DbP15TznxUefIsOMSXl
-   59 SCSO-2020-040452 (9).JPG           https://drive.google.com/file/d/18lqeF2KZGTcP_y8stv8I7Vgj1eO3p9-N
-   60 SCSO-2020-040845 (1).JPG           https://drive.google.com/file/d/16LJXiWdXHTHdjdu8RZljsP4QtcaLpb9o
-   61 SCSO-2020-040845 (2).JPG           https://drive.google.com/file/d/1d66nKgEBDPUm_ZRRHGjtV21i5WlCQX11
-   62 SCSO-2020-040845 (3).JPG           https://drive.google.com/file/d/1n9FR3MNUuqQTlOkdYa9D8ZePoGF8krpF
-   63 SCSO-2020-040845 (4).JPG           https://drive.google.com/file/d/1M5z-B_Unn8kW3WXBFSBGL8wQXL5TU56v
-   64 SCSO-2020-040845 (5).JPG           https://drive.google.com/file/d/1p2Jeu80lNBIuADhsbeDFPDhcP4qpwWhK
-   65 SCSO-2020-040845 (6).JPG           https://drive.google.com/file/d/1vR6pvH9X3cVivusOdw1CO0AcOQZk-ItV
-   66 SCSO-2020-040845 (7).JPG           https://drive.google.com/file/d/1PYhrVopmnkIXisUKQ-CeCzAKPQnMh2g3
-   67 SCSO-2020-049517 (1).JPG           https://drive.google.com/file/d/1WhcxCTZt26-gh9t0ZQKk6wSUaYfKk2Cr
-   68 SCSO-2020-049517 (2).JPG           https://drive.google.com/file/d/1toDPjjf-M__-QHDVXIDsII_J2RjBxckO
-   69 SCSO-2020-049517 (3).JPG           https://drive.google.com/file/d/1qxFw216D3Wm4RU2qUI53A27LpvNtA6_a
-   70 SCSO-2020-049517 (4).JPG           https://drive.google.com/file/d/1-jBAexBvmsXzXLw6v_QEHCu3OEqyng9i
-   71 SCSO-2020-049517 (5).JPG           https://drive.google.com/file/d/17XwO7_Yb3AbU-IW0wKwl6fZiLciPdDs_
-   72 SCSO-2020-049517 (6).JPG           https://drive.google.com/file/d/1iUkG4Wv02XKXMYZTuStZ5U6K1ZcdJ43r
-   73 SCSO-2020-053053 (1).JPG           https://drive.google.com/file/d/1XNtAwHgD0SJwDHNqx9FKByY3U-TRuq3a
-   74 SCSO-2020-053053 (2).JPG           https://drive.google.com/file/d/1cKcu6EM7KMztdSFgPNGysp6arvkQSYGM
-   75 SCSO-2020-053053 (3).JPG           https://drive.google.com/file/d/1OVlZClO_mdtKK9A0rqBBf7zhsRz4mFqb
-   76 SCSO-2020-053053 (4).JPG           https://drive.google.com/file/d/1M1xyGwyA-_1Dc0EEN-O-XX0iuq74GxTn
-   77 SCSO-2020-053053 (5).JPG           https://drive.google.com/file/d/1V8rhIh-T6HXT5HBgrAynIEJ7FoDMTi4N
+   49 SCSO-2020-028501 (5).JPG           https://drive.google.com/file/d/1ghOYtzKZxUYnY4qQp1ZexcQtT2KxZZDk
+   50 SCSO-2020-028501 (6).JPG           https://drive.google.com/file/d/1ukn4TLWoXdH-hFeDBOqyMujxxOXyZf2M
+   51 SCSO-2020-028501-CORRECTED (1).jpg https://drive.google.com/file/d/1a4K323ZRoz6SkKUPCjR2ycM-AY5YpIAV
+   52 SCSO-2020-040452 (1).JPG           https://drive.google.com/file/d/1xfJ2mYvxptHLldugAXjhEdASRJpWIzIK
+   53 SCSO-2020-040452 (10).JPG          https://drive.google.com/file/d/1_VkPwS0UaoxPymS5rTYN3pKBSGtksw2E
+   54 SCSO-2020-040452 (2).JPG           https://drive.google.com/file/d/1Tg6cFXH5dKEL8XaYYOG_YlvaOsDQcTWW
+   55 SCSO-2020-040452 (3).JPG           https://drive.google.com/file/d/1U6CAQBk3f__piiQSSjPeInnKr8ao4wkj
+   56 SCSO-2020-040452 (4).JPG           https://drive.google.com/file/d/1sbOUEgjK9AqrRrDRYa1EkU-ErkTXqURa
+   57 SCSO-2020-040452 (5).JPG           https://drive.google.com/file/d/1gy68TFdZtye5l6beMmZBiUTYVXlJKe-i
+   58 SCSO-2020-040452 (6).JPG           https://drive.google.com/file/d/1w9bTxJKvT5MUWmmqgIYY0DfayD5LOlSI
+   59 SCSO-2020-040452 (7).JPG           https://drive.google.com/file/d/1CzN8beW0ZZdX090YOw2mEJIdCZC04PGW
+   60 SCSO-2020-040452 (8).JPG           https://drive.google.com/file/d/1HvTGMksppPjm2DbP15TznxUefIsOMSXl
+   61 SCSO-2020-040452 (9).JPG           https://drive.google.com/file/d/18lqeF2KZGTcP_y8stv8I7Vgj1eO3p9-N
+   62 SCSO-2020-040845 (1).JPG           https://drive.google.com/file/d/16LJXiWdXHTHdjdu8RZljsP4QtcaLpb9o
+   63 SCSO-2020-040845 (2).JPG           https://drive.google.com/file/d/1d66nKgEBDPUm_ZRRHGjtV21i5WlCQX11
+   64 SCSO-2020-040845 (3).JPG           https://drive.google.com/file/d/1n9FR3MNUuqQTlOkdYa9D8ZePoGF8krpF
+   65 SCSO-2020-040845 (4).JPG           https://drive.google.com/file/d/1M5z-B_Unn8kW3WXBFSBGL8wQXL5TU56v
+   66 SCSO-2020-040845 (5).JPG           https://drive.google.com/file/d/1p2Jeu80lNBIuADhsbeDFPDhcP4qpwWhK
+   67 SCSO-2020-040845 (6).JPG           https://drive.google.com/file/d/1vR6pvH9X3cVivusOdw1CO0AcOQZk-ItV
+   68 SCSO-2020-040845 (7).JPG           https://drive.google.com/file/d/1PYhrVopmnkIXisUKQ-CeCzAKPQnMh2g3
+   69 SCSO-2020-049517 (1).JPG           https://drive.google.com/file/d/1WhcxCTZt26-gh9t0ZQKk6wSUaYfKk2Cr
+   70 SCSO-2020-049517 (2).JPG           https://drive.google.com/file/d/1toDPjjf-M__-QHDVXIDsII_J2RjBxckO
+   71 SCSO-2020-049517 (3).JPG           https://drive.google.com/file/d/1qxFw216D3Wm4RU2qUI53A27LpvNtA6_a
+   72 SCSO-2020-049517 (4).JPG           https://drive.google.com/file/d/1-jBAexBvmsXzXLw6v_QEHCu3OEqyng9i
+   73 SCSO-2020-049517 (5).JPG           https://drive.google.com/file/d/17XwO7_Yb3AbU-IW0wKwl6fZiLciPdDs_
+   74 SCSO-2020-049517 (6).JPG           https://drive.google.com/file/d/1iUkG4Wv02XKXMYZTuStZ5U6K1ZcdJ43r
+   75 SCSO-2020-053053 (1).JPG           https://drive.google.com/file/d/1XNtAwHgD0SJwDHNqx9FKByY3U-TRuq3a
+   76 SCSO-2020-053053 (2).JPG           https://drive.google.com/file/d/1cKcu6EM7KMztdSFgPNGysp6arvkQSYGM
+   77 SCSO-2020-053053 (3).JPG           https://drive.google.com/file/d/1OVlZClO_mdtKK9A0rqBBf7zhsRz4mFqb
+   78 SCSO-2020-053053 (4).JPG           https://drive.google.com/file/d/1M1xyGwyA-_1Dc0EEN-O-XX0iuq74GxTn
+   79 SCSO-2020-053053 (5).JPG           https://drive.google.com/file/d/1V8rhIh-T6HXT5HBgrAynIEJ7FoDMTi4N
 #>
