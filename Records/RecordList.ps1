@@ -250,7 +250,6 @@ Class RecordList
         $T  = ""
         $T += $Label
         $T += $String
-        Write-Host $T
         $T += @(" ") * (119-$T.Length) -join ''
         $T += "|"
         Return $T
@@ -273,9 +272,9 @@ Class RecordList
             $Out.Add($Out.Count,$This.Pad("| Responder : ","($($Item.Responder.Count))"))
             $Max        = @{ 
 
-                Index   = ($Item.Responder.Output.Index | Sort-Object Length)[-1]
-                Name    = ($Item.Responder.Output.Name  | Sort-Object Length)[-1]
-                Unit    = ($Item.Responder.Output.Unit  | Sort-Object Length)[-1]
+                Index   = $Item.Responder.Output.Index | Sort-Object Length | Select-Object -Last 1
+                Name    = $Item.Responder.Output.Name  | Sort-Object Length | Select-Object -Last 1
+                Unit    = $Item.Responder.Output.Unit  | Sort-Object Length | Select-Object -Last 1
             }
             $Max.Length = 2 + $Max.Index.Length + 3 + $Max.Name.Length + 3 + $Max.Unit.Length + 2
             
@@ -302,9 +301,9 @@ Class RecordList
             $Out.Add($Out.Count,$This.Pad("| Entry     : ","($($Item.Entry.Count))"))
             $Max       = @{ 
                 
-                Index   = ($Item.Entry.Output.Index | Sort-Object Length)[-1]
-                Name    = ($Item.Entry.Output.Name  | Sort-Object Length)[-1]
-                Url     = ($Item.Entry.Output.Url   | Sort-Object Length)[-1]
+                Index   = $Item.Entry.Output.Index | Sort-Object Length | Select-Object -Last 1
+                Name    = $Item.Entry.Output.Name  | Sort-Object Length | Select-Object -Last 1
+                Url     = $Item.Entry.Output.Url   | Sort-Object Length | Select-Object -Last 1
             }
             $Max.Length = 2 + $Max.Index.Length + 3 + $Max.Name.Length + 3 + $Max.Url.Length + 2
 
@@ -330,7 +329,7 @@ Class RecordList
 
             # Narrative Prep
             $Out.Add($Out.Count,$This.Pad("| Narrative : ","($($Item.Narrative.Count))"))
-            $Out.Add($Out.Count,("|-{0}|" -f (@(" -")*58 -join '')))
+            $Out.Add($Out.Count,("|-{0} |" -f (@(" -")*58 -join '')))
 
             # Narrative Content
             ForEach ($Item in $Item.Narrative.Output.Content)
