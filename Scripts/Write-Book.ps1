@@ -930,7 +930,7 @@ Function Get-FoundingFathers
     $Out
 }
 
-$Book      = Write-Book -Name "Top Deck Awareness - Not News" -Path "$Home\Documents\Not News\Framing"
+$Book      = Write-Book -Name "Top Deck Awareness - Not News"
 $Book.Flag = $Book.Flag -Replace "08/16/2022",(Get-Date -UFormat "%m/%d/%Y")
 
 # // _____________________________________________________________
@@ -2146,7 +2146,7 @@ Here's that person's resume.
 
 $Book.SetLabel(1,"Resume")
 
-$Book.AddSection(1,1,"Resume",$Book.Path("Not News (005-Resume).txt"))
+$Book.AddSection(1,1,"Resume",$Book.Resource("Not%20News%20(005-Resume).txt"))
 
 # // _________________________________
 # // | Chapter 1 - Liars in the Lead | $Book.Range("Book",2,@(94..112))
@@ -34570,8 +34570,9 @@ warranty... wound up being upside down on my loan when I had to replace the
 1) engine and then the 2) transmission...
 (6) months later, still short of paying off the vehicle by a year. 
 So, when this cocksucker said "Why don't you show us mortals how to run a car company..."
-
-| <insert hyperlink> | 2004 Pontiac Grand Prix
+_______________________________________________________________________________________________
+| 2004 Pontiac Grand Prix | https://drive.google.com/file/d/1y_i8R6l7EOkvxFzgf_W3jP3cg1u4F9xo |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 I thought, "Maybe you should stop shitting in your pants. While you're at it...? Take your own fuckin' advice."
 
 Bill Cass' Northstar Chevrolet, where I purchased the vehicle, was told of recurring issues to my piece of shit car.
@@ -36305,65 +36306,89 @@ Cop1 : That's right, man.
        ...that way we have an idea of what we're dealing with retroactively...
 Me   : Alright... that's actually a real good idea.
 Cop1 : I know, it's why I, Cop1, said that...
-__________________________________________________________________________________________
-| <insert hyperlink> | (2G62/DEPUTY MESSINES) was IN HIS SCSO UNIFORM.                   |
-|                    | SON OF ROBERT MESSINES, Bob knows who the fuck I am, Troy 2014.   |
-|                    |                                                                   |
-|                    | Basically, THIS TICKET RIGHT HERE IS REPORTING THIS DUDES SON AS  |
-|                    | a STATE TROOPER that night, but- he was in his SCSO UNIFORM.      |
-|                    |                                                                   |
-|                    | Somehow this STATE TROOPER showed up at the EXACT same time as... |
-|                    | - PAUL ZURLO (SON OF MICHAEL ZURLO)                               |
-|                    | - ANTHONY AGRESTA (ASSOCIATED TO OTHER INSTANCES, non-suspect).   |
-|                    |                                                                   |
-|                    | So what THAT means, is that someone can work in MULTIPLE POLICE   |
-|                    | ORGANIZATIONS SIMULTANEOUSLY. COOL.                               |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    Cop1 : So, on 08/05/20, I'm gonna look at ya, shake my head, and tell ya that you're a real prick pal...~!
-           Might shake my fist at ya...? 
-           Might not. 
-           Depends on what happened that day.
-    Me   : Got it.
-    Cop1 : THEN I'm gonna tell YOU, that our superiors can track us by our PHONES.
-    Me   : K.
-    Cop1 : I'll be on patrol with the blonde haired Trooper girl, who somehow keeps running into you throughout 2020. 
-           The RADIOS we walk around with...? 
-           I'm gonna have a conversation with you about how our superiors track us... using those as well. 
-           Good so far...?
-    Me   : Yeah, good. *thumbs up*
-    Cop1 : Alright, THEN, I'm gonna tell YOU, that the camera systems in the trooper vehicles are like, worth 17K. 
-    Me   : K, then...?
-    Cop1 : THEN, I'm gonna tell ya to knock off the funny business, don't be a lame bastard...
-           ...then you'll be free to go.
-    Me   : Alright Mr. fuckin' Marty McFly from the future, who somehow knows what'll happen on 08/05/20...
-           ...what if RIGHT NOW DURING THIS INTERACTION, there just so happens to be DEPUTY MESSINES who is REPORTED 
-           as 2G62 but somehow he's wearin' an BLACK SCSO uniform, right...? 
-           But he's reported in the interaction as NYSP.
-           Black uniform, not gray. 
-           He's alongside Paul Zurlo. 
-           Paul and MESSINES JR. are talkin' with my mother right now when this incident occurs. 
-           It's DEFINITELY not Anthony Agresta, cause he's still standing right here. 
-    AA   : Damn straight, I am. 
-           That's me. 
-    Me   : Pretty sure that dude with Paul Zurlo, talking to my mother ISN'T a STATE TROOPER.
-    AA   : Look pal, we're just making sure you're safe, they're safe.
-           Everybody's safe. 
-           Everywhere. 
-           All the time. 
-           Safe, or else.
-    Me   : Cool. 
-           Well, I'm NOT safe, cause 2 dudes who work with the STATION CHIEF at the CP Safety building, the guy   
-           with GLASSES, I suspect that HE IS DOING SOMETHING MAD SHADY. 
-           And, SO IS TROOPER BORDEN. 
-           But also, obviously guys at SCSO. 
-           Like, SCOTT SCHELLING and DEPUTY PIRRONE.
-    Cop1 : Dude, Trooper Borden is like Robin, you're not allowed to say stuff about HIM.
-    Me   : ...Robin...?
-    Cop1 : Yeh. 
-           You heard me, Robin, like Robin and Batman.
-    Me   : TROOPER BORDEN has made a number of slip ups. 
-           I'm not callin' the guy out for no reason. 
-           06/18/20 is when I  first officially met this 'Robin'... 
+
+_________________________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Index     : 8                                                                                         |
+| Name      : SCSO-2020-040845                                                                          |
+| Date      : 07/14/20                                                                                  |
+| Receive   : 7/14/2020 9:47:15 PM                                                                      |
+| Transmit  : 7/14/2020 9:50:06 PM                                                                      |
+| Elapsed   : 00:02:51                                                                                  |
+| Responder : (5)                                                                                       |
+| _________________________________________                                                             |
+| | 0 | SCSO Cameron Missenis    | 2G62   |                                                             |
+| | 1 | S43810AA Anthony Agresta | SL4138 |                                                             |
+| | 2 | S44333PZ Paul Zurlo      | SL4182 |                                                             |
+| | 3 | <UNSPECIFIED[1]>         | 2G36   |                                                             |
+| | 4 | <UNSPECIFIED[2]>         | 2G32   |                                                             |
+| ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                             |
+| Entry     : (7)                                                                                       |
+| ____________________________________________________________________________________________________  |
+| | 0 | SCSO-2020-040845 (1).JPG | https://drive.google.com/file/d/16LJXiWdXHTHdjdu8RZljsP4QtcaLpb9o |  |
+| | 1 | SCSO-2020-040845 (2).JPG | https://drive.google.com/file/d/1d66nKgEBDPUm_ZRRHGjtV21i5WlCQX11 |  |
+| | 2 | SCSO-2020-040845 (3).JPG | https://drive.google.com/file/d/1n9FR3MNUuqQTlOkdYa9D8ZePoGF8krpF |  |
+| | 3 | SCSO-2020-040845 (4).JPG | https://drive.google.com/file/d/1M5z-B_Unn8kW3WXBFSBGL8wQXL5TU56v |  |
+| | 4 | SCSO-2020-040845 (5).JPG | https://drive.google.com/file/d/1p2Jeu80lNBIuADhsbeDFPDhcP4qpwWhK |  |
+| | 5 | SCSO-2020-040845 (6).JPG | https://drive.google.com/file/d/1vR6pvH9X3cVivusOdw1CO0AcOQZk-ItV |  |
+| | 6 | SCSO-2020-040845 (7).JPG | https://drive.google.com/file/d/1PYhrVopmnkIXisUKQ-CeCzAKPQnMh2g3 |  |
+| ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯  |
+| (2G62/CAMERON MISSENIS) was IN HIS SCSO UNIFORM. SON OF ROBERT MISSENIS, Bob knows who the fuck I am, |
+| Troy 2014. Basically, THIS TICKET RIGHT HERE IS REPORTING THIS DUDES SON AS a STATE TROOPER that      |
+| night, but- he was in his SCSO UNIFORM.                                                               |
+|                                                                                                       |
+| Somehow this STATE TROOPER showed up at the EXACT same time as...                                     |
+| - PAUL ZURLO (SON OF MICHAEL ZURLO)                                                                   |
+| - ANTHONY AGRESTA (ASSOCIATED TO OTHER INSTANCES, non-suspect).                                       |
+|                                                                                                       |
+| So what THAT means, is that someone can work in MULTIPLE POLICE ORGANIZATIONS SIMULTANEOUSLY. COOL.   |
+|_______________________________________________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Cop1 : So, on 08/05/20, I'm gonna look at ya, shake my head, and tell ya that you're a real prick pal...~!
+       Might shake my fist at ya...? 
+       Might not. 
+       Depends on what happened that day.
+Me   : Got it.
+Cop1 : THEN I'm gonna tell YOU, that our superiors can track us by our PHONES.
+Me   : K.
+Cop1 : I'll be on patrol with the blonde haired Trooper girl, who somehow keeps running into you throughout 2020. 
+       The RADIOS we walk around with...? 
+       I'm gonna have a conversation with you about how our superiors track us... using those as well. 
+       Good so far...?
+Me   : Yeah, good. *thumbs up*
+Cop1 : Alright, THEN, I'm gonna tell YOU, that the camera systems in the trooper vehicles are like, worth 17K. 
+Me   : K, then...?
+Cop1 : THEN, I'm gonna tell ya to knock off the funny business, don't be a lame bastard...
+       ...then you'll be free to go.
+Me   : Alright Mr. fuckin' Marty McFly from the future, who somehow knows what'll happen on 08/05/20...
+       ...what if RIGHT NOW DURING THIS INTERACTION, there just so happens to be DEPUTY MESSINES who is REPORTED 
+       as 2G62 but somehow he's wearin' an BLACK SCSO uniform, right...? 
+       But he's reported in the interaction as NYSP.
+       Black uniform, not gray. 
+       He's alongside Paul Zurlo. 
+       Paul and MESSINES JR. are talkin' with my mother right now when this incident occurs. 
+       It's DEFINITELY not Anthony Agresta, cause he's still standing right here. 
+AA   : Damn straight, I am. 
+       That's me. 
+Me   : Pretty sure that dude with Paul Zurlo, talking to my mother ISN'T a STATE TROOPER.
+AA   : Look pal, we're just making sure you're safe, they're safe.
+       Everybody's safe. 
+       Everywhere. 
+       All the time. 
+       Safe, or else.
+Me   : Cool. 
+       Well, I'm NOT safe, cause 2 dudes who work with the STATION CHIEF at the CP Safety building, the guy   
+       with GLASSES, I suspect that HE IS DOING SOMETHING MAD SHADY. 
+       And, SO IS TROOPER BORDEN. 
+       But also, obviously guys at SCSO. 
+       Like, SCOTT SCHELLING and DEPUTY PIRRONE.
+Cop1 : Dude, Trooper Borden is like Robin, you're not allowed to say stuff about HIM.
+Me   : ...Robin...?
+Cop1 : Yeh. 
+       You heard me, Robin, like Robin and Batman.
+Me   : TROOPER BORDEN has made a number of slip ups. 
+       I'm not callin' the guy out for no reason. 
+       06/18/20 is when I  first officially met this 'Robin'... 
 "@)
  
 $Book.AddSection(8,"Excerpt [~] Trooper Borden",@"
@@ -36434,140 +36459,158 @@ ________________________________________________________________________________
 "@)
  
 $Book.AddSection(8,"Hiding Guilt (2)",@"
-    Me   : Trooper Borden already SAW the PICTURES I took of Catricala's rear building, when he had to look through 
-           my backpack at GT Toys on 06/18/20. I didn't know then, was that... ERIC CATRICALA was the guy in the 
-           WHITE SUV that was hunting me down on: 1) ASTOIA VUCETICS PROP. IN APRIL, 2) 06/20/20 NEW SALEM ROAD SOUTH
-           CATRICALA FUNERAL HOME is DIRECTLY ACROSS THE STREET FROM COMPUTER ANSWERS. 
-           I think that dude, just so we're clear on what dud I'm referring to...?
-           It just so happens to be, NY State Assemblyman, ERIC CATRICALA.
-           I believe that this dude has a legion of cybercommandos in his back pocket that can attack COMPUTERS,
-           MOBILE DEVICES, CABLE MODEMS, TELEPHONE LINES, SmartTV's, probably even Smart Dildos... you never know.
-           If he knows who can hack a smartphone using Pegasus, then any electronic device is on the table.
-           Then again, maybe this dude just as all the skills in the world, and does all this himself.
-    Cop1 : Dude, nobody has a legion of cybercommandos in their back pocket, not unless you're friggen Rex Power Colt 
-           himself.
-    Me   : Yeah...? Says you. I'm just sayin' ERIC CATRICALA probably knows the top-shelf hackers at the FBI.
-           I mean, lets have an honest discussion about it...
-           If we were to pit the cybercommandos from each and every organization in the US government that HAS
-           cybercommandos on deck... who do you think would win...?
-           Cause, any legion of cybercommandos isn't somethin' anyone wants to be up against.
-           They can practically karate chop people with their friggen eyebrows, if they wanted to.
-    Cop1 : Nah bro, they cannot karate chop people with their eyebrows. 
-           What the hell is wrong with you, pal...?
-           Obviously, the Central Intelligence Agency.
-    Me   : I said PRACTICALLY.
-           And that's a good pick, dude. Damn.
-           *Cop1, Cop2, and Agresta all glance at each other, all have their eyebrows focused*
-    Cop2 : The National Security Agency is nothing anybody wants to mess with...
-    Me   : Yeah you're right about that.
-    AA   : Man, I can't pick the same ones they did, huh...?
-    Me   : I mean, you COULD.
-    AA   : *sits there for a moment in deep thought*
-           I dunno, man... this is TOUGH.
-    Me   : It is.
-           They all basically have the same teachers and skillsets.
-           It's sorta like "which child is your favorite child...?"
-    AA   : Well, I'm gonna actually go with the Federal Bureau of Investigation.
-    Me   : Nice.
-    Cop1 : What about you, you haven't picked one.
-    Me   : Uh, Microsoft. No hesitation.
-    Cop2 : THAT's a COMPANY... not a government agency.
-    Me   : HEH. That's what YOU think.
-           It is a company.
-           It is also where the worlds best software engineering has always taken place.
-           That means, fully stocked with the fiercest cybercommandos known to man.
-    Cop1 : That's basically cheating though.
-    Me   : Look, when ALL of these agencies need someone to give them a dose of wisdom...?
-           Where you do think they go, I mean, really...?
-    Cop2 : That is where I would go, actually...
-    Cop1 : Not gonna lie, can't even argue with you.
-    AA   : I mean, look guys, we shouldn't be pitting our own countrymen and cybercommandos against each other anyway.
-    Me   : Alright, well, ERIC CATRICALA probably does not have Microsoft helpin' him out.
-           But it doesn't make the cybercommandos at his table, any less dangerous or lethal.
-    Cop1 : How...?    
-    Me   : Well, I don't really have an answer for ya...
-           MAYBE he's like a legitimate magician.
-           Cause the dude showed up (2x) hours after I walked past 1134 New Scotland Road.
-           The only reason I found that plate, and the car, is cause Scrotes Pirrone said to DJ Thompson, at the 
-           Halfmoon Sheriff Substation, on: [06/01/20] 
-           Scrotes     : Hey, what is this guy even doin' here...?
-           DJ Thompson : Ah, he fuckin' SUPPOSEDLY jumped in front of a vehicle that the Captains kids were driving.
-                         The ones that live off of farm to market road, called in... 
-                         ...dude literally tried to jump in front of THEIR CAR, trying to damage their car. 
-                         Like an asshole, dude.
-           Scrotes     : *looks at me, palms up* Dude, what the hell is wrong with you...? 
-                         Why would you jump in front of somebody's car like that...?
-                         *shakes head* Unbelievable...
-           Me          : Nah bro, I didn't jump in front of anybody's car.
-                         But hey, I'll remember that one, if some dude is walking nearby...? 
-                         OH... call 911 and tell THEM that they just haphazardly jumped in front of my car...
-                         ...and I ran this IDIOT over NOW I gotta get my car fixed...
-                         ...I think the guy is definitely dead though. Hold on...
-                         *bang bang* Yeah he's definitely dead.
-           Scrotes     : You know that's basically a crime right there, right...?
-           Me          : Right. So like, that's what the CAPTAINS KIDS tried to like DO. Dumbass.
-           DJ Thompson : Hey. Don't you insult this fuckin' dude who's standin' here doin' nothin'... Alright...?
-                         Thought you were gonna be cool wit' us...? Now you're bein' a douchebag...
-           Me          : Bro. I HAVE A FUCKING ALIBI. WHAT DO YOU NOT UNDERSTAND ABOUT THAT...?
-           DJ Thompson : Dude, I already told YOU, that there's nothing I can really do about that. Orders man.
-           Me          : Oh. Ok.
-           [06/01/20 *obviously ad-libbed, but the context is spot on]
-           Anyway, yeah, this WHITE MERCEDES-BENZ SUV that can be seen PARKED in my friends neighbors driveway. 
-           fuckin' ERIC CATRICALA - 20 Anchor Drive, Waterford NY – that is the vehicle that was driving in and out 
-           of every driveway, near NEW SALEM SOUTH ROAD, about 2 hours AFTER I passed 1134 New Scotland Road, and
-           this dude was definitely trying to kill me, because he didn't OPEN THE WINDOW and SAY A WORD... and he would  
-           DRIVE OFF, and then try to fake me out, and come right back, but this dude is a dumbass, hate to say it.
-    Cop1 : You do realize, that's fuckin' Eric god damn Catricala, right...? Dude's a literal State Assemblyman. 
-    Me   : Yeah, well, he's also a stupid motherfucker that's goin' to prison at some point. 
-           I don't know though, maybe he's not stupid at all, and he's an incredibly intelligent bastard that's gonna
-           get me when I least expect it. 
-           He like, tried to have Clayton Brownell ARREST ME for being at the CATRICALA FUNERAL HOME on 06/18/20.
-           WASN'T EVEN ON THE SAME SIDE OF THE ROAD. That was AFTER I caught SCROTES PIRRONE TRYING TO BE SLICK.
-           This dude, heard about the conversation I had with DR. ROBINSON, and the letter probably, and then ALSO heard 
-           about how I stopped at CENTER FOR SECURITY, to request access to their security footage, since I know for damn
-           certain, that camera in front of the place, caught my 2nd 911 call, on 05/26/20 0009
-           Julie from Trickshot Billiards might even say something about me being a total fuckface douchebag on all
-           accounts, but: "Oh yeah that dude, man. He WAS here, on 06/18/20, handed me a smashed-up purple 
-           Samsung Galaxy S9+, and then this dude, he just, took off, man..."
+Me   : Trooper Borden already SAW the PICTURES I took of Catricala's rear building, when he had to look through 
+       my backpack at GT Toys on 06/18/20. I didn't know then, was that... ERIC CATRICALA was the guy in the 
+       WHITE SUV that was hunting me down on: 1) ASTOIA VUCETICS PROP. IN APRIL, 2) 06/20/20 NEW SALEM ROAD SOUTH
+       CATRICALA FUNERAL HOME is DIRECTLY ACROSS THE STREET FROM COMPUTER ANSWERS. 
+       I think that dude, just so we're clear on what dud I'm referring to...?
+       It just so happens to be, NY State Assemblyman, ERIC CATRICALA.
+       I believe that this dude has a legion of cybercommandos in his back pocket that can attack COMPUTERS,
+       MOBILE DEVICES, CABLE MODEMS, TELEPHONE LINES, SmartTV's, probably even Smart Dildos... you never know.
+       If he knows who can hack a smartphone using Pegasus, then any electronic device is on the table.
+       Then again, maybe this dude just as all the skills in the world, and does all this himself.
+Cop1 : Dude, nobody has a legion of cybercommandos in their back pocket, not unless you're friggen Rex Power Colt 
+       himself.
+Me   : Yeah...? Says you. I'm just sayin' ERIC CATRICALA probably knows the top-shelf hackers at the FBI.
+       I mean, lets have an honest discussion about it...
+       If we were to pit the cybercommandos from each and every organization in the US government that HAS
+       cybercommandos on deck... who do you think would win...?
+       Cause, any legion of cybercommandos isn't somethin' anyone wants to be up against.
+       They can practically karate chop people with their friggen eyebrows, if they wanted to.
+Cop1 : Nah bro, they cannot karate chop people with their eyebrows. 
+       What the hell is wrong with you, pal...?
+       Obviously, the Central Intelligence Agency.
+Me   : I said PRACTICALLY.
+       And that's a good pick, dude. Damn.
+       *Cop1, Cop2, and Agresta all glance at each other, all have their eyebrows focused*
+Cop2 : The National Security Agency is nothing anybody wants to mess with...
+Me   : Yeah you're right about that.
+AA   : Man, I can't pick the same ones they did, huh...?
+Me   : I mean, you COULD.
+AA   : *sits there for a moment in deep thought*
+       I dunno, man... this is TOUGH.
+Me   : It is.
+       They all basically have the same teachers and skillsets.
+       It's sorta like "which child is your favorite child...?"
+AA   : Well, I'm gonna actually go with the Federal Bureau of Investigation.
+Me   : Nice.
+Cop1 : What about you, you haven't picked one.
+Me   : Uh, Microsoft. No hesitation.
+Cop2 : THAT's a COMPANY... not a government agency.
+Me   : HEH. That's what YOU think.
+       It is a company.
+       It is also where the worlds best software engineering has always taken place.
+       That means, fully stocked with the fiercest cybercommandos known to man.
+Cop1 : That's basically cheating though.
+Me   : Look, when ALL of these agencies need someone to give them a dose of wisdom...?
+       Where you do think they go, I mean, really...?
+Cop2 : That is where I would go, actually...
+Cop1 : Not gonna lie, can't even argue with you.
+AA   : I mean, look guys, we shouldn't be pitting our own countrymen and cybercommandos against each other anyway.
+Me   : Alright, well, ERIC CATRICALA probably does not have Microsoft helpin' him out.
+       But it doesn't make the cybercommandos at his table, any less dangerous or lethal.
+Cop1 : How...?    
+Me   : Well, I don't really have an answer for ya...
+       MAYBE he's like a legitimate magician.
+       Cause the dude showed up (2x) hours after I walked past 1134 New Scotland Road.
+       The only reason I found that plate, and the car, is cause Scrotes Pirrone said to DJ Thompson, at the 
+       Halfmoon Sheriff Substation, on: [06/01/20] 
+       Scrotes     : Hey, what is this guy even doin' here...?
+       DJ Thompson : Ah, he fuckin' SUPPOSEDLY jumped in front of a vehicle that the Captains kids were driving.
+                     The ones that live off of farm to market road, called in... 
+                     ...dude literally tried to jump in front of THEIR CAR, trying to damage their car. 
+                     Like an asshole, dude.
+       Scrotes     : *looks at me, palms up* Dude, what the hell is wrong with you...? 
+                     Why would you jump in front of somebody's car like that...?
+                     *shakes head* Unbelievable...
+       Me          : Nah bro, I didn't jump in front of anybody's car.
+                     But hey, I'll remember that one, if some dude is walking nearby...? 
+                     OH... call 911 and tell THEM that they just haphazardly jumped in front of my car...
+                     ...and I ran this IDIOT over NOW I gotta get my car fixed...
+                     ...I think the guy is definitely dead though. Hold on...
+                     *bang bang* Yeah he's definitely dead.
+       Scrotes     : You know that's basically a crime right there, right...?
+       Me          : Right. So like, that's what the CAPTAINS KIDS tried to like DO. Dumbass.
+       DJ Thompson : Hey. Don't you insult this fuckin' dude who's standin' here doin' nothin'... Alright...?
+                     Thought you were gonna be cool wit' us...? Now you're bein' a douchebag...
+       Me          : Bro. I HAVE A FUCKING ALIBI. WHAT DO YOU NOT UNDERSTAND ABOUT THAT...?
+       DJ Thompson : Dude, I already told YOU, that there's nothing I can really do about that. Orders man.
+       Me          : Oh. Ok.
+       [06/01/20 *obviously ad-libbed, but the context is spot on]
+       Anyway, yeah, this WHITE MERCEDES-BENZ SUV that can be seen PARKED in my friends neighbors driveway. 
+       fuckin' ERIC CATRICALA - 20 Anchor Drive, Waterford NY – that is the vehicle that was driving in and out 
+       of every driveway, near NEW SALEM SOUTH ROAD, about 2 hours AFTER I passed 1134 New Scotland Road, and
+       this dude was definitely trying to kill me, because he didn't OPEN THE WINDOW and SAY A WORD... and he would  
+       DRIVE OFF, and then try to fake me out, and come right back, but this dude is a dumbass, hate to say it.
+Cop1 : You do realize, that's fuckin' Eric god damn Catricala, right...? Dude's a literal State Assemblyman. 
+Me   : Yeah, well, he's also a stupid motherfucker that's goin' to prison at some point. 
+       I don't know though, maybe he's not stupid at all, and he's an incredibly intelligent bastard that's gonna
+       get me when I least expect it. 
+       He like, tried to have Clayton Brownell ARREST ME for being at the CATRICALA FUNERAL HOME on 06/18/20.
+       WASN'T EVEN ON THE SAME SIDE OF THE ROAD. That was AFTER I caught SCROTES PIRRONE TRYING TO BE SLICK.
+       This dude, heard about the conversation I had with DR. ROBINSON, and the letter probably, and then ALSO heard 
+       about how I stopped at CENTER FOR SECURITY, to request access to their security footage, since I know for damn
+       certain, that camera in front of the place, caught my 2nd 911 call, on 05/26/20 0009
+       Julie from Trickshot Billiards might even say something about me being a total fuckface douchebag on all
+       accounts, but: "Oh yeah that dude, man. He WAS here, on 06/18/20, handed me a smashed-up purple 
+       Samsung Galaxy S9+, and then this dude, he just, took off, man..."
 _____________________________________________________________________________________
 | IMG_0646.HEIC | https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD |
 |                 uploaded AFTER SCSO-2020-028501 @ 05/26/20 0357                   |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    Cop1 : Buddy... that's gotta be all nonsense... I go fishin' with that dude... He's a mad chill funeral home owner.
-           There's NO WAY that dude would ever hurt a fly.
-    Me   : Ohhh alright. Maybe he was just trying to ask me if I wanted life insurance or something on the side of the 
-           road, about 20+ miles from Clifton Park, just randomly happened to CONVENIENTLY be, in fuckin VOORHEESVILLE...
-           MAGICALLY, CONVENIENTLY, 2 hours after I found that BLACK DODGE DART sitting in the CAPTAINS' spot...
-           Yeah, the guys at the Halfmoon substation said "Captains kids called this in", so I saw this black dodge dart
-           parked in front of the CAPTAIN'S spot.
-    Cop1 : You know, you would HAVE to have EVIDENCE of something that serious... right? Cause, I'll fuckin' arrest ya 
-           right now for sayin' all this falsetto shit...
-    Me   : Oh ok, so, I showed the god damn video of this kids face, to Shaemus Leavey, on 05/27/20 at about 9am. Leavey 
-           only saw about the first minute of the video or so, and I'm pretty sure he'd remember that it was in front of 
-           Catriala's funeral home. Anyway, I'm gonna go backward in time to BEFORE all this shit started happening...
-    Cop1 : What the hell is THAT supposed to mean, dude...? You're not supposed to be able to flip back and forth through
-           time like that... Not without a time permit or somethin'...
-    Me   : THEN, I saw Trooper Leavey and showed him IMG_0647.mov which was a SINGLE file that CATRICALA's CYBERCOMMANDO  
-           BUDDIES were working REALLY FUCKIN HARD to PREVENT ME from EXFILTRATING from my DEVICE. They've been doin' 
-           this shit to me for like 3.5+ years now, believe it or not. I first noticed it back when I was at Computer
-           Answers, and then suddenly, I had this suspicion that someone was ACTIVELY EAVESDROPPING ON THE DEVICES IN 
-           THE STORE. 
-           Almost like a legit case of OBSTRUCTION OF JUSTICE. Well, it's not even ALMOST, because it IS OOJ.
-    Cop1 : Yeah but you still haven't shown me that you've got a time-permit to show me stuff from the past like that...
-    Me   : *ignores Cop1* After I showed Trooper Leavey THAT video, of the kid that DRIVES THAT CAR that HAD the LICENSE 
-           PLATE NYS/DVA-02450 in front of the CATRICALA FUNERAL HOME, my phone screen went COMPLETELY BLACK. Wasn't off.  
-           Had to remove battery, plugged it back in, phone said "Fuck you dude." I was CONVINCED that LEAVEY had some 
-           hand in that, but- then I remembered that I fuckin used it for a minute after he drove away. My neighbor works 
-           for the company CAPITAL DIGITRONICS which provides radio comm. equipment for the NYSP, in this area. 40Mi+
-    Cop2 : Hey, listen buddy, we don't have ALL DAY to talk about this hypothetical, non-realistic long ass convo that 
-           you're not even allowed to do, without a time-permit... So...
-    Me   : *ignores Cop2* | Tom McCabe: (03/21/22) https://drive.google.com/file/d/1kYKHBlJFC4-w8K1q0ROM4CvLF0dfwdbo
-            ^ Capital Digitronics guy/owner COOL DUDE, HE didn't hack HIS OWN comm. equipment. FBI (did/had access).
-           ERIC CATRICALA then ASKED SCSO James Leonard to DO SOMETHING, FAST. SCSO-2020-003177 with SCOTT CARPENTER.
-
-_________________________________________
-| SCSO-2020-003177 | <insert hyperlink> |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Cop1 : Buddy... that's gotta be all nonsense... I go fishin' with that dude... He's a mad chill funeral home owner.
+       There's NO WAY that dude would ever hurt a fly.
+Me   : Ohhh alright. Maybe he was just trying to ask me if I wanted life insurance or something on the side of the 
+       road, about 20+ miles from Clifton Park, just randomly happened to CONVENIENTLY be, in fuckin VOORHEESVILLE...
+       MAGICALLY, CONVENIENTLY, 2 hours after I found that BLACK DODGE DART sitting in the CAPTAINS' spot...
+       Yeah, the guys at the Halfmoon substation said "Captains kids called this in", so I saw this black dodge dart
+       parked in front of the CAPTAIN'S spot.
+Cop1 : You know, you would HAVE to have EVIDENCE of something that serious... right? Cause, I'll fuckin' arrest ya 
+       right now for sayin' all this falsetto shit...
+Me   : Oh ok, so, I showed the god damn video of this kids face, to Shaemus Leavey, on 05/27/20 at about 9am. Leavey 
+       only saw about the first minute of the video or so, and I'm pretty sure he'd remember that it was in front of 
+       Catriala's funeral home. Anyway, I'm gonna go backward in time to BEFORE all this shit started happening...
+Cop1 : What the hell is THAT supposed to mean, dude...? You're not supposed to be able to flip back and forth through
+       time like that... Not without a time permit or somethin'...
+Me   : THEN, I saw Trooper Leavey and showed him IMG_0647.mov which was a SINGLE file that CATRICALA's CYBERCOMMANDO  
+       BUDDIES were working REALLY FUCKIN HARD to PREVENT ME from EXFILTRATING from my DEVICE. They've been doin' 
+       this shit to me for like 3.5+ years now, believe it or not. I first noticed it back when I was at Computer
+       Answers, and then suddenly, I had this suspicion that someone was ACTIVELY EAVESDROPPING ON THE DEVICES IN 
+       THE STORE. 
+       Almost like a legit case of OBSTRUCTION OF JUSTICE. Well, it's not even ALMOST, because it IS OOJ.
+Cop1 : Yeah but you still haven't shown me that you've got a time-permit to show me stuff from the past like that...
+Me   : *ignores Cop1* After I showed Trooper Leavey THAT video, of the kid that DRIVES THAT CAR that HAD the LICENSE 
+       PLATE NYS/DVA-02450 in front of the CATRICALA FUNERAL HOME, my phone screen went COMPLETELY BLACK. Wasn't off.  
+       Had to remove battery, plugged it back in, phone said "Fuck you dude." I was CONVINCED that LEAVEY had some 
+       hand in that, but- then I remembered that I fuckin used it for a minute after he drove away. My neighbor works 
+       for the company CAPITAL DIGITRONICS which provides radio comm. equipment for the NYSP, in this area. 40Mi+
+Cop2 : Hey, listen buddy, we don't have ALL DAY to talk about this hypothetical, non-realistic long ass convo that 
+       you're not even allowed to do, without a time-permit... So...
+Me   : *ignores Cop2* | Tom McCabe: (03/21/22) https://drive.google.com/file/d/1kYKHBlJFC4-w8K1q0ROM4CvLF0dfwdbo
+        ^ Capital Digitronics guy/owner COOL DUDE, HE didn't hack HIS OWN comm. equipment. FBI (did/had access).
+       ERIC CATRICALA then ASKED SCSO James Leonard to DO SOMETHING, FAST. SCSO-2020-003177 with SCOTT CARPENTER.
+_________________________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Name      : SCSO-2020-003177                                                                          |
+| Date      : 05/27/20                                                                                  |
+| Receive   : 5/27/2020 2:14:00 PM                                                                      |
+| Transmit  : 5/24/2020 7:05:00 PM                                                                      |
+| Elapsed   : -2.19:09:00                                                                               |
+| Responder : (2)                                                                                       |
+| _______________________________________                                                               |
+| | 0 | Scott Carpenter | <UNSPECIFIED> |                                                               |
+| | 1 | James Leonard   | <UNSPECIFIED> |                                                               |
+| ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                               |
+| Entry     : (5)                                                                                       |
+| ____________________________________________________________________________________________________  |
+| | 0 | SCSO-2020-003177 (1).JPG | https://drive.google.com/file/d/1xritPqOI-ng04v_yp203zM_3sG2-_Jb2 |  |
+| | 1 | SCSO-2020-003177 (2).JPG | https://drive.google.com/file/d/119rBz3sGpt6lPF4qQ90nWwALZ2W1iWJ3 |  |
+| | 2 | SCSO-2020-003177 (3).JPG | https://drive.google.com/file/d/1FfcBWZZlkmf88XOtq0xBIvgK6m_3qwkP |  |
+| | 3 | SCSO-2020-003177 (4).JPG | https://drive.google.com/file/d/1WkNbhqgvDIWZJYbCObEI-j12Mz_g2CDJ |  |
+| | 4 | SCSO-2020-003177 (5).JPG | https://drive.google.com/file/d/1rjCU9yHzIo6gFw41aPAtAMmr42-iAG1I |  |
+| ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯  |
+|_______________________________________________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 (05/27/20 1414) [SCSO-2020-003177] 
 Carpenter, Scott: On the above date and time, I responded to the listed address for a report of a 
 SUSPICIOUS SUBJECT[01]. Upon arrival, I was met by Eric "god damn" Catricala[02]. Eric stated that
@@ -36615,9 +36658,30 @@ Patrol checked the property for damage which yielded negative results[10].
 
 This ticket was supposed to SUPPLEMENT the ticket SCSO-2020-003173…
 
-_________________________________________
-| SCSO-2020-003173 | <insert hyperlink> |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+_________________________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Name      : SCSO-2020-003173                                                                          |
+| Date      : 05/27/20                                                                                  |
+| Receive   : 5/27/2020 12:12:00 PM                                                                     |
+| Transmit  : 6/1/2020 12:19:00 PM                                                                      |
+| Elapsed   : 5.00:07:00                                                                                |
+| Responder : (3)                                                                                       |
+| _____________________________________                                                                 |
+| | 0 | Michael Smith | <UNSPECIFIED> |                                                                 |
+| | 1 | DJ Thompson   | <UNSPECIFIED> |                                                                 |
+| | 2 | James Leonard | <UNSPECIFIED> |                                                                 |
+| ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                                 |
+| Entry     : (6)                                                                                       |
+| ____________________________________________________________________________________________________  |
+| | 0 | SCSO-2020-003173 (1).JPG | https://drive.google.com/file/d/14Ajb2y93NEJ6YC255-lHe361KoCF7OxP |  |
+| | 1 | SCSO-2020-003173 (2).JPG | https://drive.google.com/file/d/1KsriWjDat6F2mz9Vy8FJMUWLRF6ViYO4 |  |
+| | 2 | SCSO-2020-003173 (3).JPG | https://drive.google.com/file/d/1l_fs1BP1FmQiuoQ7rJZQAh3dvpw5o-bQ |  |
+| | 3 | SCSO-2020-003173 (4).JPG | https://drive.google.com/file/d/1cDq5H8QpzvowOJ1C3rLbraiNCJaoscTW |  |
+| | 4 | SCSO-2020-003173 (5).JPG | https://drive.google.com/file/d/13zr1gip9mkaJSsXRnxU8lhZiR5cNYTKj |  |
+| | 5 | SCSO-2020-003173 (6).JPG | https://drive.google.com/file/d/17ZvRkZWwxDTHCnrhbHOL7hh_L2MCnF7t |  |
+| ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯  |
+|_______________________________________________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 (05/27/20 1212) [SCSO-2020-003173] 
 Martin, Michael: I was dispatched to 1771 Route 9 in the town of Clifton Park, in regard to an ongoing 
 issue[1]. Upon my arrival, I was met by the complainant, Zachary Karel[2]. The complainant stated that 
@@ -39630,11 +39694,11 @@ SCSO : NOPE.
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
-_____________________________________________________
-| 05/25/20 0010 | IMG_0649.jpg | <insert hyperlink> | 
-| 05/25/20 0010 | IMG_0650.jpg | <insert hyperlink> | 
-| 05/25/20 0010 | IMG_0651.jpg | <insert hyperlink> |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+____________________________________________________________________________________________________
+| 05/26/20 0010 | IMG_0649.jpg | https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L | 
+| 05/26/20 0010 | IMG_0650.jpg | https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l | 
+| 05/26/20 0010 | IMG_0651.jpg | https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
 When I say getting killed by this kid what I mean is: 
 - they are actual serial killers that kill REAL people [VERY OFTEN] (I don't know the rate, maybe 5 kills a week?)
 - victims aren't      ever FOUND | - they find a (COOL/CREATIVE) way to get rid of (body/bodies)
@@ -42413,9 +42477,27 @@ Me           : Listen to this recording I have of the police committing a crime 
 Schnakenberg : I don't want to listen to it.
 Me           : So you DID call CPS on me, didn't you, you spineless cocksucker...?
 Schnakenberg : No I didn't...
-_________________________________________
-| <insert hyperlink> | SCSO-2020-003688 |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+_________________________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Name      : SCSO-2020-003688                                                                          |
+| Date      : 06/19/20                                                                                  |
+| Receive   : 6/19/2020 9:58:00 AM                                                                      |
+| Transmit  : 6/18/2020 1:32:00 PM                                                                      |
+| Elapsed   : -20:26:00                                                                                 |
+| Responder : (1)                                                                                       |
+| ________________________________________                                                              |
+| | 0 | Michael Whitacre | <UNSPECIFIED> |                                                              |
+| ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                                              |
+| Entry     : (5)                                                                                       |
+| ____________________________________________________________________________________________________  |
+| | 0 | SCSO-2020-003688 (1).JPG | https://drive.google.com/file/d/1R0EUH3z8JRhliQuvpMogZK8l5Nzi80mw |  |
+| | 1 | SCSO-2020-003688 (2).JPG | https://drive.google.com/file/d/1H62ZDnQT3s-k-aUXMJAFzWseMk79e_a7 |  |
+| | 2 | SCSO-2020-003688 (3).JPG | https://drive.google.com/file/d/1g00XTcJk5_tzb4Utdn_i2on_TYuwaXTV |  |
+| | 3 | SCSO-2020-003688 (4).JPG | https://drive.google.com/file/d/1RyG2SSXNpA95zW-EugtT9zTZ4HQ7N7MV |  |
+| | 4 | SCSO-2020-003688 (5).JPG | https://drive.google.com/file/d/1RyG2SSXNpA95zW-EugtT9zTZ4HQ7N7MV |  |
+| ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯  |
+|_______________________________________________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Me           : I dunno if you can fuckin' READ bro...? But this dude at SCSO said the "FAMILY DOCTOR" called CPS.
 Schnakenberg : It wasn't me, it was obviously somebody else.
                You need to be on medication.
