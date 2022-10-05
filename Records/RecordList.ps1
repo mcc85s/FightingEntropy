@@ -250,7 +250,7 @@ Class RecordList
         $T  = ""
         $T += $Label
         $T += $String
-        $T += @(" ") * (119-$T.Length) -join ''
+        $T += @(" ") * (120-$T.Length) -join ''
         $T += "|"
         Return $T
     }
@@ -259,8 +259,8 @@ Class RecordList
         $Out = @{ }
         ForEach ($Item in $This.Output)
         {
-            $Out.Add($Out.Count,(@("_") * 120 -join ''))
-            $Out.Add($Out.Count,("|{0}|" -f (@([char]175) * 118 -join '')))
+            $Out.Add($Out.Count,(@("_") * 121 -join ''))
+            $Out.Add($Out.Count,("|{0}|" -f (@([char]175) * 119 -join '')))
             $Out.Add($Out.Count,$This.Pad("| Index     : ",$Item.Index))
             $Out.Add($Out.Count,$This.Pad("| Name      : ",$Item.Name))
             $Out.Add($Out.Count,$This.Pad("| Date      : ",$Item.Date))
@@ -329,7 +329,7 @@ Class RecordList
 
             # Narrative Prep
             $Out.Add($Out.Count,$This.Pad("| Narrative : ","($($Item.Narrative.Count))"))
-            $Out.Add($Out.Count,("|-{0} |" -f (@(" -")*58 -join '')))
+            $Out.Add($Out.Count,("|-{0} -|" -f (@(" -")*58 -join '')))
 
             # Narrative Content
             ForEach ($Item in $Item.Narrative.Output.Content)
@@ -338,8 +338,8 @@ Class RecordList
             }
 
             # Final
-            $Out.Add($Out.Count,("|{0}|" -f (@("_") * 118 -join '')))
-            $Out.Add($Out.Count,(@([Char]175) * 120 -join ''))
+            $Out.Add($Out.Count,("|{0}|" -f (@("_") * 119 -join '')))
+            $Out.Add($Out.Count,(@([Char]175) * 121 -join ''))
         }
 
         Return @($Out[0..($Out.Count-1)])
@@ -919,7 +919,7 @@ ________________________________________________________________________________
 | 05/25/20 2329 | 161 | IMG_0637        | P | https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL |
 | 05/25/20 2329 | 162 | IMG_0638        | P | https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY |
 | 05/25/20 2329 | 163 | IMG_0639        | P | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
-| 05/25/20 2335 | 164 | IMG_0640        | P | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
+| 05/25/20 2335 | 164 | IMG_0640        | P | https://drive.google.com/file/d/1V_GJJvpxrxleMcMYuf1ZrwDcxg8XvD3h |
 | 05/25/20 2336 | 165 | IMG_0641        | P | https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS |
 | 05/25/20 2337 | 166 | IMG_0642        | P | https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf |
 | 05/25/20 2337 | 167 | IMG_0643        | P | https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU |
@@ -1190,7 +1190,7 @@ ________________________________________________________________________________
 | 05/25/20 2329 | 016 | IMG_0637        | P | https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL |
 | 05/25/20 2329 | 017 | IMG_0638        | P | https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY |
 | 05/25/20 2329 | 018 | IMG_0639        | P | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
-| 05/25/20 2335 | 019 | IMG_0640        | P | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
+| 05/25/20 2335 | 019 | IMG_0640        | P | https://drive.google.com/file/d/1V_GJJvpxrxleMcMYuf1ZrwDcxg8XvD3h |
 | 05/25/20 2336 | 020 | IMG_0641        | P | https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS |
 | 05/25/20 2337 | 021 | IMG_0642        | P | https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf |
 | 05/25/20 2337 | 022 | IMG_0643        | P | https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU |
