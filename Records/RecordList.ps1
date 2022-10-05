@@ -245,6 +245,106 @@ Class RecordList
 
         Return $This.Output[$Index]
     }
+    [String] Pad([String]$Label,[String]$String)
+    {
+        $T  = ""
+        $T += $Label
+        $T += $String
+        Write-Host $T
+        $T += @(" ") * (119-$T.Length) -join ''
+        $T += "|"
+        Return $T
+    }
+    [String[]] GetOutput()
+    {
+        $Out = @{ }
+        ForEach ($Item in $This.Output)
+        {
+            $Out.Add($Out.Count,(@("_") * 120 -join ''))
+            $Out.Add($Out.Count,("|{0}|" -f (@([char]175) * 118 -join '')))
+            $Out.Add($Out.Count,$This.Pad("| Index     : ",$Item.Index))
+            $Out.Add($Out.Count,$This.Pad("| Name      : ",$Item.Name))
+            $Out.Add($Out.Count,$This.Pad("| Date      : ",$Item.Date))
+            $Out.Add($Out.Count,$This.Pad("| Receive   : ",$Item.Receive))
+            $Out.Add($Out.Count,$This.Pad("| Transmit  : ",$Item.Transmit))
+            $Out.Add($Out.Count,$This.Pad("| Elapsed   : ",$Item.Elapsed))
+
+            # Responder Prep
+            $Out.Add($Out.Count,$This.Pad("| Responder : ","($($Item.Responder.Count))"))
+            $Max        = @{ 
+
+                Index   = ($Item.Responder.Output.Index | Sort-Object Length)[-1]
+                Name    = ($Item.Responder.Output.Name  | Sort-Object Length)[-1]
+                Unit    = ($Item.Responder.Output.Unit  | Sort-Object Length)[-1]
+            }
+            $Max.Length = 2 + $Max.Index.Length + 3 + $Max.Name.Length + 3 + $Max.Unit.Length + 2
+            
+            # Responder Content
+            $Out.Add($Out.Count,$This.Pad("| ",(@("_") * $Max.Length -join '')))
+            ForEach ($Responder in $Item.Responder.Output)
+            {
+                $N      = $Responder.Name
+                $U      = $Responder.Unit
+                If ($N.Length -lt $Max.Name.Length)
+                {
+                    $N += (@(" ") * ($Max.Name.Length-$N.Length) -join '')
+                }
+                If ($U.Length -lt $Max.Unit.Length)
+                {
+                    $U += (@(" ") * ($Max.Unit.Length-$U.Length) -join '')
+                }
+
+                $Out.Add($Out.Count,$This.Pad("| ",("| {0:d$($Max.Index.Length)} | {1} | {2} |" -f $Responder.Index, $N, $U)))
+            }
+            $Out.Add($Out.Count,$This.Pad("| ",(@([Char]175) * $Max.Length -join '')))
+
+            # Entry Prep
+            $Out.Add($Out.Count,$This.Pad("| Entry     : ","($($Item.Entry.Count))"))
+            $Max       = @{ 
+                
+                Index   = ($Item.Entry.Output.Index | Sort-Object Length)[-1]
+                Name    = ($Item.Entry.Output.Name  | Sort-Object Length)[-1]
+                Url     = ($Item.Entry.Output.Url   | Sort-Object Length)[-1]
+            }
+            $Max.Length = 2 + $Max.Index.Length + 3 + $Max.Name.Length + 3 + $Max.Url.Length + 2
+
+            # Entry Content
+            $Out.Add($Out.Count,$This.Pad("| ",(@("_") * $Max.Length -join '')))
+            ForEach ($Entry in $Item.Entry.Output)
+            {
+                $N      = $Entry.Name
+                $U      = $Entry.Url
+                If ($N.Length -lt $Max.Name.Length)
+                {
+                    $N += (@(" ") * ($Max.Name.Length-$N.Length) -join "")
+                }
+
+                If ($U.Length -lt $Max.Unit.Length)
+                {
+                    $U += (@(" ") * ($Max.Url.Length-$U.Length) -join "")
+                }
+
+                $Out.Add($Out.Count,$This.Pad("| ",("| {0:d$($Max.Index.Length)} | {1} | {2} |" -f $Entry.Index, $N, $U)))
+            }
+            $Out.Add($Out.Count,$This.Pad("| ",(@([Char]175) * $Max.Length -join '')))
+
+            # Narrative Prep
+            $Out.Add($Out.Count,$This.Pad("| Narrative : ","($($Item.Narrative.Count))"))
+            $Out.Add($Out.Count,("|-{0}|" -f (@(" -")*58 -join '')))
+
+            # Narrative Content
+            ForEach ($Item in $Item.Narrative.Output.Content)
+            {
+                $Out.Add($Out.Count,$This.Pad("| ",$Item))
+            }
+
+            # Final
+            $Out.Add($Out.Count,("|{0}|" -f (@("_") * 118 -join '')))
+            $Out.Add($Out.Count,(@([Char]175) * 120 -join ''))
+        }
+
+        Return @($Out[0..($Out.Count-1)])
+    }
 }
 
 $List   = [RecordList]::New("SCSO Record List")
@@ -629,7 +729,8 @@ It can:
 12) allow people to make these things called "PHONE CALLS", 
 13) allow people to combine all of this shit into a NARRATIVE,
 14) record video of a couple of guys using PHANTOM/PEGASUS to try and MURDER somebody,
-15) allow a malicious entity to DISABLE A PARTICULAR DEVICE BECAUSE OF A PARTICULAR VIDEO I RECORDED AT 05/26/20 2343,
+15) allow a malicious entity to DISABLE A PARTICULAR DEVICE BECAUSE OF A PARTICULAR VIDEO I RECORDED AT 
+    05/26/20 2343,
 16) it can even ACCESS THE INTERNET,
 17) upload various files recorded with the device to the INTERNET,
 18) allow a remote party to basically provide an UPLINK without paying to activate the service on the device,
@@ -650,190 +751,190 @@ Nah.
 
 I'm just a lot more intelligent than people FEEL like giving me credit for...?
 And that's just the end of the conversation.
-_____________________________________________________________________________________________________________________
-|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-| Date/Time     | ### | Name            | / | % | Url (#: Index, /: Type, %: Clarity/Censorship)                    |
-|_______________|_____|_________________|___|___|___________________________________________________________________|
-|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-| 05/23/20 0132 | 000 | IMG_0394        | P | 0 | https://drive.google.com/file/d/1fZRCFjw2bw6BGoWcmyaYvLkMAOLsJVb_ |
-| 05/23/20 0133 | 001 | IMG_0395        | V | 0 | https://youtu.be/3twiZEsyQf0                                      |
-| 05/23/20 0141 | 002 | IMG_0396        | P | 0 | https://drive.google.com/file/d/1oHaFO_1ZSw8Gwx62Yyfla2yw6DB-VF4j |
-| 05/23/20 0150 | 003 | Item[2]-Orig..  | A | 0 | https://drive.google.com/file/d/1QS6HETkJu-9nbnm84auzjOc8j8vAwSHG |
-| 05/23/20 0150 | 004 | Item[2]-Treble  | A | 0 | https://drive.google.com/file/d/1J6b5AiIt8p5vswuzLflpzslK4N3DFrC7 |
-| 05/23/20 0203 | 005 | IMG_0397        | V | 0 | https://youtu.be/V-_YqedKZb8                                      |
-| 05/23/20 0214 | 006 | IMG_0398        | P | 0 | https://drive.google.com/file/d/1gFH2Y5CZSWeTdqMkUD7S7TqZhgCoygtm |
-| 05/23/20 0326 | 007 | IMG_0399        | P | 0 | https://drive.google.com/file/d/1jhrDsc_iyILUxs_zkqzJFhUOuQcNPvjz |
-| 05/23/20 0326 | 008 | IMG_0400        | P | 0 | https://drive.google.com/file/d/16Cd437RbCWho7nITf6uxRMRH5KvXPUng |
-| 05/23/20 0326 | 009 | IMG_0401        | P | 0 | https://drive.google.com/file/d/1lvON1Gqu-RFFbGQr6LcF13teNOBUC_mu |
-| 05/23/20 1715 | 010 | IMG_0402        | P | 0 | https://drive.google.com/file/d/1zm1jZDyCq_TLmyllwu_S4r8hNcIqS0M4 |
-| 05/23/20 1200 | 011 | Virtual Tour    | V | 0 | https://youtu.be/HT4p28bRhqc                                      |
-| 05/23/20 1717 | 012 | IMG_0403        | V | 0 | https://youtu.be/5guDmpaCyAM                                      |
-| 05/23/20 1734 | 013 | IMG_0404        | V | 0 | https://youtu.be/16dOquXbOrk                                      |
-| 05/23/20 1747 | 014 | IMG_0404        | V | 0 | https://youtu.be/g0ACtMIPrRo                                      |
-| 05/23/20 1755 | 015 | IMG_0404        | V | 0 | https://youtu.be/3rWdDtYC1Ac                                      |
-| 05/23/20 1808 | 016 | IMG_0407        | P | 0 | https://drive.google.com/file/d/1XdS2qBXYoEML4EbuZK_BDQkSU2VLlei_ |
-| 05/23/20 1808 | 017 | IMG_0408        | P | 0 | https://drive.google.com/file/d/1T4ReQ5dfr5SQ3r6XGnE3al3eDF99plc5 | 
-| 05/23/20 1808 | 018 | IMG_0409        | V | 0 | https://drive.google.com/file/d/1iZWZyXNJROfHaYCboY1CreK0VrWTMwsQ |
-| 05/23/20 2015 | 019 | IMG_0410        | P | 0 | https://drive.google.com/file/d/17A8VrKhf6FoijaCqYz3ElKh7KXCtmAIe |
-| 05/23/20 2015 | 020 | IMG_0411        | P | 0 | https://drive.google.com/file/d/1gYQRrg1bl7M2OyxcS4N65ttcF2L-x1PY |
-| 05/23/20 2022 | 021 | IMG_0412        | V | 0 | https://drive.google.com/file/d/1Exs2UsfQ13CKS4BE2CZU8kvMNpqH0tld |
-| 05/23/20 2040 | 022 | IMG_0413        | V | 0 | https://youtu.be/OZD6rBbDboA                                      |
-| 05/23/20 2109 | 023 | IMG_0414        | P | 1 | https://drive.google.com/file/d/1c7Ffv6EO0Jw9d1Jv-zYWNMmnoVrdI2-C |
-| 05/23/20 2115 | 024 | IMG_0415        | P | 2 | https://drive.google.com/file/d/13W3kV7PQtq8QfoENrHeWIomwIdyNvFFc |
-| 05/23/20 2118 | 025 | IMG_0416        | V | 0 | https://drive.google.com/file/d/1jJh0rG2KUtEhvqw-0FEoZ6lBXsnkyjBO |
-| 05/23/20 2209 | 026 | IMG_0418        | P | 0 | https://drive.google.com/file/d/1o0EN-_zJ2NFMpIJ62TEXt_ZzhTpIcP-J |
-| 05/23/20 2227 | 027 | IMG_0419        | P | 1 | https://drive.google.com/file/d/1ylXx3-_yqXO1aZgxs591WCkw97aGNXoJ |
-| 05/23/20 2227 | 028 | IMG_0420        | P | 1 | https://drive.google.com/file/d/1aotzEtVIzOWZpHNGBGAiKMu4ptd83RUV |
-| 05/23/20 2234 | 029 | IMG_0421        | P | 1 | https://drive.google.com/file/d/10EMq8WVC0i1JeBunE1kL6-gKe7wEB2Ah |
-| 05/23/20 2246 | 030 | IMG_0422        | P | 1 | https://drive.google.com/file/d/1soT3MzZ0kZa_wmIj-EhXtiKL5zuAZ-hr |
-| 05/23/20 2246 | 031 | IMG_0423        | P | 0 | https://drive.google.com/file/d/1k_X9QtxzjRZGVPVUHaA-gZLoPST5Bdmc |
-| 05/23/20 2246 | 032 | IMG_0424        | P | 3 | https://drive.google.com/file/d/1GBjx1ErbzNXOxJo0Uqa8TZ1YnJbhZJVe |
-| 05/23/20 2247 | 033 | IMG_0425        | P | 0 | https://drive.google.com/file/d/1o4a0TPY-FMDgRisNjd20VWvHv2sPVBVP |
-| 05/23/20 2303 | 034 | IMG_0426        | P | 1 | https://drive.google.com/file/d/1JHKgCHT7kgT3cLiAJw1qbk2auIT5EZIt |
-| 05/23/20 2304 | 035 | IMG_0427        | P | 1 | https://drive.google.com/file/d/1WFAOMoUl8H0e22r4Q2vo0hEc0JgxGBoz |
-| 05/23/20 2314 | 036 | IMG_0428        | V | 0 | https://drive.google.com/file/d/1uyWjou_6Yadc-RKI3kIqvV7PtIJZekk5 | 
-| 05/23/29 2314 | 037 | IMG_0429        | P | 2 | https://drive.google.com/file/d/1YlOSkwqNxHNOKHo-JKqKiCp-iaPYetqt |
-| 05/23/20 2316 | 038 | IMG_0430 (1/2)  | V | 1 | https://youtu.be/7ZjLXsW-USc                                      |
-| 05/23/20 2316 | 039 | IMG_0430 (2/2)  | V | 1 | https://drive.google.com/file/d/1kuaybwEfIUYTd06wf76WRHIBZtdtphBV |
-| 05/23/20 2320 | 040 | IMG_0431        | P | 2 | https://drive.google.com/file/d/1yfQd_p5XBCLVtt9Uoryac49BPopGvu3O |
-| 05/23/20 2323 | 041 | IMG_0432        | V | 0 | https://drive.google.com/file/d/1K16SXHJhaFeive21taFWquLioLSEjc6i |
-| 05/23/20 2325 | 042 | IMG_0433        | P | 0 | https://drive.google.com/file/d/1eU83YqoKOlgpqcPImmey3DuIljwaZmGi |
-| 05/23/20 2325 | 043 | IMG_0434        | P | 0 | https://drive.google.com/file/d/1rNCcFKCxH2QVdaW3moQbtYYFTCFGVzpd |
-| 05/23/20 2328 | 044 | IMG_0435        | P | 0 | https://drive.google.com/file/d/17qBZGnwK3TEQUNHlExOzBnSA9Me_Atqf |
-| 05/23/20 2329 | 045 | IMG_0436        | P | 0 | https://drive.google.com/file/d/17DDVj9j29oa0HMMEc_DXZv1kYNu2wfzy |
-| 05/23/20 2332 | 046 | IMG_0437        | P | 0 | https://drive.google.com/file/d/1f_bCTTUwcncWfVWFI4GgeoDAkmVwx-eX |
-| 05/23/20 2332 | 047 | IMG_0438        | P | 0 | https://drive.google.com/file/d/1IIr21Z94r9YNMhciVKr47jlwqrXETPk8 |
-| 05/23/20 2333 | 048 | IMG_0439        | P | 0 | https://drive.google.com/file/d/19SeWplJxmZ8X0t1lkKxIqTHzXAeOBTem |
-| 05/23/20 2339 | 049 | IMG_0440        | P | 0 | https://drive.google.com/file/d/1OXsTi4B0fwproUMHJYEnGGav0toGGyAY |
-| 05/23/20 2339 | 050 | IMG_0441        | P | 0 | https://drive.google.com/file/d/1mfVdLqrSMN1bpCyFtK4Iu9wPnBAEmVYs |
-| 05/23/20 2339 | 051 | IMG_0442        | P | 0 | https://drive.google.com/file/d/1rmRrmNMu0-FJuuP1Xc0K6aCMYop5N5Vq | 
-| 05/23/20 2357 | 052 | IMG_0443        | P | 0 | https://drive.google.com/file/d/1d4U_CbDqZCQYDaFKsVDhnah2sk7GTVET |
-| 05/23/20 2357 | 053 | IMG_0444        | P | 0 | https://drive.google.com/file/d/18yhgrBqZMNpmtrwU1xs9g-FosXJcbUa1 |
-| 05/23/20 2357 | 054 | IMG_0445        | P | 2 | https://drive.google.com/file/d/1mLIfSI1htx_jts6gOomS5aos70nmqbcF |
-| 05/23/20 2357 | 055 | IMG_0446        | P | 0 | https://drive.google.com/file/d/1hZqArWA8Juvw1WySSD1J5gfx9xGALq9Z |
-| 05/23/20 2359 | 056 | IMG_0447        | P | 0 | https://drive.google.com/file/d/1R-6g3k3ZIaIM6pvoJPFmCDdKy6N2cpAD |
-| 05/23/20 2359 | 057 | IMG_0448        | P | 0 | https://drive.google.com/file/d/1ob_d2qtZi5hyo7ROD3CuAh7ehejFKsy3 |
-| 05/23/20 2359 | 058 | IMG_0449        | P | 0 | https://drive.google.com/file/d/1CzPZ5M59yWuwguyYVVu921CHFDHA1c3y |
-| 05/23/20 2359 | 059 | IMG_0453        | P | 3 | https://drive.google.com/file/d/1W6gJhjCKDtbuq9lTnQPzJZereAnga3zT |
-| 05/24/20 0000 | 060 | IMG_0455        | P | 1 | https://drive.google.com/file/d/1Tu5ft89sJ_tR6RayQ79bSOk7F_QxsbOK |
-| 05/24/20 0001 | 061 | IMG_0456        | P | 0 | https://drive.google.com/file/d/12VV2ObukK_3DXED23Nsi1GxMbzkm9aLN |
-| 05/24/20 0002 | 062 | IMG_0457        | P | 0 | https://drive.google.com/file/d/1EabOp3qnFkaRR_GYmStsJUkbugud1zom |
-| 05/24/20 0003 | 063 | IMG_0458        | P | 0 | https://drive.google.com/file/d/115TRiUsJS55zya6qyVv1ZaQZ3lVUpGkh |
-| 05/24/20 0003 | 064 | IMG_0459        | P | 0 | https://drive.google.com/file/d/1kWVkx2wsxyQOxihEI-oHTwVEQbKFcVnW |
-| 05/24/20 0004 | 065 | IMG_0460        | P | 1 | https://drive.google.com/file/d/1d0sTQLvJSuobxgKw5j4FVVDnhBqxXdzo |
-| 05/24/20 0005 | 066 | IMG_0461        | P | 0 | https://drive.google.com/file/d/14LiGWkW4hTZvk6JfkfFyPZyIhxGEBK-_ |
-| 05/24/20 1341 | 067 | 2020 05 24 1341 | V | 0 | https://youtu.be/i88AJb_5zY4                                      |
-| 05/24/20 1759 | 068 | IMG_0468        | P | 0 | https://drive.google.com/file/d/1fNYPWpuJgyVfLsZd3Ha_0GfaPGWimvYc | 
-| 05/24/20 1800 | 069 | IMG_0469        | P | 0 | https://drive.google.com/file/d/1vgeZIIVmzBiJIOzXWfrb45qnmV_WQAwI |
-| 05/24/20 1801 | 070 | IMG_0470        | P | 0 | https://drive.google.com/file/d/1R7VNKSRzuKM-tIJwzdo7td2h6ev74j0K |
-| 05/24/20 1801 | 071 | IMG_0471        | P | 0 | https://drive.google.com/file/d/1KLSxinDnryuHw9sgwLJtPa87A0BW2Se5 |
-| 05/24/20 1802 | 072 | IMG_0472        | P | 0 | https://drive.google.com/file/d/1yjmMBTRHoC5wSRMWWrDDmGbGgkkyUx7A |
-| 05/24/20 1803 | 073 | IMG_0473        | P | 0 | https://drive.google.com/file/d/1Dwrvg_lk-uYfLVRALKGiLo756SMgwWE- |
-| 05/24/20 1810 | 074 | IMG_0477        | P | 0 | https://drive.google.com/file/d/1ex0klAW_MeYpdd5Q1trtVcLJFp2tlTUx |
-| 05/24/20 1849 | 075 | IMG_0493        | P | 0 | https://drive.google.com/file/d/1r_LYeBOis15QpVtW5WQFEB7IRoMjPgGr |
-| 05/24/20 1850 | 076 | IMG_0495        | P | 0 | https://drive.google.com/file/d/1AZcx41RWlG7nDg9EcEfYxpasPiUny3eL |
-| 05/24/20 1853 | 077 | IMG_0496        | P | 0 | https://drive.google.com/file/d/1bi8tB-eidAFVxbhdVpvyI-9OESmPhk0o |
-| 05/24/20 1854 | 078 | IMG_0497        | P | 0 | https://drive.google.com/file/d/1cUV8oy8TIciNC4mLYnAKsjHVd8KtHly_ |
-| 05/24/20 1854 | 079 | IMG_0498        | P | 0 | https://drive.google.com/file/d/1paLMRKq5YmDHt2ClWUgzXeEtpbJWpFEm |
-| 05/24/20 1904 | 080 | IMG_0499        | P | 0 | https://drive.google.com/file/d/13cG66dGN3M9kcdBex4yo7Nca5-tPFgLH |
-| 05/24/20 1904 | 081 | IMG_0500        | P | 0 | https://drive.google.com/file/d/1f6NM20A3PfRtb54wOQrU3Vq5wM_LGz14 |
-| 05/24/20 1907 | 082 | IMG_0501        | P | 0 | https://drive.google.com/file/d/1QIhQQa_Zq-lrR5qdtlfxJqkj9j9TErYy |
-| 05/24/20 1907 | 083 | IMG_0502        | P | 0 | https://drive.google.com/file/d/1W8A-OEX3fJn6J253TPhvd_Ps8A5w_pIT |
-| 05/24/20 1907 | 084 | IMG_0503        | P | 0 | https://drive.google.com/file/d/1yDZ4O_YK8UXc-prEGVNE_4o4pWweG6_z |
-| 05/24/20 1907 | 085 | IMG_0504        | P | 0 | https://drive.google.com/file/d/1Ds8pxZOpGYbkxmyAPxAw7aA-N1ngw3pe |
-| 05/24/20 1910 | 086 | IMG_0505        | P | 0 | https://drive.google.com/file/d/1agONCE8WPnlM_MLc9hEEinygOxHdPdKJ |
-| 05/24/20 1910 | 087 | IMG_0506        | P | 0 | https://drive.google.com/file/d/1tazuzEVemWTZTRJmjyF-_s_-w_Afj4SU |
-| 05/24/20 1925 | 088 | IMG_0508        | P | 0 | https://drive.google.com/file/d/1CywfAKtQQy7wm_6kBE442dk8wlN0GcCF |
-| 05/24/20 1952 | 089 | IMG_0512        | P | 0 | https://drive.google.com/file/d/1ow1cCPgUDENOvW16afXsxXzkQyJTZOQr |
-| 05/24/20 1952 | 090 | IMG_0513        | P | 0 | https://drive.google.com/file/d/1M73qUy8w7HXqL0cdIGl7_WLdDJPmOHiS |
-| 05/24/20 2049 | 091 | IMG_0525        | P | 0 | https://drive.google.com/file/d/1Ymm3YpKgYlSMs58B6z-2HeqYmQXYIVgt |
-| 05/24/20 2049 | 092 | IMG_0537        | P | 1 | https://drive.google.com/file/d/1_cWYuUbVfw-7TYH6sQAwfv_rpP5Mp1QY |
-| 05/24/20 2050 | 093 | IMG_0538        | P | 2 | https://drive.google.com/file/d/1E9hqXeb8RbyJKYgI94KtiGB79_fY5_03 |
-| 05/24/20 2050 | 094 | IMG_0539        | P | 1 | https://drive.google.com/file/d/1rmjA0c5duSUDkk5K8CNc7Wt3GQr7u4hG |
-| 05/24/20 2050 | 095 | IMG_0540        | P | 0 | https://drive.google.com/file/d/1sxauHH3gInbUg2s-gueRANRhHtVih6WD |
-| 05/24/20 2052 | 096 | IMG_0541        | P | 0 | https://drive.google.com/file/d/1J6hPh8i_8ko7A0Eqb8m8u8rb15gzveCj |
-| 05/24/20 2052 | 097 | IMG_0542        | P | 1 | https://drive.google.com/file/d/1gxtf0rjhwnwyHVUnEmi3Xgg7ACkRGFEP |
-| 05/24/20 2055 | 098 | IMG_0543        | P | 1 | https://drive.google.com/file/d/10mahQTnFZ4Yq3gysEVGjrajuELEXiSXu |
-| 05/24/20 2055 | 099 | IMG_0544        | P | 1 | https://drive.google.com/file/d/1t8g1PuC2TZ0dJv2-cjWal9sHfgR1ut5f |
-| 05/24/20 2149 | 100 | IMG_0546        | P | 0 | https://drive.google.com/file/d/1Kzn8IPwaaP1aHUL2yv4BmsMStyNWLpNX |
-| 05/24/20 2159 | 101 | IMG_0549        | P | 3 | https://drive.google.com/file/d/1VvOtkA8bT2Un20kWQA5xbp5P7F1n1i9E |
-| 05/24/20 2159 | 102 | IMG_0550        | P | 0 | https://drive.google.com/file/d/1MlrZx1HlqygJV2oh9VPz7n-OR7DBpl1H |
-| 05/24/20 2159 | 103 | IMG_0551        | P | 0 | https://drive.google.com/file/d/1v-AYHZAaUn2wKboy_ShX5wBIfpTZc4fL | 
-| 05/24/20 2159 | 104 | IMG_0552        | P | 3 | https://drive.google.com/file/d/1zNC_LckOws3yXsJThY4ZrdW1o1jgBmJX |
-| 05/24/20 2159 | 105 | IMG_0553        | P | 3 | https://drive.google.com/file/d/1OYLrWTKvkISFaCMENCpXh7TBqQ5HqTae |
-| 05/24/20 2159 | 106 | IMG_0554        | P | 1 | https://drive.google.com/file/d/1WJ-7AfxRYOhhJ96ebnl5jwVXjpCX5pWg |
-| 05/24/20 2200 | 107 | IMG_0555        | P | 0 | https://drive.google.com/file/d/127CAZ15c51ei5MSegvnPM0HuUSABFfNq |
-| 05/24/20 2200 | 108 | IMG_0556        | P | 0 | https://drive.google.com/file/d/1ivlJB0sh9Yh0YMn9GgV_-XWTg-2dJNel |
-| 05/24/20 2200 | 109 | IMG_0557        | P | 1 | https://drive.google.com/file/d/1iEbmL6pUM6qKvEIIVERJX0MFwsLOpozi |
-| 05/24/20 2200 | 110 | IMG_0558        | P | 0 | https://drive.google.com/file/d/1_lTBCXldsNe4kN92mlvTveSpIOlqQqo_ |
-| 05/24/20 2200 | 111 | IMG_0560        | P | 1 | https://drive.google.com/file/d/1GIyTQ8xyWUSZfzfuFl5Y7NgfR7TgQdno |
-| 05/24/20 2200 | 112 | IMG_0564        | P | 3 | https://drive.google.com/file/d/1ZoOpMLbj19tsPDj3RwVRsdtkaWT_WomD |
-| 05/24/20 2201 | 113 | IMG_0565        | P | 1 | https://drive.google.com/file/d/1gx9F_QPd2uzU5UPqCYife46AHgyAYDHV |
-| 05/24/20 2201 | 114 | IMG_0566        | P | 0 | https://drive.google.com/file/d/1zFvWcgV3ojqsohWjDiQBdj0myvw6JDpQ |
-| 05/24/20 2201 | 115 | IMG_0567        | P | 0 | https://drive.google.com/file/d/1qjj5mCE_bG9PLauJNJTAPfVPmigUcKb3 |
-| 05/24/20 2239 | 116 | IMG_0585        | P | 0 | https://drive.google.com/file/d/1y4f8SmcgZf_vJ8ohXVSFFWQlC19QEDZe |
-| 05/24/20 2242 | 117 | IMG_0590        | P | 0 | https://drive.google.com/file/d/1_QUY6XrDIBIJJvjaYw02B-1OdEOXm5zk |
-| 05/24/20 2243 | 118 | IMG_0591        | P | 3 | https://drive.google.com/file/d/1BrGQnWB2xPNudtUdItlJm29PqQMVltGh |
-| 05/24/20 2248 | 119 | IMG_0594        | P | 1 | https://drive.google.com/file/d/10r3SnCMggf2BRmlST4fdX5f104mwNxau |
-| 05/24/20 2249 | 120 | IMG_0595        | P | 1 | https://drive.google.com/file/d/1BnoTT0-IHk0TNvIDIYPj_H4q6fk4EkF7 |
-| 05/24/20 2249 | 121 | IMG_0596        | P | 1 | https://drive.google.com/file/d/1aZFTnKVwQXakRMHbCt9WIpKxpJUV2Q8G |
-| 05/24/20 2249 | 122 | IMG_0597        | P | 0 | https://drive.google.com/file/d/11GDlXvkiMVnt4iu8zqhzphbEjogAkvqY |
-| 05/24/20 2249 | 123 | IMG_0598        | P | 0 | https://drive.google.com/file/d/1eaT4t3viNY_j02BMbV_TxJJ-e2zCPtjq |
-| 05/24/20 2250 | 124 | IMG_0599        | P | 0 | https://drive.google.com/file/d/1VqlgtK2ER65_28Bpr7dJboIg8nzNOzMY |
-| 05/24/20 2250 | 125 | IMG_0600        | P | 1 | https://drive.google.com/file/d/1fElcWAHc6GdZVw6XsDfJZSMeM6f0e6EN |
-| 05/24/20 2250 | 126 | IMG_0601        | P | 1 | https://drive.google.com/file/d/15ZtekTtGuKWTrJ2brozUabQhlcURu7Xe |
-| 05/24/20 2250 | 127 | IMG_0602        | P | 0 | https://drive.google.com/file/d/13KQTzbTLQ7NNzS7OZ4Zmx63pgU9gF7au |
-| 05/24/20 2250 | 128 | IMG_0603        | P | 0 | https://drive.google.com/file/d/1HPdGPltH9_Nyr9GtFqYKn509z6i5ZoGF |
-| 05/24/20 2251 | 129 | IMG_0604        | P | 0 | https://drive.google.com/file/d/1p_tdU-9lQ391UxsNfixLg71F_M3aGchz |
-| 05/24/20 2251 | 130 | IMG_0605        | P | 0 | https://drive.google.com/file/d/18DeG9RcavSV42907L1kcHuTgnfC59LfG |
-| 05/24/20 2251 | 131 | IMG_0606        | P | 1 | https://drive.google.com/file/d/1U0A_lsgspUeU7AJQ9m-KebOPdkKHJsRS |
-| 05/24/20 2253 | 132 | IMG_0607        | P | 1 | https://drive.google.com/file/d/1jNHmvr66KZMoX0JiT3Cbs43Buu6zADIE |
-| 05/24/20 2255 | 133 | IMG_0608        | P | 1 | https://drive.google.com/file/d/1hv3JhYKD--0BQg-x66sO0fomgAy3kFFi |
-| 05/24/20 2255 | 134 | IMG_0609        | P | 1 | https://drive.google.com/file/d/1shrLewHORf86sf4TIp3ykAe6WosZ4Q2J |
-| 05/24/20 2256 | 135 | IMG_0611        | P | 1 | https://drive.google.com/file/d/1UfA4j-wAO1VfehUwUUJWOGJc6N9SCMFl |
-| 05/24/20 2256 | 136 | IMG_0612        | P | 0 | https://drive.google.com/file/d/1qhhH-kHGxCqUuR-8BLWjBzONOWvoEoMB |
-| 05/24/20 2256 | 137 | IMG_0613        | P | 1 | https://drive.google.com/file/d/1RzZixkCkQrD4raxRBDmehTLwTzgRLoee |
-| 05/24/20 2256 | 138 | IMG_0614        | P | 0 | https://drive.google.com/file/d/154R8Vpi-v72jyEG7Roh8hE_Ds5jLiqCm |
-| 05/24/20 2256 | 139 | IMG_0615        | P | 0 | https://drive.google.com/file/d/1d4LjeUQ-XqsiQMayFxdfq6ecC1wGWgH9 |
-| 05/24/20 2256 | 140 | IMG_0616        | P | 1 | https://drive.google.com/file/d/1M83c0dFf6HxY8YgOc68O8ydE_pLrvU7i |
-| 05/24/20 2257 | 141 | IMG_0617        | P | 0 | https://drive.google.com/file/d/1lk98_0EvCmYMaew4KY2f50iE6gfJRM92 |
-| 05/24/20 2257 | 142 | IMG_0618        | P | 1 | https://drive.google.com/file/d/1vHsJwwj-9E135C2jR1v5Elo6I65tnNCG |
-| 05/24/20 2257 | 143 | IMG_0619        | P | 0 | https://drive.google.com/file/d/1mtARlTxYGR7_UvkTBoz31Alfh6EyR9dO |
-| 05/24/20 2257 | 144 | IMG_0620        | P | 0 | https://drive.google.com/file/d/1iun2RJ-pToqMlUUQMdKl_yWvJWxKioON |
-| 05/24/20 2310 | 145 | IMG_0621        | P | 1 | https://drive.google.com/file/d/19qa9qfALiWRJQwTHwvMhmyZldxBmuEZT |
-| 05/24/20 2310 | 146 | Solar Drive     | V | 0 | https://youtu.be/ZgVTHK172O8                                      |
-| 05/25/20 1016 | 147 | IMG_0622        | P | 0 | https://drive.google.com/file/d/1BIO3h4RZxxokfhJmq3BOfgmj4gE6TQ5q |
-| 05/25/20 1016 | 148 | IMG_0623        | P | 0 | https://drive.google.com/file/d/1bpicQ6EP9ndq0DIdIy9mAAhk1X3A1GHq |
-| 05/25/20 1016 | 149 | IMG_0624        | P | 0 | https://drive.google.com/file/d/1cjJLLS8j0Zkwzvy716gCIdx1VW5TU23G |
-| 05/25/20 1028 | 150 | IMG_0625        | V | 0 | https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D |
-| 05/25/20 1054 | 151 | IMG_0627        | V | 0 | https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx |
-| 05/25/20 2135 | 152 | Capital Digi.   | A | 0 | https://drive.google.com/file/d/1Hq-CkA-K3aN5i6uYs6Tle_sLCX5SLHQY |
-| 05/25/20 2205 | 153 | IMG_0629        | P | 0 | https://drive.google.com/file/d/15oD2mMphIvsUCO9hDNUh8EJvQfmWUu5_ |
-| 05/25/20 2205 | 154 | IMG_0630        | P | 0 | https://drive.google.com/file/d/1lIx0RI0ew189GcY5YYYqKPfhNDSkn69g |
-| 05/25/20 2205 | 155 | IMG_0631        | P | 0 | https://drive.google.com/file/d/1BLC2V1WRTRSzJYZWuX7eBFXz37K4CHEP |
-| 05/25/20 2213 | 156 | IMG_0633        | P | 0 | https://drive.google.com/file/d/1mX-iOHH0mew1_iwm7nn3b4ROm4lboreM |
-| 05/25/20 2230 | 157 | Matchless Stove | A | 0 | https://drive.google.com/file/d/14bAzf7pzM_t67Exxm1NoqgHUnYV86pX7 |
-| 05/25/20 2246 | 158 | IMG_0634        | P | 0 | https://drive.google.com/file/d/1OloZklvgG_mbAz9Qc4eNKTrWSTqWwfT0 |
-| 05/25/20 2300 | 159 | Computer Ans.   | A | 0 | https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs |
-| 05/25/20 2329 | 160 | IMG_0636        | P | 0 | https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo |
-| 05/25/20 2329 | 161 | IMG_0637        | P | 0 | https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL |
-| 05/25/20 2329 | 162 | IMG_0638        | P | 0 | https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY |
-| 05/25/20 2329 | 163 | IMG_0639        | P | 0 | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
-| 05/25/20 2335 | 164 | IMG_0640        | P | 0 | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
-| 05/25/20 2336 | 165 | IMG_0641        | P | 0 | https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS |
-| 05/25/20 2337 | 166 | IMG_0642        | P | 0 | https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf |
-| 05/25/20 2337 | 167 | IMG_0643        | P | 0 | https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU |
-| 05/25/20 2337 | 168 | IMG_0644        | P | 0 | https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI |
-| 05/25/20 2337 | 169 | IMG_0645        | P | 0 | https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA |
-| 05/25/20 2343 | 170 | IMG_0646        | P | 0 | https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD |
-| 05/25/20 2343 | 171 | IMG_0647        | Q | 0 | (OBSTRUCTION OF JUSTICE -> 05/26/20 0005 (MISSING VIDEO)          |
-| 05/26/20 0005 | 172 | IMG_0648        | P | 0 | https://drive.google.com/file/d/18xllhtJW6XZhxJOZXWtesywn-Ph37KK9 |
-| 05/26/20 0011 | 173 | IMG_0649        | P | 1 | https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L |
-| 05/26/20 0011 | 174 | IMG_0650        | P | 1 | https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l |
-| 05/26/20 0011 | 175 | IMG_0651        | P | 1 | https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV |
-| 05/26/20 0348 | 176 | IMG_0652        | P | 0 | https://drive.google.com/file/d/1w0Q6lhLYH9ACwQfUosucUE9x5-uAsNzI |
-|_______________|_____|_________________|___|___|___________________________________________________________________|
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+_________________________________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Date/Time     | ### | Name            | / | Url (#: Index, /: Type[P: Photo, V: Video, A: Audio, Q: Queers])  |
+|_______________|_____|_________________|___|___________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| 05/23/20 0132 | 000 | IMG_0394        | P | https://drive.google.com/file/d/1fZRCFjw2bw6BGoWcmyaYvLkMAOLsJVb_ |
+| 05/23/20 0133 | 001 | IMG_0395        | V | https://youtu.be/3twiZEsyQf0                                      |
+| 05/23/20 0141 | 002 | IMG_0396        | P | https://drive.google.com/file/d/1oHaFO_1ZSw8Gwx62Yyfla2yw6DB-VF4j |
+| 05/23/20 0150 | 003 | Item[2]-Orig..  | A | https://drive.google.com/file/d/1QS6HETkJu-9nbnm84auzjOc8j8vAwSHG |
+| 05/23/20 0150 | 004 | Item[2]-Treble  | A | https://drive.google.com/file/d/1J6b5AiIt8p5vswuzLflpzslK4N3DFrC7 |
+| 05/23/20 0203 | 005 | IMG_0397        | V | https://youtu.be/V-_YqedKZb8                                      |
+| 05/23/20 0214 | 006 | IMG_0398        | P | https://drive.google.com/file/d/1gFH2Y5CZSWeTdqMkUD7S7TqZhgCoygtm |
+| 05/23/20 0326 | 007 | IMG_0399        | P | https://drive.google.com/file/d/1jhrDsc_iyILUxs_zkqzJFhUOuQcNPvjz |
+| 05/23/20 0326 | 008 | IMG_0400        | P | https://drive.google.com/file/d/16Cd437RbCWho7nITf6uxRMRH5KvXPUng |
+| 05/23/20 0326 | 009 | IMG_0401        | P | https://drive.google.com/file/d/1lvON1Gqu-RFFbGQr6LcF13teNOBUC_mu |
+| 05/23/20 1715 | 010 | IMG_0402        | P | https://drive.google.com/file/d/1zm1jZDyCq_TLmyllwu_S4r8hNcIqS0M4 |
+| 05/23/20 1200 | 011 | Virtual Tour    | V | https://youtu.be/HT4p28bRhqc                                      |
+| 05/23/20 1717 | 012 | IMG_0403        | V | https://youtu.be/5guDmpaCyAM                                      |
+| 05/23/20 1734 | 013 | IMG_0404        | V | https://youtu.be/16dOquXbOrk                                      |
+| 05/23/20 1747 | 014 | IMG_0404        | V | https://youtu.be/g0ACtMIPrRo                                      |
+| 05/23/20 1755 | 015 | IMG_0404        | V | https://youtu.be/3rWdDtYC1Ac                                      |
+| 05/23/20 1808 | 016 | IMG_0407        | P | https://drive.google.com/file/d/1XdS2qBXYoEML4EbuZK_BDQkSU2VLlei_ |
+| 05/23/20 1808 | 017 | IMG_0408        | P | https://drive.google.com/file/d/1T4ReQ5dfr5SQ3r6XGnE3al3eDF99plc5 | 
+| 05/23/20 1808 | 018 | IMG_0409        | V | https://drive.google.com/file/d/1iZWZyXNJROfHaYCboY1CreK0VrWTMwsQ |
+| 05/23/20 2015 | 019 | IMG_0410        | P | https://drive.google.com/file/d/17A8VrKhf6FoijaCqYz3ElKh7KXCtmAIe |
+| 05/23/20 2015 | 020 | IMG_0411        | P | https://drive.google.com/file/d/1gYQRrg1bl7M2OyxcS4N65ttcF2L-x1PY |
+| 05/23/20 2022 | 021 | IMG_0412        | V | https://drive.google.com/file/d/1Exs2UsfQ13CKS4BE2CZU8kvMNpqH0tld |
+| 05/23/20 2040 | 022 | IMG_0413        | V | https://youtu.be/OZD6rBbDboA                                      |
+| 05/23/20 2109 | 023 | IMG_0414        | P | https://drive.google.com/file/d/1c7Ffv6EO0Jw9d1Jv-zYWNMmnoVrdI2-C |
+| 05/23/20 2115 | 024 | IMG_0415        | P | https://drive.google.com/file/d/13W3kV7PQtq8QfoENrHeWIomwIdyNvFFc |
+| 05/23/20 2118 | 025 | IMG_0416        | V | https://drive.google.com/file/d/1jJh0rG2KUtEhvqw-0FEoZ6lBXsnkyjBO |
+| 05/23/20 2209 | 026 | IMG_0418        | P | https://drive.google.com/file/d/1o0EN-_zJ2NFMpIJ62TEXt_ZzhTpIcP-J |
+| 05/23/20 2227 | 027 | IMG_0419        | P | https://drive.google.com/file/d/1ylXx3-_yqXO1aZgxs591WCkw97aGNXoJ |
+| 05/23/20 2227 | 028 | IMG_0420        | P | https://drive.google.com/file/d/1aotzEtVIzOWZpHNGBGAiKMu4ptd83RUV |
+| 05/23/20 2234 | 029 | IMG_0421        | P | https://drive.google.com/file/d/10EMq8WVC0i1JeBunE1kL6-gKe7wEB2Ah |
+| 05/23/20 2246 | 030 | IMG_0422        | P | https://drive.google.com/file/d/1soT3MzZ0kZa_wmIj-EhXtiKL5zuAZ-hr |
+| 05/23/20 2246 | 031 | IMG_0423        | P | https://drive.google.com/file/d/1k_X9QtxzjRZGVPVUHaA-gZLoPST5Bdmc |
+| 05/23/20 2246 | 032 | IMG_0424        | P | https://drive.google.com/file/d/1GBjx1ErbzNXOxJo0Uqa8TZ1YnJbhZJVe |
+| 05/23/20 2247 | 033 | IMG_0425        | P | https://drive.google.com/file/d/1o4a0TPY-FMDgRisNjd20VWvHv2sPVBVP |
+| 05/23/20 2303 | 034 | IMG_0426        | P | https://drive.google.com/file/d/1JHKgCHT7kgT3cLiAJw1qbk2auIT5EZIt |
+| 05/23/20 2304 | 035 | IMG_0427        | P | https://drive.google.com/file/d/1WFAOMoUl8H0e22r4Q2vo0hEc0JgxGBoz |
+| 05/23/20 2314 | 036 | IMG_0428        | V | https://drive.google.com/file/d/1uyWjou_6Yadc-RKI3kIqvV7PtIJZekk5 | 
+| 05/23/29 2314 | 037 | IMG_0429        | P | https://drive.google.com/file/d/1YlOSkwqNxHNOKHo-JKqKiCp-iaPYetqt |
+| 05/23/20 2316 | 038 | IMG_0430 (1/2)  | V | https://youtu.be/7ZjLXsW-USc                                      |
+| 05/23/20 2316 | 039 | IMG_0430 (2/2)  | V | https://drive.google.com/file/d/1kuaybwEfIUYTd06wf76WRHIBZtdtphBV |
+| 05/23/20 2320 | 040 | IMG_0431        | P | https://drive.google.com/file/d/1yfQd_p5XBCLVtt9Uoryac49BPopGvu3O |
+| 05/23/20 2323 | 041 | IMG_0432        | V | https://drive.google.com/file/d/1K16SXHJhaFeive21taFWquLioLSEjc6i |
+| 05/23/20 2325 | 042 | IMG_0433        | P | https://drive.google.com/file/d/1eU83YqoKOlgpqcPImmey3DuIljwaZmGi |
+| 05/23/20 2325 | 043 | IMG_0434        | P | https://drive.google.com/file/d/1rNCcFKCxH2QVdaW3moQbtYYFTCFGVzpd |
+| 05/23/20 2328 | 044 | IMG_0435        | P | https://drive.google.com/file/d/17qBZGnwK3TEQUNHlExOzBnSA9Me_Atqf |
+| 05/23/20 2329 | 045 | IMG_0436        | P | https://drive.google.com/file/d/17DDVj9j29oa0HMMEc_DXZv1kYNu2wfzy |
+| 05/23/20 2332 | 046 | IMG_0437        | P | https://drive.google.com/file/d/1f_bCTTUwcncWfVWFI4GgeoDAkmVwx-eX |
+| 05/23/20 2332 | 047 | IMG_0438        | P | https://drive.google.com/file/d/1IIr21Z94r9YNMhciVKr47jlwqrXETPk8 |
+| 05/23/20 2333 | 048 | IMG_0439        | P | https://drive.google.com/file/d/19SeWplJxmZ8X0t1lkKxIqTHzXAeOBTem |
+| 05/23/20 2339 | 049 | IMG_0440        | P | https://drive.google.com/file/d/1OXsTi4B0fwproUMHJYEnGGav0toGGyAY |
+| 05/23/20 2339 | 050 | IMG_0441        | P | https://drive.google.com/file/d/1mfVdLqrSMN1bpCyFtK4Iu9wPnBAEmVYs |
+| 05/23/20 2339 | 051 | IMG_0442        | P | https://drive.google.com/file/d/1rmRrmNMu0-FJuuP1Xc0K6aCMYop5N5Vq | 
+| 05/23/20 2357 | 052 | IMG_0443        | P | https://drive.google.com/file/d/1d4U_CbDqZCQYDaFKsVDhnah2sk7GTVET |
+| 05/23/20 2357 | 053 | IMG_0444        | P | https://drive.google.com/file/d/18yhgrBqZMNpmtrwU1xs9g-FosXJcbUa1 |
+| 05/23/20 2357 | 054 | IMG_0445        | P | https://drive.google.com/file/d/1mLIfSI1htx_jts6gOomS5aos70nmqbcF |
+| 05/23/20 2357 | 055 | IMG_0446        | P | https://drive.google.com/file/d/1hZqArWA8Juvw1WySSD1J5gfx9xGALq9Z |
+| 05/23/20 2359 | 056 | IMG_0447        | P | https://drive.google.com/file/d/1R-6g3k3ZIaIM6pvoJPFmCDdKy6N2cpAD |
+| 05/23/20 2359 | 057 | IMG_0448        | P | https://drive.google.com/file/d/1ob_d2qtZi5hyo7ROD3CuAh7ehejFKsy3 |
+| 05/23/20 2359 | 058 | IMG_0449        | P | https://drive.google.com/file/d/1CzPZ5M59yWuwguyYVVu921CHFDHA1c3y |
+| 05/23/20 2359 | 059 | IMG_0453        | P | https://drive.google.com/file/d/1W6gJhjCKDtbuq9lTnQPzJZereAnga3zT |
+| 05/24/20 0000 | 060 | IMG_0455        | P | https://drive.google.com/file/d/1Tu5ft89sJ_tR6RayQ79bSOk7F_QxsbOK |
+| 05/24/20 0001 | 061 | IMG_0456        | P | https://drive.google.com/file/d/12VV2ObukK_3DXED23Nsi1GxMbzkm9aLN |
+| 05/24/20 0002 | 062 | IMG_0457        | P | https://drive.google.com/file/d/1EabOp3qnFkaRR_GYmStsJUkbugud1zom |
+| 05/24/20 0003 | 063 | IMG_0458        | P | https://drive.google.com/file/d/115TRiUsJS55zya6qyVv1ZaQZ3lVUpGkh |
+| 05/24/20 0003 | 064 | IMG_0459        | P | https://drive.google.com/file/d/1kWVkx2wsxyQOxihEI-oHTwVEQbKFcVnW |
+| 05/24/20 0004 | 065 | IMG_0460        | P | https://drive.google.com/file/d/1d0sTQLvJSuobxgKw5j4FVVDnhBqxXdzo |
+| 05/24/20 0005 | 066 | IMG_0461        | P | https://drive.google.com/file/d/14LiGWkW4hTZvk6JfkfFyPZyIhxGEBK-_ |
+| 05/24/20 1341 | 067 | 2020 05 24 1341 | V | https://youtu.be/i88AJb_5zY4                                      |
+| 05/24/20 1759 | 068 | IMG_0468        | P | https://drive.google.com/file/d/1fNYPWpuJgyVfLsZd3Ha_0GfaPGWimvYc | 
+| 05/24/20 1800 | 069 | IMG_0469        | P | https://drive.google.com/file/d/1vgeZIIVmzBiJIOzXWfrb45qnmV_WQAwI |
+| 05/24/20 1801 | 070 | IMG_0470        | P | https://drive.google.com/file/d/1R7VNKSRzuKM-tIJwzdo7td2h6ev74j0K |
+| 05/24/20 1801 | 071 | IMG_0471        | P | https://drive.google.com/file/d/1KLSxinDnryuHw9sgwLJtPa87A0BW2Se5 |
+| 05/24/20 1802 | 072 | IMG_0472        | P | https://drive.google.com/file/d/1yjmMBTRHoC5wSRMWWrDDmGbGgkkyUx7A |
+| 05/24/20 1803 | 073 | IMG_0473        | P | https://drive.google.com/file/d/1Dwrvg_lk-uYfLVRALKGiLo756SMgwWE- |
+| 05/24/20 1810 | 074 | IMG_0477        | P | https://drive.google.com/file/d/1ex0klAW_MeYpdd5Q1trtVcLJFp2tlTUx |
+| 05/24/20 1849 | 075 | IMG_0493        | P | https://drive.google.com/file/d/1r_LYeBOis15QpVtW5WQFEB7IRoMjPgGr |
+| 05/24/20 1850 | 076 | IMG_0495        | P | https://drive.google.com/file/d/1AZcx41RWlG7nDg9EcEfYxpasPiUny3eL |
+| 05/24/20 1853 | 077 | IMG_0496        | P | https://drive.google.com/file/d/1bi8tB-eidAFVxbhdVpvyI-9OESmPhk0o |
+| 05/24/20 1854 | 078 | IMG_0497        | P | https://drive.google.com/file/d/1cUV8oy8TIciNC4mLYnAKsjHVd8KtHly_ |
+| 05/24/20 1854 | 079 | IMG_0498        | P | https://drive.google.com/file/d/1paLMRKq5YmDHt2ClWUgzXeEtpbJWpFEm |
+| 05/24/20 1904 | 080 | IMG_0499        | P | https://drive.google.com/file/d/13cG66dGN3M9kcdBex4yo7Nca5-tPFgLH |
+| 05/24/20 1904 | 081 | IMG_0500        | P | https://drive.google.com/file/d/1f6NM20A3PfRtb54wOQrU3Vq5wM_LGz14 |
+| 05/24/20 1907 | 082 | IMG_0501        | P | https://drive.google.com/file/d/1QIhQQa_Zq-lrR5qdtlfxJqkj9j9TErYy |
+| 05/24/20 1907 | 083 | IMG_0502        | P | https://drive.google.com/file/d/1W8A-OEX3fJn6J253TPhvd_Ps8A5w_pIT |
+| 05/24/20 1907 | 084 | IMG_0503        | P | https://drive.google.com/file/d/1yDZ4O_YK8UXc-prEGVNE_4o4pWweG6_z |
+| 05/24/20 1907 | 085 | IMG_0504        | P | https://drive.google.com/file/d/1Ds8pxZOpGYbkxmyAPxAw7aA-N1ngw3pe |
+| 05/24/20 1910 | 086 | IMG_0505        | P | https://drive.google.com/file/d/1agONCE8WPnlM_MLc9hEEinygOxHdPdKJ |
+| 05/24/20 1910 | 087 | IMG_0506        | P | https://drive.google.com/file/d/1tazuzEVemWTZTRJmjyF-_s_-w_Afj4SU |
+| 05/24/20 1925 | 088 | IMG_0508        | P | https://drive.google.com/file/d/1CywfAKtQQy7wm_6kBE442dk8wlN0GcCF |
+| 05/24/20 1952 | 089 | IMG_0512        | P | https://drive.google.com/file/d/1ow1cCPgUDENOvW16afXsxXzkQyJTZOQr |
+| 05/24/20 1952 | 090 | IMG_0513        | P | https://drive.google.com/file/d/1M73qUy8w7HXqL0cdIGl7_WLdDJPmOHiS |
+| 05/24/20 2049 | 091 | IMG_0525        | P | https://drive.google.com/file/d/1Ymm3YpKgYlSMs58B6z-2HeqYmQXYIVgt |
+| 05/24/20 2049 | 092 | IMG_0537        | P | https://drive.google.com/file/d/1_cWYuUbVfw-7TYH6sQAwfv_rpP5Mp1QY |
+| 05/24/20 2050 | 093 | IMG_0538        | P | https://drive.google.com/file/d/1E9hqXeb8RbyJKYgI94KtiGB79_fY5_03 |
+| 05/24/20 2050 | 094 | IMG_0539        | P | https://drive.google.com/file/d/1rmjA0c5duSUDkk5K8CNc7Wt3GQr7u4hG |
+| 05/24/20 2050 | 095 | IMG_0540        | P | https://drive.google.com/file/d/1sxauHH3gInbUg2s-gueRANRhHtVih6WD |
+| 05/24/20 2052 | 096 | IMG_0541        | P | https://drive.google.com/file/d/1J6hPh8i_8ko7A0Eqb8m8u8rb15gzveCj |
+| 05/24/20 2052 | 097 | IMG_0542        | P | https://drive.google.com/file/d/1gxtf0rjhwnwyHVUnEmi3Xgg7ACkRGFEP |
+| 05/24/20 2055 | 098 | IMG_0543        | P | https://drive.google.com/file/d/10mahQTnFZ4Yq3gysEVGjrajuELEXiSXu |
+| 05/24/20 2055 | 099 | IMG_0544        | P | https://drive.google.com/file/d/1t8g1PuC2TZ0dJv2-cjWal9sHfgR1ut5f |
+| 05/24/20 2149 | 100 | IMG_0546        | P | https://drive.google.com/file/d/1Kzn8IPwaaP1aHUL2yv4BmsMStyNWLpNX |
+| 05/24/20 2159 | 101 | IMG_0549        | P | https://drive.google.com/file/d/1VvOtkA8bT2Un20kWQA5xbp5P7F1n1i9E |
+| 05/24/20 2159 | 102 | IMG_0550        | P | https://drive.google.com/file/d/1MlrZx1HlqygJV2oh9VPz7n-OR7DBpl1H |
+| 05/24/20 2159 | 103 | IMG_0551        | P | https://drive.google.com/file/d/1v-AYHZAaUn2wKboy_ShX5wBIfpTZc4fL | 
+| 05/24/20 2159 | 104 | IMG_0552        | P | https://drive.google.com/file/d/1zNC_LckOws3yXsJThY4ZrdW1o1jgBmJX |
+| 05/24/20 2159 | 105 | IMG_0553        | P | https://drive.google.com/file/d/1OYLrWTKvkISFaCMENCpXh7TBqQ5HqTae |
+| 05/24/20 2159 | 106 | IMG_0554        | P | https://drive.google.com/file/d/1WJ-7AfxRYOhhJ96ebnl5jwVXjpCX5pWg |
+| 05/24/20 2200 | 107 | IMG_0555        | P | https://drive.google.com/file/d/127CAZ15c51ei5MSegvnPM0HuUSABFfNq |
+| 05/24/20 2200 | 108 | IMG_0556        | P | https://drive.google.com/file/d/1ivlJB0sh9Yh0YMn9GgV_-XWTg-2dJNel |
+| 05/24/20 2200 | 109 | IMG_0557        | P | https://drive.google.com/file/d/1iEbmL6pUM6qKvEIIVERJX0MFwsLOpozi |
+| 05/24/20 2200 | 110 | IMG_0558        | P | https://drive.google.com/file/d/1_lTBCXldsNe4kN92mlvTveSpIOlqQqo_ |
+| 05/24/20 2200 | 111 | IMG_0560        | P | https://drive.google.com/file/d/1GIyTQ8xyWUSZfzfuFl5Y7NgfR7TgQdno |
+| 05/24/20 2200 | 112 | IMG_0564        | P | https://drive.google.com/file/d/1ZoOpMLbj19tsPDj3RwVRsdtkaWT_WomD |
+| 05/24/20 2201 | 113 | IMG_0565        | P | https://drive.google.com/file/d/1gx9F_QPd2uzU5UPqCYife46AHgyAYDHV |
+| 05/24/20 2201 | 114 | IMG_0566        | P | https://drive.google.com/file/d/1zFvWcgV3ojqsohWjDiQBdj0myvw6JDpQ |
+| 05/24/20 2201 | 115 | IMG_0567        | P | https://drive.google.com/file/d/1qjj5mCE_bG9PLauJNJTAPfVPmigUcKb3 |
+| 05/24/20 2239 | 116 | IMG_0585        | P | https://drive.google.com/file/d/1y4f8SmcgZf_vJ8ohXVSFFWQlC19QEDZe |
+| 05/24/20 2242 | 117 | IMG_0590        | P | https://drive.google.com/file/d/1_QUY6XrDIBIJJvjaYw02B-1OdEOXm5zk |
+| 05/24/20 2243 | 118 | IMG_0591        | P | https://drive.google.com/file/d/1BrGQnWB2xPNudtUdItlJm29PqQMVltGh |
+| 05/24/20 2248 | 119 | IMG_0594        | P | https://drive.google.com/file/d/10r3SnCMggf2BRmlST4fdX5f104mwNxau |
+| 05/24/20 2249 | 120 | IMG_0595        | P | https://drive.google.com/file/d/1BnoTT0-IHk0TNvIDIYPj_H4q6fk4EkF7 |
+| 05/24/20 2249 | 121 | IMG_0596        | P | https://drive.google.com/file/d/1aZFTnKVwQXakRMHbCt9WIpKxpJUV2Q8G |
+| 05/24/20 2249 | 122 | IMG_0597        | P | https://drive.google.com/file/d/11GDlXvkiMVnt4iu8zqhzphbEjogAkvqY |
+| 05/24/20 2249 | 123 | IMG_0598        | P | https://drive.google.com/file/d/1eaT4t3viNY_j02BMbV_TxJJ-e2zCPtjq |
+| 05/24/20 2250 | 124 | IMG_0599        | P | https://drive.google.com/file/d/1VqlgtK2ER65_28Bpr7dJboIg8nzNOzMY |
+| 05/24/20 2250 | 125 | IMG_0600        | P | https://drive.google.com/file/d/1fElcWAHc6GdZVw6XsDfJZSMeM6f0e6EN |
+| 05/24/20 2250 | 126 | IMG_0601        | P | https://drive.google.com/file/d/15ZtekTtGuKWTrJ2brozUabQhlcURu7Xe |
+| 05/24/20 2250 | 127 | IMG_0602        | P | https://drive.google.com/file/d/13KQTzbTLQ7NNzS7OZ4Zmx63pgU9gF7au |
+| 05/24/20 2250 | 128 | IMG_0603        | P | https://drive.google.com/file/d/1HPdGPltH9_Nyr9GtFqYKn509z6i5ZoGF |
+| 05/24/20 2251 | 129 | IMG_0604        | P | https://drive.google.com/file/d/1p_tdU-9lQ391UxsNfixLg71F_M3aGchz |
+| 05/24/20 2251 | 130 | IMG_0605        | P | https://drive.google.com/file/d/18DeG9RcavSV42907L1kcHuTgnfC59LfG |
+| 05/24/20 2251 | 131 | IMG_0606        | P | https://drive.google.com/file/d/1U0A_lsgspUeU7AJQ9m-KebOPdkKHJsRS |
+| 05/24/20 2253 | 132 | IMG_0607        | P | https://drive.google.com/file/d/1jNHmvr66KZMoX0JiT3Cbs43Buu6zADIE |
+| 05/24/20 2255 | 133 | IMG_0608        | P | https://drive.google.com/file/d/1hv3JhYKD--0BQg-x66sO0fomgAy3kFFi |
+| 05/24/20 2255 | 134 | IMG_0609        | P | https://drive.google.com/file/d/1shrLewHORf86sf4TIp3ykAe6WosZ4Q2J |
+| 05/24/20 2256 | 135 | IMG_0611        | P | https://drive.google.com/file/d/1UfA4j-wAO1VfehUwUUJWOGJc6N9SCMFl |
+| 05/24/20 2256 | 136 | IMG_0612        | P | https://drive.google.com/file/d/1qhhH-kHGxCqUuR-8BLWjBzONOWvoEoMB |
+| 05/24/20 2256 | 137 | IMG_0613        | P | https://drive.google.com/file/d/1RzZixkCkQrD4raxRBDmehTLwTzgRLoee |
+| 05/24/20 2256 | 138 | IMG_0614        | P | https://drive.google.com/file/d/154R8Vpi-v72jyEG7Roh8hE_Ds5jLiqCm |
+| 05/24/20 2256 | 139 | IMG_0615        | P | https://drive.google.com/file/d/1d4LjeUQ-XqsiQMayFxdfq6ecC1wGWgH9 |
+| 05/24/20 2256 | 140 | IMG_0616        | P | https://drive.google.com/file/d/1M83c0dFf6HxY8YgOc68O8ydE_pLrvU7i |
+| 05/24/20 2257 | 141 | IMG_0617        | P | https://drive.google.com/file/d/1lk98_0EvCmYMaew4KY2f50iE6gfJRM92 |
+| 05/24/20 2257 | 142 | IMG_0618        | P | https://drive.google.com/file/d/1vHsJwwj-9E135C2jR1v5Elo6I65tnNCG |
+| 05/24/20 2257 | 143 | IMG_0619        | P | https://drive.google.com/file/d/1mtARlTxYGR7_UvkTBoz31Alfh6EyR9dO |
+| 05/24/20 2257 | 144 | IMG_0620        | P | https://drive.google.com/file/d/1iun2RJ-pToqMlUUQMdKl_yWvJWxKioON |
+| 05/24/20 2310 | 145 | IMG_0621        | P | https://drive.google.com/file/d/19qa9qfALiWRJQwTHwvMhmyZldxBmuEZT |
+| 05/24/20 2310 | 146 | Solar Drive     | V | https://youtu.be/ZgVTHK172O8                                      |
+| 05/25/20 1016 | 147 | IMG_0622        | P | https://drive.google.com/file/d/1BIO3h4RZxxokfhJmq3BOfgmj4gE6TQ5q |
+| 05/25/20 1016 | 148 | IMG_0623        | P | https://drive.google.com/file/d/1bpicQ6EP9ndq0DIdIy9mAAhk1X3A1GHq |
+| 05/25/20 1016 | 149 | IMG_0624        | P | https://drive.google.com/file/d/1cjJLLS8j0Zkwzvy716gCIdx1VW5TU23G |
+| 05/25/20 1028 | 150 | IMG_0625        | V | https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D |
+| 05/25/20 1054 | 151 | IMG_0627        | V | https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx |
+| 05/25/20 2135 | 152 | Capital Digi.   | A | https://drive.google.com/file/d/1Hq-CkA-K3aN5i6uYs6Tle_sLCX5SLHQY |
+| 05/25/20 2205 | 153 | IMG_0629        | P | https://drive.google.com/file/d/15oD2mMphIvsUCO9hDNUh8EJvQfmWUu5_ |
+| 05/25/20 2205 | 154 | IMG_0630        | P | https://drive.google.com/file/d/1lIx0RI0ew189GcY5YYYqKPfhNDSkn69g |
+| 05/25/20 2205 | 155 | IMG_0631        | P | https://drive.google.com/file/d/1BLC2V1WRTRSzJYZWuX7eBFXz37K4CHEP |
+| 05/25/20 2213 | 156 | IMG_0633        | P | https://drive.google.com/file/d/1mX-iOHH0mew1_iwm7nn3b4ROm4lboreM |
+| 05/25/20 2230 | 157 | Matchless Stove | A | https://drive.google.com/file/d/14bAzf7pzM_t67Exxm1NoqgHUnYV86pX7 |
+| 05/25/20 2246 | 158 | IMG_0634        | P | https://drive.google.com/file/d/1OloZklvgG_mbAz9Qc4eNKTrWSTqWwfT0 |
+| 05/25/20 2300 | 159 | Computer Ans.   | A | https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs |
+| 05/25/20 2329 | 160 | IMG_0636        | P | https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo |
+| 05/25/20 2329 | 161 | IMG_0637        | P | https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL |
+| 05/25/20 2329 | 162 | IMG_0638        | P | https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY |
+| 05/25/20 2329 | 163 | IMG_0639        | P | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
+| 05/25/20 2335 | 164 | IMG_0640        | P | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
+| 05/25/20 2336 | 165 | IMG_0641        | P | https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS |
+| 05/25/20 2337 | 166 | IMG_0642        | P | https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf |
+| 05/25/20 2337 | 167 | IMG_0643        | P | https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU |
+| 05/25/20 2337 | 168 | IMG_0644        | P | https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI |
+| 05/25/20 2337 | 169 | IMG_0645        | P | https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA |
+| 05/25/20 2343 | 170 | IMG_0646        | P | https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD |
+| 05/25/20 2343 | 171 | IMG_0647        | Q | (OBSTRUCTION OF JUSTICE -> 05/26/20 0005 (MISSING VIDEO)          |
+| 05/26/20 0005 | 172 | IMG_0648        | P | https://drive.google.com/file/d/18xllhtJW6XZhxJOZXWtesywn-Ph37KK9 |
+| 05/26/20 0011 | 173 | IMG_0649        | P | https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L |
+| 05/26/20 0011 | 174 | IMG_0650        | P | https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l |
+| 05/26/20 0011 | 175 | IMG_0651        | P | https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV |
+| 05/26/20 0348 | 176 | IMG_0652        | P | https://drive.google.com/file/d/1w0Q6lhLYH9ACwQfUosucUE9x5-uAsNzI |
+|_______________|_____|_________________|___|___________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 The narrative goes like this, SCOTT SCHELLING arrived on scene FIRST, though in the RECORDS, it says JOSHUA WELCH
 arrived FIRST. However- THAT IS TOTAL BULLSHIT. SCOTT SCHELLING was the FIRST GUY ON SCENE, and I literally tried
 to show him INDEX 171, as well as INDEX 176.
@@ -1067,44 +1168,44 @@ ______________________
 |____________________|
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ...ALL look pretty fuckin' stupid.
-_____________________________________________________________________________________________________________________
-|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-| Date/Time     | ### | Name            | / | % | Url (#: Index, /: Type, %: Clarity/Censorship)                    |
-|_______________|_____|_________________|___|___|___________________________________________________________________|
-|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-| 05/24/20 1849 | 001 | IMG_0493        | P | 0 | https://drive.google.com/file/d/1r_LYeBOis15QpVtW5WQFEB7IRoMjPgGr |
-| 05/24/20 1850 | 002 | IMG_0495        | P | 0 | https://drive.google.com/file/d/1AZcx41RWlG7nDg9EcEfYxpasPiUny3eL |
-| 05/24/20 1854 | 003 | IMG_0497        | P | 0 | https://drive.google.com/file/d/1cUV8oy8TIciNC4mLYnAKsjHVd8KtHly_ |
-| 05/24/20 1910 | 004 | IMG_0505        | P | 0 | https://drive.google.com/file/d/1agONCE8WPnlM_MLc9hEEinygOxHdPdKJ |
-| 05/24/20 1910 | 005 | IMG_0506        | P | 0 | https://drive.google.com/file/d/1tazuzEVemWTZTRJmjyF-_s_-w_Afj4SU |
-| 05/24/20 1925 | 006 | IMG_0508        | P | 0 | https://drive.google.com/file/d/1CywfAKtQQy7wm_6kBE442dk8wlN0GcCF |
-| 05/25/20 2135 | 007 | Capital Digi.   | A | 0 | https://drive.google.com/file/d/1Hq-CkA-K3aN5i6uYs6Tle_sLCX5SLHQY |
-| 05/25/20 2205 | 008 | IMG_0629        | P | 0 | https://drive.google.com/file/d/15oD2mMphIvsUCO9hDNUh8EJvQfmWUu5_ |
-| 05/25/20 2205 | 009 | IMG_0630        | P | 0 | https://drive.google.com/file/d/1lIx0RI0ew189GcY5YYYqKPfhNDSkn69g |
-| 05/25/20 2205 | 010 | IMG_0631        | P | 0 | https://drive.google.com/file/d/1BLC2V1WRTRSzJYZWuX7eBFXz37K4CHEP |
-| 05/25/20 2213 | 011 | IMG_0633        | P | 0 | https://drive.google.com/file/d/1mX-iOHH0mew1_iwm7nn3b4ROm4lboreM |
-| 05/25/20 2230 | 012 | Matchless Stove | A | 0 | https://drive.google.com/file/d/14bAzf7pzM_t67Exxm1NoqgHUnYV86pX7 |
-| 05/25/20 2246 | 013 | IMG_0634        | P | 0 | https://drive.google.com/file/d/1OloZklvgG_mbAz9Qc4eNKTrWSTqWwfT0 |
-| 05/25/20 2300 | 014 | Computer Ans.   | A | 0 | https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs |
-| 05/25/20 2329 | 015 | IMG_0636        | P | 0 | https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo |
-| 05/25/20 2329 | 016 | IMG_0637        | P | 0 | https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL |
-| 05/25/20 2329 | 017 | IMG_0638        | P | 0 | https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY |
-| 05/25/20 2329 | 018 | IMG_0639        | P | 0 | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
-| 05/25/20 2335 | 019 | IMG_0640        | P | 0 | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
-| 05/25/20 2336 | 020 | IMG_0641        | P | 0 | https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS |
-| 05/25/20 2337 | 021 | IMG_0642        | P | 0 | https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf |
-| 05/25/20 2337 | 022 | IMG_0643        | P | 0 | https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU |
-| 05/25/20 2337 | 023 | IMG_0644        | P | 0 | https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI |
-| 05/25/20 2337 | 024 | IMG_0645        | P | 0 | https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA |
-| 05/25/20 2343 | 025 | IMG_0646        | P | 0 | https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD |
-| 05/25/20 2343 | 026 | IMG_0647        | Q | 0 | (OBSTRUCTION OF JUSTICE -> 05/26/20 0005 (MISSING VIDEO)          |
-| 05/26/20 0005 | 027 | IMG_0648        | P | 0 | https://drive.google.com/file/d/18xllhtJW6XZhxJOZXWtesywn-Ph37KK9 |
-| 05/26/20 0011 | 028 | IMG_0649        | P | 1 | https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L |
-| 05/26/20 0011 | 029 | IMG_0650        | P | 1 | https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l |
-| 05/26/20 0011 | 030 | IMG_0651        | P | 1 | https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV |
-| 05/26/20 0348 | 031 | IMG_0652        | P | 0 | https://drive.google.com/file/d/1w0Q6lhLYH9ACwQfUosucUE9x5-uAsNzI |
-|_______________|_____|_________________|___|___|___________________________________________________________________|
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+_________________________________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Date/Time     | ### | Name            | / | Url (#: Index, /: Type, %: Clarity/Censorship)                    |
+|_______________|_____|_________________|___|___________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| 05/24/20 1849 | 001 | IMG_0493        | P | https://drive.google.com/file/d/1r_LYeBOis15QpVtW5WQFEB7IRoMjPgGr |
+| 05/24/20 1850 | 002 | IMG_0495        | P | https://drive.google.com/file/d/1AZcx41RWlG7nDg9EcEfYxpasPiUny3eL |
+| 05/24/20 1854 | 003 | IMG_0497        | P | https://drive.google.com/file/d/1cUV8oy8TIciNC4mLYnAKsjHVd8KtHly_ |
+| 05/24/20 1910 | 004 | IMG_0505        | P | https://drive.google.com/file/d/1agONCE8WPnlM_MLc9hEEinygOxHdPdKJ |
+| 05/24/20 1910 | 005 | IMG_0506        | P | https://drive.google.com/file/d/1tazuzEVemWTZTRJmjyF-_s_-w_Afj4SU |
+| 05/24/20 1925 | 006 | IMG_0508        | P | https://drive.google.com/file/d/1CywfAKtQQy7wm_6kBE442dk8wlN0GcCF |
+| 05/25/20 2135 | 007 | Capital Digi.   | A | https://drive.google.com/file/d/1Hq-CkA-K3aN5i6uYs6Tle_sLCX5SLHQY |
+| 05/25/20 2205 | 008 | IMG_0629        | P | https://drive.google.com/file/d/15oD2mMphIvsUCO9hDNUh8EJvQfmWUu5_ |
+| 05/25/20 2205 | 009 | IMG_0630        | P | https://drive.google.com/file/d/1lIx0RI0ew189GcY5YYYqKPfhNDSkn69g |
+| 05/25/20 2205 | 010 | IMG_0631        | P | https://drive.google.com/file/d/1BLC2V1WRTRSzJYZWuX7eBFXz37K4CHEP |
+| 05/25/20 2213 | 011 | IMG_0633        | P | https://drive.google.com/file/d/1mX-iOHH0mew1_iwm7nn3b4ROm4lboreM |
+| 05/25/20 2230 | 012 | Matchless Stove | A | https://drive.google.com/file/d/14bAzf7pzM_t67Exxm1NoqgHUnYV86pX7 |
+| 05/25/20 2246 | 013 | IMG_0634        | P | https://drive.google.com/file/d/1OloZklvgG_mbAz9Qc4eNKTrWSTqWwfT0 |
+| 05/25/20 2300 | 014 | Computer Ans.   | A | https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs |
+| 05/25/20 2329 | 015 | IMG_0636        | P | https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo |
+| 05/25/20 2329 | 016 | IMG_0637        | P | https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL |
+| 05/25/20 2329 | 017 | IMG_0638        | P | https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY |
+| 05/25/20 2329 | 018 | IMG_0639        | P | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
+| 05/25/20 2335 | 019 | IMG_0640        | P | https://drive.google.com/file/d/1EL_JllhbHWTkYTPAm595SxjhMyRF5vKP |
+| 05/25/20 2336 | 020 | IMG_0641        | P | https://drive.google.com/file/d/1g-tOe4lBQcKaip8ZaHGg7lQmOF7ufSDS |
+| 05/25/20 2337 | 021 | IMG_0642        | P | https://drive.google.com/file/d/1e_KKi6oMfJcqQSLtXCIwES9jKShaK8Vf |
+| 05/25/20 2337 | 022 | IMG_0643        | P | https://drive.google.com/file/d/1GYlnixSrS-_C4BY04zx__I4LznrIFJjU |
+| 05/25/20 2337 | 023 | IMG_0644        | P | https://drive.google.com/file/d/1je8w77DYiUosmS5G3L-4ORgGG1ve7ahI |
+| 05/25/20 2337 | 024 | IMG_0645        | P | https://drive.google.com/file/d/1TIuFj7RcyWtADqpSYavDpP9UcdlyHNvA |
+| 05/25/20 2343 | 025 | IMG_0646        | P | https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD |
+| 05/25/20 2343 | 026 | IMG_0647        | Q | (OBSTRUCTION OF JUSTICE -> 05/26/20 0005 (MISSING VIDEO)          |
+| 05/26/20 0005 | 027 | IMG_0648        | P | https://drive.google.com/file/d/18xllhtJW6XZhxJOZXWtesywn-Ph37KK9 |
+| 05/26/20 0011 | 028 | IMG_0649        | P | https://drive.google.com/file/d/1W0234ojNChSpwDZWnWPzjjZRBQ2CQm0L |
+| 05/26/20 0011 | 029 | IMG_0650        | P | https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l |
+| 05/26/20 0011 | 030 | IMG_0651        | P | https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV |
+| 05/26/20 0348 | 031 | IMG_0652        | P | https://drive.google.com/file/d/1w0Q6lhLYH9ACwQfUosucUE9x5-uAsNzI |
+|_______________|_____|_________________|___|___________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 These above exhibits clearly show a lot more information than some dipshit cornoner decided to complain about to 
 SCOTT CARPENTER, like fuckin' (3) FULL DAYS LATE.
 
@@ -1117,8 +1218,8 @@ And I said "No."
 Then he BASICALLY told me to piss off.
 Pretty dead look on his face about the way he said it, too.
 
-I left a POST-IT NOTE on the door at CENTER FOR SECURITY, right after I took the first (2) pictures in the links above.
-Weird, right...?
+I left a POST-IT NOTE on the door at CENTER FOR SECURITY, right after I took the first (2) pictures in the links 
+above. Weird, right...?
 
 I also left a POST-IT NOTE on the VAN in the back of the AMBIENCE lot, right aftertook the THIRD picture in the
 links above.
@@ -1409,8 +1510,8 @@ $Record.AddNarrative(@"
 I had been leaving documents with the people at the school.
 For numerous reasons.
 
-One reason in particular, is that someone was committing espionage to me, and literally writing off all of my evidence.
-They still do this, too.
+One reason in particular, is that someone was committing espionage to me, and literally writing off all of my 
+evidence. They still do this, too.
 
 The truth is, people really are morons.
 That's why some woman wrote a letter of indication that led to my children being taken from me.
@@ -1460,11 +1561,11 @@ that has their fucking facts straight...? It's gonna cause those people to feel 
 Aw.
 I am so terribly sorry for causing someone to bawl themselves over such a traumatic event...
 
-It's ok if I was traumatized by my father having been murdered in cold blood, when I was in Mrs. Kinnaws 5th grade class at Skano.
-I obviously did something to deserve that.
+It's ok if I was traumatized by my father having been murdered in cold blood, when I was in Mrs. Kinnaws 5th grade
+class at Skano. I obviously did something to deserve that.
 
-It's ALSO ok if I was BULLIED and BEATEN and MISLABELED at the fucking school for the entire 13 years I attended SHENENDEHOWA.
-Traumatized there too, no big deal, no worries...
+It's ALSO ok if I was BULLIED and BEATEN and MISLABELED at the fucking school for the entire 13 years I attended
+SHENENDEHOWA. Traumatized there too, no big deal, no worries...
 
 It's ALSO ok if I was ALMOST killed, on 05/26/20...
 ...outside of the place I used to WORK in order to support my CHILDREN and my MOTHER for (3) years...
@@ -1476,8 +1577,8 @@ Meanwhile, if I tell some people at the district office that I've had about enou
 SHENENDEHOWA CENTRAL SCHOOL DISTRICT...
 
 ...oh boy.
-That was really traumatic for like (5) people, to see some dude spouting about how he submitted a TICKET for a fuckin'
-WIRELESS HOT SPOT like a few days beforehand, and for some reason they were still PROCESSING THE TICKET...
+That was really traumatic for like (5) people, to see some dude spouting about how he submitted a TICKET for a
+fuckin' WIRELESS HOT SPOT like a few days beforehand, and for some reason they were still PROCESSING THE TICKET...
 Which means that my CHILDREN weren't able to do their school work...
 Oh nos.
 
@@ -1542,10 +1643,10 @@ It's like this.
 If I tell people what the hell someone is trying to do, don't second guess me.
 That's how things ALWAYS WERE at COMPUTER ANSWERS.
 
-Does somebody wanna do some COOL SHIT with TAILSOS so that if for any reason whatsoever, he wants to unplug a drive,
-and destroy any of the files that were in that session...?
-Yeah, somebody was trying to do just that, and the guys kept selling him some shit that wouldn't work for what he was
-attempting to do.
+Does somebody wanna do some COOL SHIT with TAILSOS so that if for any reason whatsoever, he wants to unplug a 
+drive, and destroy any of the files that were in that session...?
+Yeah, somebody was trying to do just that, and the guys kept selling him some shit that wouldn't work for what he 
+was attempting to do.
 
 Classic PAVEL ZAICHENKO @ COMPUTER ANSWERS 101, 
 "Sell the customer some shit that they don't need, in order to make more money." -PAVEL ZAICHENKO
@@ -1567,9 +1668,9 @@ ________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 So, if I GET SOME GUY HIS LAPTOP BACK, he will basically FORGET ABOUT THAT
 Or, if I SAVE SOME DUDE'S LIFE, he will basically tell me WHATEVER DUDE, ANYBODY COULD DO THAT...
-Or, if I GET MYSELF CLEAN FROM DRUGS and RECOVER FROM MY ADDICTION, everyone else will say SO WHAT, YOU SUCK ASS BRO.
-Or, if I HAVE TO KICK IN SOME GIRLS BATHROOM DOOR CAUSE SHE GOT HIGH DURING RECOVERY, she'll TREAT ME LIKE I'M PSYCHO
-Or, if I LEAVE THE HIGHEST SALES RECORD AT COMPUTER ANSWERS, the owner(s) will PRETEND THAT SHIT NEVER HAPPENED.
+Or, if I GET MYSELF CLEAN FROM DRUGS and RECOVER FROM MY ADDICTION, everyone will say SO WHAT, YOU SUCK ASS BRO
+Or, if I HAVE TO KICK IN SOME GIRLS BATHROOM DOOR CAUSE SHE GOT HIGH IN RECOVERY, she'll TREAT ME LIKE I'M PSYCHO
+Or, if I LEAVE THE HIGHEST SALES RECORD AT COMPUTER ANSWERS, the owner(s) will PRETEND THAT SHIT NEVER HAPPENED
 Or, if I LOAN MY BUDDY 500 BUCKS, he will NEVER PAY ME BACK
 
 That's the "How people have always treated me" breakdown.
@@ -1582,9 +1683,9 @@ And I said "Yeah."
 She asked me to fix her laptop, and then I went home, and basically had the thing fixed, THAT NIGHT, which was
 JUNE 29th, 2020. I tried to CALL her on the PHONE NUMBER she gave me, but the number was DISCONNECTED.
 
-So, from JUNE 29th, 2020 to JULY 13th, 2020, I went to this ladys house at least (4) or (5) times, and each time that I 
-went back there, her door was wide open and the TELEVISION was on. So either, she was in the BATHROOM or she was AVOIDING
-HER DOOR for some NEFARIOUS REASON.
+So, from JUNE 29th, 2020 to JULY 13th, 2020, I went to this ladys house at least (4) or (5) times, and each time 
+that I went back there, her door was wide open and the TELEVISION was on. So either, she was in the BATHROOM or she
+was AVOIDING HER DOOR for some NEFARIOUS REASON.
 
 But also... this woman literally went to COMPUTER ANSWERS, and DWAYNE GAVE HER MY PERSONAL INFORMATION.
 THAT'S WHY THE WOMAN WAS AT MY FUCKING HOUSE.
@@ -1596,9 +1697,10 @@ But also...? I gave this lady my phone number. She never called it.
 Not one time did this lady call that number.
 
 The problem with the device was this simple.
-SHE SPILLED SOMETHING LIQUID ONTO THE KEYBOARD, and it shorted the VIDEO as well as the KEYBOARD and some other component.
-I did replace the SCREEN, but then when I got a POWER ADAPTER FOR IT, by trading (DWAYNE/EVAN) my stick of DDR4 from my
-dead ASUS Q504UA LAPTOP, well... Dwayne took the liberty to tell this lady 1) where I lived, and 2) not my phone number.
+SHE SPILLED SOMETHING LIQUID ONTO THE KEYBOARD, and it shorted the VIDEO as well as the KEYBOARD and some other 
+component. I did replace the SCREEN, but then when I got a POWER ADAPTER FOR IT, by trading (DWAYNE/EVAN) my stick
+of DDR4 from my dead ASUS Q504UA LAPTOP, well... Dwayne took the liberty to tell this lady 1) where I lived, and 
+2) not my phone number.
 
 That's pretty fuckin' shady, right...?
 Wrong.
@@ -1611,7 +1713,8 @@ That's ridiculous.
 But, if it's SOMEBODY WICKED IMPORTANT...?
 Oh my fucking god, dude... they are the most skilled police officers in the world when that's the case.
 
-They'll COVER SHIT UP if need be, they'll IGNORE EVIDENCE OF A CRIME HAVING BEEN COMMITTED, and then tell whoever called 911...
+They'll COVER SHIT UP if need be, they'll IGNORE EVIDENCE OF A CRIME HAVING BEEN COMMITTED, and then tell whoever
+called 911...
 ...that they're under arrest for throwing themselves in front of a passing car.
 
 I'm not fucking exaggerating here, that is what SCOTT SCHELLING literally tried to do.
@@ -1619,21 +1722,22 @@ If it sounds retarded...? Check this shit out.
 
 When this lady was at my house, (2) calls came in.
 That's what it means when a DUPLICATE CALL comes in.
-The NEIGHBORS, WILLIAM MOAK and JANET MOAK, were giving the dispatcher a PLAY-BY-PLAY SYNOPSIS of what was happening.
-The woman basically knocked on my door, I came to the door, and then this lady demands her laptop back without even
-giving me a single opportunity to explain what the fucking problem was. Nor that I had gone to her house.
+The NEIGHBORS, WILLIAM MOAK and JANET MOAK, were giving the dispatcher a PLAY-BY-PLAY SYNOPSIS of what was
+happening. The woman basically knocked on my door, I came to the door, and then this lady demands her laptop back
+without even giving me a single opportunity to explain what the fucking problem was. Nor that I had gone to her 
+house.
 
 Nope. Wanna know why...?
 It's because people are fuckin' stupid, that's why.
 
-At some point, the neighbors came outside and I was outside, and then I had multiple people holding me down saying stuff
-like "YOU'RE GONNA GO TO JAIL, YOU SCUMBAG PIECE OF SHIT~!"
+At some point, the neighbors came outside and I was outside, and then I had multiple people holding me down saying
+stuff like "YOU'RE GONNA GO TO JAIL, YOU SCUMBAG PIECE OF SHIT~!"
 
-However, that's because 100% of those people that have this retarded mentality, they don't realize how powerful FACTS are.
-So then eventually, when the NYSP Trooper Girls and Clayton Brownell showed up...?
+However, that's because 100% of those people that have this retarded mentality, they don't realize how powerful 
+FACTS are. So then eventually, when the NYSP Trooper Girls and Clayton Brownell showed up...?
 
-Well, I explained the situation pretty fuckin' clearly, and then all of the people who committed perjury on 06/13/20, who
-were ALSO making DUPLICATE 911 calls to the SCSO DISPATCH STATION...
+Well, I explained the situation pretty fuckin' clearly, and then all of the people who committed perjury on
+06/13/20, who were ALSO making DUPLICATE 911 calls to the SCSO DISPATCH STATION...
 ...who were also pretty fuckin' retarded their entire lives...
 ...who think facts are fuckin' stupid since that's what they were raised to think...
 ...the facts won out in this case, and they don't always win out.
@@ -1660,7 +1764,8 @@ The facts were as follows:
 19) I uploaded a version of Write-Theme to my Facebook account on July 5th, 2020 from her Wifi network...
 20) Nobody gave a shit about any of those details for like (2) weeks
 21) Lady shows up at my house demanding her shit back without like, paying me for wasting my time or my screen,
-22) I have a retarded mob of people who just DESPISE ME FOR NO REASON holding me down and telling me i'm goin to jail
+22) I have a retarded mob of people who just DESPISE ME FOR NO REASON holding me down and telling me i'm goin 
+    to jail
 23) The police finally arrive and that doesn't happen
 24) Clayton Brownell understood that I wasn't going to give the woman her laptop back in PIECES or PARTS
 25) He asked me how long would it take to REASSEMBLE
