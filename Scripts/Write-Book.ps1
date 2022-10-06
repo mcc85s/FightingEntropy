@@ -1,7 +1,3 @@
-$Link    = "https://github.com/mcc85s/FightingEntropy/blob/main/Scripts/Write-Book.ps1?raw=true"
-$Content = Invoke-RestMethod $Link
-$Content | Set-Clipboard
-
 [Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 
 Function Write-Theme
@@ -943,791 +939,1307 @@ Function Write-Theme
     }
 }
 
-Function Write-Book
+Function Write-Resume
 {
-    [CmdletBinding()]
-    Param(
-    [Parameter(Mandatory,ParameterSetName=0,Position=0)]
-    [Parameter(Mandatory,ParameterSetName=1,Position=0)][String]$Name,
-    [Parameter(Mandatory,ParameterSetName=1,Position=1)][String]$Path)
-        
-    # // _____________________________________________________________
-    # // | This is a screenshot object for output to png or whatever |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    [CmdLetBinding()]Param(
+        [Parameter(Mandatory,Position=0)][String]$Name,
+        [Parameter(Mandatory,Position=1)][String]$Title)
 
-    Class Screenshot
+    Class Mask
     {
-        [UInt32] $Index
-        [String] $Name
-        [Object] $Bitmap
-        [Object] $Graphic
-        Screenshot([String]$Name,[Object]$XY)
+        Static [UInt32] $Count = 57
+        Static [Byte[]] Tray([UInt32]$Index)
         {
-            $This.Name    = $Name
-            If (Test-Path $Name)
+            Return @(Switch ($Index)
             {
-                Throw "File exists"
-            }
-            
-            $This.Bitmap  = [Drawing.Bitmap]::New($XY.Width,$XY.Height)
-            $This.Graphic = [Drawing.Graphics]::FromImage($This.Bitmap)
-            $This.Graphic.CopyFromScreen($XY.Location,[Drawing.Point]::Empty,$XY.Size)
-            $This.Bitmap.Save($This.Name)
-            $This.Graphic.Dispose()
-            $This.Bitmap.Dispose()
-        }
-    }
-    
-    # // ____________________________________________________________________
-    # // | This is a collection of screenshots with a dedicated output path |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-    Class Reel
-    {
-        [String] $Base
-        [String] $Name
-        [String] $Date
-        [String] $Root
-        [Drawing.Rectangle] $Dimension
-        [Object] $Swap
-        [Object] $Output
-        [Object] $File
-        Reel([String]$Base,[String]$Name,[String[]]$Swap)
-        {
-            If (!(Test-Path $Base))
-            {
-                Throw "Invalid path"
-            }
-    
-            $This.Base      = $Base
-            $This.Name      = $Name
-            $This.Date      = Get-Date -UFormat "%m%d%Y"
-            $This.Root      = $This.Base, $This.Date, $This.Name -join "\"
-            If (!(Test-Path $This.Root))
-            {
-                New-Item $This.Root -ItemType Directory -Verbose
-            }
-            #If ($IsLinux)
-            #{
-                #$This.Dimension = [Drawing.Rectangle]::FromLTRB(25,190,1165,835)
-            #}
-            #If ($VSCode)
-            #{
-                #$This.Dimension = [Drawing.Rectangle]::FromLTRB(20,110,1440,868)
-            #}
-            #If ($WindowsTerminal)
-            #{
-                $This.Dimension = [Drawing.Rectangle]::FromLTRB(0,32,1560,760)
-            #}
-            $This.Swap      = $Swap
-            $This.Output    = @{ }
-            $Block          = @( )
-            ForEach ($X in 0..($This.Swap.Count-1))
-            {
-                If ($X -ne 0 -and $X % 30 -eq 0)
-                {
-                    $This.Output.Add($This.Output.Count,$Block)
-                    $Block        = @( )
-                }
-    
-                $Block += $This.Swap[$X] 
-            }
-            $This.File   = @( )
-        }
-        Screenshot([UInt32]$Index)
-        {
-            If ($Index -gt $This.Output.Count)
-            {
-                Throw "Invalid index"
-            }
-    
-            $Depth = ([String]($This.Output.Count)).Length
-            $ID    = "{0}/{1:d$Depth}.png" -f $This.Root, $Index
-    
-            Invoke-Expression "Clear-Host;`$This.Output[$Index] | % { Write-Host `$_ };Start-Sleep -Milliseconds 250"
-
-            $This.File += [Screenshot]::New($ID,$This.Dimension)
-        }
-        Compile()
-        {
-            ForEach ($X in 0..($This.Output.Count-1))
-            {
-                $This.Screenshot($X)
-            }
+                00 {    "32 32 32 32"} 01 {    "95 95 95 95"} 02 {"175 175 175 175"} 03 {    "45 45 45 45"} 
+                04 {    "32 32 32 47"} 05 {    "92 32 32 32"} 06 {    "32 32 32 92"} 07 {    "47 32 32 32"} 
+                08 {    "92 95 95 47"} 09 {  "47 175 175 92"} 10 { "47 175 175 175"} 11 { "175 175 175 92"} 
+                12 {    "92 95 95 95"} 13 {    "95 95 95 47"} 14 {    "91 32 95 95"} 15 {    "95 95 32 93"} 
+                16 {    "42 32 32 32"} 17 {    "32 32 42 32"} 18 {    "32 32 32 42"} 19 {    "32 42 32 32"} 
+                20 {    "91 61 61 93"} 21 {    "91 45 45 93"} 22 { "175 175 175 93"} 23 { "91 175 175 175"} 
+                24 {    "32 32 32 93"} 25 {    "91 95 95 95"} 26 {    "95 95 95 93"} 27 {    "92 95 95 91"} 
+                28 {    "32 95 95 95"} 29 {    "95 95 95 32"} 30 {    "93 95 95 47"} 31 {  "47 175 175 91"}
+                32 {    "93 32 32 32"} 33 {   "32 32 32 124"} 34 {    "95 95 32 32"} 35 {    "32 32 95 95"}
+                36 {   "124 32 32 32"} 37 {  "175 175 92 95"} 38 {  "95 47 175 175"} 39 {   "92 95 95 124"} 
+                40 {  "47 175 175 32"} 41 {   "32 32 32 175"} 42 {   "175 32 32 32"} 43 {  "32 175 175 32"} 
+                44 {  "32 175 175 92"} 45 {"175 175 175 124"} 46 {    "32 32 32 91"} 47 {    "61 61 61 61"}
+                48 {    "92 95 95 32"} 49 {    "32 32 32 95"} 50 {    "95 32 32 32"} 51 {    "32 95 95 32"}
+                52 {   "95 95 47 175"} 53 {   "175 92 95 95"} 54 {  "175 175 32 32"} 55 {  "32 32 175 175"}
+                56 {  "124 61 61 124"}
+            }) -Split " "
         }
     }
 
-    # // ____________________________________________________
-    # // | What the class name suggests, the page dimension |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-    Class PageDimension
+    Class ThemeMask       
     {
-        [UInt32] $Width
-        [UInt32] $Height
-        [UInt32] $Characters
-        PageDimension()
+        [UInt32]         $Index
+        [String]          $Face
+        Hidden [Byte[]]   $Byte
+        Hidden [UInt32[]]  $Int
+        [Char[]]          $Char
+        ThemeMask([UInt32]$Index,[Byte[]]$Byte)
         {
-            $This.Width      = 120
-            $This.Height     = 80
-            $This.Characters = $This.Width * $This.Height
-        }
-    }
-
-    # // ____________________________________________________________
-    # // | Meant to keep track of lines for each individual section |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-    Class Line
-    {
-        [UInt32] $Index
-        [String] $Content
-        Line([UInt32]$Index,[String]$Content)
-        {
-            $This.Index   = $Index
-            $This.Content = $Content
+            $This.Index = $Index
+            $This.Byte  = $Byte
+            $This.Int   = [UInt32[]]($Byte)
+            $This.Char  = [Char[]]($This.Int)
+            $This.Face  = $This.Char -join ''
         }
         [String] ToString()
         {
-            Return $This.Content
+            Return $This.Index
         }
     }
 
-    # // ___________________________________________________________
-    # // | Within each individual chapter are a series of sections |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-    Class Section
+    Class ThemeFace
     {
-        [UInt32] $Index
-        [UInt32] $Mode
-        [String] $Name
-        [Object] $Line
-        Section([UInt32]$Index,[UInt32]$Mode,[String]$Name,[String[]]$Content)
+        [Object[]]      $Guide
+        [Object[]]      $Output
+        ThemeFace()
         {
-            $This.Index   = $Index
-            $This.Mode    = $Mode
-            $This.Name    = $Name
-            $This.Line    = @( )
-            
-            $This.InsertContent($Content)
-            
-            $This.Rerank()
+            $This.Guide = ForEach ($X in 0..([Mask]::Count-1))
+            { 
+                [ThemeMask]::New($X,[Mask]::Tray($X))
+            }
+            $This.Output = $This.Guide.Face
         }
-        Section([UInt32]$Index,[String]$Name,[String[]]$Content)
-        {
-            $This.Index   = $Index
-            $This.Mode    = 0
-            $This.Name    = $Name
-            $This.Line    = @( )
-            
-            $This.InsertContent($Content)
-            
-            $This.Rerank()
-        }
-        InsertContent([String[]]$Content)
-        {
-            $Content = $Content -Split "`n"
+    }
 
-            Switch ($Content.Count)
+    Class ThemeBlock      
+    {
+        [Int32]              $Index
+        [Object]            $Object
+        [Int32]    $ForegroundColor
+        [Int32]    $BackgroundColor
+        [Int32]          $NoNewLine = 1
+        ThemeBlock([Int32]$Index,[String]$Object,[Int32]$ForegroundColor,[Int32]$BackgroundColor)
+        {
+            $This.Index             = $Index
+            $This.Object            = $Object
+            $This.ForegroundColor   = $ForegroundColor
+            $This.BackgroundColor   = $BackgroundColor
+        }
+        [String] ToString()
+        {
+            Return $This.Index
+        }
+    }
+
+    Class ThemeTrack      
+    {
+        [UInt32]        $Index
+        [String[]]     $Object
+        [UInt32[]] $Foreground
+        [UInt32[]] $Background
+        [Object]         $Mask
+        ThemeTrack([UInt32]$Index)
+        {
+            $This.Index                = $Index
+            $This.Object               = [ThemeFace]::New().Output[@(0)*30]
+            $This.Foreground           = @(0)*30
+            $This.Background           = @(0)*30
+            $This.GetMask()
+        }
+        ThemeTrack([UInt32]$Index,[String]$Mask,[String]$Foreground,[String]$Background)
+        {
+            $This.Index                = $Index
+            $This.Object               = [ThemeFace]::New().Output[(Invoke-Expression $Mask)]
+            $This.Foreground           = Invoke-Expression $Foreground
+            $This.Background           = Invoke-Expression $Background
+            $This.GetMask()
+        }
+        GetMask()
+        {
+            $This.Mask                 = @( )
+            0..( $This.Object.Count - 1 ) | % { 
+                
+                $This.Mask += [ThemeBlock]::New($_,$This.Object[$_],$This.Foreground[$_],$This.Background[$_])
+            }
+            $This.Mask[-1].NoNewLine = 0
+        }
+        [String] ToString()
+        {
+            Return $This.Index
+        }
+        Draw([UInt32[]]$Palette=@(10,12,15,0))
+        {
+            ForEach ($X in 0..($This.Mask.Count-1))
             {
+                $Splat              = @{
+
+                    Object          = $This.Object[$X]
+                    ForegroundColor = @($Palette)[$This.Mask[$X].ForegroundColor]
+                    BackgroundColor = $This.Mask[$X].BackgroundColor
+                    NoNewLine       = $X -ne ($This.Mask.Count - 1)
+                }
+
+                Write-Host @Splat
+            }
+        }
+    }
+    
+    Class ThemeTemplate   
+    {
+        Hidden [Hashtable] $StringStr = @{
+
+            00 = "@(0,1;@(0)*25;1,0,0)"
+            01 = "@(4,9,12;@(1)*23;13,9,12,0)"
+            02 = "@(6,8,10;@(2)*23;11,8,9,5)"
+            03 = "@(33,9,27,28;@(1)*21;29,30,9,8,7)"
+            04 = "@(33,8,10;@(2)*24;33,56,36)"
+            05 = "@(33,9,12;@(1)*24;13,9,36)"
+            06 = "@(33;@(8,37,38)*9;8,36)"
+            07 = "@(33,10;@(2)*26;11,36)"
+            08 = "@(33;@(0)*28;36)"
+            09 = "@(33,5;@(0)*26;4,36)"
+            10 = "@(33,7;@(0)*26;6,36)"
+            11 = "@(6,12;@(1)*26;13,7)"
+            12 = "@(46;@(47)*28;32)"
+            13 = "@(4;@(2)*28;5)"
+            14 = "@(6;@(0)*28;7)"
+            15 = "@(4;@(0)*28;5)"
+            16 = "@(6;@(1)*28;7)"
+            17 = "@(4,10;@(2)*26;11,5)"
+            18 = "@(33,36;@(0)*26;33,36)"
+            19 = "@(6,12;@(1)*26;13,7)"
+            20 = "@(0;@(2)*28;0)"
+        }
+        Hidden [Hashtable] $ForeStr = @{
+            
+            00 = "@(@(0)*30)"
+            01 = "@(0,1;@(0)*25;1,0,0)"
+            02 = "@(0,1;@(0)*25;1,1,0)"
+            03 = "@(0,1,0;@(2)*23;0,0,1,0)"
+            04 = "@(0,1;@(0)*26;1,0)"
+            05 = "@(0,1;@(0)*26;1,0)"
+            06 = "@(0;@(1)*28;0)"
+            07 = "@(0;@(0)*28;0)"
+            08 = "@(0,1;@(2)*26;1,0)"
+            09 = "@(0,1;@(2)*26;1,0)"
+            10 = "@(0,1;@(2)*26;1,0)"
+            11 = "@(0;@(1)*28;0)"
+            12 = "@(0;@(2)*28;0)"
+            13 = "@(@(0)*30)"
+            14 = "@(0,0;@(2)*26;0,0)"
+            15 = "@(0,0;@(2)*26;0,0)"
+            16 = "@(@(0)*30)"
+            17 = "@(0;@(1)*28;0)"
+            18 = "@(0,1;@(2)*26;1,0)"
+            19 = "@(0;@(1)*28;0)"
+            20 = "@(@(0)*30)"
+        }
+        Hidden [String[]] $BackStr = ( 0..20 | % { "@({0})" -f ( @(0)*30 -join ',' ) } )
+        [String]        $Name
+        [Int32]       $Header
+        [Int32]         $Body
+        [Int32]       $Footer
+        [String[]]    $String
+        [String[]]      $Fore
+        [String[]]      $Back
+        [Object[]]     $Track
+        ThemeTemplate()
+        {
+            $This.Name   = "Table"
+            $Span        = 0..20
+            $This.Header = 3
+            $This.Body   = 8
+            $This.Footer = -1
+            $This.String = @($Span | % { $This.StringStr[$_] })
+            $This.Fore   = @($Span | % { $This.ForeStr[$_] })
+            $This.Back   = @($Span | % { $This.BackStr[$_] })
+            $This.Track  = @( )
+            ForEach ($X in 0..($This.String.Count - 1))
+            {
+                $This.Track += [ThemeTrack]::New($X,$This.String[$X],$This.Fore[$X],$This.Back[$X])
+            }
+        }
+        [Object] Guide()
+        {
+            Return @(
+            "[Guide]{0}" -f ("_"*149 -join '');
+            "|  --|",(@(0..29 | % {"  {0:d2}" -f $_}) -join "|"),"| __[Mask] __" -join '';
+
+            ForEach ($X in 0..($This.Track.Count-1)){ "|  {0:d2}|{1}| {2}" -f $X,($This.Track[$X].Mask.Object -join "|"),$This.String[$X]};
+
+            [Char]175 * 156 -join '')
+        }
+        Display()
+        {
+            Write-Host ("[Theme]{0}" -f ("_" * 113 -join ''))
+            $This.Draw(@(10,12,15,0))
+            Write-Host ([Char]175 * 120 -join '')
+        }
+        Draw([UInt32[]]$Palette)
+        {
+            ForEach ($Track in $This.Track)
+            {
+                $Track.Draw($Palette)
+            }
+        }
+        Draw()
+        {
+            ForEach ($Track in $This.Track)
+            {
+                $Track.Draw(@(10,12,15,0))
+            }
+        }
+    }
+
+    Class Guide
+    {
+        [String] $Name
+        [UInt32] $Start
+        [UInt32] $End
+        [UInt32] $Length
+        Static [String[]] Types()
+        {
+            Return "Mask Header Qualification Employer Section Education Skill" -Split " "
+        }
+        Guide([String]$Name)
+        {
+            If ($Name -notin [Guide]::Types())
+            {
+                Throw "Invalid type"
+            }
+
+            $This.Name  = $Name
+            $X          = Switch ($Name)
+            {
+                Mask { 0,0 } Header { 13,103 } Default { 8,112 }
+            }
+            $This.Start  = $X[0]
+            $This.End    = $X[1]
+            $This.Length = $X[1] - $X[0]
+        }
+    }
+
+    Class Qualification
+    {
+        [UInt32]           $Index
+        [UInt32]          $Length
+        [String]     $Description
+        Qualification([UInt32]$Index,[String]$Description)
+        {
+            $This.Index       = $Index
+            $This.Length      = $Description.Length
+            $This.Description = $Description
+        }
+        [String] ToString()
+        {
+            Return $This.Description
+        }
+    }
+
+    Class Detail
+    {
+        [UInt32]         $Index
+        [String[]] $Description
+        Detail([UInt32]$Index,[String]$Description)
+        {
+            $This.Index       = $Index
+            $This.Description = $Description -Split "`n"
+        }
+        [String] Center([Object]$Length,[String]$String)
+        {
+            If ($String.Length -lt $Length)
+            {
+                $Buffer       = $Length - $String.Length
+                $Split        = [Math]::Round($Buffer / 2,[MidpointRounding]::ToZero)
+                If ($Split -eq 0)
+                {
+                    Return $String
+                }
+                Else
+                {
+                    $String   = "{0}{1}{0}" -f (@(" ") * $Split -join ''), $String
+                    If ($String.Length -lt $Length)
+                    {
+                        $String += " "
+                    }
+                    Return $String
+                }
+            }
+            Else 
+            {
+                Return $String
+            }
+        }
+        [String] ToString()
+        {
+            Return "<Detail[$($This.Index)]>"
+        }
+        [String[]] Output()
+        {
+            $Out = @()
+            If ($This.Description.Count -eq 1)
+            {
+                $Out += "[+] {0}" -f $This.Description
+            }
+            If ($This.Description.Count -gt 1)
+            {
+                $F               = 0
+                $X               = 0
+                $Out            += "[+] {0}" -f $This.Description[$X]
+                $X              ++
+                Do
+                {
+                    If ($This.Description[$X] -match "_{4,}")
+                    {
+                        $F       = 1
+                        $Line    = $This.Center(104,$This.Description[$X])
+                    }
+                    ElseIf ($F -eq 1)
+                    {
+                        $Line    = $This.Center(104,$This.Description[$X])
+                        If ($This.Description[$X] -match "¯{4,}")
+                        {
+                            $F   = 0
+                        }
+                    }
+                    Else
+                    {
+                        $Line    = "    {0}" -f $This.Description[$X]
+                    }
+                    $Out        += $Line
+                    $X          ++
+                }
+                Until ($X -eq $This.Description.Count)
+            }
+            Return $Out
+        }
+    }
+
+    Class Employer
+    {
+        Hidden [Object] $Guide
+        [UInt32]        $Index
+        [String]         $Name
+        [String]     $Location
+        [String]         $Date
+        [String]        $Title
+        [Object[]]     $Detail
+        Employer([UInt32]$Index,[String]$Name,[String]$Location,[String]$Date,[String]$Title)
+        {
+            $This.Guide    = [Guide]::New("Employer")
+            If ($Date -notmatch [Employer]::DateFormat())
+            {
+                Throw "Date must be in 'MO/YEAR - MO/YEAR' format"
+            }
+            $This.Index    = $Index
+            $This.Name     = $Name
+            $This.Location = $Location
+            $This.Date     = [Regex]::Matches($Date,[Employer]::DateFormat()).Value
+            $This.Title    = $Title
+            $This.Detail   = @( )
+        }
+        Static [String] DateFormat()
+        {
+            Return "(\d{2}\/\d{4}\s{1}\-\s{1}\d{2}\/\d{4})"
+        }
+        AddDetail([String[]]$Detail)
+        {
+            If ($Detail -in $This.Detail)
+            {
+                Throw "<Detail> already specified"
+            }
+
+            $This.Detail += [Detail]::New($This.Detail.Count,$Detail)
+        }
+        RemoveDetail([UInt32]$Index)
+        {
+            If (!$This.Detail[$Index])
+            {
+                Throw "Invalid <Detail>"
+            }
+
+            $This.Detail = $This.Detail | ? Description -ne $This.Detail[$Index].Description
+            $This.Rerank()
+        }
+        Rerank()
+        {
+            Switch ($This.Detail.Count)
+            {
+                Default {}
                 {$_ -eq 1}
                 {
-                    $This.Line += [Line]::New($This.Line.Count,$Content)
+                    $This.Detail[0].Index = 0
                 }
                 {$_ -gt 1}
                 {
-                    ForEach ($X in 0..($Content.Count-1))
-                    { 
-                        $This.Line += [Line]::New($This.Line.Count,$Content[$X]) 
+                    ForEach ($X in 0..($This.Detail.Count-1))
+                    {
+                        $This.Detail[$X].Index = $X
                     }
                 }
             }
         }
-        RemoveContent([UInt32]$Index)
+        [String[]] Details([Hashtable]$Hash)
         {
-            If ($Index -gt $This.Line.Count)
+            $This.Detail.Output() | % { $Hash.Add($Hash.Count,$_) }
+
+            Return @($Hash[0..($Hash.Count-1)])
+        }
+        [String[]] Output()
+        {
+            $Length           = $This.Guide.Length
+            If ($This.Index -eq 0)
             {
-                Throw "Invalid line index"
+                $SkimBuff     = $Length - 4
+                $DateLength   = $Length - 24
+                $Hash         = @{0="";1="";2="";3="";4="";5=""}
+                $Hash[1]      = "| {0} - {1} |" -f $This.Name, $This.Location
+                If ($Hash[1].Length -ge $DateLength)
+                {
+                    Throw "Employer name and location too long (80 chars max)"
+                }
+
+                $Hash[0]      = @("_") * $Hash[1].Length -join ""
+                $Hash[2]      = @([char]175) * $Hash[1].Length -join ""
+                Do
+                {
+                    0..2      | % { $Hash[$_] += " " }
+                }
+                Until ($Hash[1].Length -eq 83)
+                $Hash[0]     += @("_") * 21 -join ""
+                $Hash[1]     += "| {0} |" -f $This.Date
+                $Hash[2]     += @([char]175) * 21 -join ""
+                $Hash[4]      = $This.Title
+                If ($Hash[4].Length -ge $SkimBuff)
+                {
+                    Throw "Employment title too long ($SkimBuff char max)"
+                }
+                If ($Hash[4].Length -lt 100)
+                {
+                    $Hash[4]  = "| {0} |" -f $Hash[4]
+                    $Hash[3]  = @("_") * $Hash[4].Length -join ''
+                    $Hash[5]  = @([Char]175) * $Hash[4].Length -join ''
+                    $Buffer   = $Length - $Hash[4].Length
+                    $Split    = [Math]::Round($Buffer / 2,[MidpointRounding]::ToZero)
+                    $Hash[3]  = "{0}{1}{0}" -f (@(" ") * $Split -join ''), $Hash[3]
+                    $Hash[4]  = "{0}{1}{0}" -f (@(" ") * $Split -join ''), $Hash[4]
+                    $Hash[5]  = "{0}{1}{0}" -f (@(" ") * $Split -join ''), $Hash[5]
+                    If ($Hash[4].Length -le $Length)
+                    {
+                        3..5  | % { $Hash[$_] += " " }
+                    }
+                }
+                Return $This.Details($Hash)
             }
 
-            $This.Line = $This.Line | ? Index -ne $Index
+            ElseIf ($This.Index -gt 0)
+            {
+                $DateLength   = $Length - 18
+                $Hash         = @{0="";1="";2="";3="";4=""}
+                $Hash[1]      = "{0} - {1}" -f $This.Name, $This.Location
+                If ($Hash[1].Length -ge $DateLength)
+                {
+                    Throw "Employer name and location too long (86 chars max)"
+                }
+                Do
+                {
+                    $Hash[1] += " "
+                }
+                Until ($Hash[1].Length -eq $DateLength)
+                $Hash[1]     += $This.Date
+                $Hash[2]     += $This.Title
+                Do
+                {
+                    $Hash[2] += " "
+                }
+                Until ($Hash[2].Length -eq $Length)
+                Do
+                {
+                    $Hash[0] += [char]175
+                    $Hash[3] += [char]95
+                    $Hash[4] += [char]175
+                }
+                Until ($Hash[0].Length -eq $Length)
+                $Hash[0] += [char]175
+                $Hash[3] += [char]95
+                $Hash[4] += [char]175
 
-            $This.Rerank()
+                Return $This.Details($Hash)
+            }
+
+            Else
+            {
+                Return $Null
+            }
+        }
+    }
+             
+    Class Education
+    {
+        Hidden [Object] $Guide
+        [UInt32]        $Index
+        [String]         $Name
+        [String]     $Location
+        [String]         $Date
+        [String]        $Focus
+        [Object[]]     $Detail
+        Education([UInt32]$Index,[String]$Name,[String]$Location,[String]$Date,[String]$Focus)
+        {
+            $This.Guide          = [Guide]::New("Education")
+            $This.Index          = $Index
+            $This.Name           = $Name
+            $This.Location       = $Location
+            $This.Focus          = $Focus
+            $This.Date           = $Date
+            $This.Detail         = @( )
+        }
+        AddDetail([String]$Detail)
+        {
+            If ($Detail -in $This.Detail)
+            {
+                Throw "<Detail> already specified"
+            }
+
+            $This.Detail += [Detail]::New($This.Detail.Count,$Detail)
+        }
+        RemoveDetail([UInt32]$Index)
+        {
+            If (!$This.Detail[$Index])
+            {
+                Throw "Invalid <Detail>"
+            }
+
+            $This.Detail = $This.Detail | ? Description -ne $This.Detail[$Index].Description
         }
         Rerank()
         {
-            If ($This.Line.Count -eq 1)
+            Switch ($This.Detail.Count)
             {
-                $This.Line[0].Index = 0
-            }
-            ElseIf ($This.Line.Count -gt 1)
-            {
-                ForEach ($X in 0..($This.Line.Count-1))
+                Default {}
+                {$_ -eq 1}
                 {
-                    $This.Line[$X].Index = $X
+                    $This.Detail[0].Index = 0
+                }
+                {$_ -gt 1}
+                {
+                    ForEach ($X in 0..($This.Detail.Count-1))
+                    {
+                        $This.Detail[$X].Index = $X
+                    }
                 }
             }
+        }
+        [String[]] Details([Hashtable]$Hash)
+        {
+            $This.Detail.Output() | % { $Hash.Add($Hash.Count,$_) }
+
+            Return @($Hash[0..($Hash.Count-1)])
+        }
+        [String[]] Output()
+        {
+            $Length           = $This.Guide.Length
+            $DateLength       = $Length - 18
+            $Hash             = @{0="";1="";2="";3="";4=""}
+            $Hash[1]          = "{0} - {1}" -f $This.Name, $This.Location
+            If ($Hash[1].Length -ge $DateLength)
+            {
+                Throw "Employer name and location too long ($DateLength chars max)"
+            }
+            Do
+            {
+                $Hash[1]     += " "
+            }
+            Until ($Hash[1].Length -eq $DateLength)
+            $Hash[1]         += $This.Date
+            $Hash[2]         += $This.Focus
+            Do
+            {
+                $Hash[2]     += " "
+            }
+            Until ($Hash[2].Length -eq $Length)
+            Do
+            {
+                $Hash[0] += [char]175
+                $Hash[3] += [char]95
+                $Hash[4] += [char]175
+            }
+            Until ($Hash[0].Length -eq $Length)
+            $Hash[0] += [char]175
+            $Hash[3] += [char]95
+            $Hash[4] += [char]175
+
+            Return $This.Details($Hash)
+        }
+    }
+
+    Class SkillDetail
+    {
+        [String] $Name
+        [String] $Value
+        SkillDetail([String]$Name,[String]$Value)
+        {
+            $This.Name   = $Name
+            $This.Value  = $Value
+        }
+        [String] ToString()
+        {
+            Return $This.Value
+        }
+    }
+
+    Class Skill
+    {
+        Hidden [Object]  $Guide 
+        [UInt32]         $Index
+        [String]          $Name
+        [String]          $Date
+        [Object]        $Detail
+        [String[]] $Description
+        Skill([UInt32]$Index,[String]$Name,[String]$Date,[String]$Detail,[String]$Description)
+        {
+            $This.Guide       = [Guide]::New("Skill")
+            $This.Index       = $Index
+            $This.Name        = $Name
+            $This.Date        = $Date
+            $DetailName       = @("Unspecified","Hyperlink")[$Detail -match "^http(s*):\/\/"]
+            $This.Detail      = [SkillDetail]::New($DetailName,$Detail)
+            $This.Description = $Description -Split "`n"
         }
         [String] ToString()
         {
             Return $This.Name
         }
+        [String[]] Details([Hashtable]$Hash)
+        {
+            $This.Description | % { $_.ToString() } | % { $Hash.Add($Hash.Count,$_) }
+
+            Return $Hash[0..($Hash.Count-1)]
+        }
         [String[]] Output()
         {
-            $Hash = @{ }
-            $1    = $This.Name.Length
-            $0    = 116 - $1
-            $Hash.Add($Hash.Count,("  {0} /{1}\" -f $This.Name,(@([char]175) * $0 -join '' )))
-            $Hash.Add($Hash.Count,("/{0} {1} " -f (@([Char]175) * ($1 + 2) -join ''), (@(" ") * $0 -join '')))
-            ForEach ($Line in $This.Line | % Content)
+            $Length           = $This.Guide.Length
+            $DateLength       = $Length - 7
+            $Hash             = @{0="";1="";2="";3="";4=""}
+            $Hash[1]          = $This.Name
+            If ($Hash[1].Length -ge $DateLength)
             {
-                $Item = Switch ($This.Mode)
-                {
-                    0 { "    $Line" }
-                    1 { $Line }
-                }
-
-                If ($Item.Length -gt 128)
-                {
-                    $Item = $Item.Substring(0,128)
-                }
-
-                $Hash.Add($Hash.Count,$Item)
+                Throw "Skill name too long ($DateLength chars max)"
             }
-            $Hash.Add($Hash.Count,(" {0} _{1}_/" -f (@(" ") * $0 -join ''),(@("_") * $1 -join '')))
-            $Hash.Add($Hash.Count,("\{0}/ {1}  " -f (@("_") * $0 -join ''), $This.Name))
+            Do
+            {
+                $Hash[1]     += " "
+            }
+            Until ($Hash[1].Length -eq $DateLength)
+            $Hash[1]         += $This.Date
+            $Hash[2]          = $This.Detail.Value
+            Do
+            {
+                $Hash[2]     += " "
+            }
+            Until ($Hash[2].Length -eq $Length)
+            Do
+            {
+                $Hash[0]     += [char]175
+                $Hash[3]     += [char]95
+                $Hash[4]     += [char]175
+            }
+            Until ($Hash[0].Length -eq $Length)
+            $Hash[0] += [char]175
+            $Hash[3] += [char]95
+            $Hash[4] += [char]175
 
-            Return @($Hash[0..($Hash.Count-1)])
+            Return $This.Details($Hash)
         }
     }
 
-    # // ___________________________________________________
-    # // | The entire book consists of individual chapters |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-    Class Chapter
+    Class Person
     {
-        [UInt32] $Index
-        [String] $Label
-        [UInt32] $Page
-        [String] $Name
-        [Object] $Header
-        [Object] $Section
-        Chapter([Int32]$Index,[String]$Name)
+        [String]            $Name
+        [String]           $Title
+        [Object[]] $Qualification
+        [Object[]]      $Employer
+        [Object[]]     $Education
+        [Object[]]         $Skill
+        Person([String]$Name,[String]$Title)
         {
+            $This.Name          = $Name
+            $This.Title         = $Title
+            $This.Qualification = @( )
+            $This.Employer      = @( )
+            $This.Education     = @( )
+            $This.Skill         = @( )
+        }
+        AddQualification([String]$Description)
+        {
+            If ($Description -in $This.Qualification.Description)
+            {
+                Throw "<Qualification> already specified"
+            }
+
+            $This.Qualification += [Qualification]::New($This.Qualification.Count,$Description)
+        }
+        RemoveQualification([UInt32]$Index)
+        {
+            If (!$This.Qualification[$Index])
+            {
+                Throw "Invalid <Qualification>"
+            }
+
+            $This.Qualification = $This.Qualification | ? Description -ne $This.Qualification[$Index].Description
+            $This.Rerank("Qualification")
+        }
+        AddEmployer([String]$Name,[String]$Location,[String]$Date,[String]$Title)
+        {
+            If ($Name -in $This.Employer.Name)
+            {
+                Throw "<Employer> already specified"
+            }
+
+            $This.Employer += [Employer]::New($This.Employer.Count,$Name,$Location,$Date,$Title)
+        }
+        RemoveEmployer([UInt32]$Index)
+        {
+            If (!$This.Employer[$Index])
+            {
+                Throw "Invalid <Employer>"
+            }
+
+            $This.Employer = $This.Employer | ? Name -ne $This.Employer[$Index].Name
+            $This.Rerank("Employer")
+        }
+        AddEducation([String]$Name,[String]$Location,[String]$Date,[String]$Focus)
+        {
+            If ($Name -in $This.Education.Name)
+            {
+                Throw "<Education> already specified"
+            }
+
+            $This.Education += [Education]::New($This.Education.Count,$Name,$Location,$Date,$Focus)
+        }
+        RemoveEducation([UInt32]$Index)
+        {
+            If (!$This.Education[$Index])
+            {
+                Throw "Invalid <Education>"
+            }
+
+            $This.Education = $This.Education | ? Name -ne $This.Education[$Index].Name
+            $This.Rerank("Education")
+        }
+        AddSkill([String]$Name,[String]$Date,[String]$Detail,[String[]]$Description)
+        {
+            If ($Name -in $This.Skill.Name)
+            {
+                "<Skill> already specified"
+            }
+            If ($Date -notmatch "\d{2}\/\d{4}")
+            {
+                Throw "Invalid date, use MO/YEAR format"
+            }
+            
+            $This.Skill += [Skill]::New($This.Skill.Count,$Name,$Date,$Detail,$Description)
+        }
+        RemoveSkill([UInt32]$Index)
+        {
+            If (!$This.Skill[$Index])
+            {
+                Throw "Invalid <Skill>"
+            }
+
+            $This.Skill = $This.Skill | ? Name -ne $This.Skill[$Index].Name
+            $This.Rerank("Skill")
+        }
+        Rerank([String]$Type)
+        {
+            $Item = $This.$Type
+
+            Switch ($Item.Count)
+            {
+                Default {}
+                {$_ -eq 1}
+                {
+                    $Item[0].Index = 0
+                }
+                {$_ -gt 1}
+                {
+                    ForEach ($X in 0..($Item.Count-1))
+                    {
+                        $Item[$X].Index = $X
+                    }
+                }
+            }
+        }
+    }
+
+    Class Body
+    {
+        [UInt32]  $Index
+        [Int32]    $Slot
+        [String]   $Type
+        [Object] $Object
+        Body([UInt32]$Index,[String]$Type,[Object]$Object)
+        {
+            $This.Index  = $Index
+            $This.Type   = $Type
+            $This.Slot   = Switch ($Type)
+            {
+                 Employer  { 2 }
+                 Education { 4 }
+                 Skill     { 5 }
+            }
+            $This.Object = $Object
+        }
+    }
+
+    Class Insertion
+    {
+        [Int32]   $Slot
+        [String]  $Type
+        [Object] $Guide
+        [UInt32] $Index
+        [Object] $Track
+        Insertion([Int32]$Slot,[UInt32]$Index,[Object]$Track)
+        {
+            $This.Slot    = -1
+            $This.Type    = "Mask"
+            $This.Guide   = [Guide]::New("Mask")
             $This.Index   = $Index
-            $This.Name    = $Name
-            $This.Header  = @( )
-            $This.Section = @( )
+            $This.Track   = $Track
         }
-        SetLabel([String]$Label)
-        {
-            $This.Label   = $Label
-            $This.Header  = Write-Theme ("{0} - {1}" -f $This.Label, $This.Name) -Text | % { $_.TrimStart("#") }
-        }
-        AddSection([String]$Name,[String[]]$Content)
-        {
-            If ($Name -in $This.Section.Name)
+        Insertion([Int32]$Slot,[UInt32]$Index,[Object]$Track,[String]$String)
+        { 
+            $This.Slot    = $Slot
+            $This.Type    = Switch ($Slot)
             {
-                Throw "Section already exists"
+                 0 {        "Header" }
+                 1 { "Qualification" }
+                 2 {      "Employer" }
+                 3 {       "Section" }
+                 4 {     "Education" }
+                 5 {         "Skill" }
             }
-
-            $This.Section += [Section]::New($This.Section.Count,0,$Name,$Content)
-            Write-Host ("Loaded [+] {0}: Section ({1}) [{2}]" -f $This.Label,$This.Section[-1].Index,$Name)
-            If ($Name -eq "Start")
+            $This.Guide   = [Guide]::New($This.Type)
+            $This.Index   = $Index
+            If ($String.Length -le $This.Guide.Length)
             {
-                $This.Section | ? Name -eq Start | % { $_.Index = 0 }
-            }
-            
-            $This.Rerank()
-        }
-        AddSection([UInt32]$Mode,[String]$Name,[String[]]$Content)
-        {
-            If ($Name -in $This.Section.Name)
-            {
-                Throw "Section already exists"
-            }
-
-            $This.Section += [Section]::New($This.Section.Count,$Mode,$Name,$Content)
-            If ($Name -eq "Start")
-            {
-                $This.Section | ? Name -eq Start | % { $_.Index = 0 }
-            }
-            
-            $This.Rerank()
-        }
-        RemoveSection([String]$Name)
-        {
-            If ($Name -notin $This.Section.Name)
-            {
-                Throw "Invalid section name"
-            }
-
-            $This.Section = $This.Section | ? Name -ne $Name
-
-            $This.Rerank()
-        }
-        RemoveSection([UInt32]$Index)
-        {
-            If ($Index -gt $This.Section.Count)
-            {
-                Throw "Invalid section index"
-            }
-
-            $This.Section = $This.Section | ? Index -ne $Index
-
-            $This.Rerank()
-        }
-        Rerank()
-        {
-            If ($This.Section.Count -eq 1)
-            {
-                $This.Section[0].Index = 0
-            }
-            ElseIf ($This.Section.Count -gt 1)
-            {
-                ForEach ($X in 0..($This.Section.Count-1))
+                Do
                 {
-                    $This.Section[$X].Index = $X
+                    $String += " "
+                }
+                Until ($String.Length -ge $This.Guide.Length)
+                $String += " "
+            }
+
+            $This.Track                    = [ThemeTrack]::New($Slot)
+            ForEach ($X in 0..($Track.Object.Count-1))
+            {
+                $This.Track.Object[$X]     = $Track.Object[$X]
+                $This.Track.Mask[$X].ForegroundColor = $Track.Mask[$X].ForegroundColor
+                $This.Track.Mask[$X].BackgroundColor = $Track.Mask[$X].BackgroundColor
+            }
+
+            $This.Apply($String)
+        }
+        Apply([String]$String)
+        {
+            $Line      = $This.Track.Object -join ''
+            $Array0    = [Char[]]$Line
+            $Array1    = [Char[]]$String
+            $C         = 0
+            $Tray      = @( )
+
+            ForEach ($X in 0..($Array0.Count-1))
+            {
+                If ($X -notin ($This.Guide.Start)..($This.Guide.End))
+                {
+                    $Tray += $Array0[$X]
+                }
+                Else
+                {
+                    $Tray += $Array1[$C]
+                    $C ++
                 }
             }
-        }
-        [String[]] Output()
-        {
-            $Out                 = @( )
-            $This.Header         | % { $Out += $_ }
-            $Out                += " "
-            ForEach ($Line in $This.Section | % Output)
+
+            $Out   = @( )
+            $Block = ""
+            ForEach ($X in 0..($Tray.Count-1))
             {
-                $Out            += $Line
+                If ($X -ne 0 -and $X % 4 -eq 0)
+                {
+                    $Out  += $Block
+                    $Block = ""
+                }
+                $Block    += $Tray[$X]
             }
-
-            Return $Out
-        }
-        [String] ToString()
-        {
-            Return $This.Name
-        }
-    }
-
-    Class TableHeader
-    {
-        [UInt32] $Index
-        [String] $Label
-        [UInt32]  $Page
-        [String]  $Name
-        TableHeader([UInt32]$Index,[Object]$Chapter)
-        {
-            $This.Index = $Index
-            $This.Label = $Chapter.Label
-            $This.Page  = $Chapter.Page
-            $This.Name  = $Chapter.Name
+            $Out          += $Block
+            ForEach ($X in 0..($Out.Count-1))
+            {
+                $This.Track.Object[$X] = $Out[$X]
+            }
         }
     }
 
-    Class TableContentItem
+    Class Resume
     {
-        [UInt32] $Index
-        [String] $Name
-        TableContentItem([Object]$Section)
-        {
-            $This.Index = $Section.Index
-            $This.Name  = $Section.Name
-        }
-    }
-
-    Class TableContent
-    {
-        [Object] $Header
+        [Object] $Person
+        [Object] $Theme
+        Hidden [Object[]] $Guide
+        [Object] $Body
+        [Object] $Swap
         [Object] $Output
-        TableContent([Object]$Chapter)
+        Resume([String]$Name,[String]$Title)
         {
-            $This.Header = [TableHeader]::New($This.Output.Count,$Chapter)
-            $Out         = @{ }
-            ForEach ($Section in $Chapter.Section)
+            $This.Person = [Person]::New($Name,$Title)
+            $This.Theme  = [ThemeTemplate]::new()
+            $This.Guide  = [Guide]::Types() | % { [Guide]::New($_) }
+            $This.Body   = @( )
+            $This.Swap   = @{ }
+            $This.Output = @( )
+        }
+        [String] Header()
+        {
+            $Header      = $This.Person.Name, $This.Person.Title -join " | "
+            $Length      = $This.Guide | ? Name -eq Header | % Length
+            If ($Header.Length -lt ($Length-2) -and $Header.Length -gt ($Length-3))
             {
-                $Out.Add($Out.Count,[TableContentItem]::New($Section))
+                $Header   = $Header.Substring(0,($Length-3)) + "..."
             }
-            
-            $This.Output = @($Out[0..($Out.Count-1)])
-        }
-    }
-
-    Class Table
-    {
-        [Object] $Content
-        Table()
-        {
-            $This.Content = @( )
-        }
-        Add([Object]$Chapter)
-        {
-            $This.Content.Add($Chapter)
-        }
-    }
-
-    # // _____________________________________________________________________________________
-    # // | This is meant to decide between pulling resources LOCALLY or from FightingEntropy |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-    Class Mode
-    {
-        [UInt32] $Mode
-        [String] $Path
-        Mode([UInt32]$Mode)
-        {
-            $This.Mode = $Mode
-        }
-        SetPath([String]$Path)
-        {
-            $This.Path = $Path
-        }
-        [UInt32] ToString()
-        {
-            Return $This.Mode
-        }
-    }
-
-    # // ___________________________________________________________________________________
-    # // | Meant to catagorically collect, maintain, and reproduce the BOOK/PROGRAM/MODULE |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-    Class Book
-    {
-        [String] $Name
-        [Object] $Mode
-        [Object] $Cover
-        Hidden [Object] $Flag
-        Hidden [Object] $Table
-        [Object] $Chapter
-        Hidden [Object] $Reel
-        Book([String]$Name)
-        {
-            Write-Host "Assembling book... $Name"
-            $This.Name    = $Name
-            $This.Mode    = [Mode]::New(0)
-            $This.Mode.SetPath("https://github.com/mcc85s/FightingEntropy/blob/main/Framing")
-            $This.GetCover()
-            $This.GetFlag()
-            $This.Table   = $This.Resource("Not%20News%20(003-Table%20of%20Content).txt")
-            $This.Chapter = @( )
-            $This.LoadChapters()
-        }
-        Book([String]$Path,[String]$Name)
-        {
-            Write-Host "Assembling book... $Name"
-            $This.Name    = $Name
-            $This.Mode    = [Mode]::New(1)
-            $This.Mode.SetPath($Path)
-            $This.GetCover()
-            $This.GetFlag()
-            $This.Table   = $This.Path("Not News (003-Table of Content).txt")
-            $This.Chapter = @( )
-            $This.LoadChapters()
-        }
-        GetCover()
-        {
-            $Out          = @{ }
-            "                                                                                                                        ",
-            "            ____    ____    ________________________________________________________________    ____    ____            ",
-            "        ___//¯¯\\__//¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\__//¯¯\\___        ",
-            "    ___/    \__/    \__//¯¯¯          Secure Digits Plus LLC (π) | Fighting Entropy         ¯¯¯\\__/    \__/    \___    ",
-            "   //¯¯\    /¯¯\    /¯¯\\___                 Top Deck Awareness - Not News                  ___//¯¯\    /¯¯\    /¯¯\\   ",
-            "   \\__//¯¯\\__//¯¯\\__//¯¯\\______________________________________________________________//¯¯\\__//¯¯\\__//¯¯\\__//   ",
-            "   //¯¯\\__//¯¯\\__//¯¯¯    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\__//¯¯\\__//¯¯\\   ",
-            "   \\__/    \__//   ________________________________________________________________________________   \\__/    \__//   ",
-            "   //¯¯\    /¯¯\\   | Used to be news...? Now its Not News. Not News. Part of the Not News Network |   //¯¯\    /¯¯\\   ",
-            "   \\__//¯¯\\__//   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   \\__//¯¯\\__//   ",
-            "   //¯¯\\__//¯¯\\       ________________________________________________________________________       //¯¯\\__//¯¯\\   ",
-            "   \\__/    \__//   ___//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___   \\__/    \__//   ",
-            "   //¯¯\    /¯¯\\__//¯¯¯    Provisional Author: Michael C. Cook Sr. | `"The Buck Stops Here`"     ¯¯¯\\__//¯¯\    /¯¯\\   ",
-            "   \\__/¯¯¯¯    ¯¯¯¯                                                                                ¯¯¯¯    ¯¯¯¯\__//   ",
-            "   //   Thesis   : Fox News is not news, it is propaganda. They should change the name to Not News                 \\   ",
-            "   ||   Subject  : (STEM/Science, Technology, Engineering, Mathematics)                                            ||   ",
-            "   ||               History, Politics, Psychology, Philosophy, Morality, Comedy, Commerce, Industry                ||   ",
-            "   ||   Conflict : Treason, Corruption, Censorship, Injustice, Identity Theft, Cybercrime, Antitrust, Fraud        ||   ",
-            "   ||   Affair   : Political/Foreign+Domestic+Local, Social/Personal                                               ||   ",
-            "   ||   Agency   : NSA/Nat. Sec. Agency, CIA/Central Intel Agency, NIST/Nat. Institute of Standards and Tech.,     ||   ",
-            "   ||              FBI/Fed. Bureau of Invest., DHS/Dept. of Homeland Sec., CISA/Cybersec. Infra. Sec. Agency,      ||   ",
-            "   ||              NYSP/New York State Police, SCSO/Saratoga County Sheriffs Office                                ||   ",
-            "   \\______________________________________________________________________________________________________________//   ",
-            "   [====( Primary & Secondary Characters )==========================================================================]   ",
-            "   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   ",
-            "   ||   [J. P. Assange/WikiLeaks], [E. J. Snowden/CIA+NSA], [General K. McKenzie Jr./USMC+CENTCOM]                 ||   ",
-            "   ||   [E. Musk/Tesla+SpaceX], [W. Gates/Microsoft+Gates Foundation], [W. Buffett/Berkshire Hathaway]             ||   ",
-            "   ||   [R. Murdoch, T. Carlson, S. Hannity/Fox News], [T. Cruz/Senator TX], [M. Zuckerberg/Facebook],             ||   ",
-            "   ||   [G. W. Bush/Former President], [B. Lutz/General Motors], [H. Clinton/Former First Lady+Senator NY],        ||   ",
-            "   ||   [V. Putin/Dictator of Russia], [V. Zelensky/President of Ukraine], [J. Bezos/Amazon], [T. Cook/Apple]      ||   ",
-            "   \\______________________________________________________________________________________________________________//   ",
-            "   [====( Story )===================================================================================================]   ",
-            "   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   ",
-            "   ||   Once upon a time, a man once lived in the crime-riddled badlands of suburbia... in Clifton Park, NY.       ||   ",
-            "   ||   A KEYBOARD WARRIOR, whose story was unlike any other, unparalleled in nature. One night he was nearly      ||   ",
-            "   ||   killed and somehow barely survived. His story and voice were both so gritty...? Well, people could         ||   ",
-            "   ||   practically feel the bits of gravel pelting off of their eardrums when he told the tale...                 ||   ",
-            "   ||                                                                                                              ||   ",
-            "   ||   His brush with death revealed a DARK, TWISTED SECRET that laid BURIED, beneath the surface of his home     ||   ",
-            "   ||   town, HIDDEN in PLAIN SIGHT. A DANGEROUS & ELUSIVE [RACKETEER INFLUENCED CRIMINAL ORGANIZATION], a ring    ||   ",
-            "   ||   of CROOKS, CRIMINALS, BANKERS, PUBLIC SERVANTS, and SERIAL KILLERS, joined as one unstoppable force.       ||   ",
-            "   ||   All in the name of becoming something EVIL and SINISTER, committing: HOME INVASIONS, ROBBERIES, RAPES,     ||   ",
-            "   ||   MURDERS, FRAUD, RACKETEERING, EXTORTION, INTELLECTUAL PROPERTY THEFT, IDENTITY THEFT & CYBERCRIME.         ||   ",
-            "   ||                                                                                                              ||   ",
-            "   ||   They've corrupted many (county/state/gov.) agencies, killed many people, gotten very rich, and they've     ||   ",
-            "   ||   never been CAUGHT. A legion of bad-ass detectives have known about this force... They've been fighting     ||   ",
-            "   ||   a seemingly never-ending war against them. But- they've grown weary. Their sanity...? Depleted.            ||   ",
-            "   ||   Their patience...? Worn thin. Still, if there's anything they can count on...? Crime never sleeps...       ||   ",
-            "   ||   ...and neither do they.                                                                                    ||   ",
-            "   ||                                                                                                              ||   ",
-            "   ||   This is the story of a man who rose to the challenge, to begin a white-knuckled fight against ID theft &   ||   ",
-            "   ||   cybercrime, until he discovered a series of clues that directly linked those at the center of the RICO,    ||   ",
-            "   ||   to his FATHER who had been KILLED a LIFETIME ago. An INVESTIGATION, DECADES in the making, REVEALING       ||   ",
-            "   ||   SECRETS, CLUES, and REALIZATIONS- all EXPOSING the EXISTENCE of his dad's TRUE killers. THEY CONSPIRED     ||   ",
-            "   ||   to have him EXECUTED by a MERCENARY in 1995. However, making his dad's murder LOOK like a foiled robbery   ||   ",
-            "   ||   was a fatal mistake... they committed the ultimate sin.                                                    ||   ",
-            "   ||                                                                                                              ||   ",
-            "   ||   The ones that GREENLIT his father's execution...? They really were dumb enough to try and kill HIM too,    ||   ",
-            "   ||   only to fail miserably, whereby unraveling a MUCH larger, uglier, even MORE sinister truth. Those who      ||   ",
-            "   ||   killed his father revealed themselves. Whereby jeopardizing their riches, livelihood, and elusiveness.     ||   ",
-            "   ||                                                                                                              ||   ",
-            "   ||   One night before all of the chaos began, this keyboard warrior, this cybercommando, visited his fathers’   ||   ",
-            "   ||   grave. Staring at his father's legacy, engraved in stone... he spoke to him for some time. As he was       ||   ",
-            "   ||   leaving, he vowed to avenge him, and leave a mark on the world in his name. Then, as if its timing was     ||   ",
-            "   ||   fate, or destiny...? A shooting star fell from the heavens. From that day, his mission became clear.       ||   ",
-            "   ||                                                                                                              ||   ",
-            "   ||   His life...? Imbued with hardship. Pain. Scorn. Resentment, and atrocities. The love of his life...?       ||   ",
-            "   ||   Ripped away, outside of reach. His children...? Taken, and lied to. When society told him...               ||   ",
-            "   ||              ________________________________________________________________________________                ||   ",
-            "   ||              | Society : If life hands you lemons...? Make lemonade.                        |                ||   ",
-            "   ||              | Him     : *pauses for a while* Uh... That's moronic, bro.                    |                ||   ",
-            "   ||              |           How can a no-faced, no-handed, nobody, HAND anybody any lemons...? |                ||   ",
-            "   ||              |           That's impossible...                                               |                ||   ",
-            "   ||              ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                ||   ",
-            "   ||  The common-folk would roll their eyes for being 'ridiculous', but- his argument made total sense.           ||   ",
-            "   ||  Even though he never was a cop...? He didn't NEED to be. He still impressed those who were. Some knew,      ||   ",
-            "   ||  only HE, could truly fulfill the task of being something MORE. Something symbolic... something legendary.   ||   ",
-            "   ||                                                                                                              ||   ",
-            "   ||  This is the story of a man who's faced a lot of resistance, a story SUPPOSEDLY 13.7 billion years in the    ||   ",
-            "   ||  making. Practically told everybody and their mother, that somebody had been in the process, of ATTEMPTING   ||   ",
-            "   ||  to commit the ultimate sin against HIM... But- they failed.                                                 ||   ",
-            "   \\______________________________________________________________________________________________________________//   ",
-            "    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    " | % { 
-
-                $Out.Add($Out.Count,$_)
+            Else
+            {
+                $Header   = "{0}{1}" -f $Header, (@(" ") * ($Length - $Header.Length) -join '')
             }
 
-            $This.Cover = @($Out[0..($Out.Count-1)]) -join "`n"
+            Return "$Header  "
         }
-        GetFlag()
+        [String[]] Qualification()
         {
-            $xFlag = (Write-Theme -Flag -Text | % TrimStart "#")[6..33].Substring(12,96)
-            $Out   = @{ }
-            $Out.Add($Out.Count,"   $("_" * 114 -join '')   ")
-            $Out.Add($Out.Count,"   [====( Flag )$("=" * 100 -join '')]   ")
-            $Out.Add($Out.Count,"   //$("¯" * 110 -join '')\\   ")
-            $xFlag | % { $Out.Add($Out.Count,"   ||       $_       ||   ") }
-            $Out.Add($Out.Count,"   \\$("_" * 110 -join '')//   ")
-            $Out.Add($Out.Count,"    $(@([char]175) * 112 -join '')    ")    
-
-            $This.Flag = @($Out[0..($Out.Count-1)]) -join "`n"
-        }
-        [String[]] Resource([String]$File)
-        {
-            Write-Host "Loading ($File)"
-            Return @( Invoke-RestMethod ("{0}/{1}`?raw=true" -f $This.Mode.Path, $File))
-        }
-        [String[]] Path([String]$File)
-        {
-            $Path = $This.Mode.Path, $File -join "/"
-            If (!(Test-Path $Path))
+            $Length        = $This.Guide | ? Name -eq Qualification | % Length
+            $Line          = $This.Person.Qualification.Description -join " | "
+            $Array         = [Char[]]$Line
+            $Hash          = @{ 0 = "" }
+            $Out           = @( )
+            ForEach ($X in 0..($Array.Count-1))
             {
-                Throw "Invalid path"
-            }
+                $Hash[$Hash.Count-1] += $Array[$X]
 
-            Return @([System.IO.File]::ReadAllLines($Path))
-        }
-        LoadChapters()
-        {
-            $Chapters = ($This.Table -Split "`n")[3..14] | % { $_.Substring(28).Replace("|"," ").TrimEnd(" ") }
-            ForEach ($Chapter in $Chapters)
-            {
-                Write-Host "Loading Chapter ($Chapter)"
-                $This.AddChapter($Chapter)
-            }
-        }
-        AddChapter([String]$Name)
-        {
-            If ($Name -in $This.Chapter.Name)
-            {
-                Throw "Chapter already exists"
-            }
-            
-            $This.Chapter += [Chapter]::New($This.Chapter.Count,$Name)
-        }
-        RemoveChapter([String]$Name)
-        {
-            If ($Name -notin $This.Chapter.Name)
-            {
-                Throw "Invalid chapter name"
-            }
-
-            $This.Chapter = @($This.Chapter | ? Name -ne $Name)
-
-            $This.Rerank()
-        }
-        RemoveChapter([Int32]$Index)
-        {
-            If ($Index -gt $This.Chapter.Count)
-            {
-                Throw "Invalid chapter index"
-            }
-
-            $This.Chapter = @($This.Chapter | ? Index -ne $Index)
-
-            $This.Rerank()
-        }
-        SetLabel([UInt32]$Index,[String]$String)
-        {
-            $Item = $This.Get($Index)
-
-            If ($Item)
-            {
-                $Item.SetLabel($String)
-
-                Write-Host ($Item.Header -join "`n")
-            }
-        }
-        AddSection([UInt32]$Index,[String]$Name,[String[]]$Content)
-        {
-            $Item = $This.Get($Index)
-
-            If ($Item)
-            {
-                $Item.AddSection($Name,$Content)
-            }
-        }
-        AddSection([UInt32]$Index,[UInt32]$Mode,[String]$Name,[String[]]$Content)
-        {
-            $Item = $This.Get($Index)
-
-            If ($Item)
-            {
-                $Item.AddSection($Mode,$Name,$Content)
-            }
-        }
-        Rerank()
-        {
-            If ($This.Chapter.Count -eq 1)
-            {
-                $This.Chapter[0].Index = 0
-            }
-            ElseIf ($This.Chapter.Count -gt 1)
-            {
-                ForEach ($X in 0..($This.Chapter.Count-1))
+                If ($Hash[$Hash.Count-1].Length -gt $Length)
                 {
-                    $This.Chapter[$X].Index = $X
+                    $Hash.Add($Hash.Count,$Hash[$Hash.Count-1].Split(" | ")[-1])
+                    $Hash[$Hash.Count-2] = $Hash[$Hash.Count-2] -Replace $Hash[$Hash.Count-1],''
                 }
             }
-        }
-        [String[]] Range([String]$Variable,[UInt32]$Chapter,[UInt32[]]$Range)
-        {
-            $Out = @( )
-            $This.Table[$Range] | % { $_.Replace("|","").Trim(" ") -Replace "\s{2,}"," " } | % {
-                
-                $Out += "`${0}.AddSection({1},`"$_`",@`"" -f $Variable, $Chapter
-                $Out += " "
-                $Out += "`"@)"
-                $Out += " "
+            Switch ($Hash.Count)
+            {
+                {$_ -eq 0}
+                {
+                    Throw "No qualifications found"
+                }
+                {$_ -eq 1}
+                {
+                    $Out += $This.Center($Length,$Hash[0].TrimEnd(" | "))
+                }
+                {$_ -gt 1}
+                {
+                    ForEach ($X in 0..($Hash.Count-1))
+                    {
+                        $Out += $This.Center($Length,$Hash[$X].TrimEnd(" | "))
+                    }
+                }
             }
+
+            $Out = $This.Prepare($Length,$Out)
 
             Return $Out
         }
-        [String[]] Markers()
+        [String[]] Employer([UInt32]$Index)
         {
-            $Out          = @( )
-            $This.Chapter | % { "{0} - {1}" -f $_.Label,$_.Name } | % {
-
-                $Hash     = @{ 
-                
-                    0     = "";
-                    1     = "| $_ |";
-                    2     = ""
-                }
-
-                $Hash[0]  = "_" * $Hash[1].Length -join ""
-                $Hash[2]  = @([char]175) * $Hash[1].Length -join "" 
-
-                0..2      | % { 
-            
-                    $Out += "# // " + $Hash[$_]
-                }
+            $Length = $This.Guide | ? Name -eq Employer | % Length
+            If ($Index -gt $This.Person.Employer.Count)
+            {
+                Throw "Invalid <Employer> index"
             }
 
-            Return $Out
+            $Out = $This.Person.Employer[$Index].Output()
+
+            Return $This.Prepare($Length,$Out)
         }
-        [Object] Get([UInt32]$Index)
+        [String[]] Education([UInt32]$Index)
         {
-            If ($Index -gt $This.Chapter.Count)
+            $Length = $This.Guide | ? Name -eq Education | % Length
+            If ($Index -gt $This.Person.Education.Count)
             {
-                Throw "Invalid index"
+                Throw "Invalid <Education> index"
             }
 
-            Return $This.Chapter[$Index]
-        }
-        [Object[]] Output()
-        {
-            $Hash              = @{ }
-            $This.Cover -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
-            $This.Flag  -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
-            $This.Table -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
-            Write-Progress -Activity Output -Status Chapters -PercentComplete 0
-            ForEach ($X in 0..($This.Chapter.Count-1))
-            {
-                $Item          = $This.Get($X)
-                Write-Progress -Activity Output -Status Chapters -PercentComplete ($X * 100/$This.Chapter.Count)
-                $Item.Output() | % { $Hash.Add($Hash.Count,$_) }
-            }
-            Write-Progress -Activity Output -Status Chapters -Complete
-            Return @($Hash[0..($Hash.Count-1)])
-        }
-        [Object[]] Guide()
-        {
-            $Hash              = @{ }
-            $This.Output()     | % { $Hash.Add($Hash.Count,$_) }
-            $Ct                = $Hash.Count
-            $Depth             = ([String]$Ct).Length
-            $Step              = 1..100 | % { $Ct/$_ }
-            $Index             = 0
-            $Hash2             = @{ }
+            $Out = $This.Person.Education[$Index].Output()
 
-            Write-Progress -Activity Guide -Status Chapters -PercentComplete 0
-            ForEach ($X in 0..($Ct-1))
+            Return $This.Prepare($Length,$Out)
+        }
+        [String[]] Skill([UInt32]$Index)
+        {
+            $Length = $This.Guide | ? Name -eq Skill | % Length
+            If ($Index -gt $This.Person.Skill.Count)
             {
-                If ($X -ge $Step[$Index])
+                Throw "Invalid <Skill> index"
+            }
+
+            $Out = $This.Person.Skill[$Index].Output()
+
+            Return $This.Prepare($Length,$Out)
+        }
+        [String] Padding([UInt32]$Length,[String]$Line)
+        {
+            If ($Line.Length -lt $Length)
+            {
+                Do
                 {
-                    Write-Progress -Activity Guide -Status Chapters -PercentComplete ($X * 100/$Ct)
-                    $Index ++
+                    $Line += " "
                 }
-                $Hash2.Add($X,("[{0:d$Depth}] {1}" -f $X, $Hash[$X]))
+                Until ($Line.Length -eq $Length)
             }
-            Write-Progress -Activity Guide -Status Chapters -Complete
-            Return @($Hash2[0..($Ct-1)])
+            Return $Line
         }
-        GenerateReel([String]$Base)
+        [String[]] Prepare([UInt32]$Length,[String[]]$Object)
         {
-            $This.Reel = [Reel]::New($Base,$This.Name,$This.Guide())
+            Switch ($Object.Count)
+            {
+                0
+                {
+                    Throw "Cannot prepare (0) input objects"
+                }
+                1
+                {
+                    $Object[0] = $This.Padding($Length,$Object[0])
+                }
+                Default
+                {
+                    ForEach ($X in 0..($Object.Count-1))
+                    {
+                        $Object[$X] = $This.Padding($Length,$Object[$X])
+                    }
+                }
+            }
+            Return $Object
+        }
+        Populate()
+        {
+            $This.Body = @( )
+            ForEach ($Section in "Employer","Education","Skill")
+            {
+                Switch ($Section)
+                {
+                    Employer  
+                    { 
+                        If ($This.Person.Employer.Count -eq 1)
+                        {
+                            $This.Body += [Body]::New($This.Body.Count,$Section,$This.Employer(0))
+                        }
+                        ElseIf ($This.Person.Employer.Count -gt 1)
+                        {
+                            ForEach ($X in 0..($This.Person.Employer.Count-1))
+                            {
+                                $This.Body += [Body]::New($This.Body.Count,$Section,$This.Employer($X))
+                            }
+                        }
+                    }
+                    Education 
+                    { 
+                        If ($This.Person.Education.Count -eq 1)
+                        {
+                            $This.Body += [Body]::New($This.Body.Count,$Section,$This.Education(0))
+                        }
+                        ElseIf ($This.Person.Education.Count -gt 1)
+                        {
+                            ForEach ($X in 0..($This.Person.Education.Count-1))
+                            {
+                                $This.Body += [Body]::New($This.Body.Count,$Section,$This.Education($X))
+                            }
+                        }
+                    }
+                    Skill     
+                    { 
+                        If ($This.Person.Skill.Count -eq 1)
+                        {
+                            $This.Body += [Body]::New($This.Body.Count,$Section,$This.Skill(0))
+                        }
+                        ElseIf ($This.Person.Skill.Count -gt 1)
+                        {
+                            ForEach ($X in 0..($This.Person.Skill.Count-1))
+                            {
+                                $This.Body += [Body]::New($This.Body.Count,$Section,$This.Skill($X))
+                            }
+                        }   
+                    }
+                }
+            }
+        }
+        Illustrate()
+        {
+            $This.Populate()
+            $This.Swap = @{ }
+            $Flag  = 0
+            $Index = 0
+            Do
+            {
+                Switch ($Index)
+                {
+                    {$_ -in 0..2+4..7+11}
+                    {
+                        Write-Host "Guide"
+                        $This.Swap.Add($This.Swap.Count,[Insertion]::New(-1,$Index,$This.Theme.Track[$Index]))
+                        $Index ++
+                    }
+                    
+                    {$_ -eq 3}
+                    {
+                        Write-Host "Header"
+                        $Header = $This.Header()
+                        $This.Swap.Add($This.Swap.Count,[Insertion]::New(0,0,$This.Theme.Track[$Index],$Header))
+                        $Index ++
+                    }
+                    
+                    {$_ -eq 8}
+                    {
+                        $Qualification = $This.Qualification()
+                        If ($Qualification.Count -eq 1)
+                        {                        
+                            Write-Host "Qualification"
+                            $This.Swap.Add($This.Swap.Count,[Insertion]::New(1,0,$This.Theme.Track[$Index],$Qualification))
+                        }
+                        ElseIf ($Qualification.Count -gt 1)
+                        {
+                            ForEach ($X in 0..($Qualification.Count-1))
+                            {
+                                Write-Host "Qualification"
+                                $This.Swap.Add($This.Swap.Count,[Insertion]::New(1,$X,$This.Theme.Track[$Index],$Qualification[$X]))
+                            }
+                        }
+                        $Index ++
+                    }
+                    {$_ -eq 9}
+                    {
+                        $Employer       = $This.Body[0].Object
+
+                        ForEach ($X in 0..($Employer.Count-1))
+                        {
+                            Write-Host "Employer0"
+                            $This.Swap.Add($This.Swap.Count,[Insertion]::New(2,$X,$This.Theme.Track[@($Index;($Index+1))[$X % 2]],$Employer[$X]))
+                            ## $This.Swap.Add($This.Swap.Count,[Insertion]::New(1,$X,$Theme.Track[@($Index;($Index+1))[$X % 2]],$Employer[$X]))
+                            If ($X -eq $Employer.Count - 1)
+                            {
+                                $Index ++ 
+                                $X     ++
+                                If ($X % 2 -eq 1)
+                                {
+                                    $This.Swap.Add($This.Swap.Count,[Insertion]::New(2,$X,$This.Theme.Track[$Index]))
+                                }
+                            }
+                        }
+                        $Index         ++
+                    }
+                    {$_ -eq 12} # // Remaining
+                    {
+                        $Last = ""
+                        ForEach ($X in 1..($This.Body.Count-1))
+                        {
+                            $Item      = $This.Body[$X]
+                            If ($Item.Type -eq $Last)
+                            {
+                                $Index = 13
+                            }
+                            If ($Item.Type -ne $Last)
+                            {
+                                $Index = 12
+                                $Last  = $Item.Type
+                                $Label = "( $Last )"
+                                If ($Label.Length -le 104)
+                                {
+                                    Do
+                                    {
+                                        $Label += "="
+                                    }
+                                    Until ($Label.Length -ge 104)
+                                    $Label += "="
+                                }
+                                $This.Swap.Add($This.Swap.Count,[Insertion]::New(3,$This.Swap.Count,$This.Theme.Track[$Index],$Label))
+                                $Index ++
+                            }
+
+                            Write-Host ("{0} ({1}/{2})" -f $Last, $Item.Index, $This.Body.Count)
+                            $I = 0
+                            Do
+                            {
+                                If ($Index -ne 18)
+                                {
+                                    $This.Swap.Add($This.Swap.Count,[Insertion]::New($Item.Slot,$I,$This.Theme.Track[$Index],$Item.Object[$I]))
+                                    $I     ++
+                                    $Index ++
+                                }
+                                If ($Index -eq 18)
+                                {
+                                    If ($I -ne $Item.Object.Count)
+                                    {
+                                        $This.Swap.Add($This.Swap.Count,[Insertion]::New($Item.Slot,$I,$This.Theme.Track[$Index],$Item.Object[$I]))
+                                        $I ++
+                                    }
+                                    If ($I -ne $Item.Object.Count)
+                                    {
+                                        Do
+                                        {
+                                            $This.Swap.Add($This.Swap.Count,[Insertion]::New($Item.Slot,$I,$This.Theme.Track[$Index],$Item.Object[$I]))
+                                            $I ++
+                                        }
+                                        Until ($I -ge $Item.Object.Count)
+                                    }
+                                    $Index ++
+                                }
+                            }
+                            Until ($I -eq $Item.Object.Count)
+                            $This.Swap.Add($This.Swap.Count,[Insertion]::New($Item.Slot,$I,$This.Theme.Track[$Index]))
+
+                            If ($X -eq $This.Body.Count-1)
+                            {
+                                $Flag = 1
+                                $Index ++
+                                $This.Swap.Add($This.Swap.Count,[Insertion]::New(-1,$Index,$This.Theme.Track[$Index]))
+                            }
+                        }
+                    }
+                }
+            } 
+            Until ($Flag -eq 1)
+            ForEach ($X in 0..($This.Swap.Count-1))
+            {
+                $This.Swap[$X].Index  = $X
+                $This.Output    += $This.Swap[$X]
+            }
+        }
+        [Void] Draw()
+        {
+            $This.Output.Track.Draw(@(10,12,15,0))
+        }
+        [Void] Draw([UInt32[]]$Palette)
+        {
+            $This.Output.Track.Draw($Palette)
+        }
+        [String] Center([UInt32]$Length,[String]$Line)
+        {
+            $Buffer = $Length - $Line.Length
+            $Split  = [Math]::Round($Buffer / 2,[MidpointRounding]::ToZero)
+            Return "{0}{1}{0}" -f (@(" ")*$Split -join ''), $Line
+        }
+        [String[]] ToString()
+        {
+            If ($This.Output.Count -gt 0)
+            {
+                Return @( $This.Output | % { $_.Track.Object -join '' } )
+            }
+            Else
+            {
+                Return $Null
+            }
         }
     }
 
-    If ($Path)
-    {
-        [Book]::New($Path,$Name)
-    }
-    Else
-    {
-        [Book]::New($Name)
-    }
+    [Resume]::New($Name,$Title)
 }
+
 Function Get-FoundingFathers
 {
     Class Year
@@ -2066,20 +2578,653 @@ Function Get-FoundingFathers
     $Out
 }
 
-$Book       = Write-Book -Name "Top Deck Awareness - Not News"
+Function Write-Book
+{
+    [CmdletBinding()]Param([Parameter(Mandatory,Position=0)][String]$Name)
+        
+    # // _____________________________________________________________
+    # // | This is a screenshot object for output to png or whatever |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class Screenshot
+    {
+        [UInt32] $Index
+        [String] $Name
+        [Object] $Bitmap
+        [Object] $Graphic
+        Screenshot([String]$Name,[Object]$XY)
+        {
+            $This.Name    = $Name
+            If (Test-Path $Name)
+            {
+                Throw "File exists"
+            }
+            
+            $This.Bitmap  = [Drawing.Bitmap]::New($XY.Width,$XY.Height)
+            $This.Graphic = [Drawing.Graphics]::FromImage($This.Bitmap)
+            $This.Graphic.CopyFromScreen($XY.Location,[Drawing.Point]::Empty,$XY.Size)
+            $This.Bitmap.Save($This.Name)
+            $This.Graphic.Dispose()
+            $This.Bitmap.Dispose()
+        }
+    }
+    
+    # // ____________________________________________________________________
+    # // | This is a collection of screenshots with a dedicated output path |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class Reel
+    {
+        [String] $Base
+        [String] $Name
+        [String] $Date
+        [String] $Root
+        [Drawing.Rectangle] $Dimension
+        [Object] $Swap
+        [Object] $Output
+        [Object] $File
+        Reel([String]$Base,[String]$Name,[String[]]$Swap)
+        {
+            If (!(Test-Path $Base))
+            {
+                Throw "Invalid path"
+            }
+    
+            $This.Base      = $Base
+            $This.Name      = $Name
+            $This.Date      = Get-Date -UFormat "%m%d%Y"
+            $This.Root      = $This.Base, $This.Date, $This.Name -join "\"
+            If (!(Test-Path $This.Root))
+            {
+                New-Item $This.Root -ItemType Directory -Verbose
+            }
+            #If ($IsLinux)
+            #{
+                #$This.Dimension = [Drawing.Rectangle]::FromLTRB(25,190,1165,835)
+            #}
+            #If ($VSCode)
+            #{
+                #$This.Dimension = [Drawing.Rectangle]::FromLTRB(20,110,1440,868)
+            #}
+            #If ($WindowsTerminal)
+            #{
+                $This.Dimension = [Drawing.Rectangle]::FromLTRB(0,32,1560,760)
+            #}
+            $This.Swap      = $Swap
+            $This.Output    = @{ }
+            $Block          = @( )
+            ForEach ($X in 0..($This.Swap.Count-1))
+            {
+                If ($X -ne 0 -and $X % 30 -eq 0)
+                {
+                    $This.Output.Add($This.Output.Count,$Block)
+                    $Block        = @( )
+                }
+    
+                $Block += $This.Swap[$X] 
+            }
+            $This.File   = @( )
+        }
+        Screenshot([UInt32]$Index)
+        {
+            If ($Index -gt $This.Output.Count)
+            {
+                Throw "Invalid index"
+            }
+    
+            $Depth = ([String]($This.Output.Count)).Length
+            $ID    = "{0}/{1:d$Depth}.png" -f $This.Root, $Index
+    
+            Invoke-Expression "Clear-Host;`$This.Output[$Index] | % { Write-Host `$_ };Start-Sleep -Milliseconds 250"
+
+            $This.File += [Screenshot]::New($ID,$This.Dimension)
+        }
+        Compile()
+        {
+            ForEach ($X in 0..($This.Output.Count-1))
+            {
+                $This.Screenshot($X)
+            }
+        }
+    }
+
+    # // ____________________________________________________
+    # // | What the class name suggests, the page dimension |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class PageDimension
+    {
+        [UInt32] $Width
+        [UInt32] $Height
+        [UInt32] $Characters
+        PageDimension()
+        {
+            $This.Width      = 120
+            $This.Height     = 80
+            $This.Characters = $This.Width * $This.Height
+        }
+    }
+
+    # // ____________________________________________________________
+    # // | Meant to keep track of lines for each individual section |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class Line
+    {
+        [UInt32] $Index
+        [String] $Content
+        Line([UInt32]$Index,[String]$Content)
+        {
+            $This.Index   = $Index
+            $This.Content = $Content
+        }
+        [String] ToString()
+        {
+            Return $This.Content
+        }
+    }
+
+    # // ___________________________________________________________
+    # // | Within each individual chapter are a series of sections |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class Section
+    {
+        [UInt32] $Index
+        [UInt32] $Mode
+        [String] $Name
+        [Object] $Line
+        Section([UInt32]$Index,[UInt32]$Mode,[String]$Name,[String[]]$Content)
+        {
+            $This.Index   = $Index
+            $This.Mode    = $Mode
+            $This.Name    = $Name
+            $This.Line    = @( )
+            
+            $This.InsertContent($Content)
+            
+            $This.Rerank()
+        }
+        Section([UInt32]$Index,[String]$Name,[String[]]$Content)
+        {
+            $This.Index   = $Index
+            $This.Mode    = 0
+            $This.Name    = $Name
+            $This.Line    = @( )
+            
+            $This.InsertContent($Content)
+            
+            $This.Rerank()
+        }
+        InsertContent([String[]]$Content)
+        {
+            $Content = $Content -Split "`n"
+
+            Switch ($Content.Count)
+            {
+                {$_ -eq 1}
+                {
+                    $This.Line += [Line]::New($This.Line.Count,$Content)
+                }
+                {$_ -gt 1}
+                {
+                    ForEach ($X in 0..($Content.Count-1))
+                    { 
+                        $This.Line += [Line]::New($This.Line.Count,$Content[$X]) 
+                    }
+                }
+            }
+        }
+        RemoveContent([UInt32]$Index)
+        {
+            If ($Index -gt $This.Line.Count)
+            {
+                Throw "Invalid line index"
+            }
+
+            $This.Line = $This.Line | ? Index -ne $Index
+
+            $This.Rerank()
+        }
+        Rerank()
+        {
+            If ($This.Line.Count -eq 1)
+            {
+                $This.Line[0].Index = 0
+            }
+            ElseIf ($This.Line.Count -gt 1)
+            {
+                ForEach ($X in 0..($This.Line.Count-1))
+                {
+                    $This.Line[$X].Index = $X
+                }
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+        [String[]] Output()
+        {
+            $Hash = @{ }
+            $1    = $This.Name.Length
+            $0    = 116 - $1
+            $Hash.Add($Hash.Count,("  {0} /{1}\" -f $This.Name,(@([char]175) * $0 -join '' )))
+            $Hash.Add($Hash.Count,("/{0} {1} " -f (@([Char]175) * ($1 + 2) -join ''), (@(" ") * $0 -join '')))
+            ForEach ($Line in $This.Line | % Content)
+            {
+                $Item = Switch ($This.Mode)
+                {
+                    0 { "    $Line" }
+                    1 { $Line }
+                }
+
+                If ($Item.Length -gt 128)
+                {
+                    $Item = $Item.Substring(0,128)
+                }
+
+                $Hash.Add($Hash.Count,$Item)
+            }
+            $Hash.Add($Hash.Count,(" {0} _{1}_/" -f (@(" ") * $0 -join ''),(@("_") * $1 -join '')))
+            $Hash.Add($Hash.Count,("\{0}/ {1}  " -f (@("_") * $0 -join ''), $This.Name))
+
+            Return @($Hash[0..($Hash.Count-1)])
+        }
+    }
+
+    # // ___________________________________________________
+    # // | The entire book consists of individual chapters |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class Chapter
+    {
+        [UInt32] $Index
+        [String] $Label
+        [String] $Name
+        [UInt32] $Page
+        [Object] $Header
+        [Object] $Section
+        Chapter([Int32]$Index,[String]$Label,[String]$Name)
+        {
+            $This.Index   = $Index
+            $This.Label   = $Label
+            $This.Name    = $Name
+            $This.Header  = Write-Theme ("{0} - {1}" -f $This.Label, $This.Name) -Text | % { $_.TrimStart("#") }
+            $This.Section = @( )
+        }
+        NewSection([String]$Name,[String[]]$Content)
+        {
+            If ($Name -in $This.Section.Name)
+            {
+                Throw "Section already exists"
+            }
+
+            $This.Section += [Section]::New($This.Section.Count,0,$Name,$Content)
+            Write-Host ("Loaded [+] {0}: Section ({1}) [{2}]" -f $This.Label,$This.Section[-1].Index,$Name)
+            If ($Name -eq "Start")
+            {
+                $This.Section | ? Name -eq Start | % { $_.Index = 0 }
+            }
+            
+            $This.Rerank()
+        }
+        Rerank()
+        {
+            If ($This.Section.Count -eq 1)
+            {
+                $This.Section[0].Index = 0
+            }
+            ElseIf ($This.Section.Count -gt 1)
+            {
+                ForEach ($X in 0..($This.Section.Count-1))
+                {
+                    $This.Section[$X].Index = $X
+                }
+            }
+        }
+        [String[]] Output()
+        {
+            $Out                 = @( )
+            $This.Header         | % { $Out += $_ }
+            $Out                += " "
+            ForEach ($Line in $This.Section | % Output)
+            {
+                $Out            += $Line
+            }
+
+            Return $Out
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    # // ___________________________________________________________________________________
+    # // | Meant to catagorically collect, maintain, and reproduce the BOOK/PROGRAM/MODULE |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class Book
+    {
+        [String] $Name
+        [Object] $Cover
+        Hidden [Object] $Flag
+        Hidden [Object] $Table
+        [Object] $Chapter
+        Hidden [Object] $Reel
+        Book([String]$Name)
+        {
+            Write-Host "Assembling book... $Name"
+            $This.Name    = $Name
+            $This.GetCover()
+            $This.GetFlag()
+            $This.Table   = @( )
+            $This.Chapter = @( )
+        }
+        GetCover()
+        {
+            $Out          = @{ }
+            "                                                                                                                        ",
+            "            ____    ____    ________________________________________________________________    ____    ____            ",
+            "        ___//¯¯\\__//¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\__//¯¯\\___        ",
+            "    ___/    \__/    \__//¯¯¯          Secure Digits Plus LLC (π) | Fighting Entropy         ¯¯¯\\__/    \__/    \___    ",
+            "   //¯¯\    /¯¯\    /¯¯\\___                 Top Deck Awareness - Not News                  ___//¯¯\    /¯¯\    /¯¯\\   ",
+            "   \\__//¯¯\\__//¯¯\\__//¯¯\\______________________________________________________________//¯¯\\__//¯¯\\__//¯¯\\__//   ",
+            "   //¯¯\\__//¯¯\\__//¯¯¯    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\__//¯¯\\__//¯¯\\   ",
+            "   \\__/    \__//   ________________________________________________________________________________   \\__/    \__//   ",
+            "   //¯¯\    /¯¯\\   | Used to be news...? Now its Not News. Not News. Part of the Not News Network |   //¯¯\    /¯¯\\   ",
+            "   \\__//¯¯\\__//   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   \\__//¯¯\\__//   ",
+            "   //¯¯\\__//¯¯\\       ________________________________________________________________________       //¯¯\\__//¯¯\\   ",
+            "   \\__/    \__//   ___//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___   \\__/    \__//   ",
+            "   //¯¯\    /¯¯\\__//¯¯¯    Provisional Author: Michael C. Cook Sr. | `"The Buck Stops Here`"     ¯¯¯\\__//¯¯\    /¯¯\\   ",
+            "   \\__/¯¯¯¯    ¯¯¯¯                                                                                ¯¯¯¯    ¯¯¯¯\__//   ",
+            "   //   Thesis   : Fox News is not news, it is propaganda. They should change the name to Not News                 \\   ",
+            "   ||   Subject  : (STEM/Science, Technology, Engineering, Mathematics)                                            ||   ",
+            "   ||               History, Politics, Psychology, Philosophy, Morality, Comedy, Commerce, Industry                ||   ",
+            "   ||   Conflict : Treason, Corruption, Censorship, Injustice, Identity Theft, Cybercrime, Antitrust, Fraud        ||   ",
+            "   ||   Affair   : Political/Foreign+Domestic+Local, Social/Personal                                               ||   ",
+            "   ||   Agency   : NSA/Nat. Sec. Agency, CIA/Central Intel Agency, NIST/Nat. Institute of Standards and Tech.,     ||   ",
+            "   ||              FBI/Fed. Bureau of Invest., DHS/Dept. of Homeland Sec., CISA/Cybersec. Infra. Sec. Agency,      ||   ",
+            "   ||              NYSP/New York State Police, SCSO/Saratoga County Sheriffs Office                                ||   ",
+            "   \\______________________________________________________________________________________________________________//   ",
+            "   [====( Primary & Secondary Characters )==========================================================================]   ",
+            "   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   ",
+            "   ||   [J. P. Assange/WikiLeaks], [E. J. Snowden/CIA+NSA], [General K. McKenzie Jr./USMC+CENTCOM]                 ||   ",
+            "   ||   [E. Musk/Tesla+SpaceX], [W. Gates/Microsoft+Gates Foundation], [W. Buffett/Berkshire Hathaway]             ||   ",
+            "   ||   [R. Murdoch, T. Carlson, S. Hannity/Fox News], [T. Cruz/Senator TX], [M. Zuckerberg/Facebook],             ||   ",
+            "   ||   [G. W. Bush/Former President], [B. Lutz/General Motors], [H. Clinton/Former First Lady+Senator NY],        ||   ",
+            "   ||   [V. Putin/Dictator of Russia], [V. Zelensky/President of Ukraine], [J. Bezos/Amazon], [T. Cook/Apple]      ||   ",
+            "   \\______________________________________________________________________________________________________________//   ",
+            "   [====( Story )===================================================================================================]   ",
+            "   //¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\   ",
+            "   ||   Once upon a time, a man once lived in the crime-riddled badlands of suburbia... in Clifton Park, NY.       ||   ",
+            "   ||   A KEYBOARD WARRIOR, whose story was unlike any other, unparalleled in nature. One night he was nearly      ||   ",
+            "   ||   killed and somehow barely survived. His story and voice were both so gritty...? Well, people could         ||   ",
+            "   ||   practically feel the bits of gravel pelting off of their eardrums when he told the tale...                 ||   ",
+            "   ||                                                                                                              ||   ",
+            "   ||   His brush with death revealed a DARK, TWISTED SECRET that laid BURIED, beneath the surface of his home     ||   ",
+            "   ||   town, HIDDEN in PLAIN SIGHT. A DANGEROUS & ELUSIVE [RACKETEER INFLUENCED CRIMINAL ORGANIZATION], a ring    ||   ",
+            "   ||   of CROOKS, CRIMINALS, BANKERS, PUBLIC SERVANTS, and SERIAL KILLERS, joined as one unstoppable force.       ||   ",
+            "   ||   All in the name of becoming something EVIL and SINISTER, committing: HOME INVASIONS, ROBBERIES, RAPES,     ||   ",
+            "   ||   MURDERS, FRAUD, RACKETEERING, EXTORTION, INTELLECTUAL PROPERTY THEFT, IDENTITY THEFT & CYBERCRIME.         ||   ",
+            "   ||                                                                                                              ||   ",
+            "   ||   They've corrupted many (county/state/gov.) agencies, killed many people, gotten very rich, and they've     ||   ",
+            "   ||   never been CAUGHT. A legion of bad-ass detectives have known about this force... They've been fighting     ||   ",
+            "   ||   a seemingly never-ending war against them. But- they've grown weary. Their sanity...? Depleted.            ||   ",
+            "   ||   Their patience...? Worn thin. Still, if there's anything they can count on...? Crime never sleeps...       ||   ",
+            "   ||   ...and neither do they.                                                                                    ||   ",
+            "   ||                                                                                                              ||   ",
+            "   ||   This is the story of a man who rose to the challenge, to begin a white-knuckled fight against ID theft &   ||   ",
+            "   ||   cybercrime, until he discovered a series of clues that directly linked those at the center of the RICO,    ||   ",
+            "   ||   to his FATHER who had been KILLED a LIFETIME ago. An INVESTIGATION, DECADES in the making, REVEALING       ||   ",
+            "   ||   SECRETS, CLUES, and REALIZATIONS- all EXPOSING the EXISTENCE of his dad's TRUE killers. THEY CONSPIRED     ||   ",
+            "   ||   to have him EXECUTED by a MERCENARY in 1995. However, making his dad's murder LOOK like a foiled robbery   ||   ",
+            "   ||   was a fatal mistake... they committed the ultimate sin.                                                    ||   ",
+            "   ||                                                                                                              ||   ",
+            "   ||   The ones that GREENLIT his father's execution...? They really were dumb enough to try and kill HIM too,    ||   ",
+            "   ||   only to fail miserably, whereby unraveling a MUCH larger, uglier, even MORE sinister truth. Those who      ||   ",
+            "   ||   killed his father revealed themselves. Whereby jeopardizing their riches, livelihood, and elusiveness.     ||   ",
+            "   ||                                                                                                              ||   ",
+            "   ||   One night before all of the chaos began, this keyboard warrior, this cybercommando, visited his fathers’   ||   ",
+            "   ||   grave. Staring at his father's legacy, engraved in stone... he spoke to him for some time. As he was       ||   ",
+            "   ||   leaving, he vowed to avenge him, and leave a mark on the world in his name. Then, as if its timing was     ||   ",
+            "   ||   fate, or destiny...? A shooting star fell from the heavens. From that day, his mission became clear.       ||   ",
+            "   ||                                                                                                              ||   ",
+            "   ||   His life...? Imbued with hardship. Pain. Scorn. Resentment, and atrocities. The love of his life...?       ||   ",
+            "   ||   Ripped away, outside of reach. His children...? Taken, and lied to. When society told him...               ||   ",
+            "   ||              ________________________________________________________________________________                ||   ",
+            "   ||              | Society : If life hands you lemons...? Make lemonade.                        |                ||   ",
+            "   ||              | Him     : *pauses for a while* Uh... That's moronic, bro.                    |                ||   ",
+            "   ||              |           How can a no-faced, no-handed, nobody, HAND anybody any lemons...? |                ||   ",
+            "   ||              |           That's impossible...                                               |                ||   ",
+            "   ||              ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                ||   ",
+            "   ||  The common-folk would roll their eyes for being 'ridiculous', but- his argument made total sense.           ||   ",
+            "   ||  Even though he never was a cop...? He didn't NEED to be. He still impressed those who were. Some knew,      ||   ",
+            "   ||  only HE, could truly fulfill the task of being something MORE. Something symbolic... something legendary.   ||   ",
+            "   ||                                                                                                              ||   ",
+            "   ||  This is the story of a man who's faced a lot of resistance, a story SUPPOSEDLY 13.7 billion years in the    ||   ",
+            "   ||  making. Practically told everybody and their mother, that somebody had been in the process, of ATTEMPTING   ||   ",
+            "   ||  to commit the ultimate sin against HIM... But- they failed.                                                 ||   ",
+            "   \\______________________________________________________________________________________________________________//   ",
+            "    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    " | % { 
+
+                $Out.Add($Out.Count,$_)
+            }
+
+            $This.Cover = @($Out[0..($Out.Count-1)]) -join "`n"
+        }
+        GetFlag()
+        {
+            $xFlag = (Write-Theme -Flag -Text | % TrimStart "#")[6..33].Substring(12,96)
+            $Out   = @{ }
+            $Out.Add($Out.Count,"   $("_" * 114 -join '')   ")
+            $Out.Add($Out.Count,"   [====( Flag )$("=" * 100 -join '')]   ")
+            $Out.Add($Out.Count,"   //$("¯" * 110 -join '')\\   ")
+            $xFlag | % { $Out.Add($Out.Count,"   ||       $_       ||   ") }
+            $Out.Add($Out.Count,"   \\$("_" * 110 -join '')//   ")
+            $Out.Add($Out.Count,"    $(@([char]175) * 112 -join '')    ")    
+
+            $This.Flag = @($Out[0..($Out.Count-1)]) -join "`n"
+        }
+        GetTable()
+        {
+            $Entry  = @( )
+            $Out    = @{ }
+            $Out.Add($Out.Count,"   $("_" * 114 -join '')   ")
+            $Out.Add($Out.Count,"   [====( Table of Content )$("=" * 88 -join '')]   ")
+            $Out.Add($Out.Count,"   //$("¯" * 110 -join '')\\   ")
+            $Max   = @{ 
+
+                Label = ($Book.Chapter.Label | Sort-Object Length)[-1]
+                Name  = ($Book.Chapter.Name  | Sort-Object Length)[-1]
+                Page  = 3
+            }
+            $Max.Length = 11 + $Max.Label.Length + 10 + $Max.Name.Length
+
+            ForEach ($X in 0..($Book.Chapter.Count-1))
+            {
+                $I       = $Book.Chapter[$X]
+                $L       = $I.Label
+                $N       = $I.Name
+
+                If ($I.Label.Length -lt $Max.Label.Length)
+                {
+                    $L  += @(" ") * ($Max.Label.Length-$I.Label.Length) -join ''
+                }
+                If ($N.Length -lt $Max.Name.Length)
+                {
+                    $N  += @(" ") * ($Max.Name.Length-$N.Length) -join ''
+                }
+
+                $Line    = "{0} |  XXX | {1}" -f $L, $N
+                $Entry  += $Line
+                $Line   += @(" ") * (102 - $Line.Length) -join ""
+                $Out.Add($Out.Count,"   ||     $Line   ||   ")
+            }
+            $Out.Add($Out.Count,"   \\$("_" * 110 -join '')//   ")
+            $Out.Add($Out.Count,"    $(@([char]175) * 112 -join '')    ")
+
+            # $Out[0..($out.Count-1)]
+        }
+        NewChapter([String]$Label,[String]$Name)
+        {
+            If ($Name -in $This.Chapter.Name)
+            {
+                Throw "Chapter already exists"
+            }
+            
+            $Item          = [Chapter]::New($This.Chapter.Count,$Label,$Name)
+            $This.Chapter += $Item
+            Write-Host "Added [+] Chapter: [$("{0} - {1}" -f $Item.Label, $Item.Name)]"
+        }
+        NewSection([UInt32]$Index,[String]$Name,[String[]]$Content)
+        {
+            $Item = $This.Get($Index)
+
+            If ($Item)
+            {
+                $Item.NewSection($Name,$Content)
+            }
+        }
+        Rerank()
+        {
+            If ($This.Chapter.Count -eq 1)
+            {
+                $This.Chapter[0].Index = 0
+            }
+            ElseIf ($This.Chapter.Count -gt 1)
+            {
+                ForEach ($X in 0..($This.Chapter.Count-1))
+                {
+                    $This.Chapter[$X].Index = $X
+                }
+            }
+        }
+        [String[]] Range([String]$Variable,[UInt32]$Chapter,[UInt32[]]$Range)
+        {
+            $Out = @( )
+            $This.Table[$Range] | % { $_.Replace("|","").Trim(" ") -Replace "\s{2,}"," " } | % {
+                
+                $Out += "`${0}.NewSection({1},`"$_`",@`"" -f $Variable, $Chapter
+                $Out += " "
+                $Out += "`"@)"
+                $Out += " "
+            }
+
+            Return $Out
+        }
+        [String[]] Markers()
+        {
+            $Out          = @( )
+            $This.Chapter | % { "{0} - {1}" -f $_.Label,$_.Name } | % {
+
+                $Hash     = @{ 
+                
+                    0     = "";
+                    1     = "| $_ |";
+                    2     = ""
+                }
+
+                $Hash[0]  = "_" * $Hash[1].Length -join ""
+                $Hash[2]  = @([char]175) * $Hash[1].Length -join "" 
+
+                0..2      | % { 
+            
+                    $Out += "# // " + $Hash[$_]
+                }
+            }
+
+            Return $Out
+        }
+        [Object] Get([UInt32]$Index)
+        {
+            If ($Index -gt $This.Chapter.Count)
+            {
+                Throw "Invalid index"
+            }
+
+            Return $This.Chapter[$Index]
+        }
+        [Object[]] Output()
+        {
+            $Hash              = @{ }
+            $This.Cover -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
+            $This.Flag  -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
+            $This.Table -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
+            Write-Progress -Activity Output -Status Chapters -PercentComplete 0
+            ForEach ($X in 0..($This.Chapter.Count-1))
+            {
+                $Item          = $This.Get($X)
+                Write-Progress -Activity Output -Status Chapters -PercentComplete ($X * 100/$This.Chapter.Count)
+                $Item.Output() | % { $Hash.Add($Hash.Count,$_) }
+            }
+            Write-Progress -Activity Output -Status Chapters -Complete
+            Return @($Hash[0..($Hash.Count-1)])
+        }
+        [Object[]] Guide()
+        {
+            $Hash              = @{ }
+            $This.Output()     | % { $Hash.Add($Hash.Count,$_) }
+            $Ct                = $Hash.Count
+            $Depth             = ([String]$Ct).Length
+            $Step              = 1..100 | % { $Ct/$_ }
+            $Index             = 0
+            $Hash2             = @{ }
+
+            Write-Progress -Activity Guide -Status Chapters -PercentComplete 0
+            ForEach ($X in 0..($Ct-1))
+            {
+                If ($X -ge $Step[$Index])
+                {
+                    Write-Progress -Activity Guide -Status Chapters -PercentComplete ($X * 100/$Ct)
+                    $Index ++
+                }
+                $Hash2.Add($X,("[{0:d$Depth}] {1}" -f $X, $Hash[$X]))
+            }
+            Write-Progress -Activity Guide -Status Chapters -Complete
+            Return @($Hash2[0..($Ct-1)])
+        }
+        GenerateReel([String]$Base)
+        {
+            $This.Reel = [Reel]::New($Base,$This.Name,$This.Guide())
+        }
+        [String[]] Resource([String]$File)
+        {
+            Write-Host "Loading ($File)"
+            Return @( Invoke-RestMethod ("{0}/{1}`?raw=true" -f $This.Mode.Path, $File))
+        }
+        [String[]] Path([String]$File)
+        {
+            $Path = $This.Mode.Path, $File -join "/"
+            If (!(Test-Path $Path))
+            {
+                Throw "Invalid path"
+            }
+
+            Return @([System.IO.File]::ReadAllLines($Path))
+        }
+    }
+
+    [Book]::New($Name)
+}
 
 # // _____________________________________________________________
 # // | Prologue - History, the Constitution of the United States |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(0,"Prologue")
+Function Prologue
+{
+    Param ($Book)
 
-$Book.AddSection(0,"Start",@'
+$Book.NewChapter("Prologue","History, the Constitution of the United States")
+
+$Book.NewSection(0,"Start",@'
 Benjamin Franklin: It is the RESPONSIBILITY of EVERY citizen, to QUESTION AUTHORITY.
 Keep this quote in mind, because it is the beginning and the end of this entire document.
 '@)
 
-$Book.AddSection(0,"Introduction (1)",@'
+$Book.NewSection(0,"Introduction (1)",@'
 Benjamin Franklin was one of the founding fathers of the United States of America, and a very critical
 one at that. Benjamin Franklin, was a dude that had principles down pat, as he was an avid writer,
 quite the scientist, an inventor (invented bifocals), an able-bodied statesman, top-shelf diplomat,
@@ -2147,7 +3292,7 @@ A rather important man...
 ...he gave his signature speech.
 '@)
 
-$Book.AddSection(0,"Signature Speech",@'
+$Book.NewSection(0,"Signature Speech",@'
 Franklin : Gentlemen, this is MORE than words on a piece of paper that we're responsible for authoring,
            and signing.
            This will be the GREATEST document EVER written.
@@ -2166,7 +3311,7 @@ Franklin : Gentlemen, this is MORE than words on a piece of paper that we're res
            *signs the Constitution of the United States of America*
 '@)
 
-$Book.AddSection(0,"Introduction (2)",@'
+$Book.NewSection(0,"Introduction (2)",@'
 At that moment, the United States of America was finally formed, on an official basis, although the 
 Articles of Confederation had been its original Constitution, this new version would replace it. 
 It took approximately 12 days for these men to complete the document, and the document has been 
@@ -2251,9 +3396,9 @@ would remain in effect until the "complete/current" United States of America Con
 in September 1787.
 '@)
 
-$Book.AddSection(0,"Founding Fathers",(Get-FoundingFathers))
+$Book.NewSection(0,"Founding Fathers",(Get-FoundingFathers))
 
-$Book.AddSection(0,"History Repeats Itself",@"
+$Book.NewSection(0,"History Repeats Itself",@"
 Of course, history always has a way of repeating itself, and though this is a history lesson right 
 now...? It becomes the perfect metaphor for current events: 
 ________________________________________________________________________________________________________
@@ -2270,7 +3415,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(0,"Colonial America",
+$Book.NewSection(0,"Colonial America",
 @"
 Colonial American history is rather extensive, and articulate. I'm shooting for some level of concision
 and keeping the story COMPELLING and FOCUSED, but it will eventually be quite thorough.
@@ -2306,7 +3451,7 @@ While the Constitution established the base from which additional amendments wer
 made, most particularly the Bill of Rights, this document is still the most important of them all.
 "@)
 
-$Book.AddSection(0,"Transition",@"
+$Book.NewSection(0,"Transition",@"
 I'll say it right here and now, there's a lot of fuckin' swearing and offensive language in this 
 document. Oh well. The Constitution allows people to say stuff.
 
@@ -2468,7 +3613,7 @@ Are they ALL morons?
 No, they're not.
 "@)
 
-$Book.AddSection(0,"Injustice (Preview)",@"
+$Book.NewSection(0,"Injustice (Preview)",@"
 As for the POLICE, MANY of them they will PISS ALL OVER YOUR RIGHTS, and treat you like you aren't 
 fuckin' worthy of the law. Because, if a CRIME is committed by someone in the GOVERNMENT...? 
 Nobody does anything. (It seems...)
@@ -2685,7 +3830,7 @@ What I'm STATING is that THEY can FABRICATE A REASON OUT OF THIN AIR, and even G
 PERMISSION TO DO WHATEVER THEY FUCKING WANT TO DO. (← Why the CONSTITUTION was WRITTEN)
 "@)
 
-$Book.AddSection(0,"History of Mass Surveillance (Preview) (1)",@"
+$Book.NewSection(0,"History of Mass Surveillance (Preview) (1)",@"
 The COOL thing is, when I try to inform OTHER PEOPLE...? They think that what I'm saying is
 insane. Or, they will literally call my sanity into question. That's because, the USA-PATRIOT
 Act of 2001 was passed into law, to CONVERT AMERICA into a PSEUDOCOMMUNIST STATE.
@@ -2813,7 +3958,7 @@ That's COMMUNISM, but also...
 George Orwell, 1984.
 "@)
 
-$Book.AddSection(0,"Surveillance programs [2001-2007]",@"
+$Book.NewSection(0,"Surveillance programs [2001-2007]",@"
 
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 \ OAKSTAR                                 /
@@ -2885,7 +4030,7 @@ Part of the Bushmeister 5000's plan to surveil for potential terrorist
 activities in the wake of 9/11/2001.
 "@)
 
-$Book.AddSection(0,"Surveillance programs [2007+]",@"
+$Book.NewSection(0,"Surveillance programs [2007+]",@"
 
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 \ PRISM                                                      /
@@ -2969,7 +4114,7 @@ In other words, it skull fucks people left and right, no matter who you are.
 Collect (metadata/content) of phone calls from several countries
 "@)
 
-$Book.AddSection(0,"Technological Tyranny",@"
+$Book.NewSection(0,"Technological Tyranny",@"
 Injustice, as well as mass surveillance, it allows certain people to commit insider trading,
 corporate espionage, regular espionage, volume shadow copying, cyberattacks, et cetera.
 
@@ -3195,7 +4340,7 @@ OH.
 That's a SERIOUS PROBLEM.
 "@)
 
-$Book.AddSection(0,"Integrity",@"
+$Book.NewSection(0,"Integrity",@"
 Law enforcement is supposed to be the END ALL, BE ALL, LINE OF DEFENSE and INTEGRITY
 So, if you see police officers sucking Prince/Andrew/Cuomo's dick for a promotion...?
 ...that's neither one of those fuckin' things.
@@ -3234,7 +4379,7 @@ Not even remotely fuckin' kiddin'.
 SO MANY PEOPLE ARE INDIFFERENT, AND THEY'RE LIARS~! | ← PROBLEM
 "@)
 
-$Book.AddSection(0,"Focus",@"
+$Book.NewSection(0,"Focus",@"
 I will UNPACK/EXAMINE ways of dealing with BOTH of these issues, as well as what's causing ALL of them.
 Because the problem is INCREDIBLY COMPLEX, however...? 
 
@@ -3274,27 +4419,534 @@ So...
 Someone got fuckin' HIGHLY IRRITATED with a LARGE NUMBER OF PEOPLE, and decided to write this material.
 Here's that person's resume.
 "@)
+}
 
 # // ____________________________________________________
 # // | Resume - Michael C. Cook Sr. / Security Engineer |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(1,"Resume")
+Function Resume
+{
+    Param ($Book)
 
-$Book.AddSection(1,1,"Resume",$Book.Resource("Not%20News%20(005-Resume).txt"))
+$Book.NewChapter("Resume","Michael C. Cook Sr. / Security Engineer")
+
+$Resume = Write-Resume -Name "Michael C. Cook Sr." -Title "Network Information System Security Professional | DevOPS Engineer"
+
+"CompTIA A+/Network+/Security+","Cisco CCNA/CNAP","Microsoft Certified Professional/MCDST/MCSA/MCSE",
+"Associate Degree in Information Technology (Drafting & Design/Multimedia)","Portfolio Award/CRCATS" | % { 
+    
+    $Resume.Person.AddQualification($_) 
+}
+
+$Resume.Person.AddEmployer("Secure Digits Plus LLC (π)","Clifton Park, NY","10/2018 - 08/2022",
+"Security Engineer, also CEO/NISSP/DevOPS/Investigative Journalist")
+
+$Hash = @{ }
+$Hash.Add(0, @"
+Portfolio Development for Applications, as well as Investigative Journalism:
+________________________________________________________________________________________________________
+| 08/02/22 | Top Deck Awareness - Not News | drive.google.com/file/d/1NoqGcpDVYnCF6zWx-7HPQBV3-MgeCzsT |
+| 06/23/22 | Archimedes (CIA+Zuckerberg)   | https://youtu.be/QP25FbNhakQ                              |
+| 02/15/22 | A Matter of National Security | https://youtu.be/e4VnZObiez8 (Links in video description) |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+$Hash.Add(1, "Main development focus: (C/PowerShell/.NET) module development, codename [FightingEntropy(π)]")
+$Hash.Add(2, @"
+[FightingEntropy(π)] is a MODULE for PowerShell which automatically installs itself, as well as...
+(installing/configuring) Windows Server 2016/2019, Windows 10 Home/Education/Pro, RHEL/CentOS, and
+FreeBSD/OPNsense/pfSense via the [(Microsoft Deployment Toolkit – by Michael T. Niehaus)]
+"@)
+$Hash.Add(3, @"
+[FightingEntropy(π)] ALSO configures and establishes a network baseline for:
+__________________________________________________________________________________________________
+| Active Directory Domain Services | Windows Deployment Services | Hyper-V/Veridian | DNS | DHCP |
+| Demonstration of [FightingEntropy (π)][FEInfrastructure]: https://youtu.be/6yQr06_rA4I         |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+$Hash.Add(4, @"
+Other areas of development include:
+_________________________________________________________________________________________________
+| Extensible Application Markup Language | Graphical User Interface design | Linux/Unix/FreeBSD |
+| IIS/Internet Information Services | Razor/Blazor/ASP.Net Core | Conceptualizing R&D projects  |
+| Investigating: IDENTITY THEFT | CYBERCRIMINAL ACTIVITIES | GOVERNMENT CORRUPTION | ESPIONAGE  |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+$Hash.Add(5, @"
+[FightingEntropy(π)] is completely written in (C/PowerShell/.Net), and is split between:
+- Development: https://www.github.com/mcc85s/FightingEntropy
+- Production: https://www.github.com/mcc85sx/FightingEntropy
+"@)
+
+ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+
+$Resume.Person.AddEmployer("Computer Answers","Clifton Park, NY","10/2015 - 07/2019","Chief Technology Officer & Business Solutions Expert")
+$Hash = @{ } 
+$Hash.Add(0,"Developed scripts and protocol, overseeing productivity/training of all employees")
+$Hash.Add(1,"Complaining about the development team that took forever to do anything")
+$Hash.Add(2,"Featured on WTEN Alert Desk via Andrew Banas regarding SmartTV’s at https://youtu.be/-jkDPv9H6BQ")
+$Hash.Add(3,"Set highest sales record in the company to date, in August 2017")
+$Hash.Add(4,@"
+Rebuilt all of the networking equipment, point of sale equipment, server/router/access point
+configuration, surveillance system/cameras, and DHCP configuration/deployment, for ALL 7 stores
+"@)
+$Hash.Add(5,@"
+Deploying and configuring Clients/Servers/Routers/Switches/Access Points/receipt printers/SmartTV’s…
+…led to the founding of [Secure Digits Plus LLC], successor to [Mike’s PC Repair], in order to build
+a program that does all of this configuration, in a similar manner to:
+_____________________________________________________________________________________________
+| Google Kubernetes | Microsoft Azure | Amazon Web Services | VmWare vSphere | Cisco SD-WAN |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+$Hash.Add(6,@"
+Upgraded each store network to gigabit Ethernet internally, as well as installation of:
+________________________________________________________________________
+| Security Gateways using | pfSense | OPNSense | HardenedBSD | FreeBSD |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+
+$Resume.Person.AddEmployer("KeyCorp","Albany, NY","03/2016 - 12/2016","Help Desk Level (I & II) Support Engineer")
+$Hash = @{ }
+$Hash.Add(0,@"
+Provided support to (KeyCorp/KeyBank) employees over the phone and over Key's Inter IM client,
+Cisco Jabber, for various first and second level help desk support tickets
+"@)
+$Hash.Add(1,@"
+First experience with System Center Configuration Manager, which utilizes core aspects of the
+Microsoft Deployment Toolkit and other Microsoft-centric programs/applications
+"@)
+$Hash.Add(2,@"
+Exposure to Active Directory Administration was rather limited in this position (typically used for
+password resets), brief contact with Organizational Units, Site Links, Lotus Notes, Exchange,
+vSphere/eSXI, Group Policy Objects, RSA Encryption/Software tokens, KeyCounselor/HOGAN
+"@)
+
+ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+
+$Resume.Person.AddEmployer("Metroland/Lou Communications","Albany, NY","01/2007 - 01/2014","Distribution Contractor & IT Consultant")
+$Hash = @{ }
+$Hash.Add(0,"Distributed the newspaper Metroland for several years throughout the Greater Capital Region")
+$Hash.Add(1,"Eventually they were in need of IT services from 'Mike’s PC Repair' in September 2012")
+$Hash.Add(2,@"
+Documented & moved their network from 420 Madison Ave, Albany NY - 523 Western Ave, Albany NY while
+upgrading old Dell based Win NT 4.0 server to 1U blade server w/ (2x AMD CPUs, Windows Server 2008)
+"@)
+$Hash.Add(3,"Migrated ALL data from an older system that publishers used for archiving (weekly/legacy) content")
+$Hash.Add(4,@"
+Assisted John Bracchi with (printers/network storage for PUBLISHERS via Adobe (PS & Illustrator):
+____________________________________________________________________________________________
+| mapping printers | domain logins | emails/Outlook | making sure that Ted Etoll was happy |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+$Hash.Add(5, "Limited use of domain resources, otherwise most services were DISTRIBUTION of the newspaper")
+
+ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+
+$Resume.Person.AddEmployer("Nfrastructure","Clifton Park, NY","09/2010 - 01/2011","Computer (Hardware/Printer/Network) Technician")
+$Hash = @{ }
+$Hash.Add(0,@"
+Staged machines to be used for Point-Of-Sale systems for the Adidas-Reebok of North America, as well
+as testing, repairing, and maintaining a rolling inventory of computers, monitors, receipt printers,
+handheld devices, barcode scanners, & label/form printers (Epson)
+"@)
+$Hash.Add(1,"Made DAILY warranty calls to HP for Elite 8100/8200's, AND Dell for various (laptops/workstations)")
+$Hash.Add(2,"Told people how real I kept it, AND provided desktop support for internal company users ")
+$Hash.Add(3,"Repaired, inspected, and maintained full-size (Lexmark/HP) stack printers for various NYS agencies")
+$Hash.Add(4,@"
+Imaged THOUSANDS of computers to be used for various New York State companies and  gov't agencies:
+__________________________________________________________________________________________________
+| Dept. of Transportation | CSMIN | Golub Corporation | Office of People with Disabilities Dept. |
+| Dept. Of Correctional Services | Adidas-Reebok of NA | Testcomm of New York and Massachusetts  |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+
+$Resume.Person.AddEmployer("TEKsystems","Albany, NY","06/2006 - 05/2019","Various (Computer/Network) related roles")
+$Hash = @{ }
+$Hash.Add(0,"Completed Pittsfield MA Census Bureau deployment (2009-2010) | KeyCorp (2016) | Patroon Creek (2017)")
+$Hash.Add(1,@"
+Trinity Health/St. Peters Hospital 02/2019 [Interview] - Potential client was seeking to build an
+entirely new domain physically as well as ASP.Net overhaul, already developing [FightingEntropy(π)]
+"@)
+
+ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+
+$Resume.Person.AddEmployer("Hearst Corporation","Albany, NY","04/2006 - 04/2009","Distribution Contractor & Accounts Receivable Collector")
+$Hash = @{ }
+$Hash.Add(0,"Provided distribution throughout lower Saratoga County, as well as the Greater Capital Region")
+$Hash.Add(1,@"
+Daily paper drops were required in early morning hours after they are printed (2AM-4AM), and stores
+would either be open or closed - some stops needed priority treatment (primarily Stewarts Corp)
+"@)
+$hash.Add(2,"Drifted in the snow a lot, found new ways to drop off newspapers, drove a minimum of 90 miles/night")
+$Hash.Add(3,"Collected and calculated return payment amounts, deposited into bank account with Bank of America")
+$Hash.Add(4,"Worked under (Kenny/Patrick Bernard) for Q122, Q107, Q121, & Chris Jones for daytime return routes")
+
+ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+
+$Resume.Person.AddEducation("New Horizons Learning Center","Albany, NY","01/2008 - 01/2009","CompTIA & Microsoft Certifications Track")
+$Hash = @{ }
+$Hash.Add(0,"Completed certifications from CompTIA A+/Network+, MCP/MCDST")
+$Hash.Add(1,"Hands on support with hardware, and operating systems Windows (XP Pro/Home/Server 2003)")
+$Hash.Add(2,@"
+Studied server technologies and services: FTP, File Server, WINS/DNS/DHCP, RSAT/WSUS, Certificates,
+Active Directory, Group Policy, Drivers, Wireless, IIS 6.0, VPN Encryption, & Virtual Server
+"@)
+
+ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X]) }
+
+$Resume.Person.AddEducation("ITT Technical Institute","Albany, NY","06/2004 - 06/2006","Information Technology: Drafting & Design, Multimedia")
+$Hash = @{ }
+$Hash.Add(0,"Received Associate degree in (IT/Drafting and Design-Multimedia)")
+$Hash.Add(1,@"
+Course studies included:
+_________________________________________________________________________________________________
+| 2D/3D graphic, print AND web design AND publishing | Portfolio Development |  Problem-Solving |
+|  Instructional Design | Micro Economics | CompTIA (A+/Network+) | Intro to Visual Basic .Net  |
+|-----------------------------------------------------------------------------------------------|
+|   Macromedia | [Flash/Director/Dreamweaver] HTML/CSS and flash animation                      |
+|-----------------------------------------------------------------------------------------------|
+|        Adobe | [Premiere/After Effects] video/scene | [Photoshop/Illustrator] photo | editing |
+|-----------------------------------------------------------------------------------------------|
+| AutoDesk 3DS | scene/character modeling | lighting | texturing | rigging | animation          |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X]) }
+
+$Resume.Person.AddEducation("Capital Region Career and Technical School","Albany, NY","09/2001 - 06/2003","Microsoft System Administration, CompTIA A+/Network+, & Cisco Certified Network Academy")
+$Hash = @{ }
+$Hash.Add(0,@"
+While attending Shenendehowa High School, this 2-year vocational program consisted of hands-on lab
+environment experience, and studies related to the above curriculum
+"@)
+$Hash.Add(1,@"
+Briefly acted as (Student Network Administrator), using (MMC/Microsoft Management Console) snap-ins,
+HyperTerminal, Novell Netware IPX/SPX, Windows XP/Server 2000 Workgroup, and some Red Hat Linux
+"@)
+$Hash.Add(2,"Received an in-depth year with Cisco (routers/switches) via RS232")
+$Hash.Add(3,"Participated in NYS competition at (SCCC/Schenectady County Community College), & ITT Tech")
+$Hash.Add(4,"Received an award from the school for Portfolio Development at final graduation ceremony")
+
+ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X]) }
+
+$Resume.Person.AddSkill("FightingEntropy FEInfrastructure","12/2021","https://youtu.be/6yQr06_rA4I",@"
+This is a video where I PROVE that BY MYSELF, I know ALL OF THE ASPECTS of:
+___________________________________________________________________________________________________
+| APP DEVELOPMENT | VIRTUALIZATION | HARDWARE/NETWORK MAGISTRATION | MICROSOFT DEPLOYMENT TOOLKIT |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+As in, I AM MORE EXPERIENCED THAN 95% of the people in the field of INFORMATION TECHNOLOGY.
+"@)
+
+$Resume.Person.AddSkill("Advanced Domain Controller Promotion","10/2021","https://youtu.be/O8A2PDfQOBs",@'
+Basically, promoting a server to a domain controller via the GUI. This GUI can also be controlled    
+via the process in Flight Test, which means that uh, I'm doing stuff that hasn't been developed yet.
+'@)
+
+$Resume.Person.AddSkill("A Deep Dive: PowerShell and XAML","03/2021","https://youtu.be/NK4NuQrraCI",@"
+In this video, I EDUCATE PEOPLE on: BUILDING A GRAPHICAL USER INTERFACE using XAML & POWERSHELL
+This video should, single-handedly, prove that I am an EXPERT. 
+I can EASILY adjust my LANGUAGE so that PEOPLE CAN LEARN FROM AN *EXPERT* SUCH AS MYSELF.
+Like an ACTUAL EXPERT that gets PAID a LOT OF MONEY to TEACH PEOPLE...
+Like, a PROFESSOR. Sorta like KEVLIN HENNEY, ROBERT SOPOLSKY, or JEREMY RIFKIN. Even TIM COREY.
+"@)
+
+$Resume.Person.AddSkill("Wireless Network Scanning Utility","05/2022","https://youtu.be/35EabWfh8dQ",@"
+This is a video where I show off HOW TO PROGRAM & MANIPULATE WIRELESS RADIOS using POWERSHELL, and
+CREATE GRAPHICAL USER INTERFACES using XAML/POWERSHELL.
+It should hands down, single handedly prove that I am MORE EXPERIENCED than 95% of people in the field
+of information technology.
+
+So, for ANY USELESS DOUCHEBAG that wants to try and tell me that I “don't have enough experience”...
+WELL, dipshit... this video will show ya, I've got more experience than anyone you probably know.
+"@)
+
+$Resume.Person.AddSkill("PowerShell Deployment FE Wizard","09/2021","https://youtu.be/lZX5fAgczz0",@"
+This is a video where I've decided to EXTEND the CAPABILITIES & FUNCTIONS of the POWERSHELL DEPLOYMENT
+project written by:
+_____________________________________________________________________________
+| DEPLOYMENT BUNNY/JOHAN ARWIDMARK & MYKAEL NYSTROM (Both former Microsoft) |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+...as well as:
+______________________________________________________________________________
+| MICROSOFT/MICHAEL T. "Smart bastard" NIEHAUS – Vice President of Marketing |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+The original PSD Wizard GRAPHICAL USER INTERFACE that I modified, was created by:
+______________________________________
+| SYST AND DEPLOY/DAMIEN VAN ROBAEYS |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Resume.Person.AddSkill("2019_0125-(Computer Answers - MDT)","01/2019","https://youtu.be/5Cyp3pqIMRs",@"
+This is when I was using VIRTUALBOX developed by ORACLE...
+...to create a CUSTOM MODIFICATION that became HYBRID-DSC.
+I believe that Microsoft was PISSED about this video because I wasn't using HYPER-V...
+
+Which is what I use basically all the time now...
+And Microsoft agrees, HYPER-V is the way to go.
+
+What's COOL about HYPER-V is that it is 100% CONTROLLABLE from POWERSHELL.
+So, you get cool features and kick ass performance that you just can't get from VIRTUALBOX...
+"@)
+
+$Resume.Person.AddSkill("Install-pfSense","06/2021","https://youtu.be/E_uFbzS0blQ",@'
+This is a video where I use VISUAL STUDIO CODE to access POWERSHELL DIRECT to manage HYPER-V over a
+REMOTE DESKTOP CONNECTION to AUTOMATE THE INSTALLATION of pfSense onto VIRTUAL GATEWAYS/ROUTERS
+'@)
+
+$Resume.Person.AddSkill("Advanced System Administration Lab","06/2021","https://youtu.be/xgffIccX1eg",
+"Same sort of idea as above, except a lot more EXTENSIVE and COMPREHENSIVE.")
+
+$Resume.Person.AddSkill("Windows Image Extraction","06/2021","https://youtu.be/G10EuwlNAyo",@'                                    
+This extracts Windows Images from the ISO directly from Microsoft's website, to be injected as       
+TASK SEQUENCES for the MICROSOFT DEPLOYMENT TOOLKIT. 
+'@)
+
+$Resume.Person.AddSkill("Flight Test Part 1","08/2021","https://drive.google.com/file/d/1qdS_UVcLTsxHFCpuwK16NQs0xJL7fv0W",@'
+This video has to be DOWNLOADED because of the MUSIC in a 6 hour video demonstration.                
+I don't expect EVERYBODY to watch the entire 6 hours worth of content here, but somebody will want   
+to see HOW STRONGLY I CAN PROGRAM SOMETHING THAT ORCHESTRATES THE ENTIRE DEPLOYMENT PROCESS FOR AN   
+ADVANCED NETWORK of GATEWAYS/ROUTERS, DHCP/DNS/ADDS SERVERS, DOMAIN CONTROLLERS, and WORKSTATIONS.   
+There WILL be a few people who hire contractors at a STARTING RATE of over $250K/year, to do what I  
+demonstrate in this particular video. That's because I'm fulfilling the role of SOLUTIONS ARCHITECT. 
+'@)
+
+$Resume.Person.AddSkill("Flight Test Part 2","08/2021","https://youtu.be/vg359UlYVp8","Continuing on from the last video, covering some stuff I forgot to fix or implement.")
+
+$Resume.Person.AddSkill("Advanced Domain Controller Promotion","10/2021","https://youtu.be/O8A2PDfQOBs",@'
+Basically, promoting a server to a domain controller via the GUI. This GUI can also be controlled    
+via the process in Flight Test, which means that uh, I'm doing stuff that hasn't been developed yet.
+'@)
+
+$Resume.Person.AddSkill("Hybrid | Desired State Controller","05/2019","https://youtu.be/C8NYaaqJAlI",@"
+This is a DEMONSTRATION of the MICROSOFT DEPLOYMENT TOOLKIT MODIFICATION that I spent like...
+(4) months working on, WHILE learning how to use PowerShell.
+
+I became rather INTRIGUED with the IDEA of DEPLOYING WINDOWS 10 TO THE CUSTOMERS COMPUTERS at:
+___________________________________________________________________________________________
+| COMPUTER ANSWERS | 1602 US-9, Clifton Park, NY 12065 | 514 MAIN ST. BENNINGTON VT 05201 |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ That's why I WAS ATTACKED on 01/15/2019, left address, I was ATTACKED AGAIN on 03/07/2019, right side.
+
+I ASKED MY OLD INSTRUCTOR (BRUCE CHENEY/CYBERSTONE SECURITY) FOR SOME HELP...?
+BUT HE'S SORT OF A DIPSHIT THAT HAS TO HIDE HIS TAIL BETWEEN HIS LEGS AND GETS OFFENDED VERY EASILY.
+"@)
+
+$Resume.Person.AddSkill("Methodologies","11/2019","https://youtu.be/bZuSgBK36CE","This is a video where I was about LESS THAN (1) year into PROGRAMMING/APP DEVELOPMENT w/ POWERSHELL.")
+
+$Resume.Person.AddSkill("Education/Exhibition Program Design","08/2019","https://youtu.be/v6RrrzR5v2E",@"
+This is a video where I was in the MIDDLE of being ATTACKED by some HACKERS, so I decided to tell em:
+___________________________________________________________________________________________
+| Me : You know what...?                                                                  |
+|      Fuck you guys.                                                                     |
+|      I'm just gonna start RECORDING VIDEOS of ME, TEACHING OTHER PEOPLE...              |
+|      ...that way you queers have 2x fewer legs to stand on when you keep ATTACKING ME.  |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Resume.Person.AddSkill("Spectrum Cable Modem Reset","07/2017","https://youtu.be/LfZW-s0BMow",@"
+This is a video that showcases just how gay PAVEL ZAICHENKO/CEO of COMPUTER ANSWERS, actually is.
+If people wanna argue with me “I don't see anything that indicates this dude is gay...”
+    
+OH- well, I was able to EDUCATE A LOT OF PEOPLE by BEING MORE TALENTED at RUNNING COMPUTER ANSWERS,
+the COMPANY, than the OWNER/CEO... and EVEN the Vice President, DWAYNE O. COONRADT, the ol' PC-DOC
+"@)
+
+$Resume.Person.AddSkill("How to repair an iPhone 7+","04/2018","https://youtu.be/i3qn1CZ-5WM",@"
+This is a video that showcases how gay TIM COOK/CEO of APPLE CORPORATION, actually is.
+APPLE DISABLED MY IPHONE 8+ AFTER I SHOWED NYS TROOPER SHAEMUS LEAVEY A VIDEO OF 2 GUYS USING PEGASUS,
+AS THEY WERE ATTEMPTING TO MURDER ME OUTSIDE OF (1597-1602) US-9, CLIFTON PARK NY 12065 on 05/26/2020.
+
+RESULTANT, I HAVE WITNESSED TIM COOK BEING PRIMARILY RESPONSIBLE FOR COMMITTING OBSTRUCTION OF JUSTICE.
+TIM COOK will CONTINUALLY be CALLED OUT for being a FLAMING HOMOSEXUAL for ALLOWING THIS. I KNOW THAT IS
+EXACTLY WHAT HAPPENED, but the COMMUNITY and the POLICE have been TOO BUSY BEING MORONS, to watch this.
+
+Sorta know what I'm doing more than most people in the COMMUNITY or the POLICE. (FACT, not an OPINION)
+
+As for TIM COOK (CEO OF APPLE), the man has received a LOT of awards from the town, for being the GAYEST
+GUY IN CUPERTINO, CA each year. Nobody in CUPERTINO has a shot at outdoing this man, at being gay.
+Outside of CUPERTINO, CA...? VLADIMIR PUTIN, APT29 & CERBERUS most definitely win, hands down.
+
+By the way, TIM COOK and I are NOT RELATED, but that man is DEFINITELY ALMOST as gay, as APT29.
+I have MORE EXPERIENCE than:
+____________________________________________________________________________________________________
+| the people who work at ANY APPLE STORE | MOST of the people at APPLE HQ in CUPERTINO, CALIFORNIA |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Resume.Person.AddSkill("Troubleshooting Network Equipment 101","03/2018","https://youtu.be/0nEiGijjOEY",@"
+This is a video that showcases how gay DWAYNE COONRADT/VP of COMPUTER ANSWERS, APPEARS to be when he
+refuses to tell people that I outperformed him 100% of the 3+ years I (worked at/MANAGED) the COMPANY
+COMPUTER ANSWERS.
+"@)
+
+$Resume.Person.AddSkill("Troubleshooting a poorly made CRM","11/2017","https://youtu.be/xs-FVZgjnkI",@"
+This is a video where I am attempting to educate the lazy moron who owns COMPUTER ANSWERS, what was
+ALWAYS PROBLEMATIC about the PIECE OF SHIT SOFTWARE that he was attempting to build without having the 
+experience necessary to do so. He actually STOLE THIS SOFTWARE from SOHRAB GHAIRAT who is an ACTUAL 
+EXPERT at DEVELOPING APPLICATIONS/PROGRAMMING.
+"@)
+
+$Resume.Person.AddSkill("Game Design 101 Part I - 20KDM2 - Return to Castle: Quake","08/2021","https://youtu.be/xN53K9oGCME",@"
+This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAY back in (2001/2002) for
+QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2001.
+_________________________________________________________________
+| This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Resume.Person.AddSkill("Game Design 101 Part II - 20KDM1 - Tempered Graveyard","08/2021","https://youtu.be/dyHwm9AdkQs",@"
+This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAY back in (2001) for
+QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2001.
+_________________________________________________________________
+| This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Resume.Person.AddSkill("Game Design 101 Part III - 20KCTF1 - Out of my head","08/2021","https://youtu.be/rwyHCNnwlkM",@"
+This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAAY back in (2002) for
+QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2002.
+_________________________________________________________________
+| This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Resume.Person.AddSkill("Game Design 101 Part IV - 20KDM3 - Insane Products","08/2021","https://youtu.be/EG8UyJSMK3Y",@"
+This is a LEVEL that I CREATED for my WEBSITE on PLANETQUAKE.COM/BFG20K, WAAAAAY back in (2006) for
+QUAKE III ARENA, which showcases that I knew how to DESIGN VIDEO GAMES in 2006.
+_________________________________________________________________
+| This particular map is OLDER THAN FACEBOOK & COMPUTER ANSWERS |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Resume.Person.AddSkill("Website Design 101 - BFG20K's Shopping Maul","05/2001","http://web.archive.org/web/20220000000000*/planetquake.com/bfg20k", @"
+This is a link to the WAYBACK MACHINE, featuring a WEBSITE that I CREATED when I was 15 years old.
+This particular website is OLDER THAN FACEBOOK. AND YOUTUBE. AND REDDIT. AND TWITTER. AND MYSPACE...
+
+So, when I hear people tell me that “I don't have enough experience”, that means they probably could use
+a nice, fresh smack across the fuckin' face. Dead serious.
+
+The WEBSITE BFG20K's Shopping Maul EXISTED in 1999, but then PLANETQUAKE.COM was like:
+___________________________________________________________
+| PlanetQuake : DUDE, YOU CAN TOTALLY HAVE A HOSTED SITE. |
+|               YOU'RE ONLY 15...?                        |
+|               THIS SHIT IS COOL AS FUCK.                |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Thus, PLANETQUAKE.COM/BFG20K was born, WAAAAAAY back in 2001~!
+Like, BEFORE THE TWIN TOWERS WERE ATTACKED~!
+But, I'm gonna get some cocksucker that will TRY to say that “I don't have enough experience.” Sure.
+To anyone who wants to say that...?
+Make yourself useful, and go suck a fuckin' dick like MARK ZUCKERBERG does.
+"@)
+
+$Resume.Person.AddSkill("Top Deck Awareness - Not News","08/2022","https://drive.google.com/file/d/1XWGSsZ-rGQHfB8eY2Xm6uu51wuj1MqFW",@"
+My master thesis about the following subjects:                                                              
+________________________________________________________________________________________________________
+| U.S. CONSTITUTION | PSYCHOLOGICAL MANIPULATION | PRIVATE INVESTIGATION   |     COOL/SMART RICH DUDES |
+| HIDDEN GOVERNMENT | USA-PATRIOT ACT of 2001    | SURVEILLANCE CAPITALISM | LAME/DOUCHEBAG RICH DUDES |
+| NEWS VS PROPAGANDA | EXPERT PROGRAMMING | INJUSTICE | JULIEN ASSANGE | EDWARD SNOWDEN | U.S. HISTORY |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Resume.Person.AddSkill("News 10 - Interview with Andrew Banas regarding WEEPING ANGEL","03/2018","https://youtu.be/bPdWt7kcd3M",@"
+This is an INTERVIEW that I had with an actual NEWS REPORTER named ANDREW BANAS, WAAAAY back in 03/2018
+when I MANAGED COMPUTER ANSWERS at 1602 Route 9, CLIFTON PARK, NY 12065.
+This was BEFORE (HOMOSEXUALS/HACKERS from APT29) STARTED TO ATTACK ME and my work.
+Still, I must NOT have enough EXPERIENCE to run CIRCLES around people that make over `$250K/year, right?
+"@)
+
+$Resume.Person.AddSkill("Central Intelligence Agency/VAULT 7/Archimedes","02/2022","https://youtu.be/QP25FbNhakQ",@"
+MARK ZUCKERBERG, owner of FACEBOOK using a TOOL developed by the CENTRAL INTELLIGENCE AGENCY from
+VAULT 7, to CAUSE INTERFERENCE to my LAPTOP, the CONTEXT of the VIDEO should SHOWCASE the REASONS WHY.
+"@)
+
+$Resume.Person.AddSkill("Central Intelligence Agency/VAULT 7/After Midnight (Laptop angle)","02/2022","https://youtu.be/LYVUMLpofWg",@"
+From the CYBERATTACK on 02/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from
+VAULT 7, being used against me to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the
+DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below. (It failed)
+"@)
+
+
+$Resume.Person.AddSkill("Central Intelligence Agency/VAULT 7/After Midnight (Smartphone angle)","02/2022","https://youtu.be/oShPs6_uXIk",@"
+From the CYBERATTACK on 2/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from
+VAULT 7, being used against mme to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the
+DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below.
+"@)
+
+$Resume.Person.AddSkill("Facebook BSOD","02/2022","https://youtu.be/40sQXpVh_8Y",@"
+This is a BLUE SCREEN OF DEATH that was CAUSED by FACEBOOK AFFILIATES that are HACKERS and they're known
+as (APT29/ADVANCED PERSISTENT THREAT 29), and they COMMIT CYBERATTACKS/IDENTITY THEFT and are VERY GAY,
+and every single one of them has sucked at QUAKE III ARENA over the last 20+ years.
+__________________________________________________________________________
+| APT29 : Yeah, we're the most raging homosexuals on the fuckin' planet. |
+|         AND, we suck at QUAKE III ARENA. So what...?                   |
+|         Who's gonna stop us...? Hm...?                                 |
+|         NOBODY... that's who.                                          |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+"@)
+
+$Resume.Person.AddSkill("Facebook Censorship","02/2022","https://youtu.be/Jmq4yBqGhTs",@"
+This is a video that showcases how gay MARK ZUCKERBERG/CEO OF FACEBOOK, actually is. I posted a comment,
+and then like magic, my COMMENT is REMOVED from the system before my very eyes. This showcases a living 
+example of JUST HOW GAY, MARK ZUCKERBERG truly is. Doesn't matter if he's a COOL, HIGHLY RESPECTED
+BILLIONAIRE, because this is what this GAY BASTARD HAS BEEN DOING TO ME ever since I wrote a RESPONSE
+to an AD REJECTION in 02/2019. They felt that my AD was VIOLATING PEOPLE'S PRIVACY. What I told him, was
+that he's fucking lucky that I wasn't a member of Congress during the CAMBRIDGE ANALYTICA scandal.
+"@)
+
+$Resume.Person.AddSkill("Hardware Security","09/2019","https://youtu.be/-jkDPv9H6BQ",@"
+This is a video where I discuss the INTERVIEW with ANDREW BANAS, as well as WEEPING ANGEL being REVERSE
+ENGINEERED, and EXPANDING UPON HIS REPORT.
+I also explain to people how I'm more EXPERIENCED than LINUS SEBASTIAN from LINUS MEDIA GROUP.
+And, that NFRASTRUCTURE was involved in ATTACKING MY EQUIPMENT.
+I also caught the attention of APT29 with this particular video.
+"@)
+
+$Resume.Person.AddSkill("NFRASTRUCTURE – RICO","03/2019","https://youtu.be/vmDVKwTF2Zc",@"
+This is a VIDEO that I sent to some woman at MICROSOFT regarding the CYBERATTACKS that I kept facing
+that I described up above in the PREVIOUS ENTRY. I actually ASSUMED that MICHAEL T. NIEHAUS had SOME
+hand in ATTACKING ME...
+
+However, I don't think that he had ANYTHING to do with the attack.
+The attack consisted of 1) PEGASUS/PHANTOM 2) DENIAL OF SERVICE, 3) CVE-2019-8936, 4) WANNACRY.
+Basically, SOMEONE WITH A LOT OF TECHNICAL EXPERTISE (like, the queers in APT29 that PAVEL knows)
+performed the ATTACK that CAUSED ME TO THINK that my FORMER EMPLOYER had ATTACKED ME.
+2 former employers, by the way, not just (1). (2) former employers. 
+I BELIEVE that MR. NIEHAUS has been HELPING ME ever since I recorded this video.
+"@)
+
+$Resume.Person.AddSkill("A Matter of National Security","02/2022","https://youtu.be/e4VnZObiez8",@"
+This is a video that showcases someone in the CENTRAL INTELLIGENCE AGENCY that has been INTERACTING WITH
+ME for over 3+ years by using SCRIBBLES (VAULT 7) to ADD A LINE OF PIXELS to PARTICULAR LINES OF TEXT in 
+ANY MICROSOFT WORD-LIKE EDITOR, and I TALK ABOUT PEGASUS/PHANTOM and JULIEN ASSANGE, and EDWARD SNOWDEN. 
+Still, with all of these INDICATIONS that I have PLENTY of EXPERIENCE...?
+I know that someone will come right out and say that I must not have enough, yet.
+"@)
+
+$Resume.Illustrate()
+
+$Book.NewSection(1,"Resume",($Resume.ToString() -join "`n"))
+}
 
 # // _________________________________
-# // | Chapter 1 - Liars in the Lead | $Book.Range("Book",2,@(94..112))
+# // | Chapter 1 - Liars in the Lead |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(2,"Chapter 1")
+Function Chapter_1
+{
+    Param ($Book)
 
-$Book.AddSection(2,"Start",@"
+$Book.NewChapter("Chapter 1","Liars in the Lead")
+
+$Book.NewSection(2,"Start",@"
 Suggestion: If Fox News has the best ratings in the industry...? 
 That's a fuckin' problem right there.
 "@)
 
-$Book.AddSection(2,"Overview",@"
+$Book.NewSection(2,"Overview",@"
 If anybody reading this, watches Fox News...? 
 You really should consider not watching it anymore.
 
@@ -3313,7 +4965,7 @@ Almost has the same ring to it as Fox News Network...
 ...except it just SOUNDS a lot more honest.
 "@)
 
-$Book.AddSection(2,"Skit [~] It's Not News",@"
+$Book.NewSection(2,"Skit [~] It's Not News",@"
 They really could make things easier on everybody here, change (1) word. 
 Turn the word Fox, into Not.
 Then it would be accurate all the time.
@@ -3387,7 +5039,7 @@ Someone2 : I really don't wanna watch this shit anymore...
            This shit ain't news.
 "@)
 
-$Book.AddSection(2,"Fox News → Not News",@"
+$Book.NewSection(2,"Fox News → Not News",@"
 Yeah, so, the Fox News Organization, is essentially some rich dude named RUPERT MURDOCH playing god. 
 
 At one point in time...? 
@@ -3423,7 +5075,7 @@ The problem is, if TUCKER CARLSON is the most popular thing in the industry,
     ...then again, maybe not.
 "@)
 
-$Book.AddSection(2,"When Insults Are Warranted",@"
+$Book.NewSection(2,"When Insults Are Warranted",@"
 Climate change is definitely fuckin' real, and I can translate how that is, to corruption in the government.
 Almost like, Cause → Effect...
 Corrupt politicians accepting bribery from Exxon Mobil like Ted Cruz, not being arrested for THAT, 
@@ -3597,7 +5249,7 @@ likely to do some shit to me. Michael Zurlo apparently likes to have his units f
 I'm involved in, and I'm not even exaggerating that at all... I'll rip on the county sheriffs later.
 "@)
 
-$Book.AddSection(2,"Censorship Meets Tyranny",@"
+$Book.NewSection(2,"Censorship Meets Tyranny",@"
 Now, occasionally, people might need to follow some SUGGESTIONS, but... if SUGGESTIONS and RESPECT are treated 
 as ONE WAY STREETS, you have to STOP and CONSIDER that anyone expecting it to be a one-way street is probably 
 asking to get themselves smacked across the face with a reality check. Cause, there's actually TWO WAYS that...
@@ -3640,7 +5292,7 @@ So, they may as well ASK you, to grab a gun and EXECUTE them, with that line of 
 And they are perfectly content with people knowing you're onto them too, from what I can tell.
 "@)
 
-$Book.AddSection(2,"Climate Change",@"
+$Book.NewSection(2,"Climate Change",@"
 In reference to (Murdoch/Fox News), you can't expect anyone at Murdoch incorporated, will follow anyone 
 elses' suggestions. He has rights, too. He can just, totally ignore your ass, and spam the shit out of people.
 
@@ -3697,7 +5349,7 @@ I'm gonna hold off on Ted Cruz momentarily, and focus on Hannity and Murdoch.
 Here's a skit, not unlike when Eminem dissed Insane Clown Posse.
 "@)
 
-$Book.AddSection(2,"Skit [~] SEAN HANNITY and RUPERT MURDOCH",@"
+$Book.NewSection(2,"Skit [~] SEAN HANNITY and RUPERT MURDOCH",@"
 Murdoch : Hey Sean!
 Hannity : Hey Rupert.
 Murdoch : Say... 
@@ -3739,7 +5391,7 @@ Person 2 : He probably does.
 Person 1 : Well, that does actually make SOME sense...
 "@)
 
-$Book.AddSection(2,"Abusive Relationship",@"
+$Book.NewSection(2,"Abusive Relationship",@"
 Sean is in an abusive relationship with Murdock.
 Then Sean tells everybody that he was at the "dojo". That's not a fuckin' dojo buddy...
 May as well tell people he was practicing the skin flute.
@@ -3766,7 +5418,7 @@ Yeah, when people accept bribery money from the oil/car/gas industry...
 ...those people have to worry about how they look when it's recorded on video.
 "@)
 
-$Book.AddSection(2,"Enlightenment [!] Why smartphones are useful AND deadly",@"
+$Book.NewSection(2,"Enlightenment [!] Why smartphones are useful AND deadly",@"
 The reason why smartphones are USEFUL and DEADLY, is because they're useful if you have...
 100% complete control over the device
     
@@ -3811,7 +5463,7 @@ That's why telling them is POINTLESS.
 While smartphones are INCREDIBLY useful, that device can be turned into a WEAPON at any given time.
 "@)
 
-$Book.AddSection(2,"What is Censorship and Why does it happen?",@"
+$Book.NewSection(2,"What is Censorship and Why does it happen?",@"
 ___________________________
 | Q : What is CENSORSHIP? |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -4055,7 +5707,7 @@ SARATOGA COUNTY SHERIFFS OFFICE, and FACEBOOK... usually there's a good reason w
 specific target quite yet. That's because someone ELSE also knows what's happening.
 "@)
 
-$Book.AddSection(2,"Censorship and Militias: Peaceful versus Non-Peaceful Resolution",@"
+$Book.NewSection(2,"Censorship and Militias: Peaceful versus Non-Peaceful Resolution",@"
 Examination: I will illustrate a logic map, to VISUALIZE how CENSORSHIP OCCURS
 The analogy stated above in reference to Ted Cruz, will cause MANY people to be grossed out, and they'll just 
 stop reading completely. Why...? Uh, cause these people know how to MANIPULATE the public, so that individuals 
@@ -4130,7 +5782,7 @@ about it. George Pataki would've rolled up his fuckin' sleeves, and made damn ce
 done right there and then while havin' plenty of sex with his fuckin' wife.
 "@)
 
-$Book.AddSection(2,"Excerpt [+] George 'The man' Pataki",@"
+$Book.NewSection(2,"Excerpt [+] George 'The man' Pataki",@"
 George Pataki was a GREAT governor for the state of New York when I was in (elementary/middle/high) school.
 He succeeded Andrews father Mario Cuomo (wasn't bad from what I remember), and was succeeded by Eliot Spitzer.
 George Pataki had a ceremony for crime victims at the State Capitol after my father was killed in 1995.
@@ -4152,7 +5804,7 @@ dome from his wife. Not sayin' that I blame Bill, but, ya know. The last couple 
 was basically him being a lame duck president. Not a great situation for anybody.
 "@)
 
-$Book.AddSection(2,"Excerpt [+] Andrew 'Don't touch me, Grandpa' Cuomo",@"
+$Book.NewSection(2,"Excerpt [+] Andrew 'Don't touch me, Grandpa' Cuomo",@"
 Anyway, this dude was too busy trying to get these girls to fuck him, right...? 
 All of em said "Nah. I'm all set..." (← I wonder why they ALL say/do that...)
 Then he's like "Hey... C'mon. I'll buy ya dinner and whatevs."
@@ -4257,7 +5909,7 @@ it in a post. He acts like one sometimes. Especially when I know he's interactin
 platform sometimes. Doesn't mean he's not someone I respect, but- sometimes it's a term of endearment.
 "@)
 
-$Book.AddSection(2,"Excerpt [~] Marcus 'Oriellius' Zuckerberg",@"
+$Book.NewSection(2,"Excerpt [~] Marcus 'Oriellius' Zuckerberg",@"
 Me   : You know who's pretty cool sometimes...?
        Fuckin' Mark Zuckerberg, buddy.
 Mark : …
@@ -4376,7 +6028,7 @@ ____________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(2,"Expressing Something Offensive",@"
+$Book.NewSection(2,"Expressing Something Offensive",@"
 As far as posting something offensive on Facebook that might upset someone in the government's pride, 
 it's gonna cause someone to abuse the platform or maybe they'll ask some people at Facebook: 
 
@@ -4440,7 +6092,7 @@ The WORDS I said were CONSIDERED MORE OFFENSIVE.
 Sure, ok, people seem to have trouble making the CORRELATION with FREEDOM OF EXPRESSION/SPEECH, and CENSORSHIP.
 "@)
 
-$Book.AddSection(2,"Militias",@"
+$Book.NewSection(2,"Militias",@"
 _________________________
 | Q: What is a MILITIA? |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -4524,7 +6176,7 @@ I'll talk more about the (law enforcement + justice system) in:
 [Chapter 3 - See no evil, Speak no evil, Hear no evil (Malice)]
 "@)
 
-$Book.AddSection(2,"Peaceful Resolution",@"
+$Book.NewSection(2,"Peaceful Resolution",@"
 Objective: (1) lousy politician is accepting BRIBERY which is a CRIMINAL ACTIVITY
 That is a FELONY which carries a sentence of 3-5 years in prison. (Not allowed to be a politician after that)
 ARREST → ESCORT → ARRAIGN → IMPRISON
@@ -4542,7 +6194,7 @@ Then you just restate what you said, "You thought wrong. Someone is going to pri
 "We are here to escort them to an arraignment with an actual judge that isn't able to be bribed."
 "@)
 
-$Book.AddSection(2,"Non-Peaceful Resolution",@"
+$Book.NewSection(2,"Non-Peaceful Resolution",@"
 If they really are that fuckin' stupid enough to grab their weapons, or like try to arrest you... 
 FIRE A WARNING SHOT. That'll fuckin' get them to realize that you're not actually breaking the law.
 
@@ -4580,7 +6232,7 @@ They will probably not put up a fight, and if they are that fuckin' stupid, they
 I say PROBABLY, because, there might be some idiots out there that know they are ALSO going to prison...
 "@)
 
-$Book.AddSection(2,"Excerpt [+] Constitutional Guarantees",@"
+$Book.NewSection(2,"Excerpt [+] Constitutional Guarantees",@"
 Here's the situation. I realize plenty of people are gonna read all of that, and they're gonna say 
 "Wait a second... the Constitution says all that shit...?" Yeah. It does. 
 Read it sometime. Most people haven't.
@@ -4629,21 +6281,26 @@ People may ASSUME that there's NO WAY I could be correct about the reason...    
 I'm going to talk a lot about FALLACIES in this document, and they need to be READILY IDENTIFIED and 
 DISASSEMBLED WHEN THEY ARE DETECTED, however they are part of a larger scope of PSYCHOLOGICAL MANIPULATION
 "@)
+}
 
 # // __________________________________________
 # // | Chapter 2 - Psychological Manipulation |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(3,"Chapter 2")
+Function Chapter_2
+{
+    Param ($Book)
 
-$Book.AddSection(3,"Start",@"
+$Book.NewChapter("Chapter 2","Psychological Manipulation")
+
+$Book.NewSection(3,"Start",@"
 Psychological Manipulation is an understanding of how psychology and manipulation work in conjunction, to 
 achieve a particular goal or outcome. It is by far one of the most advanced tools a person can have a BASIC 
 or THOROUGH understanding of, though it will require a lot of conditioning and study, in order to have a great 
 degree of control with it. It will actually be scattered in bits and pieces throughout this entire book. 
 "@)
 
-$Book.AddSection(3,"Overview",@"
+$Book.NewSection(3,"Overview",@"
 (PM) is quite an extraordinary way to "control" people, and it is so fucking powerful, that simply writing words 
 in a document can cause some of the most powerful people on the planet, to take notice. 
 Making this statement will immediately gain the interest of people who ALSO use it. 
@@ -4667,7 +6324,7 @@ Maybe Exxon Mobil does that and I might be quite a dick to have to consider the 
 how he gets paid.
 "@)
  
-$Book.AddSection(3,"Explanation",@"
+$Book.NewSection(3,"Explanation",@"
 The end result here is, none of those questions really matter so much as the PRINCIPLE of a senator, being 
 BRIBED, but also, in the same exact way that WikiLeaks leaked a classified video "Collateral Murder", the 
 PRINCIPLE of CENSORING that video, is that SOMEONE in the MILITARY was committing a heinous OFFENSE, and 
@@ -4733,7 +6390,7 @@ Some of those conditions are literally written in the fuckin' Constitution. Mayb
 the same criteria of the Declaration of Independence. It's like "Hey, fuckface... suck a fuckin' dick, bro."
 "@)
  
-$Book.AddSection(3,"Identification",@"
+$Book.NewSection(3,"Identification",@"
 The PROBLEM here, happens to be how SOME people can get away with CRIMINAL BEHAVIOR, while OTHERS cannot.
 
 The end result is:
@@ -4775,7 +6432,7 @@ So, that's when and where PSYCHOLOGICAL MANIPULATION has to be used, in order to
 INTENT: a declaration or directive, following an order, or a specific moral/ethical constraint or principle.
 "@)
  
-$Book.AddSection(3,"Why having a WELL (EQUIPPED/TRAINED) MILITIA is a NECESSITY",@"
+$Book.NewSection(3,"Why having a WELL (EQUIPPED/TRAINED) MILITIA is a NECESSITY",@"
 Here's a visualization of INTENT, as well as how to MANIPULATE several organizations simultaneously:
 Breakdown: Hidden Government/Serial killers/USA-PATRIOT Act of 2001/PEGASUS/PHANTOM → 
 
@@ -4835,7 +6492,7 @@ Most of the agency has no idea I'm NOT making that up, they think I'm a deranged
 However, Michael Zurlo knows I am 100% accurate, and has been unable to be reached for comment.
 "@)
  
-$Book.AddSection(3,"Practice and Conditioning",@"
+$Book.NewSection(3,"Practice and Conditioning",@"
 People will attempt to use PSYCHOLOGICAL MANIPULATION to cause someone to DOUBT THEMSELVES, or SOMEONE ELSE.
 Those who understand the core basic concepts involved in establishing BASE REALITY CERTAINTY... 
 ...will never be wrong, in terms of judging a person's character or likelihood of doing something.
@@ -5065,7 +6722,7 @@ they have PATTERNS in them. Not normal bird patterns either.
 More like "Cool, so this thing sounds like ARTIFICIAL INTELLIGENCE." https://youtu.be/zXkmxtYQ6wQ 
 "@)
  
-$Book.AddSection(3,"Identifying a PATTERN",@"
+$Book.NewSection(3,"Identifying a PATTERN",@"
 _______________________
 | Complicated/4 pages |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -5494,7 +7151,7 @@ Attempting to have a bunch of puppets try to manipulate ME or force my hand...?
 These tactics, NO LONGER WORK ON ME. However, this takes quite a bit of PRACTICE and CONDITIONING.
 "@)
  
-$Book.AddSection(3,"Application",@"
+$Book.NewSection(3,"Application",@"
 People, really are, morons. The truth is, not EVERYBODY happens to be a moron, but it is a SAFE assumption 
 to make in EVERY circumstance, UNTIL they prove otherwise. As long as you are able to provide PRESSURE, or 
 DETECT when someone is SWITCHING TO OTHER TOPICS (DISTRACTIONS), you can take COMMAND of a conversation. 
@@ -5680,7 +7337,7 @@ ____________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.AddSection(3,"False Assurances and Fallacies",@"
+$Book.NewSection(3,"False Assurances and Fallacies",@"
 These terms refer to using LOGIC LOOPHOLES to justify a sensibility or reasoning. 
 (^ they UNDERMINE a person's intelligence)
 
@@ -5813,7 +7470,7 @@ that I am MORE INTELLIGENT THAN THEY WILL EVER BE, to say these things.
 I also think my aunt TERRI COOK had something to do with that scenario as well.
 "@)
  
-$Book.AddSection(3,"Appearances can be Deceiving",@"
+$Book.NewSection(3,"Appearances can be Deceiving",@"
 I talk about a girl named MEGHAN PURTCELL later in this. When a REALLY HOT GIRL LIES, it doesn't matter to 
 anybody that's a moron. Not one bit. You could've JUST busted a nut on her chin, like at a bar... cause she 
 MAY have been chokin' YOUR big fat D like less than 60 seconds ago, right...? THEN, a minute later, she 
@@ -5914,7 +7571,7 @@ but if somebody is INSISTENT about a particular STATEMENT or STORY...? It's prob
 ATTENTION/EFFORT, after all.
 "@)
  
-$Book.AddSection(3,"Principle over Personality",@"
+$Book.NewSection(3,"Principle over Personality",@"
 AMBER BURDO is my ex-girlfriend, she was not QUITE* as hot as Meghan,                        (← Pretty fuckin' close)  
 However, she seemed to be a LOT more intelligent, which made her more hot in my book.
 
@@ -6023,7 +7680,7 @@ ride on their APPEARANCE, PERSONALITY, or REPUTATION, rather than by sheer PRINC
 effective tool than anything else in the PSYCHOLOGICAL MANIPULATION tool-belt.
 "@)
  
-$Book.AddSection(3,"Exploitation",@"
+$Book.NewSection(3,"Exploitation",@"
 Here's how that stuff can be used to EXPLOIT people:
 ___________________________________________________________________________________________________________
 | 1) OPERATING on ASSUMPTIONS → using (PERSONALITY/REPUTATION/APPEARANCE) to cause others SOCIAL PRESSURE |
@@ -6216,7 +7873,7 @@ Therefore, you'll have no certainty about anything. Because, your principles wil
            ---------------------------------------                ---------------------------------------
 "@)
  
-$Book.AddSection(3,"Principle vs Emotion",@"
+$Book.NewSection(3,"Principle vs Emotion",@"
 PRINCIPLES are not supposed to SLIDE AROUND AIMLESSLY, because those aren't PRINCIPLES. 
 Those are EMOTIONS, totally different fuckin' thing. 
 
@@ -6250,7 +7907,7 @@ This is SUPER CRITICAL, if you're going to [read this entire document] and [take
 
 "@)
  
-$Book.AddSection(3,"Psychological Strategy",@"
+$Book.NewSection(3,"Psychological Strategy",@"
 The objective isn't to fuckin' tell Ted Cruz that he likes gettin' drilled between the ass cheeks for a 
 cool `$500M. Nah, dude probably doesn't realize that he's committing a serious crime because he's that 
 stupid. So, you gotta CONSIDER THAT SOME PEOPLE MAY NOT ACTUALLY KNOW THAT THEY'RE DOING SOMETHING WRONG.             
@@ -6339,7 +7996,7 @@ ________________________________________________________________________________
 |_______________________________________________________________________________________________________________|
 "@)
  
-$Book.AddSection(3,"Examination",@"
+$Book.NewSection(3,"Examination",@"
 I could really go on with an entire book laying out strategy after strategy, however it all breaks down to 
 philosophy, morals, and their ethical implications, which I'll discuss more about in:
 [Chapter – See no evil, Speak no evil, Hear no evil (Malice)]
@@ -6405,7 +8062,7 @@ SARATOGA HOSPITAL MENTAL HEALTH UNIT... have been put there because SOMEONE IMPO
 That's right. It's basically a "POLITICAL OPPONENT JAILHOUSE." (← MEDICAL FRAUD)
 "@)
  
-$Book.AddSection(3,"Solution",@"
+$Book.NewSection(3,"Solution",@"
 There's a SOLUTION for all of these massacres, I believe that the problem MAY BE BEST RESOLVED, by people 
 making a better COLLABORATIVE EFFORT, to talk about how they feel – ESPECIALLY as it concerns (PEOPLE/THINGS) 
 they DO NOT WANT TO TALK ABOUT (STIGMA). 
@@ -6597,7 +8254,7 @@ Cruz : That's... actually not a bad idea...
 Me   : Right.
 "@)
  
-$Book.AddSection(3,"Multi-Pronged Approach (1)",@"
+$Book.NewSection(3,"Multi-Pronged Approach (1)",@"
 The best case I can make about this hidden government shit, is to compare and contrast laws that don't make 
 any fuckin' sense. Because, how do they get passed...? 
 
@@ -6617,7 +8274,7 @@ alarming, but... he will probably watch, especially if she's hot enough. Dude's 
 away... Gotta make some new ones, ya know...
 "@)
  
-$Book.AddSection(3,"Skit [~] You be the Judge (1)",@"
+$Book.NewSection(3,"Skit [~] You be the Judge (1)",@"
 Paul : Holy fuck bro... that is... my god damn bed... 
 Me   : Yeh. Look, *shows hot girl* 
        Nice, eh?
@@ -6652,7 +8309,7 @@ Girl : HOLY FUCK. *eyes rolling* SPANK ME HARDER.
 Me   : Heh. Ya hear that Paul...?
 "@)
  
-$Book.AddSection(3,"Multi-Pronged Approach (2)",@"
+$Book.NewSection(3,"Multi-Pronged Approach (2)",@"
 Cause let's face it... 
 Pelagalli is probably gonna think to himself that he definitely misjudged me for fuckin' sure. 
 It'd been a while since HIS bed had seen any action, so, had to fuckin' go in there and get a job done...
@@ -6687,7 +8344,7 @@ with a story like this...? Probably not. I would imagine, people will read this,
 get pretty wet in the pants. Well, fuckin' good. They'd better... Especially if I keep describing it too...
 "@)
  
-$Book.AddSection(3,"Skit [~] You be the Judge (2)",@"
+$Book.NewSection(3,"Skit [~] You be the Judge (2)",@"
 Girl : *grunting* HARDER. SPANK ME HARDER~!
 Me   : *grabs hair pulls back* *other hand around neck* *starts slamming her down into my groin area...* 
 Girl : BOUT TO COME … HOLY FUCK... DON'T FUCKIN' STOP~!
@@ -6726,7 +8383,7 @@ Girl : *doesn't really hesitate at all* I guess, sure.
 Paul : …
 "@)
  
-$Book.AddSection(3,"Multi-Pronged Approach (3)",@"
+$Book.NewSection(3,"Multi-Pronged Approach (3)",@"
 Yeah, I'm gonna say that's bound to probably HUMILIATE him while also INTRIGUE the hell out of him, cause, 
 what the fuck can he do...? "OoOoOhhHh dude fuckin' wrote a story about how I committed a crime and then he 
 fucks the snot outta some hot bitch in my bed, cause he figured out where I live and got in somehow... 
@@ -6781,7 +8438,7 @@ as close to your fuckin' face as possible... It's probably gonna be annoying if 
 somehow managing to get in your house again even though you locked all the doors …
 "@)
  
-$Book.AddSection(3,"Skit [~] You be the Judge (3)",@"
+$Book.NewSection(3,"Skit [~] You be the Judge (3)",@"
 Paul      : Hey, this motherfucker keeps getting' in here somehow, and I can't …
 <unknown> : …
 Paul      : Yeah...? Pretty hard to do that when he's bangin' some hot bitch AGAIN.
@@ -6809,7 +8466,7 @@ Paul      : *spreads arms wide* LOOK DUDE, all's I'm sayin', is that if we get l
 <unknown> : …
 "@)
  
-$Book.AddSection(3,"Multi-Pronged Approach (4)",@"
+$Book.NewSection(3,"Multi-Pronged Approach (4)",@"
 Maybe the story sounded "pretty good".
 That's … cause when people start talking about things like "hottest fuckin' girl ever in recorded history"...
 People have an idea of what that'd look like.
@@ -6821,7 +8478,7 @@ Then again, he might piss his pants laughing...
 ...and be intrigued and actually give a shit about what happened to me AT MY OLD JOB. 
 "@)
  
-$Book.AddSection(3,"Cyberattacks (1)",@"
+$Book.NewSection(3,"Cyberattacks (1)",@"
 They're something to be worried about no matter who you are, or what you do.
 Cause they can lead to 2020 US Federal Data Breaches… then everybody's basically fucked for a bit.
 
@@ -6899,7 +8556,7 @@ piece of shit like you...?" (← Cause, stepdad... I think that my FATHER was EX
 Anyone who reads that will probably think "THAT IS A DAMN GOOD REASON, ACTUALLY..."
 "@)
  
-$Book.AddSection(3,"Recordings",@"
+$Book.NewSection(3,"Recordings",@"
 The COOL thing is, I sorta had a clue that someone was listening to me as far back as January 29th, 2020, OR BEFORE.
 But it eventually BECAME a THREATENING PROPSPECT, because I couldn't EXPLAIN WHY I SUSPECTED what I was SEEING.
 I suppose I should go back and review the audio logs I recorded on May 19th, 20th, 21st 2020 …
@@ -6931,7 +8588,7 @@ Past, was finally resolved by making some admissions… cause that's moronic, go
 The problem is that there are ALTERNATE reasons that she is a critical part of this story. I'll explain later.
 "@)
  
-$Book.AddSection(3,"Narrative",@"
+$Book.NewSection(3,"Narrative",@"
 The way I see it, I was really opening up a can of worms after I started the business in 10/18
 I didn't expect to get thrown off onto several tangents... 
 
@@ -7119,7 +8776,7 @@ she was hot too. Can't remember her name. Anyway…
 Suppose I told her there and then, just waltzed in, and just asked her:
 "@)
  
-$Book.AddSection(3,"Skit [~] Kristen Stangle",@"
+$Book.NewSection(3,"Skit [~] Kristen Stangle",@"
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
@@ -7261,7 +8918,7 @@ What if she's using a lot of eyebrow movements and can't help herself but smile.
 Well, this is actually a pretty good way to SEGUE into a slightly relevant topic...
 "@)
  
-$Book.AddSection(3,"Body Language",@"
+$Book.NewSection(3,"Body Language",@"
 If someone of the opposite sex happens to be having a conversation with you that goes a lot like that...? 
 It's cause both of those people probably want to break the suspense somehow. People ought to scope out how
 basically every dialog James Bond has with a woman... in basically EVERY James Bond movie... Sorta fuckin'
@@ -7298,7 +8955,7 @@ is how I've always been until someone has sorta screwed me over...
 The truth is, you really don't want to let the cat out of the bag, as that is the element of surprise.
 "@)
  
-$Book.AddSection(3,"Analogy [~] The cat's outta the bag",@"
+$Book.NewSection(3,"Analogy [~] The cat's outta the bag",@"
 You can say things that might cause the cat to pop it's head out of the bag, and look around...
 Now the cat sees ya. Cat goes "Meow", maybe the cat's hungry- and it needs to be fed.
 
@@ -7361,7 +9018,7 @@ Cat : Yeah~!
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 "@)
  
-$Book.AddSection(3,"Respect is a TWO-WAY-STREET (1)",@"
+$Book.NewSection(3,"Respect is a TWO-WAY-STREET (1)",@"
 Look respect is a TWO WAY STREET, and even disrespecting someone YOU might think could never matter ever, in 
 the world, at any point in time, space, existence...? 
 
@@ -7398,7 +9055,7 @@ UNDERESTIMATION is a pretty HUGE, NON-MISTAKE people might make.
 Still, people will call him and have a conversation like this...
 "@)
  
-$Book.AddSection(3,"Skit [~] `$4500.00/month → `$6500.00/month",@"
+$Book.NewSection(3,"Skit [~] `$4500.00/month → `$6500.00/month",@"
 Tim : *phone rings, Tim looks at it, some random number, answers the phone* Hello...?
 Guy : Hey dude.
 Tim : Sup...?
@@ -7511,7 +9168,7 @@ Guy : Anyway, look buddy.
 Tim : Bro. 
 "@)
  
-$Book.AddSection(3,"Respect is a TWO-WAY-STREET (2)",@"
+$Book.NewSection(3,"Respect is a TWO-WAY-STREET (2)",@"
 Tim has relatively a LOT LESS to worry about than someone who is a county sheriff, like Michael Zurlo.
 But I suspect that these two have had DIRECT INVOLVEMENT SOMEHOW, typically when you're in an AREA...
 ...where you're near somebody's PROPERTY, BUSINESS, or even BOTH... it's not a bad assumption to make.
@@ -7689,7 +9346,7 @@ is a (← TWO WAY STREET →). Speaking of TED ETOLL, he's a cool guy, and altho
 his business partner at Lou Communications/Metroland STEPHEN LEON certainly did.
 "@)
  
-$Book.AddSection(3,"Story [~] Ted Etoll, Lou Communications/Metroland",@"
+$Book.NewSection(3,"Story [~] Ted Etoll, Lou Communications/Metroland",@"
 I worked for over 7 years at Lou Communications. Ted, was actually the owner of Metroland, and didn't feel 
 like calling the shots, he just paid Stephen Leon to run Metroland. Stephen Leon, wasn't always a bad guy, but 
 sometimes he'd be a condescending dickhead that needed to be pulled down several pegs.
@@ -7789,7 +9446,7 @@ saying: "Make sure this never happens again."
 Ah. Ok fuckface. I made damn certain of it.
 "@)
  
-$Book.AddSection(3,"Insults",@"
+$Book.NewSection(3,"Insults",@"
 INSULTS are EXTREMELY EFFECTIVE, when people CARE about their REPUTATION
 On the contrary, if you aggressively insult somebody you will earn the reputation of someone that lacks respect.
 But, most people won't understand WHY, nor will they CARE why...
@@ -7853,7 +9510,7 @@ Because if you ARE being censored or limited, then the solution is...
 ...to acclimate the situation, by making THREATS.
 "@)
  
-$Book.AddSection(3,"Threats",@"
+$Book.NewSection(3,"Threats",@"
 They differ in severity just like CENSORSHIP also ranges in severity.
 
 Threats are seen as INDICATIVE of AGGRESSION, and therefore, society frowns upon them because they can be 
@@ -7903,7 +9560,7 @@ High:
  - RYAN WARD (my cousin) basically making it incredibly clear to me that he's had FBI remote access to my equipment
 "@)
  
-$Book.AddSection(3,"De-escalation",@"
+$Book.NewSection(3,"De-escalation",@"
 Sometimes TIME causes the issue to drop in severity.
 _________________
 | Nfrastructure |  I had to wait a few years to calm the fuck down after Matt had me fired. I didn't mean to
@@ -7921,7 +9578,7 @@ _______________________
 people will be like "OooOoOoohhhHHhooHhh you're the guy that pissed Tim off, eh...?"
 "@)
  
-$Book.AddSection(3,"Cyberattacks (2)",@"
+$Book.NewSection(3,"Cyberattacks (2)",@"
 The truth is someone is using stuff that kills people, and then playing games with that stuff, and if they do 
 it again, they won't survive. Cause if they want to take the easy way out and just take someone a lot more 
 talented than they are, out of the game, then just fuckin' do it already. Why make me wait...? Ya know...? 
@@ -7958,7 +9615,7 @@ government. A lot of people in the business world don't actually have talent.
 Allow me to rephrase that...
 "@)
  
-$Book.AddSection(3,"Excerpt [~] Raw Talent",@"
+$Book.NewSection(3,"Excerpt [~] Raw Talent",@"
 There are plenty of people with (ACTUAL/RAW TALENT), that exist in the business world.
 But, many of them have what's called "ass kissing skills".
 
@@ -8314,7 +9971,7 @@ He doesn't appreciate being called one... but he plays this same game that so ma
 they fuckin' heard what I had to say alright, but I never hear back. And that, to me, is OFFENSIVE.
 "@)
  
-$Book.AddSection(3,"Hidden Gov't and Corruption",@"
+$Book.NewSection(3,"Hidden Gov't and Corruption",@"
 Further to that point, requesting transcriptions from the court is bogus. 
 Why do they do that, rather than the audio recording? 
 See, something like that sounds incredibly questionable. 
@@ -8432,7 +10089,7 @@ If they DO give a shit, then...
 So, this document is probably gonna change some shit. 
 "@)
  
-$Book.AddSection(3,"Tyranny",@"
+$Book.NewSection(3,"Tyranny",@"
 Tyranny appears to be in full swing, and there's something wrong with this guy. (← CHARACTERIZATION)
 An extremely useful tool, is to consider characterizing a problem as an actual person.
 
@@ -8500,20 +10157,25 @@ Suppose that's the case, hidden government has these people that hunt citizens d
 get killed, then whoa, that's jail time cause they're probably being watched... Basically, serial killers that 
 nobody has any defense against. (Covered in [Chapter 6 - Hidden Government])
 "@)
+}
 
 # // _________________________________________________________________
-# // | Chapter 3 - See no evil, Speak no evil, Hear no evil (Malice) |  cls; $Book.Range("Book",4,@(158..167))
+# // | Chapter 3 - See no evil, Speak no evil, Hear no evil (Malice) |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(4,"Chapter 3")
+Function Chapter_3
+{
+    Param ($Book)
 
-$Book.AddSection(4,"Start",@"
+$Book.NewChapter("Chapter 3","See no evil, Speak no evil, Hear no evil (Malice)")
+
+$Book.NewSection(4,"Start",@"
 See no evil...? Speak no evil...? Hear no evil...? 
 Malice is basically the living embodiment of Satan. 
 You don't have to be religious at all, to know what I mean, either.
 "@)
 
-$Book.AddSection(4,"Overview",@"
+$Book.NewSection(4,"Overview",@"
 Lady justice wearing a fucking blindfold around her eyes, tells me that at some point in time, 
 some asshole came around and decided that should be a cool way to install a hidden government. 
 
@@ -8619,7 +10281,7 @@ Evil, is when you ask yourself hypothetical questions about "if this person did 
 same level of sense... that is a great way to define "evil".
 "@)
  
-$Book.AddSection(4,"Identification",@"
+$Book.NewSection(4,"Identification",@"
 So for instance... 
 Condition 1: "IF Michael Zurlo facilitated an attempted murder by using Pegasus, 
 ...then can Captain Cooper's (2) adult kids kill me...?"                            (← Not sure what their names are)
@@ -8655,7 +10317,7 @@ But, they need to be EDUCATED, on how to determine with SHEER CERTAINTY, that th
 things, and vice versa. MORALITY and ETHICS play a HUGE role, in determining ONE from the OTHER.
 "@)
  
-$Book.AddSection(4,"Moral Dilemma",@"
+$Book.NewSection(4,"Moral Dilemma",@"
 Example: Moral Dilemma: Train track (Covered by Michael Stevens from Vsauce) 
 You just so happen to see (5) people that are somehow tied to a set of train tracks.
 You just so happen to see (1) person that is somehow tied to a parallel set of train tracks.
@@ -8699,7 +10361,7 @@ That probably sounds fuckin' ridiculous. Nobody will openly state that they're O
 But, it is actually a real thing that needs to be taken SERIOUSLY.
 "@)
  
-$Book.AddSection(4,"Determining Seriousness",@"
+$Book.NewSection(4,"Determining Seriousness",@"
 Sometimes these people aren't afraid at all, they're deadly and have actually killed people before.
 The more people they are involved with killing, the more "dead" the look in their eyes becomes, when they lie.
 
@@ -8736,7 +10398,7 @@ But- people should consider that some people really are that damaged, scarred, o
 So it makes perfect sense to understand their motivations and relate to them.
 "@)
  
-$Book.AddSection(4,"Determining Scope, Severity, and Suspicion",@"
+$Book.NewSection(4,"Determining Scope, Severity, and Suspicion",@"
 ________________________________________________________________________________________________________
 | Term      | Definition                                                                               |
 |===========|==========================================================================================|
@@ -8825,7 +10487,7 @@ near (New Country/Falcon Trace). Known or suspected associates ranking in likeli
 Example: [MICHAEL ZURLO] – Headmaster County Sheriff for Saratoga County AKA "straight to the top" [RICO]
 "@)
  
-$Book.AddSection(4,"Association List",@"
+$Book.NewSection(4,"Association List",@"
 _________________________________________________________________________________________________________________
 | Name                                     | Association/Records                                                |
 |==[SCSO/GUILTY/RICO/FACILITATION]=========|====================================================================|
@@ -8875,7 +10537,7 @@ That does NOT mean that they are GUILTY, could mean that they are INNOCENT and t
 explains how SOMEONE ELSE IS GUILTY.
 "@)
  
-$Book.AddSection(4,"Impressions",@"
+$Book.NewSection(4,"Impressions",@"
 Pretty substantial. I can say with SHEER CERTAINTY, that PAUL ZURLO, is a gay guy, but he is not a 
 bloodthirsty killer at all. I can ALSO say that about TIMOTHY BERLIN, not GAY, but innocent.
 Same goes for ANTHONY AGRESTA, not GAY, but innocent.
@@ -8965,7 +10627,7 @@ But those suspicions have SHIFTED because of additional key observations I have 
           ----------      -------            ---------------------------------------
 "@)
  
-$Book.AddSection(4,"Observations",@"
+$Book.NewSection(4,"Observations",@"
 I don't go around placing microphones in fictional dimly lit warehouses to derive this information either.
 I talk to people to derive SUBLIMINAL information from their: VOCAL RESPONSES, INTONATION, and INFLECTIONS
 __________________________________________________________________________________________________________
@@ -9072,7 +10734,7 @@ Yeah, that dude was driving the white SUV, I'll discuss that in:
 [Chapter 7 : USA-Patriot Act of 2001 and Surveillance Capitalism]
 "@)
  
-$Book.AddSection(4,"Resistance",@"
+$Book.NewSection(4,"Resistance",@"
 Pretty easy to tell when someone WAS, however. When someone IS involved in something like that, they will act...
 ...like a dog that just shit in the house, and then you try to put their nose in the shit pile. 
 
@@ -9107,7 +10769,7 @@ Or other dudes.
 The listed parties above in the ZURLO/Association list, are NOT New York State Troopers, are they? Nope.
 "@)
  
-$Book.AddSection(4,"Narrative",@"
+$Book.NewSection(4,"Narrative",@"
 SCSO was definitely involved in trying to kill me, I wouldn't suspect it if I didn't see so many indications
 or FEEL like SCOTT SCHELLING was trying to do that. Yeah. Dude was TRYING TO DO THAT, which is why I asked 
 JEFFREY KAPLAN to follow him when bringing me to my house. JOSHUA WELCH and JEFFREY KAPLAN arrived MINUTES after
@@ -9204,14 +10866,19 @@ Also, my neighbors that live across the street from me ...they work for Capital 
 Coincidence...? Coincidences do happen. But not as often as I have seen them.
 When I spoke to Mr. McCabe, he appeared to have NO idea who I was. So, I think he is TOTALLY innocent.
 "@)
+}
 
 # // ________________________
-# // | Chapter 4 - The Week |  cls; $Book.Range("Book",5,@(171..215))
+# // | Chapter 4 - The Week |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(5,"Chapter 4")
+Function Chapter_4
+{
+    Param ($Book)
 
-$Book.AddSection(5,"Start",@"
+$Book.NewChapter("Chapter 4","The Week")
+
+$Book.NewSection(5,"Start",@"
 This is an actual statement that I am making, as to the events over the course of about a week, in May 2020.
 Even though there were MULTIPLE ATTEMPTS between (05/19/20) → (05/27/20), I've uncovered...
  ________________________________________________________________________________________________________________
@@ -9221,7 +10888,7 @@ Even though there were MULTIPLE ATTEMPTS between (05/19/20) → (05/27/20), I've
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(5,"Overview",@"
+$Book.NewSection(5,"Overview",@"
 Make no mistake here, I know that some of my exhibits aren't gonna be "perfect" by any standard.
 I suppose I'll explain myself when asked questions, I was worried I'd die for this whole period of time.
 I'm not even remotely kidding about that in the least.
@@ -9232,7 +10899,7 @@ for them to do this...? Maybe. But, seems like I've caught onto a charade that s
                         -----                  ----------------------------------------------------------------
 "@)
  
-$Book.AddSection(5,"Theodore Roosevelt [|] (05/19/20 → 05/21/20)",@"
+$Book.NewSection(5,"Theodore Roosevelt [|] (05/19/20 → 05/21/20)",@"
 ________________________________________________________________________________________________________________
 | 05/19/20 0840 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -9864,7 +11531,7 @@ by his best friend, going on to earning themselves a Nobel Peace Prize, and bein
 So... the point I'm trying to make is that "Big things start small." -Jeff Bezos
 "@)
  
-$Book.AddSection(5,"Beginning [|] (05/21/20 1500 → 05/22/20 1700)",@"
+$Book.NewSection(5,"Beginning [|] (05/21/20 1500 → 05/22/20 1700)",@"
 I'm not going to write about everything I posted to Facebook, but I had been recording some videos of birds.
 Back in February or March of 2020, I recorded a video of what I believed was a Peregrine falcon.
 
@@ -10258,7 +11925,7 @@ Stepdad : Ya know, where the hell IS this son of a bitch...?
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 "@)
  
-$Book.AddSection(5,"S.A.N.G [|] (05/22/20 2330)",@"
+$Book.NewSection(5,"S.A.N.G [|] (05/22/20 2330)",@"
 ________________________________________________________________________________________________________________
 | 05/22/20 2330 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -10410,7 +12077,7 @@ But no. I run into this problem quite a lot. Maybe someone should hook me up wit
 CLEARANCE... 
 "@)
  
-$Book.AddSection(5,"Flashback [~] Gary McQueen",@"
+$Book.NewSection(5,"Flashback [~] Gary McQueen",@"
 The reason why I was thinking about heading to SCHENECTADY before I even went to STRATTON, is because I was 
 certain that some dude who works at Rivers Casino, was using these fuckin' remote code executions on the Acer 
 Veritons back in 2019 when I was running [COMPUTER ANSWERS - 514 Main Street Bennington, VT 05201] between 
@@ -10548,7 +12215,7 @@ Regardless, Gary got in trouble for something... I lost contact with him.
 Didn't stop me from being curious about what the hell he meant.
 "@)
  
-$Book.AddSection(5,"Schenectady [|] (05/23/20 0100 → 05/23/20 0230)",@"
+$Book.NewSection(5,"Schenectady [|] (05/23/20 0100 → 05/23/20 0230)",@"
 ________________________________________________________________________________________________________________
 | 05/23/20 0100 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -10629,7 +12296,7 @@ She was actually pretty hot by the way. Considering the circumstances, I was pre
 I thanked her for the ride home and left it at that.
 "@)
  
-$Book.AddSection(5,"Affairs in Order [|] (05/23/20 1200 → 05/23/20 1800)",@"
+$Book.NewSection(5,"Affairs in Order [|] (05/23/20 1200 → 05/23/20 1800)",@"
 ________________________________________________________________________________________________________________
 | 05/23/20 1200 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -10685,7 +12352,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.AddSection(5,"On the Offensive [|] (05/23/20 2000 → 05/24/20 0230)",@"
+$Book.NewSection(5,"On the Offensive [|] (05/23/20 2000 → 05/24/20 0230)",@"
 ________________________________________________________________________________________________________________
 | 05/23/20 2000 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -11806,7 +13473,7 @@ Then I looked at the other versions of the files and the cool thing is that (2) 
 have differing file sizes, which means that the videos have something transcoded in them.
 "@)
  
-$Book.AddSection(5,"35th Birthday [|] (05/24/20 1200)",@"
+$Book.NewSection(5,"35th Birthday [|] (05/24/20 1200)",@"
 One thing you wanna keep in mind when you're doing something most people would never think/do in my situation, 
 is just to keep applying pressure. Because the LAST thing ANY serial killer really wants, is to be caught on 
 camera looking like they're about to stab somebody... But, maybe they'll try again. You know? I mean, so what 
@@ -11944,7 +13611,7 @@ I had been eyeing the 1769 Route 9 residence for some time, for reasons I will e
 I took pictures of nearly every property adjacent to Asotoia Vucetic's abandoned driving range property.
 "@)
  
-$Book.AddSection(5,"Biette Road [|] (05/24/20 1800)",@"
+$Book.NewSection(5,"Biette Road [|] (05/24/20 1800)",@"
 ___________________________________________________________________________________________________________
 | Index   Name     Date    Time   Focus                (URL/Uniform Resource Locator)                     |
 |---/--------|---------\------\-----|--------------------\-------------|------------/---------------------|
@@ -12119,7 +13786,7 @@ MAYBE he'll have second thoughts. But- maybe it wasn't quite time.
 somebody would've arrested that dude by now, right...?                                                    (← FALLACY)
 "@)
 
-$Book.AddSection(5,"Before Catricala [|] (05/24/20 1845) (1)",@"
+$Book.NewSection(5,"Before Catricala [|] (05/24/20 1845) (1)",@"
 This area will be a crucial stage of the arena that would later be battled upon.
 ___________________________________________________________________________________________________________
 | Index   Name     Date    Time   Focus                (URL/Uniform Resource Locator)                     |
@@ -12363,7 +14030,7 @@ Well, think again, ya fucks. That's like 2 or 3 fallacious statements right ther
 That's like a fuckin' megafallacy.
 "@)
  
-$Book.AddSection(5,"Excerpt [~] Now that's what I call 'Alliteration'",@"
+$Book.NewSection(5,"Excerpt [~] Now that's what I call 'Alliteration'",@"
 Nah. I'm not calling the people at the sub shop stupid fucks, nor the readers. 
 I'm calling the morons at Verizon... 
 ...who drive, float, and fuck around, in their fuckin' federal phallus faceted fuckmobiles...
@@ -12384,7 +14051,7 @@ People  : ...that doesn't answer my question...
 Verizon : Suck a fuckin' dick, bro.
 "@)
  
-$Book.AddSection(5,"Before Catricala [|] (05/24/20 1845) (2)",@"
+$Book.NewSection(5,"Before Catricala [|] (05/24/20 1845) (2)",@"
 BEHIND them, the Athletic business gets Verizon FIOS, undetected... by morons. 
 I mean, nobody would ever notice something that OBVIOUS, or fuckin' blatant... would they...? 
 If Gus Fring can distribute methamphetamines in fast food chicken trucks, surely Verizon can get away with 
@@ -12420,7 +14087,7 @@ I mean, I really hope I'm wrong about that and this is just a LOCALIZED THING TH
 However... I've got something else to really sew it all together.    
 "@)
  
-$Book.AddSection(5,"Catricala [|] (05/24/20 1910) (1)",@"
+$Book.NewSection(5,"Catricala [|] (05/24/20 1910) (1)",@"
 I was walking up Route 9, when suddenly, I see someone that looks like the dude in the convertible with 
 his wife several days beforehand, pull up to the funeral home across the street from Computer Answers in a 
 black, Lexus (I think). I decide to approach him, he was inside. As soon as he came to the door, he and I 
@@ -12432,7 +14099,7 @@ At the time, I didn't think much of Eric Catricala being involved or related or 
 Didn't even know his name. I had a gut feeling that maybe I oughtta talk to the dude when I saw him pull up.
 "@)
  
-$Book.AddSection(5,"Flashback [!] Eric Catricala",@"
+$Book.NewSection(5,"Flashback [!] Eric Catricala",@"
 Catricala : How can I help you...?
 Me        : Hi, my name is Michael Cook. 
 Catricala : Hello Michael, I'm Eric Catricala.
@@ -12484,7 +14151,7 @@ Me        : *momentary pause* You keep up the good work there, Mr. Catricala.
 Catricala : Alright, I will, you take care of yourself too.
 "@)
  
-$Book.AddSection(5,"Catricala [|] (05/24/20 1910) (2)",@"
+$Book.NewSection(5,"Catricala [|] (05/24/20 1910) (2)",@"
 Now, the real conversation he and I had, only had certain elements of what I threw into the document.
 Tanski, Wormuth and Amato were ALREADY investigated.
 Most of it is fairly accurate. Neither one of us really had a fuckin' clue, about each other.
@@ -12502,7 +14169,7 @@ Maybe those people didn't actually accept a BUYOUT... but instead, were TAKEN OU
 And then, now the land can be redeveloped. (not) Cool. Maybe I'm wrong.
 "@)
  
-$Book.AddSection(5,"After Catricala [|] (05/24/20 1915)",@"
+$Book.NewSection(5,"After Catricala [|] (05/24/20 1915)",@"
 I began to walk all the way down Route 9 to Guideboard Road, where I began to head into Waterford. I was making  
 recordings of the "birds" that I heard, attempting to discern the REAL birds, from ones that I believed to be fake. 
 
@@ -12573,7 +14240,7 @@ ________________________________________________________________________________
 |______________________________________________________________________________________________________________|
 "@)
  
-$Book.AddSection(5,"Bell Atlantic [|] (05/24/20 1930)",@"
+$Book.NewSection(5,"Bell Atlantic [|] (05/24/20 1930)",@"
 
 I had been saying quite a lot about Bell Atlantic, and how they have a dick basically jammed up everybody's 
 butt. Obviously not literally, but they are a friggen monopoly. These pictures were hand-picked to be left 
@@ -12629,7 +14296,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.AddSection(5,"Halfmoon Town Hall [|] (05/24/20 2045)",@"
+$Book.NewSection(5,"Halfmoon Town Hall [|] (05/24/20 2045)",@"
 I found something rather terrifying in a couple of these pictures, then I saw anomalies in others.
 There's literally a GHOST CAR in one of these pictures, and 5 seconds later, MAN, it's fuckin' TOTALLY GONE.
 ___________________________________________________________________________________________________________
@@ -12743,7 +14410,7 @@ were because someone I've known since I was a kid... they were the reason why th
 Which is why I wound up going to Innisbrook the following day.
 "@)
  
-$Book.AddSection(5,"Solar Drive [|] (05/24/20 2200)",@"
+$Book.NewSection(5,"Solar Drive [|] (05/24/20 2200)",@"
 Took some pictures on Solar Drive, found a meter that was not running at the cell phone tower, among some
 other stuff. Note how some pictures are perfectly stable, and the others aren't...? Well, that is a perfect
 indication of a COCKSUCKER being involved somehow... The details are not so apparent until you apply this
@@ -12818,7 +14485,7 @@ By the way, here's the VIDEO that I made of some of these same shots.
 (^ Aw... That one meter stays at 0.00 for like a while, doesn't it...?)
 "@)
  
-$Book.AddSection(5,"Mission Complete [|] (05/24/20 2300)",@"
+$Book.NewSection(5,"Mission Complete [|] (05/24/20 2300)",@"
 I began to upload my files, pictures, and whatnot. Someone was still trying to be a lame motherfucker though.
 Had to upload the pictures in smaller groups or chunks to avoid someone who was being a dickhead in the middle.
 
@@ -12930,7 +14597,7 @@ At least I'm not pegging anybody with a dick that just so happens to ALSO be a W
 dangerous in a totally different way than it should be... ya know...? 
 "@)
  
-$Book.AddSection(5,"Skit [~] Pencil Dickman vs. Fatcock Goodman",@"
+$Book.NewSection(5,"Skit [~] Pencil Dickman vs. Fatcock Goodman",@"
 Pencil Dickman  : Hey Fatcock! 
                   What the fuck, bro...? 
 Fatcock Goodman : Hey, what's goin' on Pencil Dickman?
@@ -13016,7 +14683,7 @@ Fatcock Goodman : I agree...
                   ...IS pretty dangerous.
 "@)
  
-$Book.AddSection(5,"Day Preceding the Attack [|] (05/25/20 1200 → 05/25/20 1700)",@"
+$Book.NewSection(5,"Day Preceding the Attack [|] (05/25/20 1200 → 05/25/20 1700)",@"
 ________________________________________________________________________________________________________________
 | 05/25/20 1200 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -13539,7 +15206,7 @@ This son of a bitch got Ray Fetcho, but not in his sleep. He was my 8th grade Ea
 I have a feeling, that having to tap into spiritual powers, is what's gonna get me outta this fuckin' mess.
 "@)
  
-$Book.AddSection(5,"Night of the Attack [|] (05/25/20 2100 → 05/25/20 2343) (1)",@"
+$Book.NewSection(5,"Night of the Attack [|] (05/25/20 2100 → 05/25/20 2343) (1)",@"
 ________________________________________________________________________________________________________________
 | 05/25/20 2100 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    
@@ -13571,7 +15238,7 @@ SCOTT even said 'you're a naughty boy bro' and, JOHN PICKETT might be the reason
 These dudes probably watch JUST to get a glimpse of what I'm like...
 "@)
  
-$Book.AddSection(5,"Skit [~] John Pickett and Scott Salvadore",@"
+$Book.NewSection(5,"Skit [~] John Pickett and Scott Salvadore",@"
 John : Hey. 
        What's Michael Cook doin' right now...?
        ...probably watchin some kick ass porn, isn't he...?
@@ -13688,7 +15355,7 @@ He fuckin' read the email I wrote, and he will fuckin' stare at it for a while..
 *pointing* "This fuckin' dude has the ambition AND the drive, to do the work of an entire library full of people."
 "@)
 
-$Book.AddSection(5,"Night of the Attack [|] (05/25/20 2100 → 05/25/20 2343) (2)",@"
+$Book.NewSection(5,"Night of the Attack [|] (05/25/20 2100 → 05/25/20 2343) (2)",@"
 The pattern I had detected, was that this fuckin' CAPITAL DIGITRONICS was showing up in coincidental locations
 and, seemed pretty strange to me. I have a feeling that these people living across the street are RUSSIAN SPIES.
 
@@ -13890,7 +15557,7 @@ Nah, I fuckin' had somewhat of a clue. Just think, if they sent some guys that w
 probably could've been a lot less obvious. So, I kept thinkin' about recording a video just talking some shit.
 "@)
 
-$Book.AddSection(5,"Flashback [!] The Attack",@"
+$Book.NewSection(5,"Flashback [!] The Attack",@"
 
 Me :  Hey, everybody, Michael Cook comin' at ya with a deep-inside look...
       Catricala Funeral Home, has a little building in the back.
@@ -14094,7 +15761,7 @@ The secret's out, motherfucker.
 The cat's out of the bag, and it ain't goin' back in, either.                  (← The entire point of the book)
 "@)
  
-$Book.AddSection(5,"The Attack [|] (05/25/20 2343 → 05/26/20 0130) (1)",@"
+$Book.NewSection(5,"The Attack [|] (05/25/20 2343 → 05/26/20 0130) (1)",@"
 ________________________________________________________________________________________________________________
 | 05/25/20 2343 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -14125,7 +15792,7 @@ On the fucking total edge of my seat...
 Just another hair-raising episode of "Morons trying to fool me, but failing" starring: Michael C. fuckin' Cook Sr.
 "@)
  
-$Book.AddSection(5,"Story [~] Top Deck Awareness",@"
+$Book.NewSection(5,"Story [~] Top Deck Awareness",@"
 Once upon a time, a man once lived in the crime-riddled badlands of suburbia... in Clifton Park, NY.
 A KEYBOARD WARRIOR, whose story was unlike any other, unparalleled in nature. One night he was nearly
 killed and somehow barely survived. His story and voice were both so gritty...? Well, people could
@@ -14175,7 +15842,7 @@ aking. Practically told everybody and their mother, that somebody had been in th
 o commit the ultimate sin against HIM... But- they failed.
 "@)
 
-$Book.AddSection(5,"The Attack [|] (05/25/20 2343 → 05/26/20 0130) (2)",@"
+$Book.NewSection(5,"The Attack [|] (05/25/20 2343 → 05/26/20 0130) (2)",@"
 Yeah, the real story is... that dramatic after all. Probably moreso.
 Didn't know it was HIS car, until he got into it, many moments later.
 
@@ -14490,7 +16157,7 @@ people that somehow knew what the hell I was even saying into a device that wasn
 And the reason I know this is as follows...
 "@)
 
-$Book.AddSection(5,"Home Stretch [|] (05/26/20 0130 → 05/26/20 0155)",@"
+$Book.NewSection(5,"Home Stretch [|] (05/26/20 0130 → 05/26/20 0155)",@"
 ________________________________________________________________________________________________________________
 | 05/26/20 0130 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -14507,7 +16174,7 @@ When he got out, I had my hands up, wasn't pulling any funny business,
 and I told him that I tried to call 911 about 90 minutes beforehand TWICE.
 "@)
 
-$Book.AddSection(5,"Flashback [!] (SCSO-2020-028501) Zappone → Home",@"
+$Book.NewSection(5,"Flashback [!] (SCSO-2020-028501) Zappone → Home",@"
 Schelling : You obviously didn't call 911 otherwise WE would've gotten the call...
 Me        : I have like, screenshots of the calls and the call log.
 Schelling : Look dude, what the hell is this...?
@@ -14951,7 +16618,7 @@ opponents, and that dude could've looked at the fucking video that I wound up sh
 At least I survived... barely.
 "@)
  
-$Book.AddSection(5,"Barely Survived",@"
+$Book.NewSection(5,"Barely Survived",@"
 ________________________________________________________________________________________________________________
 | 05/26/20 0155 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -15183,7 +16850,7 @@ medical fraud at Saratoga Hospital...? It's cause of this shit called HIPAA. "Nf
 involved" Yeah they were, fuckface. But hey...
 "@)
  
-$Book.AddSection(5,"Flashback [~] Stonecrest/Werner 05/26/20",@"
+$Book.NewSection(5,"Flashback [~] Stonecrest/Werner 05/26/20",@"
 Me     : I think we're being attacked right now.
 Girls  : *arms crossed* Oh yeh...?
          What makes you think that...?
@@ -15242,7 +16909,7 @@ cause that. They definitely distributed hacked firmware to the device. They didn
 "Fuck it bro..." and then I was able to fall asleep.
 "@)
  
-$Book.AddSection(5,"Day After the Attack (1)",@"
+$Book.NewSection(5,"Day After the Attack (1)",@"
 ________________________________________________________________________________________________________________
 | 05/27/20 0900 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -15282,7 +16949,7 @@ but when I got to Latham Circle, I said "Fuck it, I'm goin' to the fuckin' top, 
 When I was just about halfway to Latham, Catricala calls James Leonard.
 "@)
  
-$Book.AddSection(5,"Skit [~] Eric Catricala and James Leonard",@"
+$Book.NewSection(5,"Skit [~] Eric Catricala and James Leonard",@"
     Catricala : Hey bro... 
                 This fuckin' guy needs an attitude adjustment.
     Leonard   : Oh, I agree with ya there.
@@ -15365,7 +17032,7 @@ $Book.AddSection(5,"Skit [~] Eric Catricala and James Leonard",@"
     Catricala : Alright, Jesus.
 "@)
  
-$Book.AddSection(5,"Day After the Attack (2)",@"
+$Book.NewSection(5,"Day After the Attack (2)",@"
 ________________________________________________________________________________________________________________
 | 05/27/20 1800 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -15470,7 +17137,7 @@ I haven't seen this guy in years. And yeah, to have to talk with "family" about 
 I gathered information that caused me to specifically name some people. 
 "@)
  
-$Book.AddSection(5,"Cortana",@"
+$Book.NewSection(5,"Cortana",@"
 Back on May 25th, 2020, I decided to walk all the way there talking about how Cortana would eventually be willed 
 into existence because people are using the USA-PATRIOT Act to generate revenue, instead of using it to PROTECT 
 PEOPLE. Not meant for generating revenue. Meant for protecting people. People that use it to generate revenue 
@@ -15602,7 +17269,7 @@ a shield that protects people from serial killers, or fuckin' accidents, or what
 the person.
 "@)
  
-$Book.AddSection(5,"Quantum Physics",@"
+$Book.NewSection(5,"Quantum Physics",@"
 If it's true that there's a literal GHOST CAR that can show up at the speed of light, and fuck everything up, 
 and then bounce... it probably explains why so many people have such (little/no) integrity or morality. Yeah 
 I'm sure people are gonna say, BEFORE they even see these pictures: "GHOST CARS DON'T EXIST YA FUCKIN LUNATIC~!"
@@ -15967,7 +17634,7 @@ If you fuck some girl, and EVERY TIME AFTERWARD, she says "HEY GOTTA GO, I'LL BE
 ...she is going to fuck some other guy. Or, girl. So, that's a PATTERN. Sex → Gotta go, be back soon → Cheating.
 "@)
  
-$Book.AddSection(5,"Skit [~] FBI Investigator Ryan Ward",@"
+$Book.NewSection(5,"Skit [~] FBI Investigator Ryan Ward",@"
 Look, here's some real talk... 
 Maybe having a pencil dick is what pushed Ryan to be so highly talented at Karate.  
 
@@ -16056,7 +17723,7 @@ Me   : Yeh, ok dude.
        Should've, would've, could've...                                                         (← FALLACY ALERT)
 "@)
  
-$Book.AddSection(5,"Reality Check (1)",@"
+$Book.NewSection(5,"Reality Check (1)",@"
 In reality, I didn't do all of this alone, nor did I figure it out by myself.
 Tati Cleveland never said those words, by the way. She did more than that.
 
@@ -16153,7 +17820,7 @@ being enforced, from top → bottom, they all need to be revised and rewritten f
 fuckbag from England came over here, and spiked the fuckin' punchbowl...
 "@)
  
-$Book.AddSection(5,"Example [+] Someone spiked the punchbowl at Alcoholics Anonymous",@"
+$Book.NewSection(5,"Example [+] Someone spiked the punchbowl at Alcoholics Anonymous",@"
 Thesis – Some asshole from England thought OooOOooOOhHhhh nobody will ever know we just kept SPAMMING America
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -16192,7 +17859,7 @@ Guy : I have 30 years sober.
       Other than that though, I've been sober 30 years... to the day.
 "@)
  
-$Book.AddSection(5,"Reality Check (2)",@"
+$Book.NewSection(5,"Reality Check (2)",@"
 Ah, yeah. It's like Prince Andrew being seen sucking Andrew Cuomo's dick, right...? 
 And then he stops, and they both say, "Hey, neither one of us are gay."
 And then Prince Andrew starts blowing him some more.
@@ -16375,7 +18042,7 @@ to stand on, that are trying to sink into the chair and not look like a fuckin' 
 Like the GIF of Homer Simpson backing up into the bushes. | ← Don't do that. Take accountability.
 "@)
  
-$Book.AddSection(5,"Exploits",@"
+$Book.NewSection(5,"Exploits",@"
 ...are a lot like: asking some girl "Wanna choke on a big fat dick...?" It is an extremely aggressive 
 strategy, but I gotta say, the fact that a man asked that question in record time...? That's gonna be a bit of
 a turn on for THEM. So you get (2) things out there, and she might just fuckin' say "Hell yeah...~! I love 
@@ -16442,7 +18109,7 @@ If you have some common decency, you won't fuckin' do that in any of those scena
 piss some people off. It may actually work a little TOO well, is what I mean.
 "@)
  
-$Book.AddSection(5,"Control",@"
+$Book.NewSection(5,"Control",@"
 You can't expect everyone else in the world is gonna care about things like RESPECT and DECENCY. 
 Believe it or not, these things paint a pretty good picture of someone's INTEGRITY → HONESTY → TRUSTWORTHINESS
 This strategy WORKS, but like I said, it's a fuckin' exploit. 
@@ -16707,7 +18374,7 @@ BUT- trying to kill somebody after failing miserably over and over at a bunch ot
 ...is grounds for me to say "OoooHoOooOOooohhhHHhh, girls dating my cousin...? Fuck it. I'm goin' in boys."
 "@)
  
-$Book.AddSection(5,"Skit [~] Tatiana Cleveland",@"
+$Book.NewSection(5,"Skit [~] Tatiana Cleveland",@"
 Tati : Well, hello Michael.
 Me   : Tati...
 Tati : What are ya doin' here...? 
@@ -16980,7 +18647,7 @@ that he doesn't get an official thank you letter for his patriotism and service.
 benefactors when I still have work to do...
 "@)
  
-$Book.AddSection(5,"Excerpt [~] SCSO Captain Jeffrey Brown",@"
+$Book.NewSection(5,"Excerpt [~] SCSO Captain Jeffrey Brown",@"
 I don't know if this guy knows this or not... but this guy may have lived up the street from me at one point
     and I am not going to state HOW I know this, but if he's got a daughter named Kristine and a son name Michael,
     then it is the exact person I think it is.
@@ -18783,19 +20450,24 @@ I don't know if this guy knows this or not... but this guy may have lived up the
     Me   : I don't doubt that at all.
            Experience matters, for sure.
 "@)
+}
 
 # // _______________________________________________________
-# // | Chapter 5 - If you were smart, you'd be rich by now | cls; $Book.Range("Book",6,@(220..266))
+# // | Chapter 5 - If you were smart, you'd be rich by now |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(6,"Chapter 5")
+Function Chapter_5
+{
+    Param ($Book)
 
-$Book.AddSection(6,"Start",@"
+$Book.NewChapter("Chapter 5","If you were smart, you'd be rich by now")
+
+$Book.NewSection(6,"Start",@"
 "If you were smart, you'd be rich by now". 
 Whoever says this, would be a shitty programmer.
 "@)
 
-$Book.AddSection(6,"Overview (1)",@"
+$Book.NewSection(6,"Overview (1)",@"
 Morons say that quite a lot, and the amount of SENSE it makes, is akin to having a screen door on 
 a submarine, but- with logic. That begs the question though, how DOES somebody become rich? 
 
@@ -18843,7 +20515,7 @@ That guy, I've already mentioned, has the superhuman ability to spread his ass c
 Wanna know how he learned to do that...? 
 "@)
  
-$Book.AddSection(6,"Shoutout [+] Pablo Escobar",@"
+$Book.NewSection(6,"Shoutout [+] Pablo Escobar",@"
 Well, I'm not gonna say that Pablo Escobar did what Sackler does, BUT- 
 Pablo Escobar was the cocaine kingpin in the 80's/90's in Columbia, making cocaine castles. 
 This dude basically had SO MUCH fucking money, that he had to dig holes in the ground, 
@@ -18858,7 +20530,7 @@ Pablo Escobar and his cartel was well known for being VERY VIOLENT and DEADLY, a
 was someone to be FEARED, for sure. 
 "@)
  
-$Book.AddSection(6,"Overview (2)",@"
+$Book.NewSection(6,"Overview (2)",@"
 Richard Sackler took note of this (minus the fear aspect), and restored the Opium War.
 During the invasion of Afghanistan, some military black ops would commandeer their opium farms and 
 plantations, Afghanistan is home to the best climate to grow opium in the world, and at one point 
@@ -18906,7 +20578,7 @@ of your accounts and assets, and they'll fuckin' show up every morning with a ne
 and tell you what the hell happened while you were asleep.
 "@)
  
-$Book.AddSection(6,"Skit [~] Morning Briefing",@"
+$Book.NewSection(6,"Skit [~] Morning Briefing",@"
 Gates    : *yawns* Wow.
            I feel like a billion bucks.
 Jim      : *scoffs* Buddy, you're worth a lot more than that...
@@ -18962,7 +20634,7 @@ Gates    : Damn straight.
 Jim      : Alright buddy.
 "@)
  
-$Book.AddSection(6,"Overview (3)",@"
+$Book.NewSection(6,"Overview (3)",@"
 Pretty sure Gates didn't get where he is by doing real evil shit to people.
 You know who did...? Richard Sackler.
 
@@ -18971,7 +20643,7 @@ and QUESTIONABLE shit to others... AND, you're granted IMMUNITY from any potenti
 then the BEST way to get rich and stay rich, is to do what he did... unfortunately.
 "@)
  
-$Book.AddSection(6,"Reverse Psychology (1)",@"
+$Book.NewSection(6,"Reverse Psychology (1)",@"
 That's what the HIDDEN GOVERNMENT in America causes people to believe... 
 	
  - Who cares about who dying...?
@@ -19116,7 +20788,7 @@ Anyway, I wouldn't consider Hillary a BILLIONAIRE or ROYALTY, but, she's still P
 the former first lady - Bill didn't get to be president without her help.
 "@)
  
-$Book.AddSection(6,"Question (1)",@"
+$Book.NewSection(6,"Question (1)",@"
 The question is, at what point can she break a law and get in trouble for it...?
 
 That's a good fuckin' question, isn't it...?
@@ -19129,7 +20801,7 @@ Probably sounds moronic, I offended HILLARY CLINTON by (existing/questioning aut
 Like, Benjamin Franklin would ADVISE EVERY CITIZEN TO DO.
 "@)
  
-$Book.AddSection(6,"Skit [~] FBI Raids the Clinton Residence",@"
+$Book.NewSection(6,"Skit [~] FBI Raids the Clinton Residence",@"
 She found out I (existed/questioned authority)...?
 Well, NOW she knows... 
 Now, she's fuckin' gunnin' for me just like she did with JULIEN ASSANGE...
@@ -19404,7 +21076,7 @@ Comey : *puts his sunglasses on like the dude in the intro of the CSI: Miami*
         *gives a nice big wave to the several camera crews across the street*	
 "@)
  
-$Book.AddSection(6,"Question (2)",@"
+$Book.NewSection(6,"Question (2)",@"
 If the question is, at what point can someone important, get in trouble for something they did...?
 	
 Well, the same question may ALSO be applied for former president George W. Bush, because hey. 
@@ -19451,7 +21123,7 @@ committed TREASON or anything. But- something doesn't seem right about JULIEN AS
 situation, and I think she has some say over that. Because she has friends at Exxon Mobil.
 "@)
  
-$Book.AddSection(6,"Domino Theory (1)",@"
+$Book.NewSection(6,"Domino Theory (1)",@"
 She was embarrassed by (JULIEN ASSANGE/WikiLeaks), which I further discuss in GREAT DETAIL, in…
 [Chapter 7 - USA-Patriot Act of 2001 and Surveillance Capitalism]
 
@@ -19489,7 +21161,7 @@ anybody that has a cool idea, or sounds interesting, and they will fuckin' come 
 because some people lack morals.
 "@)
  
-$Book.AddSection(6,"Excerpt [~] Starlite",@"
+$Book.NewSection(6,"Excerpt [~] Starlite",@"
 STARLITE is a material that this dude invented that even NASA fuckin' wanted, REALLY BADLY.
 	
 The man was a barber or salon stylist, he performed a demonstration of this material that HE 
@@ -19520,7 +21192,7 @@ Had that man been able to capitalize on that idea, our current state of affairs 
 things, may be VERY DIFFERENT.
 "@)
  
-$Book.AddSection(6,"Domino Theory (2)",@"
+$Book.NewSection(6,"Domino Theory (2)",@"
 Now, that's a true story, didn't make that up, but- the reason why it persists is because CAPITALISM 
 has some fuckin' problems. They want people to think that it's a FREE MARKET, but they will send some 
 henchman to STEAL SHIT from people, and become rich off of it... cause they're immortal.
@@ -19541,7 +21213,7 @@ MAYBE there isn't a guy that's ALWAYS 50 feet away who smiles at them face-to-fa
 So, they all had to pay somebody to watch that guy...
 "@)
  
-$Book.AddSection(6,"Skit [~] Always Watchin'",@"
+$Book.NewSection(6,"Skit [~] Always Watchin'",@"
 Even when you cooperate with the "man", the issue becomes, "can I trust the man", well. 
 Maybe... but MAYBE isn't a fuckin' real pleasant feeling, is it?
 
@@ -19582,7 +21254,7 @@ There are people that watch others and will do exactly what Mila Kunis' characte
 uses her looks, to steal shit from people. Lies a lot too. Immoral.
 "@)
  
-$Book.AddSection(6,"Reverse Psychology (2)",@"
+$Book.NewSection(6,"Reverse Psychology (2)",@"
 
 Guys like Gates have every reason to be concerned about their shit being stolen, I agree.
 	
@@ -19619,7 +21291,7 @@ MOST PEOPLE DO NOT NOTICE THIS. EVEN IF I SHOW PEOPLE WHAT I MANAGED TO SEE.
 ^ That's censorship
 "@)
  
-$Book.AddSection(6,"Masters",@"
+$Book.NewSection(6,"Masters",@"
 Even Noam Chomsky talks about these people, quite a lot. The MASTERS, control everything.
 	
 I don't think that there IS a public forum on the internet anymore that isn't controlled by the 
@@ -19656,7 +21328,7 @@ as sinister as PEGASUS/PHANTOM, against ME.
 It is a compelling analogy. Too compelling, actually.
 "@)
  
-$Book.AddSection(6,"Obedience",@"
+$Book.NewSection(6,"Obedience",@"
 I'm not jealous of either Hannity or Carlson, nor am I envious of them, either.
 However, it's true, they're pretty rich after all. 
 But, what are they really rich for...? Good question.
@@ -19708,7 +21380,7 @@ When they can change the channel to Fox News, and then just listen to TUCKER CAR
 fuckin' clueless for a few hours straight... Some people will say: 
 "@)
  
-$Book.AddSection(6,"Skit [~] Order of Credibility",@"
+$Book.NewSection(6,"Skit [~] Order of Credibility",@"
 Person1 : Check this TUCKER CARLSON dude out, buddy... 
           What a total moron.
           Wow. 
@@ -19810,7 +21482,7 @@ So, I have to think back on how I voted for Obama both times, (Biden was VP)
 ...and say to myself "I fuckin' voted for THAT dude, and the man did an overall, amazing job."
 "@)
  
-$Book.AddSection(6,"Shoutout [+] Barack Obama",@"
+$Book.NewSection(6,"Shoutout [+] Barack Obama",@"
 This dude, deserves some special recognition, actually. 
 So, I'm gonna say it right now.
 Bill Clinton did a pretty decent job.
@@ -19879,7 +21551,7 @@ I would still consider going to this dude's presidential library, and take a tou
 ...when it's completed.    
 "@)
  
-$Book.AddSection(6,"Focus",@"
+$Book.NewSection(6,"Focus",@"
 Look, when people say stuff like "He's rich and THAT must mean he's smart", 
 or "If you were so smart, you'd be rich by now"...
 I don't understand why people say that, well... let me restate that.
@@ -19908,7 +21580,7 @@ I have no doubt that they're not total morons cause I am exaggerating some shit 
 But that REALLY depends...
 "@)
  
-$Book.AddSection(6,"Intelligence",@"
+$Book.NewSection(6,"Intelligence",@"
 
 However, when I think about people where literally ANY person in the world would agree...
 "Yeah, that person IS smart", I think about guys like George Carlin.
@@ -20000,7 +21672,7 @@ I don't really think that people on Wall St. ever have permanent, long-lasting s
 Because, Bear Sterns is a prime example of how volatile (Wall St./NYSE), truly is.
 "@)
  
-$Book.AddSection(6,"Warren Buffett",@"
+$Book.NewSection(6,"Warren Buffett",@"
 Warren Buffett spent his entire life working his ass off and being on top of stuff...
 ...like for instance, Wall St. and NYSE, although he preferred many safer alternatives. 
 He was actually consulted with so many times during the Bear Sterns incident, and even HE,
@@ -20020,7 +21692,7 @@ Warren Buffet WAS the richest man in the world for a really long time.
 He was like Obiwan Kenobi was to Anakin Skywalker, Bill Gate's trainer.
 "@)
  
-$Book.AddSection(6,"William Gates",@"
+$Book.NewSection(6,"William Gates",@"
 Before Windows 95, Buffett sat at the top of the leader-board for a loooong time.
 Then, Windows 95 was released, and then Bill Gates was for a VERY long time, the richest
 man in the world. He had a lot of respect for Buffett and they had plenty of meals and talks,
@@ -20041,7 +21713,7 @@ Gates and Paul Allen, essentially took Tim Berners Lee, to an even higher status
 already had, and they all, together... built the foundation of today's internet.
 "@)
  
-$Book.AddSection(6,"Jeff Bezos",@"
+$Book.NewSection(6,"Jeff Bezos",@"
 Amazon, a very early adopter of the internet, and found a way to literally choke-slam
 companies like Borders, and Barnes and Noble... each of these companies were large conglomerate
 book companies... today, they exist in much rarer numbers.
@@ -20054,7 +21726,7 @@ Bezos became quite a leader actually, and for a very long time, he knew how to p
 10 dimensional chess really well. But he wasn't the ONLY early adopter of the internet...
 "@)
  
-$Book.AddSection(6,"Elon Musk",@"
+$Book.NewSection(6,"Elon Musk",@"
 
 In the early days of the internet, this guy was part of a team of ninja-assassins that knew 
 programming inside and out... 
@@ -20085,7 +21757,7 @@ its first bubble... the "dot com bubble"...
 However, the internet survived, and then the internet led to social media.
 "@)
  
-$Book.AddSection(6,"Mark Zuckerberg",@"
+$Book.NewSection(6,"Mark Zuckerberg",@"
 This guy may have done more than just take inspiration from other projects, but-
 ...that doesn't mean he wasn't a large contributor for the internet to become what it is today.
 
@@ -20104,7 +21776,7 @@ They had a lot of ideas that they've implemented over the years, and eventually,
 allowed Zuckerberg to become quite a rich bastard.
 "@)
  
-$Book.AddSection(6,"Examination",@"
+$Book.NewSection(6,"Examination",@"
 People should consider what made these guys the leaders.
 I'll tell ya, the richest guys in the world all have ETHICAL/MORAL boundaries, though they 
 vary between: SAFE vs. RISKY vs. HYBRID
@@ -20179,7 +21851,7 @@ They will occasionally ALLOW Google to FEEL like it may someday have a shot at b
 in 2nd place, in terms of where the world's best software engineering takes place. 
 "@)
  
-$Book.AddSection(6,"Microsoft - World's 1st place Software Engineering",@"
+$Book.NewSection(6,"Microsoft - World's 1st place Software Engineering",@"
 This is how they do it. They will literally ask the owner of Oracle, Larry Ellison to go take 
 a nap or a break or something... He'll say "Alright, fine."
 
@@ -20194,7 +21866,7 @@ The company is still very active, throws elbows 'n shit...
 Satya Nadella runs the show now. Doin' a great job.
 "@)
  
-$Book.AddSection(6,"Amazon - The Bookstore and so much (1)",@"
+$Book.NewSection(6,"Amazon - The Bookstore and so much (1)",@"
 In reference to Amazon, the bookstore and so much more...? 
 	
 You're talkin' about a series of smart bastards that went into board meetings, looked at bar graphs
@@ -20202,7 +21874,7 @@ and pie charts, told a friend of a friend, to tell everyone they knew, that Amaz
 things to the next level... Amazon Web Services.
 "@)
  
-$Book.AddSection(6,"Skit [~] Amazon Web Services",@"
+$Book.NewSection(6,"Skit [~] Amazon Web Services",@"
 Person1 : Hey, listen man. 
 Person2 : *eyebrows raised* Sup?
 Person1 : How would you like to have a business on the internet where you could just...
@@ -20243,7 +21915,7 @@ Person2 : ...Amazon Web Services...?
 Person1 : *nods* Yep. 
 "@)
  
-$Book.AddSection(6,"Amazon - The Bookstore and so much (2)",@"
+$Book.NewSection(6,"Amazon - The Bookstore and so much (2)",@"
 I might get on Jeff's case sometimes with a light insult or two, but... he didn't build Amazon 
 by himself. McKenzie helped with that immensely, and so did that board room full of geniuses.
 He had a team of REAL smart bastards helpin' him out...
@@ -20267,7 +21939,7 @@ His story seems to be a combination of Simulation and simulacra, The Matrix, and
 But- sort of the same story.
 "@)
 
-$Book.AddSection(6,"Programmers",@"
+$Book.NewSection(6,"Programmers",@"
 ALL of these guys, Buffet, Zuckerberg, Gates, Bezos, and Musk... 
 ...guess what they really do have in common above all else...? 
 
@@ -20292,7 +21964,7 @@ Doesn't matter how fuckin' rich somebody is, that period of time, STILL FEELS LI
 But his hard work is paying off, regardless.
 "@)
  
-$Book.AddSection(6,"Ingenuity",@"
+$Book.NewSection(6,"Ingenuity",@"
 His ideas revolved around (physical objects/machines) that involve a lot of complex engineering, 
 and typically revolve around the idea of making things cost less, more environmentally friendly, 
 or have to do specifically with capturing, storing and distributing renewable energy. 
@@ -20350,7 +22022,7 @@ Musk : Here's a fuckin' electric car, in space dipshit.
 Nobody asks "How come this one guy seems to be doing all of these amazing things?"
 "@)
  
-$Book.AddSection(6,"Complacency",@"
+$Book.NewSection(6,"Complacency",@"
 America has a theme of laziness, but a less offensive way to state it is complacency.
 Maybe it's also because of ignorance, or a less offensive way to state it is creativity.
 
@@ -20371,7 +22043,7 @@ pattern of something harvested. If things change, they will change everything ar
 ...cause that's how the stock market works. 
 "@)
  
-$Book.AddSection(6,"Talent",@"
+$Book.NewSection(6,"Talent",@"
 There might be more talent in America than overseas...
 ...and it seems like society doesn't think a lot about that.
 
@@ -20398,7 +22070,7 @@ if someone were to try and do that, WELL, then the police would DEFINITELY be ab
 stop to that, wouldn't they? Cause then it'd be WITHIN THEIR JURISDICTION. 
 "@)
  
-$Book.AddSection(6,"Precedent",@"
+$Book.NewSection(6,"Precedent",@"
 The thing is, the examples people set for others, IS pretty important. 
 If Ted Cruz accepts bribery from Exxon Mobil but has to keep the dick in his ass a secret, he's not 
 really setting a good example for other people to follow, other than if you keep your mouth shut, 
@@ -20481,7 +22153,7 @@ Not shooting somebody, nor hoping that someone gets shot, nor hoping and praying
 never be a school shooting ever again... but instead, EXPOSING the HIDDEN GOVERNMENT.
 "@)
  
-$Book.AddSection(6,"Stagnation",@"
+$Book.NewSection(6,"Stagnation",@"
 America prides itself on innovation, right?
 While it's pretty difficult to identify specific individuals who promote these themes, society as 
 a whole does this... subconsciously. I can say though, BOB LUTZ had an opportunity to set a 
@@ -20502,7 +22174,7 @@ Attacking people, with violence... usually not very good disruption, but can be 
 Suggesting descriptive parallels or analogies, is a constructive form of disruption.
 "@)
  
-$Book.AddSection(6,"Disruption",@"
+$Book.NewSection(6,"Disruption",@"
 I realize Warren worked his ass off and was considerate of other people's feelings, and didn't like 
 the idea of being 'disruptive' so be played the safe game. So did Bill Gates.
 Mr. Gates wasn't ALWAYS playing the safe game, however. 
@@ -20554,7 +22226,7 @@ Ted might like that scenario... but then again, might not.
 He sure as hell likes the pay day though, doesn't he?
 "@)
  
-$Book.AddSection(6,"Consideration",@"
+$Book.NewSection(6,"Consideration",@"
 Nah, everybody's gotta share this fear or belief that someone that sounds crazy probably is...
 Cause, they're probably upsetting somebody that's popular and well liked.
 Meanwhile, someone smarter than they are, is gonna call that popular person out for being a moron.
@@ -20604,7 +22276,7 @@ the time...? Someone such as myself has to stop that moron in their tracks, and 
 how stupid they sound. 
 "@)
  
-$Book.AddSection(6,"Opinions",@"
+$Book.NewSection(6,"Opinions",@"
 If they try to say "that's just your opinion"...
 Or, "It's a good thing the world doesn't run on opinions."
 
@@ -20647,7 +22319,7 @@ Again, the world DOES run on OPINIONS, actually.
 Even the MILITARY is driven by OPINIONS.
 "@)
  
-$Book.AddSection(6,"Adversity",@"
+$Book.NewSection(6,"Adversity",@"
 Still, sometimes OPINIONS go ignored by people.	
 GENERALIZATIONS like that aren't typically helpful to make...
 ...unless you're trying to make a SPECIFIC ARGUMENT.
@@ -20712,7 +22384,7 @@ I don't TRULY believe that everyone drowns my opinion or rhetoric out...?
 But sometimes it does frustrate me when I'm not getting feedback or validation.
 "@)
  
-$Book.AddSection(6,"Offensive",@"
+$Book.NewSection(6,"Offensive",@"
 
 It is pretty offensive, to discover that I WAS being heard, and then, someone chose to take 
 action regarding an OPINION that I indicated, but- without telling ME.
@@ -20752,7 +22424,7 @@ Cause a Big Mac, isn't something to consider a POTENTIAL THREAT
 But a PERSON who finds out that they were LIED TO, that's definitely a POTENTIAL THREAT
 "@)
  
-$Book.AddSection(6,"Elaborate",@"
+$Book.NewSection(6,"Elaborate",@"
 Now, suppose they had their own thought out OPINIONS/IDEAS, they would respond or comment.
 That means they will ELABORATE on what they are thinking.
 
@@ -20792,7 +22464,7 @@ Sorta how like Elon Musk made BOB LUTZ look like a dude that spent 50 years runn
 his pants everyday... Well, that's how guys like Dennis Bruce are going to look at some point.
 "@)
  
-$Book.AddSection(6,"Specifics",@"
+$Book.NewSection(6,"Specifics",@"
 In reference to the opinion I had about Ukraine being invaded, VLADIMIR PUTIN thought it'd be 
 cool. And, that it'd be easy. And, his people would be supportive and not have a problem with 
 this military operation... and then this idiot didn't realize how much money he would cost the 
@@ -20819,7 +22491,7 @@ The bottom like is that the statement does not hold true...
 Makes as much sense as a screen door on a submarine.
 "@)
  
-$Book.AddSection(6,"Suggestions (1)",@"
+$Book.NewSection(6,"Suggestions (1)",@"
 It's not a requirement for people to give a shit what I think.
 It is just insulting, to see cases like "Key and Peele: High on Poteneuse"
 
@@ -20827,7 +22499,7 @@ Sometimes, people will like, hear my rhetoric AND consider it... and then wave m
 If people do this right in front of me, then I have to make strong suggestions...
 "@)
  
-$Book.AddSection(6,"Skit [~] Strong Suggestions",@"
+$Book.NewSection(6,"Skit [~] Strong Suggestions",@"
 Me   : Hey, you said you don't care what I think or whatever right...?
 Them : Yeah buddy. *waves me off* Fuck you man, shoo already...
 Me   : You know... 
@@ -20868,7 +22540,7 @@ Me   : Listen you dumb motherfucker...
        You're not gettin' it, are ya?
 "@)
  
-$Book.AddSection(6,"Suggestions (2)",@"
+$Book.NewSection(6,"Suggestions (2)",@"
 Me   : Hey, you said you don't care what I think or whatever right...?
 Them : Yeah buddy. *waves me off* Fuck you man, shoo already...
 Me   : You know... 
@@ -20909,7 +22581,7 @@ Me   : Listen you dumb motherfucker...
        You're not gettin' it, are ya?
 "@)
  
-$Book.AddSection(6,"Conclusion",@"
+$Book.NewSection(6,"Conclusion",@"
 When it comes to me accusing Fox News of being a strictly propaganda machine...
 ...people are gonna say "That's your opinion..."
 Sometimes people that aren't very smart, they don't know what the difference between 
@@ -20941,7 +22613,7 @@ Cause this IMPLIES: "Knowing the definition of words, is important."
 The police like to do this where they confuse that shit too.
 "@)
  
-$Book.AddSection(6,"Skit [~] Observation → Opinion → Fact",@"
+$Book.NewSection(6,"Skit [~] Observation → Opinion → Fact",@"
 New York State Trooper Borden acts very gay. 
 
 That's an OBSERVATION that became an OPINION. 
@@ -20976,28 +22648,33 @@ Me   : Yeh.
 Just so we're clear, I don't have a picture of NYS Trooper Borden with a guys dick in his mouth.
 I'm just ILLUSTRATING a point, I still think he's still a cocksucker.
 "@)
+}
 
 # // _________________________________
-# // | Chapter 6 - Hidden Government | cls; $Book.Range("Book",7,@(270..302))
+# // | Chapter 6 - Hidden Government |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(7,"Chapter 6")
+Function Chapter_6
+{
+    Param ($Book)
 
-$Book.AddSection(7,"Start",@"
+$Book.NewChapter("Chapter 6","Hidden Government")
+
+$Book.NewSection(7,"Start",@"
 The thing is, when SOME DETAILS aren't known, or collected yet, operating on assumptions is a bad idea.
 However, SOME assumptions ARE safe to make... typically those working with EXCLUSION. Knowing when to apply 
 concepts such as RARITY, is difficult for most people to do, and thus, sometimes they need to be RECORDED.
 That's when they'll realize that the RARE thing that they kept overlooking...? Requires dildo-in-ass removal.
 "@)
 
-$Book.AddSection(7,"Overview",@"
+$Book.NewSection(7,"Overview",@"
 The thing is, when SOME DETAILS aren't known, or collected yet, operating on assumptions is a bad idea.
 However, SOME assumptions ARE safe to make... typically those working with EXCLUSION. Knowing when to apply 
 concepts such as RARITY, is difficult for most people to do, and thus, sometimes they need to be RECORDED.
 That's when they'll realize that the RARE thing that they kept overlooking...? Requires dildo-in-ass removal.
 "@)
  
-$Book.AddSection(7,"Local Correlation",@"
+$Book.NewSection(7,"Local Correlation",@"
 Ryan has made it clear to me that he is part of a larger collective.
 He is directly involved with the (2) guys who attempted to kill me on May 26th, 2020, and has also made it clear 
 to me, that he has killed a lot of people. He has access to equipment and software that can exploit any mobile 
@@ -21120,7 +22797,7 @@ ________________________________________________________________________________
 Here, I have provided multiple examples of what is ACTUALLY HAPPENING UNDER PEOPLES NOSES.
 "@)
  
-$Book.AddSection(7,"Scenario 1 [+] They (win/survive), you (lose/die)",@"
+$Book.NewSection(7,"Scenario 1 [+] They (win/survive), you (lose/die)",@"
 ______________________________________________________________
 | Assassins vs Individual: How SCSO will report the incident |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -21156,7 +22833,7 @@ Some people really are stupid, and they think that if a police officer breaks th
 Nah. It doesn't mean that at all. But, SOME PEOPLE REALLY ARE THAT FUCKIN DUMB.
 "@)
  
-$Book.AddSection(7,"Scenario 2 [+] They (lose/die), you STILL (lose/go to prison)",@"
+$Book.NewSection(7,"Scenario 2 [+] They (lose/die), you STILL (lose/go to prison)",@"
 ______________________________________________________________
 | Assassins vs Individual: How SCSO will report the incident |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -21198,7 +22875,7 @@ None of these people would have a job being a police officer if they were total 
 However, some of them need to be called out. They trust someone that was ACTIVELY ATTEMPTING TO MURDER ME.
 "@)
  
-$Book.AddSection(7,"Scenario 3 [+] They (lose/go to prison), you (win/What's the problem officer?)",@"
+$Book.NewSection(7,"Scenario 3 [+] They (lose/go to prison), you (win/What's the problem officer?)",@"
 _________________________________________________________________
 | Assassins vs Militia:  How SCSO they will report the incident |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -21284,7 +22961,7 @@ called Cortana, will exist at some point. The idea isn't ridiculous at all, it's
 ONE DAY, be a REALITY. And when you begin to talk about stuff like that... you will become a target.
 "@)
  
-$Book.AddSection(7,"Scenario 4 [+] They (lose/die), you (win/Why do the police keep going missing?)",@"
+$Book.NewSection(7,"Scenario 4 [+] They (lose/die), you (win/Why do the police keep going missing?)",@"
 _________________________________________________________________
 | Assassins vs Militia:  How SCSO they will report the incident |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -21369,7 +23046,7 @@ Zurlo : I don't fuckin' know what happened bro but this is... fuckin' insanity..
 Brown : I think we fucked with the wrong people dude. I'm actually terrified now.
 "@)
  
-$Book.AddSection(7,"Identification (1)",@"
+$Book.NewSection(7,"Identification (1)",@"
 Now, here's the bright side. 
 None of that shit in scenario 2, 3 or 4... will likely happen within the next few days, or weeks.
 Maybe months...? Or years...? Who knows...? Maybe it'll start TODAY. Or, tomorrow. You never really know.
@@ -21471,7 +23148,7 @@ I'll go over this shortly.
 At some point, a lot of people are going to think "THAT IS FUCKED UP BRO..." No shit.
 "@)
  
-$Book.AddSection(7,"Militia Cont'd",@"
+$Book.NewSection(7,"Militia Cont'd",@"
 Continuing from the very last point about the Militia, written in [Chapter 1 – Liars in the Lead]...
 
 That doesn't mean that THE MILITIA doesn't have to POINT THEIR WEAPONS AT THEM ANYWAY... They do. And, will.
@@ -21532,7 +23209,7 @@ single ass fuck, like ya know, Ted Cruz...?"
 He would probably start negotiating it down A LOT, OR, upgrade the FREQUENCY/QUANTITY.
 "@)
  
-$Book.AddSection(7,"Skit [~] Negotiation",@"
+$Book.NewSection(7,"Skit [~] Negotiation",@"
 Musk : So, what you're saying, is that Ted Cruz gets a REAL COOL `$500M to allow Exxon Mobil-
 Me   : ...to fuck him in the ass.
 Musk : *chuckles* Jeez, I guess I'm in the wrong industry...
@@ -21568,7 +23245,7 @@ Me   : ...attractive than Ted Cruz, right...?
 Musk : You took the words right out of my mouth.  
 "@)
  
-$Book.AddSection(7,"Identification (2)",@"
+$Book.NewSection(7,"Identification (2)",@"
 Make sense yet? 
  
 However, some people will actually laugh uncontrollably when they read it... 
@@ -21620,7 +23297,7 @@ Tucker spent months talking some serious shit about BOB LUTZ SO many times, and 
 pretending like he didn't hear this fuckin' dude. Bob got pissed off enough to accept a match... 
 "@)
  
-$Book.AddSection(7,"Skit [~] Tucker's Talking Smack",@"
+$Book.NewSection(7,"Skit [~] Tucker's Talking Smack",@"
 Carlson : You fuckin' suck ass at golf, old man. Admit it. 
 Lutz    : The fuck I do, ya little twerp.
           You wanna play me in a game you, son of a bitch...?
@@ -21720,7 +23397,7 @@ Hannity is a tool. So is Ted Cruz.
 Whereas, Tucker is a mass manipulator.
 "@)
  
-$Book.AddSection(7,"Identification (3)",@"
+$Book.NewSection(7,"Identification (3)",@"
 
 While Tucker will (SAY/DO) questionable shit that proves what a moron he is...
 ...the idea of cobbin' on another mans knob, like Hannity does to Murdock...
@@ -21777,7 +23454,7 @@ Well, SEAN HANNITY will do that if he wants to keep getting a paycheck. So will 
 That's just how America works, and I REALLY don't think people understand the gravity of what I'm saying.
 "@)
  
-$Book.AddSection(7,"Thesis [+] Change the name of Fox News → Not News",@"
+$Book.NewSection(7,"Thesis [+] Change the name of Fox News → Not News",@"
 
 The idea that any of these fucks would ever admit that they do this shit, OR, change the god damn name of...
 Fox News → Not News...? 
@@ -21839,7 +23516,7 @@ then what might happen, is that I'll have a following of people that read it, an
 pants laughing about it.
 "@)
  
-$Book.AddSection(7,"Counter-Manipulation (1)",@"
+$Book.NewSection(7,"Counter-Manipulation (1)",@"
 Why...? Because anyone who's NOT an idiot, they'll say to themselves:
 
 "Wow, I really could see SEAN HANNITY choking on RUPERT MURDOCHs dick, for like `$100M a year." 
@@ -21966,7 +23643,7 @@ Or, lines they'd never cross, somehow being crossed quite a lot afterward.
 They may even go so far as to kill innocent people.
 "@)
  
-$Book.AddSection(7,"Flashback [~] Dwayne Coonradt (Morality)",@"
+$Book.NewSection(7,"Flashback [~] Dwayne Coonradt (Morality)",@"
 Dwayne Coonradt would never suck a guys dick in his fuckin' life.
 Not unless RUPERT MURDOCH had someone throw a fuckin' stack of cash at him, and told him to do just that.
 THEN, Dwayne Coonradt would GLADLY get on his knees, and suck whoever's dick he was told to.
@@ -22001,7 +23678,7 @@ ________________________________________________________________________________
 Need I continue...? 
 "@)
  
-$Book.AddSection(7,"Counter-Manipulation (2)",@"
+$Book.NewSection(7,"Counter-Manipulation (2)",@"
 
 The point I'm attempting to illustrate, is that when people try to tell me:
 ________________________________________________________________________________________________________________
@@ -22101,7 +23778,7 @@ For anybody who thinks I'm full of shit, well... read the god damn statutes in t
 about the document itself, its lasting implications, and my observations about it being (MISUSED/ABUSED).
 "@)
  
-$Book.AddSection(7,"Used to be News...? Now we're not news",@"
+$Book.NewSection(7,"Used to be News...? Now we're not news",@"
 
 Anyone reading this probably COULD'VE gotten that news, from news organizations.
 But not Fox News. Nah. Fox News...
@@ -22174,7 +23851,7 @@ Marco Rubio is on the list, but he stays relatively low-key these days.
 2016 Before the Flood... watch that documentary to see a list of bribed politicians.
 "@)
  
-$Book.AddSection(7,"Skit [~] Ted Cruz (Part 1)",@"
+$Book.NewSection(7,"Skit [~] Ted Cruz (Part 1)",@"
 The problem is, Ted Cruz will literally be embarrassed by my single comment, that he'll say:
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -22287,7 +23964,7 @@ Me   : Nah you're right, they don't let EVERYBODY get away.
        …they just reason with themselves that they've earned the right to write me off.
 "@)
  
-$Book.AddSection(7,"Interactions",@"
+$Book.NewSection(7,"Interactions",@"
 
 I don't try to belittle everybody I meet, but when I start to hear it in their voice...? 
 I give it RIGHT back to em, and then they are typically shocked...~! 
@@ -22430,7 +24107,7 @@ So allow me to be clear here... people's constitutional rights are being overrid
 It has been happening since October 26th, 2001.
 "@)
  
-$Book.AddSection(7,"Excerpt [~] Familiar with the Technology",@"
+$Book.NewSection(7,"Excerpt [~] Familiar with the Technology",@"
 An excerpt that I wrote following the situation where SCSO SCOTT SCHELLING REFUSED TO COLLECT EVIDENCE FROM MY
 DEVICE ON 05/26/20. Original:  https://docs.google.com/document/d/11Q11HnRmAuCd_HAJZPLEoWJIujv9Jpyq1O1I5MODqWk
 
@@ -22444,7 +24121,7 @@ SCSO DEPUTY MICHAEL MARTIN, and SCSO DEPUTY DJ THOMPSON arrested me on 06/01/20 
 ...at the request of SCSO JAMES LEONARD
 "@)
  
-$Book.AddSection(7,"Familiar with the Technology (1)",@"
+$Book.NewSection(7,"Familiar with the Technology (1)",@"
 I'm Very Familiar With The Technology
 Used to be, that there were fleets of vehicles and dudes/dudettes that drove around, using radios to find trouble, 
 and then…? Telling the trouble they found, that there would be additional trouble for them… if they didn't freeze, 
@@ -22610,7 +24287,7 @@ to DO nor CONSIDER… but- these guys do it every day. Don't they...? People wou
 ever realize just how often the police DESTROY EVIDENCE of THEM, COMMITTING ILLEGAL ACTIVITIES like DEREK CHAUVIN.
 "@)
  
-$Book.AddSection(7,"Cop Types",@"
+$Book.NewSection(7,"Cop Types",@"
 Anyway, the officers that scoped out your profile...? 
 Well, they could be assisting serial killers AS WELL ASS good guy cops… 
 The good guy cops might not have an inkling of suspicion or merely a single clue… 
@@ -22653,7 +24330,7 @@ Not a wide range of multiple cop types, it seems. However, that's just what some
 There's a wide range of multiple cop types for certain.
 "@)
  
-$Book.AddSection(7,"Familiar with the Technology (2)",@"
+$Book.NewSection(7,"Familiar with the Technology (2)",@"
 Anyway, until then, ask a cop to do some information technology related work… or ask for some help obtaining the
 evidence from your phone… Your DEAD phone… like my Apple iPhone 8+. 
 Instead of not knowing how wires plug into one…? 
@@ -22734,7 +24411,7 @@ kindergartners… cause they're gonna get tired after 20 minutes of (hard labor/
 box, so that they can get a nice hour or two of a real comfy ass nap in the middle of their shift.
 "@)
  
-$Book.AddSection(7,"Law Enforcement vs Law Avoidance",@"
+$Book.NewSection(7,"Law Enforcement vs Law Avoidance",@"
 That's what THEY need.
 But, if you ever find yourself in this same type of situation...? Well, what YOU'LL need, is a guy like me.
 One that has the SAME LAW ENFORCEMENT capabilities that a REGULAR COP would have…?
@@ -22771,7 +24448,7 @@ Like, some people actually think that OBVIOUSLY if someone put a SCREEN DOOR ON 
 It was a design choice. There's no way that it'll sink because of that. (← that's why some people are retarded)
 "@)
  
-$Book.AddSection(7,"Familiar with the Technology (3)",@"
+$Book.NewSection(7,"Familiar with the Technology (3)",@"
 I would be very familiar with the technology… and, I would throw in quite a number of lame ass, cheesy puns. 
 Ones that get old real fast...? But, still sound so stupid... that it's STILL worthy of an additional laugh… 
 So funny that people will RELUCTANTLY laugh out loud...
@@ -22806,7 +24483,7 @@ generation of recruits that have 1) integrity, and 2) perseverance... because, t
 need to ADAPT to NEW TIMES/CONDITIONS. And, that is EXACTLY what the USA-PATRIOT Act of 2001 was WRITTEN FOR.
 "@)
  
-$Book.AddSection(7,"Qui-Gon Jinn, Bryan Mills, or Rahs Al Guhl",@"
+$Book.NewSection(7,"Qui-Gon Jinn, Bryan Mills, or Rahs Al Guhl",@"
 All cops should have a mandatory Batman 101 course, where they each have to learn a number of things, like: 
 ______________________________________________________________________________________________________________
 | Hand-to-hand combat (CQC) | Psychological Manipulation | Programming and logic | How to fill out paperwork |
@@ -22921,7 +24598,7 @@ Just because I made that OBSERVATION, doesn't mean I have any earthly idea if th
 I'm just saying, I've DETECTED EXTREMELY MALICIOUS AND NEFARIOUS INTENT FROM THIS PARTICULAR COCKSUCKER.
 "@)
  
-$Book.AddSection(7,"Familiar with the Technology (4)",@"
+$Book.NewSection(7,"Familiar with the Technology (4)",@"
 Once humanity gets to a point in time where police officers can no longer be taken seriously if they say 
 something stupid, such as "I'm not familiar with the technology"...? 
 
@@ -22988,7 +24665,7 @@ Well, nobody is even proud of you for doing that at all. If anything...? People 
 even if you were INNOCENT, or you have PROOF. (← Typically morons)
 "@)
  
-$Book.AddSection(7,"Systemic Injustice",@"
+$Book.NewSection(7,"Systemic Injustice",@"
 Now, you get to deal with a thing on your record which was bullshit… 
 Maybe you even get sent back to jail in your last week of parole or probation… to serve the whole sentence. 
 Maybe, screw all that…
@@ -23023,7 +24700,7 @@ NOBODY cares. Not even me. Nope. Just sittin here, pounding away about SYSTEMIC 
 because I actually don't fuckin' care at all... (I'm being sarcastic, if people can't tell.)
 "@)
  
-$Book.AddSection(7,"Better Solutions",@"
+$Book.NewSection(7,"Better Solutions",@"
 At any rate, you could just do away with all of that muss and fuss… and tell SYSTEMIC INJUSTICE to fuck itself,
 right in the god damn face. Cause. A better solution is out there, and it can be deployed so quickly that guys
 like TROOPER RUFFAS won't have TIME to break the fuckin cables on purpose~!
@@ -23166,7 +24843,7 @@ But there are a lot of bad guys... and, they would PREFER that I shut the fuck u
 Guys like NYSP TROOPER RUFFAS.
 "@)
  
-$Book.AddSection(7,"Reasons They Want Me Dead",@"
+$Book.NewSection(7,"Reasons They Want Me Dead",@"
 ______________
 | Free Power |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -23361,7 +25038,7 @@ ______________
  water vapor… then what factors must be considered to get the best zero-sum impact on the environment?
 "@)
  
-$Book.AddSection(7,"Shaping the Question",@"
+$Book.NewSection(7,"Shaping the Question",@"
 Sometimes learning how to shape the question takes a while to figure out.
 The real question is… could plants be used to make better fiber optic systems?
 The answer is, "Yes, they can."
@@ -23515,7 +25192,7 @@ They may be any other profession in the WORLD, OR... LAW AVOIDANCE PROFESSIONALS
 So, if someone has EVIDENCE, you should probably CONSIDER COLLECTING IT...
 "@)
  
-$Book.AddSection(7,"Leavey Synopsis (May 31st, 2020)",@"
+$Book.NewSection(7,"Leavey Synopsis (May 31st, 2020)",@"
 As for what I wrote about TROOPER LEAVEY a couple of years ago...?
 Sometimes, you'll get a guy like Mr. Leavey who says "How long do you think I've been on the force?", because 
 he's implying that his "time" on the force, means that his gut tells him it's not a thing to be worried about… 
@@ -23715,7 +25392,7 @@ Never hesitates to tell a Blood Dragon to piss off, either.
 Cause that's the story of a fuckin' top-notch cybercommando.
 "@)
  
-$Book.AddSection(7,"Excerpt [~] Jake Gunslinger",@"
+$Book.NewSection(7,"Excerpt [~] Jake Gunslinger",@"
 Now I'll state it openly... Shaemus Leavey isn't exactly a cybercommando that goes around punching Blood Dragons
 in the fuckin' face... Nah. The CLOSEST thing to an actual, bonafide cybercommando that comes even REMOTELY close
 to Rex Power Colt...?
@@ -23993,13 +25670,19 @@ He'd be the FIRST fuckin' dude to join my militia and start holding people accou
 That's why he gave me his name and number.
 "@)
 
+}
+
 # // ___________________________________________________________________
-# // | Chapter 7 - USA-Patriot Act of 2001 and Surveillance Capitalism | cls; $Book.Range("Book",8,@(306..325+350..355+365..394+404..420))
+# // | Chapter 7 - USA-Patriot Act of 2001 and Surveillance Capitalism |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(8,"Chapter 7")
+Function Chapter_7
+{
+    Param ($Book)
 
-$Book.AddSection(8,"Start",@"
+$Book.NewChapter("Chapter 7","USA-Patriot Act of 2001 and Surveillance Capitalism")
+
+$Book.NewSection(8,"Start",@"
 |¯|       |¯|             |¯|        |¯|         |¯|           |¯|     |¯|    |¯|         |¯|        |¯|
 |U|niting/|S|trengthening |A|merica: |P|roviding |A|ppropriate |T|ools |R|eq. |I|ntercept/|O|bstruct |T|errorism
 |_|       |_|             |_|        |_|         |_|           |_|     |_|    |_|         |_|        |_|
@@ -24007,7 +25690,7 @@ $Book.AddSection(8,"Start",@"
 ...but sometimes it is also used to commit [OBSTRUCTION OF JUSTICE: DESTRUCTION OF EVIDENCE]
 "@)
 
-$Book.AddSection(8,"Overview",@"
+$Book.NewSection(8,"Overview",@"
 _________________________________________________________
 | USA-PATRIOT Act of 2001: Signed on October 26th, 2001 |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -24341,7 +26024,7 @@ So in totality, I'm fighting an UPHILL BATTLE, because there may be ULTERIOR MOT
 Totally fucking serious about that, there may in fact be, ULTERIOR MOTIVES for the WAY that PEOPLE, TREAT ME.
 "@)
  
-$Book.AddSection(8,"Bigger Picture",@"
+$Book.NewSection(8,"Bigger Picture",@"
 Situations where former senator Hillary Rodham 'Who gives a shit...?' Clinton managed to get herself arrested, 
 and prosecuted and then imprisoned by the Federal Bureau of Investigation, like she SHOULD'VE been back in 
 July 2016... well, that didn't happen at all. 
@@ -24505,7 +26188,7 @@ Much like Henry "Hank" Paulson's bazooka strategy, you carry around a real big b
 ...might not need to fire it. -2008/2009
 "@)
  
-$Book.AddSection(8,"New World Order",@"
+$Book.NewSection(8,"New World Order",@"
 
 In order to understand why the USA-PATRIOT Act even exists, it is necessary to discuss what MAJOR EVENT 
 LED TO IT BEING PASSED INTO LAW. For over 20 years, treasonists continued to make these mistakes along the 
@@ -24552,7 +26235,7 @@ If you think that report sucks ass, and the 12-hour blowjob wasn't "good enough 
 out of that person in every single possible way... This process is worse than being blacklisted.
 "@)
  
-$Book.AddSection(8,"Legislation",@"
+$Book.NewSection(8,"Legislation",@"
 Anyway, the TREASONISTS that WROTE the USA-PATRIOT Act of 2001, there is no fucking way that they wrote that 
 document AFTER 9/11. It was written BEFOREHAND. 
 They are the people who conspired to destroy the World Trade Center on 9/11 through a process called: 
@@ -24610,7 +26293,7 @@ to blow up the (3) buildings, and THEN pass the USA-PATRIOT Act of 2001 that con
 called SURVEILLANCE CAPITALISM.
 "@)
  
-$Book.AddSection(8,"Iraq/Kuwait",@"
+$Book.NewSection(8,"Iraq/Kuwait",@"
 Now they can tell anybody they want, to "Suck a fuckin' dick, bro". Now, they're gonna finish what they started 
 in Desert Storm. They were able to invade Iraq (completing Desert Storm/Kuwait), THEN find Saddam Hussein in a 
 spider hole, then Exxon Mobil took command of their oil fields where they generated TRILLIONS OF DOLLARS. 
@@ -24650,7 +26333,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.AddSection(8,"Afghanistan",@"
+$Book.NewSection(8,"Afghanistan",@"
 Plenty of things happened in Afghanistan that I wasn't there for, however, a lot of what happened there is seen
 and translated by stories/movies like: The Hurt Locker, American Sniper, Zero Dark Thirty, in addition to Homeland 
 starring Claire Danes... probably not EXACT or PRECISELY ACCURATE DEPICTIONS, but I gotta say based on what I've
@@ -24667,7 +26350,7 @@ The problem IS, if people tried to grow the stuff on their own...? They would ge
 even confiscated. 
 "@)
  
-$Book.AddSection(8,"Skit [~] George W. Bush and Richard Sackler",@"
+$Book.NewSection(8,"Skit [~] George W. Bush and Richard Sackler",@"
 The only money they could make off of Afghanistan would be from their poppy production... 
 ...so Richard Sackler got on a phone call with the Bushmeister.
 
@@ -24738,7 +26421,7 @@ processing, just like on the show "The Punisher" on Netflix. They may actually h
 into heroin or some other precursor before shipping it back.
 "@)
  
-$Book.AddSection(8,"War on Terror",@"
+$Book.NewSection(8,"War on Terror",@"
 The "War on Terror" was actually the same exact thing that VLADIMIR PUTIN attempted to do in 02/22 → 06/22.
 __________________________________________________________________________________________________________________
 |  Bush | dick → everybody's mouth → Evil-ass Terrorist Saddam Hussein has WMD's (and oil)      | War on Terror  |
@@ -24829,7 +26512,7 @@ THEIR STELLAR WORK. *cough* If they are though, I'd like to recommend that Micha
 get one.
 "@)
  
-$Book.AddSection(8,"Preparation",@"
+$Book.NewSection(8,"Preparation",@"
 So, it stands to reason that the WTC attack, was a "trap", and that Exxon Mobil had every reason and 
 motivation to kill 2,996 civilians, in order to pass a new law that's so powerful, that people didn't give 
 it (2) thoughts back on October 26th, 2001. Here's what makes them treasonists...
@@ -24855,7 +26538,7 @@ Also, a plane flying into the Pentagon ALSO needed to look PLAUSIBLE...     ____
                                                                             ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.AddSection(8,"Examination (1)",@"
+$Book.NewSection(8,"Examination (1)",@"
 After the first plane struck the tower, the (police/firefighters) headed to the WTC. 
 When they got there, they began to look for survivors... 
 That is when a man with a remote control sitting in the Exxon Mobil office in (WTC 7) saw them go in, and THEN,  
@@ -24929,7 +26612,7 @@ Militia : Yeah, well... that means they can pretend as if they're royalty...
           But we don't have royalty, it's in the constitution.
 "@)
  
-$Book.AddSection(8,"Excerpt [~] USA-PATRIOT Act : Statutes",@"
+$Book.NewSection(8,"Excerpt [~] USA-PATRIOT Act : Statutes",@"
 
 ___/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\____
 //¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯\\
@@ -25321,7 +27004,7 @@ ___/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯
  found out that I was 100% correct, they're not gonna waste any time holding people accountable.
 "@)
  
-$Book.AddSection(8,"Examination (2)",@"
+$Book.NewSection(8,"Examination (2)",@"
 The same "command" was issued to the second building, eliminating nearly 3000 people that day…
 …it is likely that at least 2000 of those people could have survived, at a bare minimum.
 
@@ -25363,7 +27046,7 @@ The whole damn thing is just dancing around a very obvious series of points that
 like how TUCKER CARLSON will talk shit about BOB LUTZ' golf game, and then have his buddy play that game instead.
 "@)
  
-$Book.AddSection(8,"Analogy [~] The Gay Kid",@"
+$Book.NewSection(8,"Analogy [~] The Gay Kid",@"
 The NIST report, is basically like when a gay kid hangs out with a girl all the time... 
 Gay kid knows he's never gonna have sex with that girl, because he likes penis in his (mouth/ass).
 But, she has a vagina, which is sorta meant for penis.
@@ -25424,7 +27107,7 @@ He doesn't get it that if some dude tries to flirt with HIM...?
 She's gonna say "Alright, see ya later buddy~!" and then leave.
 "@)
  
-$Book.AddSection(8,"Examination (3)",@"
+$Book.NewSection(8,"Examination (3)",@"
 Same concept applies to the NIST 9/11 report, they're gonna do what Shayam Sundar and George W. Bush did. 
 Rather than for George W. Bush to award Robert Korol with a Nobel Peace Prize, George W. Bush thought it'd
 be cool to censor the dog shit out of Robert Korol. Cool, huh?
@@ -25548,7 +27231,7 @@ it has enabled the federal government to commit treason against its own citizens
 citizens' constitutional liberties/freedoms are being overridden, and Teddy Roosevelt is rolling in his grave.
 "@)
  
-$Book.AddSection(8,"Compare/Contrast",@"
+$Book.NewSection(8,"Compare/Contrast",@"
 There's a serious problem with this country, when HILLARY CLINTON isn't in prison, but- JULIEN ASSANGE IS.
 ...and Ed Snowden is over in Russia, still hasn't sold out his country. 
 
@@ -25602,7 +27285,7 @@ Whereas, JULIEN ASSANGE, constantly pissing people off at the Central Intelligen
 or big oil conglomerates that have caused IRREVERISBLE DAMAGE to the entire planet... 
 "@)
  
-$Book.AddSection(8,"Excerpt [+] Julien P. Assange",@"
+$Book.NewSection(8,"Excerpt [+] Julien P. Assange",@"
 JULIEN ASSANGE was born Julien Paul Hawkins, his mom and dad were together briefly but split up before he was 
 born. Some people may say "This dude came into the world with a friggen shovel in his hands", as a metaphor.
 But, this dude apparently came into the world with a LOT more intensity than that... 
@@ -26022,7 +27705,7 @@ I have a feeling that the next time they break in, it will be too late to stop A
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.AddSection(8,"WikiLeaks (1)",@"
+$Book.NewSection(8,"WikiLeaks (1)",@"
 WikiLeaks was founded by Julien P. Assange, and though I've already explained much about Mr. Assange, the truth
 is that the UNITED STATES JUSTICE SYSTEM has decided to FRAME and INCARCERATE him for BEING A JOURNALIST.
 
@@ -26073,7 +27756,7 @@ SYSTEM...?
 It is ALL directly resultant, to how many fucking times I've written about JULIEN ASSANGE.
 "@)
  
-$Book.AddSection(8,"Collateral Murder",@"
+$Book.NewSection(8,"Collateral Murder",@"
 Essentially, the biggest slap across the face to military operations in memory, not because the event itself 
 is really unexpected or just insanely unbelievable... During war, innocent people do wind up getting killed. 
 
@@ -26104,7 +27787,7 @@ I know that the military will classify events such as this, and I have no doubt 
 agencies in the government do this shit too. Most notably the (CIA/Central Intelligence Agency).
 "@)
  
-$Book.AddSection(8,"Vault 7 (Summary)",@"
+$Book.NewSection(8,"Vault 7 (Summary)",@"
 Vault 7 is a series of hacking tools that were developed by the Central Intelligence Agency, and sometimes these 
 tools are used by other agencies, such as the Federal Bureau of Investigation, and even the National Security 
 Agency. I'm certain that there are plenty of GOOD USE CASES for these tools, but the entire point of them ALL, 
@@ -26113,7 +27796,7 @@ and notice when THEY'RE ACTUALLY USING SOME ADVANCED SHIT AGAINST YOU ON YOUR CO
 they've done to me repeatedly.
 "@)
  
-$Book.AddSection(8,"Vault 7 (Official)",@"
+$Book.NewSection(8,"Vault 7 (Official)",@"
 Vault 7 is a series of documents that WikiLeaks began to publish on 03/07/17, detailing the activities and
 capabilities of the United States (CIA/Central Intelligence Agency) to perform: 
 _________________________________________________________________________________________________________________
@@ -26131,7 +27814,7 @@ These files detail the agency's software capabilities from 2013-2016+, effective
 A CIA internal audit identified (91+/500) malware tools in use in 2016 being compromised by the release.
 "@)
 
-$Book.AddSection(8,"(Vault 7 [01] Year Zero) [~] Documentation",@"
+$Book.NewSection(8,"(Vault 7 [01] Year Zero) [~] Documentation",@"
 ____________
 | 03/07/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26148,7 +27831,7 @@ its mandated powers and the problem of public oversight of the agency (nobody ev
 programmers or hackers... MORALITY, is the key term here.)
 "@)
  
-$Book.AddSection(8,"(Vault 7 [02] Dark Matter) [~] Apple iPhone",@"
+$Book.NewSection(8,"(Vault 7 [02] Dark Matter) [~] Apple iPhone",@"
 ____________
 | 03/27/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26157,7 +27840,7 @@ These included the SONIC SCREWDRIVER malware that could use the thunderbolt inte
 APPLE's password firmware protection.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [03] Marble) [~] Obfuscation",@"
+$Book.NewSection(8,"(Vault 7 [03] Marble) [~] Obfuscation",@"
 ____________
 | 03/31/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26166,7 +27849,7 @@ scramble, malware code in an attempt to make it so that anti-virus firms or inve
 code or attribute its source. The code also includes a de-obfuscator to reverse the obfuscation effects.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [04] Grasshopper) [~] Malware",@"
+$Book.NewSection(8,"(Vault 7 [04] Grasshopper) [~] Malware",@"
 ____________
 | 04/07/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26179,7 +27862,7 @@ Grasshopper focused on (PSP/Personal Security Product) avoidance. PSP's are anti
             ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.AddSection(8,"(Vault 7 [05] HIVE) [~] Advanced phishing MITM",@"
+$Book.NewSection(8,"(Vault 7 [05] HIVE) [~] Advanced phishing MITM",@"
 ____________
 | 04/14/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26195,7 +27878,7 @@ looking public domains through a masking interface known as SWITCHBLADE.
 Also called (LP/Listening Post) and (C2/Command and Control).
 "@)
  
-$Book.AddSection(8,"(Vault 7 [06] Weeping Angel/Willow) [~] SmartTV's mic & WiFi",@"
+$Book.NewSection(8,"(Vault 7 [06] Weeping Angel/Willow) [~] SmartTV's mic & WiFi",@"
 ____________
 | 04/21/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26214,7 +27897,7 @@ As of this part 6 publication, "Weeping Angel" is the second major CIA hacking t
 the British television show, Doctor Who, alongside "Sonic Screwdriver" in "Dark Matter".
 "@)
  
-$Book.AddSection(8,"(Vault 7 [07] Scribbles) [~] Adds a beacon to particular documents",@"
+$Book.NewSection(8,"(Vault 7 [07] Scribbles) [~] Adds a beacon to particular documents",@"
 ____________
 | 04/28/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26239,7 +27922,7 @@ watermarked image will not be able to contact its home server.
 This is overridden only when a user enables editing.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [08] Archimedes) [~] Hijacks control AND traffic on a device",@"
+$Book.NewSection(8,"(Vault 7 [08] Archimedes) [~] Hijacks control AND traffic on a device",@"
 ____________
 | 05/05/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26258,7 +27941,7 @@ Paganini stated that potential targeted computers can search for those hashes on
 their systems had been attacked by the CIA.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [09] After Midnight/Assassin) [~] Malware with payload scripts",@"
+$Book.NewSection(8,"(Vault 7 [09] After Midnight/Assassin) [~] Malware with payload scripts",@"
 ____________
 | 05/12/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26277,7 +27960,7 @@ beacon to their configured LP to either request tasks or send private informatio
 automatically uninstall themselves on a set date and time.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [10] Athena) [~] Hijacks Windows Remote Access Services",@"
+$Book.NewSection(8,"(Vault 7 [10] Athena) [~] Hijacks Windows Remote Access Services",@"
 ____________
 | 05/19/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26308,7 +27991,7 @@ All of the above designed to deceive computer security software.
 Beside the published documents, WikiLeaks hasn't provided evidence to suggest the CIA uses ATHENA, or not.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [11] Pandemic) [~] Infects SMB shares and spreads to others",@"
+$Book.NewSection(8,"(Vault 7 [11] Pandemic) [~] Infects SMB shares and spreads to others",@"
 ____________
 | 06/01/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26327,7 +28010,7 @@ While not stated in the leaked documentation, it is possible that newly infected
 become "Pandemic" file servers, allowing the implant to reach new targets on a local network.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [12] Cherry Blossom) [~] Hijacks control of ROUTERS/ACCESS POINTS",@"
+$Book.NewSection(8,"(Vault 7 [12] Cherry Blossom) [~] Hijacks control of ROUTERS/ACCESS POINTS",@"
 ____________
 | 06/15/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26350,7 +28033,7 @@ malicious content into the stream to exploit vulnerabilities in applications or 
 on the computer of the targeted user
 "@)
  
-$Book.AddSection(8,"(Vault 7 [13] Brutal Kangaroo) [~] Infects thumb drives, makes hidden network",@"
+$Book.NewSection(8,"(Vault 7 [13] Brutal Kangaroo) [~] Infects thumb drives, makes hidden network",@"
 ____________
 | 06/22/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26372,7 +28055,7 @@ a covert network to coordinate tasks and data exchange. Although not explicitly 
 this method of compromising closed networks is very similar to how Stuxnet worked.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [14] Elsa) [~] Collects GPS coordinates from WiFi radios",@"
+$Book.NewSection(8,"(Vault 7 [14] Elsa) [~] Collects GPS coordinates from WiFi radios",@"
 ____________
 | 06/28/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26403,7 +28086,7 @@ unprocessed access point information from exfiltrated log files to geolocation d
 profile of the target device.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [15] Outlaw Country) [~] Targets Linux OS, hijacks outbound traffic",@"
+$Book.NewSection(8,"(Vault 7 [15] Outlaw Country) [~] Targets Linux OS, hijacks outbound traffic",@"
 ____________
 | 06/30/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26425,7 +28108,7 @@ This module will only work with default kernels.
 Also, OUTLAW COUNTRY v1.0 only supports adding covert DNAT rules to the PREROUTING chain.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [16] Bothan Spy/GyrFalcon) [~] Swipes SSH creds for Windows/Linux",@"
+$Book.NewSection(8,"(Vault 7 [16] Bothan Spy/GyrFalcon) [~] Swipes SSH creds for Windows/Linux",@"
 ____________
 | 07/06/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26452,7 +28135,7 @@ later exfiltration.
 It is installed and configured by using a CIA-developed root kit (JQC/KitV) on the target machine.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [17] High Rise) [~] Targets Android, hijacks SMS",@"
+$Book.NewSection(8,"(Vault 7 [17] High Rise) [~] Targets Android, hijacks SMS",@"
 ____________
 | 07/13/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26468,7 +28151,7 @@ HIGH RISE provides a communications channel between the HIGH RISE field operator
 secured internet communication.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [18] Raytheon) [~] Research and development regarding attack vectors",@"
+$Book.NewSection(8,"(Vault 7 [18] Raytheon) [~] Research and development regarding attack vectors",@"
 ____________
 | 07/19/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26483,7 +28166,7 @@ of the CIA by analyzing malware attacks in the wild, and giving recommendations 
 for further investigation and PoC development for their own malware projects.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [19] Imperial) [~] Suite of tools for Unix based OSs (and Apple stuff)",@"
+$Book.NewSection(8,"(Vault 7 [19] Imperial) [~] Suite of tools for Unix based OSs (and Apple stuff)",@"
 ____________
 | 07/27/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26503,7 +28186,7 @@ SEAPEA is an OSX Rootkit, which provides STEAL and TOOL LAUNCHING CAPABILITIES.
 It hides FILES/DIRECTORIES, SOCKET CONNECTIONS and/or PROCESSES. It runs on Mac OSX (10.6/10.7)
 "@)
  
-$Book.AddSection(8,"(Vault 7 [20] Dumbo) [~] NMAP for WiFi/BT cameras, can ALSO corrupt footage",@"
+$Book.NewSection(8,"(Vault 7 [20] Dumbo) [~] NMAP for WiFi/BT cameras, can ALSO corrupt footage",@"
 ____________
 | 08/03/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26528,7 +28211,7 @@ It supports 32-bit MICROSOFT WINDOWS (XP/VISTA), and NEWER VERSIONS of MICROSOFT
 64-bit MICROSOFT WINDOWS XP, or versions prior to XP are NOT supported (SUPPOSEDLY).
 "@)
  
-$Book.AddSection(8,"(Vault 7 [21] Couch Potato) [~] Hijacks RTSP/H.264 video streams",@"
+$Book.NewSection(8,"(Vault 7 [21] Couch Potato) [~] Hijacks RTSP/H.264 video streams",@"
 ____________
 | 08/10/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26542,7 +28225,7 @@ It utilizes FFMPEG for VIDEO and IMAGE ENCODING/DECODING, as well as RTSP connec
 COUCH POTATO relies on being launched in an ICE v3 Fire and Collect compatible loader.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [22] Express Lane) [~] A biometrics nightmare",@"
+$Book.NewSection(8,"(Vault 7 [22] Express Lane) [~] A biometrics nightmare",@"
 ____________
 | 08/24/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26569,7 +28252,7 @@ The company hit the headlines in 2011 when it was reported that the US military 
 to identify OSAMA BIN LADEN during the assassination operation in PAKISTAN.
 "@)
  
-$Book.AddSection(8,"(Vault 7 [23] Angel Fire) [~] Various Windows exploitation",@"
+$Book.NewSection(8,"(Vault 7 [23] Angel Fire) [~] Various Windows exploitation",@"
 ____________
 | 08/31/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26603,7 +28286,7 @@ SPECIFIC ACTIONS including: | INSTALLATION | ADDING/REMOVING FILES from ANGEL FI
 Transitory files are added to the "UserInstallApp".
 "@)
  
-$Book.AddSection(8,"(Vault 7 [24] Protego) [~] Tool for missile control systems",@"
+$Book.NewSection(8,"(Vault 7 [24] Protego) [~] Tool for missile control systems",@"
 ____________
 | 09/07/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -26636,7 +28319,7 @@ Similarly, safeguards are in place to auto-destruct (encryption + authentication
 scenarios (leaving a target area of operation/missing missile).
 "@)
 
-$Book.AddSection(8,"Vault 7 Cont'd",@"
+$Book.NewSection(8,"Vault 7 Cont'd",@"
 A number of these tools have been used against me, MALICIOUSLY. 
 Some of them have been used BENEVOLENTLY.
 
@@ -26690,7 +28373,7 @@ out a pistol, and shooting me in front of people... the reason being, I don't re
 Assange did basically the same thing SHE did, and got 175 years...                        (← NOT COMPLETELY ACCURATE)
 "@)
 
-$Book.AddSection(8,"Hidden Government",@"
+$Book.NewSection(8,"Hidden Government",@"
 If the comparison I've been alluding to, about how Ted Cruz gets pumped in the butt for `$500M, sounds fucked up...? 
 Oh well, that's just too fuckin' bad. The principle of him getting bribery money should be MORE insulting.
 
@@ -26718,7 +28401,7 @@ citizens. The reason that I am CERTAIN that this is the case, is because of Pega
 Apple iPhone 8+.
 "@)
  
-$Book.AddSection(8,"Review [~] The Week",@"
+$Book.NewSection(8,"Review [~] The Week",@"
 As mentioned in chapter "The 'Week'", I walked to (SANG/Stratton Air National Guard) on 05/22/20. 
 I walked there because I had a feeling that someone was trying to kill me, earlier that day. 
 They actually told me the equivalent of "Fuck you dude, we don't care." and then they called the police,
@@ -26998,7 +28681,7 @@ in that at all, pretty sure Tanski wasn't involved in that either. But, maybe th
 What I do think, is that I have to set better traps for next time.
 "@)
  
-$Book.AddSection(8,"Excerpt [~] Factors",@"
+$Book.NewSection(8,"Excerpt [~] Factors",@"
 Wouldn't be much of a stretch for me to assume that these things might actually ALL be RELATED.
 related (ADJECTIVE: associated with the specified item or process, especially causally)
 ______________________________________________________________________
@@ -27172,7 +28855,7 @@ the assumption they should be making, is that the man is being raped.
 Because, if Ted Cruz was PROUD of this happening, he probably would've recorded it on video, right...?
 "@)
  
-$Book.AddSection(8,"Skit [~] Ted Cruz' Fantasy",@"
+$Book.NewSection(8,"Skit [~] Ted Cruz' Fantasy",@"
 Ted Cruz (senator from Texas), had been looking forward to this very night, for his whole life. It's his fantasy.
 
 Ted Cruz (senator from Texas), asked some women what THEY want from their man... and they told him.
@@ -27254,7 +28937,7 @@ for the tea. Ya know?
 What if somebody owns a news network named Fox News, and it's not news, because it's propaganda...?
 "@)
  
-$Book.AddSection(8,"Rich Brat",@"
+$Book.NewSection(8,"Rich Brat",@"
 
 There's a rich brat that needs to be pulled down a LOT of pegs, which I go over later in the material.
 A specific entity who's never NAMED 1 time in this entire book, that I'm referring to when I say that phrase.
@@ -27343,7 +29026,7 @@ But the reason SOME stuff is on TV, is because they want people to FEEL like, if
 ...*chuckles* you're gonna get caught. Meanwhile, most murders go unsolved. 
 "@)
  
-$Book.AddSection(8,"Comparisons (1)",@"
+$Book.NewSection(8,"Comparisons (1)",@"
 I'm going to provide some examples of shows on television that feature COPS, and grade them on their REALISTIC
 NATURE, and the details that either CAUSE them to be realistic, and in some cases, what caused them to be
 noteworthy enough to be included.
@@ -27355,7 +29038,7 @@ This TABLE will showcase just how fucked up these systems are in some cases.
 That's not an opinion by the way.
 "@)
 
-$Book.AddSection(8,"Breaking Bad",@"
+$Book.NewSection(8,"Breaking Bad",@"
 _______________________
 | EXTREMELY REALISTIC |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27368,7 +29051,7 @@ Lots of reasons to watch this, maybe seeing a head on the back of a tortoise isn
 ...but most of the show is shockingly realistic.
 "@)
 
-$Book.AddSection(8,"Renegade",@"
+$Book.NewSection(8,"Renegade",@"
 _______________________________
 | NOT EVEN SLIGHTLY REALISTIC |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27384,7 +29067,7 @@ roundhouse kicks to people's faces... BOOKIE WARD would even agree that this dud
 That's the story of LORENZO LAMAS, no realation to TOM LLAMAS... but also, a fictional story.
 "@)
 
-$Book.AddSection(8,"The Shield",@"
+$Book.NewSection(8,"The Shield",@"
 _______________________
 | EXTREMELY REALISTIC |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27420,7 +29103,7 @@ Then it is literally a prime example of how to indicate that she along with the 
 ...they fuckin' suck ass at their jobs when they FAIL TO COLLECT EVIDENCE.
 "@)
 
-$Book.AddSection(8,"NCIS",@"
+$Book.NewSection(8,"NCIS",@"
 ________________________________
 | NOT FUCKIN' REALISTIC AT ALL |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27446,7 +29129,7 @@ Then what...? Scooby and Shaggy are gonna starve to death, and NOBODY really wan
 Nah. I don't think so. You're basically pissing all over one of the most beloved (dude + dog) combos in history.
 "@)
 
-$Book.AddSection(8,"Law and Order",@"
+$Book.NewSection(8,"Law and Order",@"
 ____________________________________________________________________________
 | SORT OF REALISTIC, BUT NOT REALLY. THE COURTROOM STUFF IS MORE REALISTIC |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27459,7 +29142,7 @@ There are a few other derivatives of this show that I can tolerate (Criminal Int
 That's what I'm watchin' for the rest of the day. 
 "@)
 
-$Book.AddSection(8,"COPS",@"
+$Book.NewSection(8,"COPS",@"
 ____________________________________________________________________________________________________
 | ABOUT AS REAL AS IT GETS (it's literally footage that gets recorded when a cameraman goes in...) |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27486,7 +29169,7 @@ even Albany, NY...? But the police constantly break the law around here AND at t
 - Federal Bureau of Investigation @ 200 McCarty Ave, Albany NY
 "@)
 
-$Book.AddSection(8,"RENO 911!",@"
+$Book.NewSection(8,"RENO 911!",@"
 _________________________________________________________________________
 | The entire point of this show, has historically always been a JOKE... |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27502,7 +29185,7 @@ the police I just mentioned... That should paint a pretty clear picture that the
 not be taken seriously, and yet... they have a badge.
 "@)
 
-$Book.AddSection(8,"The Other Guys",@"
+$Book.NewSection(8,"The Other Guys",@"
 ____________________________________________________________________________________
 | Fuckin' HILARIOUS MOVIE... NOT REALISTIC AT ALL (partially filmed in Albany, NY) |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27855,7 +29538,7 @@ fuckin' had in this movie.
 
 "@)
 
-$Book.AddSection(8,"Last Action Hero",@"
+$Book.NewSection(8,"Last Action Hero",@"
 ______________________________________________________________________________________________
 | In no way realistic at all (But it is probably one of my favorite childhood cop movies...) |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28174,7 +29857,7 @@ have nothing but a VERY SMALL FRACTION or PERCENTAGE of the INTEGRITY, that a FI
 fuckin' had in this movie.
 "@)
 
-$Book.AddSection(8,"Comparisons (2)",@"
+$Book.NewSection(8,"Comparisons (2)",@"
 If the rich brat kills people, the police shrug their fuckin' shoulders: "What can anybody do about it? Jesus."
 If it's somebody that ISN'T a rich brat at all, and gets caught...? That person will go to prison. 
 Hm. Let's draw up a comparison here.
@@ -28307,7 +29990,7 @@ Everyone says "Fuck you, pal" or, "It is, what it is, bro. Now fuck off, I've go
 ==================================================================================================================
 "@)
  
-$Book.AddSection(8,"Control Program/Monitor",@"
+$Book.NewSection(8,"Control Program/Monitor",@"
 A man named Gary Kildall (https://en.wikipedia.org/wiki/Gary_Kildall) was the sole inspiration that caused 
 Microsoft to develop an operating system called Disk Operating System. I really don't exactly have the whole 
 entire story, maybe I have something wrong.
@@ -28334,7 +30017,7 @@ To say that Gary Kildall was NOT a very large influential character in the 80's,
 Donald Trump was one of the best presidents that ever lived…
 "@)
  
-$Book.AddSection(8,"Microsoft - Larger than Life",@"
+$Book.NewSection(8,"Microsoft - Larger than Life",@"
 Computers were PRETTY FUCKIN SLOW back then, and a lot of times people had to swap in a number of floppy disks
 to load up programs or really to do whatever with the computer.
 
@@ -28364,7 +30047,7 @@ property CP/M in order to conduct his deal with IBM, and gave Gary `$20,000 afte
 Here is why Mr. Gates FAILING to admit that, leaves a stain on his legacy... 
 "@)
  
-$Book.AddSection(8,"Intellectual Property Theft",@"
+$Book.NewSection(8,"Intellectual Property Theft",@"
 Intellectual property theft is a SERIOUS PROBLEM now. (← It's so serious, I had to write this entire book)
 I'm not going to say that I'm gonna stay upset with the guy for doin' that, cause obviously Kildall was seemingly
 careless with his IP. However, translate that problem to today. Now it's impossible to come up with ideas without
@@ -28390,7 +30073,7 @@ Well, they're gonna tell me to fuck off, they have U-turns to go sit at where th
 service. I can't treat all of them like that... but they seem to think they're smarter than I am.
 "@)
  
-$Book.AddSection(8,"Cool Factor",@"
+$Book.NewSection(8,"Cool Factor",@"
 Here's the REAL problem.
 
 If certain people LIKE you, then you're allowed to be cool to SOME degree. But, if a lot of people don't really 
@@ -28787,7 +30470,7 @@ documents he leaked. I'm not certain what's the most relevant or important docum
 "quick" rundown of our modern equivalent to a Colonial Minuteman, Edward "Paul Revere" Snowden...
 "@)
  
-$Book.AddSection(8,"Excerpt [~] Edward J. Snowden (Expert Cybercommando)",@"
+$Book.NewSection(8,"Excerpt [~] Edward J. Snowden (Expert Cybercommando)",@"
 
 Edward J. Snowden | Expert Cybercommando/Wizard/Keyboard Warrior | https://en.wikipedia.org/wiki/Edward_Snowden 
 _______________________________________________
@@ -28932,7 +30615,7 @@ give a shit...? Oh. Maybe that's how he got in the position he's in. Superiors t
 1000 Justin Belleville's swapping cash from one drawer to another.
 "@)
  
-$Book.AddSection(8,"Relevant Details",@"
+$Book.NewSection(8,"Relevant Details",@"
 As for General McKenzie, that dude has spent his entire life being in the military
 Marine Corps from 1979 to 2022, 43 years in total. If anyone's a fuckin' patriot, he sure as hell is. 
 Fuckin' dude has probably had his fair share of crawling under barbed wire in the mud, while being shot at, barely 
@@ -29326,7 +31009,7 @@ was mad cool and they could turn a profit off of it...? Then fuck me, AND my ide
 audio recording with such a COOL idea, and it wasn't even mine anymore once I stated it into the microphone. 
 "@)
  
-$Book.AddSection(8,"Original [~] The Uncanny Valley",@"
+$Book.NewSection(8,"Original [~] The Uncanny Valley",@"
 Go on an adventure with me.
 Step into the uncanny valley.
 You're uncertain what this adventure leads to...
@@ -29392,7 +31075,7 @@ To elaborate, it's a warning.
 Basically, intellectual property theft, but I mean, fuckin' way worse than that.
 "@)
  
-$Book.AddSection(8,"Injustice",@"
+$Book.NewSection(8,"Injustice",@"
 JULIEN ASSANGE's entire purpose with WikiLeaks was to be a modern Paul Revere. 
 He wasn't doing all this shit to be an annoying asshole trying to be correct all the time... nah. 
 He saw some people doing evil shit. 
@@ -29742,7 +31425,7 @@ Here's a look at General McKenzie's (resume/history)... it's worth noting that h
 Expendables movie with Sylvester Stallone. 
 "@)
  
-$Book.AddSection(8,"Excerpt [~] General Kenneth F. 'top-shelf commander' McKenzie Jr.",@"
+$Book.NewSection(8,"Excerpt [~] General Kenneth F. 'top-shelf commander' McKenzie Jr.",@"
 Kenneth F. McKenzie Jr. | Birmingham, AL | USMC (top-shelf) General [Retired]
 _______________________________________________________________
 | 1979 : Naval Reserve Officers Training Corps at The Citadel |
@@ -29833,7 +31516,7 @@ Dude spent 43 years being a role model commander in the United States Marine Cor
 up his ass either, but it's a question that anybody should be asking…
 "@)
  
-$Book.AddSection(8,"Taking Accountability",@"
+$Book.NewSection(8,"Taking Accountability",@"
 This dude has integrity, he literally took accountability for the mistake AFTER the Kabul airport attack...
 ...and I think that if anyone's gonna have the moral high ground, sensibility, and capability to DO something,
 it might be this guy.
@@ -29994,7 +31677,7 @@ So, tit for tat between suspected treasonists committing censorship against peop
 All while I write these stories about BOB LUTZ sitting in his favorite chair. 
 "@)
  
-$Book.AddSection(8,"Skit [~] BOB LUTZ : Show us mortals how to run a car company",@"
+$Book.NewSection(8,"Skit [~] BOB LUTZ : Show us mortals how to run a car company",@"
 Sometimes he would grab some saran wrap right before he shit his pants in his favorite chair, 
 stick it under his ass... cause then it wouldn't seep out of his underwear. 
 
@@ -30172,7 +31855,7 @@ HIGHLY fuckin' likely. But, telling other people better be a damn good story, or
 Might be a total waste of effort.
 "@)
  
-$Book.AddSection(8,"Monarchy",@"
+$Book.NewSection(8,"Monarchy",@"
 The way I see it is like this, I can see clear as fucking day, that someone successfully converted America, 
 back into a monarchy, like, England. This time around, it wasn't some bullshit tea that Britain was forcing
 the people in America to pay for, now it's shitty vehicles that break a lot. Or, medicines that are dangerous 
@@ -30195,7 +31878,7 @@ so many of the things he highlighted... could very well be charged with crimes..
 GWB and Michael Hayden, among others. That is of course, IF everybody collectively gives a flying fuck.
 "@)
  
-$Book.AddSection(8,"Excerpt [~] Communist outpost in the heart of a 'democracy'",@"
+$Book.NewSection(8,"Excerpt [~] Communist outpost in the heart of a 'democracy'",@"
 The problem is, I think that the part of America that USED to have integrity, died on September 11, 2001, 
 in Washington DC, and Manhattan. I am MOST POSITIVE, that BARACK OBAMA IS NOT THE GUY that I should be MAD at,
 because EDWARD SNOWDEN hasn't been given a trial. 
@@ -30313,7 +31996,7 @@ Korol never said anybody had some jizz-on-the-chin, it's just a colorful metapho
 A visually stunning, white, sticky, gooey metaphor...
 "@)
  
-$Book.AddSection(8,"Colorful Metaphors (1)",@"
+$Book.NewSection(8,"Colorful Metaphors (1)",@"
 Many of the girls I went to school with, even some of the teachers at Shenendehowa Central School district... 
 ...they might've had SOME jizz-on-the-chin here or there...
 ...but not nearly as much as the President of the United States, George W. Bush...
@@ -30485,7 +32168,7 @@ And from what I've seen, they don't like it when someone calls them out in an al
 Might even look 'accidental'...
 "@)
  
-$Book.AddSection(8,"Skit [~] Jeopardy! Champion, Ken Jennings",@"
+$Book.NewSection(8,"Skit [~] Jeopardy! Champion, Ken Jennings",@"
 Jeopardy! → Alex Trebek → Merv Griffin → Ken Jennings → 74 consecutive wins → `$4,522,700
 Ken Jennings probably isn't related to the late news anchor, Peter Jennings.
 
@@ -30531,7 +32214,7 @@ Griffin : Alex, chill out dude.
           I've got so much money, there's no need to get pissed at Ken Jennings.
 "@)
  
-$Book.AddSection(8,"Colorful Metaphors (2)",@"
+$Book.NewSection(8,"Colorful Metaphors (2)",@"
 Jizz-on-the-chin, is actually a metaphor, to be clear.
 The girl blowing me at school, isn't a metaphor... she was cool with havin' a smidge of jizz-on-the-chin. 
 No big deal.
@@ -30686,7 +32369,7 @@ that they're not ignoring what I'm writing, and just jumping to the conclusion t
 EVER LIE TO PEOPLE... because that's moronic. 
 "@)
  
-$Book.AddSection(8,"Excerpt [~] Presidents that have lied",@"
+$Book.NewSection(8,"Excerpt [~] Presidents that have lied",@"
 It's time to whip out the whole "Table of Presidents that have lied"
 ______________________________________________________________________________________________________________________
 |     [NAME]        [TERM]       [ACTION]                        [FALSE STATEMENT ISSUED TO PUBLIC]                  | 
@@ -30758,7 +32441,7 @@ But- not Andrew Cuomo. Ooooohhh no. It's why he's not the GOVERNOR anymore.
 I'm gonna leave that subject now.
 "@)
  
-$Book.AddSection(8,"Architects & Engineers for 9/11 Truth",@"
+$Book.NewSection(8,"Architects & Engineers for 9/11 Truth",@"
 A lot of people probably don't know who Robert Korol is.
 _____________________________________________________________________________
 | Robert Korol | https://www.eng.mcmaster.ca/civil/people/faculty/bob-korol |
@@ -30805,7 +32488,7 @@ I'm layering in some humor and it's gonna fall flat on some people, because mayb
 respect people who lie. Not people that tell the truth... nor make people laugh, but rather...
 "@)
  
-$Book.AddSection(8,"When the government goes too far",@"
+$Book.NewSection(8,"When the government goes too far",@"
 "Woe to You Oh Earth and Sea…
 For the Devil sends the beast with wrath, because he knows the time is short
 Let him who have understanding reckon, the number of the beast…
@@ -30966,7 +32649,7 @@ They don't have any intention of getting back to you in either case.
 It's better than assaulting people.
 "@)
  
-$Book.AddSection(8,"Who do they go after? (1)",@"
+$Book.NewSection(8,"Who do they go after? (1)",@"
 Here's the bottom line. 
 They will not waste their effort going after a drug dealer unless they are REALLY starting to piss them off. 
 Unless the dealer was someone really important like Richard "Dick Tackler" Sackler. 
@@ -31112,7 +32795,7 @@ So, maybe I'll start the (CCTF/Cybercommando Coalition Task Force), and we'll be
 Or better yet, maybe it's time to talk about the (IC3/Internet & Computer Crime Cybercommando Task Force). 
 "@)
  
-$Book.AddSection(8,"Skit [~] IC3/Internet & Computer Crime Cybercommando Task Force",@"
+$Book.NewSection(8,"Skit [~] IC3/Internet & Computer Crime Cybercommando Task Force",@"
 That isn't the real name for this band of misfits that are essentially an entire division of the (Federal) 
 Bureau of Investigation. I've been writing a number of stories about so many other government agencies…? Heh.
 
@@ -31291,7 +32974,7 @@ IC3 : Well, Pavel is a Russian spy.
       They're dangerous.
 "@)
  
-$Book.AddSection(8,"Who do they go after? (2)",@"
+$Book.NewSection(8,"Who do they go after? (2)",@"
 So, IC3 isn't exactly the Internet & Computer Crime Cybercommando Task Force… 
 …but with enough greasing of the wheels, maybe it COULD be.
 The next best thing would be to enlist many of the people that work at IC3 that wanna get their hands dirty.
@@ -31905,7 +33588,7 @@ At that point I begin to consider that person doesn't realize that I'm correct..
 So then the logic board has to be whipped out.
 "@)
  
-$Book.AddSection(8,"Logic Board",@"
+$Book.NewSection(8,"Logic Board",@"
 Something violating the Constitution → Is illegal → Isn't supposed to happen → Happens anyway → Someone 
 hears all that → They find it hard to believe → It's accurate → They assume somebody should do something 
 about that → they fuck off.
@@ -32353,7 +34036,7 @@ documents, because... what the hell else can I do? If I offer to assault them fo
 might wake up later and realize how stupid that was... but then I'm gonna get myself in trouble.
 "@)
  
-$Book.AddSection(8,"Changing Direction",@"
+$Book.NewSection(8,"Changing Direction",@"
 I didn't go around being a miserable prick throwing my intellect around, insulting random people PRIOR, to the 
 night I was almost killed. In fact, maybe I should elaborate because I did do that after I noticed that an 
 employer owed me like `$4K. Somehow, I was expected to do a job, but- I was owed a lot of money. 
@@ -32435,7 +34118,7 @@ I'm going to cover the events of (06/13/20 → 06/22/20), though the first entry
 …(06/10/20 → 06/13/20).
 "@)
  
-$Book.AddSection(8,"June 13th, 2020 (1)",@"
+$Book.NewSection(8,"June 13th, 2020 (1)",@"
 I was in a verbal altercation with my mother and stepfather. 
 
 I'm going to tangent off to events BEFORE June 13th, 2020, so that when I explain what happened that day…? 
@@ -32749,7 +34432,7 @@ He says "I don't know what the password is."
 Oh. So, he doesn't know his password... Huh.
 "@)
  
-$Book.AddSection(8,"Skit [~] Kristin Johnson",@"
+$Book.NewSection(8,"Skit [~] Kristin Johnson",@"
 My kid just lied to me, for the 7 billionth time.
 Guess how I was able to get my sons password to his account...?
 It's cause I called ELIZABETH RILEY.
@@ -32881,7 +34564,7 @@ Realistically, I have to phrase it just like that...? Cause that happens to be t
 I've tried to get Oliver Robinson's attention too, but what the hell man...? 
 "@)
  
-$Book.AddSection(8,"June 13th, 2020 (2)",@"
+$Book.NewSection(8,"June 13th, 2020 (2)",@"
 As for the DAY OR TWO PRIOR to June 13th, 2020, when I walked to IMS, and realized I had to go back home…
 …as soon as I got back to the house to grab the laptop, I asked my son for his account and password. 
 He suddenly couldn't remember his password.
@@ -33307,7 +34990,7 @@ Ya know...?
 Anyway, I was stuck there for a couple more days, and I got out on the 16th.
 "@)
  
-$Book.AddSection(8,"June 16th, 2020",@"
+$Book.NewSection(8,"June 16th, 2020",@"
 When I was released, I went home, and that's when things started to get progressively worse, and FAST.
 You see, I didn't realize that every single time I said words to people...? They thought that I suddenly 
 learned how to speak Chinese, and THAT'S why they couldn't understand. Everybody thought I was speaking a 
@@ -33562,7 +35245,7 @@ me contained. I'm not exaggerating that.
 Therefore, I'm being censored because I'm embarrassing people with my first amendment right to free speech. 
 "@)
  
-$Book.AddSection(8,"June 17th, 2020",@"
+$Book.NewSection(8,"June 17th, 2020",@"
 I recorded a video of my attempt to extract some files from my secondary storage drive that I am well aware, had
 some type of "flag" in it, which means that if a specific file or folder is flagged, it will cause the folder to 
 load its content more slowly than it normally would. That's cause a cocksucker flagged it, remotely.
@@ -33786,7 +35469,7 @@ Guy4 : Nah the man has a way of knowing wasn't happening behind him, in front of
        He's basically like Batman.
 "@)
  
-$Book.AddSection(8,"June 18th, 2020 (1)",@"
+$Book.NewSection(8,"June 18th, 2020 (1)",@"
 Back in the early 1900's, they used to have these Sherlock Holmes-like dudes, wearin' a special hat, smokin' 
 on a pipe. Long ass trench coats for the rain. Now, look at what they've got. They've got cybercommandos that 
 basically do their job for em. Once you get a few cybercommandos on deck, your job becomes a HELL OF A LOT
@@ -33813,7 +35496,7 @@ attempted murder.
               ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(8,"Feiden Appliance Center",@"
+$Book.NewSection(8,"Feiden Appliance Center",@"
 I was looking for ANY EVIDENCE WHATSOEVER of (SCSO-2020-028501) the (record/interaction). 
 I wouldn't get this information until speaking to (SCSO Captain Jeffrey Brown) in February 2021. 
 So basically, I requested records, and, I didn't get the main record I was looking for. 
@@ -34012,7 +35695,7 @@ JAMES LEONARD COMMITTED. Ya know...? Ignoring the fact that I called 911 multipl
 right ahead and arrest me for a fuckin' kayak strap, sorry for trying to smack some sense into JAMES LEONARD.
 "@)
 
-$Book.AddSection(8,"Shenendehowa District Office",@"
+$Book.NewSection(8,"Shenendehowa District Office",@"
 I wrote a pretty long winded document or two, and left them with the superintendent at 5 Chelsea Place.     
 I had already left numerous documents there. I don't know if the guy has been reading them, or not. But- 
 there's a reason why I don't go to the police. It's cause I had evidence of 2 dudes trying to murder me
@@ -34285,7 +35968,7 @@ Me      : If everybody thinks that, then that is what makes society as flawed as
 
 "@)
 
-$Book.AddSection(8,"Center for Security",@"
+$Book.NewSection(8,"Center for Security",@"
 I wanted to get the footage for the 911 call that I made in front of the camera here. I had already been to 
 this place beforehand on 5/27/20, and the same blonde haired kid came up to me, and had this kinda dead-eyed 
 look when I asked him about it. He immediately asked me if I had a badge, and I don't. So, I said that and 
@@ -34304,7 +35987,7 @@ gotten posted on Facebook/Reddit. I'm dead serious. I think they were actually s
 The truth is, even if they were...? They're not gonna be obvious about it at all.
 "@)
 
-$Book.AddSection(8,"AAA Clifton Park",@"
+$Book.NewSection(8,"AAA Clifton Park",@"
 I went to this place as well, because on the night of the attack, I tried to leave some type of evidence that
 I was here. As for THIS date, I was at this location for approximately 15 minutes or so.
 
@@ -34327,7 +36010,7 @@ The people at this place were totally cooperative, and didn't really provide any
 I don't think they had the footage I needed.
 "@)
 
-$Book.AddSection(8,"Computer Answers",@"
+$Book.NewSection(8,"Computer Answers",@"
 So, I was thinking about how I had this incident where 2 dudes committed a ransomware attack like a couple 
 years before, and how this dude Dwayne, literally tells people that he can easily beat my numbers. 
 
@@ -34365,7 +36048,7 @@ That's a victory for me, bro. Nah, I just... came, cleaned house, and took off.
 Like a miracle that just stopped by, and had to go. Oh well, bro.
 "@)
 
-$Book.AddSection(8,"Trickshot Billiards/Wicked",@"
+$Book.NewSection(8,"Trickshot Billiards/Wicked",@"
 Then, I went to Trickshot Billiards, with a few items that I found on the side of the road since I walk around 
 town quite a lot. The cool thing is, even Judge James Hughes walks around town quite a bit. The literal town
 justice. The end all, be all, of awesome local judges. 
@@ -34415,7 +36098,7 @@ And that was that. Haven't really been back there ever since. It used to be one 
 But I think I just outgrew it.
 "@)
 
-$Book.AddSection(8,"Boomer-McCloud Plaza",@"
+$Book.NewSection(8,"Boomer-McCloud Plaza",@"
 So, I had a feeling that the DUDE DRIVING AN SUV that said 4130 on the plate, WAS ACTUALLY THE GUY WHO I
 CALLED... "SHOULDER-PHONE COP". I called him shoulder-phone cop (AKA "Scrotum Chin Pirrone", or "Scrotes") 
 cause this dude was actually the most AMAZING cop I've ever seen in my entire life... 
@@ -34530,7 +36213,7 @@ A highly advanced expert with technology...
 You really cannot come up with a FAR MORE INTERESTING STORY… than this, pal.
 "@)
 
-$Book.AddSection(8,"Walmart",@"
+$Book.NewSection(8,"Walmart",@"
 Shortly after the showdown between myself, and Mr. Catricala, (who happens to be alive, and well, believe it or   
 not...) SCSO Clayton Brownell felt like coming right up on me near Walmart, and nearly scaring the shit outta
 me. He got out of his SUV/vehicle, says "HEY MICHAEL~!", and then immediately has his hand over his holstered 
@@ -34560,7 +36243,7 @@ And that is when I saw a brigade of police cruisers, barreling down Route 9.
 Obviously, they needed about 6 of these guys to intercept a (1) man wrecking crew like myself...
 "@)
 
-$Book.AddSection(8,"Flashback [~] GT Toys/Trooper Borden/Clayton Brownell",@"
+$Book.NewSection(8,"Flashback [~] GT Toys/Trooper Borden/Clayton Brownell",@"
 I attempted to get all the way through the parking lot, but I failed, because then all of a sudden, there's
 the man, the myth, the legend... It's Trooper Borden. Here's the thing about Trooper Borden...
 
@@ -35013,7 +36696,7 @@ Me       : The first amendment was written along with several others, just so yo
            You oughtta read the constitution sometime.
 "@)
  
-$Book.AddSection(8,"June 18th, 2020 (2)",@"
+$Book.NewSection(8,"June 18th, 2020 (2)",@"
 After Trooper Borden and crew decided to kick me loose, I walked all the way to my friend Samantha Caine's 
 house. She apparently, wasn't home. While I was walking there, I plugged the BATTERY back into the LOGIC 
 BOARD, and then all of a sudden... Whoa. A kid that I saw at my friend's house the night prior...?
@@ -35027,7 +36710,7 @@ I left a quarter behind her mailbox, to leave some type of clue that I was, in f
 Walked all the way back home...
 "@)
  
-$Book.AddSection(8,"June 19th, 2020",@"
+$Book.NewSection(8,"June 19th, 2020",@"
 At some point in the day, a woman named LAURA HUGHES showed up, knocking on the door.
 She seemed to have such GENUINE CONCERN about me almost being murdered... that she made no mention of it.
 She asked to speak with me, so I went and spoke to her outside at the table.
@@ -35165,7 +36848,7 @@ how many people worked together and didn't have their fuckin' facts straight... 
 like a long list of morons. 
 "@)
  
-$Book.AddSection(8,"June 20th, 2020",@"
+$Book.NewSection(8,"June 20th, 2020",@"
 
 Father's Day | Asked my mother for a ride to my aunt Nancy's house. She said "Nah", so I wound up walking the 
 entire way from Clifton Park → Menands → New Salem | Why...? Uh, because I still have the same suspicion NOW, 
@@ -35387,7 +37070,7 @@ Then, you'll never believe how much more compelling all of this BECAME after she
 Trooper Borden. Fucked it ALL up for ya...
 "@)
  
-$Book.AddSection(8,"June 21st, 2020",@"
+$Book.NewSection(8,"June 21st, 2020",@"
 First thing I did when I woke up, was to knock on the door to either my aunt Cindy's or Nancy's door.
 As soon as I managed to wake up, I looked in the DIRT for where I WROTE the license plate NYS/DVA-2450,
 but I really could not read it at all. I still remembered the plate number from the day before, I chanted
@@ -35531,7 +37214,7 @@ Cool...? That's what I've been saying for over 2 years now...? Did I go around s
 05/26/20...? Nope. I didn't. That's why I keep saying over and over, that some people are fuckin' stupid.
 "@)
  
-$Book.AddSection(8,"June 22nd, 2020",@"
+$Book.NewSection(8,"June 22nd, 2020",@"
 My aunt Nancy wound up driving me home. Wish my mother was as bright as she is, cause this woman actually 
 sounds smart when she talks. You can tell someone is smart by the way they ask COMPLEX QUESTIONS, and 
 provide RELEVANT STATEMENTS that fall in line with the direction of the conversation, so if this person 
@@ -35646,7 +37329,7 @@ Me     : So, you are REFUSING to run a suspects PLATE NUMBER, in front of ME, an
 Borden : Yeah.
 "@)
  
-$Book.AddSection(8,"Aftermath",@"
+$Book.NewSection(8,"Aftermath",@"
 Over time, I just started to drop the idea that I have to be nice to people. 
 Cause, when I'm nice, people will do what Trooper Borden did on June 18th, 2020 @ GT Toys. 
 Lying to my face.
@@ -36163,7 +37846,7 @@ Somebody might say "That's fuckin impressive." No shit.
 Dude ran Tesla WHILE conceptualizing this fuckin' thing, all while BOB LUTZ ran shit down his leg.
 "@)
  
-$Book.AddSection(8,"Smarter People Exist",@"
+$Book.NewSection(8,"Smarter People Exist",@"
 I'm gonna segue here, cause, I have more important shit to say, then telling a bunch of people, that smarter 
 people exist... 
     
@@ -36631,7 +38314,7 @@ They didn't understand, that I will tear a human being apart when I'm ready to d
 But sometimes I have to stop myself from thinking about being that intense.
 "@)
  
-$Book.AddSection(8,"Intensity",@"
+$Book.NewSection(8,"Intensity",@"
 At some point, I have to curtail what was said cause I know someone will intentionally misunderstand what 
 I wrote. It's like this... Innocent people that aren't doing something stupid, they have no reason to be 
 worried about me. The people that think they are fuckin' dangerous, they probably know that I am on their 
@@ -36727,7 +38410,7 @@ Who gives a shit...? I do, believe it or not.
 But, somebody felt like it was best to slander me, or put me in a fuckin' bubble, and totally ignore me.
 "@)
  
-$Book.AddSection(8,"Turning the screws",@"
+$Book.NewSection(8,"Turning the screws",@"
 If    SEAN HANNITY sucks RUPERT MURDOCHs' dick,                                      who gives a shit? Nobody.
 If        Ted Cruz gets fucked in the ass by Exxon Mobil,                            who gives a shit? Nobody.
 If Dwayne Coonradt gets killed by some Russian kids,                                 who gives a shit? Nobody.
@@ -36964,7 +38647,7 @@ Ted    : *snaps back* Listen pal, I worked my ass off to get all this.
 Nobody really knows what he means by that statement, because it's like double-speak or something.  
 "@)
  
-$Book.AddSection(8,"Narrative",@"
+$Book.NewSection(8,"Narrative",@"
 All things considered, I should tell Daniel Pickett, sorry for being a douchebag.
 Yeah, Dan Pickett has some friends that can do what I feared the most.
 
@@ -37376,7 +39059,7 @@ I wouldn't say they're morons, if they weren't.
 However, someone's gonna have a hard time digesting the fact that there are plenty of them on their team.
 "@)
  
-$Book.AddSection(8,"Hiding Guilt (1)",@"
+$Book.NewSection(8,"Hiding Guilt (1)",@"
 When I record footage of something like that, and try to show it to them...? 
 ...it's like I'm trying to force my dog to look at a pile of shit he just left on the floor...
 ...cause he couldn't hold it, like BOB LUTZ, former director of GM who shit his pants everyday for 50 years.
@@ -37715,7 +39398,7 @@ Me   : TROOPER BORDEN has made a number of slip ups.
        06/18/20 is when I  first officially met this 'Robin'... 
 "@)
  
-$Book.AddSection(8,"Excerpt [~] Trooper Borden",@"
+$Book.NewSection(8,"Excerpt [~] Trooper Borden",@"
 BORDEN's (behaviors/responses) did not match a pattern where it caused any suspicion that he had ANY 
 involvement whatsoever, in the attack on 5/26/20. In short, he wasn't involved in the attack on 5/25-5/26 2020
 I am absolutely certain of that.
@@ -37782,7 +39465,7 @@ ________________________________________________________________________________
 - as soon as I saw it, they started the vehicle, and drove away
 "@)
  
-$Book.AddSection(8,"Hiding Guilt (2)",@"
+$Book.NewSection(8,"Hiding Guilt (2)",@"
 Me   : Trooper Borden already SAW the PICTURES I took of Catricala's rear building, when he had to look through 
        my backpack at GT Toys on 06/18/20. I didn't know then, was that... ERIC CATRICALA was the guy in the 
        WHITE SUV that was hunting me down on: 1) ASTOIA VUCETICS PROP. IN APRIL, 2) 06/20/20 NEW SALEM ROAD SOUTH
@@ -38231,7 +39914,7 @@ Digital security, fuckface.
 You stick to driving your vehicle around, I'll stick to knowing what the fuck I'm talking about. Got it?
 "@)
  
-$Book.AddSection(8,"Asking the Accused",@"
+$Book.NewSection(8,"Asking the Accused",@"
 These guys don't like being put in check. It is literally that simple. 
 So if I tell them that Dwayne steals shit from customers and from software distributors, 
 ...that doesn't make sense to them... 
@@ -38391,7 +40074,7 @@ just say...
 We could've fuckin' avoided that whole disaster." -The police
 "@)
  
-$Book.AddSection(8,"Skit [~] Even a magic genie has limitations",@"
+$Book.NewSection(8,"Skit [~] Even a magic genie has limitations",@"
 That's why I tell people, so many people are morons.
 Some people aren't morons, but they're extremely rare.
 
@@ -38431,7 +40114,7 @@ Which means that I have to basically REPROGRAM people's sense of logic, and peop
 that... unless I explain parallels or analogies.
 "@)
  
-$Book.AddSection(8,"Exclusion",@"
+$Book.NewSection(8,"Exclusion",@"
 Lets say that every single person, everything they ever said was a lie.
 Then the only way people would know for sure that they can trust what the hell's going on, is by ignoring 
 everything people say...
@@ -38756,7 +40439,7 @@ That motherfucker knows I cut his fuckin' phone line for a reason.
 Didn't say a word about that.
 "@)
  
-$Book.AddSection(8,"Verdict",@"
+$Book.NewSection(8,"Verdict",@"
 Many companies (especially Facebook and Google), are probably using the USA-PATRIOT Act of 2001, to spy on 
 people. When I say "spy on people" what I mean is, literally watching what people do.
     
@@ -38815,20 +40498,25 @@ time at all, because you are no fucking threat to someone that has made you cont
 you decide that you want to be paid more money, or know some secrets that might damage their credibility, some 
 of them will actually try to kill you.
 "@)
+}
 
 # // _____________________________
-# // | Chapter 8 - The Rich Brat | cls; $Book.Range("Book",9,@(424..477))
+# // | Chapter 8 - The Rich Brat |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(9,"Chapter 8")
+Function Chapter_8
+{
+    Param ($Book)
 
-$Book.AddSection(9,"Start",@"
+$Book.NewChapter("Chapter 8","The Rich Brat")
+
+$Book.NewSection(9,"Start",@"
 The "Rich brat", is someone that I intend to catch.
 The "Rich brat" just so happens to be, a serial killer working on behalf of the KGB/FSV/MI5 for Moscow/London. 
 Whether that (IS/IS NOT) the case, I'm going to cover a few topics of discussion.
 "@)
 
-$Book.AddSection(9,"Board of Possibilities",@"
+$Book.NewSection(9,"Board of Possibilities",@"
 I'm throwing the above onto what I like to call the Board of Possibilities.
 The investigators at every police agency that exists, they do this too.
 They will literally stare at statements, pictures, documents, or timelines, in order to determine...
@@ -38857,7 +40545,7 @@ I'm going to list some things that I think this "rich brat" has in common with t
 associated already, AND, some of the things I've corroborated with other people in the community.
 "@)
  
-$Book.AddSection(9,"Clues",@"
+$Book.NewSection(9,"Clues",@"
 The MOST important thing is, that I know for damn certain, that I caught these (2) guys on video attempting
 to murder me, and that they had their vehicles parked in places BEFORE the video started.
 
@@ -38941,7 +40629,7 @@ to murder me, and that they had their vehicles parked in places BEFORE the video
 - May have some CALENDAR APPOINTMENTS that YOU never set
 "@)
  
-$Book.AddSection(9,"Profile",@"
+$Book.NewSection(9,"Profile",@"
 They are definitely dangerous, no question about it.
 These guys are dangerous for reasons that will be pretty difficult to recapture on video. 
 They are smart, otherwise they wouldn't be getting away with this over and over again.
@@ -38966,7 +40654,7 @@ However, they're not really all that bright if you apply PSYCHOLOGICAL MANIPULAT
 Then, they will EASILY reveal who they are.
 "@)
  
-$Book.AddSection(9,"Reviewing The Attack",@"
+$Book.NewSection(9,"Reviewing The Attack",@"
 SOMEONE with a small dick used (Pegasus/Phantom) because they felt like committing INTELLECTUAL PROPERTY 
 THEFT to ME. Intellectual property theft is basically when someone isn't as creative or intelligent as someone
 who comes up with their own original ideas, steals that persons ideas and then develops the shit out of them.
@@ -38999,7 +40687,7 @@ he does ALL of these things, but to some extent, this information can be DERIVED
 MANIPULATION.
 "@)
  
-$Book.AddSection(9,"Application of Psychological Manipulation",@"
+$Book.NewSection(9,"Application of Psychological Manipulation",@"
 Designing Facebook obviously involved smarter people than Mark. 
 
 He hired people that actually know what they're doing. Ever since then...? 
@@ -39308,7 +40996,7 @@ are SELECTIVELY concentrating on certain (KEY WORDS/TERMS). Now, some people mig
 ...and listen to it, and maybe they'll try to say that I sound like a lunatic...?
 "@)
  
-$Book.AddSection(9,"Allegation",@"
+$Book.NewSection(9,"Allegation",@"
 I'm pretty sure that I don't. I'm pretty sure that I clearly discuss some of my observations about:
 RUSSIANS ATTACKING ME, my EQUIPMENT, my SOCIAL MEDIA, etc.
 So, the allegation that I'm making, is that FACEBOOK's CEO, MARK ZUCKERBERG, works with RUSSIANS/BRITISH.
@@ -39366,7 +41054,7 @@ their hands into a HIGHER JURISDICTION/CAPABILITY/SCOPE...? Then, they can just 
 receive into the garbage.
 "@)
  
-$Book.AddSection(9,"Incrimination",@"
+$Book.NewSection(9,"Incrimination",@"
 I do in fact, believe that is what they do.
 I have called them before. 
 Good conversations with some of them sometimes, BUT- if something involves a PHYSICAL CRIME, and a 
@@ -39760,7 +41448,7 @@ Only problem is, that cop didn't realize they were the trash, and I'm the fuckin
 Cleanin' up the fuckin' trash, man.
 "@)
  
-$Book.AddSection(9,"Base Reality Certainty",@"
+$Book.NewSection(9,"Base Reality Certainty",@"
 Actual criminals, they deserve to be in jail.
 Guys like me, don't deserve any of that shit at all.
 When the law and justice systems prevent the serious offenders from going to prison, 
@@ -40075,7 +41763,7 @@ They're not ALL corrupt, but the ones in charge are the only ones I'm worried ab
 They're corrupt.
 "@)
  
-$Book.AddSection(9,"Conviction",@"
+$Book.NewSection(9,"Conviction",@"
 When I say stuff to people, they hear like, PORTIONS of what I'm saying. Not FULL SENTENCES, or MULTIPLE POINTS.
 Which is why I argue with my mother QUITE OFTEN. Because, she is literally that stupid.
 I really don't HATE my mother, but she is... one dumb bitch, I swear.
@@ -40107,7 +41795,7 @@ But, they do not actually EMPLOY ANY of those people. I'm fuckin' certain of tha
 However, the Central Intelligence Agency sure as fuck does. 
 "@)
  
-$Book.AddSection(9,"Review (1)",@"
+$Book.NewSection(9,"Review (1)",@"
 In [Chapter 7 – USA-PATRIOT Act of 2001 and Surveillance Capitalism], I spoke about:
 ________________________________________________________________________________________________________________
 | Julien P. Assange | WikiLeaks | Vault 7 | EDWARD SNOWDEN | Gen. Kenneth McKenzie | My involvement w/ Vault 7 |
@@ -40218,7 +41906,7 @@ or the NYSP. Sometimes even the FBI. Or the NSA. Or the CIA. Or the DOD. Serious
 god damn meticulous, and it doesn't miss a fuckin' thing, dude.
 "@)
  
-$Book.AddSection(9,"Cerberus",@"
+$Book.NewSection(9,"Cerberus",@"
 Back in 2016, I once worked for KeyCorp in the Enterprise Resolution Center... 
 ...this was during the First Niagra → KeyCorp merger.
 
@@ -40517,7 +42205,7 @@ ___________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.AddSection(9,"Review (2)",@"
+$Book.NewSection(9,"Review (2)",@"
 Pretty sure that I have a pretty rare set of skills and talents, and I think that these guys may agree.
 Not gonna say why. They probably have read what I've written about how to terminate my own network cables, and use 
 SSH and PowerShell to interact with routers, switches, and etc. remotely. 
@@ -40655,7 +42343,7 @@ I'm going to describe the profile of the person that has the capabilities, total
 immoral nature, that would readily define this "serial killer" type.
 "@)
  
-$Book.AddSection(9,"Intent (1)",@"
+$Book.NewSection(9,"Intent (1)",@"
 James Leonard is a part of this group of people with (deadly/malicious/nefarious) intent.
 Does not seem to have a conscious from what I can tell.
 
@@ -40961,7 +42649,7 @@ Those people didn't realize that the Russians were watching them as they said 'n
 That's why Solorigate also goes by the name of:
 "@)
  
-$Book.AddSection(9,"The 2020 Federal Data Breach",@"
+$Book.NewSection(9,"The 2020 Federal Data Breach",@"
 People should click that link, learn HOW BAD THAT ATTACK WAS.
 Because, I TRIED TO WARN PEOPLE.
 
@@ -41203,7 +42891,7 @@ So is like, the DEPARTMENT OF JUSTICE...
 So, the United States of America is the same EXACT thing, as a (COMMUNIST STATE/MONARCHY)
 "@)
  
-$Book.AddSection(9,"Intent (2)",@"
+$Book.NewSection(9,"Intent (2)",@"
 _______________________________________________________________________________________________
 | 07/14/22 | Shen Campus - Clifton Park Public Safety Building | https://youtu.be/Lo5SFNd-ER4 |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -41621,7 +43309,7 @@ Cause I have a lot of fuckin' nerve, to have already done more research than any
 "NO way pal. You don't get to be more informed than us... fuckface."
 "@)
  
-$Book.AddSection(9,"Rotating Strategies",@"
+$Book.NewSection(9,"Rotating Strategies",@"
 Look the truth is, I know I am pissin' some people off with this document, but I'm ROTATING STRATEGIES
 because wouldn't you know, it's like I'm hanging out in a coffin already. 
 I gotta try to leave some shit behind for somebody to look at, to avoid the seemingly unavoidable.
@@ -41733,7 +43421,7 @@ However, as soon as someone who was killing a bunch of people, routinely, with G
 ...cause he thought "Well, what the fuck does that even mean...?"
 "@)
  
-$Book.AddSection(9,"Exceptions",@"
+$Book.NewSection(9,"Exceptions",@"
 Making exceptions to the law, for certain people or companies, SHOULD be grounds for the military 
 to immediately dispatch an execution squad in order to shoot that person/people to death. No exceptions 
 should be made if we're all honest with ourselves and we believe in the constitution before ANY other 
@@ -41801,7 +43489,7 @@ At some point, people are gonna read all of this...?
 And it's gonna 'click' for them too.
 "@)
  
-$Book.AddSection(9,"Role Reversal",@"
+$Book.NewSection(9,"Role Reversal",@"
 If anybody calls 911 and says:
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -41878,7 +43566,7 @@ Nah. They wouldn't actually have done anything about it by now, if EVERYONE make
 That's IF the 911 operator knows what the definition to the word "BRIBERY" is.
 "@)
  
-$Book.AddSection(9,"Bribery",@"
+$Book.NewSection(9,"Bribery",@"
 It is basically PROGRAMMING A PERSON.
 bribery (NOUN: the giving or offering of a bribe)
 bribe   (VERB: to act in one's favor, typically illegally or dishonestly, by a gift/money/power)
@@ -41915,7 +43603,7 @@ An illegal version of bribery...
     "Ted Cruz gets `$500M, and asks Exxon Mobil to throw a BONER IN THE BUTTHOLE." ← COOL.
 "@)
  
-$Book.AddSection(9,"Expectations",@"
+$Book.NewSection(9,"Expectations",@"
 The truth is, over the last 3.5 years, I have made a consistently conscious effort, to rip apart 
 my expectations about society, and in this process is quite a mind fuck.
 
@@ -42018,7 +43706,7 @@ So like, out of 800 people in my class. 10 or 20 of those people, AT or ABOVE my
 That means like 95-99th percentile.
 "@)
  
-$Book.AddSection(9,"Summary (1)",@"
+$Book.NewSection(9,"Summary (1)",@"
 In other words, the police. are. not. fucking. smart. at. All.
 Neither are a lot of people that CALL them, for ridiculous reasons.
 I mean, maybe they are. Who knows.
@@ -42068,7 +43756,7 @@ Not because they'll get in trouble...
 ...but it's fucking annoying when I do things that keep pissing them off.
 "@)
  
-$Book.AddSection(9,"Audit the Audit",@"
+$Book.NewSection(9,"Audit the Audit",@"
 Audit the Audit, https://www.youtube.com/c/AuditTheAudit
 This YouTube channel focuses on videos where the police overextend themselves.
 This channel could have hundreds of new videos PER DAY... but it's just (1) guy I think.
@@ -42162,7 +43850,7 @@ There's NO WAY that I could've had … a lead or something like that...         
 ...which could've been a CLUE, by chance... right?
 "@)
  
-$Book.AddSection(9,"Superiority Complex",@"
+$Book.NewSection(9,"Superiority Complex",@"
 It might be a symptom of: Autism.
 I know people will read some of these things and think I have a superiority complex, but nah... THEY fucking do. 
 Not always, but many times they rest on their laurels... and then Solorigate makes em look like morons.
@@ -42575,7 +44263,7 @@ They merged the data between (2) completely different videos and made some CLUES
 A LOT MORE OBVIOUS.
 "@)
  
-$Book.AddSection(9,"Blatantly Obvious",@"
+$Book.NewSection(9,"Blatantly Obvious",@"
 When I was in Bennington, I had an argument with Scott Salvadore, who is former military. 
 He's never been sent into war, but he knows people in the military, and those people kept fucking with 
 me to no end. He kept saying "mutehammer", which basically means "censorship button". It's also when he
@@ -42859,7 +44547,7 @@ it's important to know if she'll fuckin' STAB YA AFTER THE SEX.   (← JAMES BON
 Or if it's someone who just TRUSTED SOMEONE THEY SHOULDN'T HAVE. 
 "@)
  
-$Book.AddSection(9,"Sleeping with the Enemy",@"
+$Book.NewSection(9,"Sleeping with the Enemy",@"
 (JAMES BOND/AKA 007) would still throw one in the enemy... if she was hot enough.
 Hell, even INDIANA JONES knew that sleeping with the enemy is a bad idea... 
 Indiana Jones and his dad, they have this conversation in the movie "Indiana Jones and the Last Crusade".
@@ -42892,7 +44580,7 @@ She'll even go against her own family, cause she fuckin' wants some more of that
 Look at Romeo and Juliet...
 "@)
  
-$Book.AddSection(9,"Wall of Trustworthy Characters",@"
+$Book.NewSection(9,"Wall of Trustworthy Characters",@"
 In contrast, when it concerns a MALE OFFICER who just LIES TO EVERYBODY... then you gotta worry about how many
 fuckin' people trust that dude. Cause the "WALL OF TRUSTWORTHY CHARACTERS" might consist of a FEW of these 
 guys. Then, everybody's basically fucked.
@@ -42907,7 +44595,7 @@ Then, the military might just have to look, standing back in wild fuckin' amazem
 ...when there's a huge ring of corruption right under their fuckin' noses.
 "@)
  
-$Book.AddSection(9,"Evidence",@"
+$Book.NewSection(9,"Evidence",@"
 None of them will come to this conclusion UNLESS, there's a stack of SUPPORTING EVIDENCE in hand.
 
 Pictures         : Good, but not the best. These can help quite a lot of there's nothin' better.
@@ -42920,7 +44608,7 @@ Documents        : Not exactly seen as the best type of EVIDENCE. However, they 
                    They can also remind an AUTHOR what happened on what date/about the time it was written.
 "@)
  
-$Book.AddSection(9,"Conclusion",@"
+$Book.NewSection(9,"Conclusion",@"
 Not much anybody can really do when they have EVIDENCE of that POLICE OFFICER 
 1) breaking the LAW 
 2) COVERING UP A MURDER ATTEMPT  
@@ -42933,7 +44621,7 @@ that all of these fucks worked REAL HARD to try and contain evidence of a crime 
 Basically 100% of the people you go to will think you're insane. But- you're not insane at all. They're morons.
 "@)
  
-$Book.AddSection(9,"Catricala",@"
+$Book.NewSection(9,"Catricala",@"
 As for (06/18/20), (Criminal/State Assemblyman/Catricala) literally told the Sheriffs, that I was at the 
 Catricala Funeral Home that day. Which, nah I wasn't. Julie could attest to that. So could Dwayne. 
 
@@ -43051,7 +44739,7 @@ The ones that want to uphold the law, they will go and ask that dude...
 ...rather than to INVESTIGATE or CATCH that motherfucker in the act.                              (← STING OPERATION)
 "@)
  
-$Book.AddSection(9,"Skit [~] Conducting a Sting Operation",@"
+$Book.NewSection(9,"Skit [~] Conducting a Sting Operation",@"
 You can tell the police HOW to CONDUCT a STING OPERATION (all this shit)... 
 ...but, they won't even know how to read the instructions...
 
@@ -43179,7 +44867,7 @@ But it is also highly manipulative.
 However, sometimes it is true.
 "@)
  
-$Book.AddSection(9,"Intent (3)",@"
+$Book.NewSection(9,"Intent (3)",@"
 The problem is, they will trust people that aren't very FORTHRIGHT about LYING to their faces.
 Like, Trooper Carter, literally has that dudes' mentality up above, because he will trust SCOTT SCHELLING.
 Not even exaggerating in the least. He is... not a real smart dude I'll tell ya that much.
@@ -43242,7 +44930,7 @@ Bitch was a moron, but somehow she got a promotion for that whole ordeal... whic
 The cops... sometimes they're actually fuckin' morons.
 "@)
  
-$Book.AddSection(9,"Application",@"
+$Book.NewSection(9,"Application",@"
 These fucks that tried to kill me, have had me on a SPECIAL LIST OF PEOPLE, because they SUSPECT that I'm
 just gonna pop outta fuckin' nowhere, like I'm literally Batman.
 
@@ -43513,7 +45201,7 @@ They both told me that the order needed to be rewritten.
 Then, I told Sarah Schellinger. 4 months later, she STILL hadn't gotten a "CHANCE" to get back to me.
 "@)
  
-$Book.AddSection(9,"Flashback [~] Family Court - April 6th, 2021",@"
+$Book.NewSection(9,"Flashback [~] Family Court - April 6th, 2021",@"
 Audio to the EXHIBIT below
 https://drive.google.com/file/d/1J0CzI1nW5xwmWbwUVwOEMbhLUiZYEr4p/view?usp=sharing 
 
@@ -43589,7 +45277,7 @@ So then people will be like "OoOoOhhHh, you're threatening to assault police off
 Well, sometimes people need to be provided with an attitude adjustment.
 "@)
  
-$Book.AddSection(9,"Attitude Adjustment",@"
+$Book.NewSection(9,"Attitude Adjustment",@"
 
 They're not gonna do it on their own.
 They have made the process of giving people attitude adjustments, "illegal".
@@ -43761,7 +45449,7 @@ These people don't know how to act when they've been caught red handed committin
 fuckin' asshole. That's why assaulting someone that does this, has to be done with documents like this.
 "@)
  
-$Book.AddSection(9,"Flashback [~] Eric Schnakenberg M.D. 1783 Route 9 Ste 204, Clifton Park, 12065",@"
+$Book.NewSection(9,"Flashback [~] Eric Schnakenberg M.D. 1783 Route 9 Ste 204, Clifton Park, 12065",@"
 Eric Schnakenberg, my family doctor for about 4-5 years, that my former doctor Susan Ferarry from SPARC Cohoes,
 recommended because I used to be prescribed BUPHRENORPHINE/Suboxone. I was a patient at SPARC for over 6 years, 
 on and off. Had a really good rapport with Jennifer Mansky, the former director of the clinic.
@@ -43886,7 +45574,7 @@ Not only am I NOT making that up, but, I ACTUALLY SHOWED THE VIDEO TO TROOPER LE
 DR. SCHNAKENBERG about that...? He literally stood up, and walked out of the fucking room.
 "@)
  
-$Book.AddSection(9,"Correlation",@"
+$Book.NewSection(9,"Correlation",@"
 
 I'm certain that it's all tied together, and when I explain it in great detail, some people really are fuckin'
 morons. Those same kids, attacked the Clifton Park Computer Answers network, that I was providing service for, 
@@ -43937,7 +45625,7 @@ Rather than to HURT people, for ignoring me over and over...?
 I'll just keep writing up these documents and skits.
 "@)
  
-$Book.AddSection(9,"Compiling an effective motivator (1)",@"
+$Book.NewSection(9,"Compiling an effective motivator (1)",@"
 Ted Cruz might not like reading about how Exxon Mobil shoves a huge veiny dick in that dudes asshole, 
 but so long as he gets paid millions of dollars...? Ted Cruz will do it. So will Eric Schnackenberg. 
 So will SEAN HANNITY.
@@ -43993,7 +45681,7 @@ are combined. Then people will realize that... most people don't know how to do 
 Because, that requires a basic understanding of superposition...
 "@)
  
-$Book.AddSection(9,"Skit [~] Idea Competition",@"
+$Book.NewSection(9,"Skit [~] Idea Competition",@"
 Maybe I AM actually a lot more intelligent than most people... 
 But if I go around saying that, spamming the shit out of everybody that ever lived...? 
 It's likely gonna piss some people off...
@@ -44077,7 +45765,7 @@ Or, do stuff with the landscape. But, I'll tell ya, it'd probably make a real gr
 I'll have to write a totally separate book about.
 "@)
  
-$Book.AddSection(9,"Compiling an effective motivator (2)",@"
+$Book.NewSection(9,"Compiling an effective motivator (2)",@"
 As far as relevance, ideas, people, and compiling it all into an effective motivator, Dale Carnegies book isn't
 gonna work in every case. How to Win Friends and Influence People, is great when you want to understand the core
 concepts of "mutually exclusive best-interest". It's great at that.
@@ -44210,7 +45898,7 @@ What I know has a circle of people in CLIFTON PARK/HALFMOON and LOWER SARATOGA C
 Well, that dude is gonna be pretty worried about what I have to reveal.
 "@)
  
-$Book.AddSection(9,"Intent (4)",@"
+$Book.NewSection(9,"Intent (4)",@"
 Dude is part of a group of serial killers that have the FBI, SCSO, NYSP on lock.
 Also, has several local businesses going around picking locks, breaking into security systems, using exploits, 
 stealing intellectual property, stealing documents, deeds, records, titles, then has these serial killers kill
@@ -44268,7 +45956,7 @@ The vehicle that was in the video I recorded between (05/25/20 1143 → 05/26/20
 ...I recorded that the night my son and I spoke to John Hoffman.
 "@)
  
-$Book.AddSection(9,"You sound like a broken record",@"
+$Book.NewSection(9,"You sound like a broken record",@"
 My mother always told me "You sound like a broken record", or "I've heard all this before".
 The assumption she is attempting to convey is that "I don't really care dude. Fuck you."
 Those statements do not convey "If somebody was trying to kill you, they would've done so by now."
@@ -44328,7 +46016,7 @@ That's 175 years. Just like JULIEN ASSANGE.
 See no evil, Hear no evil, Speak no evil... just do it. Who gives a shit...?
 "@)
  
-$Book.AddSection(9,"Ultimatum",@"
+$Book.NewSection(9,"Ultimatum",@"
 If Eric Schnackenberg sees someone and decides to tell that person to fuck off... 
 ...he'll get `$500 bucks to do that.
 If I work my ass off and outperform all of the people at Computer Answers...
@@ -44545,7 +46233,7 @@ The guys who ran the United States...?
 They weren't fuckin' gay by any means, and there was no jizz on ANY of their faces at all.
 "@)
  
-$Book.AddSection(9,"Summary (2)",@"
+$Book.NewSection(9,"Summary (2)",@"
 You have to be basically ROYALTY, in order to matter to people. 
 If you're not...? Oh well, dude. 
 Fuck you. 
@@ -44595,7 +46283,7 @@ Cause guys that aren't like him...?
 They sure as hell don't seem to know the definition to a lot of words. 
 "@)
  
-$Book.AddSection(9,"Excerpt [~] Room for one more...",@"
+$Book.NewSection(9,"Excerpt [~] Room for one more...",@"
 If Ted Cruz WAS being bribed, they will ALSO reason, that if this were the case...
 ...somebody would've arrested Ted Cruz by now. 
     
@@ -44680,7 +46368,7 @@ So, if everybody except ONE DUDE is wrong... they won't even fuckin' consider th
 That's why "Room for one more..." is the story of my life.
 "@)
  
-$Book.AddSection(9,"Summary (3)",@"
+$Book.NewSection(9,"Summary (3)",@"
 So, if the police say "If Ted Cruz was accepting bribery, he would've been arrested by now"
 You have to tell them "That's YOUR JOB, dipshit."
 And, if they don't feel like doing their job... 
@@ -44701,7 +46389,7 @@ In this process, even god damn Dr. Oliver fuckin' Robinson, superintendent of a 
 ...DOES NOT SEE THE FUCKING PROBLEM.
 "@)
  
-$Book.AddSection(9,"Intent (5)",@"
+$Book.NewSection(9,"Intent (5)",@"
 
 Sometimes the police will actually continue to make fools of themselves... 
 
@@ -44946,7 +46634,7 @@ So, if I meet an actual lawyer like "Lawyer Man 5000"...
 ...and courtrooms aren't actually staged at all.
 "@)
  
-$Book.AddSection(9,"Skit [~] Lawyer Man 5000",@"
+$Book.NewSection(9,"Skit [~] Lawyer Man 5000",@"
 When it comes to all of the law men out there in the wild...? 
 Well... sometimes you might need help from a guy like Lawyer Man 5000.
 
@@ -45317,7 +47005,7 @@ Well, I've got a lot more evidence than the stuff I've posted.
 But- I have to make an adamant example out of the agency, Saratoga County.
 "@)
  
-$Book.AddSection(9,"Excerpt [~] Taking the law into one's own hands",@"
+$Book.NewSection(9,"Excerpt [~] Taking the law into one's own hands",@"
 Just like I made an example out of Jeff Truesell, I was willing to provide my own sense of justice. 
 Because the kid kept breaking into my home.
 
@@ -45387,7 +47075,7 @@ When they wake up, they will say "What the hell did you do that for...?"
 Well, it was cause somebody needed an attitude adjustment. 
 "@)
  
-$Book.AddSection(9,"Skit [~] Ted Cruz (2)",@"
+$Book.NewSection(9,"Skit [~] Ted Cruz (2)",@"
 Cruz : I mean, jeez buddy. 
 If the police don't feel like doin' something, then they really don't have to...
 Me   : You're right Ted. 
@@ -45429,7 +47117,7 @@ But... I know they just lied.
 Then they may realize I'm onto them and so they start to say things like "That dude's crazy~!"
 "@)
  
-$Book.AddSection(9,"Excerpt [~] That dudes crazy~!",@"
+$Book.NewSection(9,"Excerpt [~] That dudes crazy~!",@"
 
 Sometimes people will say that because [they're fuckin' stupid*]. 
 No better explanation, actually. 
@@ -45719,7 +47407,7 @@ Basically they don't want to end up like James Comey, trying to do the right thi
 jam a fuckin' huge dildo up their asshole unwillingly.
 "@)
  
-$Book.AddSection(9,"Skit [~] Ted Cruz (3)",@"
+$Book.NewSection(9,"Skit [~] Ted Cruz (3)",@"
     Me    : People will say "he's crazy" when they know I'm right.
             Probably because they *really* enjoy a hot, flaming pecker in the asshole...
             At least you though Ted... 
@@ -45945,7 +47633,7 @@ $Book.AddSection(9,"Skit [~] Ted Cruz (3)",@"
             Then what, Ted? *shakes head*
 "@)
  
-$Book.AddSection(9,"Hidden Government",@"
+$Book.NewSection(9,"Hidden Government",@"
 Guys like Ted Cruz (senator from Texas), SEAN HANNITY, TUCKER CARLSON...? 
 They each get a cool stack of cash from this dude, RUPERT MURDOCH and/or Exxon Mobil.
 Then they call this daily orgy on television, Fox News.
@@ -46097,7 +47785,7 @@ Dude basically looks like he got lost at a museum and can't find his mom.
 RUPERT MURDOCH picked up on this, and he keeps messing with this dude...
 "@)
  
-$Book.AddSection(9,"Skit [~] Sky High Stacks",@"
+$Book.NewSection(9,"Skit [~] Sky High Stacks",@"
     Murdock: Hey kid...
     Carlson: *eyebrows up* Yeah...?
     Murdock: I'll help you find your mom, kid.
@@ -46147,7 +47835,7 @@ $Book.AddSection(9,"Skit [~] Sky High Stacks",@"
     Carlson: ...wow.
 "@)
  
-$Book.AddSection(9,"Propaganda",@"
+$Book.NewSection(9,"Propaganda",@"
 
 Now, I know someone will probably say "You better not make fun of Rupert! He's a good guy...~!" 
 Those people should probably go fuck themselves though, cause he isn't.
@@ -46221,18 +47909,23 @@ Saving money...? Doesn't work when inflation is moving too quickly... Oh well.
 Used to be able to save money... now everyone is supposedly losing money.
 Nah. Not everybody.
 "@)
+}
 
 # // ___________________________________
-# // | Chapter 9 - News vs. Propaganda | cls; $Book.Range("Book",10,@(481..507))
+# // | Chapter 9 - News vs. Propaganda |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(10,"Chapter 9")
+Function Chapter_9
+{
+    Param ($Book)
 
-$Book.AddSection(10,"Start",@"
+$Book.NewChapter("Chapter 9","News vs. Propaganda")
+
+$Book.NewSection(10,"Start",@"
 What EXACTLY is the difference between NEWS and PROPAGANDA...?
 "@)
 
-$Book.AddSection(10,"Overview",@"
+$Book.NewSection(10,"Overview",@"
 NEWS, is when actual talented people in an actual news industry... 
 ...they've REPORTED a story without altering the FACTS...
 ...or forcing details to fit a certain AGENDA...
@@ -46274,7 +47967,7 @@ ________________________________________________________________________________
 See how cool that sounds now? Also, sorta looks kinda cool too, huh? That's technically a graphic.
 "@)
  
-$Book.AddSection(10,"Examination (1)",@"
+$Book.NewSection(10,"Examination (1)",@"
 When you want the most up to date information possible, on news...? 
 Put it on anything that isn't Fox News.
 And take a closer look at how the people reporting ACTUAL news, SOUND and CONVEY themselves.
@@ -46560,7 +48253,7 @@ news isn't supposed to like, flirt with the story, or alter it.
 Fox News consists of people that get paid a lot of money to push an AGENDA.
 "@)
  
-$Book.AddSection(10,"Discussion [~] Oil Corporation [Agenda] → Deny Climate Change",@"
+$Book.NewSection(10,"Discussion [~] Oil Corporation [Agenda] → Deny Climate Change",@"
 TUCKER CARLSON, and SEAN HANNITY are (2) prime examples, of people that never got rich or famous for their 
 intelligence. Quite the opposite, actually. They're constantly pushing an AGENDA.
 
@@ -46622,7 +48315,7 @@ Because, he kept denying climate change that whole time, didn't stop for a singl
 that know what the hell they're talking about.
 "@)
  
-$Book.AddSection(10,"Shoutout [+] My Grandfather Thomas Cook",@"
+$Book.NewSection(10,"Shoutout [+] My Grandfather Thomas Cook",@"
 My grandfather was a trucker who delivered gasoline for the Amerada Hess Corporation all up and down the east 
 coast. About 20 years ago, he told me "The planet has about *checks watch* 35 years worth of oil left, by my
 calculations."
@@ -46728,7 +48421,7 @@ it's probably not their fault if their great grandfather was a tycoon that had v
 government and the economy...
 "@)
  
-$Book.AddSection(10,"Shoutout [+] Theodore Roosevelt: One of the greatest former presidents",@"
+$Book.NewSection(10,"Shoutout [+] Theodore Roosevelt: One of the greatest former presidents",@"
 Theodore 'Teddy' Roosevelt had to deal with monopolies and create policies that needed to be set as an example 
 or a rule. The thing about Teddy Roosevelt, was that Teddy would knock a motherfucker out. 
 I'm not even kidding, he would kick the shit out of somebody if he felt like it, before he was even a president.
@@ -46794,7 +48487,7 @@ But, this dude would do stuff like that... when I say that he literally went to 
 canal, that's not an exaggeration at all. He did shit like that. However, some of this stuff is very accurate.
 "@)
 
-$Book.AddSection(10,"Examination (2)",@"
+$Book.NewSection(10,"Examination (2)",@"
 
 Yeah. SEAN HANNITY doesn't like to tell people this, but he gets paid `$100M a year to keep saying climate 
 change is not real. But, it is SO real, that I can practically see a dick in this guys mouth, every single 
@@ -46892,7 +48585,7 @@ Well, they needed an extension of the rollout, cause...
 Not with Carlson.
 "@)
 
-$Book.AddSection(10,"Skit [~] Lester Holt accidentally hurled an F bomb",@"
+$Book.NewSection(10,"Skit [~] Lester Holt accidentally hurled an F bomb",@"
 
 The rest of the people in the industry, they hurl a SINGLE F BOMB, they're probably gettin' let go.
 Maybe, MAYBE... Lester Holt might say it by accident, but even he would get a REAL stern talking to.
@@ -46982,7 +48675,7 @@ Nobody sounds less threatening than when they spell out the good ol' H E double 
 Anyway...
 "@)
 
-$Book.AddSection(10,"Examination (3)",@"
+$Book.NewSection(10,"Examination (3)",@"
 
 Fox News still needs to transition over to the new name. 
 Cause they know... it would make their lives easier. 
@@ -47053,7 +48746,7 @@ Other kid would say "No WAY man... that stuff SCARES me..."
 Nothing like being a kid, scared shitless of aliens popping out of nowhere to abduct Scully or Mulder again.
 "@)
 
-$Book.AddSection(10,"Skit [~] X-Files: Elementary School Synopsis",@"
+$Book.NewSection(10,"Skit [~] X-Files: Elementary School Synopsis",@"
 Mulder : Scully... you can't go in there alone... too dangerous.
 Scully : *staring with intensity* Why not...?
 Mulder : *shakin head* Scully...? I don't wanna LOSE ya...
@@ -47069,7 +48762,7 @@ Mulder : *sniffles* I thought I lost ya last time... I'm not gonna lose you agai
 *suddenly an alien pops out of nowhere* (← and that's when I'd almost shit my pants like BOB LUTZ does)
 "@)
 
-$Book.AddSection(10,"Examination (4)",@"
+$Book.NewSection(10,"Examination (4)",@"
 
 X-Files was a good show. So was X-Men. Simpsons, Spiderman, then eventually Family Guy, and American Dad, a lot of 
 this stuff made it to many other networks on syndication. It's not like Fox had shit content all these years, that's 
@@ -47220,7 +48913,7 @@ the camera as long as possible. Because, the more time they're in front of the c
 to read things like 1) books, 2) newspapers, 3) what educated people say, 4) anything educational...
 "@)
 
-$Book.AddSection(10,"Excerpt [~] Square peg, round hole",@"
+$Book.NewSection(10,"Excerpt [~] Square peg, round hole",@"
 I know someone's gonna say "But, they have a teleprompter that they read all the time..." Sure they do. 
 You really think these guys know how to read...? Words? Nah. 
 They don't have time to read WORDS, dude... 
@@ -47304,7 +48997,7 @@ No more having to get pissed at people cause NASCAR is on during a football game
 ...cause they won't even know what fuckin' channel the events are on anymore.
 "@)
 
-$Book.AddSection(10,"Skit [~] Dramatic Genius",@"
+$Book.NewSection(10,"Skit [~] Dramatic Genius",@"
     Person1 : What the hell happened to Fox News...? 
               It's just gone...
     Person2 : Ah, you didn't get the memo...?
@@ -47330,7 +49023,7 @@ $Book.AddSection(10,"Skit [~] Dramatic Genius",@"
               Well, now it's just business as usual, for the Not News Network.
 "@)
 
-$Book.AddSection(10,"Examination (5)",@"
+$Book.NewSection(10,"Examination (5)",@"
 
 What the fuck, can I get paid to roast these sons of bitches every day...? 
 Just call this dude a fuckin' moron each and every day, ALOT more often than John Oliver does...?
@@ -47424,7 +49117,7 @@ Dude would probably freak the fuck out, and have a fuckin' panic attack if you c
 So you gotta hold one behind your back so he doesn't see it... and just ask him.
 "@)
 
-$Book.AddSection(10,"Skit [~] You and your god damn books...~!",@"
+$Book.NewSection(10,"Skit [~] You and your god damn books...~!",@"
 You     : Hey, you wanna check out a book?
 Carlson : What, are you *voice very low, whispering* fuckin' crazy or something...? 
           How would it look...
@@ -47500,7 +49193,7 @@ Carlson: I'm gonna fuckin' crush it today.
          I can feel it.
 "@)
 
-$Book.AddSection(10,"Examination (6)",@"
+$Book.NewSection(10,"Examination (6)",@"
 I have to have respect for a dude who amps himself up that much every day, and yet...
 ...fails miserably at the thing he said he would do.
 Maybe he just gets overwhelmed after a few seconds of looking at the square peg.
@@ -47535,7 +49228,7 @@ He looks smart. And, probably is... just, not when the cameras are ever rolling 
 That's what America seems to be all about now, "Who gives a shit about the truth?"
 "@)
 
-$Book.AddSection(10,"Shoutout [+] Tribute to Lester Holt",@"
+$Book.NewSection(10,"Shoutout [+] Tribute to Lester Holt",@"
 Lester Holt is like an oasis in the desert, well NBC is anyway... 
 They give a shit about the truth.
 
@@ -47553,7 +49246,7 @@ Lester Holt sure as hell does.
 He'll even tell ya that climate change is definitely real.
 "@)
  
-$Book.AddSection(10,"Reality",@"
+$Book.NewSection(10,"Reality",@"
 Every time people watch Fox news...? 
 People probably believe that its GOTTA be news... since it's part of the name, right? Wrong. 
 It's not news at all, its one long winded opinion with bits and pieces of truth that get squashed back down, 
@@ -47642,7 +49335,7 @@ getting injured, and then coming home to a country full of ungrateful fucks, may
 report actual news (like Hannity or Carlson), should do what Richard Engel does. 
 "@)
 
-$Book.AddSection(10,"Shoutout [+] Tribute to Richard Engel",@"
+$Book.NewSection(10,"Shoutout [+] Tribute to Richard Engel",@"
 NBC has a shadow warrior named Richard Engel.
 Dude goes way deep into enemy territory, blends in like a soldier, whips out his camera, tells the facts, 
 gives falsehoods a middle finger.
@@ -47716,7 +49409,7 @@ Dude's probably able to sleep like a baby through actual gunfire.
 So, firecrackers aren't likely to get him to spaz the fuck out, man... Not him.
 "@)
 
-$Book.AddSection(10,"Examination (7)",@"
+$Book.NewSection(10,"Examination (7)",@"
 When groups of corporations work together to slander scientists, pollute the fuckin' planet... 
 ...kill animal species willy nilly, kill rainforests, allow hurricanes to get worse...
 ...tornadoes to get worse, wildfires to get worse...
@@ -47742,7 +49435,7 @@ For like... the last 10 years, man.
 The channel could probably be an enjoyable thing to watch if they changed their name to NOT NEWS. 
 "@)
 
-$Book.AddSection(10,"Excerpt [+] Not News Trailer (1)",@"
+$Book.NewSection(10,"Excerpt [+] Not News Trailer (1)",@"
 Trailer : Wanna see a grown ass man try to get a square peg through a round hole...?
           Well... look no further.
           Not only do you get the most up to date … details that happen to be Not News-worthy...?
@@ -47825,7 +49518,7 @@ But- suppose they came right out and said that what they're reporting is some st
 "This is some straight-up, bullshit right here, man..."
 "@)
 
-$Book.AddSection(10,"Excerpt [+] Not News Trailer (2)",@"
+$Book.NewSection(10,"Excerpt [+] Not News Trailer (2)",@"
 Person  : This is the Not News Network, isn't it?
 Trailer : Yep.
           Sure as hell IS, buddy.
@@ -47845,7 +49538,7 @@ Trailer : Yep.
           We tell the bullshit stories, so that you don't EVER have to take us seriously.
 "@)
 
-$Book.AddSection(10,"Excerpt [+] Not News Trailer/Interview with TUCKER CARLSON",@"
+$Book.NewSection(10,"Excerpt [+] Not News Trailer/Interview with TUCKER CARLSON",@"
 Carlson : Jeez, how long have I been with Not News Network...? 
           Oh gosh... 
           It's been YEARS, hasn't it...? 
@@ -47873,7 +49566,7 @@ Carlson : Jeez, how long have I been with Not News Network...?
           It's something I'll take with me to my grave.
 "@)
 
-$Book.AddSection(10,"Excerpt [+] Not News Trailer/Interview with SEAN HANNITY",@"
+$Book.NewSection(10,"Excerpt [+] Not News Trailer/Interview with SEAN HANNITY",@"
 Hannity: Wow, I can't even tell ya how long I've been with the Not News Network... 
          Jeez. 
          Decades, I think...?
@@ -47904,7 +49597,7 @@ Hannity: Wow, I can't even tell ya how long I've been with the Not News Network.
          It really does have the perfect ring to it, doesn't it?
 "@)
 
-$Book.AddSection(10,"Examination (8)",@"
+$Book.NewSection(10,"Examination (8)",@"
 __________________________________________________________________________________
 | Used to be News...? Now we're Not News. Not News. Part of the Not News Network |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -48080,7 +49773,7 @@ I say MIGHT be, because, it IS possible, that someone a LOT less intelligent tha
 But, good luck convincing people that stick up for these guys on Fox News, it's a lost fucking cause. 
 "@)
  
-$Book.AddSection(10,"Conclusion (1)",@"
+$Book.NewSection(10,"Conclusion (1)",@"
 It's not a lost cause because their viewers aren't able to be reasoned with or are idiots necessarily.
 It's not a lost cause because Carlson or Hannity are bad PEOPLE, I never said these guys were bad people at all. 
 
@@ -48758,7 +50451,7 @@ Because, he looked like the type of dude who could cause people confusion...
 That's because, if someone can make up some bullshit on the fly...? It's him.
 "@)
 
-$Book.AddSection(10,"Skit [~] Tucker and Bob's golf match",@"
+$Book.NewSection(10,"Skit [~] Tucker and Bob's golf match",@"
 Tucker took inspiration from BOB LUTZ...
 He kept talking shit to this old man, about his golf game. 
 He had no fuckin' clue whether he played golf or not, but he felt like bothering *somebody*.
@@ -48901,7 +50594,7 @@ coincide in a story where Carlson doesn't have to play a single game of golf, to
 that they would shake his hand and play a game against some totally different person.
 "@)
 
-$Book.AddSection(10,"Conclusion (2)",@"
+$Book.NewSection(10,"Conclusion (2)",@"
 That's because, if there is something this dude knows how to do, it's to manipulate people, for sure.
 That's what this dude gets `$100M+ for, per yer, if not more, and RUPERT MURDOCH is happy to give him 
 whatever he wants. What can anybody do about it?
@@ -48932,20 +50625,25 @@ a god damn leader, for sure.
 
 That's a fucking SERIOUS problem.
 "@)
+}
 
 # // _______________________________________
-# // | Chapter 10 - Expert Programming 101 | cls; $Book.Range("Book",11,@(511..571))
+# // | Chapter 10 - Expert Programming 101 |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Book.SetLabel(11,"Chapter 10")
+Function Chapter_10
+{
+    Param ($Book)
 
-$Book.AddSection(11,"Start",@"
+$Book.NewChapter("Chapter 10","Expert Programming 101")
+
+$Book.NewSection(11,"Start",@"
 When you want to prove to people that think LYING or having TERRIBLE LOGIC doesn't matter...?
 Whip out the HOW TO PROGRAM toolbelt, to educate those people on HOW they're DUMBASSES.
 And then, publicly humiliate them for thinking this way.
 "@)
 
-$Book.AddSection(11,"Overview (1)",@"
+$Book.NewSection(11,"Overview (1)",@"
 (Originally written between 05/13/22 → 05/18/22)
 
 Greetings (Reddit) PowerShell Community,
@@ -49035,7 +50733,7 @@ ________________________________________________________________________________
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(11,"Design Choices",@"
+$Book.NewSection(11,"Design Choices",@"
 Musk     : Guys, this isn't gonna work. 
            We need to throw ceramic tiles onto this thing...
 Engineer : Oh god. 
@@ -49065,7 +50763,7 @@ Musk     : You know it bro.
 Engineer : Yes sir.
 "@)
 
-$Book.AddSection(11,"Overview (2)",@"
+$Book.NewSection(11,"Overview (2)",@"
 I can imagine that when building PayPal, Elon didn't mess around.
 You wanna pay a pal of yours over the internet...? Well, now you can.
 Wanna know why you can pay a pal over the internet now...?
@@ -49129,7 +50827,7 @@ ___________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(11,"Can't just go reinventing stuff",@"
+$Book.NewSection(11,"Can't just go reinventing stuff",@"
 It is one of the most challenging tasks I've ever decided to take on. The takeaway will be that I found a way to 
 integrate the threading of multiple runspaces via many custom classes that I wrote to drive the backend of the 
 utility. It is rather thorough in the information it collects, and it formats itself and saves a running system
@@ -49156,7 +50854,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(11,"<Editor> (1)",@"
+$Book.NewSection(11,"<Editor> (1)",@"
 `$WMIList        = (Get-WMIObject Win32_Product)[0] 
 _________
 | or... |
@@ -49167,7 +50865,7 @@ __________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(11,"But Dad, you said...",@"
+$Book.NewSection(11,"But Dad, you said...",@"
 Kid : ...but Dad, you said to run 
 _______________________________
 | Get-WMIObject Win32_Product |
@@ -49190,7 +50888,7 @@ Kid : Yeah.
 Me  : Gladly.
 "@)
 
-$Book.AddSection(11,"Line #1: Breakdown",@"
+$Book.NewSection(11,"Line #1: Breakdown",@"
            ______________________________3  6
 `$WMIList = ( Get-WMIObject Win32_Product )[ 0 ]
 ¯¯¯¯¯¯¯1 2   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯4  ¯¯¯¯5
@@ -49214,7 +50912,7 @@ If the command returns (1) or more, `$WMIList will NOT be `$Null/<empty>
 Here's some sample output that got returned by the console when I ran the above...
 "@)
 
-$Book.AddSection(11,"<Console> (1)",@"
+$Book.NewSection(11,"<Console> (1)",@"
 PS Prompt:\> `$WMIList
 
 IdentifyingNumber : {2AF42320-5ECF-4BCA-B756-8F3677262D55}
@@ -49224,7 +50922,7 @@ Version           : 1.00.0009
 Caption           : Branding64
 "@)
 
-$Book.AddSection(11,"Kid sort of gets it now",@"
+$Book.NewSection(11,"Kid sort of gets it now",@"
 Kid : Alright... *adjusts his glasses* I sort of get it now.
 Me  : Cool.
 Kid : How do you know that Paul Allen said that everything starts with the number 0, though?
@@ -49250,7 +50948,7 @@ Kid : Alright.
       Feel free to proceed.
 "@)
  
-$Book.AddSection(11,"<Properties> (1)",@"
+$Book.NewSection(11,"<Properties> (1)",@"
 Properties are in (EXECUTABLE/COMMAND/FUNCTION/TYPE/CLASS/METHOD/VARIABLE/PROPERTY/VALUE) list.
 Because we'll refer to this list right here a lot, let's define a MENTAL VARIABLE named `$List
 ___________________________________________________________________________________
@@ -49279,7 +50977,7 @@ object they are part of *instantaneously*.
 Before I can really dive deeper into properties though, I have to touch on the Lamda.
 "@)
 
-$Book.AddSection(11,"<Lambda>",@"
+$Book.NewSection(11,"<Lambda>",@"
 I'm going to shorthand all (3) of these, 1) Commands, 2) Functions and 3) Methods, as "Lamda"
 
 A LAMBDA can either be:
@@ -49299,7 +50997,7 @@ _______________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(11,"From Executables to Values (1)",@"
+$Book.NewSection(11,"From Executables to Values (1)",@"
 A dude named KEVIN came along, and then suddenly, a LAMBDA was invoked...
 ...now that dude's name is MARK.
 
@@ -49432,14 +51130,14 @@ or BUILD that .mp4 file...? That really depends on what those instructions actua
 Because, it could literally just be the same exact character repeated ...
 "@)
 
-$Book.AddSection(11,"<Console> (2)",@"
+$Book.NewSection(11,"<Console> (2)",@"
 PS Prompt:\> `$Int = [Int64](10.7 * 1GB)
 PS Prompt:\> `$Int
 
 11489037517
 "@)
 
-$Book.AddSection(11,"From Executables to Values (2)",@"
+$Book.NewSection(11,"From Executables to Values (2)",@"
 11489037517 many times. Yeah. It won't be an exciting, action-packed, thriller of a movie.
 If it is the same character repeated that many times, then that (*.mp4) file won't even open.
 That's pretty boring. But, there COULD actually be something WAY more boring, than a file that claims to be an 
@@ -49506,7 +51204,7 @@ That was the actual moral of the story of the 1997 movie CONTACT.
 What do these things have to do with the properties of `$WMIList, though...?
 "@)
 
-$Book.AddSection(11,"Properties, Strings, Serialization, Deserialization",@"
+$Book.NewSection(11,"Properties, Strings, Serialization, Deserialization",@"
 ______________________________________________________________
 | Property          | Value                                  |
 |-------------------|----------------------------------------|
@@ -49578,7 +51276,7 @@ at least, whenever they're programmed to perform specific lambdas in response to
 That's the cinematic, long-winded explanation... for patterns in strings of serialized text.
 "@)
 
-$Book.AddSection(11,"Regular Expressions (1)",@"
+$Book.NewSection(11,"Regular Expressions (1)",@"
 This specific (Regex/regular expression) pattern here...
 "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 ...can be used to match any GUID in existence, if the letters are lowercase. Not uppercase.
@@ -49600,7 +51298,7 @@ Does the value for property "IdentifyingNumber" for variable `$WMIList match the
 Let's find out...
 "@)
 
-$Book.AddSection(11,"<Console> (3)",@"
+$Book.NewSection(11,"<Console> (3)",@"
 ____________________________________________________________________________________________________
 | 1) Assign [String]"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" to var `$Pattern |____________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -49623,7 +51321,7 @@ ________________________________________________________________________________
 UPPERCASE letters [A-F].
 "@)
 
-$Book.AddSection(11,"Regular Expressions (2)",@"
+$Book.NewSection(11,"Regular Expressions (2)",@"
 If we're being serious, there's PLENTY we can do here.
 a) Drop 'c' from "-cmatch", or...
 b) change the pattern to consider uppercase letters.
@@ -49652,7 +51350,7 @@ being anywhere between:
 If we need ABSOLUTE CERTAINTY that our PATTERN will match regardless, CHANGE the PATTERN.
 "@)
 
-$Book.AddSection(11,"<Console> (4)",@"
+$Book.NewSection(11,"<Console> (4)",@"
 ____________________________________________________________________________________________________
 | 1) Assign [String]"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" to var `$Pattern |____________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -49675,7 +51373,7 @@ ________________________________________________________________________________
 Typically, people will use -match in their scripts far more often than -cmatch
 "@)
 
-$Book.AddSection(11,"Regular Expressions (3)",@"
+$Book.NewSection(11,"Regular Expressions (3)",@"
 The thing is, if we directly compare the Regex match pattern to the actual value...
 __________________________________________________________________________
 | Pattern | [0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12} |
@@ -49720,7 +51418,7 @@ I'll demonstrate a complicated way to create a class that generates a legitimate
 This class will actually perform ADDITIONAL roles/duties/methods, that the base class [Guid] doesn't.
 "@)
 
-$Book.AddSection(11,"<Complicated>",@"
+$Book.NewSection(11,"<Complicated>",@"
 Kid : Dad, this sounds really complicated.
 Me  : Listen, Kid.
       The reason all of this SOUNDS incredibly complicated...?
@@ -49768,7 +51466,7 @@ Kid : *rolls his eyes* Whatever...
 Me  : Wait till you're ready to try some on, kid... all this stuff'll help.
 "@)
 
-$Book.AddSection(11,"Overly-Complicated Class Definition that Generates GUID's",@'
+$Book.NewSection(11,"Overly-Complicated Class Definition that Generates GUID's",@'
 Using a (1) property named Guid, I want to (match/extend) the output for the [Guid] base class.
 There are comments within the class here, feel free to study it, as I suggest doing so. 
 
@@ -49873,7 +51571,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
-$Book.AddSection(11,"<Console> (5)",@"
+$Book.NewSection(11,"<Console> (5)",@"
 We will use (2) manners of accessing the class I just wrote...
 ________________________________________________________________________________________
 | Manner 1) Direct value entry (unable to invoke methods within this class externally) |_______________________
@@ -49918,7 +51616,7 @@ That's because the command is accessing that specific type via that function/cmd
 However, there are other methods within the class that I'd like to access, so it shows more details.
 "@)
 
-$Book.AddSection(11,"Notes + Method Chaining",@"
+$Book.NewSection(11,"Notes + Method Chaining",@"
 The other manner is to use a variable, which allows a user to have extended control over the methods within a
 class/type. Without casting it to a variable, there's no way to access those methods, unless you chain the method 
 on at the end. If you use the variable assignment manner, you don't have to do that.
@@ -50031,7 +51729,7 @@ Then, if one of those methods returns null...? Then object won't be wiped from e
 Nah. It'll still exist, the method just won't do anything to it. Then, you're good.
 "@)
 
-$Book.AddSection(11,"<Console> (6)",@"
+$Book.NewSection(11,"<Console> (6)",@"
 ___________________________________________________________________________
 | 2) Variable usage (able to invoke methods within this class externally) |____________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -50099,7 +51797,7 @@ that things get lost in translation without a reference.
 Still, it is extremely useful, however, I won't cover that here.
 "@)
 
-$Book.AddSection(11,"<Properties> (2)",@"
+$Book.NewSection(11,"<Properties> (2)",@"
 Let me return to the topic of properties. Below are the properties from the FIRST command we ran.
 ______________________________________________________________
 | Property          | Value                                  |
@@ -50182,7 +51880,7 @@ The point of elaborating on so many of these details, is so that now we can navi
 throwing a lot of them together just like I did in Line #1. Because, Line #1 is just the tip of the iceberg.
 "@)
 
-$Book.AddSection(11,"<Console> (7)",@'
+$Book.NewSection(11,"<Console> (7)",@'
 Remember, $Pattern was set to "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 1) Return $WMIList.IdentifyingNumber as a) [String], b) [String][GUID] and c) [String][DemoGuid]
  ______________________________________________________________________________________________________________
@@ -50258,7 +51956,7 @@ I've now demonstrated how classes are conceptualized, and written.
          ¯¯¯¯¯¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯      ¯¯¯¯¯¯¯
 '@)
 
-$Book.AddSection(11,"Dissemination",@"
+$Book.NewSection(11,"Dissemination",@"
 I was also able to integrate these various details back into the overarching lesson plan after all. 
 Now, it IS definitely debatable as to whether or not anybody should go ahead, and reinvent the wheel, or 
 whatever pseudonym people want to use... but, that's not what I did at all.
@@ -50317,7 +52015,7 @@ ______________________________________________________________
 ...and that property I'm about to go over, is the Version property.
 "@)
 
-$Book.AddSection(11,"<Console> (8)",@'
+$Book.NewSection(11,"<Console> (8)",@'
  ______________________________________________________________________________________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -50341,7 +52039,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
-$Book.AddSection(11,"<Properties> (3)",@"
+$Book.NewSection(11,"<Properties> (3)",@"
 Now, this all started with some action jam packed into Line #1.
 It needed a breakdown, but now, I'm going to finish what I started in reference to properties.
 
@@ -50361,7 +52059,7 @@ PROPERTIES definitely qualify as VARIABLES.
 But, VARIABLES themselves aren't necessarily PROPERTIES, not unless they are attached to a specific OBJECT...
 "@)
 
-$Book.AddSection(11,"<Console> (9)",@'
+$Book.NewSection(11,"<Console> (9)",@'
 In PowerShell, if a VARIABLE IS NOT attached to an [Object], then the VARIABLE is a property of the current
 (PowerShell host/execution context). THAT is the [Object] (that/those) VARIABLE(S) are properties of.
 
@@ -50444,7 +52142,7 @@ Hence, why you've seen the VARIABLE go back to "".
 Convinced yet...?
 '@)
 
-$Book.AddSection(11,"<Properties> (4) The final stanza, Tony Danza",@"
+$Book.NewSection(11,"<Properties> (4) The final stanza, Tony Danza",@"
 I'm going to restate some things I just stated above slightly differently.
 
 If I know my stuff, what you just did...?
@@ -50530,7 +52228,7 @@ The property rundown is finito. Now, you just gotta ask yourself one question...
 Who's the boss, NOW, buddy? Is it you? Or Tony Danza? (Or, is it Angela...?)
 "@)
 
-$Book.AddSection(11,"Back to Work",@'
+$Book.NewSection(11,"Back to Work",@'
 It's time to go all out beast mode with the $WMIList Object.
 Now we're going to start dynamically building a class definition, for WMIObject.
 
@@ -50556,7 +52254,7 @@ the dashed line below, it won't actually assign the output to anything. The one 
 will show you the table output, not the list.
 '@)
 
-$Book.AddSection(11,"Work for Real",@'
+$Book.NewSection(11,"Work for Real",@'
 We want to format the class with the right spacing between elements, cause I'm a perfectionist AND precise. 
 All of the type names and property names will line up if we collect em all to find the length of the longest type.
 
@@ -50571,7 +52269,7 @@ To explain, it's a multifaceted ONE-LINER involving:
 - $True selects slot 1 in the array returning ($_ -Replace "System\.","")
 '@)
 
-$Book.AddSection(11,"<Commands> (1)",@'
+$Book.NewSection(11,"<Commands> (1)",@'
 _________________________________________________________________________________________________
 | Assign variable $TypesMaxLength to the operation Types. Or, highlight them both and press F8  |______________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -50656,7 +52354,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
-$Book.AddSection(11,"<Class Definiton>",@'
+$Book.NewSection(11,"<Class Definiton>",@'
 ________________________________________________________
 | Here is the OUTPUT of ALL that stuff we just did...  |_______________________________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -50754,7 +52452,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
-$Book.AddSection(11,"<Class Definition> Summary",@"
+$Book.NewSection(11,"<Class Definition> Summary",@"
 Above, the newly constructed class has been cleanly formatted, and procedurally spaced out.
 But, here's why it's not all that COOL or USEFUL... yet.
 
@@ -50842,7 +52540,7 @@ Man. Guess I shouldn't haphazardly try to rhyme everything that comes to mind.
 That dude, sounds like he's been through the ringer... *shakes head*. 
 "@)
 
-$Book.AddSection(11,"Invoke `$ClassDefinition",@'
+$Book.NewSection(11,"Invoke `$ClassDefinition",@'
 Anyway, yeah. If you want to invoke the class that was just created with the last several breaks of code, 
 then here is where that code gets turned into a class definition that can be invoked. 
 ________________________________________________________________
@@ -50886,7 +52584,7 @@ that at some point in the previous 1500+ lines.
 Well... a type is a class, and a class is a type... the terms, I'm fairly certain, are literally interchangeable.
 '@)
 
-$Book.AddSection(11,"Computer Updated - Press F1",@"
+$Book.NewSection(11,"Computer Updated - Press F1",@"
 Uh-oh... Matthew Caldwell didn't do any Google searches BEFORE having me image a thousand machines in the
 warehouse... Now I gotta do ALL that work all over again, because of this following article...
 
@@ -50955,7 +52653,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(11,"<Console> (10)",@'
+$Book.NewSection(11,"<Console> (10)",@'
 Checks both (32-bit/64-bit) registry paths | No games being played here...
  ______________________________________________________________________________________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -50998,7 +52696,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
-$Book.AddSection(11,"Back to the Drawing Board",@"
+$Book.NewSection(11,"Back to the Drawing Board",@"
 The problem is, now the class definition is out of date!
 We don't need the old one anymore, cause it doesn't have what we need.
 
@@ -51078,7 +52776,7 @@ To do this, lets start with a common application that was installed via MSI, sin
 and the most consistency (so, like Microsoft Edge, or Google Chrome...)
 "@)
 
-$Book.AddSection(11,"<Template>",@"
+$Book.NewSection(11,"<Template>",@"
 I currently have Microsoft Edge installed on this machine, it is hands down, the best there is.
  ______________________________________________________________________________________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -51109,7 +52807,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.AddSection(11,"Non-Default Registry Keys",@"
+$Book.NewSection(11,"Non-Default Registry Keys",@"
 This time, we want to add a property for NON-DEFAULT registry keys in this uninstall path folder.
 [Analogy]: Entries with NON-DEFAULT registry keys are similar to when somebody doesn't fit into
 the typical mold that most people in society fit into since they're different than everyone else.
@@ -51179,7 +52877,7 @@ each property. Then, we want to have a method that can format all of those objec
 the output.
 "@)
 
-$Book.AddSection(11,"<Commands> (2)",@'
+$Book.NewSection(11,"<Commands> (2)",@'
 We'll run through the script again... but with a few added steps and more explanations.
 Get $Edge.PSObject.Properties where the name doesn't start with either "_" or "PS"
  ______________________________________________________________________________________________________________
@@ -51279,7 +52977,7 @@ help, lets call the .NET base type, via [PSNoteProperty]::New but, with a twist.
 BTW: "[PSNoteProperty]::New()" literally does the same thing as "New-Object PSNoteProperty"
 '@)
 
-$Book.AddSection(11,"[CLR/.Net Tricks Explained]: Auto Completion, and Overload Definitions",@'
+$Book.NewSection(11,"[CLR/.Net Tricks Explained]: Auto Completion, and Overload Definitions",@'
 ______________________________
 | Trick #1 : Auto Completion |_________________________________________________________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -51351,7 +53049,7 @@ While there ARE very subtle differences and variations here, they ALL draw some 
 than just abstract similarity to one another. Can you spot the similarities?
 '@)
 
-$Book.AddSection(11,"PowerShell Class/Type Engine Assumptions",@'
+$Book.NewSection(11,"PowerShell Class/Type Engine Assumptions",@'
 Not all of the labels appear in each instance. 
 With PowerShell, the console is pretty good about ASSUMING (classes/types) for each variable. 
 That's because of the PowerShell Class/Type engine.
@@ -51490,7 +53188,7 @@ scriptblock or curly braces where the ($_ / Null) variable works, then this nake
 fine... as long as you're not using exotic characterss, or spaces.
 '@)
 
-$Book.AddSection(11,"Excerpt [~] Comparing CSharp & PowerShell",@"
+$Book.NewSection(11,"Excerpt [~] Comparing CSharp & PowerShell",@"
 The take away from all of this explanation, is that PowerShell is LITERALLY the same exact thing as CSharp under 
 the skin, though I'm sure someone from Microsoft will pop out, and say:
 __________________
@@ -51547,7 +53245,7 @@ _____________________________
 But, maybe break is the wrong term here...
 "@)
 
-$Book.AddSection(11,"Embrace, Extend, and Enhance",@"
+$Book.NewSection(11,"Embrace, Extend, and Enhance",@"
 When is the last time you've ever heard anybody say:
 ______________________________________________________________________________________________
 | Someone: Hey, buddy. You better not go make something even cooler than it already was...~! |
@@ -51590,7 +53288,7 @@ That's cause they invented the idea of software. So, when they decide to do some
 They don't play games. One day they got together and said to Google...
 "@)
 
-$Book.AddSection(11,"Internet Explorer vs. Chrome vs. Edge",@"
+$Book.NewSection(11,"Internet Explorer vs. Chrome vs. Edge",@"
 Microsoft : Hey Google. 
             Let us show you how to build a better web browser.
 Google    : Chrome is the best, pal.
@@ -51645,7 +53343,7 @@ Microsoft : It is.
             But- we did a lot more than just give it a facelift...
 "@)
 
-$Book.AddSection(11,"Skit [~] Dreaming Big, Building Bigger",@"
+$Book.NewSection(11,"Skit [~] Dreaming Big, Building Bigger",@"
 The truth is, when Microsoft really wants to do something...? 
 They will actually go right ahead, assign a whole football team worth of people that just so happen to be very 
 bright individuals, and they'll spend all day and night conceptualizing about the thing they set out to do.
@@ -51739,7 +53437,7 @@ ________________________________________________________________________________
 You wouldn't think that this story was really all that realistic, but... it probably is.
 "@)
 
-$Book.AddSection(11,"The Two Titans of Technology",@"
+$Book.NewSection(11,"The Two Titans of Technology",@"
 The end result, is that Microsoft was able to build a version of Chrome that uses less resources, is snappier, 
 uses all of the same extensions Chrome does whereby making Edge have backward compatibility with other extensions, 
 and now they've incorporated what made Edge v1 actually pretty cool, useful, and performant. 
@@ -51757,7 +53455,7 @@ Written on a napkin.
 Decades in the making...
 "@)
 
-$Book.AddSection(11,"Continued, Language Construction/Similarities (Object-Oriented vs. Functional vs. String-based)",@"
+$Book.NewSection(11,"Continued, Language Construction/Similarities (Object-Oriented vs. Functional vs. String-based)",@"
 Some may say that PowerShell is a functional language, but it really is a lot more than that.
 I suppose for the people that only know how to use commands that come with the operating system, then it's pretty 
 easy to think PowerShell is just a functional language.
@@ -51807,7 +53505,7 @@ Those nested objects might even have many properties with single values, or mult
 Now you probably have no idea if I'm stating things metaphorically, or specifically... do you?
 "@)
 
-$Book.AddSection(11,"Quantum Physics, Entanglement, and Superposition",@"
+$Book.NewSection(11,"Quantum Physics, Entanglement, and Superposition",@"
 The truth is, I could be stating one of those things. 
 Or, the other.
 
@@ -51862,7 +53560,7 @@ Them...? Thinking about how to reliably count the number of stars in the univers
 You...? Probably just getting a coffee at Starbucks to start your day.
 "@)
 
-$Book.AddSection(11,"Doing the Impossible",@"
+$Book.NewSection(11,"Doing the Impossible",@"
 If that just blew your mind...? Sorry. 
 
 It's easy to get carried away with how much control there is, especially when just casually stating these words 
@@ -51882,7 +53580,7 @@ calculated, translated, and duplicated with precision.
 The possibilities don't stop there, either. But, Allow me to return to the subject of:
 "@)
 
-$Book.AddSection(11,"Object-Oriented vs. Functional vs. String-based",@"
+$Book.NewSection(11,"Object-Oriented vs. Functional vs. String-based",@"
 String based languages like tsch ARE reliable, however...
 It is very old, as it originates from (UNICS/Uniplexed Information and Computing System)
 Which, eventually dropped the CS and traded it with an X, whereby changing UNICS to UNIX.
@@ -51938,7 +53636,7 @@ So, if you're using Linux or Mac OSX, THEN... Python is a GREAT choice. But, so 
 On Windows, you have access to PowerShell Desktop AND Core. Then, it isn't much of a question.
 "@)
 
-$Book.AddSection(11,"Should I install Python...? PowerShell is just WAY too convenient...",@"
+$Book.NewSection(11,"Should I install Python...? PowerShell is just WAY too convenient...",@"
 Guy : Should I use PowerShell (since it's already included on Windows) or, install Python...?
       Decisions, decisions...
       Do I use Python version 3.0.0, 3.1.0, or heck, maybe 3.9.4 is the way to go...? 
@@ -52025,7 +53723,7 @@ I'm sure that's an OVERSIMPLIFICATION, but Python causes me to FEEL as if, it is
 Now, bringing it all back to comparing and contrasting with CSharp, since that's where this started.
 "@)
 
-$Book.AddSection(11,"Comparing/Contrasting CSharp & PowerShell",@"
+$Book.NewSection(11,"Comparing/Contrasting CSharp & PowerShell",@"
 CSharp isn't your standard issue, do-it-in-a-jiffy type of programming language... Nah.
 It requires a LOT more meticulousness than PowerShell, as it is specifically, and strongly typed.
 
@@ -52235,7 +53933,7 @@ GM has ALMOST made a good electric vehicle many, many times... but each time tho
 to market... they somehow *vanished*.
 "@)
 
-$Book.AddSection(11,"The Terrible Magician",@"
+$Book.NewSection(11,"The Terrible Magician",@"
 This is a bit of a tangent and this is gonna be a bit DETAILED and LONG WINDED, but I promise you...?
 The tangent will coalesce back into the narrative of PROGRAMMING and the MORAL of the story will make itself
 PERFECTLY CLEAR and RELEVANT toward the end.
@@ -52324,7 +54022,7 @@ GM hasn't been an interesting vehicle manufacturer, since... like, WAAAAY back i
 Basically BEFORE BOB LUTZ began to run General Motors, that's when General Motors was actually respectable.
 "@)
 
-$Book.AddSection(11,"Microsoft's Golden Standards",@"
+$Book.NewSection(11,"Microsoft's Golden Standards",@"
 Microsoft doesn't have this issue where they perform magic tricks or tell stories...
 Well, let me rephrase that... They perform magic tricks that are SKILLFULLY executed, not TERRIBLY executed.
 Not only do THEY know how real climate change is, but they never sound moronic, like, ever.
@@ -52463,7 +54161,7 @@ Not theirs.
 Microsoft would never, ever, not in their entire existence, implement intentional design flaws.
 "@)
 
-$Book.AddSection(11,"Insulting General Motors and Big Oil",@"
+$Book.NewSection(11,"Insulting General Motors and Big Oil",@"
 Seriously. That's because they have ACTUAL gold standards... not "quote unquote gold standards".
 When the FBI guys drive around in the State issued GMC Yukon Denalis, they may say:
 
@@ -52807,7 +54505,7 @@ Too worried about BURNING and LEAKING oil... not about GAS MILEAGE or SUSTAINABI
 The MORE MONEY they can CONVINCE people to WASTE...? The BETTER.
 "@)
 
-$Book.AddSection(11,"Climate Change",@"
+$Book.NewSection(11,"Climate Change",@"
 That means they have MORE to give to RUPERT MURDOCH, SEAN HANNITY, or TUCKER CARLSON, which works great for them. 
 To them...? 
 They don't care about wildfires.
@@ -52936,7 +54634,7 @@ So, even though the dudes on Fox News constantly spam people with THEIR rhetoric
 else does that same exact thing in return.
 "@)
 
-$Book.AddSection(11,"Skit [~] Steve Jobs: 'You've baked a lovely cake...'",@"
+$Book.NewSection(11,"Skit [~] Steve Jobs: 'You've baked a lovely cake...'",@"
 What if everybody just showed up on their set, and just started phrasing rhetoric too.
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -52992,7 +54690,7 @@ Then whoever didn't prepare for the situation...?
 They're all screwed.
 "@)
 
-$Book.AddSection(11,"Martial Law",@"
+$Book.NewSection(11,"Martial Law",@"
 It stands to reason, that this idiot might actually be surprised when he tries to go to the store and use some 
 of those millions, when the world is in a state of martial law.
 
@@ -53150,7 +54848,7 @@ Repeating the gospels of fools, while also foreshadowing the certain inevitable 
 ...of the day where everything began to fall apart.
 "@)
 
-$Book.AddSection(11,"Judgement Day",@"
+$Book.NewSection(11,"Judgement Day",@"
 That's because, the day of reckoning finally arrived, with the skies torched and blackened, and the sun drowned 
 out like a faint glimmer in a seemingly endless void, an oasis in the desert... 
 
@@ -53288,7 +54986,7 @@ And that's how it ALLLLLLLL ties back into the original lesson plan.
 Cyberterrorism.
 "@)
  
-$Book.AddSection(11,"Cyberterrorism",@"
+$Book.NewSection(11,"Cyberterrorism",@"
 If you contact the local boys, they will laugh at you cause they don't know about stuff like Pegasus. 
 Some of them are pretty gay about it too. 
 
@@ -53321,7 +55019,7 @@ at GM for 50 years. A long chapter of time where some blindfolded noob just swun
 called THAT.... "being a role model citizen".
 "@)
 
-$Book.AddSection(11,"Greatest Challenge of our Time",@"
+$Book.NewSection(11,"Greatest Challenge of our Time",@"
 But, it could also branch back to global warming and climate change. 
 Al Gore. 
 Leonardo DiCaprio.
@@ -53397,7 +55095,7 @@ Former President George W. Bush, is a saint, of all sainthood, in comparison to 
 GM for 50 years (though to be clear, GWB is no saint). 
 "@)
 
-$Book.AddSection(11,"The Adventures of Starman",@"
+$Book.NewSection(11,"The Adventures of Starman",@"
 I realize someone will probably tell BOB LUTZ about this entire document, and if he reads it, he may cry. 
 And, that's ok. Elon just went right ahead, and upended everything this man BOB LUTZ ever did for 50 years 
 straight... Elon had the (1) company he owns/runs, one who doesn't make a single bad vehicle... make a Tesla 
@@ -53432,7 +55130,7 @@ lazy as BOB LUTZ always has been. And that's fine. So it really isn't Elons faul
 many negative people, who couldnt do a fifth of what he's done, if they all tried together...?
 "@)
 
-$Book.AddSection(11,"Almost",@"
+$Book.NewSection(11,"Almost",@"
 Yeah. George Bush was a perfect president, when compared to this moron, BOB LUTZ. 
 Bob made lot of really bad vehicles. When I say BAD, I mean...
 ...in his entire 50 year tenure, the man never completed (1) single thing to be proud of...
@@ -53733,7 +55431,7 @@ You're not ALMOST gettin' the best there is in the industry... Nah.
 You're DEFINITELY gettin' that, and that's all there is to it.
 "@)
 
-$Book.AddSection(11,"Back to the Lesson Plan",@'
+$Book.NewSection(11,"Back to the Lesson Plan",@'
 The tangent I just went on, caused me to begin writing Top Deck Awareness – Not News.
 But, I'm gonna finish out this lesson plan.
 
@@ -54242,7 +55940,7 @@ $ClassDefinition = @("Class $($Def.Name)","{",($Def.Type -join "`n"),
                      "}") -join "`n"
 '@)
 
-$Book.AddSection(11,"<Class Definition> Template",@'
+$Book.NewSection(11,"<Class Definition> Template",@'
 Now, I'll develop these above variables as (2) separate classes, one for the container, one for the class object, 
 and the class object needs to be written FIRST so that the type can be used in the container class. 
 
@@ -54471,7 +56169,7 @@ ________________________________________________________________________________
 $ClassDefinition | Set-Clipboard
 '@)
 
-$Book.AddSection(11,"Output",@'
+$Book.NewSection(11,"Output",@'
 Class Uninstall
 {
     [String]        $DisplayName
@@ -54551,7 +56249,7 @@ Things become harder to do when you're writing CODE that does what you as a huma
 content, and that's when design choices might change.
 '@)
 
-$Book.AddSection(11,"Comparison",@'
+$Book.NewSection(11,"Comparison",@'
 _________________________________________________________________________________________________________________
 | FIRST CLASS, [UninstallStack] |/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/|
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -55137,7 +56835,7 @@ Maybe some of them do, I don't know.
 From what some of my friends tell me they say it's ONLY fun AFTER you get paid.
 '@)
 
-$Book.AddSection(11,"Conclusion",@'
+$Book.NewSection(11,"Conclusion",@'
     Anyway, that's it for the lesson, hope you enjoyed it.
     I've gone ahead and pasted additional copies of the classes below in a comment block.
      ______________________________________________________________________________________________________________
@@ -55314,7 +57012,24 @@ $Book.AddSection(11,"Conclusion",@'
     \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
-#>
+}
+
+$Book       = Write-Book -Name "Top Deck Awareness - Not News"
+$Book | % { 
+
+    Prologue    $_
+    Resume      $_
+    Chapter_1   $_
+    Chapter_2   $_
+    Chapter_3   $_
+    Chapter_4   $_
+    Chapter_5   $_
+    Chapter_6   $_
+    Chapter_7   $_
+    Chapter_8   $_  
+    Chapter_9   $_
+    Chapter_10  $_
+}
 
 <#
    __________________________________________________________________________________________________________________   
