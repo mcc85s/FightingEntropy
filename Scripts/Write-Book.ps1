@@ -2731,105 +2731,37 @@ Function Write-Book
     Class Section
     {
         [UInt32] $Index
-        [UInt32] $Mode
+        [String] $Type
         [String] $Name
+        Hidden [Hashtable] $Hash
         [Object] $Line
-        Section([UInt32]$Index,[UInt32]$Mode,[String]$Name,[String[]]$Content)
+        Section([UInt32]$Index,[String]$Type,[String]$Name,[String[]]$Content)
         {
             $This.Index   = $Index
-            $This.Mode    = $Mode
+            $This.Type    = $Type
             $This.Name    = $Name
-            $This.Line    = @( )
-            
-            $This.InsertContent($Content)
-            
-            $This.Rerank()
-        }
-        Section([UInt32]$Index,[String]$Name,[String[]]$Content)
-        {
-            $This.Index   = $Index
-            $This.Mode    = 0
-            $This.Name    = $Name
-            $This.Line    = @( )
-            
-            $This.InsertContent($Content)
-            
-            $This.Rerank()
-        }
-        InsertContent([String[]]$Content)
-        {
-            $Content = $Content -Split "`n"
+            $This.Hash    = @{ }
 
-            Switch ($Content.Count)
+            $1            = $This.Name.Length
+            $0            = 116 - $1
+            $This.NewLine(("  {0} /{1}\" -f $This.Name,(@([char]175) * $0 -join '' )))
+            $This.NewLine(("/{0} {1} " -f (@([Char]175) * ($1 + 2) -join ''), (@(" ") * $0 -join '')))
+            ForEach ($Line in $Content -Split "`n")
             {
-                {$_ -eq 1}
-                {
-                    $This.Line += [Line]::New($This.Line.Count,$Content)
-                }
-                {$_ -gt 1}
-                {
-                    ForEach ($X in 0..($Content.Count-1))
-                    { 
-                        $This.Line += [Line]::New($This.Line.Count,$Content[$X]) 
-                    }
-                }
+                $This.NewLine("    $Line")
             }
+            $This.NewLine((" {0} _{1}_/" -f (@(" ") * $0 -join ''),(@("_") * $1 -join '')))
+            $This.NewLine(("\{0}/ {1}  " -f (@("_") * $0 -join ''), $This.Name))
+            
+            $This.Line    = @($This.Hash[0..($This.Hash.Count-1)])
         }
-        RemoveContent([UInt32]$Index)
+        NewLine([String]$Line)
         {
-            If ($Index -gt $This.Line.Count)
-            {
-                Throw "Invalid line index"
-            }
-
-            $This.Line = $This.Line | ? Index -ne $Index
-
-            $This.Rerank()
-        }
-        Rerank()
-        {
-            If ($This.Line.Count -eq 1)
-            {
-                $This.Line[0].Index = 0
-            }
-            ElseIf ($This.Line.Count -gt 1)
-            {
-                ForEach ($X in 0..($This.Line.Count-1))
-                {
-                    $This.Line[$X].Index = $X
-                }
-            }
+            $This.Hash.Add($This.Hash.Count,[Line]::New($This.Hash.Count,$Line))
         }
         [String] ToString()
         {
             Return $This.Name
-        }
-        [String[]] Output()
-        {
-            $Hash = @{ }
-            $1    = $This.Name.Length
-            $0    = 116 - $1
-            $Hash.Add($Hash.Count,("  {0} /{1}\" -f $This.Name,(@([char]175) * $0 -join '' )))
-            $Hash.Add($Hash.Count,("/{0} {1} " -f (@([Char]175) * ($1 + 2) -join ''), (@(" ") * $0 -join '')))
-            ForEach ($Line in $This.Line | % Content)
-            {
-                $Item = Switch ($This.Mode)
-                {
-                    0 { "    $Line" }
-                    1 { $Line }
-                }
-
-                If ($Item.Length -gt 128)
-                {
-                    $Item = $Item.Substring(0,128)
-                }
-
-                $Hash.Add($Hash.Count,$Item)
-            }
-            $Hash.Add($Hash.Count,(" {0} _{1}_/" -f (@(" ") * $0 -join ''),(@("_") * $1 -join '')))
-            $Hash.Add($Hash.Count,("\{0}/ {1}  " -f (@("_") * $0 -join ''), $This.Name))
-
-            Return @($Hash[0..($Hash.Count-1)])
         }
     }
 
@@ -2853,15 +2785,15 @@ Function Write-Book
             $This.Header  = Write-Theme ("{0} - {1}" -f $This.Label, $This.Name) -Text | % { $_.TrimStart("#") }
             $This.Section = @( )
         }
-        NewSection([String]$Name,[String[]]$Content)
+        NewSection([String]$Type,[String]$Name,[String[]]$Content)
         {
             If ($Name -in $This.Section.Name)
             {
                 Throw "Section already exists"
             }
 
-            $This.Section += [Section]::New($This.Section.Count,0,$Name,$Content)
-            Write-Host ("Loaded [+] {0}: Section ({1}) [{2}]" -f $This.Label,$This.Section[-1].Index,$Name)
+            $This.Section += [Section]::New($This.Section.Count,$Type,$Name,$Content)
+            Write-Host ("Added [+] {0}: Section ({1}) [{2}]" -f $This.Label,$This.Section[-1].Index,$Name)
             If ($Name -eq "Start")
             {
                 $This.Section | ? Name -eq Start | % { $_.Index = 0 }
@@ -2908,6 +2840,7 @@ Function Write-Book
     Class Book
     {
         [String] $Name
+        Hidden [Hashtable] $Hash
         [Object] $Cover
         Hidden [Object] $Flag
         Hidden [Object] $Table
@@ -2917,6 +2850,7 @@ Function Write-Book
         {
             Write-Host "Assembling book... $Name"
             $This.Name    = $Name
+            $This.Hash    = @{ }
             $This.GetCover()
             $This.GetFlag()
             $This.Table   = @( )
@@ -2924,7 +2858,7 @@ Function Write-Book
         }
         GetCover()
         {
-            $Out          = @{ }
+            $Out = @{ }
             "                                                                                                                        ",
             "            ____    ____    ________________________________________________________________    ____    ____            ",
             "        ___//¯¯\\__//¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\__//¯¯\\___        ",
@@ -3009,63 +2943,167 @@ Function Write-Book
             "   \\______________________________________________________________________________________________________________//   ",
             "    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    " | % { 
 
-                $Out.Add($Out.Count,$_)
+                $Out.Add($Out.Count,[Line]::New($Out.Count,$_))
             }
 
-            $This.Cover = @($Out[0..($Out.Count-1)]) -join "`n"
+            $This.Cover     = @($Out[0..($Out.Count-1)]) -join "`n"
+            ForEach ($X in 0..($Out.Count-1))
+            {
+                $This.Hash.Add($This.Hash.Count,$Out[$X])
+            }
         }
         GetFlag()
         {
-            $xFlag = (Write-Theme -Flag -Text | % TrimStart "#")[6..33].Substring(12,96)
-            $Out   = @{ }
-            $Out.Add($Out.Count,"   $("_" * 114 -join '')   ")
-            $Out.Add($Out.Count,"   [====( Flag )$("=" * 100 -join '')]   ")
-            $Out.Add($Out.Count,"   //$("¯" * 110 -join '')\\   ")
-            $xFlag | % { $Out.Add($Out.Count,"   ||       $_       ||   ") }
-            $Out.Add($Out.Count,"   \\$("_" * 110 -join '')//   ")
-            $Out.Add($Out.Count,"    $(@([char]175) * 112 -join '')    ")    
+            $xFlag          = (Write-Theme -Flag -Text | % TrimStart "#")[6..33].Substring(12,96)
+            $Out            = @{ }
+            $Out.Add($Out.Count,[Line]::New($Out.Count,"   $("_" * 114 -join '')   "))
+            $Out.Add($Out.Count,[Line]::New($Out.Count,"   [====( Flag )$("=" * 100 -join '')]   "))
+            $Out.Add($Out.Count,[Line]::New($Out.Count,"   //$("¯" * 110 -join '')\\   "))
 
-            $This.Flag = @($Out[0..($Out.Count-1)]) -join "`n"
+            $xFlag          | % { 
+
+                $Out.Add($Out.Count,[Line]::New($Out.Count,"   ||       $_       ||   "))
+            }
+
+            $Out.Add($Out.Count,[Line]::New($Out.Count,"   \\$("_" * 110 -join '')//   "))
+            $Out.Add($Out.Count,[Line]::New($Out.Count,"    $(@([char]175) * 112 -join '')    "))
+
+            $This.Flag      = @($Out[0..($Out.Count-1)]) -join "`n"
+            ForEach ($X in 0..($Out.Count-1))
+            {
+                $This.Hash.Add($This.Hash.Count,$Out[$X])
+            }
         }
         GetTable()
         {
-            $Entry  = @( )
-            $Out    = @{ }
-            $Out.Add($Out.Count,"   $("_" * 114 -join '')   ")
-            $Out.Add($Out.Count,"   [====( Table of Content )$("=" * 88 -join '')]   ")
-            $Out.Add($Out.Count,"   //$("¯" * 110 -join '')\\   ")
-            $Max   = @{ 
+            $Entry          = @( )
+            $Out            = @{ }
 
-                Label = ($Book.Chapter.Label | Sort-Object Length)[-1]
-                Name  = ($Book.Chapter.Name  | Sort-Object Length)[-1]
-                Page  = 3
+            # Main Section Prep
+            $Out.Add($Out.Count,[Line]::New($Out.Count,"   $("_" * 114 -join '')   "))
+            $Out.Add($Out.Count,[Line]::New($Out.Count,"   [====( Table of Content )$("=" * 88 -join '')]   "))
+            $Out.Add($Out.Count,[Line]::New($Out.Count,"   //$("¯" * 110 -join '')\\   "))
+            $Max            = @{ 
+
+                Label       = ($This.Chapter.Label | Sort-Object Length)[-1]
+                Name        = ($This.Chapter.Name  | Sort-Object Length)[-1]
+                Page        = 3
             }
-            $Max.Length = 11 + $Max.Label.Length + 10 + $Max.Name.Length
+            $Max.Length     = 11 + $Max.Label.Length + 10 + $Max.Name.Length
+            $Buffer         = 115 - $Max.Length
 
-            ForEach ($X in 0..($Book.Chapter.Count-1))
+            # Main Section Content
+            ForEach ($X in 0..($This.Chapter.Count-1))
             {
-                $I       = $Book.Chapter[$X]
-                $L       = $I.Label
-                $N       = $I.Name
+                $I          = $This.Chapter[$X]
+                $L          = $I.Label
+                $N          = $I.Name
 
                 If ($I.Label.Length -lt $Max.Label.Length)
                 {
-                    $L  += @(" ") * ($Max.Label.Length-$I.Label.Length) -join ''
+                    $L     += @(" ") * ($Max.Label.Length-$I.Label.Length) -join ''
                 }
                 If ($N.Length -lt $Max.Name.Length)
                 {
-                    $N  += @(" ") * ($Max.Name.Length-$N.Length) -join ''
+                    $N     += @(" ") * ($Max.Name.Length-$N.Length) -join ''
                 }
 
-                $Line    = "{0} |  XXX | {1}" -f $L, $N
-                $Entry  += $Line
-                $Line   += @(" ") * (102 - $Line.Length) -join ""
-                $Out.Add($Out.Count,"   ||     $Line   ||   ")
+                $Line       = "{0} |  XXX | {1}" -f $L, $N
+                $Entry     += "   [====( $Line )$("=" * $Buffer -join '')]   "
+                $Line      += @(" ") * (100 - $Line.Length) -join ""
+                $Out.Add($Out.Count,[Line]::New($Out.Count,"   ||     $Line     ||   "))
             }
-            $Out.Add($Out.Count,"   \\$("_" * 110 -join '')//   ")
-            $Out.Add($Out.Count,"    $(@([char]175) * 112 -join '')    ")
+            $Out.Add($Out.Count,[Line]::New($Out.Count,"   \\$("_" * 110 -join '')//   "))
 
-            # $Out[0..($out.Count-1)]
+            # Individual chapters
+            ForEach ($X in 0..($This.Chapter.Count-1))
+            {
+                $xChapter    = $This.Chapter[$X]
+                $Out.Add($Out.Count,[Line]::New($Out.Count,$Entry[$X]))
+                $Out.Add($Out.Count,[Line]::New($Out.Count,"   //$("¯" * 110 -join '')\\   "))
+                If ($xChapter.Label -ne "Resume")
+                {
+                    ForEach ($I in 0..($xChapter.Section.Count-1))
+                    {
+                        $Line = "   ||     {0}" -f $xChapter.Section[$I].Name
+                        $Line = $Line + (@(" ") * (112 - $Line.Length) -join '') + "   ||   "
+                        $Out.Add($Out.Count,[Line]::New($Out.Count,$Line))
+                    }
+                }
+                If ($xChapter.Label -eq "Resume")
+                {
+                    ForEach ($Line in "(Current)",
+                    "- [00] Secure Digits Plus LLC",
+                    "(Former Employers)",
+                    "- [01] Computer Answers",
+                    "- [02] KeyCorp",
+                    "- [03] Metroland/Lou Communications",
+                    "- [04] Nfrastructure",
+                    "- [05] TEKSystems",
+                    "- [06] Hearst Corporation",
+                    " ",
+                    "(Education)",
+                    "- [01] New Horizons Learning Center",
+                    "- [02] ITT Technical Institute",
+                    "- [03] Capital Region Career and Technical School",
+                    " ",
+                    "(Skills/Experience)",
+                    ("_" * 95 -join ''),"| [Application Development + Network/Hardware Magistration + Virtualization + Graphic Design] |",
+                    ("¯" * 95 -join ''),
+                    "- [01] FightingEntropy FEInfrastructure",
+                    "- [02] Advanced Domain Controller Promotion",
+                    "- [03] A Deep Dive: PowerShell and XAML",
+                    "- [04] Wireless Network Scanning Utility",
+                    "- [05] PowerShell Deployment FE Wizard",
+                    "- [06] 2019_0125-(Computer Answers - MDT)",
+                    "- [07] Install-pfSense",
+                    "- [08] Advanced System Administration Lab",
+                    "- [09] Windows Image Extraction",
+                    "- [10] Flight Test Part 1",
+                    "- [11] Flight Test Part 2",
+                    "- [12] Hybrid | Desired State Controller",
+                    "- [13] Methodologies",
+                    "- [14] Education/Exhibition Program Design",
+                    ("_" * 35 -join ''),"| [Network/Hardware Magistration] |",("¯" * 35 -join ''),
+                    "- [01] Spectrum Cable Modem Reset",
+                    "- [02] How to repair an iPhone 7+",
+                    "- [03] Troubleshooting Network Equipment 101",
+                    "- [04] Troubleshooting a poorly made CRM",
+                    ("_" * 20 -join ''),"| [Graphic Design] |",("¯" * 20 -join ''),
+                    "- [01] Game Design 101 Part I - 20KDM2 - Return to Castle: Quake",
+                    "- [02] Game Design 101 Part II - 20KDM1 - Tempered Graveyard",
+                    "- [03] Game Design 101 Part III - 20KCTF1 - Out of my head",
+                    "- [04] Game Design 101 Part IV - 20KDM3 - Insane Products",
+                    "- [05] Website Design 101 - BFG20K's Shopping Maul",
+                    ("_" * 39 -join ''),"| [Security Engineering & Journalism] |",("¯" * 39 -join ''),
+                    "- [01] Top Deck Awareness - Not News",
+                    "- [02] News 10 - Interview with Andrew Banas regarding WEEPING ANGEL",
+                    "- [03] Central Intelligence Agency/VAULT 7/Archimedes",
+                    "- [04] Central Intelligence Agency/VAULT 7/After Midnight (Laptop angle)",
+                    "- [05] Central Intelligence Agency/VAULT 7/After Midnight (Smartphone angle)",
+                    "- [06] Facebook BSOD",
+                    "- [07] Facebook Censorship",
+                    "- [08] Hardware Security",
+                    "- [09] NFRASTRUCTURE – RICO",
+                    "- [10] A Matter of National Security")
+                    { 
+                        If ($Line.Length -lt 104)
+                        {
+                            $Line = $Line + (" " * (104 - $Line.Length) -join "")
+                        }
+
+                        $Out.Add($Out.Count,[Line]::New($Out.Count,"   ||   $Line   ||   "))
+                    }
+                }
+                $Out.Add($Out.Count,[Line]::New($Out.Count,"   \\$("_" * 110 -join '')//   "))
+            }
+            $Out.Add($Out.Count,[Line]::New($Out.Count,"    $(@([char]175) * 112 -join '')    "))
+
+            $This.Table = @($Out[0..($Out.Count-1)]) -join "`n"
+            ForEach ($X in 0..($Out.Count-1))
+            {
+                $This.Hash.Add($This.Hash.Count,$Out[$X])
+            }
         }
         NewChapter([String]$Label,[String]$Name)
         {
@@ -3077,14 +3115,22 @@ Function Write-Book
             $Item          = [Chapter]::New($This.Chapter.Count,$Label,$Name)
             $This.Chapter += $Item
             Write-Host "Added [+] Chapter: [$("{0} - {1}" -f $Item.Label, $Item.Name)]"
+            ForEach ($Line in $This.Chapter.Header)
+            {
+                $This.Hash.Add($This.Hash.Count,[Line]::New($This.Hash.Count,$Line))
+            }
         }
-        NewSection([UInt32]$Index,[String]$Name,[String[]]$Content)
+        NewSection([UInt32]$Index,[String]$Type,[String]$Name,[String[]]$Content)
         {
             $Item = $This.Get($Index)
 
             If ($Item)
             {
-                $Item.NewSection($Name,$Content)
+                $Item.NewSection($Type,$Name,$Content)
+                ForEach ($Line in $This.Chapter.Section | ? Name -eq $Name)
+                {
+                    $This.Hash.Add($This.Hash.Count,[Line]::New($This.Hash.Count,$Line))
+                }
             }
         }
         Rerank()
@@ -3148,25 +3194,13 @@ Function Write-Book
         }
         [Object[]] Output()
         {
-            $Hash              = @{ }
-            $This.Cover -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
-            $This.Flag  -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
-            $This.Table -Split "`n" | % { $Hash.Add($Hash.Count,$_) }
-            Write-Progress -Activity Output -Status Chapters -PercentComplete 0
-            ForEach ($X in 0..($This.Chapter.Count-1))
-            {
-                $Item          = $This.Get($X)
-                Write-Progress -Activity Output -Status Chapters -PercentComplete ($X * 100/$This.Chapter.Count)
-                $Item.Output() | % { $Hash.Add($Hash.Count,$_) }
-            }
-            Write-Progress -Activity Output -Status Chapters -Complete
-            Return @($Hash[0..($Hash.Count-1)])
+            Return @($This.Hash[0..($This.Hash.Count-1)])
         }
         [Object[]] Guide()
         {
-            $Hash              = @{ }
-            $This.Output()     | % { $Hash.Add($Hash.Count,$_) }
-            $Ct                = $Hash.Count
+            $Out              = @{ }
+            $This.Output()     | % { $Out.Add($Out.Count,$_) }
+            $Ct                = $Out.Count
             $Depth             = ([String]$Ct).Length
             $Step              = 1..100 | % { $Ct/$_ }
             $Index             = 0
@@ -3180,7 +3214,7 @@ Function Write-Book
                     Write-Progress -Activity Guide -Status Chapters -PercentComplete ($X * 100/$Ct)
                     $Index ++
                 }
-                $Hash2.Add($X,("[{0:d$Depth}] {1}" -f $X, $Hash[$X]))
+                $Hash2.Add($X,("[{0:d$Depth}] {1}" -f $X, $Out[$X]))
             }
             Write-Progress -Activity Guide -Status Chapters -Complete
             Return @($Hash2[0..($Ct-1)])
@@ -3209,6 +3243,11 @@ Function Write-Book
     [Book]::New($Name)
 }
 
+$Book       = Write-Book -Name "Top Deck Awareness - Not News"
+
+Function Content
+{
+    Param ($Book)
 # // _____________________________________________________________
 # // | Prologue - History, the Constitution of the United States |
 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -3219,12 +3258,12 @@ Function Prologue
 
 $Book.NewChapter("Prologue","History, the Constitution of the United States")
 
-$Book.NewSection(0,"Start",@'
+$Book.NewSection(0,"Lesson","Start",@'
 Benjamin Franklin: It is the RESPONSIBILITY of EVERY citizen, to QUESTION AUTHORITY.
 Keep this quote in mind, because it is the beginning and the end of this entire document.
 '@)
 
-$Book.NewSection(0,"Introduction (1)",@'
+$Book.NewSection(0,"Lesson","Introduction (1)",@'
 Benjamin Franklin was one of the founding fathers of the United States of America, and a very critical
 one at that. Benjamin Franklin, was a dude that had principles down pat, as he was an avid writer,
 quite the scientist, an inventor (invented bifocals), an able-bodied statesman, top-shelf diplomat,
@@ -3292,7 +3331,7 @@ A rather important man...
 ...he gave his signature speech.
 '@)
 
-$Book.NewSection(0,"Signature Speech",@'
+$Book.NewSection(0,"Skit","Signature Speech",@'
 Franklin : Gentlemen, this is MORE than words on a piece of paper that we're responsible for authoring,
            and signing.
            This will be the GREATEST document EVER written.
@@ -3311,7 +3350,7 @@ Franklin : Gentlemen, this is MORE than words on a piece of paper that we're res
            *signs the Constitution of the United States of America*
 '@)
 
-$Book.NewSection(0,"Introduction (2)",@'
+$Book.NewSection(0,"Lesson","Introduction (2)",@'
 At that moment, the United States of America was finally formed, on an official basis, although the 
 Articles of Confederation had been its original Constitution, this new version would replace it. 
 It took approximately 12 days for these men to complete the document, and the document has been 
@@ -3396,9 +3435,9 @@ would remain in effect until the "complete/current" United States of America Con
 in September 1787.
 '@)
 
-$Book.NewSection(0,"Founding Fathers",(Get-FoundingFathers))
+$Book.NewSection(0,"Lesson","Founding Fathers",(Get-FoundingFathers))
 
-$Book.NewSection(0,"History Repeats Itself",@"
+$Book.NewSection(0,"Conjecture","History Repeats Itself",@"
 Of course, history always has a way of repeating itself, and though this is a history lesson right 
 now...? It becomes the perfect metaphor for current events: 
 ________________________________________________________________________________________________________
@@ -3415,7 +3454,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(0,"Colonial America",
+$Book.NewSection(0,"Conjecture","Colonial America",
 @"
 Colonial American history is rather extensive, and articulate. I'm shooting for some level of concision
 and keeping the story COMPELLING and FOCUSED, but it will eventually be quite thorough.
@@ -3451,7 +3490,7 @@ While the Constitution established the base from which additional amendments wer
 made, most particularly the Bill of Rights, this document is still the most important of them all.
 "@)
 
-$Book.NewSection(0,"Transition",@"
+$Book.NewSection(0,"Conjecture","Transition",@"
 I'll say it right here and now, there's a lot of fuckin' swearing and offensive language in this 
 document. Oh well. The Constitution allows people to say stuff.
 
@@ -3613,7 +3652,7 @@ Are they ALL morons?
 No, they're not.
 "@)
 
-$Book.NewSection(0,"Injustice (Preview)",@"
+$Book.NewSection(0,"Conjecture","Injustice (Preview)",@"
 As for the POLICE, MANY of them they will PISS ALL OVER YOUR RIGHTS, and treat you like you aren't 
 fuckin' worthy of the law. Because, if a CRIME is committed by someone in the GOVERNMENT...? 
 Nobody does anything. (It seems...)
@@ -3830,7 +3869,7 @@ What I'm STATING is that THEY can FABRICATE A REASON OUT OF THIN AIR, and even G
 PERMISSION TO DO WHATEVER THEY FUCKING WANT TO DO. (← Why the CONSTITUTION was WRITTEN)
 "@)
 
-$Book.NewSection(0,"History of Mass Surveillance (Preview) (1)",@"
+$Book.NewSection(0,"Lesson","History of Mass Surveillance (Preview) (1)",@"
 The COOL thing is, when I try to inform OTHER PEOPLE...? They think that what I'm saying is
 insane. Or, they will literally call my sanity into question. That's because, the USA-PATRIOT
 Act of 2001 was passed into law, to CONVERT AMERICA into a PSEUDOCOMMUNIST STATE.
@@ -3958,7 +3997,7 @@ That's COMMUNISM, but also...
 George Orwell, 1984.
 "@)
 
-$Book.NewSection(0,"Surveillance programs [2001-2007]",@"
+$Book.NewSection(0,"Lesson","Surveillance programs [2001-2007]",@"
 
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 \ OAKSTAR                                 /
@@ -4030,7 +4069,7 @@ Part of the Bushmeister 5000's plan to surveil for potential terrorist
 activities in the wake of 9/11/2001.
 "@)
 
-$Book.NewSection(0,"Surveillance programs [2007+]",@"
+$Book.NewSection(0,"Lesson","Surveillance programs [2007+]",@"
 
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 \ PRISM                                                      /
@@ -4114,7 +4153,7 @@ In other words, it skull fucks people left and right, no matter who you are.
 Collect (metadata/content) of phone calls from several countries
 "@)
 
-$Book.NewSection(0,"Technological Tyranny",@"
+$Book.NewSection(0,"Conjecture","Technological Tyranny",@"
 Injustice, as well as mass surveillance, it allows certain people to commit insider trading,
 corporate espionage, regular espionage, volume shadow copying, cyberattacks, et cetera.
 
@@ -4340,7 +4379,7 @@ OH.
 That's a SERIOUS PROBLEM.
 "@)
 
-$Book.NewSection(0,"Integrity",@"
+$Book.NewSection(0,"Conjecture","Integrity",@"
 Law enforcement is supposed to be the END ALL, BE ALL, LINE OF DEFENSE and INTEGRITY
 So, if you see police officers sucking Prince/Andrew/Cuomo's dick for a promotion...?
 ...that's neither one of those fuckin' things.
@@ -4379,7 +4418,7 @@ Not even remotely fuckin' kiddin'.
 SO MANY PEOPLE ARE INDIFFERENT, AND THEY'RE LIARS~! | ← PROBLEM
 "@)
 
-$Book.NewSection(0,"Focus",@"
+$Book.NewSection(0,"Lesson","Focus",@"
 I will UNPACK/EXAMINE ways of dealing with BOTH of these issues, as well as what's causing ALL of them.
 Because the problem is INCREDIBLY COMPLEX, however...? 
 
@@ -4419,6 +4458,7 @@ So...
 Someone got fuckin' HIGHLY IRRITATED with a LARGE NUMBER OF PEOPLE, and decided to write this material.
 Here's that person's resume.
 "@)
+
 }
 
 # // ____________________________________________________
@@ -4478,7 +4518,10 @@ $Hash.Add(5, @"
 - Production: https://www.github.com/mcc85sx/FightingEntropy
 "@)
 
-ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+ForEach ($X in 0..($Hash.Count - 1)) 
+{ 
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) 
+}
 
 $Resume.Person.AddEmployer("Computer Answers","Clifton Park, NY","10/2015 - 07/2019","Chief Technology Officer & Business Solutions Expert")
 $Hash = @{ } 
@@ -4505,7 +4548,10 @@ ________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+ForEach ($X in 0..($Hash.Count - 1)) 
+{ 
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) 
+}
 
 $Resume.Person.AddEmployer("KeyCorp","Albany, NY","03/2016 - 12/2016","Help Desk Level (I & II) Support Engineer")
 $Hash = @{ }
@@ -4523,7 +4569,10 @@ password resets), brief contact with Organizational Units, Site Links, Lotus Not
 vSphere/eSXI, Group Policy Objects, RSA Encryption/Software tokens, KeyCounselor/HOGAN
 "@)
 
-ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+ForEach ($X in 0..($Hash.Count - 1)) 
+{ 
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) 
+}
 
 $Resume.Person.AddEmployer("Metroland/Lou Communications","Albany, NY","01/2007 - 01/2014","Distribution Contractor & IT Consultant")
 $Hash = @{ }
@@ -4542,7 +4591,10 @@ ________________________________________________________________________________
 "@)
 $Hash.Add(5, "Limited use of domain resources, otherwise most services were DISTRIBUTION of the newspaper")
 
-ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+ForEach ($X in 0..($Hash.Count - 1)) 
+{ 
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) 
+}
 
 $Resume.Person.AddEmployer("Nfrastructure","Clifton Park, NY","09/2010 - 01/2011","Computer (Hardware/Printer/Network) Technician")
 $Hash = @{ }
@@ -4562,7 +4614,10 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+ForEach ($X in 0..($Hash.Count - 1)) 
+{ 
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X])
+}
 
 $Resume.Person.AddEmployer("TEKsystems","Albany, NY","06/2006 - 05/2019","Various (Computer/Network) related roles")
 $Hash = @{ }
@@ -4572,7 +4627,10 @@ Trinity Health/St. Peters Hospital 02/2019 [Interview] - Potential client was se
 entirely new domain physically as well as ASP.Net overhaul, already developing [FightingEntropy(π)]
 "@)
 
-ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+ForEach ($X in 0..($Hash.Count - 1)) 
+{ 
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) 
+}
 
 $Resume.Person.AddEmployer("Hearst Corporation","Albany, NY","04/2006 - 04/2009","Distribution Contractor & Accounts Receivable Collector")
 $Hash = @{ }
@@ -4585,7 +4643,10 @@ $hash.Add(2,"Drifted in the snow a lot, found new ways to drop off newspapers, d
 $Hash.Add(3,"Collected and calculated return payment amounts, deposited into bank account with Bank of America")
 $Hash.Add(4,"Worked under (Kenny/Patrick Bernard) for Q122, Q107, Q121, & Chris Jones for daytime return routes")
 
-ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) }
+ForEach ($X in 0..($Hash.Count - 1)) 
+{ 
+    $Resume.Person.Employer[$Resume.Person.Employer.Count - 1].AddDetail($Hash[$X]) 
+}
 
 $Resume.Person.AddEducation("New Horizons Learning Center","Albany, NY","01/2008 - 01/2009","CompTIA & Microsoft Certifications Track")
 $Hash = @{ }
@@ -4596,7 +4657,10 @@ Studied server technologies and services: FTP, File Server, WINS/DNS/DHCP, RSAT/
 Active Directory, Group Policy, Drivers, Wireless, IIS 6.0, VPN Encryption, & Virtual Server
 "@)
 
-ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X]) }
+ForEach ($X in 0..($Hash.Count - 1)) 
+{ 
+    $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X]) 
+}
 
 $Resume.Person.AddEducation("ITT Technical Institute","Albany, NY","06/2004 - 06/2006","Information Technology: Drafting & Design, Multimedia")
 $Hash = @{ }
@@ -4615,7 +4679,10 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X]) }
+ForEach ($X in 0..($Hash.Count - 1)) 
+{ 
+    $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X]) 
+}
 
 $Resume.Person.AddEducation("Capital Region Career and Technical School","Albany, NY","09/2001 - 06/2003","Microsoft System Administration, CompTIA A+/Network+, & Cisco Certified Network Academy")
 $Hash = @{ }
@@ -4631,7 +4698,10 @@ $Hash.Add(2,"Received an in-depth year with Cisco (routers/switches) via RS232")
 $Hash.Add(3,"Participated in NYS competition at (SCCC/Schenectady County Community College), & ITT Tech")
 $Hash.Add(4,"Received an award from the school for Portfolio Development at final graduation ceremony")
 
-ForEach ($X in 0..($Hash.Count - 1)) { $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X]) }
+ForEach ($X in 0..($Hash.Count - 1)) 
+{ 
+    $Resume.Person.Education[$Resume.Person.Education.Count - 1].AddDetail($Hash[$X]) 
+}
 
 $Resume.Person.AddSkill("FightingEntropy FEInfrastructure","12/2021","https://youtu.be/6yQr06_rA4I",@"
 This is a video where I PROVE that BY MYSELF, I know ALL OF THE ASPECTS of:
@@ -4697,8 +4767,7 @@ This is a video where I use VISUAL STUDIO CODE to access POWERSHELL DIRECT to ma
 REMOTE DESKTOP CONNECTION to AUTOMATE THE INSTALLATION of pfSense onto VIRTUAL GATEWAYS/ROUTERS
 '@)
 
-$Resume.Person.AddSkill("Advanced System Administration Lab","06/2021","https://youtu.be/xgffIccX1eg",
-"Same sort of idea as above, except a lot more EXTENSIVE and COMPREHENSIVE.")
+$Resume.Person.AddSkill("Advanced System Administration Lab","06/2021","https://youtu.be/xgffIccX1eg","Same sort of idea as above, except a lot more EXTENSIVE and COMPREHENSIVE.")
 
 $Resume.Person.AddSkill("Windows Image Extraction","06/2021","https://youtu.be/G10EuwlNAyo",@'                                    
 This extracts Windows Images from the ISO directly from Microsoft's website, to be injected as       
@@ -4869,7 +4938,6 @@ VAULT 7, being used against me to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to m
 DATA on my SYSTEM, because of the CENSORSHIP VIDEO I posted below. (It failed)
 "@)
 
-
 $Resume.Person.AddSkill("Central Intelligence Agency/VAULT 7/After Midnight (Smartphone angle)","02/2022","https://youtu.be/oShPs6_uXIk",@"
 From the CYBERATTACK on 2/26/22, featuring AFTERMIDNIGHT, another CENTRAL INTELLIGENCE AGENCY tool from
 VAULT 7, being used against mme to DISTRIBUTE MALICIOUS PAYLOADS and SCRIPTS to my device to CORRUPT the
@@ -4927,8 +4995,9 @@ I know that someone will come right out and say that I must not have enough, yet
 "@)
 
 $Resume.Illustrate()
+$Output = ($Resume.ToString() | % { $_ -Replace "^    ","" }) -join "`n"
 
-$Book.NewSection(1,"Resume",($Resume.ToString() -join "`n"))
+$Book.NewSection(1,"Excerpt","Resume",$Output)
 }
 
 # // _________________________________
@@ -4941,12 +5010,12 @@ Function Chapter_1
 
 $Book.NewChapter("Chapter 1","Liars in the Lead")
 
-$Book.NewSection(2,"Start",@"
+$Book.NewSection(2,"Lesson","Start",@"
 Suggestion: If Fox News has the best ratings in the industry...? 
 That's a fuckin' problem right there.
 "@)
 
-$Book.NewSection(2,"Overview",@"
+$Book.NewSection(2,"Conjecture","Overview",@"
 If anybody reading this, watches Fox News...? 
 You really should consider not watching it anymore.
 
@@ -4965,7 +5034,7 @@ Almost has the same ring to it as Fox News Network...
 ...except it just SOUNDS a lot more honest.
 "@)
 
-$Book.NewSection(2,"Skit [~] It's Not News",@"
+$Book.NewSection(2,"Skit","It's Not News",@"
 They really could make things easier on everybody here, change (1) word. 
 Turn the word Fox, into Not.
 Then it would be accurate all the time.
@@ -5039,7 +5108,7 @@ Someone2 : I really don't wanna watch this shit anymore...
            This shit ain't news.
 "@)
 
-$Book.NewSection(2,"Fox News → Not News",@"
+$Book.NewSection(2,"Thesis","Fox News → Not News",@"
 Yeah, so, the Fox News Organization, is essentially some rich dude named RUPERT MURDOCH playing god. 
 
 At one point in time...? 
@@ -5050,7 +5119,7 @@ Coverage of the political landscape, current events, and leveling out the news c
 Now, he's lost his way, and acts a lot like VLADIMIR PUTIN. Seemingly identical.
 Even the people who work at Fox News Network know that their work is garbage.
 __________________________________________________________________________________
-| Used to be News...? Now we're not news. Not News. Part of the Not News Network |
+| Used to be News...? Now we're Not News. Not News. Part of the Not News Network |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Anyway, that SHOULD be their slogan, and they SHOULD change their name...
 ...but providing people with SUGGESTIONS like that, probably feels BIASED and NUANCED, doesn't it...? 
@@ -5075,7 +5144,7 @@ The problem is, if TUCKER CARLSON is the most popular thing in the industry,
     ...then again, maybe not.
 "@)
 
-$Book.NewSection(2,"When Insults Are Warranted",@"
+$Book.NewSection(2,"Conjecture","When Insults Are Warranted",@"
 Climate change is definitely fuckin' real, and I can translate how that is, to corruption in the government.
 Almost like, Cause → Effect...
 Corrupt politicians accepting bribery from Exxon Mobil like Ted Cruz, not being arrested for THAT, 
@@ -5249,7 +5318,7 @@ likely to do some shit to me. Michael Zurlo apparently likes to have his units f
 I'm involved in, and I'm not even exaggerating that at all... I'll rip on the county sheriffs later.
 "@)
 
-$Book.NewSection(2,"Censorship Meets Tyranny",@"
+$Book.NewSection(2,"Lesson","Censorship Meets Tyranny",@"
 Now, occasionally, people might need to follow some SUGGESTIONS, but... if SUGGESTIONS and RESPECT are treated 
 as ONE WAY STREETS, you have to STOP and CONSIDER that anyone expecting it to be a one-way street is probably 
 asking to get themselves smacked across the face with a reality check. Cause, there's actually TWO WAYS that...
@@ -5292,7 +5361,7 @@ So, they may as well ASK you, to grab a gun and EXECUTE them, with that line of 
 And they are perfectly content with people knowing you're onto them too, from what I can tell.
 "@)
 
-$Book.NewSection(2,"Climate Change",@"
+$Book.NewSection(2,"Conjecture","Climate Change",@"
 In reference to (Murdoch/Fox News), you can't expect anyone at Murdoch incorporated, will follow anyone 
 elses' suggestions. He has rights, too. He can just, totally ignore your ass, and spam the shit out of people.
 
@@ -5349,7 +5418,7 @@ I'm gonna hold off on Ted Cruz momentarily, and focus on Hannity and Murdoch.
 Here's a skit, not unlike when Eminem dissed Insane Clown Posse.
 "@)
 
-$Book.NewSection(2,"Skit [~] SEAN HANNITY and RUPERT MURDOCH",@"
+$Book.NewSection(2,"Skit","SEAN HANNITY and RUPERT MURDOCH",@"
 Murdoch : Hey Sean!
 Hannity : Hey Rupert.
 Murdoch : Say... 
@@ -5391,8 +5460,8 @@ Person 2 : He probably does.
 Person 1 : Well, that does actually make SOME sense...
 "@)
 
-$Book.NewSection(2,"Abusive Relationship",@"
-Sean is in an abusive relationship with Murdock.
+$Book.NewSection(2,"Conjecture","Abusive Relationship",@"
+Sean is in an abusive relationship with Murdoch.
 Then Sean tells everybody that he was at the "dojo". That's not a fuckin' dojo buddy...
 May as well tell people he was practicing the skin flute.
 
@@ -5418,7 +5487,7 @@ Yeah, when people accept bribery money from the oil/car/gas industry...
 ...those people have to worry about how they look when it's recorded on video.
 "@)
 
-$Book.NewSection(2,"Enlightenment [!] Why smartphones are useful AND deadly",@"
+$Book.NewSection(2,"Excerpt","Why smartphones are useful AND deadly",@"
 The reason why smartphones are USEFUL and DEADLY, is because they're useful if you have...
 100% complete control over the device
     
@@ -5463,7 +5532,7 @@ That's why telling them is POINTLESS.
 While smartphones are INCREDIBLY useful, that device can be turned into a WEAPON at any given time.
 "@)
 
-$Book.NewSection(2,"What is Censorship and Why does it happen?",@"
+$Book.NewSection(2,"Lesson","What is Censorship and Why does it happen?",@"
 ___________________________
 | Q : What is CENSORSHIP? |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -5533,7 +5602,7 @@ ________________________________________________________________________________
 | ...that is NOT CENSORSHIP, he has a dick in his mouth. Totally legal, totally fine. That's their prerogative. |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ____________________________________________________________________________________________________________
-| Example #8) What if Hannity/Murdock ask MARK ZUCKERBERG to make a SPECIFIC social media post on Facebook |
+| Example #8) What if Hannity/Murdoch ask MARK ZUCKERBERG to make a SPECIFIC social media post on Facebook |
 | invisible to others...?                                                                                  |
 |==========================================================================================================| 
 | ...that is DEFINITELY CENSORSHIP, and THAT IS ILLEGAL. Even if that IS his company...? That process is a |
@@ -5707,7 +5776,7 @@ SARATOGA COUNTY SHERIFFS OFFICE, and FACEBOOK... usually there's a good reason w
 specific target quite yet. That's because someone ELSE also knows what's happening.
 "@)
 
-$Book.NewSection(2,"Censorship and Militias: Peaceful versus Non-Peaceful Resolution",@"
+$Book.NewSection(2,"Lesson","Censorship and Militias: Peaceful versus Non-Peaceful Resolution",@"
 Examination: I will illustrate a logic map, to VISUALIZE how CENSORSHIP OCCURS
 The analogy stated above in reference to Ted Cruz, will cause MANY people to be grossed out, and they'll just 
 stop reading completely. Why...? Uh, cause these people know how to MANIPULATE the public, so that individuals 
@@ -5750,7 +5819,7 @@ _________________________________________
 Now, Cuomo COULD consider dramatically raising his chances of success by ALTERING: (Females/0%) → (Males/100%)
 So, "sausage wrecker" is a (COMPELLING ANALOGY/METAPHOR)... for some dudes cobbin' on each other's knobs.
 Or, maybe it's one knob at a time getting' cobbed on, or look- I don't fuckin' really CARE to describe it.
-It's bad enough that I keep saying it about Hannity/Murdock, but they keep saying "climate change is fake."
+It's bad enough that I keep saying it about Hannity/Murdoch, but they keep saying "climate change is fake."
 ________________________________________
 | Applying the lesson/properties above |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -5782,7 +5851,7 @@ about it. George Pataki would've rolled up his fuckin' sleeves, and made damn ce
 done right there and then while havin' plenty of sex with his fuckin' wife.
 "@)
 
-$Book.NewSection(2,"Excerpt [+] George 'The man' Pataki",@"
+$Book.NewSection(2,"Excerpt","George 'The man' Pataki",@"
 George Pataki was a GREAT governor for the state of New York when I was in (elementary/middle/high) school.
 He succeeded Andrews father Mario Cuomo (wasn't bad from what I remember), and was succeeded by Eliot Spitzer.
 George Pataki had a ceremony for crime victims at the State Capitol after my father was killed in 1995.
@@ -5804,7 +5873,7 @@ dome from his wife. Not sayin' that I blame Bill, but, ya know. The last couple 
 was basically him being a lame duck president. Not a great situation for anybody.
 "@)
 
-$Book.NewSection(2,"Excerpt [+] Andrew 'Don't touch me, Grandpa' Cuomo",@"
+$Book.NewSection(2,"Excerpt","Andrew 'Don't touch me, Grandpa' Cuomo",@"
 Anyway, this dude was too busy trying to get these girls to fuck him, right...? 
 All of em said "Nah. I'm all set..." (← I wonder why they ALL say/do that...)
 Then he's like "Hey... C'mon. I'll buy ya dinner and whatevs."
@@ -5909,7 +5978,7 @@ it in a post. He acts like one sometimes. Especially when I know he's interactin
 platform sometimes. Doesn't mean he's not someone I respect, but- sometimes it's a term of endearment.
 "@)
 
-$Book.NewSection(2,"Excerpt [~] Marcus 'Oriellius' Zuckerberg",@"
+$Book.NewSection(2,"Excerpt","Marcus 'Eye of Sauron' Zuckerberg",@"
 Me   : You know who's pretty cool sometimes...?
        Fuckin' Mark Zuckerberg, buddy.
 Mark : …
@@ -6028,7 +6097,7 @@ ____________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(2,"Expressing Something Offensive",@"
+$Book.NewSection(2,"Conjecture","Expressing Something Offensive",@"
 As far as posting something offensive on Facebook that might upset someone in the government's pride, 
 it's gonna cause someone to abuse the platform or maybe they'll ask some people at Facebook: 
 
@@ -6092,7 +6161,7 @@ The WORDS I said were CONSIDERED MORE OFFENSIVE.
 Sure, ok, people seem to have trouble making the CORRELATION with FREEDOM OF EXPRESSION/SPEECH, and CENSORSHIP.
 "@)
 
-$Book.NewSection(2,"Militias",@"
+$Book.NewSection(2,"Lesson","Militias",@"
 _________________________
 | Q: What is a MILITIA? |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -6176,7 +6245,7 @@ I'll talk more about the (law enforcement + justice system) in:
 [Chapter 3 - See no evil, Speak no evil, Hear no evil (Malice)]
 "@)
 
-$Book.NewSection(2,"Peaceful Resolution",@"
+$Book.NewSection(2,"Lesson","Peaceful Resolution",@"
 Objective: (1) lousy politician is accepting BRIBERY which is a CRIMINAL ACTIVITY
 That is a FELONY which carries a sentence of 3-5 years in prison. (Not allowed to be a politician after that)
 ARREST → ESCORT → ARRAIGN → IMPRISON
@@ -6194,7 +6263,7 @@ Then you just restate what you said, "You thought wrong. Someone is going to pri
 "We are here to escort them to an arraignment with an actual judge that isn't able to be bribed."
 "@)
 
-$Book.NewSection(2,"Non-Peaceful Resolution",@"
+$Book.NewSection(2,"Lesson","Non-Peaceful Resolution",@"
 If they really are that fuckin' stupid enough to grab their weapons, or like try to arrest you... 
 FIRE A WARNING SHOT. That'll fuckin' get them to realize that you're not actually breaking the law.
 
@@ -6232,7 +6301,7 @@ They will probably not put up a fight, and if they are that fuckin' stupid, they
 I say PROBABLY, because, there might be some idiots out there that know they are ALSO going to prison...
 "@)
 
-$Book.NewSection(2,"Excerpt [+] Constitutional Guarantees",@"
+$Book.NewSection(2,"Excerpt","Constitutional Guarantees",@"
 Here's the situation. I realize plenty of people are gonna read all of that, and they're gonna say 
 "Wait a second... the Constitution says all that shit...?" Yeah. It does. 
 Read it sometime. Most people haven't.
@@ -6293,14 +6362,14 @@ Function Chapter_2
 
 $Book.NewChapter("Chapter 2","Psychological Manipulation")
 
-$Book.NewSection(3,"Start",@"
+$Book.NewSection(3,"Lesson","Start",@"
 Psychological Manipulation is an understanding of how psychology and manipulation work in conjunction, to 
 achieve a particular goal or outcome. It is by far one of the most advanced tools a person can have a BASIC 
 or THOROUGH understanding of, though it will require a lot of conditioning and study, in order to have a great 
 degree of control with it. It will actually be scattered in bits and pieces throughout this entire book. 
 "@)
 
-$Book.NewSection(3,"Overview",@"
+$Book.NewSection(3,"Lesson","Overview",@"
 (PM) is quite an extraordinary way to "control" people, and it is so fucking powerful, that simply writing words 
 in a document can cause some of the most powerful people on the planet, to take notice. 
 Making this statement will immediately gain the interest of people who ALSO use it. 
@@ -6324,7 +6393,7 @@ Maybe Exxon Mobil does that and I might be quite a dick to have to consider the 
 how he gets paid.
 "@)
  
-$Book.NewSection(3,"Explanation",@"
+$Book.NewSection(3,"Lesson","Explanation",@"
 The end result here is, none of those questions really matter so much as the PRINCIPLE of a senator, being 
 BRIBED, but also, in the same exact way that WikiLeaks leaked a classified video "Collateral Murder", the 
 PRINCIPLE of CENSORING that video, is that SOMEONE in the MILITARY was committing a heinous OFFENSE, and 
@@ -6390,7 +6459,7 @@ Some of those conditions are literally written in the fuckin' Constitution. Mayb
 the same criteria of the Declaration of Independence. It's like "Hey, fuckface... suck a fuckin' dick, bro."
 "@)
  
-$Book.NewSection(3,"Identification",@"
+$Book.NewSection(3,"Conjecture","Identification",@"
 The PROBLEM here, happens to be how SOME people can get away with CRIMINAL BEHAVIOR, while OTHERS cannot.
 
 The end result is:
@@ -6432,7 +6501,7 @@ So, that's when and where PSYCHOLOGICAL MANIPULATION has to be used, in order to
 INTENT: a declaration or directive, following an order, or a specific moral/ethical constraint or principle.
 "@)
  
-$Book.NewSection(3,"Why having a WELL (EQUIPPED/TRAINED) MILITIA is a NECESSITY",@"
+$Book.NewSection(3,"Conjecture","Why having a WELL (EQUIPPED/TRAINED) MILITIA is a NECESSITY",@"
 Here's a visualization of INTENT, as well as how to MANIPULATE several organizations simultaneously:
 Breakdown: Hidden Government/Serial killers/USA-PATRIOT Act of 2001/PEGASUS/PHANTOM → 
 
@@ -6492,7 +6561,7 @@ Most of the agency has no idea I'm NOT making that up, they think I'm a deranged
 However, Michael Zurlo knows I am 100% accurate, and has been unable to be reached for comment.
 "@)
  
-$Book.NewSection(3,"Practice and Conditioning",@"
+$Book.NewSection(3,"Lesson","Practice and Conditioning",@"
 People will attempt to use PSYCHOLOGICAL MANIPULATION to cause someone to DOUBT THEMSELVES, or SOMEONE ELSE.
 Those who understand the core basic concepts involved in establishing BASE REALITY CERTAINTY... 
 ...will never be wrong, in terms of judging a person's character or likelihood of doing something.
@@ -6722,7 +6791,7 @@ they have PATTERNS in them. Not normal bird patterns either.
 More like "Cool, so this thing sounds like ARTIFICIAL INTELLIGENCE." https://youtu.be/zXkmxtYQ6wQ 
 "@)
  
-$Book.NewSection(3,"Identifying a PATTERN",@"
+$Book.NewSection(3,"Application","Identifying a PATTERN",@"
 _______________________
 | Complicated/4 pages |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -7151,7 +7220,7 @@ Attempting to have a bunch of puppets try to manipulate ME or force my hand...?
 These tactics, NO LONGER WORK ON ME. However, this takes quite a bit of PRACTICE and CONDITIONING.
 "@)
  
-$Book.NewSection(3,"Application",@"
+$Book.NewSection(3,"Lesson","Application",@"
 People, really are, morons. The truth is, not EVERYBODY happens to be a moron, but it is a SAFE assumption 
 to make in EVERY circumstance, UNTIL they prove otherwise. As long as you are able to provide PRESSURE, or 
 DETECT when someone is SWITCHING TO OTHER TOPICS (DISTRACTIONS), you can take COMMAND of a conversation. 
@@ -7337,7 +7406,7 @@ ____________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.NewSection(3,"False Assurances and Fallacies",@"
+$Book.NewSection(3,"Lesson","False Assurances and Fallacies",@"
 These terms refer to using LOGIC LOOPHOLES to justify a sensibility or reasoning. 
 (^ they UNDERMINE a person's intelligence)
 
@@ -7470,7 +7539,7 @@ that I am MORE INTELLIGENT THAN THEY WILL EVER BE, to say these things.
 I also think my aunt TERRI COOK had something to do with that scenario as well.
 "@)
  
-$Book.NewSection(3,"Appearances can be Deceiving",@"
+$Book.NewSection(3,"Lesson","Appearances can be Deceiving",@"
 I talk about a girl named MEGHAN PURTCELL later in this. When a REALLY HOT GIRL LIES, it doesn't matter to 
 anybody that's a moron. Not one bit. You could've JUST busted a nut on her chin, like at a bar... cause she 
 MAY have been chokin' YOUR big fat D like less than 60 seconds ago, right...? THEN, a minute later, she 
@@ -7571,7 +7640,7 @@ but if somebody is INSISTENT about a particular STATEMENT or STORY...? It's prob
 ATTENTION/EFFORT, after all.
 "@)
  
-$Book.NewSection(3,"Principle over Personality",@"
+$Book.NewSection(3,"Lesson","Principle over Personality",@"
 AMBER BURDO is my ex-girlfriend, she was not QUITE* as hot as Meghan,                        (← Pretty fuckin' close)  
 However, she seemed to be a LOT more intelligent, which made her more hot in my book.
 
@@ -7680,7 +7749,7 @@ ride on their APPEARANCE, PERSONALITY, or REPUTATION, rather than by sheer PRINC
 effective tool than anything else in the PSYCHOLOGICAL MANIPULATION tool-belt.
 "@)
  
-$Book.NewSection(3,"Exploitation",@"
+$Book.NewSection(3,"Lesson","Exploitation",@"
 Here's how that stuff can be used to EXPLOIT people:
 ___________________________________________________________________________________________________________
 | 1) OPERATING on ASSUMPTIONS → using (PERSONALITY/REPUTATION/APPEARANCE) to cause others SOCIAL PRESSURE |
@@ -7873,7 +7942,7 @@ Therefore, you'll have no certainty about anything. Because, your principles wil
            ---------------------------------------                ---------------------------------------
 "@)
  
-$Book.NewSection(3,"Principle vs Emotion",@"
+$Book.NewSection(3,"Lesson","Principle vs Emotion",@"
 PRINCIPLES are not supposed to SLIDE AROUND AIMLESSLY, because those aren't PRINCIPLES. 
 Those are EMOTIONS, totally different fuckin' thing. 
 
@@ -7907,7 +7976,7 @@ This is SUPER CRITICAL, if you're going to [read this entire document] and [take
 
 "@)
  
-$Book.NewSection(3,"Psychological Strategy",@"
+$Book.NewSection(3,"Application","Psychological Strategy",@"
 The objective isn't to fuckin' tell Ted Cruz that he likes gettin' drilled between the ass cheeks for a 
 cool `$500M. Nah, dude probably doesn't realize that he's committing a serious crime because he's that 
 stupid. So, you gotta CONSIDER THAT SOME PEOPLE MAY NOT ACTUALLY KNOW THAT THEY'RE DOING SOMETHING WRONG.             
@@ -7996,7 +8065,7 @@ ________________________________________________________________________________
 |_______________________________________________________________________________________________________________|
 "@)
  
-$Book.NewSection(3,"Examination",@"
+$Book.NewSection(3,"Conjecture","Examination",@"
 I could really go on with an entire book laying out strategy after strategy, however it all breaks down to 
 philosophy, morals, and their ethical implications, which I'll discuss more about in:
 [Chapter – See no evil, Speak no evil, Hear no evil (Malice)]
@@ -8062,7 +8131,7 @@ SARATOGA HOSPITAL MENTAL HEALTH UNIT... have been put there because SOMEONE IMPO
 That's right. It's basically a "POLITICAL OPPONENT JAILHOUSE." (← MEDICAL FRAUD)
 "@)
  
-$Book.NewSection(3,"Solution",@"
+$Book.NewSection(3,"Lesson","Solution",@"
 There's a SOLUTION for all of these massacres, I believe that the problem MAY BE BEST RESOLVED, by people 
 making a better COLLABORATIVE EFFORT, to talk about how they feel – ESPECIALLY as it concerns (PEOPLE/THINGS) 
 they DO NOT WANT TO TALK ABOUT (STIGMA). 
@@ -8254,7 +8323,7 @@ Cruz : That's... actually not a bad idea...
 Me   : Right.
 "@)
  
-$Book.NewSection(3,"Multi-Pronged Approach (1)",@"
+$Book.NewSection(3,"Conjecture","Multi-Pronged Approach (1)",@"
 The best case I can make about this hidden government shit, is to compare and contrast laws that don't make 
 any fuckin' sense. Because, how do they get passed...? 
 
@@ -8274,7 +8343,7 @@ alarming, but... he will probably watch, especially if she's hot enough. Dude's 
 away... Gotta make some new ones, ya know...
 "@)
  
-$Book.NewSection(3,"Skit [~] You be the Judge (1)",@"
+$Book.NewSection(3,"Skit","You be the Judge (1)",@"
 Paul : Holy fuck bro... that is... my god damn bed... 
 Me   : Yeh. Look, *shows hot girl* 
        Nice, eh?
@@ -8309,7 +8378,7 @@ Girl : HOLY FUCK. *eyes rolling* SPANK ME HARDER.
 Me   : Heh. Ya hear that Paul...?
 "@)
  
-$Book.NewSection(3,"Multi-Pronged Approach (2)",@"
+$Book.NewSection(3,"Conjecture","Multi-Pronged Approach (2)",@"
 Cause let's face it... 
 Pelagalli is probably gonna think to himself that he definitely misjudged me for fuckin' sure. 
 It'd been a while since HIS bed had seen any action, so, had to fuckin' go in there and get a job done...
@@ -8344,7 +8413,7 @@ with a story like this...? Probably not. I would imagine, people will read this,
 get pretty wet in the pants. Well, fuckin' good. They'd better... Especially if I keep describing it too...
 "@)
  
-$Book.NewSection(3,"Skit [~] You be the Judge (2)",@"
+$Book.NewSection(3,"Skit","You be the Judge (2)",@"
 Girl : *grunting* HARDER. SPANK ME HARDER~!
 Me   : *grabs hair pulls back* *other hand around neck* *starts slamming her down into my groin area...* 
 Girl : BOUT TO COME … HOLY FUCK... DON'T FUCKIN' STOP~!
@@ -8383,7 +8452,7 @@ Girl : *doesn't really hesitate at all* I guess, sure.
 Paul : …
 "@)
  
-$Book.NewSection(3,"Multi-Pronged Approach (3)",@"
+$Book.NewSection(3,"Conjecture","Multi-Pronged Approach (3)",@"
 Yeah, I'm gonna say that's bound to probably HUMILIATE him while also INTRIGUE the hell out of him, cause, 
 what the fuck can he do...? "OoOoOhhHh dude fuckin' wrote a story about how I committed a crime and then he 
 fucks the snot outta some hot bitch in my bed, cause he figured out where I live and got in somehow... 
@@ -8438,7 +8507,7 @@ as close to your fuckin' face as possible... It's probably gonna be annoying if 
 somehow managing to get in your house again even though you locked all the doors …
 "@)
  
-$Book.NewSection(3,"Skit [~] You be the Judge (3)",@"
+$Book.NewSection(3,"Skit","You be the Judge (3)",@"
 Paul      : Hey, this motherfucker keeps getting' in here somehow, and I can't …
 <unknown> : …
 Paul      : Yeah...? Pretty hard to do that when he's bangin' some hot bitch AGAIN.
@@ -8466,7 +8535,7 @@ Paul      : *spreads arms wide* LOOK DUDE, all's I'm sayin', is that if we get l
 <unknown> : …
 "@)
  
-$Book.NewSection(3,"Multi-Pronged Approach (4)",@"
+$Book.NewSection(3,"Conjecture","Multi-Pronged Approach (4)",@"
 Maybe the story sounded "pretty good".
 That's … cause when people start talking about things like "hottest fuckin' girl ever in recorded history"...
 People have an idea of what that'd look like.
@@ -8478,7 +8547,7 @@ Then again, he might piss his pants laughing...
 ...and be intrigued and actually give a shit about what happened to me AT MY OLD JOB. 
 "@)
  
-$Book.NewSection(3,"Cyberattacks (1)",@"
+$Book.NewSection(3,"Excerpt","Cyberattacks (1)",@"
 They're something to be worried about no matter who you are, or what you do.
 Cause they can lead to 2020 US Federal Data Breaches… then everybody's basically fucked for a bit.
 
@@ -8556,7 +8625,7 @@ piece of shit like you...?" (← Cause, stepdad... I think that my FATHER was EX
 Anyone who reads that will probably think "THAT IS A DAMN GOOD REASON, ACTUALLY..."
 "@)
  
-$Book.NewSection(3,"Recordings",@"
+$Book.NewSection(3,"Lesson","Recordings",@"
 The COOL thing is, I sorta had a clue that someone was listening to me as far back as January 29th, 2020, OR BEFORE.
 But it eventually BECAME a THREATENING PROPSPECT, because I couldn't EXPLAIN WHY I SUSPECTED what I was SEEING.
 I suppose I should go back and review the audio logs I recorded on May 19th, 20th, 21st 2020 …
@@ -8588,7 +8657,7 @@ Past, was finally resolved by making some admissions… cause that's moronic, go
 The problem is that there are ALTERNATE reasons that she is a critical part of this story. I'll explain later.
 "@)
  
-$Book.NewSection(3,"Narrative",@"
+$Book.NewSection(3,"Conjecture","Narrative",@"
 The way I see it, I was really opening up a can of worms after I started the business in 10/18
 I didn't expect to get thrown off onto several tangents... 
 
@@ -8776,7 +8845,7 @@ she was hot too. Can't remember her name. Anyway…
 Suppose I told her there and then, just waltzed in, and just asked her:
 "@)
  
-$Book.NewSection(3,"Skit [~] Kristen Stangle",@"
+$Book.NewSection(3,"Skit","Kristen Stangle",@"
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
@@ -8918,7 +8987,7 @@ What if she's using a lot of eyebrow movements and can't help herself but smile.
 Well, this is actually a pretty good way to SEGUE into a slightly relevant topic...
 "@)
  
-$Book.NewSection(3,"Body Language",@"
+$Book.NewSection(3,"Lesson","Body Language",@"
 If someone of the opposite sex happens to be having a conversation with you that goes a lot like that...? 
 It's cause both of those people probably want to break the suspense somehow. People ought to scope out how
 basically every dialog James Bond has with a woman... in basically EVERY James Bond movie... Sorta fuckin'
@@ -8955,7 +9024,7 @@ is how I've always been until someone has sorta screwed me over...
 The truth is, you really don't want to let the cat out of the bag, as that is the element of surprise.
 "@)
  
-$Book.NewSection(3,"Analogy [~] The cat's outta the bag",@"
+$Book.NewSection(3,"Excerpt","The cat's outta the bag",@"
 You can say things that might cause the cat to pop it's head out of the bag, and look around...
 Now the cat sees ya. Cat goes "Meow", maybe the cat's hungry- and it needs to be fed.
 
@@ -9018,7 +9087,7 @@ Cat : Yeah~!
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 "@)
  
-$Book.NewSection(3,"Respect is a TWO-WAY-STREET (1)",@"
+$Book.NewSection(3,"Conjecture","Respect is a TWO-WAY-STREET (1)",@"
 Look respect is a TWO WAY STREET, and even disrespecting someone YOU might think could never matter ever, in 
 the world, at any point in time, space, existence...? 
 
@@ -9055,7 +9124,7 @@ UNDERESTIMATION is a pretty HUGE, NON-MISTAKE people might make.
 Still, people will call him and have a conversation like this...
 "@)
  
-$Book.NewSection(3,"Skit [~] `$4500.00/month → `$6500.00/month",@"
+$Book.NewSection(3,"Skit","`$4500.00/month → `$6500.00/month",@"
 Tim : *phone rings, Tim looks at it, some random number, answers the phone* Hello...?
 Guy : Hey dude.
 Tim : Sup...?
@@ -9168,7 +9237,7 @@ Guy : Anyway, look buddy.
 Tim : Bro. 
 "@)
  
-$Book.NewSection(3,"Respect is a TWO-WAY-STREET (2)",@"
+$Book.NewSection(3,"Conjecture","Respect is a TWO-WAY-STREET (2)",@"
 Tim has relatively a LOT LESS to worry about than someone who is a county sheriff, like Michael Zurlo.
 But I suspect that these two have had DIRECT INVOLVEMENT SOMEHOW, typically when you're in an AREA...
 ...where you're near somebody's PROPERTY, BUSINESS, or even BOTH... it's not a bad assumption to make.
@@ -9346,7 +9415,7 @@ is a (← TWO WAY STREET →). Speaking of TED ETOLL, he's a cool guy, and altho
 his business partner at Lou Communications/Metroland STEPHEN LEON certainly did.
 "@)
  
-$Book.NewSection(3,"Story [~] Ted Etoll, Lou Communications/Metroland",@"
+$Book.NewSection(3,"Excerpt","Ted Etoll, Lou Communications/Metroland",@"
 I worked for over 7 years at Lou Communications. Ted, was actually the owner of Metroland, and didn't feel 
 like calling the shots, he just paid Stephen Leon to run Metroland. Stephen Leon, wasn't always a bad guy, but 
 sometimes he'd be a condescending dickhead that needed to be pulled down several pegs.
@@ -9446,7 +9515,7 @@ saying: "Make sure this never happens again."
 Ah. Ok fuckface. I made damn certain of it.
 "@)
  
-$Book.NewSection(3,"Insults",@"
+$Book.NewSection(3,"Lesson","Insults",@"
 INSULTS are EXTREMELY EFFECTIVE, when people CARE about their REPUTATION
 On the contrary, if you aggressively insult somebody you will earn the reputation of someone that lacks respect.
 But, most people won't understand WHY, nor will they CARE why...
@@ -9510,7 +9579,7 @@ Because if you ARE being censored or limited, then the solution is...
 ...to acclimate the situation, by making THREATS.
 "@)
  
-$Book.NewSection(3,"Threats",@"
+$Book.NewSection(3,"Lesson","Threats",@"
 They differ in severity just like CENSORSHIP also ranges in severity.
 
 Threats are seen as INDICATIVE of AGGRESSION, and therefore, society frowns upon them because they can be 
@@ -9560,7 +9629,7 @@ High:
  - RYAN WARD (my cousin) basically making it incredibly clear to me that he's had FBI remote access to my equipment
 "@)
  
-$Book.NewSection(3,"De-escalation",@"
+$Book.NewSection(3,"Lesson","De-escalation",@"
 Sometimes TIME causes the issue to drop in severity.
 _________________
 | Nfrastructure |  I had to wait a few years to calm the fuck down after Matt had me fired. I didn't mean to
@@ -9578,7 +9647,7 @@ _______________________
 people will be like "OooOoOoohhhHHhooHhh you're the guy that pissed Tim off, eh...?"
 "@)
  
-$Book.NewSection(3,"Cyberattacks (2)",@"
+$Book.NewSection(3,"Excerpt","Cyberattacks (2)",@"
 The truth is someone is using stuff that kills people, and then playing games with that stuff, and if they do 
 it again, they won't survive. Cause if they want to take the easy way out and just take someone a lot more 
 talented than they are, out of the game, then just fuckin' do it already. Why make me wait...? Ya know...? 
@@ -9615,7 +9684,7 @@ government. A lot of people in the business world don't actually have talent.
 Allow me to rephrase that...
 "@)
  
-$Book.NewSection(3,"Excerpt [~] Raw Talent",@"
+$Book.NewSection(3,"Lesson","Raw Talent",@"
 There are plenty of people with (ACTUAL/RAW TALENT), that exist in the business world.
 But, many of them have what's called "ass kissing skills".
 
@@ -9971,7 +10040,7 @@ He doesn't appreciate being called one... but he plays this same game that so ma
 they fuckin' heard what I had to say alright, but I never hear back. And that, to me, is OFFENSIVE.
 "@)
  
-$Book.NewSection(3,"Hidden Gov't and Corruption",@"
+$Book.NewSection(3,"Conjecture","Hidden Gov't and Corruption",@"
 Further to that point, requesting transcriptions from the court is bogus. 
 Why do they do that, rather than the audio recording? 
 See, something like that sounds incredibly questionable. 
@@ -10089,7 +10158,7 @@ If they DO give a shit, then...
 So, this document is probably gonna change some shit. 
 "@)
  
-$Book.NewSection(3,"Tyranny",@"
+$Book.NewSection(3,"Conjecture","Tyranny",@"
 Tyranny appears to be in full swing, and there's something wrong with this guy. (← CHARACTERIZATION)
 An extremely useful tool, is to consider characterizing a problem as an actual person.
 
@@ -10169,13 +10238,13 @@ Function Chapter_3
 
 $Book.NewChapter("Chapter 3","See no evil, Speak no evil, Hear no evil (Malice)")
 
-$Book.NewSection(4,"Start",@"
+$Book.NewSection(4,"Lesson","Start",@"
 See no evil...? Speak no evil...? Hear no evil...? 
 Malice is basically the living embodiment of Satan. 
 You don't have to be religious at all, to know what I mean, either.
 "@)
 
-$Book.NewSection(4,"Overview",@"
+$Book.NewSection(4,"Lesson","Overview",@"
 Lady justice wearing a fucking blindfold around her eyes, tells me that at some point in time, 
 some asshole came around and decided that should be a cool way to install a hidden government. 
 
@@ -10281,7 +10350,7 @@ Evil, is when you ask yourself hypothetical questions about "if this person did 
 same level of sense... that is a great way to define "evil".
 "@)
  
-$Book.NewSection(4,"Identification",@"
+$Book.NewSection(4,"Conjecture","Identification",@"
 So for instance... 
 Condition 1: "IF Michael Zurlo facilitated an attempted murder by using Pegasus, 
 ...then can Captain Cooper's (2) adult kids kill me...?"                            (← Not sure what their names are)
@@ -10317,7 +10386,7 @@ But, they need to be EDUCATED, on how to determine with SHEER CERTAINTY, that th
 things, and vice versa. MORALITY and ETHICS play a HUGE role, in determining ONE from the OTHER.
 "@)
  
-$Book.NewSection(4,"Moral Dilemma",@"
+$Book.NewSection(4,"Application","Moral Dilemma",@"
 Example: Moral Dilemma: Train track (Covered by Michael Stevens from Vsauce) 
 You just so happen to see (5) people that are somehow tied to a set of train tracks.
 You just so happen to see (1) person that is somehow tied to a parallel set of train tracks.
@@ -10343,15 +10412,15 @@ fuckin' train tracks, because it would be ABSOLUTELY RIDICULOUS to NOT consider 
 with. So the death of those people should NOT be on a particular person's conscious, HOWEVER... people do 
 that every fuckin' day.
 
-For instance, the hidden government causes Americans to suffer, and actually laughs about it too. 
- _______________________________________________________________________________________________________________
- | Hidden gov't : Wow, LOL. Those fuckin' 19 kids and 2 teachers, they deserved that shit in Uvalde, alright.  |
- |                We should really put an additional `$100M in Ted Cruz's pocket so it happens more often.      |
- |                These Americans have NO FUCKIN CLUE that we laugh about this shit every god damn day.        |
- |                If they KNEW THAT WE EXISTED, they would probably exterminate us with extreme prejudice...   |
- |                See no evil, Speak no evil, Hear no evil.                                                    |
- |                Fuckin' morons.                                                                              |
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+For instance, the hidden government causes Americans to suffer, and actually laughs about it too.
+_______________________________________________________________________________________________________________
+| Hidden gov't : Wow, LOL. Those fuckin' 19 kids and 2 teachers, they deserved that shit in Uvalde, alright.  |
+|                We should really put an additional 100M in Ted Cruz's pocket so it happens more often.       |
+|                These Americans have NO FUCKIN CLUE that we laugh about this shit every god damn day.        |
+|                If they KNEW THAT WE EXISTED, they would probably exterminate us with extreme prejudice...   |
+|                See no evil, Speak no evil, Hear no evil.                                                    |
+|                Fuckin' morons.                                                                              |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Probably sounds EVIL to hear all of that, right...? Well, police officers are OK with that. 
 So are doctors. And the judges, and every lawyer, every politician, everyone is OK with this scenario 
 occurring right under everyone's noses.
@@ -10361,7 +10430,7 @@ That probably sounds fuckin' ridiculous. Nobody will openly state that they're O
 But, it is actually a real thing that needs to be taken SERIOUSLY.
 "@)
  
-$Book.NewSection(4,"Determining Seriousness",@"
+$Book.NewSection(4,"Conjecture","Determining Seriousness",@"
 Sometimes these people aren't afraid at all, they're deadly and have actually killed people before.
 The more people they are involved with killing, the more "dead" the look in their eyes becomes, when they lie.
 
@@ -10398,7 +10467,7 @@ But- people should consider that some people really are that damaged, scarred, o
 So it makes perfect sense to understand their motivations and relate to them.
 "@)
  
-$Book.NewSection(4,"Determining Scope, Severity, and Suspicion",@"
+$Book.NewSection(4,"Conjecture","Determining Scope, Severity, and Suspicion",@"
 ________________________________________________________________________________________________________
 | Term      | Definition                                                                               |
 |===========|==========================================================================================|
@@ -10487,12 +10556,12 @@ near (New Country/Falcon Trace). Known or suspected associates ranking in likeli
 Example: [MICHAEL ZURLO] – Headmaster County Sheriff for Saratoga County AKA "straight to the top" [RICO]
 "@)
  
-$Book.NewSection(4,"Association List",@"
+$Book.NewSection(4,"Application","Association List",@"
 _________________________________________________________________________________________________________________
 | Name                                     | Association/Records                                                |
 |==[SCSO/GUILTY/RICO/FACILITATION]=========|====================================================================|
 | COOPER                (without question) | SCSO : NFRASTRUCTURE, SHENENDEHOWA | 2020-003688 [KEY]             |
-| MESSINES JR.          (without question) | SCSO : 2020-040845, ASSOC. NYSP TROOPER ROBERT MESSINES [KEY]      |
+| MISSENIS JR.          (without question) | SCSO : 2020-040845, ASSOC. NYSP TROOPER ROBERT MISSENIS [KEY]      |
 | J. LEONARD            (without question) | SCSO : 2020-003173, 2020-003177 [KEY]                              |
 | S. SCHELLING          (without question) | SCSO : 2020-027797, 2020-028501 [KEY]                              |
 | PIRRONE               (without question) | SCSO : CATRICALA, COOPER | 2020-003173 | LEONARD [KEY]             |
@@ -10537,7 +10606,7 @@ That does NOT mean that they are GUILTY, could mean that they are INNOCENT and t
 explains how SOMEONE ELSE IS GUILTY.
 "@)
  
-$Book.NewSection(4,"Impressions",@"
+$Book.NewSection(4,"Lesson","Impressions",@"
 Pretty substantial. I can say with SHEER CERTAINTY, that PAUL ZURLO, is a gay guy, but he is not a 
 bloodthirsty killer at all. I can ALSO say that about TIMOTHY BERLIN, not GAY, but innocent.
 Same goes for ANTHONY AGRESTA, not GAY, but innocent.
@@ -10627,7 +10696,7 @@ But those suspicions have SHIFTED because of additional key observations I have 
           ----------      -------            ---------------------------------------
 "@)
  
-$Book.NewSection(4,"Observations",@"
+$Book.NewSection(4,"Lesson","Observations",@"
 I don't go around placing microphones in fictional dimly lit warehouses to derive this information either.
 I talk to people to derive SUBLIMINAL information from their: VOCAL RESPONSES, INTONATION, and INFLECTIONS
 __________________________________________________________________________________________________________
@@ -10709,7 +10778,7 @@ BORDEN did cover shit up, and asked questions about CATRICALA and the pictures I
 _________________________________________________________________________________________________________
 | Side point |/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__|
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-NYSP TROOPER/INVESTIGATOR ROBERT MESSINES… as well as his SON DEPUTY/TROOPER MESSINES, who was reported
+NYSP TROOPER/INVESTIGATOR ROBERT MISSENIS… as well as his SON DEPUTY/TROOPER MISSENIS, who was reported
 as a STATE TROOPER in THIS TICKET 2020-040845, who just so happened to show up at the EXACT same time…
 …as ANTHONY AGRESTA, and PAUL ZURLO. Wanna know why…? It's because he was IN HIS COUNTY SHERIFF UNIFORM.
 
@@ -10734,7 +10803,7 @@ Yeah, that dude was driving the white SUV, I'll discuss that in:
 [Chapter 7 : USA-Patriot Act of 2001 and Surveillance Capitalism]
 "@)
  
-$Book.NewSection(4,"Resistance",@"
+$Book.NewSection(4,"Application","Resistance",@"
 Pretty easy to tell when someone WAS, however. When someone IS involved in something like that, they will act...
 ...like a dog that just shit in the house, and then you try to put their nose in the shit pile. 
 
@@ -10769,7 +10838,7 @@ Or other dudes.
 The listed parties above in the ZURLO/Association list, are NOT New York State Troopers, are they? Nope.
 "@)
  
-$Book.NewSection(4,"Narrative",@"
+$Book.NewSection(4,"Assertion","Narrative",@"
 SCSO was definitely involved in trying to kill me, I wouldn't suspect it if I didn't see so many indications
 or FEEL like SCOTT SCHELLING was trying to do that. Yeah. Dude was TRYING TO DO THAT, which is why I asked 
 JEFFREY KAPLAN to follow him when bringing me to my house. JOSHUA WELCH and JEFFREY KAPLAN arrived MINUTES after
@@ -10851,10 +10920,10 @@ Those files were uploaded about 20 minutes BEFORE I saw the FIRST kid who just s
 SERIAL KILLER. In one of those recordings, I remember someone was trying to hit me with their vehicle 
 ON THE WAY TO MOBIL. I sorta forgot about it. But, I uploaded the audio recordings and then heard something 
 in the woods behind Catricala's building (the "bird").
-____________________________________________________________________________________________________
-| 05/25/20 2343 | Boomer McCloud plaza | <insert link>                                             |
-|               |                      | TAKEN IMMEDIATELY BEFORE THE ATTACK (IMG_0646.JPG)        |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+________________________________________________________________________________________
+| 05/25/20 2343 | IMG_0646 | Boomer McCloud plaza, TAKEN IMMEDIATELY BEFORE THE ATTACK |
+| https://drive.google.com/file/d/1Lb8RLYUsJnnKnTOHbunlyBmidIXycjVD                    |                                                                              |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Prior to this, I walked around the building behind the Catricala Funeral Home, and took some pictures.
 Then I walked back out to Route 9, and attempted to record a video, but forgot it was still on picture mode.
 
@@ -10878,7 +10947,7 @@ Function Chapter_4
 
 $Book.NewChapter("Chapter 4","The Week")
 
-$Book.NewSection(5,"Start",@"
+$Book.NewSection(5,"Assertion","Start",@"
 This is an actual statement that I am making, as to the events over the course of about a week, in May 2020.
 Even though there were MULTIPLE ATTEMPTS between (05/19/20) → (05/27/20), I've uncovered...
  ________________________________________________________________________________________________________________
@@ -10888,7 +10957,7 @@ Even though there were MULTIPLE ATTEMPTS between (05/19/20) → (05/27/20), I've
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(5,"Overview",@"
+$Book.NewSection(5,"Assertion","Overview",@"
 Make no mistake here, I know that some of my exhibits aren't gonna be "perfect" by any standard.
 I suppose I'll explain myself when asked questions, I was worried I'd die for this whole period of time.
 I'm not even remotely kidding about that in the least.
@@ -10899,7 +10968,7 @@ for them to do this...? Maybe. But, seems like I've caught onto a charade that s
                         -----                  ----------------------------------------------------------------
 "@)
  
-$Book.NewSection(5,"Theodore Roosevelt [|] (05/19/20 → 05/21/20)",@"
+$Book.NewSection(5,"Excerpt","Theodore Roosevelt [|] (05/19/20 → 05/21/20)",@"
 ________________________________________________________________________________________________________________
 | 05/19/20 0840 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -11531,16 +11600,16 @@ by his best friend, going on to earning themselves a Nobel Peace Prize, and bein
 So... the point I'm trying to make is that "Big things start small." -Jeff Bezos
 "@)
  
-$Book.NewSection(5,"Beginning [|] (05/21/20 1500 → 05/22/20 1700)",@"
+$Book.NewSection(5,"Excerpt","Beginning [|] (05/21/20 1500 → 05/22/20 1700)",@"
 I'm not going to write about everything I posted to Facebook, but I had been recording some videos of birds.
 Back in February or March of 2020, I recorded a video of what I believed was a Peregrine falcon.
 
 Then, on 05/21/20 at approximately 2:45PM, I recorded multiple videos of multiple TURKEY VULTURES flying above
-ASTOIA VUCETICS' property. After posting the videos on Facebook, a friend of mine (Kris Wacikowski) told me 
+Ostoja VUCETICS' property. After posting the videos on Facebook, a friend of mine (Kris Wacikowski) told me 
 that they are TURKEY VULTURES, and they feed on CARRION. In other words, dead bodies... 
 
 Now, maybe it'd be a bit of a stretch to say "Ah, dead bodies must be nearby." after seeing (1) TURKEY VULTURE.
-But I literally recorded a video where there are (6) of them circling AT or ABOUT, 15 Fern Lane/ASTOIA VUCETICS
+But I literally recorded a video where there are (6) of them circling AT or ABOUT, 15 Fern Lane/Ostoja VUCETICS
 property... THEN, as I was writing up these last couple of paragraphs, it appears as if WRITING THESE LAST 
 COUPLE PARAGRAPHS REALLY PISSED SOMEBODY OFF either at FACEBOOK, or like, LOCALLY... because I had to REFRESH
 THE PAGE, and somehow a couple of posts I wrote on Facebook that day...? Man, it's like somebody didn't want 
@@ -11626,7 +11695,7 @@ ________________________________________________________________________________
 | 0004 | IMG_0384 | 05/21/20 1447 | 0 | https://drive.google.com/file/d/1HSHEEnPfGw9LqiVT0amoq7Bfv2Jlwr4o |
 | 0005 | IMG_0385 | 05/21/20 1448 | 0 | https://drive.google.com/file/d/1-OYxuc7HAVAL_gFt-Xq-A_lLpDL9dSLc |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
-| [0001, 0002, 0003, 0004, 0005]: TURKEY VULTURES flying in circles above Astoia Vucetic's driving range. |
+| [0001, 0002, 0003, 0004, 0005]: TURKEY VULTURES flying in circles above Ostoja Vucetic's driving range. |
 |---------------------------------------------------------------------------------------------------------|
 | 0006 | IMG_0388 | 05/21/20 2103 | 0 | https://drive.google.com/file/d/1cAUZNgct_m7q3byf4qoZasriIe4EyITw |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
@@ -11848,11 +11917,11 @@ I used to go there and record myself memorizing "The Uncanny Valley", a poem I w
     _________________________________________________________________________________________________________
     | Side point |/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__|
     |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-    | Prior to THAT incident, I was going onto ASTOIA VUCETIC's property, going around trying to figure out |
+    | Prior to THAT incident, I was going onto Ostoja VUCETIC's property, going around trying to figure out |
     | where this dude went, because to ME, it felt like this guy just went MISSING.                         |
     | I did work with this dude, BRIEFLY.                                                                   |
     |                                                                                                       |
-    | Anyway, I was on his property that Kenneth Yates later told me, that Astoia had sold to Amedore.      |
+    | Anyway, I was on his property that Kenneth Yates later told me, that Ostoja had sold to Amedore.      |
     | I was in the garage cleaning it up, actually.                                                         |
     | Then, I left... suddenly "whoosh" a white SUV came onto the property, and turned its lights off...    |
     |                                                                                                       |
@@ -11867,7 +11936,7 @@ I used to go there and record myself memorizing "The Uncanny Valley", a poem I w
     | shit, I was looking for CLUES because this dude just went MISSING. Nobody leaves a property in that   |
     | condition, unless they had a pretty good reason to say:                                               |
     |                                                                                                       |        
-    | Astoia : Fuck it.                                                                                     | 
+    | Ostoja : Fuck it.                                                                                     | 
     |          None of that shit even mattered to me, anyway.                                               | 
     |          I only owned this property for like 35 years...                                              | 
     |          So, who gives a shit...?                                                                     | 
@@ -11889,7 +11958,7 @@ I used to go there and record myself memorizing "The Uncanny Valley", a poem I w
     | |                                                                                                   | |
     | | But I noticed that whoever abandoned the property ALLOWED people to go in this dude's house, and  | |
     | | smash up the Sheetrock and tear shit out of the walls, smashing glass and whatever, I had a       | |
-    | | feeling that Astoia was probably a victim, UP UNTIL, the house, food shack, & wooden deck were    | |
+    | | feeling that Ostoja was probably a victim, UP UNTIL, the house, food shack, & wooden deck were    | |
     | | demolished. THEN people were actually taking care of the property.                                | |
     | |___________________________________________________________________________________________________| |
     | | Deeper side point |/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/| |
@@ -11925,7 +11994,7 @@ Stepdad : Ya know, where the hell IS this son of a bitch...?
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 "@)
  
-$Book.NewSection(5,"S.A.N.G [|] (05/22/20 2330)",@"
+$Book.NewSection(5,"Excerpt","S.A.N.G [|] (05/22/20 2330)",@"
 ________________________________________________________________________________________________________________
 | 05/22/20 2330 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -12077,7 +12146,7 @@ But no. I run into this problem quite a lot. Maybe someone should hook me up wit
 CLEARANCE... 
 "@)
  
-$Book.NewSection(5,"Flashback [~] Gary McQueen",@"
+$Book.NewSection(5,"Flashback","Gary McQueen",@"
 The reason why I was thinking about heading to SCHENECTADY before I even went to STRATTON, is because I was 
 certain that some dude who works at Rivers Casino, was using these fuckin' remote code executions on the Acer 
 Veritons back in 2019 when I was running [COMPUTER ANSWERS - 514 Main Street Bennington, VT 05201] between 
@@ -12214,8 +12283,8 @@ Well, I think it has something to do with my father's death, and (Nfrastructure/
 Regardless, Gary got in trouble for something... I lost contact with him. 
 Didn't stop me from being curious about what the hell he meant.
 "@)
- 
-$Book.NewSection(5,"Schenectady [|] (05/23/20 0100 → 05/23/20 0230)",@"
+
+$Book.NewSection(5,"Excerpt","Schenectady [|] (05/23/20 0100 → 05/23/20 0230)",@"
 ________________________________________________________________________________________________________________
 | 05/23/20 0100 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -12296,7 +12365,7 @@ She was actually pretty hot by the way. Considering the circumstances, I was pre
 I thanked her for the ride home and left it at that.
 "@)
  
-$Book.NewSection(5,"Affairs in Order [|] (05/23/20 1200 → 05/23/20 1800)",@"
+$Book.NewSection(5,"Excerpt","Affairs in Order [|] (05/23/20 1200 → 05/23/20 1800)",@"
 ________________________________________________________________________________________________________________
 | 05/23/20 1200 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -12352,7 +12421,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.NewSection(5,"On the Offensive [|] (05/23/20 2000 → 05/24/20 0230)",@"
+$Book.NewSection(5,"Excerpt","On the Offensive [|] (05/23/20 2000 → 05/24/20 0230)",@"
 ________________________________________________________________________________________________________________
 | 05/23/20 2000 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -13473,7 +13542,7 @@ Then I looked at the other versions of the files and the cool thing is that (2) 
 have differing file sizes, which means that the videos have something transcoded in them.
 "@)
  
-$Book.NewSection(5,"35th Birthday [|] (05/24/20 1200)",@"
+$Book.NewSection(5,"Excerpt","35th Birthday [|] (05/24/20 1200)",@"
 One thing you wanna keep in mind when you're doing something most people would never think/do in my situation, 
 is just to keep applying pressure. Because the LAST thing ANY serial killer really wants, is to be caught on 
 camera looking like they're about to stab somebody... But, maybe they'll try again. You know? I mean, so what 
@@ -13611,7 +13680,7 @@ I had been eyeing the 1769 Route 9 residence for some time, for reasons I will e
 I took pictures of nearly every property adjacent to Asotoia Vucetic's abandoned driving range property.
 "@)
  
-$Book.NewSection(5,"Biette Road [|] (05/24/20 1800)",@"
+$Book.NewSection(5,"Excerpt","Biette Road [|] (05/24/20 1800)",@"
 ___________________________________________________________________________________________________________
 | Index   Name     Date    Time   Focus                (URL/Uniform Resource Locator)                     |
 |---/--------|---------\------\-----|--------------------\-------------|------------/---------------------|
@@ -13620,7 +13689,7 @@ ________________________________________________________________________________
 | 0003 | IMG_0470 | 05/24/20 1801 | 0 | https://drive.google.com/file/d/1R7VNKSRzuKM-tIJwzdo7td2h6ev74j0K |
 | 0004 | IMG_0471 | 05/24/20 1801 | 0 | https://drive.google.com/file/d/1KLSxinDnryuHw9sgwLJtPa87A0BW2Se5 |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
-| [0001/OLD ENTRANCE TO ASTOIA VUCETICS GARAGE]: Overgrown vegetation + non-use makes it hard to see.     |
+| [0001/OLD ENTRANCE TO Ostoja VUCETICS GARAGE]: Overgrown vegetation + non-use makes it hard to see.     |
 | This is adjacent to KENNETH YATES' uncle's property. It is DIRECTLY across street from 1769 US-9, Zack  |
 | Karel's "residence". Maybe Zack DOES live there. However, Zack's 'HOUSE' used to be a 'DOCTORS OFFICE'. |
 | [0002/1769 US-9 parking]: Where PATIENTS of the 'DOCTORS OFFICE' once parked. Stays relatively unused.  |
@@ -13637,7 +13706,7 @@ ________________________________________________________________________________
 |---------------------------------------------------------------------------------------------------------|
 | 0006 | IMG_0473 | 05/24/20 1803 | 0 | https://drive.google.com/file/d/1Dwrvg_lk-uYfLVRALKGiLo756SMgwWE- |
 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - |
-| [0006/ASTOIA VUCETIC'S HOUSE+Red Car]: Not sure who that is. But obviously, this was taken before the   |
+| [0006/Ostoja VUCETIC'S HOUSE+Red Car]: Not sure who that is. But obviously, this was taken before the   |
 | building was torn down. Pretty sure people aren't supposed to just casually drive in there and hang out.|
 |---------------------------------------------------------------------------------------------------------|
 | 0007 | IMG_0477 | 05/24/20 1810 | 0 | https://drive.google.com/file/d/1ex0klAW_MeYpdd5Q1trtVcLJFp2tlTUx |
@@ -13646,7 +13715,7 @@ ________________________________________________________________________________
 | later, but I've made a very key observation about this building. This is the same exact place where I   |
 | saw SCSO SEDAN 4184 6-7 minutes after KEY BANK 06/16/20 (I'll talk about that later, but the key term   |
 | to remember is FAKE COP CAR THAT MARK SHEEHAN KNOWS ABOUT... PARKED IN THE MIDDLE OF ROUTE 9, TRIED TO  |
-| FAKE ME OUT BUT THEN WENT TO PULL A 180 IN ASTOIA VUCETICS DRIVING RANGE PARKING LOT INSTEAD OF TURNING |
+| FAKE ME OUT BUT THEN WENT TO PULL A 180 IN Ostoja VUCETICS DRIVING RANGE PARKING LOT INSTEAD OF TURNING |
 | LEFT INTO PARKWOOD PLAZA, AND THEN STARTED TO DRIVE BACK TOWARD ME... but then I cut through this       |
 | parking lot and went home, basically I didn't have to tell that guy to fuck off...).                    | 
 |                                                                                                         |
@@ -13782,11 +13851,11 @@ That person being, me.
 If Ken knew just how many people in this shit storm are involved...? 
 MAYBE he'll have second thoughts. But- maybe it wasn't quite time.
 
-[ASTOIA VUCETIC's OLD HOUSE]: Maybe if the person in the RED CAR was doing something illegal, 
+[Ostoja VUCETIC's OLD HOUSE]: Maybe if the person in the RED CAR was doing something illegal, 
 somebody would've arrested that dude by now, right...?                                                    (← FALLACY)
 "@)
 
-$Book.NewSection(5,"Before Catricala [|] (05/24/20 1845) (1)",@"
+$Book.NewSection(5,"Excerpt","Before Catricala [|] (05/24/20 1845) (1)",@"
 This area will be a crucial stage of the arena that would later be battled upon.
 ___________________________________________________________________________________________________________
 | Index   Name     Date    Time   Focus                (URL/Uniform Resource Locator)                     |
@@ -14030,7 +14099,7 @@ Well, think again, ya fucks. That's like 2 or 3 fallacious statements right ther
 That's like a fuckin' megafallacy.
 "@)
  
-$Book.NewSection(5,"Excerpt [~] Now that's what I call 'Alliteration'",@"
+$Book.NewSection(5,"Excerpt","Now that's what I call 'Alliteration'",@"
 Nah. I'm not calling the people at the sub shop stupid fucks, nor the readers. 
 I'm calling the morons at Verizon... 
 ...who drive, float, and fuck around, in their fuckin' federal phallus faceted fuckmobiles...
@@ -14051,7 +14120,7 @@ People  : ...that doesn't answer my question...
 Verizon : Suck a fuckin' dick, bro.
 "@)
  
-$Book.NewSection(5,"Before Catricala [|] (05/24/20 1845) (2)",@"
+$Book.NewSection(5,"Excerpt","Before Catricala [|] (05/24/20 1845) (2)",@"
 BEHIND them, the Athletic business gets Verizon FIOS, undetected... by morons. 
 I mean, nobody would ever notice something that OBVIOUS, or fuckin' blatant... would they...? 
 If Gus Fring can distribute methamphetamines in fast food chicken trucks, surely Verizon can get away with 
@@ -14087,7 +14156,7 @@ I mean, I really hope I'm wrong about that and this is just a LOCALIZED THING TH
 However... I've got something else to really sew it all together.    
 "@)
  
-$Book.NewSection(5,"Catricala [|] (05/24/20 1910) (1)",@"
+$Book.NewSection(5,"Excerpt","Catricala [|] (05/24/20 1910) (1)",@"
 I was walking up Route 9, when suddenly, I see someone that looks like the dude in the convertible with 
 his wife several days beforehand, pull up to the funeral home across the street from Computer Answers in a 
 black, Lexus (I think). I decide to approach him, he was inside. As soon as he came to the door, he and I 
@@ -14099,7 +14168,7 @@ At the time, I didn't think much of Eric Catricala being involved or related or 
 Didn't even know his name. I had a gut feeling that maybe I oughtta talk to the dude when I saw him pull up.
 "@)
  
-$Book.NewSection(5,"Flashback [!] Eric Catricala",@"
+$Book.NewSection(5,"Flashback","Eric Catricala",@"
 Catricala : How can I help you...?
 Me        : Hi, my name is Michael Cook. 
 Catricala : Hello Michael, I'm Eric Catricala.
@@ -14151,7 +14220,7 @@ Me        : *momentary pause* You keep up the good work there, Mr. Catricala.
 Catricala : Alright, I will, you take care of yourself too.
 "@)
  
-$Book.NewSection(5,"Catricala [|] (05/24/20 1910) (2)",@"
+$Book.NewSection(5,"Excerpt","Catricala [|] (05/24/20 1910) (2)",@"
 Now, the real conversation he and I had, only had certain elements of what I threw into the document.
 Tanski, Wormuth and Amato were ALREADY investigated.
 Most of it is fairly accurate. Neither one of us really had a fuckin' clue, about each other.
@@ -14169,7 +14238,7 @@ Maybe those people didn't actually accept a BUYOUT... but instead, were TAKEN OU
 And then, now the land can be redeveloped. (not) Cool. Maybe I'm wrong.
 "@)
  
-$Book.NewSection(5,"After Catricala [|] (05/24/20 1915)",@"
+$Book.NewSection(5,"Excerpt","After Catricala [|] (05/24/20 1915)",@"
 I began to walk all the way down Route 9 to Guideboard Road, where I began to head into Waterford. I was making  
 recordings of the "birds" that I heard, attempting to discern the REAL birds, from ones that I believed to be fake. 
 
@@ -14240,8 +14309,7 @@ ________________________________________________________________________________
 |______________________________________________________________________________________________________________|
 "@)
  
-$Book.NewSection(5,"Bell Atlantic [|] (05/24/20 1930)",@"
-
+$Book.NewSection(5,"Excerpt","Bell Atlantic [|] (05/24/20 1930)",@"
 I had been saying quite a lot about Bell Atlantic, and how they have a dick basically jammed up everybody's 
 butt. Obviously not literally, but they are a friggen monopoly. These pictures were hand-picked to be left 
 out of my uploads to Google Drive. How cool is that...?
@@ -14296,7 +14364,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.NewSection(5,"Halfmoon Town Hall [|] (05/24/20 2045)",@"
+$Book.NewSection(5,"Excerpt","Halfmoon Town Hall [|] (05/24/20 2045)",@"
 I found something rather terrifying in a couple of these pictures, then I saw anomalies in others.
 There's literally a GHOST CAR in one of these pictures, and 5 seconds later, MAN, it's fuckin' TOTALLY GONE.
 ___________________________________________________________________________________________________________
@@ -14410,7 +14478,7 @@ were because someone I've known since I was a kid... they were the reason why th
 Which is why I wound up going to Innisbrook the following day.
 "@)
  
-$Book.NewSection(5,"Solar Drive [|] (05/24/20 2200)",@"
+$Book.NewSection(5,"Excerpt","Solar Drive [|] (05/24/20 2200)",@"
 Took some pictures on Solar Drive, found a meter that was not running at the cell phone tower, among some
 other stuff. Note how some pictures are perfectly stable, and the others aren't...? Well, that is a perfect
 indication of a COCKSUCKER being involved somehow... The details are not so apparent until you apply this
@@ -14485,7 +14553,7 @@ By the way, here's the VIDEO that I made of some of these same shots.
 (^ Aw... That one meter stays at 0.00 for like a while, doesn't it...?)
 "@)
  
-$Book.NewSection(5,"Mission Complete [|] (05/24/20 2300)",@"
+$Book.NewSection(5,"Excerpt","Mission Complete [|] (05/24/20 2300)",@"
 I began to upload my files, pictures, and whatnot. Someone was still trying to be a lame motherfucker though.
 Had to upload the pictures in smaller groups or chunks to avoid someone who was being a dickhead in the middle.
 
@@ -14597,7 +14665,7 @@ At least I'm not pegging anybody with a dick that just so happens to ALSO be a W
 dangerous in a totally different way than it should be... ya know...? 
 "@)
  
-$Book.NewSection(5,"Skit [~] Pencil Dickman vs. Fatcock Goodman",@"
+$Book.NewSection(5,"Skit","Pencil Dickman vs. Fatcock Goodman",@"
 Pencil Dickman  : Hey Fatcock! 
                   What the fuck, bro...? 
 Fatcock Goodman : Hey, what's goin' on Pencil Dickman?
@@ -14683,7 +14751,7 @@ Fatcock Goodman : I agree...
                   ...IS pretty dangerous.
 "@)
  
-$Book.NewSection(5,"Day Preceding the Attack [|] (05/25/20 1200 → 05/25/20 1700)",@"
+$Book.NewSection(5,"Excerpt","Day Preceding the Attack [|] (05/25/20 1200 → 05/25/20 1700)",@"
 ________________________________________________________________________________________________________________
 | 05/25/20 1200 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -14939,7 +15007,7 @@ ANYBODY TO DO... HUH. WEIRD. Well, it could be because the police would rather H
     | I didn't make a FACIAL identification, I just know that the guy appeared to be approximately the same |
     | height. But, interestingly enough, I think the hacked firmware had something to do with the guy from  |
     | SCSO coming to a complete, dead stop in the middle of US-9 7-8 minute AFTER I walked past the bank,   |
-    | and then trying to fake me out when he pulled into ASTOIA VUCETIC's driving range parking lot, BEFORE | 
+    | and then trying to fake me out when he pulled into Ostoja VUCETIC's driving range parking lot, BEFORE | 
     | I went to 5 CHELSEA PLACE the following day, leaving a letter that (Oliver Robinson/Michael Whitacre) | 
     | would wind up reading too.                                                                            |
     | _____________________________________________________________________________________________________ |
@@ -15206,7 +15274,7 @@ This son of a bitch got Ray Fetcho, but not in his sleep. He was my 8th grade Ea
 I have a feeling, that having to tap into spiritual powers, is what's gonna get me outta this fuckin' mess.
 "@)
  
-$Book.NewSection(5,"Night of the Attack [|] (05/25/20 2100 → 05/25/20 2343) (1)",@"
+$Book.NewSection(5,"Excerpt","Night of the Attack [|] (05/25/20 2100 → 05/25/20 2343) (1)",@"
 ________________________________________________________________________________________________________________
 | 05/25/20 2100 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    
@@ -15238,7 +15306,7 @@ SCOTT even said 'you're a naughty boy bro' and, JOHN PICKETT might be the reason
 These dudes probably watch JUST to get a glimpse of what I'm like...
 "@)
  
-$Book.NewSection(5,"Skit [~] John Pickett and Scott Salvadore",@"
+$Book.NewSection(5,"Skit","John Pickett and Scott Salvadore",@"
 John : Hey. 
        What's Michael Cook doin' right now...?
        ...probably watchin some kick ass porn, isn't he...?
@@ -15355,7 +15423,7 @@ He fuckin' read the email I wrote, and he will fuckin' stare at it for a while..
 *pointing* "This fuckin' dude has the ambition AND the drive, to do the work of an entire library full of people."
 "@)
 
-$Book.NewSection(5,"Night of the Attack [|] (05/25/20 2100 → 05/25/20 2343) (2)",@"
+$Book.NewSection(5,"Excerpt","Night of the Attack [|] (05/25/20 2100 → 05/25/20 2343) (2)",@"
 The pattern I had detected, was that this fuckin' CAPITAL DIGITRONICS was showing up in coincidental locations
 and, seemed pretty strange to me. I have a feeling that these people living across the street are RUSSIAN SPIES.
 
@@ -15557,8 +15625,7 @@ Nah, I fuckin' had somewhat of a clue. Just think, if they sent some guys that w
 probably could've been a lot less obvious. So, I kept thinkin' about recording a video just talking some shit.
 "@)
 
-$Book.NewSection(5,"Flashback [!] The Attack",@"
-
+$Book.NewSection(5,"Flashback","The Attack",@"
 Me :  Hey, everybody, Michael Cook comin' at ya with a deep-inside look...
       Catricala Funeral Home, has a little building in the back.
       Suspected bodies being thrown into concrete foundation slurry...
@@ -15761,7 +15828,7 @@ The secret's out, motherfucker.
 The cat's out of the bag, and it ain't goin' back in, either.                  (← The entire point of the book)
 "@)
  
-$Book.NewSection(5,"The Attack [|] (05/25/20 2343 → 05/26/20 0130) (1)",@"
+$Book.NewSection(5,"Excerpt","The Attack [|] (05/25/20 2343 → 05/26/20 0130) (1)",@"
 ________________________________________________________________________________________________________________
 | 05/25/20 2343 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -15792,7 +15859,7 @@ On the fucking total edge of my seat...
 Just another hair-raising episode of "Morons trying to fool me, but failing" starring: Michael C. fuckin' Cook Sr.
 "@)
  
-$Book.NewSection(5,"Story [~] Top Deck Awareness",@"
+$Book.NewSection(5,"Story","Top Deck Awareness",@"
 Once upon a time, a man once lived in the crime-riddled badlands of suburbia... in Clifton Park, NY.
 A KEYBOARD WARRIOR, whose story was unlike any other, unparalleled in nature. One night he was nearly
 killed and somehow barely survived. His story and voice were both so gritty...? Well, people could
@@ -15842,7 +15909,7 @@ aking. Practically told everybody and their mother, that somebody had been in th
 o commit the ultimate sin against HIM... But- they failed.
 "@)
 
-$Book.NewSection(5,"The Attack [|] (05/25/20 2343 → 05/26/20 0130) (2)",@"
+$Book.NewSection(5,"Excerpt","The Attack [|] (05/25/20 2343 → 05/26/20 0130) (2)",@"
 Yeah, the real story is... that dramatic after all. Probably moreso.
 Didn't know it was HIS car, until he got into it, many moments later.
 
@@ -16157,7 +16224,7 @@ people that somehow knew what the hell I was even saying into a device that wasn
 And the reason I know this is as follows...
 "@)
 
-$Book.NewSection(5,"Home Stretch [|] (05/26/20 0130 → 05/26/20 0155)",@"
+$Book.NewSection(5,"Excert","Home Stretch [|] (05/26/20 0130 → 05/26/20 0155)",@"
 ________________________________________________________________________________________________________________
 | 05/26/20 0130 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -16174,7 +16241,7 @@ When he got out, I had my hands up, wasn't pulling any funny business,
 and I told him that I tried to call 911 about 90 minutes beforehand TWICE.
 "@)
 
-$Book.NewSection(5,"Flashback [!] (SCSO-2020-028501) Zappone → Home",@"
+$Book.NewSection(5,"Flashback","(SCSO-2020-028501) Zappone → Home",@"
 Schelling : You obviously didn't call 911 otherwise WE would've gotten the call...
 Me        : I have like, screenshots of the calls and the call log.
 Schelling : Look dude, what the hell is this...?
@@ -16618,7 +16685,7 @@ opponents, and that dude could've looked at the fucking video that I wound up sh
 At least I survived... barely.
 "@)
  
-$Book.NewSection(5,"Barely Survived",@"
+$Book.NewSection(5,"Excerpt","Barely Survived",@"
 ________________________________________________________________________________________________________________
 | 05/26/20 0155 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -16657,8 +16724,8 @@ from Zackary Karel on Biette Road. I was worried about this dude because I occas
 the area and I noticed his vehicle hadn't moved, blinds/curtains in the same position.  and that dude ALSO hangs 
 out with Tim Krom a lot, who lives across the street from ME. Tim Krom is my best friend Nick Sicko's dad. Nick, 
 Pam, Jessie, and Tim Jr. have ALL lived there across the street from me. I've known them longer than Trooper 
-Borden has been a Trooper. A lot longer. Nick and I used to go stealin' golf balls and pissin' off Astoia when 
-we were kids, and Astoia caught us a few times and always let us go. Astoia was a cool dude.
+Borden has been a Trooper. A lot longer. Nick and I used to go stealin' golf balls and pissin' off Ostoja when 
+we were kids, and Ostoja caught us a few times and always let us go. Ostoja was a cool dude.
 ________________________________________________________________________________________________________________
 | 05/26/20 0800 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -16743,7 +16810,7 @@ my evidence has never been officially collected, is because I apparently haven't
 a fuckin' genie inside, and made a wish and said, "I wish somebody would help me file several lawsuits."
 
 After I left Halfmoon Sunoco, my intuition told me to check out the turkey vultures that were behind the gas 
-station. I recorded a video back on May 18th or May 19th of (6) turkey vultures flying above Astoia Vucetics 
+station. I recorded a video back on May 18th or May 19th of (6) turkey vultures flying above Ostoja Vucetics 
 property. My friend Kris Wacikowski told me that they feed on CARRION, which means DEAD BODIES. 
 So, if the AIR current, is pushing HOT AIR UP, and there's DEAD BODIES NEARBY... that means those fucks 
 will be there. Like, if you ask a hot girl if she wants to suck a big fat dick... she will hang out cause 
@@ -16850,7 +16917,7 @@ medical fraud at Saratoga Hospital...? It's cause of this shit called HIPAA. "Nf
 involved" Yeah they were, fuckface. But hey...
 "@)
  
-$Book.NewSection(5,"Flashback [~] Stonecrest/Werner 05/26/20",@"
+$Book.NewSection(5,"Flashback","Stonecrest/Werner 05/26/20",@"
 Me     : I think we're being attacked right now.
 Girls  : *arms crossed* Oh yeh...?
          What makes you think that...?
@@ -16909,7 +16976,7 @@ cause that. They definitely distributed hacked firmware to the device. They didn
 "Fuck it bro..." and then I was able to fall asleep.
 "@)
  
-$Book.NewSection(5,"Day After the Attack (1)",@"
+$Book.NewSection(5,"Excerpt","Day After the Attack (1)",@"
 ________________________________________________________________________________________________________________
 | 05/27/20 0900 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -16949,7 +17016,7 @@ but when I got to Latham Circle, I said "Fuck it, I'm goin' to the fuckin' top, 
 When I was just about halfway to Latham, Catricala calls James Leonard.
 "@)
  
-$Book.NewSection(5,"Skit [~] Eric Catricala and James Leonard",@"
+$Book.NewSection(5,"Skit","Eric Catricala and James Leonard",@"
     Catricala : Hey bro... 
                 This fuckin' guy needs an attitude adjustment.
     Leonard   : Oh, I agree with ya there.
@@ -17032,7 +17099,7 @@ $Book.NewSection(5,"Skit [~] Eric Catricala and James Leonard",@"
     Catricala : Alright, Jesus.
 "@)
  
-$Book.NewSection(5,"Day After the Attack (2)",@"
+$Book.NewSection(5,"Excerpt","Day After the Attack (2)",@"
 ________________________________________________________________________________________________________________
 | 05/27/20 1800 |_/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -17137,7 +17204,7 @@ I haven't seen this guy in years. And yeah, to have to talk with "family" about 
 I gathered information that caused me to specifically name some people. 
 "@)
  
-$Book.NewSection(5,"Cortana",@"
+$Book.NewSection(5,"Conjecture","Cortana",@"
 Back on May 25th, 2020, I decided to walk all the way there talking about how Cortana would eventually be willed 
 into existence because people are using the USA-PATRIOT Act to generate revenue, instead of using it to PROTECT 
 PEOPLE. Not meant for generating revenue. Meant for protecting people. People that use it to generate revenue 
@@ -17269,7 +17336,7 @@ a shield that protects people from serial killers, or fuckin' accidents, or what
 the person.
 "@)
  
-$Book.NewSection(5,"Quantum Physics",@"
+$Book.NewSection(5,"Conjecture","Quantum Physics",@"
 If it's true that there's a literal GHOST CAR that can show up at the speed of light, and fuck everything up, 
 and then bounce... it probably explains why so many people have such (little/no) integrity or morality. Yeah 
 I'm sure people are gonna say, BEFORE they even see these pictures: "GHOST CARS DON'T EXIST YA FUCKIN LUNATIC~!"
@@ -17634,7 +17701,7 @@ If you fuck some girl, and EVERY TIME AFTERWARD, she says "HEY GOTTA GO, I'LL BE
 ...she is going to fuck some other guy. Or, girl. So, that's a PATTERN. Sex → Gotta go, be back soon → Cheating.
 "@)
  
-$Book.NewSection(5,"Skit [~] FBI Investigator Ryan Ward",@"
+$Book.NewSection(5,"Skit","FBI Investigator Ryan Ward",@"
 Look, here's some real talk... 
 Maybe having a pencil dick is what pushed Ryan to be so highly talented at Karate.  
 
@@ -17723,7 +17790,7 @@ Me   : Yeh, ok dude.
        Should've, would've, could've...                                                         (← FALLACY ALERT)
 "@)
  
-$Book.NewSection(5,"Reality Check (1)",@"
+$Book.NewSection(5,"Conjecture","Reality Check (1)",@"
 In reality, I didn't do all of this alone, nor did I figure it out by myself.
 Tati Cleveland never said those words, by the way. She did more than that.
 
@@ -17820,7 +17887,7 @@ being enforced, from top → bottom, they all need to be revised and rewritten f
 fuckbag from England came over here, and spiked the fuckin' punchbowl...
 "@)
  
-$Book.NewSection(5,"Example [+] Someone spiked the punchbowl at Alcoholics Anonymous",@"
+$Book.NewSection(5,"Excerpt","Someone spiked the punchbowl at Alcoholics Anonymous",@"
 Thesis – Some asshole from England thought OooOOooOOhHhhh nobody will ever know we just kept SPAMMING America
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -17859,7 +17926,7 @@ Guy : I have 30 years sober.
       Other than that though, I've been sober 30 years... to the day.
 "@)
  
-$Book.NewSection(5,"Reality Check (2)",@"
+$Book.NewSection(5,"Conjecture","Reality Check (2)",@"
 Ah, yeah. It's like Prince Andrew being seen sucking Andrew Cuomo's dick, right...? 
 And then he stops, and they both say, "Hey, neither one of us are gay."
 And then Prince Andrew starts blowing him some more.
@@ -18042,7 +18109,7 @@ to stand on, that are trying to sink into the chair and not look like a fuckin' 
 Like the GIF of Homer Simpson backing up into the bushes. | ← Don't do that. Take accountability.
 "@)
  
-$Book.NewSection(5,"Exploits",@"
+$Book.NewSection(5,"Lesson","Exploits",@"
 ...are a lot like: asking some girl "Wanna choke on a big fat dick...?" It is an extremely aggressive 
 strategy, but I gotta say, the fact that a man asked that question in record time...? That's gonna be a bit of
 a turn on for THEM. So you get (2) things out there, and she might just fuckin' say "Hell yeah...~! I love 
@@ -18051,7 +18118,7 @@ doin' that~!" If you don't feel like being THAT aggressive, it's probably a good
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 Me    : Hey. My name is Michael. Wanna choke on a big fat dick...?
-Her   : Oh hi~! I'm <girls name>, and I'd be happy to do that~!          (← how Hannity sounds when Murdock asks)
+Her   : Oh hi~! I'm <girls name>, and I'd be happy to do that~!          (← how Hannity sounds when Murdoch asks)
 Me    : Well, alright then... 
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
@@ -18109,7 +18176,7 @@ If you have some common decency, you won't fuckin' do that in any of those scena
 piss some people off. It may actually work a little TOO well, is what I mean.
 "@)
  
-$Book.NewSection(5,"Control",@"
+$Book.NewSection(5,"Lesson","Control",@"
 You can't expect everyone else in the world is gonna care about things like RESPECT and DECENCY. 
 Believe it or not, these things paint a pretty good picture of someone's INTEGRITY → HONESTY → TRUSTWORTHINESS
 This strategy WORKS, but like I said, it's a fuckin' exploit. 
@@ -18374,7 +18441,7 @@ BUT- trying to kill somebody after failing miserably over and over at a bunch ot
 ...is grounds for me to say "OoooHoOooOOooohhhHHhh, girls dating my cousin...? Fuck it. I'm goin' in boys."
 "@)
  
-$Book.NewSection(5,"Skit [~] Tatiana Cleveland",@"
+$Book.NewSection(5,"Skit","Tatiana Cleveland",@"
 Tati : Well, hello Michael.
 Me   : Tati...
 Tati : What are ya doin' here...? 
@@ -18647,7 +18714,7 @@ that he doesn't get an official thank you letter for his patriotism and service.
 benefactors when I still have work to do...
 "@)
  
-$Book.NewSection(5,"Excerpt [~] SCSO Captain Jeffrey Brown",@"
+$Book.NewSection(5,"Excerpt","SCSO Captain Jeffrey Brown",@"
 I don't know if this guy knows this or not... but this guy may have lived up the street from me at one point
     and I am not going to state HOW I know this, but if he's got a daughter named Kristine and a son name Michael,
     then it is the exact person I think it is.
@@ -20462,12 +20529,12 @@ Function Chapter_5
 
 $Book.NewChapter("Chapter 5","If you were smart, you'd be rich by now")
 
-$Book.NewSection(6,"Start",@"
+$Book.NewSection(6,"Lesson","Start",@"
 "If you were smart, you'd be rich by now". 
 Whoever says this, would be a shitty programmer.
 "@)
 
-$Book.NewSection(6,"Overview (1)",@"
+$Book.NewSection(6,"Lesson","Overview (1)",@"
 Morons say that quite a lot, and the amount of SENSE it makes, is akin to having a screen door on 
 a submarine, but- with logic. That begs the question though, how DOES somebody become rich? 
 
@@ -20515,7 +20582,7 @@ That guy, I've already mentioned, has the superhuman ability to spread his ass c
 Wanna know how he learned to do that...? 
 "@)
  
-$Book.NewSection(6,"Shoutout [+] Pablo Escobar",@"
+$Book.NewSection(6,"Excerpt","Pablo Escobar",@"
 Well, I'm not gonna say that Pablo Escobar did what Sackler does, BUT- 
 Pablo Escobar was the cocaine kingpin in the 80's/90's in Columbia, making cocaine castles. 
 This dude basically had SO MUCH fucking money, that he had to dig holes in the ground, 
@@ -20530,7 +20597,7 @@ Pablo Escobar and his cartel was well known for being VERY VIOLENT and DEADLY, a
 was someone to be FEARED, for sure. 
 "@)
  
-$Book.NewSection(6,"Overview (2)",@"
+$Book.NewSection(6,"Lesson","Overview (2)",@"
 Richard Sackler took note of this (minus the fear aspect), and restored the Opium War.
 During the invasion of Afghanistan, some military black ops would commandeer their opium farms and 
 plantations, Afghanistan is home to the best climate to grow opium in the world, and at one point 
@@ -20578,7 +20645,7 @@ of your accounts and assets, and they'll fuckin' show up every morning with a ne
 and tell you what the hell happened while you were asleep.
 "@)
  
-$Book.NewSection(6,"Skit [~] Morning Briefing",@"
+$Book.NewSection(6,"Skit","Morning Briefing",@"
 Gates    : *yawns* Wow.
            I feel like a billion bucks.
 Jim      : *scoffs* Buddy, you're worth a lot more than that...
@@ -20634,7 +20701,7 @@ Gates    : Damn straight.
 Jim      : Alright buddy.
 "@)
  
-$Book.NewSection(6,"Overview (3)",@"
+$Book.NewSection(6,"Lesson","Overview (3)",@"
 Pretty sure Gates didn't get where he is by doing real evil shit to people.
 You know who did...? Richard Sackler.
 
@@ -20643,7 +20710,7 @@ and QUESTIONABLE shit to others... AND, you're granted IMMUNITY from any potenti
 then the BEST way to get rich and stay rich, is to do what he did... unfortunately.
 "@)
  
-$Book.NewSection(6,"Reverse Psychology (1)",@"
+$Book.NewSection(6,"Conjecture","Reverse Psychology (1)",@"
 That's what the HIDDEN GOVERNMENT in America causes people to believe... 
 	
  - Who cares about who dying...?
@@ -20668,7 +20735,7 @@ They don't realize, Richard Sackler just pays out of pocket at that point.
 So, he's got a Reluctant Butler... 
 
 Reluctant Butler shows up every morning and is inclined to say stuff to this dude for his paycheck. 
-Doesn't really have anywhere CLOSE to the level of control that Murdock has over Hannity.
+Doesn't really have anywhere CLOSE to the level of control that Murdoch has over Hannity.
 	
  /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 	
@@ -20787,8 +20854,8 @@ Nope. Cause he's as long as he's got stacks of cash, he can still pay people to 
 Anyway, I wouldn't consider Hillary a BILLIONAIRE or ROYALTY, but, she's still PLENTY IMPORTANT, being 
 the former first lady - Bill didn't get to be president without her help.
 "@)
- 
-$Book.NewSection(6,"Question (1)",@"
+
+$Book.NewSection(6,"Conjecture","Question (1)",@"
 The question is, at what point can she break a law and get in trouble for it...?
 
 That's a good fuckin' question, isn't it...?
@@ -20801,7 +20868,7 @@ Probably sounds moronic, I offended HILLARY CLINTON by (existing/questioning aut
 Like, Benjamin Franklin would ADVISE EVERY CITIZEN TO DO.
 "@)
  
-$Book.NewSection(6,"Skit [~] FBI Raids the Clinton Residence",@"
+$Book.NewSection(6,"Skit","FBI Raids the Clinton Residence",@"
 She found out I (existed/questioned authority)...?
 Well, NOW she knows... 
 Now, she's fuckin' gunnin' for me just like she did with JULIEN ASSANGE...
@@ -21062,7 +21129,7 @@ Bill  : They can be a little overly aggressive at times...
 Comey : I respect that though. 
         Not sure that guy understands that.
 Bill  : I'll let him know when he calms down.
-Her   :  Alright, rather than to continue dwelling over whether I FEEL like going to prison...
+Her   : Alright, rather than to continue dwelling over whether I FEEL like going to prison...
         I'm gonna save myself and every other American some trouble.
 Comey : Press release...?
 Her   : *quietly nods*
@@ -21076,7 +21143,7 @@ Comey : *puts his sunglasses on like the dude in the intro of the CSI: Miami*
         *gives a nice big wave to the several camera crews across the street*	
 "@)
  
-$Book.NewSection(6,"Question (2)",@"
+$Book.NewSection(6,"Conjecture","Question (2)",@"
 If the question is, at what point can someone important, get in trouble for something they did...?
 	
 Well, the same question may ALSO be applied for former president George W. Bush, because hey. 
@@ -21123,7 +21190,7 @@ committed TREASON or anything. But- something doesn't seem right about JULIEN AS
 situation, and I think she has some say over that. Because she has friends at Exxon Mobil.
 "@)
  
-$Book.NewSection(6,"Domino Theory (1)",@"
+$Book.NewSection(6,"Conjecture","Domino Theory (1)",@"
 She was embarrassed by (JULIEN ASSANGE/WikiLeaks), which I further discuss in GREAT DETAIL, in…
 [Chapter 7 - USA-Patriot Act of 2001 and Surveillance Capitalism]
 
@@ -21161,7 +21228,7 @@ anybody that has a cool idea, or sounds interesting, and they will fuckin' come 
 because some people lack morals.
 "@)
  
-$Book.NewSection(6,"Excerpt [~] Starlite",@"
+$Book.NewSection(6,"Excerpt","Starlite",@"
 STARLITE is a material that this dude invented that even NASA fuckin' wanted, REALLY BADLY.
 	
 The man was a barber or salon stylist, he performed a demonstration of this material that HE 
@@ -21192,7 +21259,7 @@ Had that man been able to capitalize on that idea, our current state of affairs 
 things, may be VERY DIFFERENT.
 "@)
  
-$Book.NewSection(6,"Domino Theory (2)",@"
+$Book.NewSection(6,"Conjecture","Domino Theory (2)",@"
 Now, that's a true story, didn't make that up, but- the reason why it persists is because CAPITALISM 
 has some fuckin' problems. They want people to think that it's a FREE MARKET, but they will send some 
 henchman to STEAL SHIT from people, and become rich off of it... cause they're immortal.
@@ -21213,7 +21280,7 @@ MAYBE there isn't a guy that's ALWAYS 50 feet away who smiles at them face-to-fa
 So, they all had to pay somebody to watch that guy...
 "@)
  
-$Book.NewSection(6,"Skit [~] Always Watchin'",@"
+$Book.NewSection(6,"Skit","Always Watchin'",@"
 Even when you cooperate with the "man", the issue becomes, "can I trust the man", well. 
 Maybe... but MAYBE isn't a fuckin' real pleasant feeling, is it?
 
@@ -21254,8 +21321,7 @@ There are people that watch others and will do exactly what Mila Kunis' characte
 uses her looks, to steal shit from people. Lies a lot too. Immoral.
 "@)
  
-$Book.NewSection(6,"Reverse Psychology (2)",@"
-
+$Book.NewSection(6,"Conjecture","Reverse Psychology (2)",@"
 Guys like Gates have every reason to be concerned about their shit being stolen, I agree.
 	
 These people that lack morals really are... all over America, AND, everywhere else.
@@ -21291,7 +21357,7 @@ MOST PEOPLE DO NOT NOTICE THIS. EVEN IF I SHOW PEOPLE WHAT I MANAGED TO SEE.
 ^ That's censorship
 "@)
  
-$Book.NewSection(6,"Masters",@"
+$Book.NewSection(6,"Assertion","Masters",@"
 Even Noam Chomsky talks about these people, quite a lot. The MASTERS, control everything.
 	
 I don't think that there IS a public forum on the internet anymore that isn't controlled by the 
@@ -21328,7 +21394,7 @@ as sinister as PEGASUS/PHANTOM, against ME.
 It is a compelling analogy. Too compelling, actually.
 "@)
  
-$Book.NewSection(6,"Obedience",@"
+$Book.NewSection(6,"Conjecture","Obedience",@"
 I'm not jealous of either Hannity or Carlson, nor am I envious of them, either.
 However, it's true, they're pretty rich after all. 
 But, what are they really rich for...? Good question.
@@ -21380,7 +21446,7 @@ When they can change the channel to Fox News, and then just listen to TUCKER CAR
 fuckin' clueless for a few hours straight... Some people will say: 
 "@)
  
-$Book.NewSection(6,"Skit [~] Order of Credibility",@"
+$Book.NewSection(6,"Skit","Order of Credibility",@"
 Person1 : Check this TUCKER CARLSON dude out, buddy... 
           What a total moron.
           Wow. 
@@ -21482,7 +21548,7 @@ So, I have to think back on how I voted for Obama both times, (Biden was VP)
 ...and say to myself "I fuckin' voted for THAT dude, and the man did an overall, amazing job."
 "@)
  
-$Book.NewSection(6,"Shoutout [+] Barack Obama",@"
+$Book.NewSection(6,"Excerpt","Barack 'Leader of the Free World' Obama",@"
 This dude, deserves some special recognition, actually. 
 So, I'm gonna say it right now.
 Bill Clinton did a pretty decent job.
@@ -21551,7 +21617,7 @@ I would still consider going to this dude's presidential library, and take a tou
 ...when it's completed.    
 "@)
  
-$Book.NewSection(6,"Focus",@"
+$Book.NewSection(6,"Conjecture","Focus",@"
 Look, when people say stuff like "He's rich and THAT must mean he's smart", 
 or "If you were so smart, you'd be rich by now"...
 I don't understand why people say that, well... let me restate that.
@@ -21580,8 +21646,7 @@ I have no doubt that they're not total morons cause I am exaggerating some shit 
 But that REALLY depends...
 "@)
  
-$Book.NewSection(6,"Intelligence",@"
-
+$Book.NewSection(6,"Lesson","Intelligence",@"
 However, when I think about people where literally ANY person in the world would agree...
 "Yeah, that person IS smart", I think about guys like George Carlin.
 
@@ -21672,7 +21737,7 @@ I don't really think that people on Wall St. ever have permanent, long-lasting s
 Because, Bear Sterns is a prime example of how volatile (Wall St./NYSE), truly is.
 "@)
  
-$Book.NewSection(6,"Warren Buffett",@"
+$Book.NewSection(6,"Excerpt","Warren Buffett",@"
 Warren Buffett spent his entire life working his ass off and being on top of stuff...
 ...like for instance, Wall St. and NYSE, although he preferred many safer alternatives. 
 He was actually consulted with so many times during the Bear Sterns incident, and even HE,
@@ -21692,7 +21757,7 @@ Warren Buffet WAS the richest man in the world for a really long time.
 He was like Obiwan Kenobi was to Anakin Skywalker, Bill Gate's trainer.
 "@)
  
-$Book.NewSection(6,"William Gates",@"
+$Book.NewSection(6,"Excerpt","William Gates",@"
 Before Windows 95, Buffett sat at the top of the leader-board for a loooong time.
 Then, Windows 95 was released, and then Bill Gates was for a VERY long time, the richest
 man in the world. He had a lot of respect for Buffett and they had plenty of meals and talks,
@@ -21713,7 +21778,7 @@ Gates and Paul Allen, essentially took Tim Berners Lee, to an even higher status
 already had, and they all, together... built the foundation of today's internet.
 "@)
  
-$Book.NewSection(6,"Jeff Bezos",@"
+$Book.NewSection(6,"Excerpt","Jeff Bezos",@"
 Amazon, a very early adopter of the internet, and found a way to literally choke-slam
 companies like Borders, and Barnes and Noble... each of these companies were large conglomerate
 book companies... today, they exist in much rarer numbers.
@@ -21726,7 +21791,7 @@ Bezos became quite a leader actually, and for a very long time, he knew how to p
 10 dimensional chess really well. But he wasn't the ONLY early adopter of the internet...
 "@)
  
-$Book.NewSection(6,"Elon Musk",@"
+$Book.NewSection(6,"Excerpt","Elon Musk",@"
 
 In the early days of the internet, this guy was part of a team of ninja-assassins that knew 
 programming inside and out... 
@@ -21757,7 +21822,7 @@ its first bubble... the "dot com bubble"...
 However, the internet survived, and then the internet led to social media.
 "@)
  
-$Book.NewSection(6,"Mark Zuckerberg",@"
+$Book.NewSection(6,"Excerpt","Mark Zuckerberg",@"
 This guy may have done more than just take inspiration from other projects, but-
 ...that doesn't mean he wasn't a large contributor for the internet to become what it is today.
 
@@ -21776,7 +21841,7 @@ They had a lot of ideas that they've implemented over the years, and eventually,
 allowed Zuckerberg to become quite a rich bastard.
 "@)
  
-$Book.NewSection(6,"Examination",@"
+$Book.NewSection(6,"Conjecture","Examination",@"
 People should consider what made these guys the leaders.
 I'll tell ya, the richest guys in the world all have ETHICAL/MORAL boundaries, though they 
 vary between: SAFE vs. RISKY vs. HYBRID
@@ -21851,7 +21916,7 @@ They will occasionally ALLOW Google to FEEL like it may someday have a shot at b
 in 2nd place, in terms of where the world's best software engineering takes place. 
 "@)
  
-$Book.NewSection(6,"Microsoft - World's 1st place Software Engineering",@"
+$Book.NewSection(6,"Excerpt","Microsoft - World's 1st place Software Engineering",@"
 This is how they do it. They will literally ask the owner of Oracle, Larry Ellison to go take 
 a nap or a break or something... He'll say "Alright, fine."
 
@@ -21866,7 +21931,7 @@ The company is still very active, throws elbows 'n shit...
 Satya Nadella runs the show now. Doin' a great job.
 "@)
  
-$Book.NewSection(6,"Amazon - The Bookstore and so much (1)",@"
+$Book.NewSection(6,"Excerpt","Amazon - The Bookstore and so much (1)",@"
 In reference to Amazon, the bookstore and so much more...? 
 	
 You're talkin' about a series of smart bastards that went into board meetings, looked at bar graphs
@@ -21874,7 +21939,7 @@ and pie charts, told a friend of a friend, to tell everyone they knew, that Amaz
 things to the next level... Amazon Web Services.
 "@)
  
-$Book.NewSection(6,"Skit [~] Amazon Web Services",@"
+$Book.NewSection(6,"Skit","Amazon Web Services",@"
 Person1 : Hey, listen man. 
 Person2 : *eyebrows raised* Sup?
 Person1 : How would you like to have a business on the internet where you could just...
@@ -21915,7 +21980,7 @@ Person2 : ...Amazon Web Services...?
 Person1 : *nods* Yep. 
 "@)
  
-$Book.NewSection(6,"Amazon - The Bookstore and so much (2)",@"
+$Book.NewSection(6,"Excerpt","Amazon - The Bookstore and so much (2)",@"
 I might get on Jeff's case sometimes with a light insult or two, but... he didn't build Amazon 
 by himself. McKenzie helped with that immensely, and so did that board room full of geniuses.
 He had a team of REAL smart bastards helpin' him out...
@@ -21939,7 +22004,7 @@ His story seems to be a combination of Simulation and simulacra, The Matrix, and
 But- sort of the same story.
 "@)
 
-$Book.NewSection(6,"Programmers",@"
+$Book.NewSection(6,"Assertion","Programmers",@"
 ALL of these guys, Buffet, Zuckerberg, Gates, Bezos, and Musk... 
 ...guess what they really do have in common above all else...? 
 
@@ -21964,7 +22029,7 @@ Doesn't matter how fuckin' rich somebody is, that period of time, STILL FEELS LI
 But his hard work is paying off, regardless.
 "@)
  
-$Book.NewSection(6,"Ingenuity",@"
+$Book.NewSection(6,"Conjecture","Ingenuity",@"
 His ideas revolved around (physical objects/machines) that involve a lot of complex engineering, 
 and typically revolve around the idea of making things cost less, more environmentally friendly, 
 or have to do specifically with capturing, storing and distributing renewable energy. 
@@ -22022,7 +22087,7 @@ Musk : Here's a fuckin' electric car, in space dipshit.
 Nobody asks "How come this one guy seems to be doing all of these amazing things?"
 "@)
  
-$Book.NewSection(6,"Complacency",@"
+$Book.NewSection(6,"Conjecture","Complacency",@"
 America has a theme of laziness, but a less offensive way to state it is complacency.
 Maybe it's also because of ignorance, or a less offensive way to state it is creativity.
 
@@ -22043,7 +22108,7 @@ pattern of something harvested. If things change, they will change everything ar
 ...cause that's how the stock market works. 
 "@)
  
-$Book.NewSection(6,"Talent",@"
+$Book.NewSection(6,"Conjecture","Talent",@"
 There might be more talent in America than overseas...
 ...and it seems like society doesn't think a lot about that.
 
@@ -22070,7 +22135,7 @@ if someone were to try and do that, WELL, then the police would DEFINITELY be ab
 stop to that, wouldn't they? Cause then it'd be WITHIN THEIR JURISDICTION. 
 "@)
  
-$Book.NewSection(6,"Precedent",@"
+$Book.NewSection(6,"Conjecture","Precedent",@"
 The thing is, the examples people set for others, IS pretty important. 
 If Ted Cruz accepts bribery from Exxon Mobil but has to keep the dick in his ass a secret, he's not 
 really setting a good example for other people to follow, other than if you keep your mouth shut, 
@@ -22153,7 +22218,7 @@ Not shooting somebody, nor hoping that someone gets shot, nor hoping and praying
 never be a school shooting ever again... but instead, EXPOSING the HIDDEN GOVERNMENT.
 "@)
  
-$Book.NewSection(6,"Stagnation",@"
+$Book.NewSection(6,"Conjecture","Stagnation",@"
 America prides itself on innovation, right?
 While it's pretty difficult to identify specific individuals who promote these themes, society as 
 a whole does this... subconsciously. I can say though, BOB LUTZ had an opportunity to set a 
@@ -22174,7 +22239,7 @@ Attacking people, with violence... usually not very good disruption, but can be 
 Suggesting descriptive parallels or analogies, is a constructive form of disruption.
 "@)
  
-$Book.NewSection(6,"Disruption",@"
+$Book.NewSection(6,"Conjecture","Disruption",@"
 I realize Warren worked his ass off and was considerate of other people's feelings, and didn't like 
 the idea of being 'disruptive' so be played the safe game. So did Bill Gates.
 Mr. Gates wasn't ALWAYS playing the safe game, however. 
@@ -22226,7 +22291,7 @@ Ted might like that scenario... but then again, might not.
 He sure as hell likes the pay day though, doesn't he?
 "@)
  
-$Book.NewSection(6,"Consideration",@"
+$Book.NewSection(6,"Conjecture","Consideration",@"
 Nah, everybody's gotta share this fear or belief that someone that sounds crazy probably is...
 Cause, they're probably upsetting somebody that's popular and well liked.
 Meanwhile, someone smarter than they are, is gonna call that popular person out for being a moron.
@@ -22276,7 +22341,7 @@ the time...? Someone such as myself has to stop that moron in their tracks, and 
 how stupid they sound. 
 "@)
  
-$Book.NewSection(6,"Opinions",@"
+$Book.NewSection(6,"Conjecture","Opinions",@"
 If they try to say "that's just your opinion"...
 Or, "It's a good thing the world doesn't run on opinions."
 
@@ -22319,7 +22384,7 @@ Again, the world DOES run on OPINIONS, actually.
 Even the MILITARY is driven by OPINIONS.
 "@)
  
-$Book.NewSection(6,"Adversity",@"
+$Book.NewSection(6,"Conjecture","Adversity",@"
 Still, sometimes OPINIONS go ignored by people.	
 GENERALIZATIONS like that aren't typically helpful to make...
 ...unless you're trying to make a SPECIFIC ARGUMENT.
@@ -22384,7 +22449,7 @@ I don't TRULY believe that everyone drowns my opinion or rhetoric out...?
 But sometimes it does frustrate me when I'm not getting feedback or validation.
 "@)
  
-$Book.NewSection(6,"Offensive",@"
+$Book.NewSection(6,"Conjecture","Offensive",@"
 
 It is pretty offensive, to discover that I WAS being heard, and then, someone chose to take 
 action regarding an OPINION that I indicated, but- without telling ME.
@@ -22424,7 +22489,7 @@ Cause a Big Mac, isn't something to consider a POTENTIAL THREAT
 But a PERSON who finds out that they were LIED TO, that's definitely a POTENTIAL THREAT
 "@)
  
-$Book.NewSection(6,"Elaborate",@"
+$Book.NewSection(6,"Conjecture","Elaborate",@"
 Now, suppose they had their own thought out OPINIONS/IDEAS, they would respond or comment.
 That means they will ELABORATE on what they are thinking.
 
@@ -22464,7 +22529,7 @@ Sorta how like Elon Musk made BOB LUTZ look like a dude that spent 50 years runn
 his pants everyday... Well, that's how guys like Dennis Bruce are going to look at some point.
 "@)
  
-$Book.NewSection(6,"Specifics",@"
+$Book.NewSection(6,"Conjecture","Specifics",@"
 In reference to the opinion I had about Ukraine being invaded, VLADIMIR PUTIN thought it'd be 
 cool. And, that it'd be easy. And, his people would be supportive and not have a problem with 
 this military operation... and then this idiot didn't realize how much money he would cost the 
@@ -22491,7 +22556,7 @@ The bottom like is that the statement does not hold true...
 Makes as much sense as a screen door on a submarine.
 "@)
  
-$Book.NewSection(6,"Suggestions (1)",@"
+$Book.NewSection(6,"Thesis","Suggestions",@"
 It's not a requirement for people to give a shit what I think.
 It is just insulting, to see cases like "Key and Peele: High on Poteneuse"
 
@@ -22499,7 +22564,7 @@ Sometimes, people will like, hear my rhetoric AND consider it... and then wave m
 If people do this right in front of me, then I have to make strong suggestions...
 "@)
  
-$Book.NewSection(6,"Skit [~] Strong Suggestions",@"
+$Book.NewSection(6,"Skit","Strong Suggestions",@"
 Me   : Hey, you said you don't care what I think or whatever right...?
 Them : Yeah buddy. *waves me off* Fuck you man, shoo already...
 Me   : You know... 
@@ -22540,48 +22605,7 @@ Me   : Listen you dumb motherfucker...
        You're not gettin' it, are ya?
 "@)
  
-$Book.NewSection(6,"Suggestions (2)",@"
-Me   : Hey, you said you don't care what I think or whatever right...?
-Them : Yeah buddy. *waves me off* Fuck you man, shoo already...
-Me   : You know... 
-       How would YOU like it... 
-       ...if I just... 
-       ...helped you out big time... 
-       ...and SHOWED you...
-       ...how to break both of your legs...
-       ...for wavin' me off like you just did...?
-Them : *puzzled* ...show me how to break-?
-Me   : ...BOTH of your LEGS...
-Them : For...?
-Me   : Wavin' me off like you just did.
-Them : *puzzled* I don't get it...
-Me   : Oh, you just told me to fuck off. 
-       Right...?
-Them : *nods* Yeah. 
-       Why haven't you yet...?
-Me   : *chuckles* Heh.
-       Well bro... 
-       You seem to have made a serious error. 
-       That's why.
-Them : ...oh really? 
-       How so...?
-Me   : I'm considering teaching you a lesson, where YOU break BOTH of YOUR OWN LEGS.
-       Cause, I will fuckin' show ya...
-       REAL interesting stuff, man.
-Them : *puzzled* I still don't get it though, how can someone break both of their own legs...?
-       I just... 
-       I don't get it.
-Me   : Imagine, you... 
-       ...having 2 broken legs...
-       ...within the next minute.
-Them : Jeez... 
-       *hand on back of neck* I just...
-       ...don't seem to understand how *I* would be responsible for that though...?
-Me   : Listen you dumb motherfucker... 
-       You're not gettin' it, are ya?
-"@)
- 
-$Book.NewSection(6,"Conclusion",@"
+$Book.NewSection(6,"Lesson","Conclusion",@"
 When it comes to me accusing Fox News of being a strictly propaganda machine...
 ...people are gonna say "That's your opinion..."
 Sometimes people that aren't very smart, they don't know what the difference between 
@@ -22613,7 +22637,7 @@ Cause this IMPLIES: "Knowing the definition of words, is important."
 The police like to do this where they confuse that shit too.
 "@)
  
-$Book.NewSection(6,"Skit [~] Observation → Opinion → Fact",@"
+$Book.NewSection(6,"Skit","Observation → Opinion → Fact",@"
 New York State Trooper Borden acts very gay. 
 
 That's an OBSERVATION that became an OPINION. 
@@ -22660,21 +22684,14 @@ Function Chapter_6
 
 $Book.NewChapter("Chapter 6","Hidden Government")
 
-$Book.NewSection(7,"Start",@"
-The thing is, when SOME DETAILS aren't known, or collected yet, operating on assumptions is a bad idea.
-However, SOME assumptions ARE safe to make... typically those working with EXCLUSION. Knowing when to apply 
-concepts such as RARITY, is difficult for most people to do, and thus, sometimes they need to be RECORDED.
-That's when they'll realize that the RARE thing that they kept overlooking...? Requires dildo-in-ass removal.
-"@)
-
-$Book.NewSection(7,"Overview",@"
+$Book.NewSection(7,"Lesson","Start",@"
 The thing is, when SOME DETAILS aren't known, or collected yet, operating on assumptions is a bad idea.
 However, SOME assumptions ARE safe to make... typically those working with EXCLUSION. Knowing when to apply 
 concepts such as RARITY, is difficult for most people to do, and thus, sometimes they need to be RECORDED.
 That's when they'll realize that the RARE thing that they kept overlooking...? Requires dildo-in-ass removal.
 "@)
  
-$Book.NewSection(7,"Local Correlation",@"
+$Book.NewSection(7,"Assertion","Local Correlation",@"
 Ryan has made it clear to me that he is part of a larger collective.
 He is directly involved with the (2) guys who attempted to kill me on May 26th, 2020, and has also made it clear 
 to me, that he has killed a lot of people. He has access to equipment and software that can exploit any mobile 
@@ -22686,7 +22703,7 @@ the last (2) years has taught me that nobody has rights anymore.
 
 That's it. 
 Game over, bro. 
-Nobody has rights, 
+Nobody has rights.
 Might as well, crawl under a rock... 
 ...and stay there...
 ...might not be that bad, after you get used to living under a rock.
@@ -22712,92 +22729,177 @@ To say BOTH of these IDENTIFIED THREATS are DANGEROUS, is foolhardy, they're mor
 I believe, that my uncle Thomas did business with someone that "greenlit" my father to be executed by Zontell...
 ...and that person/party attempted to murder me as well on May 26th, 2020
 I do not think that it was ONLY a foiled robbery.
-My reasoning is as follows:
 
-1989
+My reasoning is as follows:
 ______________________________________________________________________________________________________
-+ | My father studied Digital Electronics, Programming, Physics, Mathematics                           | Award
-+ | My father and Jesse Pickett were in the same class together at HVCC                                | Association
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-1994
-______________________________________________________________________________________________________
-+ | My father stated that he didn't trust Terri, and had a falling out with my uncle Thomas            | Suspicion
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-1995
-______________________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [1989]                                                                                             |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| My father studied Digital Electronics, Programming, Physics, Mathematics                           | Award
+|----------------------------------------------------------------------------------------------------|
+| My father and Jesse Pickett were in the same class together at HVCC                                | Association
+| https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf           |
+| (^ What THAT is called, is 'SUPPORTING EVIDENCE', stuff that law men SUPPOSEDLY 'collect')         |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [1992]                                                                                             |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| The Pickett brothers start the Nfrastructure Corporation, in like, Mechanicville. Working various  |
+| contracts for Key Bank. Climbing through ceiling tiles and getting their clothes all dirty tugging |
+| miles of ethernet cable, and then getting blisters on the tips of their fingers from untwisting    |
+| the ends of the god damn (UTP/unshielded twisted pairs) from terminating the ends of thousands of  |
+| cables... running their own networks.                                                              |
+|                                                                                                    |
+| Whenever the job or day was through...? They would go to the nearest (pub/bar) and give themselves |
+| a warm, comfortable pat on the back for a job well done that day.                                  | Facts
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [1994]                                                                                             |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| My father stated that he didn't trust Terri, and had a falling out with my uncle Thomas            | Suspicion
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [1995]                                                                                             |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 | Tyrell Crawford (front passenger, broken knee) wrong size bullets for HIS gun                      | Intent
+|----------------------------------------------------------------------------------------------------|
 | Clifton Williamson got away and later turned himself in                                            | Evidence
+|----------------------------------------------------------------------------------------------------|
 | Nobody named the trigger man.                                                                      | Key Detail
+|----------------------------------------------------------------------------------------------------|
 | The dispatcher was ALSO involved in another cab driver's death, living in the same neighborhood    | Turf
+|----------------------------------------------------------------------------------------------------|
 | The box of documents that my father left behind, has never been collected nor investigated.        | <Critical>
+|----------------------------------------------------------------------------------------------------|
 | My father supposedly earned a perfect score on his military ASVAB entrance examination             | Military
+|----------------------------------------------------------------------------------------------------|
 | My father told my mother, "Someone is looking for me, I have a bad feeling."                       | Expectation
+|----------------------------------------------------------------------------------------------------|
 | My father also knew what RACE his killers would be, when he said "If they try to get me I'm        | Expectation
 | gonna put my foot to the floor, and take those niggers with me to hell."                           | 
+|----------------------------------------------------------------------------------------------------|
 | Someone using RADIO was listening to my father speaking with the dispatcher on the night he died   | Suspicion
+|----------------------------------------------------------------------------------------------------|
 | Someone using RADIO was listening to Sammie speaking with the dispatcher on the night he died.     | Suspicion
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-2017
-______________________________________________________________________________________________________
-+ | My neighbors across the street moved in after Pavel Zaichenko was investigated by labor dept.      | Suspicion
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-2019
-______________________________________________________________________________________________________
-+ | Mr. Pickett heard the audio recording I recorded where I said "I know there's some fuckin' funny   | Correlation
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [2016]                                                                                             |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| MATTHEW ROERIG was the store manager at COMPUTER ANSWERS from October 2015 -> January 5th, 2016    |
+| when he randomly quit, I believe it had something to do with his girlfriend. I'm not certain.      |
+|----------------------------------------------------------------------------------------------------|
+| From JANUARY, to MARCH, I helped DWAYNE COONRADT and the CLIFTON PARK COMPUTER ANSWERS STORE       |
+| generate over `$30K in sales for (3) consecutive months, which had NEVER IN ITS ENTIRE HISTORY,    |
+| BEEN DONE BEFORE...                                                                                |
+|----------------------------------------------------------------------------------------------------|
+| I sold BILL MOAK a TOSHIBA LAPTOP that was worth 350 for 150, cause I was lookin' out for him.     |
+|----------------------------------------------------------------------------------------------------|
+| I was hired by TEKSystems/KeyCorp to work in the Enterprise Resolution Center at:                  |
+| 17 Corporate Woods Boulevard, Albany NY 12203 in March 2016                                        |
+|----------------------------------------------------------------------------------------------------|
+| NFRASTRUCTURE deployed the CISCO CATALYST switches for all of the FNFG branches merging with       |
+| KeyCorp, and MATTHEW ROERIG was ON THAT PROJECT, and IN COMMUNICATION WITH ME... he told me that   |
+| the job had sent him all over the place                                                            |
+|----------------------------------------------------------------------------------------------------|
+| I handled a call on the ERC for a RELATIONSHIP MANAGER from the WOLF ROAD BRANCH, who was handling |
+| JOHN HOFFMAN, the guy who cleans out people's pipes in my neighborhood.                            |
+|----------------------------------------------------------------------------------------------------|
+| At some point between JULY and OCTOBER 2016, an ERROR in SYSTEM CENTER CONFIGURATION MANAGER       |
+| occurred, FORCING ALL OF THE COMPUTERS THROUGHOUT THE ENTIRE COMPANY, TO NEED AN IMMEDIATE REBOOT, |
+| as a GLOBAL UNIQUE IDENTIFIER for the VIRUS DEFINITIONS in the ENDPOINT ENCRYPTION PROTECTION had  |
+| reported an INVALID GUID, which means that the ENTIRE COMPANY was probably leaking (data/money).   |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [2017]                                                                                             |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| My neighbors across the street moved in after Pavel Zaichenko was investigated by labor dept.      | Suspicion
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [2019]                                                                                             |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Mr. Pickett heard the audio recording I recorded where I said "I know there's some fuckin' funny   | Correlation
 | business goin on where people are leaking information." on January 11, 2019 | 8 year anniversary   |
-+ | I was in contact with Mattew Roerig at or about that time, as well as Jerimey Mahoney,             | ! Coincidence
+|----------------------------------------------------------------------------------------------------|
+| I was in contact with Mattew Roerig at or about that time, as well as Jerimey Mahoney,             | ! Coincidence
 | CVE-2019-8936 + Wannacry Ransomware 1/15/2019 @ 1602 Route 9 CP 12065                              |
-+ | Nfrastructure is involved somehow, and I think it has something to do with John Pickett            | Suspicion
+|----------------------------------------------------------------------------------------------------|
+| Nfrastructure is involved somehow, and I think it has something to do with John Pickett            | Suspicion
 | and, Scott Salvadore – because that is approximately when shit started getting fuckin' serious     |
 | April 2019 | Facebook posts about "Top Deck Awareness 2019"                                        | 
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-2020
-______________________________________________________________________________________________________
-+ | FBI Christopher Murphy at 200 McCarty Ave spoke to me the day before CPS was called on me 1/2020   | Nfrastructure
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [2020]                                                                                             |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| FBI Christopher Murphy at 200 McCarty Ave spoke to me the day before CPS was called on me 1/2020   | Nfrastructure
 | I had called an FBI switchboard the night before, spoke to a woman in Virginia for several minutes |
 | I told her "I believe Nfrastructure or someone in the FBI is attacking me" and then my internet    |
 | sustained service disruption later that night                                                      |
-+ | 10 Innisbrook/Terri + Ryan/Old house: 05/25/2020 → 12 hours before attempted murder - I heard FBI  | ! Coincidence
+|----------------------------------------------------------------------------------------------------|
+| 10 Innisbrook/Terri + Ryan/Old house: 05/25/2020 → 12 hours before attempted murder - I heard FBI  | ! Coincidence
 | radio chatter in the video IMG_0627.mov, also OTHER videos - girl jogging past me was attempting   |
 | to look inconspicuous, also seen jogging off of Barn Owl Drive → 5/26/2020 after Leavey responded  |
 | to a call for service at Graybar/which I was never AT Graybar, I was at NYSEG.                     |
-+ | The attack using Pegasus/Phantom, about 12 hours after walking to 10 Innisbrook                    | 1st murder
-|  (technically SCSO Schelling was 2nd attempt that I stopped by having Kaplan follow Schelling)      |    attempt
-+ | The resistance in preventing me from showing other people that video was so strong, that I could   | Resistance
+|----------------------------------------------------------------------------------------------------|
+| The attack using Pegasus/Phantom, about 12 hours after walking to 10 Innisbrook                    | 1st murder
+| (technically SCSO Schelling was 2nd attempt that I stopped by having Kaplan follow Schelling)      | attempt
+|----------------------------------------------------------------------------------------------------|
+| The resistance in preventing me from showing other people that video was so strong, that I could   | Resistance
 | get nearly every other file off of the iPhone EXCEPT the video. I think it's because the party     |
 | that murdered my father also tried to murder me. Only Leavey, my son, and daughter have seen it.   |
-+ | 203D Halfmoon Circle – where (NYSP Leavey: Trusted) saw a portion of the video (05/27/2020 ~9AM)   | Innocent
+|----------------------------------------------------------------------------------------------------|
+| 203D Halfmoon Circle – where (NYSP Leavey: Trusted) saw a portion of the video (05/27/2020 ~9AM)   | Innocent
 |   (2) adults attempting to murder me using Pegasus/Phantom, outside of Catricala/Computer Answers  | 
-+ | After I told Trooper Leavey about the video, someone at the FBI disabled my iPhone                 | ! Coincidence
-| 6/13/20 – Moak: Attempted Assault,
-+ | 6/16/20 – KeyBank: 10pm and somebody's walking around in the bank – ILLEGAL/Needs Preauthorization | 2nd murder 
-| could actually be doing illegal shit after hours → 7 minutes later, SCSO 4148 stares at me, about  |    attempt
-| to turn into Parkwood, parked in middle of Route 9, turns around in Astoias lot                    | 
-+ | 6/18/20 – CPS: Cuntface Laura Hughes wrote letter of indication, I wrote document that talks about | Allegation  
+|----------------------------------------------------------------------------------------------------|
+| After I told Trooper Leavey about the video, someone at the FBI disabled my iPhone                 | ! Coincidence
+|----------------------------------------------------------------------------------------------------|
+| 6/13/20 – Moak: Attempted Assault                                                                  |
+|----------------------------------------------------------------------------------------------------|
+| 6/16/20 – KeyBank: 10pm and somebody's walking around in the bank – ILLEGAL/Needs Preauthorization | 2nd murder 
+| could actually be doing illegal shit after hours → 7 minutes later, SCSO 4148 stares at me, about  | attempt
+| to turn into Parkwood, parked in middle of Route 9, turns around in Ostoja's lot                   | 
+|----------------------------------------------------------------------------------------------------|
+| 6/18/20 – CPS: Cuntface Laura Hughes wrote letter of indication, I wrote document that talks about | Allegation  
 | these details, Nfrastructure, J. Hoffman, Catricala/Tanski (among others)                          |
-+ | Asked mom for ride aunt Nancy's house, said no, walked the whole way on 06/20/20, CP → Menands →   | 3rd murder 
-| Roerig knows digital birds exist, Pickett's → saw Nicole Bonesteele (Catricala) NS Ave, Found blk  |    attempt
+|----------------------------------------------------------------------------------------------------|
+| Asked mom for ride aunt Nancy's house, said no, walked the whole way on 06/20/20, CP → Menands →   | 3rd murder 
+| Roerig knows digital birds exist, Pickett's → saw Nicole Bonesteele (Catricala) NS Ave, Found blk  | attempt
 | Dodge Dart in Captain's spot NYS/DVA-2450 → White SUV passing 1M from New Salem, brake lights, ear |
 | started ringing/panic, hid, 2hrs after sunset, aggressively HUNTING me, drove into EVERY driveway, |
 | AND woods, drove away, came back < 60s, tryna fake me out, "missing person" → similar behavior to  | 
 | white SUV leaving Wescot 5/24/20 (5m before Catricala), may have been same SUV 4/20 @ Vucetic that | 
 | found me using offline iphone GPS → Someone knew my trajectory RESIDENCE/BUGGED → Call w/Kathy was | 
-| ALSO bugged → They attacked Nancy's cable modem and computer → somewhat safe                       | 
-+ | I made an audio recording and left it with the FBI ~ July 28, 2020 "Jesse Picket 785-3221"         | Allegation
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    
-2022
-______________________________________________________________________________________________________
-+ | Russia invades Ukraine, cyberattack commences that I catch on video, Facebook & YouTube AGGRESSIVE | Censorship
+| ALSO bugged → They attacked Nancy's cable modem and computer → somewhat safe                       |
+|----------------------------------------------------------------------------------------------------|
+| I made an audio recording and left it with the FBI ~ July 28, 2020 "Jesse Picket 785-3221"         | Allegation
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [2022]                                                                                             |
+|____________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Russia invades Ukraine, cyberattack commences that I catch on video, Facebook & YouTube AGGRESSIVE | Censorship
 | censorship, multiple videos of censorship, censorship excessive                                    | 
-+ | 203D Halfmoon Circle - where I spoke with Mr. McCabe, 4/2022                                       | Innocent
-+ | Mr. McCabe "CAPDIG1" asked if my dad went to HVCC when I told him he studied dig. Electronics.     | Education
-+ | Mr. McCabe said "Partner's been doin' this since the 70's", "We have a lot of military guys"       | Military
-+ | White Cadillac car parked in Cull de sac staring at me through my window, left when I looked at it | Stalking
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ 
+|----------------------------------------------------------------------------------------------------|
+| 203D Halfmoon Circle - where I spoke with Mr. McCabe, 4/2022                                       | Innocent
+|----------------------------------------------------------------------------------------------------|
+| Mr. McCabe "CAPDIG1" asked if my dad went to HVCC when I told him he studied dig. Electronics.     | Education
+|----------------------------------------------------------------------------------------------------|
+| Mr. McCabe said "Partner's been doin' this since the 70's", "We have a lot of military guys"       | Military
+|----------------------------------------------------------------------------------------------------|
+| White Cadillac car parked in Cull de sac staring at me through my window, left when I looked at it | Stalking
+|____________________________________________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Here, I have provided multiple examples of what is ACTUALLY HAPPENING UNDER PEOPLES NOSES.
 "@)
  
-$Book.NewSection(7,"Scenario 1 [+] They (win/survive), you (lose/die)",@"
+$Book.NewSection(7,"Excerpt","Scenario 1 [+] They (win/survive), you (lose/die)",@"
 ______________________________________________________________
 | Assassins vs Individual: How SCSO will report the incident |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -22833,7 +22935,7 @@ Some people really are stupid, and they think that if a police officer breaks th
 Nah. It doesn't mean that at all. But, SOME PEOPLE REALLY ARE THAT FUCKIN DUMB.
 "@)
  
-$Book.NewSection(7,"Scenario 2 [+] They (lose/die), you STILL (lose/go to prison)",@"
+$Book.NewSection(7,"Excerpt","Scenario 2 [+] They (lose/die), you STILL (lose/go to prison)",@"
 ______________________________________________________________
 | Assassins vs Individual: How SCSO will report the incident |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -22875,7 +22977,7 @@ None of these people would have a job being a police officer if they were total 
 However, some of them need to be called out. They trust someone that was ACTIVELY ATTEMPTING TO MURDER ME.
 "@)
  
-$Book.NewSection(7,"Scenario 3 [+] They (lose/go to prison), you (win/What's the problem officer?)",@"
+$Book.NewSection(7,"Excerpt","Scenario 3 [+] They (lose/go to prison), you (win/What's the problem officer?)",@"
 _________________________________________________________________
 | Assassins vs Militia:  How SCSO they will report the incident |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -22961,7 +23063,7 @@ called Cortana, will exist at some point. The idea isn't ridiculous at all, it's
 ONE DAY, be a REALITY. And when you begin to talk about stuff like that... you will become a target.
 "@)
  
-$Book.NewSection(7,"Scenario 4 [+] They (lose/die), you (win/Why do the police keep going missing?)",@"
+$Book.NewSection(7,"Excerpt","Scenario 4 [+] They (lose/die), you (win/Why do the police keep going missing?)",@"
 _________________________________________________________________
 | Assassins vs Militia:  How SCSO they will report the incident |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -23046,7 +23148,7 @@ Zurlo : I don't fuckin' know what happened bro but this is... fuckin' insanity..
 Brown : I think we fucked with the wrong people dude. I'm actually terrified now.
 "@)
  
-$Book.NewSection(7,"Identification (1)",@"
+$Book.NewSection(7,"Conjecture","Identification (1)",@"
 Now, here's the bright side. 
 None of that shit in scenario 2, 3 or 4... will likely happen within the next few days, or weeks.
 Maybe months...? Or years...? Who knows...? Maybe it'll start TODAY. Or, tomorrow. You never really know.
@@ -23148,7 +23250,7 @@ I'll go over this shortly.
 At some point, a lot of people are going to think "THAT IS FUCKED UP BRO..." No shit.
 "@)
  
-$Book.NewSection(7,"Militia Cont'd",@"
+$Book.NewSection(7,"Conjecture","Militia Cont'd",@"
 Continuing from the very last point about the Militia, written in [Chapter 1 – Liars in the Lead]...
 
 That doesn't mean that THE MILITIA doesn't have to POINT THEIR WEAPONS AT THEM ANYWAY... They do. And, will.
@@ -23209,7 +23311,7 @@ single ass fuck, like ya know, Ted Cruz...?"
 He would probably start negotiating it down A LOT, OR, upgrade the FREQUENCY/QUANTITY.
 "@)
  
-$Book.NewSection(7,"Skit [~] Negotiation",@"
+$Book.NewSection(7,"Skit","Negotiation",@"
 Musk : So, what you're saying, is that Ted Cruz gets a REAL COOL `$500M to allow Exxon Mobil-
 Me   : ...to fuck him in the ass.
 Musk : *chuckles* Jeez, I guess I'm in the wrong industry...
@@ -23245,7 +23347,7 @@ Me   : ...attractive than Ted Cruz, right...?
 Musk : You took the words right out of my mouth.  
 "@)
  
-$Book.NewSection(7,"Identification (2)",@"
+$Book.NewSection(7,"Conjecture","Identification (2)",@"
 Make sense yet? 
  
 However, some people will actually laugh uncontrollably when they read it... 
@@ -23261,7 +23363,7 @@ Facebook does that... unless it's about something vague or nondescript...
 Well, Ted Cruz will probably think its funny that I made a document that he's probably gonna take some notes 
 from... ...just keep readin' buddy.
 
-As for the "Skit : Hannity givin Murdock some dome", several chapters up, some of them will find it funny, 
+As for the "Skit : Hannity givin Murdoch some dome", several chapters up, some of them will find it funny, 
 RUPERT MURDOCH will probably laugh when he reads this, because he says the same exact shit that I say. 
 He's probably thinking "...I do talk to Sean like that... like, word for word..."
 
@@ -23297,7 +23399,7 @@ Tucker spent months talking some serious shit about BOB LUTZ SO many times, and 
 pretending like he didn't hear this fuckin' dude. Bob got pissed off enough to accept a match... 
 "@)
  
-$Book.NewSection(7,"Skit [~] Tucker's Talking Smack",@"
+$Book.NewSection(7,"Skit","Tucker's Talking Smack",@"
 Carlson : You fuckin' suck ass at golf, old man. Admit it. 
 Lutz    : The fuck I do, ya little twerp.
           You wanna play me in a game you, son of a bitch...?
@@ -23397,10 +23499,10 @@ Hannity is a tool. So is Ted Cruz.
 Whereas, Tucker is a mass manipulator.
 "@)
  
-$Book.NewSection(7,"Identification (3)",@"
+$Book.NewSection(7,"Conjecture","Identification (3)",@"
 
 While Tucker will (SAY/DO) questionable shit that proves what a moron he is...
-...the idea of cobbin' on another mans knob, like Hannity does to Murdock...
+...the idea of cobbin' on another mans knob, like Hannity does to Murdoch...
 ...OR spreading his ass cheeks for anybody at Exxon Mobil like Ted Cruz...
 ...well, that's crossin' the fuckin' line for TUCKER CARLSON.
 
@@ -23454,7 +23556,7 @@ Well, SEAN HANNITY will do that if he wants to keep getting a paycheck. So will 
 That's just how America works, and I REALLY don't think people understand the gravity of what I'm saying.
 "@)
  
-$Book.NewSection(7,"Thesis [+] Change the name of Fox News → Not News",@"
+$Book.NewSection(7,"Thesis","Change the name of Fox News → Not News",@"
 
 The idea that any of these fucks would ever admit that they do this shit, OR, change the god damn name of...
 Fox News → Not News...? 
@@ -23516,7 +23618,7 @@ then what might happen, is that I'll have a following of people that read it, an
 pants laughing about it.
 "@)
  
-$Book.NewSection(7,"Counter-Manipulation (1)",@"
+$Book.NewSection(7,"Application","Counter-Manipulation (1)",@"
 Why...? Because anyone who's NOT an idiot, they'll say to themselves:
 
 "Wow, I really could see SEAN HANNITY choking on RUPERT MURDOCHs dick, for like `$100M a year." 
@@ -23614,7 +23716,7 @@ Almost like when someone rips one of the nastiest farts anyone ever smelled, and
 ...their shit doesn't stink, and yours does.
 They have it down to a science, that people are just too fuckin' oblivious to catch on.
 
-In reference to Murdock, this man has so much money, he can THROW A WHOLE STACK OF IT AT ANYONE, and that idiot 
+In reference to Murdoch, this man has so much money, he can THROW A WHOLE STACK OF IT AT ANYONE, and that idiot 
 will do whatever they're told. So if it's a federal investigator that is supposed to arrest people in the 
 government that accept bribery, well...
 
@@ -23622,12 +23724,12 @@ The reason they didn't get around to it YET, is because they're filling their an
 Too busy doing that, they can't do it fast enough I'm afraid. 
 Maybe that's not what they're doing at all, but it seems PLAUSIBLE to me.
 
-As for Murdock going around haphazardly injuring people with a taped up stack of cash that he'll throw at 
-anybody. I'm not hyperbolizing that at all, Murdock could INJURE people, with the HEAVY ASS STACKS OF CASH 
+As for Murdoch going around haphazardly injuring people with a taped up stack of cash that he'll throw at 
+anybody. I'm not hyperbolizing that at all, Murdoch could INJURE people, with the HEAVY ASS STACKS OF CASH 
 HE HAS. The point being, if RUPERT MURDOCH wants to get somebody's fuckin' attention...? 
 
 He will PAY someone STRONG enough, to THROW that stack of money, at any person at all.
-Murdock having someone throw a large enough stack of cash at somebody, NOBODY IS GONNA IGNORE THAT.
+Murdoch having someone throw a large enough stack of cash at somebody, NOBODY IS GONNA IGNORE THAT.
 
 Whether it's James Comey, or Christopher Wray, Barack Obama, HILLARY CLINTON, Andrew Cuomo, Michael Zurlo, 
 Eric Catricala, Bruce Tanski, or whoever the fuck he feels like.
@@ -23643,7 +23745,7 @@ Or, lines they'd never cross, somehow being crossed quite a lot afterward.
 They may even go so far as to kill innocent people.
 "@)
  
-$Book.NewSection(7,"Flashback [~] Dwayne Coonradt (Morality)",@"
+$Book.NewSection(7,"Flashback","Dwayne Coonradt (Morality)",@"
 Dwayne Coonradt would never suck a guys dick in his fuckin' life.
 Not unless RUPERT MURDOCH had someone throw a fuckin' stack of cash at him, and told him to do just that.
 THEN, Dwayne Coonradt would GLADLY get on his knees, and suck whoever's dick he was told to.
@@ -23678,8 +23780,7 @@ ________________________________________________________________________________
 Need I continue...? 
 "@)
  
-$Book.NewSection(7,"Counter-Manipulation (2)",@"
-
+$Book.NewSection(7,"Lesson","Counter-Manipulation (2)",@"
 The point I'm attempting to illustrate, is that when people try to tell me:
 ________________________________________________________________________________________________________________
 | there's no way that anybody would do that | that's impossible | why would they bother doing something to you |
@@ -23778,12 +23879,11 @@ For anybody who thinks I'm full of shit, well... read the god damn statutes in t
 about the document itself, its lasting implications, and my observations about it being (MISUSED/ABUSED).
 "@)
  
-$Book.NewSection(7,"Used to be News...? Now we're not news",@"
-
+$Book.NewSection(7,"Thesis","Used to be News...? Now we're Not News",@"
 Anyone reading this probably COULD'VE gotten that news, from news organizations.
 But not Fox News. Nah. Fox News...
 __________________________________________________________________________________
-| Used to be News...? Now we're not news. Not News. Part of the Not News Network |
+| Used to be News...? Now we're Not News. Not News. Part of the Not News Network |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Here's the thing, when I write these documents, differences are being resolved peacefully.
 If someone worked so very hard to prevent distribution of this document, 
@@ -23851,7 +23951,7 @@ Marco Rubio is on the list, but he stays relatively low-key these days.
 2016 Before the Flood... watch that documentary to see a list of bribed politicians.
 "@)
  
-$Book.NewSection(7,"Skit [~] Ted Cruz (Part 1)",@"
+$Book.NewSection(7,"Skit","Ted Cruz (Part 1)",@"
 The problem is, Ted Cruz will literally be embarrassed by my single comment, that he'll say:
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -23964,14 +24064,26 @@ Me   : Nah you're right, they don't let EVERYBODY get away.
        …they just reason with themselves that they've earned the right to write me off.
 "@)
  
-$Book.NewSection(7,"Interactions",@"
-
-I don't try to belittle everybody I meet, but when I start to hear it in their voice...? 
+$Book.NewSection(7,"Conjecture","Interactions",@"
+I don't try to belittle everybody I meet, but when I start to HEAR it in their VOICE...? 
 I give it RIGHT back to em, and then they are typically shocked...~! 
 I just, started acting incredibly rude...~!
 For like NO REASON, huh?
 
-There was a reason, but people constantly insult my intelligence, and they think nothing of it.
+Nah, there was a reason, they're just typically not intelligent enough to understand when
+or where I FEEL like I might break somebody's legs in a minute...
+People constantly insult my intelligence, and they think nothing of it.
+
+But, breaking people's legs isn't something I think to do if they just met me or don't know me that well.
+I typically start to think about breaking somebody's legs when i've met the person many many times, and
+they say stuff that continues to undermine my intelligence.
+
+I have to be pretty EXPLICIT about this, I... DO... NOT... LIKE... WHEN... PEOPLE... INSULT... MY...
+INTELLIGENCE... and BECAUSE... I... AM... MORE... INTELLIGENT... THAN... MOST... PEOPLE...?
+IT... HAPPENS... QUITE... A... LOT...
+
+Which is why I have to call people stupid, in sophisticated ways.
+
 They may not understand that I'd rather punch somebody in the fuckin' face first...
 ...than to be rude when people start to be very snobby to me.
 
@@ -24107,7 +24219,7 @@ So allow me to be clear here... people's constitutional rights are being overrid
 It has been happening since October 26th, 2001.
 "@)
  
-$Book.NewSection(7,"Excerpt [~] Familiar with the Technology",@"
+$Book.NewSection(7,"Excerpt","Familiar with the Technology",@"
 An excerpt that I wrote following the situation where SCSO SCOTT SCHELLING REFUSED TO COLLECT EVIDENCE FROM MY
 DEVICE ON 05/26/20. Original:  https://docs.google.com/document/d/11Q11HnRmAuCd_HAJZPLEoWJIujv9Jpyq1O1I5MODqWk
 
@@ -24121,12 +24233,14 @@ SCSO DEPUTY MICHAEL MARTIN, and SCSO DEPUTY DJ THOMPSON arrested me on 06/01/20 
 ...at the request of SCSO JAMES LEONARD
 "@)
  
-$Book.NewSection(7,"Familiar with the Technology (1)",@"
+$Book.NewSection(7,"Story","Familiar with the Technology (1)",@"
 I'm Very Familiar With The Technology
-Used to be, that there were fleets of vehicles and dudes/dudettes that drove around, using radios to find trouble, 
-and then…? Telling the trouble they found, that there would be additional trouble for them… if they didn't freeze, 
+
+Used to be, that there were fleets of vehicles and (dudes/dudettes) that drove around, using radios to find trouble, 
+and then…? Telling the trouble they found, that there would be ADDITIONAL trouble for them… if they didn't freeze, 
 put their hands in the air, maybe they even threw in the occasional 'wave em around like you just don't care'… just 
 to be an extra amount of 'prick'.
+
 I would do that. Anyone reading this, knows that I would. 
 Guy tryin' to flush stacks of cash down the toilet…? 
 
@@ -24141,6 +24255,7 @@ Me  : Hey, that's fine, dude.
       That was optional.
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
 Anyway... look. You ask an officer about anything technology related...? 
 They'll say the most mundane words you've ever heard… 
 
@@ -24150,6 +24265,7 @@ Cop : I'm not familiar with the technology, dude.
       I don't even use Facebook…
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
 ...these statements may or may not be true… but they still have a pretty good idea of who you are, and they have 
 people that ARE familiar with the technology give them each a daily briefing of YOU and YOUR social media posts,
 emails, phone records, porn sites, all of that.
@@ -24185,6 +24301,7 @@ Me       : Nah man...
 Somebody : Yeah, well... fuck you ANYWAY, bro.
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
 At any rate, I've noticed that every time the police come to 'offer help'…?
 There's always some type of [sanity check*] involved.
 
@@ -24232,7 +24349,9 @@ Maybe it just seems hard to believe… I'm a rare type of person who knows a lot
 Not just one field or a couple, but a good general knowledge of what a wise investment in time/resources versus 
 a wasteful one is, and how to properly educate people the difference between the two. Naturally, fat cats that 
 like being lazy… they hate my guts. (← Some of the wrong people are gonna get offended by that, they shouldn't)
+
 So… ALREADY worth a LOT to LIMIT and such. 
+
 Also, investigating a corporate/government monopoly, in which the best fiber optic internet backbone is held 
 captive, and the shitty one that costs a lot more, isn't. On top of that, there's a serial killer with a badge 
 that protects this monopoly in particular, mainly because, they've been through (2)-(3) Sherman Antitrust 
@@ -24261,7 +24380,8 @@ shit out there, like "the Consitution grants people 'rights'". That one will REA
 I start saying shit like "Nah, people don't have rights anymore, they're just lied to about whether they have any",
 that will immediately cause people that don't know they're constantly lied to, controlled, and manipulated, to 
 immediately feel EXTREMELY OFFENDED AND BUTT HURT...
-But that's ok. That's a sign of an ESTROGEN FUELED DECISION where someone chose to act like a CHILD when they were
+
+But, that's ok. That's a sign of an ESTROGEN FUELED DECISION where someone chose to act like a CHILD when they were
 shown a number of COMPELLING ARGUMENTS in RAPID SUCCESSION. Normally, people will walk out of a room before they
 are even shown the most critical supporting evidence that suggests my statement. That's why people are morons.
 
@@ -24280,6 +24400,7 @@ This is why "COLLATERAL MURDER" is such a COMPELLING ARGUMENT that LINE OF REASO
 NOW, they can use this program called PRISM/PEGASUS to prevent evidence from making it to another law man's hand.
 That's what they're using it for to track me… and it is what they use to DESTROY EVIDENCE on a target SMARTPHONE.
 REMOTELY, by the way. They don't have to plug anything into your device to destroy evidence on your smartphone.
+
 Nah, they can just ask a hacker to find your account, mac address, and then remotely WIPE your device. Cool...?
 There are a laundry list of OTHER violations and felonies that I will be adding... (in the book) but-
 OBSTRUCTION OF JUSTICE is a super big, important, critical fuckin' thing, that MOST people would NEVER EVEN DARE
@@ -24287,21 +24408,25 @@ to DO nor CONSIDER… but- these guys do it every day. Don't they...? People wou
 ever realize just how often the police DESTROY EVIDENCE of THEM, COMMITTING ILLEGAL ACTIVITIES like DEREK CHAUVIN.
 "@)
  
-$Book.NewSection(7,"Cop Types",@"
+$Book.NewSection(7,"Conjecture","Cop Types",@"
 Anyway, the officers that scoped out your profile...? 
-Well, they could be assisting serial killers AS WELL ASS good guy cops… 
+Well, they could be assisting serial killers AS WELL AS good guy cops… 
+
 The good guy cops might not have an inkling of suspicion or merely a single clue… 
 …that they work with a serial killer who has a badge, and logs everything for later… 
 …a good little dependable MAFIOSO who's paid UNDER THE TABLE by a MAFIA BOSS...
 …one that doesn't bother to let his bro know that he saw something worth looking at a little more closely later...
+
 Now, to combat theses evil-doin', sleeper-cell type of activity, fuck-faced bastards… 
 ...you gotta have some BASIC cop-type detection skills.
 
 Could it be a REAL cop..?
 Or, a fake-ass cop..?
+
 Could be a REAL cop that isn't an asshole like that... and you might offend a REAL cop by tellin' him that his
 buddy who's been his partner for a REAL long time, is a fake-ass cop. NOW, you've just pissed off a REAL cop...
 That REAL cop is not gonna be YOUR buddy ANY MORE after that.
+
 Nope.
 Dude's gonna cross his arms...?
 And flat out tell ya some shit that sounds a lot like "You're not invited to MY birthday party, dude."
@@ -24323,19 +24448,23 @@ Cause that was the signal. They knew it was time to inconspicuously lay down som
 ...now they're crawling through vents like Liquid Snake...
 ...or wearing an eye patch like Snake Plisken...
 ...could be THAT type of cop…
+
 Then again, maybe it isn't even that intense yet. Might be a lame-ass, no-game-havin', fake-cheesecake-bakin', 
 drives-a-car-barefoot-like-Fred-fuckin-Flintstone… douchebag cop that IS an asshole like that...? 
 But, everyone still thinks he's cool and trustworthy…
+
 Not a wide range of multiple cop types, it seems. However, that's just what some of them WANT you to think...
 There's a wide range of multiple cop types for certain.
 "@)
  
-$Book.NewSection(7,"Familiar with the Technology (2)",@"
+$Book.NewSection(7,"Story","Familiar with the Technology (2)",@"
 Anyway, until then, ask a cop to do some information technology related work… or ask for some help obtaining the
 evidence from your phone… Your DEAD phone… like my Apple iPhone 8+. 
-Instead of not knowing how wires plug into one…? 
+Instead of not knowing how wires plug into one…?
+
 They can just pretend to be fucking lazy, and not do that - like they currently do.
-So, even if you have EVIDENCE of a SERIAL KILLER on YOUR PHONE…? 
+So, even if you have EVIDENCE of a SERIAL KILLER on YOUR PHONE…?
+
 It doesn't actually COUNT as LEGAL EVIDENCE until a (3)rd copy of the evidence shows up elsewhere.
 If you have evidence like this...? That's actually a fucking crime in some people's eyes.
 
@@ -24383,11 +24512,11 @@ Schelling : Well dude, I can arrest you for saying something like that...
 Me        : I have evidence on my device.
 Schelling : Yeah right, dude.
             You don't have evidence on that device...
-            I would've seen it by now, if it did.
+            I would've seen it by now, if you had evidence on that device...
 Me        : Yeah well my phone needs to be charged...
 Schelling : *chuckles* Heh.
             Dude, who do you think I am, some type of fuckin' moron that doesn't know the whole...
-            OoOOoooOOooOHhhhH my phone needs to be charged, gag...?
+            'OoOOoooOOooOHhhhH my phone needs to be charged', gag...?
             C'mon bro.
             *scoffs* Who the hell do you even think you're foolin right now...?
             Hm...?
@@ -24411,7 +24540,7 @@ kindergartners… cause they're gonna get tired after 20 minutes of (hard labor/
 box, so that they can get a nice hour or two of a real comfy ass nap in the middle of their shift.
 "@)
  
-$Book.NewSection(7,"Law Enforcement vs Law Avoidance",@"
+$Book.NewSection(7,"Lesson","Law Enforcement vs Law Avoidance",@"
 That's what THEY need.
 But, if you ever find yourself in this same type of situation...? Well, what YOU'LL need, is a guy like me.
 One that has the SAME LAW ENFORCEMENT capabilities that a REGULAR COP would have…?
@@ -24425,7 +24554,7 @@ Being able to determine a LAW ENFORCEMENT OFFICER from a LAW AVOIDANCE OFFICER, 
 TROOPER DICKSON, RIZANNO, O'NEIL, BAKER, ENNIST, CARTER, and SHAEMUS LEAVEY are → [LAW ENFORCEMENT OFFICERS]...
 ...which means that they ENFORCE the law... so if they observe something ILLEGAL, they do their job CORRECTLY.
                          ¯¯¯¯¯¯¯
-Whereas ROBERT MESSINES SR. and JR., SERGEANT BOSCO, and TROOPER RUFFAS are LAW AVOIDANCE OFFICERS.
+Whereas (ROBERT/CAMERON) MISSENIS, SERGEANT BOSCO, and TROOPER RUFFAS are LAW AVOIDANCE OFFICERS.
 ...which means that they AVOID the law... so if they observe something LEGAL, they do their job INCORRECTLY.
                          ¯¯¯¯¯
 TROOPER BORDEN, is SOMEWHERE IN THE MIDDLE... One day, he might ENFORCE the law. Might do that 95% of the day.
@@ -24448,11 +24577,45 @@ Like, some people actually think that OBVIOUSLY if someone put a SCREEN DOOR ON 
 It was a design choice. There's no way that it'll sink because of that. (← that's why some people are retarded)
 "@)
  
-$Book.NewSection(7,"Familiar with the Technology (3)",@"
+$Book.NewSection(7,"Story","Familiar with the Technology (3)",@"
 I would be very familiar with the technology… and, I would throw in quite a number of lame ass, cheesy puns. 
 Ones that get old real fast...? But, still sound so stupid... that it's STILL worthy of an additional laugh… 
 So funny that people will RELUCTANTLY laugh out loud...
-You ever seen somebody RELUCTANTLY start bursting with laughter...? Well, that's me.
+
+You ever seen somebody RELUCTANTLY start bursting with laughter...? Well, that'd be me.
+I wouldn't necessarily be the overzealous cop...
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Cop : NOBODY better be doin' ANYTHING illegal, or else EVERYBODY's gettin' arrested...
+Guy : *eyebrows up* ...what...?
+Cop : You heard me, dude.
+      I'll arrest EVERYBODY if I even see (1) person doing something SLIGHTLY illegal.
+Guy : ...you can't do that.
+Cop : Oh yeah...?
+      Wanna make a bet...?
+      I'll do it, buddy...
+      THEN we'll see who's laughin'...
+Guy : ...So, what if somebody's just look' at ya funny...?
+Cop : That's an UNLAWFUL STARING CONTEST.
+      I'll arrest EVERYBODY for that.
+Guy : Pretty sure that's not a law.
+Cop : The hell it isn't.
+Guy : If that IS a law...?
+      That's pretty ridiculous.
+Cop : Buddy, that's an UNLAWFUL STUPID OPINION, right there...
+      I could arrest you for that...
+Guy : *nervous gulp*
+Cop : Yeah, see..?
+      I can arrest anybody for whatever.
+      If I see a crime happening ANYWHERE...?
+      EVERYBODY within 25,000 miles of the scene of the crime is gettin' arrested, bub.
+Guy : That's impossible.
+Cop : That's another count of an UNLAWFUL STUPID OPINION, dude.
+      You are REALLY pressin' your luck.
+      Don't test me, buddy.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 I know how wires work, AND…? I'm not too lazy to give a different wire a shot, if you were to tell me that a cop 
 I work with either IS a SERIAL KILLER, or COLLABORATES with one. There have been (0) police officers who've 
@@ -24464,7 +24627,8 @@ Maybe they don't realize that I've been working (MULTIPLE) class action lawsuits
 
 Apple, Facebook, Asus, Bell Atlantic/Verizon, Spectrum, State of New York... they're all gonna be sued at the same 
 exact time, because they're CO-CONSPIRATORS. And maybe THAT'S why they don't believe in cop serial killers...
-Regardless… I would already have all of the information necessary to help you. 
+Regardless… I would already have all of the information necessary to help you.
+
 Not unlike CITIZEN LAB, which is based in CANADA, and has worked with AL-JEZEERA to determine with SHEER CERTAINTY,
 that someone was USING PEGASUS to SPY on REPORTERS that work for AL-JEZEERA, and this was like... AFTER I wound up
 learning FIRST HAND, that I had this PROGRAM dispatched to my fuckin' device.
@@ -24477,13 +24641,14 @@ this top notch son of a bitch...? It's impossible.
 Even on his worst day ever… still can't be done… Not via any conventional means anyay…
 Lawyer Man 5000 would even tell ya, this cop is one that can't be beaten without having a fuckin parade of veteran
 investigators, captains, sergeants, and retired cop heroes...
+
 There exists no known organization or government entity that 1) does this, or 2) thinks that this would be a 
 perfect way to show EVERYBODY, how, over time...? Teddy Roosevelt has to come back from the dead and train a new
 generation of recruits that have 1) integrity, and 2) perseverance... because, trades such as LAW ENFORCEMENT 
 need to ADAPT to NEW TIMES/CONDITIONS. And, that is EXACTLY what the USA-PATRIOT Act of 2001 was WRITTEN FOR.
 "@)
  
-$Book.NewSection(7,"Qui-Gon Jinn, Bryan Mills, or Rahs Al Guhl",@"
+$Book.NewSection(7,"Application","Qui-Gon Jinn, Bryan Mills, or Rahs Al Guhl",@"
 All cops should have a mandatory Batman 101 course, where they each have to learn a number of things, like: 
 ______________________________________________________________________________________________________________
 | Hand-to-hand combat (CQC) | Psychological Manipulation | Programming and logic | How to fill out paperwork |
@@ -24534,20 +24699,35 @@ MULTIPLE TYPES OF SMARTPHONES that may have EVIDENCE of an ATTEMPTED MURDER...?
 
 That's... too much of a fuckin' hassle for some dipshit like TROOPER RUFFAS.
 WAY too difficult to do something like that. 
-It'd just be a LOT easier for him to GRAB A JUICE BOX, and a BLANKET, and then... take a fuckin 5 hour nap.
-Right in the middle of his shift. Nobody will stop him from doin that because, he will literally outperform 
-ANY other LAW AVOIDANCE OFFICER on staff, AND, he's in a MUCH DIFFERENT PAY GRADE because of the QUALITY of 
-LAW AVOIDANCE SERVICES that he provides the STATE OF NEW YORK.
+
+It'd just be a LOT easier for him to GRAB A JUICE BOX, and a BLANKET, and then... take a fuckin' 5 hour nap.
+Right in the middle of his shift. 
+Nobody'll stop him from doin' that, because he will literally outperform ANY other LAW AVOIDANCE OFFICER on 
+staff, AND, he's in a MUCH DIFFERENT PAY GRADE because of the QUALITY of LAW AVOIDANCE SERVICES that he provides 
+the STATE OF NEW YORK.
 
 Does any of that shit sound retarded...?
-Well, fuck you for thinkin that, cause TROOPER RUFFAS will agree with everything I just said.
-So will TROOPER MESSINES. And, SERGEANT BOSCO, though I'm on the fence about HIM, because he may actually
-be SUGGESTIBLE with the EVIDENCE... 
+
+Well, fuck you for thinkin' that, cause TROOPER RUFFAS will agree with everything I just said.
+So will CAMERON MISSENIS. And, SERGEANT BOSCO, though I'm on the fence about HIM, because he may actually
+be SUGGESTIBLE with the EVIDENCE... as long as he stops acting wicked gay like he did in this video...
+____________________________________________________________________
+| 09/12/22 | TROOPER BOSCO being gay | https://youtu.be/9w9oSNvMQM |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+To the UNTRAINED EYE...? 
+It won't look like TROOPER BOSCO is being gay at all in this video.
+
+To the TRAINED EYE...? 
+Anyone will notice:
+1) when I correctly identify him "Are you SERGEANT BOSCO...?" he doesn't respond to me VERBALLY
+2) when I ask him WHO CAMERON MISSENIS' FIRST NAME IS, he just said "I don't remember", 
+   but that is a rather EXTREMELY CLEAR SIGN of being quite gay, right there...
 
 The bottom line is that... if GOLDSTEIN is willing to charge `$17K to install those camera systems like 2G32 told
 me on 08/05/20 near JOES CARS on US-9 after the incident at 1602 US-9, where TROOPER OPOBANO came and handed off
 the DISORDERLY CONDUCT paperwork/bullshit arrest...? Then, GOLDSTEIN should ALSO install a `$5 adapter that they 
-LITERALLY SELL at EVERY FUCKIN' GAS STATION and WALMART, or even a dollar store...? 
+LITERALLY SELL at EVERY FUCKIN' GAS STATION and WALMART, or even a dollar store...?
+
 They have those adapters there... Why would the FUCKING EXPENSIVE STATE TROOPER VEHICLES, OR the SARATOGA COUNTY 
 SHERIFF VEHICLES have NONE of those adapters installed in them, out of the gate...? 
 
@@ -24598,7 +24778,7 @@ Just because I made that OBSERVATION, doesn't mean I have any earthly idea if th
 I'm just saying, I've DETECTED EXTREMELY MALICIOUS AND NEFARIOUS INTENT FROM THIS PARTICULAR COCKSUCKER.
 "@)
  
-$Book.NewSection(7,"Familiar with the Technology (4)",@"
+$Book.NewSection(7,"Story","Familiar with the Technology (4)",@"
 Once humanity gets to a point in time where police officers can no longer be taken seriously if they say 
 something stupid, such as "I'm not familiar with the technology"...? 
 
@@ -24623,6 +24803,7 @@ It is not something that they typically CARE ABOUT, nor TAKE SERIOUSLY…
 
 Perhaps, some of them do take it a lot more seriously than most...?
 But… I wish there were more than just SOME, that DO…
+
 Because, it surely seems that if the money is right, some of these sad pricks get paid to confuse an L for a C.
 So like, Michael L. Cook who has a WARRANT out for his arrest... some of these morons will pretend like 
 the L looks basically exactly like a C, and then there's the CUFFS, there's an innocent person going to JAIL, and
@@ -24630,6 +24811,13 @@ then like, (3) weeks later...? Ah, finally released from jail. "Sorry about that
 
 SOMETIMES… you'll get a prick that actually bets with his partner to see if he can arraign your ass off of a 
 record that is ALMOST the same as yours..? But it isn't yours, like I just described above. 
+
+Let's talk about shoulder-phone-cop the 5th, who basically breaks the law as he's enforcing the law,
+pleads the fifth while upholding the laws he SUPPOSEDLY enforces... without raising ANY EYEBROWS.
+Nah. Dude knows how to plead the fifth, cause he's shoulder-phone-cop the 5th.
+
+He also goes by the street name, "Scrotum Chin".
+I'm talking about SCSO Anthony Pirrone, the "Traffic Safety cop" in SUV 4130.
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
@@ -24665,7 +24853,7 @@ Well, nobody is even proud of you for doing that at all. If anything...? People 
 even if you were INNOCENT, or you have PROOF. (← Typically morons)
 "@)
  
-$Book.NewSection(7,"Systemic Injustice",@"
+$Book.NewSection(7,"Excerpt","Systemic Injustice",@"
 Now, you get to deal with a thing on your record which was bullshit… 
 Maybe you even get sent back to jail in your last week of parole or probation… to serve the whole sentence. 
 Maybe, screw all that…
@@ -24700,7 +24888,7 @@ NOBODY cares. Not even me. Nope. Just sittin here, pounding away about SYSTEMIC 
 because I actually don't fuckin' care at all... (I'm being sarcastic, if people can't tell.)
 "@)
  
-$Book.NewSection(7,"Better Solutions",@"
+$Book.NewSection(7,"Conjecture","Better Solutions",@"
 At any rate, you could just do away with all of that muss and fuss… and tell SYSTEMIC INJUSTICE to fuck itself,
 right in the god damn face. Cause. A better solution is out there, and it can be deployed so quickly that guys
 like TROOPER RUFFAS won't have TIME to break the fuckin cables on purpose~!
@@ -24843,7 +25031,7 @@ But there are a lot of bad guys... and, they would PREFER that I shut the fuck u
 Guys like NYSP TROOPER RUFFAS.
 "@)
  
-$Book.NewSection(7,"Reasons They Want Me Dead",@"
+$Book.NewSection(7,"Assertion","Reasons They Want Me Dead",@"
 ______________
 | Free Power |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -25038,10 +25226,11 @@ ______________
  water vapor… then what factors must be considered to get the best zero-sum impact on the environment?
 "@)
  
-$Book.NewSection(7,"Shaping the Question",@"
+$Book.NewSection(7,"Conjecture","Shaping the Question",@"
 Sometimes learning how to shape the question takes a while to figure out.
 The real question is… could plants be used to make better fiber optic systems?
 The answer is, "Yes, they can."
+
 The problem is, lots of rich guys fucking hate that idea, because it'd make em less rich. 
 I don't want to throw them ALL into this camp, but I'm certain that some RICH PEOPLE act like TROOPER RUFFAS.
 
@@ -25049,11 +25238,14 @@ And, it means they might actually have to work a lot fucking harder than they ev
 Might not be a consistent case, but it's definitely an observation I've made.
 Perhaps you want to come right out of the gate, and explain the final end goal of the cop badge guy who's 
 NOW familiar with the technology…
+
 People have to ask "Don't we have that already…?"
 The answer is, yeah, but they think I'm nuts…
 Prior to the last 18 months, never saw myself as a 'genius'…
+
 However, starting to think that maybe I have been all this time, and didn't know it
 Because... I couldn't possibly be correct about all of the things I've said… unless I am… right? (← FALLACY)
+
 So… if there IS a way that I could possibly be correct about all of the things I've said… and then people that 
 say "There's NO WAY…" etc. Well, those people just sound dumb.
 
@@ -25065,7 +25257,9 @@ How dumb...?
 Also, my amateur detective skills detected something that any good cop that actually follows these things called 
 LEADS would've ALSO found… those things are called CLUES. I'm like friggen Dick Tracy, dude... Just gonna get 
 right in people's faces and show them the LEADS, and the CLUES... and if they get pissed? Oh well.
-Now look, do I want to bash actual good cops that kick a lot of ass? Nah bro. 
+
+Now look, do I want to bash actual good cops that kick a lot of ass...? Nah bro. 
+
 I don't like letting a bunch of good cops feel like they gotta get MAD over the fact that I made a habit of 
 badmouthing LAW AVOIDANCE OFFICERS like TROOPER RUFFAS… he's not a good cop all across the board. He might impress
 SOME people when they're like some HOT BITCH, or something...? But- he's not that impressive when it comes to guys
@@ -25077,7 +25271,8 @@ and met up with some morons at EVERY place I went to…
 
 Or perhaps I'm just a genius, and I piss people off by being a smartass all the time.
 Maybe people didn't know I (WON/TIED for FIRST PLACE with AMY BATEMAN) in the 4th grade science fair… 
-MAYBE, they don't know that I ran circles around Dwayne Coonradt for the 3+ years I worked at COMPUTER ANSWERS. 
+MAYBE, they don't know that I ran circles around Dwayne Coonradt for the 3+ years I worked at COMPUTER ANSWERS.
+
 MAYBE, they don't really care if people lie to them about the news, or police reports, or that serial killers are
 in town using ADVANCED TECHNOLOGICAL EXPLOITS to STEAL PEOPLE'S MONEY and that I'VE BEEN INVESTIGATING THAT and it's
 ALMOST GOTTEN ME KILLED a number of times...
@@ -25089,24 +25284,28 @@ for it… they may just be in total disbelief "Wow, that sounds TOO GOOD TO BE T
 Well, there's another explanation for it. Many of the police officers that currently get paid to perform LAW 
 ENFORCEMENT, they're not performing LAW ENFORCEMENT, they're performing LAW AVOIDANCE. That's why THOSE cops 
 fuckin' suck ass at LAW ENFORCEMENT. Thus, people rarely ever take me seriously... that some LAW AVOIDANCE 
-OFFICERS have been attempting to kill me. Hence, why I originally wrote this fuckin' document, and then (2) years
-later, I've decided to EXPAND upon it, as it is a subject that I talk about in my BOOK.
-Maybe people they didn't see the FUN involved, in whether a REAL billionaire REALLY BUILT a CYBERNETIC BIRD, which
-was developed by a DARPA Project...
+OFFICERS have been attempting to kill me. 
 
-They didn't say those words, but not a single place took me seriously.
+Hence, why I originally wrote this fuckin' document, and then (2) years later, I've decided to EXPAND upon it, 
+as it is a subject that I talk about in my BOOK. Maybe people they didn't see the FUN involved, in whether a 
+REAL billionaire REALLY BUILT a CYBERNETIC BIRD, which was developed by a DARPA Project...
+
+Not unlike this thing here...
+____________________________________________________________
+| 11/29/16 | Cyborg Beetles | https://youtu.be/tgLjhT7S15U |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+They didn't say those words, but- not a single place took me seriously.
 Which means that the billionaire has made a thing that I fucking know what it is, but… 
 …no one else fucking does… 
 
 Because… if I were a billionaire I would also make something that nobody would fucking believe was a thing that 
 was made… which is why I'm fairly certain that I've been in the CENTRAL INTELLIGENCE AGENCY spotlight for some 
 time now. Hence, why the person who sent this bird… …has my adamant fuckin' respect… 
-
 …cause sometimes I don't even believe the evidence or the story… 
 …almost wanna say "Touche you real smart bastard(s)… touche…"
 
 But if I'm smart enough to detect something that, even if I tell people or record evidence of it...
-...people will FUCKIN IMMEDIATELY DOUBT IT IS WHAT I KNOW IT IS...
+...people will FUCKIN' IMMEDIATELY DOUBT IT IS WHAT I KNOW IT IS...
 ...then the disguise works perfectly.
 
 It's not fooling me, but they gain enjoyment from knowing that I fuckin' definitely know this thing is an advanced
@@ -25119,23 +25318,103 @@ would just magically seem like a perfect idea to talk about… OH YES… Because
 It's called the (DARPA/Defense Advanced Research Projects Agency), where they make some robots, bro. 
 I've seen a number of these videos where they have the technology to exhibit MIND CONTROL over a FLYING BUG.
 To say that they can't apply the same concepts to exhibit MIND CONTROL over a BIRD, or CYBERNETIC IMPLANTS in
-a BIRD...? I think that's more realistic than saying it's ALIEN BASED. But still, talking about it is gonna piss
-off a bunch of people that were never INTELLIGENT ENOUGH nor OBSERVANT ENOUGH to detect something so 
-CLEVERLY HIDDEN. And thus, they will accuse me of being PSYCHOTIC, rather than to STUDY the RECORDINGS I made.
+a BIRD...? 
 
-They've been doing it for a while. So, I'm not that fuckin nuts.
+I think that's more realistic than saying it's ALIEN BASED. But still, talking about it is gonna piss
+off a bunch of people that were never INTELLIGENT ENOUGH nor OBSERVANT ENOUGH to detect something so 
+CLEVERLY HIDDEN. 
+____________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| What they'll accuse me of... | Rather than to...                 |
+|______________________________|___________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| being PSYCHOTIC              | study the AUDIO RECORDINGS I made |
+|______________________________|___________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Morons like to do this.
+They've been doing it for CENTURIES to OTHER PEOPLE.
+Ya know...?
+
+What if someone's just MORE INTELLIGENT...?
+Oh well. They got written off just like Nikola Tesla did.
+
+Nikola Tesla... far more intelligent than Thomas Edison...
+___________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Who           | What                                | Died                              |
+|_______________|_____________________________________|___________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Nikola Tesla  | + Invented ALTERNATING CURRENT      | Broke and miserable in the        |
+|               | + Had various other (ideas/patents) | Wyndham New Yorker Hotel          |
+|               | + Basically invented wireless radio |                                   |
+|               | + Conceptualized wireless power     |                                   |
+|_______________|_____________________________________|___________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Thomas Edison | + Did not invent the light bulb     | Respected by everybody            |
+|               | + Founded GENERAL ELECTRIC          | Rich, not miserable               |
+|               | + Various other noteworthy things   |                                   |
+|_______________|_____________________________________|___________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+The problem is that HUMANITY typically does not LIKE people who are THAT intelligent.
+Consider the story of WILLIAM SIDIS.
+Smartest man that ever lived... could literally speak dozens of languages by the time he
+was like 3 years old since he READ a lot.
+
+Had an IQ of like 250.
+Nobody liked this dude and they thought he was INSANE.
+That's because, historically speaking...?
+People will treat SMART BASTARDS like JESUS CHRIST.
+That means, 1) nailing to a cross, and 2) burning them to death.
+Why...? Because people have historically been fuckin' morons.
+
+Morons are VERY EXPERIENCED at doing this, they've been doing this for quite a while.
+
+So, I'm not that fuckin' nuts. SOMETIMES I will openly state THEORIES to SEE how OTHER PEOPLE respond.
+Sometimes, when I state THEORIES...? Morons will accuse me of being INSANE.
+That's because MORONS don't understand what the (word/term) THEORY, actually is.
+
+Investigators are SUPPOSED to know what the word "THEORY" is, but I've never in my entire life met someone
+who was an INVESTIGATOR, that knew how to APPLY SUPPORTING EVIDENCE to THEORIES... in order to make sense 
+of them. I am being INCREDIBLY OBTUSE here, but here's my observation...
+
+It is universally frowned upon by nearly everybody in society, to state these things called THEORIES.
+Nah. You're basically branded as a psychotic douchebag that needs to shut the hell up and take some fuckin'
+medicine, if you even THINK about mentioning THEORIES that involve PEOPLE doing things that require
+SUPPORTING EVIDENCE to UNDERSTAND...
+
+Why...? Because someone a LOT less intelligent can't wrap their heads around THEORIES.
+They have a hard time being able to double click a file that opens a VIDEO or AUDIO file.
+If they have a hard time doing THAT...?
+How the hell can you ever expect them to understand ADVANCED THEORIES that are only able to be understood,
+if they ANALYZE the EVIDENCE that they've never seen before in their entire life...?
+
+That's just it.
+Most people don't know how to double-click a file...
+They would rather watch CSI: MIAMI, a show about FAKE COPS that DO NOT EXIST...
+...because that shit is HIGHLY INTERESTING.
+It's WAY MORE INTERESTING than watching some REAL SHIT called EVIDENCE.
+Yeah. Fuck you and your ridiculous fuckin' quote unquote EVIDENCE.
+
 I sent an email to Boston Dynamics many years ago when I first saw their Atlas robot, looks like a terminator, 
 sort of… I've even shown my kids these videos. Boston Dynamics was purchased by Google/Alphabet I believe, but
 BEFORE that, they had a few different versions of this thing. 
-
-Atlas - Humanoid
-Mad Cat - Jaguar/Cheetah 
-Big Dog – Cow
-Flea – Not based on an animal, gets through the most tight places possible.
-
+_______________________________________________________________
+|¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Name    | Resemblance                                       |
+|_________|___________________________________________________|
+|¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Atlas   | Humanoid                                          |
+| Mad Cat | Jaguar/Cheetah                                    |
+| Big Dog | Cow                                               |
+| Flea    | Not based on an animal, gets through tight spaces |
+|_________|___________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 So, when I talk about robots…? 
 I'm not oblivious as the police I went to, for help… 
+
 Maybe they don't even know what DARPA is yet. 
+Here's what it is... (DARPA/DEFENSE ADVANCED RESEARCH PROJECTS AGENCY)
+
 Maybe I should send them a Wikipedia link, just as a portion of evidence...
 Anyway, all of them… thought I was actually nuts. 
 Not a single fuckin' one of them thought to themselves… 
@@ -25183,7 +25462,7 @@ Were they like, stroking each others dick or somethin...? How do YOU know that t
 At a bare minimum, somebody COULD'VE asked me those questions, ya know...?
 Not to turn me away, and immediately say "No (2) gay guys were tryin' to kill ya... You're nuts, pal."
 Professionals don't do that. 
-Only lazy cops like TROOPER RUFFAS, or MESSINES do that.
+Only lazy cops like TROOPER RUFFAS, or MISSENIS do that.
 So far… met a lot of lazy cops.
 
 If anyone attempts to argue with you about this, they're not LAW ENFORCEMENT PROFESSIONALS.
@@ -25192,7 +25471,7 @@ They may be any other profession in the WORLD, OR... LAW AVOIDANCE PROFESSIONALS
 So, if someone has EVIDENCE, you should probably CONSIDER COLLECTING IT...
 "@)
  
-$Book.NewSection(7,"Leavey Synopsis (May 31st, 2020)",@"
+$Book.NewSection(7,"Excerpt","Leavey Synopsis (May 31st, 2020)",@"
 As for what I wrote about TROOPER LEAVEY a couple of years ago...?
 Sometimes, you'll get a guy like Mr. Leavey who says "How long do you think I've been on the force?", because 
 he's implying that his "time" on the force, means that his gut tells him it's not a thing to be worried about… 
@@ -25231,24 +25510,27 @@ Of course, they get mad.
 
 Because, you caught LAW AVOIDANCE OFFICERS being LAZY and LYING to you...
 (2) videos of this shit happening..? (0) positive responses…
-I could understand getting irritated with a ROOKIE who doesn't even have a BADGE, for asking too many questions… 
+I could understand getting irritated with a ROOKIE who doesn't even have a BADGE, for asking too many questions…
+
 But, if LAW AVOIDANCE OFFICERS stopped doing the thing they're not supposed to be doing, LAW AVOIDANCE...
 ...and STARTED doing what they're SUPPOSED to be doing LAW ENFORCEMENT...
 
 ...then the ROOKIE with NO BADGE, won't come around to make guys like TROOPER RUFFAS look like a lazy 
 incompetent bastard who just leaves the vehicle running at the station. 
+
 That means someone who isn't even a cop yet, made TROOPER RUFFAS look like a complete waste of everyone's money.
 But, the detail that continues to be left out is… 
-I literally walked from Clifton Park, to Albany NY the other day… 
-Because… I'm fairly certain that a lot of heroin overdoses are actually murders. 
-And… someone in town is definitely doing this. 
+I literally walked from Clifton Park, to Albany NY the other day… (when I originally wrote this in May 2020)
+
+Because… I'm fairly certain that a lot of HEROIN OVERDOSES are actually MURDERS.
+And… someone in town is definitely doing this.
 
 This coronavirus situation is just a perfect opportunity to use as cover for a process in which a lot of people get
 _______________________________________________________________________________________________________________
 | beaten up while their | home is invaded | then get killed once they provide a deed, will, or whatever else… | 
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Then hey… maybe someone knows how to change documents around, so that papers can continue to be filed, bills paid, 
-credit paid… So, guys like (Goran/Astoia) Vucetic who ran the driving range for his whole life… guys like him
+credit paid… So, guys like (Goran/Ostoja) Vucetic who ran the driving range for his whole life… guys like him
 mysteriously go missing... (he's fine though)
 
 Anyway, as far as the power situation… 
@@ -25261,6 +25543,7 @@ Just, sign in as this person.
 Cause a phone that was taken from a body, can now be used to fake someone's online status. 
 It could even be used to continue paying bills, filling up for gas, buying food, groceries, online stores… 
 silk road activity…
+
 But hey, NOBODY TOOK ME SERIOUSLY ABOUT ANY OF THESE CLUES...
 The fact that I have this theory, that there are serial killers that have police training… that are doing this…
 Catricala video I uploaded, somehow… not accessible, because these police officers that tried to kill me have 
@@ -25273,16 +25556,20 @@ It's a criminal offense to do such a thing when it is involved in a criminal inv
 This is the sort of thing that BCI would normally handle, but I really have gotten tired of asking cops for help… 
 ...and now my whole forehead and chest is peeling like a bastard because Clifton Park to Albany is a pretty long 
  hike to make in the middle of the day.
+
 Anyway, a lot of people could already be dead… and nobody even knew… 
 Because, if you are killed with your phone on you, then these guys can log into your Facebook as you for the rest of
 time… So, when you see all of these people on Facebook… you have to question whether or not the person you knew that
 lived across the street the whole time… Maybe they got taken out. And someone sold whatever to whoever, and they're
 living happily out in some other state where you more than likely will never go…
+
 If a police officer says all of this, then… maybe it is always...
-...the truth, the whole truth, and nothing but the truth, so help them god… 
+...the truth, the whole truth, and nothing but the truth, so help them god…
+
 Even if they take this oath, and you have picture evidence of a thing a police officer attested to as true while 
 under oath, but the evidence suggests otherwise… then, APPARENTLY... the evidence is FALSE EVIDENCE in every court 
 of law I've ever been to… not sure why. (← I'm hyperbolizing that)
+
 If you need evidence of such a thing, here's a classic example of the exact opposite thing of justice taking place… 
 
 Ms. Vero could've contacted Microsoft to determine if Precision Periodontics was wicked far behind on everything…
@@ -25290,21 +25577,50 @@ Ms. Vero could've contacted Microsoft to determine if Precision Periodontics was
 
 All of the stuff that a dentist office should keep out of reach of people that don't work at that building…? 
 Just go ahead and make it available to the public, that's what the RED COLOR MEANS when MALWAREBYTES detects
-a REMOTE ACCESS TROJAN on a network that's SUPPOSED to be SECURE for PATIENT CONFIDENTIALITY. 
+a REMOTE ACCESS TROJAN on a NETWORK that's SUPPOSED to be SECURE for PATIENT CONFIDENTIALITY. 
+
 Things like that. 
 
-(So, Eaglesoft and Patterson can blow me… *recant*) they should have an SQL syste...
-...not a whole 'put documents in folders that anyone can publicly access…' (They had nothing to do with the WAY
-their system was set up or inadequately prepared by a system engineer)
+So, Eaglesoft and Patterson can blow me… (<- I recant this comment) they should have an SQL system
+not a whole 'put documents in folders that anyone can publicly access…' 
+(Patterson/Eaglesoft had nothing to do with the WAY their system was set up.)
 
 Maybe they didn't realize how insecure it is, for 10 of the computers in the building to each have the username
-"Admin" and password "Password"… Maybe BANKING INSTITUTIONS should do that too. Ya know...? 
-
+"Admin" and password "Password"… Maybe BANKING INSTITUTIONS should do that too. Ya know...?
+______________________________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Note : A client of mine told me that the STATE OF NY OFFICES at the HARRIMAN STATE CAMPUS, they all used   |
+|        passwords like SUNY1234, SUNY12345, or SUNY123456, stuff like that is pretty STUPID, but-           |
+|        that's just an OPINION. They'll keep doin' that, and it'll lead to incidents like:                  |
+|____________________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| 2020 Federal Data Breach | https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach |
+|__________________________|_________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| What that is, is actually stupidity that matches a really cool show called:                                |
+| https://en.wikipedia.org/wiki/Check_It_Out!_with_Dr._Steve_Brule                                           |
+|                                                                                                            |
+| The show "CHECK IT OUT, with Dr. STEVE BRULE" is a funny show, about a made-up doctor played by            |
+| John C. Reilly. Dr. Steve Brule is a TOTAL DUMBASS, but- he is STILL, more intelligent than RICHARD TODD   |
+| LOEBER at SARATOGA HOSPITAL. And, that's OK. DR. LOEBER doesn't mind being called a MORON repeatedly.      |
+|                                                                                                            |
+| Yeah, Dr. STEVE BRULE is NOT a smart dude by any measure of the word. Nah.                                 |
+| The ACTOR, John C. Reilly is a funny bastard.                                                              |
+| But- the FAKE DOCTOR, DR. STEVE BRULE...? He's a dumb motherfucker.                                        |
+|                                                                                                            |
+| That's how stupid it is, for a SYSTEM ADMINISTRATOR at the HARRIMAN STATE CAMPUS, to allow a RETARDED      |
+| PASSWORD to be USABLE... because it'll leave the door open for ANOTHER FUTURE ATTACK JUST LIKE THE 2020    |
+| FEDERAL DATA BREACH... Ya know...? Don't use passwords like SUNY1234, SUNY12345, or SUNY123456.            |
+| Because that's fuckin' stupid.                                                                             |
+|____________________________________________________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Dentist office had 10 computers using the same credentials. 
 The software would allow specific users, but, here's a fun fact. 
+
 All it could take is for one of these people to put a keylog on there, and then they have everybody's login. 
 Maybe, they didn't see the thousands of infected files on the server that they tasked me with having to transfer 
 to the new system that Computer Answers had built. Totally other story… but somewhat relevant...
+
 Even if the dude deleted logs and reformatted everything at that office…? Well, each of those machines has a 
 (UUID/digital signature). Every time you download an update from Microsoft, it is permanently kept on record, 
 because they have to track where the updates go and if they are mutated at all… 
@@ -25312,16 +25628,19 @@ because they have to track where the updates go and if they are mutated at all�
 It might be a stretch to think that they exist 18 months later, but who knows. 
 Main reason I started my own company was because Precision Periodontics wasn't the first time I saw a business 
 that had a lot of these tunnels called "trojans".
+
 They're never anything less than an immediate threat.
 Not the type of thing you'd want dozens of, on each machine in your network… (they didn't have dozens on EACH)
 ...
 They have the records necessary that prove that I did the work that I stated was completed. 
 But, then someone put the bad files right back where they were… because the BACKUP SYSTEM was AUTOMATICALLY
 RESTORING BACKED UP INFECTIONS. Ah. That's the clincher right there.
+
 Not 100% certain about what MS can/has to do, but they have some records which show the work that I did at that
 building, (so do the FBI/NSA/CISA) and even on top of that, so would MALWAREBYTES. Anyway, if I know that Pavel 
 didn't touch the network, and neither did Spectrum because I changed the security options since the defaults 
 were unsafe… was I asked any of these questions? No.
+
 Pavel may be involved with Russians that play with their dicks all day watching a video of him pounding a bottle 
 of vodka, and then jumping into a frozen river… Again. Bragging about doing such a stupid thing while he's doing 
 it… talking shit in half Russian, half English... getting out while continuing to brag about what the hell he just 
@@ -25332,20 +25651,27 @@ did… wiping himself off with a stupid ass towel talking the most smack talk an
 - jumping into a frozen river
 - talking shit about basically everyone in half Russian, half English
 - bragging about it.
-(^ Because it's funny. He's the type of dude who definitely does that, and would even admit it. Ask him.)
+___________________________________________________________________________________________________________
+| ^ Because it's funny. He's the type of dude who definitely does that, and would even admit it. Ask him. |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 It doesn't change the fact that he's still an oblivious idiot. 
 He might have friends who aren't as oblivious, totally telling him what to do, and how long to do it… 
+
 Maybe… Pavel sent these goons… cause he's pissed off about how even years later after working for him… the sales
 records I left behind still make his best attempt look like a kid that never grew out of wearing his favorite 
 pull-ups. In other words, he makes a better hushin' russian than a technology wizard… 
+
 AKA, he's too busy blowing somebody to answer the phone.
-Suffice to say, all of these above situations…? 
+Suffice to say, all of these above situations…?
+
 They all lead to being constantly hyper-aware of my surroundings and I watch interactions a little more closely, 
 and listen a little more closely as well… so when the police that work right now could easily say they don't know 
 the technology, that's fine.
+
 Eventually cops won't ever say that because that's what they'll do… is know the technology. 
 Like IDK, Judge Dredd or something… Roll around on his electronic floating Frankenstein Ferrari from the future … 
 some Fifth Element type of taxicab/ship/whatever…
+
 We could have that already. 
 Only reason that we don't is cause, flying cars aren't a thing that we've mastered yet… 
 
@@ -25354,6 +25680,7 @@ understand how obsolete pavement will be. And tires. And oil. Probably. Just a f
 
 Never falls or anything… If it ever even thinks about trying to stall out…? 
 It'll still be floating there, saying "Nah, bruh." It'll defy the laws of physics…
+
 This dude will be the average cop in the future, driving the type of car I just mentioned, who's literally able 
 to program themselves into a brand new wormhole that he just created to catch some bad guy real quick, program 
 himself right back to where he's gotta drop him off for prints and a mugshot… talk some shit to him before he 
@@ -25362,27 +25689,35 @@ takes a hike down to where bad guys go… and then bam. Locks him up for being a
 These cops in the future that I just mentioned, they're not the type of people that you want to just chill out 
 in the vehicle with, while you're scoping out targets and scanning with your radar… these cops might have to do 
 that as a fallback when the detective work is in short supply.
+
 But, suppose that the actual factual, top notch, technical advisory panel of badass assassin grade programming
 directors that can calculate functions… suppose that is what it takes to be a Cyber Commando… like Rex Power Colt, 
 from Far Cry III: Blood Dragon.
+
 The game is a bit of an off discussion, but it's got some pretty good gameplay. 
 I imagine that Far Cry is not far off from the type of game that I envision myself playing, at times… 
-I would say, more like Metal Gear… but, it's not a real apples to oranges comparison. 
+I would say, more like Metal Gear… but, it's not a real apples to oranges comparison.
+
 Both games feature an attempt to create realistic open-world gameplay where you just go fuckin bonkers and shoot
 whatever, and whoever, like a maniac would do.
+
 Let me reel it back slightly, it's not like the objective of the game is to lose your mind and go postal… 
 …it's just a side effect that happens to the character in the game, as well as you, in real life. 
 The real objective is to collect some clues. 
+
 You wanna try and figure out which evil bastard you have to go after… 
 Each game is a new, more evil jerk than in the game before… supposedly anyway…
+
 Each of these games involves taking a bunch of pictures, finding clues, telling people who the hell you are or 
 what you want, it's… a tried and true recipe from each game in the series. 
 
 So, naturally… if you want to take things up a few notches… you can't go wrong with a game that revolves around 
 the concept of Blood Dragons…
+
 These things try to eat your face off a lot.
 Sometimes, they'll get ya. Sucks. They're cool to look at, but … having to be a real prick to one…? 
 …before you can really take a good look at this bastard…?
+
 What type of heartless monster would not want to see more of the Blood Dragon before it tries to kill the player…? 
 Not sure if they thought that part through…
 These are the types of soldier-top-notch-badass-cops that will exist in the future… 
@@ -25392,7 +25727,7 @@ Never hesitates to tell a Blood Dragon to piss off, either.
 Cause that's the story of a fuckin' top-notch cybercommando.
 "@)
  
-$Book.NewSection(7,"Excerpt [~] Jake Gunslinger",@"
+$Book.NewSection(7,"Excerpt","Jake Gunslinger",@"
 Now I'll state it openly... Shaemus Leavey isn't exactly a cybercommando that goes around punching Blood Dragons
 in the fuckin' face... Nah. The CLOSEST thing to an actual, bonafide cybercommando that comes even REMOTELY close
 to Rex Power Colt...?
@@ -25446,7 +25781,7 @@ Me   : Well, no ...
        Sorry if I snapped at ya, been pretty frustrated with all of these girls clothes all over the place.
        I dropped something and that's why I'm making a ruckus...
 Jake : ...I can see that...
-       ...Didn't know that's what the problem was, thought you were just being rude.
+       ...didn't know that's what the problem was, thought you were just being rude.
 Me   : Nah man, look I'm sorry if I upset you or your wife.
        I'm just desperate to find this thing I dropped.
 
@@ -25682,7 +26017,7 @@ Function Chapter_7
 
 $Book.NewChapter("Chapter 7","USA-Patriot Act of 2001 and Surveillance Capitalism")
 
-$Book.NewSection(8,"Start",@"
+$Book.NewSection(8,"Lesson","Start",@"
 |¯|       |¯|             |¯|        |¯|         |¯|           |¯|     |¯|    |¯|         |¯|        |¯|
 |U|niting/|S|trengthening |A|merica: |P|roviding |A|ppropriate |T|ools |R|eq. |I|ntercept/|O|bstruct |T|errorism
 |_|       |_|             |_|        |_|         |_|           |_|     |_|    |_|         |_|        |_|
@@ -25690,7 +26025,7 @@ $Book.NewSection(8,"Start",@"
 ...but sometimes it is also used to commit [OBSTRUCTION OF JUSTICE: DESTRUCTION OF EVIDENCE]
 "@)
 
-$Book.NewSection(8,"Overview",@"
+$Book.NewSection(8,"Lesson","Overview",@"
 _________________________________________________________
 | USA-PATRIOT Act of 2001: Signed on October 26th, 2001 |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -25740,8 +26075,9 @@ ________________________________________________________________________________
 At that point…? They may start laughing, and that's fine. 
 Then, I have to whip out the VIDEOS where I'm literally tearing apart iPhones back in 2018 for Asurion...
 ...right BEFORE I started working with some tiny-dicked douchebag named Michael DeGioralmo from Team Tech...
-(Apple iPhone Repair - https://youtu.be/i3qn1CZ-5WM)
-
+______________________________________________________
+| Apple iPhone Repair | https://youtu.be/i3qn1CZ-5WM |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ...THEN, they will probably stop fucking laughing and start to feel nervous...
 ...THEN, I'll show them the interview I had with (Andrew Banas regarding SmartTV's - https://youtu.be/bPdWt7kcd3M)...
 ...THEN, ALL of the staff at the Apple Store will realize, I am a LOT MORE EXPERIENCED THAN THEY ARE... 
@@ -25763,7 +26099,7 @@ _______________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Here is how that conversation went...
 
-\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 Me     : I believe that a serial killer is going house to house, killing people.
          I think 80% of the people up the street here, *points up Paddock Turn* have been killed.
@@ -25777,8 +26113,7 @@ Me     : Well, like I mentioned to the trooper girls you were with yesterday, I 
 Leavey : So like, people leaving their air conditioners running, or lights on...
          ...the power company is just gonna not disconnect the service...?
 
-
-/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 I was still conceptualizing my theories, and I'm fairly certain that people in our society don't realize that
 I spit out a lot of theories, and people will assume I must be insane because they're stupid... they hear me 
@@ -25798,7 +26133,7 @@ BOTH cell towers on SOLAR DRIVE, in HALFMOON NY.
 
 One of the cell towers had a meter that said 0.00KwH.
 
-\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 NYSEG : YEAH, UH, THE METERS ARE SUPPOSED TO DO THAT...? 
         Cause like, they'll FLASH OFF, and perform a RESET.
@@ -25811,11 +26146,12 @@ Me    : Oh, ok fuckface.
         The video I recorded is showing a totally different story.
         So maybe you should shut the fuck up, and go back to school.
 
-/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 When the meter says 0.00KwH for multiple seconds in one of the pictures I took...? 
 Well fuckface, my phone had a mode where it was taking pictures AND videos at the same time. 
 So like, ALL of the pictures I took on SOLAR DRIVE...? They were, in fact, VIDEO FILES~!
+
 So, I was able to catch the meter reading saying a stagnant 0.00KwH, for, check it out...
 ...multiple seconds it was just saying 0.00KwH. THAT MEANS THE METER IS NOT CONNECTED, OR RUNNING, OR OTHERWISE, 
 IN WORKING ORDER. Here's what it ULTIMATELY means... If someone is attached to the grid, it is still drawing the 
@@ -25834,11 +26170,12 @@ The reason why people have a hard time believing this, is mainly because most pe
 
 Does that make the situation pretty fucking clear for other people...? Yeah...? 
 Sorry if I'm coming across as a real ASSHOLE, but guess what...? 
+
 Telling people doesn't really change anything. Nah. Cause they'll probably write me off as if I don't know what 
 I'm talking about, when the fact of the matter is, they're asking people that don't know what the fuck they're
 talking about OR, they're LYING. That's what NYSEG does.
 
-\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 Me     : ...it's why I called out a couple guys when I went to NYSEG yesterday.
 Leavey : You mean, GrayBar...?
@@ -25993,7 +26330,7 @@ KGB    : Heh, that's just it man...
          But jeez, it really sounds like you're onto something here, dude, cause...
          That's like (3) or (4) fuckin people right there IN YOUR ACTUAL FAMILY, that MIGHT be foreign spies.
 
-/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 The truth is, there's no way that I could have put all of my suspicions into a few sentences that TROOPER LEAVEY
 could've taken seriously and acted upon in all seriousness, because there were too many holes in my theories.
@@ -26024,7 +26361,7 @@ So in totality, I'm fighting an UPHILL BATTLE, because there may be ULTERIOR MOT
 Totally fucking serious about that, there may in fact be, ULTERIOR MOTIVES for the WAY that PEOPLE, TREAT ME.
 "@)
  
-$Book.NewSection(8,"Bigger Picture",@"
+$Book.NewSection(8,"Conjecture","Bigger Picture",@"
 Situations where former senator Hillary Rodham 'Who gives a shit...?' Clinton managed to get herself arrested, 
 and prosecuted and then imprisoned by the Federal Bureau of Investigation, like she SHOULD'VE been back in 
 July 2016... well, that didn't happen at all. 
@@ -26097,13 +26434,24 @@ General McKenzie ALONE has done a lot more work than anyone at that table, talki
 because he was PUBLISHING DOCUMENTS that LEAKED INFORMATION about YOU PEOPLE DOING QUESTIONABLE SHIT. 
 COOL STORY BRO.
 
-George W. Bush is the biggest pussy that ever lived.
+George W. Bush is the biggest pussy that ever lived. 
+My opinion changes on a daily basis as I learn more about the PRESIDENTIAL SURVEILLANCE PROGRAM, and things
+just like it. I am CONVINCED that this man established a number of surveillance programs to convert America 
+into a communist country, but with like a index finger over his lips telling me:
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+GWB : *SHUSH~!* 
+      DON'T TELL ANYBODY~!
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+
 Why...? Because he allowed our country to become this MIRROR IMAGE of a communist country, and literally tried
 to force everybody to call FRENCH FRIES → FREEDOM FRIES. YEAH.
 
 Person shows up at fuckin' McDonalds and then the person says "Would you like freedom fries with that...?"
 
-\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 Person    : Uh, what the hell are FREEDOM FRIES, I just want FRENCH FRIES...
 McDonalds : Well, legally we're not allowed to say the word FRENCH before FRIES, anymore.
@@ -26119,13 +26467,19 @@ McDonalds : Hey buddy, I don't make up the rules...
             But, yeh.
 Person    : Ok, yes, I would like the FRIES with that.
 
-/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 And just like that...? Oh. Fuckin' FREEDOM FRIES. Not FRENCH FRIES. 
 I dunno if this dude ever realized that, or thinks about it when he looks at himself in the mirror and says...
 
-GWB : Dude, why do you fuckin' suck ass at writing and reading speeches in public...? 
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+GWB : *looking in mirror*
+      Dude, what the fuck...?
+      Why do you fuckin' suck ass at writing and reading speeches in public...?
       *shakes head* Shanksville was just not a good performance...
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 Anyway, for what it's worth, George W. Bush isn't quite the same level of queer that Andrew Cuomo has always 
 been, but- I gotta say, I feel like George W. Bush pissed all over the American flag, AND the constitution, 
@@ -26169,14 +26523,16 @@ They're right to think that nobody is EVER gonna be able to catch them...
 They're just a lot smarter than everybody.
 
 You know...? BRUCE TANSKI...? Earned the right to commit fraud unimpeded at Key Bank, and NEVER get caught 
-doing that. Wanna know why...? Because JULIEN ASSANGE can LITERALLY release damaging documents that outline...
+doing that. Wanna know why...? Because JULIEN ASSANGE can LITERALLY release damaging documents that outline
+how many morons are at the CIA, violating people's rights and calling it NATIONAL SECURITY or whatever.
 
+Somehow, they're not smart enough to catch guys like BRUCE TANSKI committing bank fraud...
+But also, they're not smart enough to be able to catch HILLARY CLINTON committing basically the same "crime"...
 
-...how many morons run the CIA. They're not smart enough to catch guys like BRUCE TANSKI committing fraud. 
-They're not smart enough to be able to catch HILLARY CLINTON committing basically the same "crime"...
-
-Nah. The reason why, isn't because they're morons. These people are not morons at all...
-They just don't actually give a shit. (← That's the truth.)
+I'm by no measure stating that EVERYBODY at the CIA is a moron.
+Nah. The reason why, isn't because they're morons. 
+These people are not morons at all...
+But- some of them just don't actually give a shit about MORALITY, or (RIGHT/WRONG). (← That's the truth.)
 
 That's a pretty good indication that the government is incompetent, and doesn't know what the fuck it's doing.
 
@@ -26188,8 +26544,7 @@ Much like Henry "Hank" Paulson's bazooka strategy, you carry around a real big b
 ...might not need to fire it. -2008/2009
 "@)
  
-$Book.NewSection(8,"New World Order",@"
-
+$Book.NewSection(8,"Conjecture","New World Order",@"
 In order to understand why the USA-PATRIOT Act even exists, it is necessary to discuss what MAJOR EVENT 
 LED TO IT BEING PASSED INTO LAW. For over 20 years, treasonists continued to make these mistakes along the 
 way that allowed me to "better connect the dots". 
@@ -26235,7 +26590,7 @@ If you think that report sucks ass, and the 12-hour blowjob wasn't "good enough 
 out of that person in every single possible way... This process is worse than being blacklisted.
 "@)
  
-$Book.NewSection(8,"Legislation",@"
+$Book.NewSection(8,"Conjecture","Legislation",@"
 Anyway, the TREASONISTS that WROTE the USA-PATRIOT Act of 2001, there is no fucking way that they wrote that 
 document AFTER 9/11. It was written BEFOREHAND. 
 They are the people who conspired to destroy the World Trade Center on 9/11 through a process called: 
@@ -26293,7 +26648,7 @@ to blow up the (3) buildings, and THEN pass the USA-PATRIOT Act of 2001 that con
 called SURVEILLANCE CAPITALISM.
 "@)
  
-$Book.NewSection(8,"Iraq/Kuwait",@"
+$Book.NewSection(8,"Conjecture","Iraq/Kuwait",@"
 Now they can tell anybody they want, to "Suck a fuckin' dick, bro". Now, they're gonna finish what they started 
 in Desert Storm. They were able to invade Iraq (completing Desert Storm/Kuwait), THEN find Saddam Hussein in a 
 spider hole, then Exxon Mobil took command of their oil fields where they generated TRILLIONS OF DOLLARS. 
@@ -26333,7 +26688,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.NewSection(8,"Afghanistan",@"
+$Book.NewSection(8,"Conjecture","Afghanistan",@"
 Plenty of things happened in Afghanistan that I wasn't there for, however, a lot of what happened there is seen
 and translated by stories/movies like: The Hurt Locker, American Sniper, Zero Dark Thirty, in addition to Homeland 
 starring Claire Danes... probably not EXACT or PRECISELY ACCURATE DEPICTIONS, but I gotta say based on what I've
@@ -26350,7 +26705,7 @@ The problem IS, if people tried to grow the stuff on their own...? They would ge
 even confiscated. 
 "@)
  
-$Book.NewSection(8,"Skit [~] George W. Bush and Richard Sackler",@"
+$Book.NewSection(8,"Skit","George W. Bush and Richard Sackler",@"
 The only money they could make off of Afghanistan would be from their poppy production... 
 ...so Richard Sackler got on a phone call with the Bushmeister.
 
@@ -26421,7 +26776,7 @@ processing, just like on the show "The Punisher" on Netflix. They may actually h
 into heroin or some other precursor before shipping it back.
 "@)
  
-$Book.NewSection(8,"War on Terror",@"
+$Book.NewSection(8,"Conjecture","War on Terror",@"
 The "War on Terror" was actually the same exact thing that VLADIMIR PUTIN attempted to do in 02/22 → 06/22.
 __________________________________________________________________________________________________________________
 |  Bush | dick → everybody's mouth → Evil-ass Terrorist Saddam Hussein has WMD's (and oil)      | War on Terror  |
@@ -26512,7 +26867,7 @@ THEIR STELLAR WORK. *cough* If they are though, I'd like to recommend that Micha
 get one.
 "@)
  
-$Book.NewSection(8,"Preparation",@"
+$Book.NewSection(8,"Conjecture","Preparation",@"
 So, it stands to reason that the WTC attack, was a "trap", and that Exxon Mobil had every reason and 
 motivation to kill 2,996 civilians, in order to pass a new law that's so powerful, that people didn't give 
 it (2) thoughts back on October 26th, 2001. Here's what makes them treasonists...
@@ -26538,7 +26893,7 @@ Also, a plane flying into the Pentagon ALSO needed to look PLAUSIBLE...     ____
                                                                             ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.NewSection(8,"Examination (1)",@"
+$Book.NewSection(8,"Conjecture","Examination (1)",@"
 After the first plane struck the tower, the (police/firefighters) headed to the WTC. 
 When they got there, they began to look for survivors... 
 That is when a man with a remote control sitting in the Exxon Mobil office in (WTC 7) saw them go in, and THEN,  
@@ -26596,7 +26951,7 @@ the constitution, and then aim rifles at people that pretend it doesn't exist.
 
 When that happens, what can they do...? 
 
-\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 Them    : OooOoOhohHHh that's illegal.
 Militia : Uh, so is censorship, bud.
@@ -26610,11 +26965,12 @@ Them    : Whatever bro.
           Federal investigators can follow highly sophisticated terrorists trained to evade detection.
 Militia : Yeah, well... that means they can pretend as if they're royalty...
           But we don't have royalty, it's in the constitution.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 "@)
  
-$Book.NewSection(8,"Excerpt [~] USA-PATRIOT Act : Statutes",@"
-
-___/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\____
+$Book.NewSection(8,"Excerpt","USA-PATRIOT Act : Statutes",@"
+ ___/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\____
 //¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯  ¯¯¯¯\\
 \\ [USA-PATRIOT Act of 2001] from : https://www.justice.gov/archive/ll/highlights.htm                            //
 //_______________________________________________________________________________________________________________\\
@@ -26797,233 +27153,249 @@ ___/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯
 [+] (ELIMINATES/EXTENDS) STATUTE OF LIMITATIONS for CERTAIN TERRORISM CRIMES                                    [+]
  \\_____________________________________________________________________________________________________________//
 
- The government's success in preventing another catastrophic attack on the American homeland since 09/11/01, would
- have been much more difficult, if not impossible, without the USA Patriot Act. The authorities Congress provided 
- have substantially enhanced our ability to prevent, investigate, and prosecute acts of terror. 
+The government's success in preventing another catastrophic attack on the American homeland since 09/11/01, would
+have been much more difficult, if not impossible, without the USA Patriot Act. The authorities Congress provided 
+have substantially enhanced our ability to prevent, investigate, and prosecute acts of terror. 
 
- \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
- Look, the statutes are all right there, I've compacted them and arranged them to be a lot more clear-cut, and 
- understandable. That process isn't exactly an easy thing to do, to take a COMPLICATED DOCUMENT, and compact it 
- down to the point where it's COOL LOOKING, and EASY FOR ANY LAWMAN TO READ, and UNDERSTAND: 
- "Oh, ok, cybercrime somehow fits in this place, SOMEWHERE... right?"
- Ya know, the part where it says:
- ____________________________________________________________________________________________________
- | 3) UPDATED THE LAW to reflect NEW TECHNOLOGIES and NEW THREATS...                                |
- | - VICTIMS of COMPUTER HACKING to request LAW ENFORCEMENT ASSISTANCE in MONITORING TRESPASSERS... |
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
- Well, what if I ask SCSO Scott Schelling to look at my evidence like I did back on 05/26/20 0130...?
- WELL, I'm gonna get some HEMS and HAWS, because none of the LOCAL COPS seem to know what this fuckin' document 
- says. In fact, I'd go so far as to say, that each time I talk about it with people...? They must think I'm some 
- asshole that only cares about an annoying document that they've never read, and won't care to read it...
+Look, the statutes are all right there, I've compacted them and arranged them to be a lot more clear-cut, and 
+understandable. That process isn't exactly an easy thing to do, to take a COMPLICATED DOCUMENT, and compact it 
+down to the point where it's COOL LOOKING, and EASY FOR ANY LAWMAN TO READ, and UNDERSTAND: 
+"Oh, ok, cybercrime somehow fits in this place, SOMEWHERE... right?"
+Ya know, the part where it says:
+____________________________________________________________________________________________________
+| 3) UPDATED THE LAW to reflect NEW TECHNOLOGIES and NEW THREATS...                                |
+| - VICTIMS of COMPUTER HACKING to request LAW ENFORCEMENT ASSISTANCE in MONITORING TRESPASSERS... |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Well, what if I ask SCSO Scott Schelling to look at my evidence like I did back on 05/26/20 0130...?
+WELL, I'm gonna get some HEMS and HAWS, because none of the LOCAL COPS seem to know what this fuckin' document 
+says. In fact, I'd go so far as to say, that each time I talk about it with people...? They must think I'm some 
+asshole that only cares about an annoying document that they've never read, and won't care to read it...
 
- So, I'm the asshole here. Cause. Nobody cares if there's a TEAM OF POLICE OFFICERS that are ABUSING TECHNOLOGY
- EXPLOITS, and they operate as a RACKETEER INFLUENCED CRIMINAL ORGANIZATION... Maybe it's not that special.
+So, I'm the asshole here. Cause. Nobody cares if there's a TEAM OF POLICE OFFICERS that are ABUSING TECHNOLOGY
+EXPLOITS, and they operate as a RACKETEER INFLUENCED CRIMINAL ORGANIZATION... Maybe it's not that special.
+______________________________________________________________________________________________________
+| 06/23/22 | How SCSO guys sound | https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6 |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+This is admittedly, nowhere CLOSE to verbatim of the above dialog… but the CONTEXT is on point.
 
- \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
- ______________________________________________________________________________________________________
- | 06/23/22 | How SCSO guys sound | https://drive.google.com/file/d/1Q5JgJ_LLf4PYsil54_hHVo90kG7gViU6 |
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
- (This is admittedly, nowhere CLOSE to verbatim of the above dialog… but the CONTEXT is on point.)
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
- SCSO   : Dude, everybody's in a RACKETEER INFLUENCED CRIMINAL ORGANIZATION.
-          Get over yourself already...
- Me     : That's illegal though.
- SCSO   : Oh well, dude.
-          How many times have we heard you making these complaints...?
-          Hm...?
- Me     : A lot.
- SCSO   : Look, there's nothing we can do about all that.
-          You just... gotta suck it up, dude.
-          *shakes head* Move on with your life already, man...
- Me     : Do you even know what the term RACKETEERING is...?
- SCSO   : Nah man, that sounds like a totally made up term.
-          You're bullshittin' me...
- Me     : Nah, it's a real crime that the guy who runs SCSO, does.
- SCSO   : I mean, there's really nothing I can do, bub.
- Me     : You could take my statement... ya know...?
- SCSO   : Look pal...
-          *points* You see that guy over there...?
- Me     : Which one...?
- SCSO   : The one walkin' his dog.
- Me     : Yeah, I see him.
- SCSO   : Buddy, HE'S probably in a RACKETEER INFLUENCED CRIMINAL ORGANIZATION, too. 
-          Everybody is...
- Me     : You have no fucking idea what that is, do you...?
- SCSO   : Listen buddy...
-          Nah.
-          I- I don't actually know what that is...
- Me     : Alright, well at least you're being honest with me.
-          Your supervisor, his name is MICHAEL ZURLO...
-          He's supposed to make damn certain that you know what CRIMES are.
-          Otherwise, having you on the police force is against the law.
-          ______________________________________________________________________________________________________
-          | RACKETEERING | https://en.wikipedia.org/wiki/Racketeering                                          |
-          |----------------------------------------------------------------------------------------------------|
-          | RACKETEERING is a type of ORGANIZED CRIME in which the PERPETRATORS set up a COERCIVE, FRAUDULENT, |
-          | EXTORTIONARY, or otherwise ILLEGAL COORDINATED SCHEME or OPERATION (a "racket") to REPEATEDLY or   |
-          | CONSISTENTLY COLLECT a PROFIT                                                                      |
-          | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
-          | Example: BRUCE TANSKI and JOHN HOFFMAN have friends that commit INSURANCE SCAMS, and people in     |
-          | CLIFTON PARK, NY, are getting RICH off of this SCHEME that is HIGHLY ILLEGAL → That's RACKETEERING |
-          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
- SCSO   : Wow, I have heard of those guys.
- Me     : Yeah, they're also guilty of committing BANK FRAUD at KEY BANK.
-          Do you know how to arrest someone for something like that...?
- SCSO   : Look man, *chuckles* heh. 
-          I'm just a guy. 
-          I wouldn't even know the first thing about catching someone committing RACKETEERING, or FRAUD.
- Me     : No, I totally understand that, that's why you SHOULD NOT BE A FUCKING POLICE OFFICER.
- SCSO   : Listen buddy, I've been a police officer at SCSO for many years.
- Me     : Yeah, well... you should consider making the time driving around with a STATE TROOPER, if you want to
-          have a MUCH BETTER IDEA on how to be a policeman. 
-          They're not perfect EITHER... 
-          But, they are typically pretty fuckin' informed about stuff like RACKETEERING, or even EXTORTION.
- SCSO   : What's EXTORTION...?
- Me     : Well, I'm glad that you asked me that question, because I have a feeling that MICHAEL ZURLO isn't doing
-          HIS JOB... EXTORTION → 
-          ______________________________________________________________________________________________________
-          | EXTORTION | https://en.wikipedia.org/wiki/Extortion                                                |
-          |----------------------------------------------------------------------------------------------------|
-          | EXTORTION is the PRACTICE of OBTAINING BENEFIT through COERCION. In most JURISDICTIONS, its likely | 
-          | to CONSTITUTE a CRIMINAL OFFENSE. ROBBERY is the SIMPLEST/MOST COMMON FORM of EXTORTION, although  |
-          | making UNFOUNDED THREATS to OBTAIN an UNFAIR BUSINESS ADVANTAGE is ALSO a form of EXTORTION.       |
-          | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
-          | Example: BRUCE TANSKI and JOHN HOFFMAN have friends that commit INSURANCE SCAMS, and people in     |
-          | CLIFTON PARK, NY, are getting RICH off of this SCHEME that is HIGHLY ILLEGAL → That's RACKETEERING |
-          | ...and it is ALSO EXTORTION... however, RACKETEERING is basically having a SYSTEM OF EXTORTION, so | 
-          | that the CRIMINAL ACTIVITY recurs without people actually giving a shit about going to prison for  | 
-          | continuing to perform a PROCESS that is HIGHLY ILLEGAL.                                            |
-          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
- SCSO   : Wow. I do get quite a lot of BURGLARY cases...
- Me     : Well, I'm glad that you sorta know what that one is.
- SCSO   : No, I know EXACTLY what that one is, because I have arrested a number of people in my day for burglary.
- Me     : Cool.
-          You know what you COULD do...?
- SCSO   : *eyebrows up, nods head upward* Sup...?
- Me     : Do you know what the term FACILITATION is...?
- SCSO   : *shaking head* Ehhh, I mean, VAGUELY...
- Me     : Do you know what the term ATTEMPTED MURDER is...?
- SCSO   : Well, obviously, I know what THAT one is...
- Me     : Ok, do you know what the term SERIAL KILLER is...?
- SCSO   : *points* That one, *nodding excessively* I definitely know what that is.
- Me     : Cool, so, SOMEONE FACILITATED AN ATTEMPTED MURDER on 05/26/20 outside of the CATRICALA FUNERAL HOME.
- SCSO   : Look buddy... 
-          ...EVERYBODY had somebody FACILITATE an ATTEMPTED MURDER outside of the CATRICALA FUNERAL HOME.
-          You're really not THAT special, dude.
-          I mean, how many times have you made these complaints to us, man...?
- Me     : Uh, like thousands...?
- SCSO   : See...?
-          That's your problem right there, dude.
-          If somebody tried to kill you, somebody would've done something about it by now.                 (← FALLACY)
-          You don't even have any PROOF of such a thing.
- Me     : Nah, I totally do, I have pictures of these assholes and I also had a video that I showed to a TROOPER.
-          THEN after I showed the video to him...?
-          Well, somebody remotely disabled my device and eliminated the evidence I had on my device.
- SCSO   : Yeah, well... take it up with them.
- Me     : What I'm tryin' to tell ya, is that you have some police officers that are committing CRIMINAL ACTIVITIES.
-          For instance, SOMEONE THAT YOU WORK WITH...
-          Like, JAMES LEONARD.
-          COMMITTED A SERIOUS CRIME CALLED OBSTRUCTION OF JUSTICE, DESTROYING EVIDENCE, and...
-          ...TELEPHONY DENIAL OF SERVICE
-          OBSTRUCTION OF JUSTICE at CENTER FOR SECURITY, and REMOTELY FROM MY DEVICE.
-          THEN this cocksucker actually wrote (2) reports where I somehow got in trouble after I dialed 911 twice.
-          That's actually a CAPITAL CRIME BRO.
- SCSO   : He's a good dude though, man, I really doubt that he'd do somethin' illegal to ya...
- Me     : Nah, I think you people all need to be reevaluated by an actual LAW ENFORCEMENT PROFESSIONAL.
-          Literally telling you people over and over, that your whole department is like, running away from the
-          event that took place on May 26th, 2020 outside of CATRICALA FUNERAL HOME.
- SCSO   : Look dude.
-          That event happened SO LONG AGO...
- Me     : Yeah, you know what else happened...?
- SCSO   : What's up...?
- Me     : Have you ever heard of a term called OBSTRUCTION OF JUSTICE...?
- SCSO   : *frowns slightly, starts shaking head* Nah man, can't say that I have...
- Me     : Oh, cool... 
-          Allow me to tell you how serious of a crime that is...
-          ______________________________________________________________________________________________________
-          | FACILITATION | https://definitions.uslegal.com/c/criminal-facilitation/                            |
-          |----------------------------------------------------------------------------------------------------|
-          | A person is guilty of CRIMINAL FACILITATION if they KNOWINGLY PROVIDE SUBSTANTIAL ASSISTANCE to a  | 
-          | person INTENDING to COMMIT a FELONY and THAT PERSON, in fact, COMMITS THE CRIME CONTEMPLATED, or a | 
-          | like or related FELONY, EMPLOYING the ASSISTANCE SO PROVIDED. The ready lawful availability from   | 
-          | OTHERS of the GOODS/SERVICES provided by a DEFENDANT is a FACTOR to be CONSIDERED in DETERMINING   | 
-          | whether or not their ASSISTANCE was SUBSTANTIAL.                                                   |
-          | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
-          | Example : MICHAEL ZURLO and SCOTT SCHELLING refusing to collect my evidence of my 911 calls that   |
-          | someone IGNORED, is because they FACILITATED an ATTEMPTED MURDER, ALSO, committing Telephony DDOS  |
-          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-          ______________________________________________________________________________________________________
-          | OBSTRUCTION OF JUSTICE | https://en.wikipedia.org/wiki/Obstruction_of_justice                      |
-          |----------------------------------------------------------------------------------------------------|
-          | Obstruction of Justice, in US jurisdictions, is a CRIME consisting of OBSTRUCTING PROSECTORS,      | 
-          | INVESTIGATORS, or OTHER GOVERNMENT OFFICIALS. COMMON LAW JURISDICTIONS other than the US tend to   | 
-          | use the WIDER OFFENSE of PERVERTING the COURSE of JUSTICE.                                         | 
-          | OBSTRUCTION is a BROAD CRIME that may include acts such as PERJURY, MAKING FALSE STATEMENTS to     |
-          | OFFICIALS, WITNESS TAMPERING, JURY TAMPERING, [DESTRUCTION OF EVIDENCE*], and many others.         |
-          | OBSTRUCTION ALSO applies to overt COERCION of COURT or GOVERNMENT OFFICIALS via the means of       |
-          | THREATS or ACTUAL PHYSICAL HARM, and also apply to DELIBERATE SEDITION against a COURT OFFICIAL to |
-          | UNDERMINE the APPEARANCE of LEGITIMATE AUTHORITY                                                   | 
-          | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
-          | Example : MICHAEL ZURLO and JAMES LEONARD having some hackers prevent me from extracting the VIDEO |
-          | evidence I recorded (05/25/20 2343 → 05/26/20 0004), then remotely disabling my Apple iPhone 8+ to | 
-          | destroy the video evidence I showed to NYS Trooper Leavey, and then arresting me for a KAYAK STRAP |
-          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
- SCSO    : Look buddy...
-           There's really nothing I can do about any of that.
- Me      : Well, there definitely is something you can do about it, you're just being totally useless.
-           And lazy.
- SCSO    : That's just your opinion man...
- Me      : Look, I'm fairly certain that James Leonard is going to murder MICHAEL ZURLO.
- SCSO    : Nah, he wouldn't do that, LOL.
- Me      : Well, how do you KNOW that...?
-           You didn't even bother to ask me what would cause me to think that, or say it...?
- SCSO    : I mean, I frankly don't care, LOL.
-           I'm not paid to put a whole lot of thought into my job, dude...
-           *shakes head* Once you said something about murderers and racketeering and stuff...?
-           *makes gesture with his hands around his head, that his mind is blown*
-           Blowin' my mind with all this stuff you said, pal...
- Me      : Look. I really have no idea if James Leonard is going to literally kill MICHAEL ZURLO...?
-           I'm just saying... 
-           I really won't be surprised by James Leonard somehow outdoing himself at being a dumbass.
- SCSO    : Hey man, *shakes head* have some respect...
- Me      : Nah man, I have no desire to respect anything goin' on over at SCSO... 
-           I don't wanna say that the WHOLE ORGANIZATION is full of stupid people... 
-           But it's at least 50% full of morons...
-           The thing is, I know very few of the people who work there are actually morons.
- SCSO    : Well, why would you say something like that...?
- Me      : Because I'm going to manipulate some of the people at your organization to get caught.
-           Then they're goin' to prison.
-           I really cannot specify how easy it is for me to manipulate people.
+SCSO   : Dude, everybody's in a RACKETEER INFLUENCED CRIMINAL ORGANIZATION.
+         Get over yourself already...
+Me     : That's illegal though.
+SCSO   : Oh well, dude.
+         How many times have we heard you making these complaints...?
+         Hm...?
+Me     : A lot.
+SCSO   : Look, there's nothing we can do about all that.
+         You just... gotta suck it up, dude.
+         *shakes head* Move on with your life already, man...
+Me     : Do you even know what the term RACKETEERING is...?
+SCSO   : Nah man, that sounds like a totally made up term.
+         You're bullshittin' me...
+Me     : Nah, it's a real crime that the guy who runs SCSO, does.
+SCSO   : I mean, there's really nothing I can do, bub.
+Me     : You could take my statement... ya know...?
+SCSO   : Look pal...
+         *points* You see that guy over there...?
+Me     : Which one...?
+SCSO   : The one walkin' his dog.
+Me     : Yeah, I see him.
+SCSO   : Buddy, HE'S probably in a RACKETEER INFLUENCED CRIMINAL ORGANIZATION, too. 
+         Everybody is...
+Me     : You have no fucking idea what that is, do you...?
+SCSO   : Listen buddy...
+         Nah.
+         I- I don't actually know what that is...
+Me     : Alright, well at least you're being honest with me.
+         Your supervisor, his name is MICHAEL ZURLO...
+         He's supposed to make damn certain that you know what CRIMES are.
+         Otherwise, having you on the police force is against the law.
+         ______________________________________________________________________________________________________
+         | RACKETEERING | https://en.wikipedia.org/wiki/Racketeering                                          |
+         |----------------------------------------------------------------------------------------------------|
+         | RACKETEERING is a type of ORGANIZED CRIME in which the PERPETRATORS set up a COERCIVE, FRAUDULENT, |
+         | EXTORTIONARY, or otherwise ILLEGAL COORDINATED SCHEME or OPERATION (a "racket") to REPEATEDLY or   |
+         | CONSISTENTLY COLLECT a PROFIT                                                                      |
+         | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
+         | Example: BRUCE TANSKI and JOHN HOFFMAN have friends that commit INSURANCE SCAMS, and people in     |
+         | CLIFTON PARK, NY, are getting RICH off of this SCHEME that is HIGHLY ILLEGAL → That's RACKETEERING |
+         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+SCSO   : Wow, I have heard of those guys.
+Me     : Yeah, they're also guilty of committing BANK FRAUD at KEY BANK.
+         Do you know how to arrest someone for something like that...?
+SCSO   : Look man, *chuckles* heh. 
+         I'm just a guy. 
+         I wouldn't even know the first thing about catching someone committing RACKETEERING, or FRAUD.
+Me     : No, I totally understand that, that's why you SHOULD NOT BE A FUCKING POLICE OFFICER.
+SCSO   : Listen buddy, I've been a police officer at SCSO for many years.
+Me     : Yeah, well... you should consider making the time driving around with a STATE TROOPER, if you want to
+         have a MUCH BETTER IDEA on how to be a policeman. 
+         They're not perfect EITHER... 
+         But, they are typically pretty fuckin' informed about stuff like RACKETEERING, or even EXTORTION.
+SCSO   : What's EXTORTION...?
+Me     : Well, I'm glad that you asked me that question, because I have a feeling that MICHAEL ZURLO isn't doing
+         HIS JOB... EXTORTION → 
+         ______________________________________________________________________________________________________
+         | EXTORTION | https://en.wikipedia.org/wiki/Extortion                                                |
+         |----------------------------------------------------------------------------------------------------|
+         | EXTORTION is the PRACTICE of OBTAINING BENEFIT through COERCION. In most JURISDICTIONS, its likely | 
+         | to CONSTITUTE a CRIMINAL OFFENSE. ROBBERY is the SIMPLEST/MOST COMMON FORM of EXTORTION, although  |
+         | making UNFOUNDED THREATS to OBTAIN an UNFAIR BUSINESS ADVANTAGE is ALSO a form of EXTORTION.       |
+         | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
+         | Example: BRUCE TANSKI and JOHN HOFFMAN have friends that commit INSURANCE SCAMS, and people in     |
+         | CLIFTON PARK, NY, are getting RICH off of this SCHEME that is HIGHLY ILLEGAL → That's RACKETEERING |
+         | ...and it is ALSO EXTORTION... however, RACKETEERING is basically having a SYSTEM OF EXTORTION, so | 
+         | that the CRIMINAL ACTIVITY recurs without people actually giving a shit about going to prison for  | 
+         | continuing to perform a PROCESS that is HIGHLY ILLEGAL.                                            |
+         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+SCSO   : Wow. I do get quite a lot of BURGLARY cases...
+Me     : Well, I'm glad that you sorta know what that one is.
+SCSO   : No, I know EXACTLY what that one is, because I have arrested a number of people in my day for burglary.
+Me     : Cool.
+         You know what you COULD do...?
+SCSO   : *eyebrows up, nods head upward* Sup...?
+Me     : Do you know what the term FACILITATION is...?
+SCSO   : *shaking head* Ehhh, I mean, VAGUELY...
+Me     : Do you know what the term ATTEMPTED MURDER is...?
+SCSO   : Well, obviously, I know what THAT one is...
+Me     : Ok, do you know what the term SERIAL KILLER is...?
+SCSO   : *points* That one, *nodding excessively* I definitely know what that is.
+Me     : Cool, so, SOMEONE FACILITATED AN ATTEMPTED MURDER on 05/26/20 outside of the CATRICALA FUNERAL HOME.
+SCSO   : Look buddy... 
+         ...EVERYBODY had somebody FACILITATE an ATTEMPTED MURDER outside of the CATRICALA FUNERAL HOME.
+         You're really not THAT special, dude.
+         I mean, how many times have you made these complaints to us, man...?
+Me     : Uh, like thousands...?
+SCSO   : See...?
+         That's your problem right there, dude.
+         If somebody tried to kill you, somebody would've done something about it by now.                 (← FALLACY)
+         You don't even have any PROOF of such a thing.
+Me     : Nah, I totally do, I have pictures of these assholes and I also had a video that I showed to a TROOPER.
+         THEN after I showed the video to him...?
+         Well, somebody remotely disabled my device and eliminated the evidence I had on my device.
+SCSO   : Yeah, well... take it up with them.
+Me     : What I'm tryin' to tell ya, is that you have some police officers that are committing CRIMINAL ACTIVITIES.
+         For instance, SOMEONE THAT YOU WORK WITH...
+         Like, JAMES LEONARD.
+         COMMITTED A SERIOUS CRIME CALLED OBSTRUCTION OF JUSTICE, DESTROYING EVIDENCE, and...
+         ...TELEPHONY DENIAL OF SERVICE
+         OBSTRUCTION OF JUSTICE at CENTER FOR SECURITY, and REMOTELY FROM MY DEVICE.
+         THEN this cocksucker actually wrote (2) reports where I somehow got in trouble after I dialed 911 twice.
+         That's actually a CAPITAL CRIME BRO.
+SCSO   : He's a good dude though, man, I really doubt that he'd do somethin' illegal to ya...
+Me     : Nah, I think you people all need to be reevaluated by an actual LAW ENFORCEMENT PROFESSIONAL.
+         Literally telling you people over and over, that your whole department is like, running away from the
+         event that took place on May 26th, 2020 outside of CATRICALA FUNERAL HOME.
+SCSO   : Look dude.
+         That event happened SO LONG AGO...
+Me     : Yeah, you know what else happened...?
+SCSO   : What's up...?
+Me     : Have you ever heard of a term called OBSTRUCTION OF JUSTICE...?
+SCSO   : *frowns slightly, starts shaking head* Nah man, can't say that I have...
+Me     : Oh, cool... 
+         Allow me to tell you how serious of a crime that is...
+         ______________________________________________________________________________________________________
+         | FACILITATION | https://definitions.uslegal.com/c/criminal-facilitation/                            |
+         |----------------------------------------------------------------------------------------------------|
+         | A person is guilty of CRIMINAL FACILITATION if they KNOWINGLY PROVIDE SUBSTANTIAL ASSISTANCE to a  | 
+         | person INTENDING to COMMIT a FELONY and THAT PERSON, in fact, COMMITS THE CRIME CONTEMPLATED, or a | 
+         | like or related FELONY, EMPLOYING the ASSISTANCE SO PROVIDED. The ready lawful availability from   | 
+         | OTHERS of the GOODS/SERVICES provided by a DEFENDANT is a FACTOR to be CONSIDERED in DETERMINING   | 
+         | whether or not their ASSISTANCE was SUBSTANTIAL.                                                   |
+         | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
+         | Example : MICHAEL ZURLO and SCOTT SCHELLING refusing to collect my evidence of my 911 calls that   |
+         | someone IGNORED, is because they FACILITATED an ATTEMPTED MURDER, ALSO, committing Telephony DDOS  |
+         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+         ______________________________________________________________________________________________________
+         | OBSTRUCTION OF JUSTICE | https://en.wikipedia.org/wiki/Obstruction_of_justice                      |
+         |----------------------------------------------------------------------------------------------------|
+         | Obstruction of Justice, in US jurisdictions, is a CRIME consisting of OBSTRUCTING PROSECTORS,      | 
+         | INVESTIGATORS, or OTHER GOVERNMENT OFFICIALS. COMMON LAW JURISDICTIONS other than the US tend to   | 
+         | use the WIDER OFFENSE of PERVERTING the COURSE of JUSTICE.                                         | 
+         | OBSTRUCTION is a BROAD CRIME that may include acts such as PERJURY, MAKING FALSE STATEMENTS to     |
+         | OFFICIALS, WITNESS TAMPERING, JURY TAMPERING, [DESTRUCTION OF EVIDENCE*], and many others.         |
+         | OBSTRUCTION ALSO applies to overt COERCION of COURT or GOVERNMENT OFFICIALS via the means of       |
+         | THREATS or ACTUAL PHYSICAL HARM, and also apply to DELIBERATE SEDITION against a COURT OFFICIAL to |
+         | UNDERMINE the APPEARANCE of LEGITIMATE AUTHORITY                                                   | 
+         | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
+         | Example : MICHAEL ZURLO and JAMES LEONARD having some hackers prevent me from extracting the VIDEO |
+         | evidence I recorded (05/25/20 2343 → 05/26/20 0004), then remotely disabling my Apple iPhone 8+ to | 
+         | destroy the video evidence I showed to NYS Trooper Leavey, and then arresting me for a KAYAK STRAP |
+         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+SCSO    : Look buddy...
+          There's really nothing I can do about any of that.
+Me      : Well, there definitely is something you can do about it, you're just being totally useless.
+          And lazy.
+SCSO    : That's just your opinion man...
+Me      : Look, I'm fairly certain that James Leonard is going to murder MICHAEL ZURLO.
+SCSO    : Nah, he wouldn't do that, LOL.
+Me      : Well, how do you KNOW that...?
+          You didn't even bother to ask me what would cause me to think that, or say it...?
+SCSO    : I mean, I frankly don't care, LOL.
+          I'm not paid to put a whole lot of thought into my job, dude...
+          *shakes head* Once you said something about murderers and racketeering and stuff...?
+          *makes gesture with his hands around his head, that his mind is blown*
+          Blowin' my mind with all this stuff you said, pal...
+Me      : Look. I really have no idea if James Leonard is going to literally kill MICHAEL ZURLO...?
+          I'm just saying... 
+          I really won't be surprised by James Leonard somehow outdoing himself at being a dumbass.
+SCSO    : Hey man, *shakes head* have some respect...
+Me      : Nah man, I have no desire to respect anything goin' on over at SCSO... 
+          I don't wanna say that the WHOLE ORGANIZATION is full of stupid people... 
+          But it's at least 50% full of morons...
+          The thing is, I know very few of the people who work there are actually morons.
+SCSO    : Well, why would you say something like that...?
+Me      : Because I'm going to manipulate some of the people at your organization to get caught.
+          Then they're goin' to prison.
+          I really cannot specify how easy it is for me to manipulate people.
 
- /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
- SOME OF THESE STATUTES ARE BEING MISUSED.  
- Perhaps the reason that they haven't openly stated that the Constitution is basically dead, is because 
- they're trying to avoid a civil war. I think the real reason is because people in the military, if they 
- found out that I was 100% correct, they're not gonna waste any time holding people accountable.
+SOME OF THESE STATUTES ARE BEING "MISUSED".
+
+Perhaps the reason that they haven't openly stated that the Constitution is basically dead, is because 
+they're trying to avoid a civil war. I think the real reason is because people in the military, if they 
+found out that I was 100% correct, they're not gonna waste any time holding people accountable.
 "@)
  
-$Book.NewSection(8,"Examination (2)",@"
-The same "command" was issued to the second building, eliminating nearly 3000 people that day…
-…it is likely that at least 2000 of those people could have survived, at a bare minimum.
+$Book.NewSection(8,"Conjecture","Examination (2)",@"
+Returning to the examination... the same "command" was issued to the second building, eliminating nearly 
+3000 people that day… it is likely that at least 2000 of those people could have survived, at a bare minimum.
 
 The REASON those buildings were subjected to controlled demolition, is because Larry Silverstein had just 
 changed the insurance on the building... to cover terrorist attacks - (2) weeks prior to the attack.
     
 And that is why I am charging that George W. Bush should be held accountable, and so should Exxon Mobil, and 
-people in the CIA that knew those planes were inbound. Also, there's a possibility that the planes that struck
-the towers were NOT the same planes that took off from Boston, meaning (4) total planes were involved with the 
-story about the towers. (See → Rebekah Roth)
+people in the CIA that knew those planes were inbound. Sorta how like GWB had the SEC not release it's report
+into HARKEN ENERGY that SUPPOSEDLY didn't find any evidence of INSIDER TRADING goin' on by GWB...
 
-George W. Bush provisioned another COMMAND to the (NIST/National Institute of Standards and Technology, to 
+Mysteriously, there's a possibility that the planes that struck the towers were NOT the same planes that took
+off from Boston, meaning (4) total planes were involved with the story about the towers. (See → Rebekah Roth)
+
+George W. Bush provisioned another COMMAND to the (NIST/National Institute of Standards and Technology), to 
 heavily redact the report, and withheld the TYPE of structural steel that was used to fabricate the building.
 The grade of the structural steel was the highest tensile strength available in the late 60's/early 70's, and 
 they were wrapped with the hardest concrete possible, allowing the buildings to be approximately 110 stories high.
     
-(Shayam Sunder/NIST) suggested that the collapse of the buildings was because of the 2800°F of HEAT that
-somehow traveled DOWNWARD, whereby SUFFICIENTLY WEAKENING THE STRUCTURAL BEAMS, whereby causing the collapse.   
-However, I don't think this guy realizes how stupid he sounds in this report. 
+(Shayam Sundar/NIST) suggested that the collapse of the buildings was because of the 2800°F of HEAT that
+somehow traveled DOWNWARD, whereby SUFFICIENTLY WEAKENING THE STRUCTURAL BEAMS, whereby causing the collapse.
+
+However, I don't think this guy realizes how stupid he sounds in this report.
+It's like this... people should trust STRUCTURAL ENGINEERS like ROBERT KOROL, a civil engineering professor.
+As well as LEEROY HULSEY, and various others.
+
+Because SHAYAM SUNDAR was just a shill-boy from Tanzania that reluctantly used his CREDENTIALS to LIE TO PEOPLE.
+That's what a lot of people in AMERICAN SOCIETY get to do.
+
+They don't tell the TRUTH, they tell a BIASED REPORT where they got paid a fat stack of cash to be a lying 
+fuckface, and override the word of someone with FAR MORE EXPERIENCE...
+
+...such as ROBERT KOROL. Ya know...?
+SHAYAM SUNDAR, basically signed off on a RIDICULOUS REPORT that DOES NOT NAME THE FACTORS THAT CAUSED THE
+ADDITIONAL 1000°F HEAT THAT JET FUEL "ALONE" _____COULD_NOT_HAVE_CAUSED_____.
 
 Without something such as 1) thermite AND 2) explosives...? 
 Then an AIRPLANE made of ALUMINUM (which is a REALLY LIGHT METAL, not dense at all), with the hottest flammable 
@@ -27046,7 +27418,7 @@ The whole damn thing is just dancing around a very obvious series of points that
 like how TUCKER CARLSON will talk shit about BOB LUTZ' golf game, and then have his buddy play that game instead.
 "@)
  
-$Book.NewSection(8,"Analogy [~] The Gay Kid",@"
+$Book.NewSection(8,"Excerpt","The Gay Kid",@"
 The NIST report, is basically like when a gay kid hangs out with a girl all the time... 
 Gay kid knows he's never gonna have sex with that girl, because he likes penis in his (mouth/ass).
 But, she has a vagina, which is sorta meant for penis.
@@ -27073,7 +27445,7 @@ The first dude will come up... and try to talk to her or flirt with her.
 She, wants to fuck that dude, one that is obviously trying to get in her pants... but- uh-oh. 
 Gay kid swoops in and says:
 
-\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 Guy     : Hey, what's going on? 
 Girl    : *twirling her hair* Hi~!
@@ -27098,16 +27470,18 @@ Girl    : ...what was wrong with that dude?
 Gay kid : Well, I didn't think he was all that good looking.
 Girl    : Dude, you don't know what I like.
 
-/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 The gay kid doesn't know what she likes. 
 He's just her good friend, is gay, and he'd prefer to be a roadblock and stand in the way...
-...than to go home, hang out by himself, masturbate and cry... while she fucks that dude.    (← Can't blame the girl)
+...than to go home, hang out by himself, masturbate and cry... while she fucks that dude.  
+(^ Can't blame the girl)
+
 He doesn't get it that if some dude tries to flirt with HIM...? 
 She's gonna say "Alright, see ya later buddy~!" and then leave.
 "@)
  
-$Book.NewSection(8,"Examination (3)",@"
+$Book.NewSection(8,"Conjecture","Examination (3)",@"
 Same concept applies to the NIST 9/11 report, they're gonna do what Shayam Sundar and George W. Bush did. 
 Rather than for George W. Bush to award Robert Korol with a Nobel Peace Prize, George W. Bush thought it'd
 be cool to censor the dog shit out of Robert Korol. Cool, huh?
@@ -27174,7 +27548,6 @@ The Americans that DON'T BELIEVE BUSH get:
 ________________________________________________________________________________________________________________
 | CENSORED | LABELED DELUSIONAL | JAILED/IMPRISONED | KILLED/GO MISSING | ATTACKED VIA CYBERATTACKS REPEATEDLY |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
 MAYBE All of that stuff is in my head, ya know...? Maybe, I put all this time and effort into something
 that will just get me thrown in jail, since I live in a "free" country where you can't attack GWB, you also
 can't insult GWB, cause you'll get censored. The truth is, I'm certain he'll tell EVERYBODY AND THEIR MOTHER...
@@ -27231,7 +27604,7 @@ it has enabled the federal government to commit treason against its own citizens
 citizens' constitutional liberties/freedoms are being overridden, and Teddy Roosevelt is rolling in his grave.
 "@)
  
-$Book.NewSection(8,"Compare/Contrast",@"
+$Book.NewSection(8,"Conjecture","Compare/Contrast",@"
 There's a serious problem with this country, when HILLARY CLINTON isn't in prison, but- JULIEN ASSANGE IS.
 ...and Ed Snowden is over in Russia, still hasn't sold out his country. 
 
@@ -27285,7 +27658,7 @@ Whereas, JULIEN ASSANGE, constantly pissing people off at the Central Intelligen
 or big oil conglomerates that have caused IRREVERISBLE DAMAGE to the entire planet... 
 "@)
  
-$Book.NewSection(8,"Excerpt [+] Julien P. Assange",@"
+$Book.NewSection(8,"Excerpt","Julien P. Assange",@"
 JULIEN ASSANGE was born Julien Paul Hawkins, his mom and dad were together briefly but split up before he was 
 born. Some people may say "This dude came into the world with a friggen shovel in his hands", as a metaphor.
 But, this dude apparently came into the world with a LOT more intensity than that... 
@@ -27705,7 +28078,7 @@ I have a feeling that the next time they break in, it will be too late to stop A
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.NewSection(8,"WikiLeaks (1)",@"
+$Book.NewSection(8,"Excerpt","WikiLeaks (1)",@"
 WikiLeaks was founded by Julien P. Assange, and though I've already explained much about Mr. Assange, the truth
 is that the UNITED STATES JUSTICE SYSTEM has decided to FRAME and INCARCERATE him for BEING A JOURNALIST.
 
@@ -27756,7 +28129,7 @@ SYSTEM...?
 It is ALL directly resultant, to how many fucking times I've written about JULIEN ASSANGE.
 "@)
  
-$Book.NewSection(8,"Collateral Murder",@"
+$Book.NewSection(8,"Excerpt","Collateral Murder",@"
 Essentially, the biggest slap across the face to military operations in memory, not because the event itself 
 is really unexpected or just insanely unbelievable... During war, innocent people do wind up getting killed. 
 
@@ -27787,7 +28160,7 @@ I know that the military will classify events such as this, and I have no doubt 
 agencies in the government do this shit too. Most notably the (CIA/Central Intelligence Agency).
 "@)
  
-$Book.NewSection(8,"Vault 7 (Summary)",@"
+$Book.NewSection(8,"Excerpt","Vault 7 (Summary)",@"
 Vault 7 is a series of hacking tools that were developed by the Central Intelligence Agency, and sometimes these 
 tools are used by other agencies, such as the Federal Bureau of Investigation, and even the National Security 
 Agency. I'm certain that there are plenty of GOOD USE CASES for these tools, but the entire point of them ALL, 
@@ -27796,7 +28169,7 @@ and notice when THEY'RE ACTUALLY USING SOME ADVANCED SHIT AGAINST YOU ON YOUR CO
 they've done to me repeatedly.
 "@)
  
-$Book.NewSection(8,"Vault 7 (Official)",@"
+$Book.NewSection(8,"Excerpt","Vault 7 (Official)",@"
 Vault 7 is a series of documents that WikiLeaks began to publish on 03/07/17, detailing the activities and
 capabilities of the United States (CIA/Central Intelligence Agency) to perform: 
 _________________________________________________________________________________________________________________
@@ -27814,7 +28187,7 @@ These files detail the agency's software capabilities from 2013-2016+, effective
 A CIA internal audit identified (91+/500) malware tools in use in 2016 being compromised by the release.
 "@)
 
-$Book.NewSection(8,"(Vault 7 [01] Year Zero) [~] Documentation",@"
+$Book.NewSection(8,"Excerpt","[01 Year Zero]: Documentation",@"
 ____________
 | 03/07/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27831,7 +28204,7 @@ its mandated powers and the problem of public oversight of the agency (nobody ev
 programmers or hackers... MORALITY, is the key term here.)
 "@)
  
-$Book.NewSection(8,"(Vault 7 [02] Dark Matter) [~] Apple iPhone",@"
+$Book.NewSection(8,"Excerpt","[02 Dark Matter]: Apple iPhone",@"
 ____________
 | 03/27/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27840,7 +28213,7 @@ These included the SONIC SCREWDRIVER malware that could use the thunderbolt inte
 APPLE's password firmware protection.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [03] Marble) [~] Obfuscation",@"
+$Book.NewSection(8,"Excerpt","[03 Marble]: Obfuscation framework",@"
 ____________
 | 03/31/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27849,7 +28222,7 @@ scramble, malware code in an attempt to make it so that anti-virus firms or inve
 code or attribute its source. The code also includes a de-obfuscator to reverse the obfuscation effects.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [04] Grasshopper) [~] Malware",@"
+$Book.NewSection(8,"Excerpt","[04 Grasshopper]: Shape-shifting malware framework",@"
 ____________
 | 04/07/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27862,7 +28235,7 @@ Grasshopper focused on (PSP/Personal Security Product) avoidance. PSP's are anti
             ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.NewSection(8,"(Vault 7 [05] HIVE) [~] Advanced phishing MITM",@"
+$Book.NewSection(8,"Excerpt","[05 HIVE]: Advanced Phishing M.I.T.M.",@"
 ____________
 | 04/14/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27878,7 +28251,7 @@ looking public domains through a masking interface known as SWITCHBLADE.
 Also called (LP/Listening Post) and (C2/Command and Control).
 "@)
  
-$Book.NewSection(8,"(Vault 7 [06] Weeping Angel/Willow) [~] SmartTV's mic & WiFi",@"
+$Book.NewSection(8,"Excerpt","[06 Weeping Angel/Willow]: SmartTV's mic & WiFi",@"
 ____________
 | 04/21/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27897,7 +28270,7 @@ As of this part 6 publication, "Weeping Angel" is the second major CIA hacking t
 the British television show, Doctor Who, alongside "Sonic Screwdriver" in "Dark Matter".
 "@)
  
-$Book.NewSection(8,"(Vault 7 [07] Scribbles) [~] Adds a beacon to particular documents",@"
+$Book.NewSection(8,"Excerpt","[07 Scribbles]: Adds a beacon to particular documents",@"
 ____________
 | 04/28/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27922,7 +28295,7 @@ watermarked image will not be able to contact its home server.
 This is overridden only when a user enables editing.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [08] Archimedes) [~] Hijacks control AND traffic on a device",@"
+$Book.NewSection(8,"Excerpt","[08 Archimedes]: Hijacks (control+traffic) from (browser+operating system)",@"
 ____________
 | 05/05/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27941,7 +28314,7 @@ Paganini stated that potential targeted computers can search for those hashes on
 their systems had been attacked by the CIA.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [09] After Midnight/Assassin) [~] Malware with payload scripts",@"
+$Book.NewSection(8,"Excerpt","[09 After Midnight/Assassin]: Kernel-grade malware with PAYLOAD SCRIPTS",@"
 ____________
 | 05/12/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27960,7 +28333,7 @@ beacon to their configured LP to either request tasks or send private informatio
 automatically uninstall themselves on a set date and time.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [10] Athena) [~] Hijacks Windows Remote Access Services",@"
+$Book.NewSection(8,"Excerpt","[10 Athena]: Hijacks Windows Remote Access Services/Domain Name Service",@"
 ____________
 | 05/19/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -27991,7 +28364,7 @@ All of the above designed to deceive computer security software.
 Beside the published documents, WikiLeaks hasn't provided evidence to suggest the CIA uses ATHENA, or not.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [11] Pandemic) [~] Infects SMB shares and spreads to others",@"
+$Book.NewSection(8,"Excerpt","[11 Pandemic]: Infects SMB shares, spreads to others",@"
 ____________
 | 06/01/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28010,7 +28383,7 @@ While not stated in the leaked documentation, it is possible that newly infected
 become "Pandemic" file servers, allowing the implant to reach new targets on a local network.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [12] Cherry Blossom) [~] Hijacks control of ROUTERS/ACCESS POINTS",@"
+$Book.NewSection(8,"Excerpt","[12 Cherry Blossom]: Hijacks control of (ROUTERS+ACCESS POINTS)",@"
 ____________
 | 06/15/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28033,7 +28406,7 @@ malicious content into the stream to exploit vulnerabilities in applications or 
 on the computer of the targeted user
 "@)
  
-$Book.NewSection(8,"(Vault 7 [13] Brutal Kangaroo) [~] Infects thumb drives, makes hidden network",@"
+$Book.NewSection(8,"Excerpt","[13 Brutal Kangaroo]: Infects thumb drives + makes hidden network",@"
 ____________
 | 06/22/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28055,7 +28428,7 @@ a covert network to coordinate tasks and data exchange. Although not explicitly 
 this method of compromising closed networks is very similar to how Stuxnet worked.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [14] Elsa) [~] Collects GPS coordinates from WiFi radios",@"
+$Book.NewSection(8,"Excerpt","[14 Elsa]: Collects GPS coordinates from WiFi radios",@"
 ____________
 | 06/28/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28086,7 +28459,7 @@ unprocessed access point information from exfiltrated log files to geolocation d
 profile of the target device.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [15] Outlaw Country) [~] Targets Linux OS, hijacks outbound traffic",@"
+$Book.NewSection(8,"Excerpt","[15 Outlaw Country]: Targets Linux OS, hijacks outbound traffic",@"
 ____________
 | 06/30/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28108,7 +28481,7 @@ This module will only work with default kernels.
 Also, OUTLAW COUNTRY v1.0 only supports adding covert DNAT rules to the PREROUTING chain.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [16] Bothan Spy/GyrFalcon) [~] Swipes SSH creds for Windows/Linux",@"
+$Book.NewSection(8,"Excerpt","[16 Bothan Spy/GyrFalcon]: Swipes SSH creds for Windows/Linux",@"
 ____________
 | 07/06/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28135,7 +28508,7 @@ later exfiltration.
 It is installed and configured by using a CIA-developed root kit (JQC/KitV) on the target machine.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [17] High Rise) [~] Targets Android, hijacks SMS",@"
+$Book.NewSection(8,"Excerpt","[17 High Rise]: Targets Android, hijacks SMS",@"
 ____________
 | 07/13/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28151,7 +28524,7 @@ HIGH RISE provides a communications channel between the HIGH RISE field operator
 secured internet communication.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [18] Raytheon) [~] Research and development regarding attack vectors",@"
+$Book.NewSection(8,"Excerpt","[18 Raytheon]: Research/development regarding ATTACK VECTORS",@"
 ____________
 | 07/19/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28166,7 +28539,7 @@ of the CIA by analyzing malware attacks in the wild, and giving recommendations 
 for further investigation and PoC development for their own malware projects.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [19] Imperial) [~] Suite of tools for Unix based OSs (and Apple stuff)",@"
+$Book.NewSection(8,"Excerpt","[19 Imperial]: Suite of tools for Unix based OSs (and Apple stuff)",@"
 ____________
 | 07/27/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28186,7 +28559,7 @@ SEAPEA is an OSX Rootkit, which provides STEAL and TOOL LAUNCHING CAPABILITIES.
 It hides FILES/DIRECTORIES, SOCKET CONNECTIONS and/or PROCESSES. It runs on Mac OSX (10.6/10.7)
 "@)
  
-$Book.NewSection(8,"(Vault 7 [20] Dumbo) [~] NMAP for WiFi/BT cameras, can ALSO corrupt footage",@"
+$Book.NewSection(8,"Excerpt","[20 Dumbo]: NMAP for WiFi/BT cameras, can ALSO corrupt footage",@"
 ____________
 | 08/03/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28211,7 +28584,7 @@ It supports 32-bit MICROSOFT WINDOWS (XP/VISTA), and NEWER VERSIONS of MICROSOFT
 64-bit MICROSOFT WINDOWS XP, or versions prior to XP are NOT supported (SUPPOSEDLY).
 "@)
  
-$Book.NewSection(8,"(Vault 7 [21] Couch Potato) [~] Hijacks RTSP/H.264 video streams",@"
+$Book.NewSection(8,"Excerpt","[21 Couch Potato]: Hijacks RTSP/H.264 video streams",@"
 ____________
 | 08/10/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28225,7 +28598,7 @@ It utilizes FFMPEG for VIDEO and IMAGE ENCODING/DECODING, as well as RTSP connec
 COUCH POTATO relies on being launched in an ICE v3 Fire and Collect compatible loader.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [22] Express Lane) [~] A biometrics nightmare",@"
+$Book.NewSection(8,"Excerpt","[22 Express Lane]: A biometrics nightmare",@"
 ____________
 | 08/24/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28252,7 +28625,7 @@ The company hit the headlines in 2011 when it was reported that the US military 
 to identify OSAMA BIN LADEN during the assassination operation in PAKISTAN.
 "@)
  
-$Book.NewSection(8,"(Vault 7 [23] Angel Fire) [~] Various Windows exploitation",@"
+$Book.NewSection(8,"Excerpt","[23 Angel Fire]: Various Windows exploitation",@"
 ____________
 | 08/31/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28286,7 +28659,7 @@ SPECIFIC ACTIONS including: | INSTALLATION | ADDING/REMOVING FILES from ANGEL FI
 Transitory files are added to the "UserInstallApp".
 "@)
  
-$Book.NewSection(8,"(Vault 7 [24] Protego) [~] Tool for missile control systems",@"
+$Book.NewSection(8,"Excerpt","[24 Protego]: Tool for missile control systems",@"
 ____________
 | 09/07/17 |
 ¯¯¯¯¯¯¯¯¯¯¯¯
@@ -28319,7 +28692,7 @@ Similarly, safeguards are in place to auto-destruct (encryption + authentication
 scenarios (leaving a target area of operation/missing missile).
 "@)
 
-$Book.NewSection(8,"Vault 7 Cont'd",@"
+$Book.NewSection(8,"Excerpt","Vault 7 Cont'd",@"
 A number of these tools have been used against me, MALICIOUSLY. 
 Some of them have been used BENEVOLENTLY.
 
@@ -28373,7 +28746,7 @@ out a pistol, and shooting me in front of people... the reason being, I don't re
 Assange did basically the same thing SHE did, and got 175 years...                        (← NOT COMPLETELY ACCURATE)
 "@)
 
-$Book.NewSection(8,"Hidden Government",@"
+$Book.NewSection(8,"Conjecture","Hidden Government",@"
 If the comparison I've been alluding to, about how Ted Cruz gets pumped in the butt for `$500M, sounds fucked up...? 
 Oh well, that's just too fuckin' bad. The principle of him getting bribery money should be MORE insulting.
 
@@ -28401,7 +28774,7 @@ citizens. The reason that I am CERTAIN that this is the case, is because of Pega
 Apple iPhone 8+.
 "@)
  
-$Book.NewSection(8,"Review [~] The Week",@"
+$Book.NewSection(8,"Review","The Week",@"
 As mentioned in chapter "The 'Week'", I walked to (SANG/Stratton Air National Guard) on 05/22/20. 
 I walked there because I had a feeling that someone was trying to kill me, earlier that day. 
 They actually told me the equivalent of "Fuck you dude, we don't care." and then they called the police,
@@ -28681,7 +29054,7 @@ in that at all, pretty sure Tanski wasn't involved in that either. But, maybe th
 What I do think, is that I have to set better traps for next time.
 "@)
  
-$Book.NewSection(8,"Excerpt [~] Factors",@"
+$Book.NewSection(8,"Excerpt","Factors",@"
 Wouldn't be much of a stretch for me to assume that these things might actually ALL be RELATED.
 related (ADJECTIVE: associated with the specified item or process, especially causally)
 ______________________________________________________________________
@@ -28855,7 +29228,7 @@ the assumption they should be making, is that the man is being raped.
 Because, if Ted Cruz was PROUD of this happening, he probably would've recorded it on video, right...?
 "@)
  
-$Book.NewSection(8,"Skit [~] Ted Cruz' Fantasy",@"
+$Book.NewSection(8,"Skit","Ted Cruz' Fantasy",@"
 Ted Cruz (senator from Texas), had been looking forward to this very night, for his whole life. It's his fantasy.
 
 Ted Cruz (senator from Texas), asked some women what THEY want from their man... and they told him.
@@ -28916,7 +29289,7 @@ Ted Cruz (senator from Texas)
 Probably the best motivator in existence, since he's bound to be embarrassed by the video being publicly distributed.
 Then, everyone's gonna talk about it.
     
-\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
 Guy1: Hey, is that Ted Cruz (senator from Texas)?
 Guy2: Yep. That's... fuckin' Ted god damn Cruz right there.
@@ -28929,7 +29302,7 @@ Guy2: Filled with joy, even.
 Guy1: This dude, *ALMOST* sounds like a woman.
 Guy2: Well, ALMOST.
 
-/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
     
 Look, the point is, if certain people are allowed to break the law and nobody else can, it sounds a lot like 
 when the American Colonists had to kick the shit out of the British army, because they didn't really care 
@@ -28937,8 +29310,7 @@ for the tea. Ya know?
 What if somebody owns a news network named Fox News, and it's not news, because it's propaganda...?
 "@)
  
-$Book.NewSection(8,"Rich Brat",@"
-
+$Book.NewSection(8,"Conjecture","Rich Brat",@"
 There's a rich brat that needs to be pulled down a LOT of pegs, which I go over later in the material.
 A specific entity who's never NAMED 1 time in this entire book, that I'm referring to when I say that phrase.
 
@@ -29026,7 +29398,7 @@ But the reason SOME stuff is on TV, is because they want people to FEEL like, if
 ...*chuckles* you're gonna get caught. Meanwhile, most murders go unsolved. 
 "@)
  
-$Book.NewSection(8,"Comparisons (1)",@"
+$Book.NewSection(8,"Lesson","Comparisons (1)",@"
 I'm going to provide some examples of shows on television that feature COPS, and grade them on their REALISTIC
 NATURE, and the details that either CAUSE them to be realistic, and in some cases, what caused them to be
 noteworthy enough to be included.
@@ -29038,7 +29410,7 @@ This TABLE will showcase just how fucked up these systems are in some cases.
 That's not an opinion by the way.
 "@)
 
-$Book.NewSection(8,"Breaking Bad",@"
+$Book.NewSection(8,"Excerpt","Breaking Bad",@"
 _______________________
 | EXTREMELY REALISTIC |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -29051,7 +29423,7 @@ Lots of reasons to watch this, maybe seeing a head on the back of a tortoise isn
 ...but most of the show is shockingly realistic.
 "@)
 
-$Book.NewSection(8,"Renegade",@"
+$Book.NewSection(8,"Excerpt","Renegade",@"
 _______________________________
 | NOT EVEN SLIGHTLY REALISTIC |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -29067,7 +29439,7 @@ roundhouse kicks to people's faces... BOOKIE WARD would even agree that this dud
 That's the story of LORENZO LAMAS, no realation to TOM LLAMAS... but also, a fictional story.
 "@)
 
-$Book.NewSection(8,"The Shield",@"
+$Book.NewSection(8,"Excerpt","The Shield",@"
 _______________________
 | EXTREMELY REALISTIC |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -29094,7 +29466,7 @@ Because it's basically a bunch of cops that break every law they feel like break
 consider themselves the "good guys". 
 
 This is basically how a lot of cops who wind up getting involved with Narcotics units wind up acting like. 
-In other words, people like Sgt. Bosco, or Trooper Messines, or even Sara DeRusso, they will do the drugs, get
+In other words, people like Sgt. Bosco, or Trooper MISSENIS, or even Sara DeRusso, they will do the drugs, get
 addicted to the lifestyle, the money, the drugs, the people... they wind up forgetting that they're a cop.
 They're not supposed to allow themselves to be corrupted like that. 
 But- it happens every fuckin' day.
@@ -29103,7 +29475,7 @@ Then it is literally a prime example of how to indicate that she along with the 
 ...they fuckin' suck ass at their jobs when they FAIL TO COLLECT EVIDENCE.
 "@)
 
-$Book.NewSection(8,"NCIS",@"
+$Book.NewSection(8,"Excerpt","NCIS",@"
 ________________________________
 | NOT FUCKIN' REALISTIC AT ALL |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -29129,7 +29501,7 @@ Then what...? Scooby and Shaggy are gonna starve to death, and NOBODY really wan
 Nah. I don't think so. You're basically pissing all over one of the most beloved (dude + dog) combos in history.
 "@)
 
-$Book.NewSection(8,"Law and Order",@"
+$Book.NewSection(8,"Excerpt","Law and Order",@"
 ____________________________________________________________________________
 | SORT OF REALISTIC, BUT NOT REALLY. THE COURTROOM STUFF IS MORE REALISTIC |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -29142,12 +29514,12 @@ There are a few other derivatives of this show that I can tolerate (Criminal Int
 That's what I'm watchin' for the rest of the day. 
 "@)
 
-$Book.NewSection(8,"COPS",@"
+$Book.NewSection(8,"Excerpt","COPS",@"
 ____________________________________________________________________________________________________
 | ABOUT AS REAL AS IT GETS (it's literally footage that gets recorded when a cameraman goes in...) |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Cameraman : ALRIGHT BRO. 
-            I WANNA RECORD SOMESHIT. *cocaine sniffle*
+            I WANNA RECORD SOME SHIT. *cocaine sniffle*
             YOU DOWN...?
 Cops      : *chuckles* Buddy...? 
             You probably don't know what you're getting' yourself into...
@@ -29163,13 +29535,19 @@ a cop is not somehow obnoxiously chewing on a real nice piece of fuckin' gum. Th
 You'll NEVER see an episode of COPS filmed in CLIFTON PARK, NY, because the show actually CHERRY PICKS the things
 that are LEGAL for the COPS to DO. So, they have probably TRIED to record MANY INSTANCES of Clifton Park, NY, or
 even Albany, NY...? But the police constantly break the law around here AND at these organizations...
-
-- New York State Police [Troop G] @ 760 Troy Schenectady Rd, Latham, NY 12110
-- Saratoga County Sheriff's Office @ 6010 County Farm Road, Ballston Spa, NY
-- Federal Bureau of Investigation @ 200 McCarty Ave, Albany NY
+_____________________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯|¯¯¯¯¯¯¯|
+| Agency                           | Address                 | City         | State | Zip   |
+|__________________________________|_________________________|______________|_______|_______|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯|¯¯¯¯¯¯¯|
+| New York State Police [Troop G]  | 760 Troy Schenectady Rd | Latham       | NY    | 12110 |
+| Saratoga County Sheriff's Office | 6010 County Farm Road   | Ballston Spa | NY    | 12020 |
+| Federal Bureau of Investigation  | 200 McCarty Ave         | Albany       | NY    | 12209 |
+|__________________________________|_________________________|______________|_______|_______|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(8,"RENO 911!",@"
+$Book.NewSection(8,"Excerpt","RENO 911!",@"
 _________________________________________________________________________
 | The entire point of this show, has historically always been a JOKE... |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -29185,7 +29563,7 @@ the police I just mentioned... That should paint a pretty clear picture that the
 not be taken seriously, and yet... they have a badge.
 "@)
 
-$Book.NewSection(8,"The Other Guys",@"
+$Book.NewSection(8,"Excerpt","The Other Guys",@"
 ____________________________________________________________________________________
 | Fuckin' HILARIOUS MOVIE... NOT REALISTIC AT ALL (partially filmed in Albany, NY) |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -29272,7 +29650,7 @@ Danny, being fuckin' WICKED IMPRESSED... with the WAY that Nick decided to intro
 ...it introduces the concept that he's a fuckin straight shooter, and he's got a British accent too, fuckface.
 
 Arnold Shwarzenegger, holdin' down the fort as Jack Slater... the toughest, coolest, most awesome cop that ever
-lived... one who literally, hands down, makes NYS TROOPER ROBERT MESSINES and his son TROOPER/DEPUTY MESSINES 
+lived... one who literally, hands down, makes NYS TROOPER ROBERT MISSENIS and his son TROOPER/DEPUTY MISSENIS 
 look like the biggest pussies that have ever had a fucking badge throughout human history... Jack Slater doesn't
 NEED to cause a word editor to keep locking up and freezing... Nah. That's because he will literally shoot a cop
 like that who WOULD keep causing a word editor to freeze, lock up, or crash... in the fuckin head.
@@ -29282,13 +29660,13 @@ Neither are bullets flying into the HEAD, of a PERSON who keeps doing that to my
 I'm using. Do it again motherfucker. See how much longer you'll be alive.
 
 That's why he's a fictional character... Doesn't exist... But- should.
-Why...? Because sometimes MALICIOUS ABUSE OF AUTHORITY is ROBERT MESSINES being the same thing as PRACTICE...
+Why...? Because sometimes MALICIOUS ABUSE OF AUTHORITY is ROBERT MISSENIS being the same thing as PRACTICE...
 ...PRACTICE MAKES PERFECT. (Foreshadowing)
 
 Jack Slater is literally driving around in a friggen convertible, not even looking at the fuckin' road, shooting 
 sons of bitches while driving with his knees... anytime the bad guys toss him a stick of dynamite...? Heh.
 Slater just drives in the direction to ROLL the bundle of dynamite into his hands, so he can defuse the fuse. 
-That's cause he's not a little bitch like Robert Messines, or his son.
+That's cause he's not a little bitch like Robert MISSENIS, or his son.
 
 Anyway, at some point, the old run down theatre somehow turns into a friggen portal to the movie dimension, all
 because of Danny Maddigan's magical golden ticket from Harry Houdini himself. The ticket starts to glow from the
@@ -29386,7 +29764,7 @@ Jack decides to go knock on the door, and realizes that there actually is someth
 glass eye. Jack realizes "Alright, the fuck face that I just said 'How are you going to snap your fingers, if I rip 
 off both of your (fuckin') thumbs...?'", is suspiciously wearing a glass eye that Danny pointed out. So, it's on.
 
-Anyway, Jack Slater is later approached by agent Practice, basically the same thing as Robert Messines.
+Anyway, Jack Slater is later approached by agent Practice, basically the same thing as Robert MISSENIS.
 Basically a cop that shouldn't be one... decides to play favorites with the mobsters, and attempts to betray Jack
 until Whiskers basically saves the fuckin' day.
 
@@ -29524,7 +29902,7 @@ The captain is just reaming Jack out for almost being killed, and causing untold
 Smoke still blowing out of his ears... and then Jack says "SHUT THE HELL UP~!"
 The captain is fuckin' speechless cause... he doesn't even realize that Jack is now literally making statements
 about how the captain is the COMIC RELIEF, and JACK IS THE FUCKIN' HERO, so SHUT THE FUCK UP ALREADY... 
-...the captain realizes he's as useless as MICHAEL ZURLO at SCSO, as well as SGT BOSCO and TROOPER MESSINES.
+...the captain realizes he's as useless as MICHAEL ZURLO at SCSO, as well as SGT BOSCO and TROOPER MISSENIS.
 They really have no ammunition or anything to respond to being told to SHUT THE FUCK UP, YOU SUCK AT YOUR JOB,
 and then that's exactly what they do.
 
@@ -29538,7 +29916,7 @@ fuckin' had in this movie.
 
 "@)
 
-$Book.NewSection(8,"Last Action Hero",@"
+$Book.NewSection(8,"Excerpt","Last Action Hero",@"
 ______________________________________________________________________________________________
 | In no way realistic at all (But it is probably one of my favorite childhood cop movies...) |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -29592,7 +29970,7 @@ Danny, being fuckin' WICKED IMPRESSED... with the WAY that Nick decided to intro
 ...it introduces the concept that he's a fuckin straight shooter, and he's got a British accent too, fuckface.
 
 Arnold Shwarzenegger, holdin' down the fort as Jack Slater... the toughest, coolest, most awesome cop that ever
-lived... one who literally, hands down, makes NYS TROOPER ROBERT MESSINES and his son TROOPER/DEPUTY MESSINES 
+lived... one who literally, hands down, makes NYS TROOPER ROBERT MISSENIS and his son TROOPER/DEPUTY MISSENIS 
 look like the biggest pussies that have ever had a fucking badge throughout human history... Jack Slater doesn't
 NEED to cause a word editor to keep locking up and freezing... Nah. That's because he will literally shoot a cop
 like that who WOULD keep causing a word editor to freeze, lock up, or crash... in the fuckin head.
@@ -29602,13 +29980,13 @@ Neither are bullets flying into the HEAD, of a PERSON who keeps doing that to my
 I'm using. Do it again motherfucker. See how much longer you'll be alive.
 
 That's why he's a fictional character... Doesn't exist... But- should.
-Why...? Because sometimes MALICIOUS ABUSE OF AUTHORITY is ROBERT MESSINES being the same thing as PRACTICE...
+Why...? Because sometimes MALICIOUS ABUSE OF AUTHORITY is ROBERT MISSENIS being the same thing as PRACTICE...
 ...PRACTICE MAKES PERFECT. (Foreshadowing)
 
 Jack Slater is literally driving around in a friggen convertible, not even looking at the fuckin' road, shooting 
 sons of bitches while driving with his knees... anytime the bad guys toss him a stick of dynamite...? Heh.
 Slater just drives in the direction to ROLL the bundle of dynamite into his hands, so he can defuse the fuse. 
-That's cause he's not a little bitch like Robert Messines, or his son.
+That's cause he's not a little bitch like Robert MISSENIS, or his son.
 
 Anyway, at some point, the old run down theatre somehow turns into a friggen portal to the movie dimension, all
 because of Danny Maddigan's magical golden ticket from Harry Houdini himself. The ticket starts to glow from the
@@ -29706,7 +30084,7 @@ Jack decides to go knock on the door, and realizes that there actually is someth
 glass eye. Jack realizes "Alright, the fuck face that I just said 'How are you going to snap your fingers, if I rip 
 off both of your (fuckin') thumbs...?'", is suspiciously wearing a glass eye that Danny pointed out. So, it's on.
 
-Anyway, Jack Slater is later approached by agent Practice, basically the same thing as Robert Messines.
+Anyway, Jack Slater is later approached by agent Practice, basically the same thing as Robert MISSENIS.
 Basically a cop that shouldn't be one... decides to play favorites with the mobsters, and attempts to betray Jack
 until Whiskers basically saves the fuckin' day.
 
@@ -29844,7 +30222,7 @@ The captain is just reaming Jack out for almost being killed, and causing untold
 Smoke still blowing out of his ears... and then Jack says "SHUT THE HELL UP~!"
 The captain is fuckin' speechless cause... he doesn't even realize that Jack is now literally making statements
 about how the captain is the COMIC RELIEF, and JACK IS THE FUCKIN' HERO, so SHUT THE FUCK UP ALREADY... 
-...the captain realizes he's as useless as MICHAEL ZURLO at SCSO, as well as SGT BOSCO and TROOPER MESSINES.
+...the captain realizes he's as useless as MICHAEL ZURLO at SCSO, as well as SGT BOSCO and TROOPER MISSENIS.
 They really have no ammunition or anything to respond to being told to SHUT THE FUCK UP, YOU SUCK AT YOUR JOB,
 and then that's exactly what they do.
 
@@ -29857,7 +30235,7 @@ have nothing but a VERY SMALL FRACTION or PERCENTAGE of the INTEGRITY, that a FI
 fuckin' had in this movie.
 "@)
 
-$Book.NewSection(8,"Comparisons (2)",@"
+$Book.NewSection(8,"Lesson","Comparisons (2)",@"
 If the rich brat kills people, the police shrug their fuckin' shoulders: "What can anybody do about it? Jesus."
 If it's somebody that ISN'T a rich brat at all, and gets caught...? That person will go to prison. 
 Hm. Let's draw up a comparison here.
@@ -29869,7 +30247,7 @@ ________________________________________________________________________________
 Rich Brat & | 10+  | Cool AF bro,   | + Kills ppl w/ Pegasus       | Ignore that          | ALSO ignore that      
 serial      |      | millions views | + Cries/Loses @ Fortnite     | Say grow up, kid     | say he's a role model 
 killer      |      | on YouTube     | + is gay, says he isn't      | Say so what...?      | he's a good kid though
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
 He's not a kid, and he should be executed by state for being an existential threat to humanity.                   
 ==================================================================================================================
 George W.   | 10+  | Did very well  | + commits treason 09/11/01   | Ignore that          | Pretend it's nonsense!
@@ -29878,8 +30256,9 @@ Bush        |      |                | + conspires USA-PATRIOT Act  | Not see the
             |      |                | + authorize F22 Raptor devel | Say: Cool story, bro | Give 2 greatness award
             |      |                | + let Exxon demo WTC 1,2,7   | Ignore that          | Pretend it's nonsense 
             |      |                | + have NIST ignore Rob Korol | Say: What thermite?  | Pretend it's nonsense 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
 Convinced this man committed treason. Isn't an ACTUAL cock sucker like Cuomo...? But, SOUNDS like one sometimes.  
+[Mission Accomplished]: https://drive.google.com/file/d/1EDBRJHxcPKOkbJ75hfPik7rxD2zERtt3
 ==================================================================================================================
 Barack      | 10+  | Did very well  | + handles Deepwater Horizon  | Commend that         | Give 1 greatness award
 Obama       |      |                | + lies about mass surveil    | Ignore that          | Pretend it's nonsense 
@@ -29887,59 +30266,65 @@ Obama       |      |                | + lies about mass surveil    | Ignore that
             |      |                | + GM/AIG/Banks Bailout check | Ignore that          | Encouraged/supported  
             |      |                | + Gets Osama Bin Laden       | Round of applause    | Give 5 greatness award
             |      |                | + Passes Affordable Care Act | Round of applause    | Give 5 greatness award
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Overall good job, commendable service, still decided to disgrace warrior EDWARD SNOWDEN                           
+
+Overall good job, commendable service, still decided to disgrace warrior EDWARD SNOWDEN
 ==================================================================================================================
 Rupert      | 10+* | The best ever  | + extort gov/push propaganda | Ignore that          | Never even considered 
-Murdock     |      |                | + has Hannity suck his dick  | Say: He must LOVE it | Never even considered 
+Murdoch     |      |                | + has Hannity suck his dick  | Say: He must LOVE it | Never even considered 
             |      |                | + hurt ppl w/ stacks of cash | Say: So what?        | Never even considered  
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Existential threat change Fox News → Not News Network                                                             
+
+Existential threat change Fox News → Not News Network
 ==================================================================================================================
 Vladimir    | -20  | Fuckin moron   | + tell mil to kill innocents | Consider that        | Throw their hands up  
 Putin       |      |                | + tell mil to suck his dick  | Say: So what...?     | Remain indifferent    
             |      |                | + has state issue propaganda | Say: Cool story, bro | Wish we could help    
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Existential threat. Remove dildo from asshole, asshole.                                                           
+
+Existential threat. Remove dildo from asshole, asshole.
 ==================================================================================================================
 Donald J.   | 10+* | Fuckin' moron  | + try to overthrow democracy | Hem/haw for months   | Ongoing development   
 Trump       |      |                | + sounds like a moron        | Say: That's normal   | Adds Brett Kavanaugh  
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-There are plenty of worse people...                                                                               
+
+There are plenty of worse people... but he's still plenty bad.
 ==================================================================================================================
 Ted Cruz    | 10+  | Hes alright    | + accepts bribery from Exxon | Say: Oh well, bro    | Never even considered 
             |      |                | + fantasizes a date w/ Exxon | Say: He must LOVE it | Remain indifferent    
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Smarter than trump, but who isn't...?                                                                             
+
+Smarter than trump, but who isn't...?
 ==================================================================================================================
 Chuck       | 10+  | Role model     | + Keeps gov't SORTA running  | Round of applause    | Give 5 greatness award
 Schumer     |      | politician     | + Doesn't accept bribery     | Say: Why not...?     | Give 5 greatness award
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
 Dude's a role model politician. Kicks SO MANY people's asses at being a politician, he SHOULD run for president...
 ==================================================================================================================
 William     | 10+  | Visionary,     | + innovate ideas for decades | Say: He does that    | Asks for advice       
 Gates       |      | Genius,        | + stole CPM from G. Kildall  | Say: Oh well         | Never even considered 
             |      | Scholar        | + Starts/runs Gates Found.   | Round of applause    | Asks for advice       
             |      |                | + writes "The Road Ahead"    | Say: He's a good guy | Asks for more advice  
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Complicated, he may not have STOLEN CP/M from Digital Research/Gary Kildall, but it WAS COPIED SOMEHOW...         
+
+Complicated, he may not have STOLEN CP/M from Digital Research/Gary Kildall, but it WAS COPIED SOMEHOW...
+Regardless, the man is an awesome son-of-a-bitch, and has basically been on the forefront of innovation for 
+decades. Literally took an Altair 8800, wrote a version of BASIC for it with Paul Allen, and bankrupted so many
+obnoxious douchebags over the years.
+
 ==================================================================================================================
 Mark        | 10+  | Genius         | + started Facebook w/ no $   | Say: Cool story, bro | Give 1 greatness award
 Zuckerberg  |      |                | + sold data → Cambridge Anal.| Ignore that          | Wonders if thats bad  
             |      |                | + prioritize profit > people | Say: Grumble 7 times | Finally sees bad      
             |      |                | + censor users, kills for IP | Say: Who cares...?   | Give 5 greatness award
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
 His company has some serious problems, and he is LITERALLY having people murdered... I have SUPPORTING EVIDENCE.  
+[Sailing]: https://drive.google.com/file/d/1nkDurUU5RNBz6Icij2b9BMaqudh-EzGq
 ==================================================================================================================
 S. Pichai   | 10+  | Doing fine...? | + work w/ FB to CENSOR users | Say: Who cares...?   | Encouraged/supported  
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-I don't think he's a bad guy, but his company is DEFINITELY censoring my content, has for years. No transparency. 
+
+I don't think he's a bad guy, but his company was DEFINITELY censoring my content for years.
+I think my RECENT content has been viewed more favorably by the company...
 ==================================================================================================================
 Jeff Bezos  | 10+  | Genius, but... | + eavesdrops on customers    | Say: Oh well, bro    | Never even considered 
             |      |  not on the    | + William Shatner → space    | Say: That's whats up | Give 5 greatness award
             |      |   level of     | + threatened Leo DiCaprio    | Say: LOL             | Say: We would've, too 
             |      |   Elon Musk    | + makes a fool of himself    | Say: Oh well, bro.   | Remain indifferent    
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
 McKenzie left him for a GOOD reason, he's like a KID in a candy shop, has occasional (ego/short sightedness).     
 ==================================================================================================================
 Elon Musk   | 100+ | Genius, Role   | + Paypal, pal-paying-program | Say: Good            | Give greatness award  
@@ -29949,48 +30334,53 @@ Elon Musk   | 100+ | Genius, Role   | + Paypal, pal-paying-program | Say: Good  
             |      | he's in a race | + starts Boring company      | Say: Awesome         | Encouraged/supported  
             |      | by himself     | + outright buys Twitter      | Say: Awesome         | Encourage/supported   
             |      |                | + writes jokes on Twitter    | Say: Grumble 7 times | They don't get it yet 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Coolest dude on this list, mankind's BEST hope at avoiding an (ELE/extinction level event, where EVERYTHING DIES.)
+
+Probably the coolest dude on this list, (that's sayin' somethin' too...) 
+Probably mankind's BEST hope at avoiding an ELE/extinction level event.
+[Tesla Model S Plaid @ Nurburgring]: https://youtu.be/Ujp3q_aryRA
+[Starship SN10]: https://youtu.be/ODY6JWzS8WU
 ==================================================================================================================
-BOB LUTZ    | 5+   | Senior citizen | + ran GM for 40-50 yrs.      | Commend that         | Give 1 greatness award
+Bob Lutz    | 5+   | Senior citizen | + ran GM for 40-50 yrs.      | Commend that         | Give 1 greatness award
             |      |                | + shits pants @ 1045AM daily | Say: Seems unlikely  | Never even considered 
             |      |                | + tries to insult Musk/Tesla | Say: Oh well...      | They don't get it yet 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Established the most profitable, low-quality standards at General Motors for 50 consecutive years... *clap clap*  
+
+Established the most profitable, low-quality standards at General Motors for 50 consecutive years... *clap clap*
 ==================================================================================================================
 Tim Cook    | 8+   | Gayest guy in  | + Sells 0-day vuln. to NSO   | Say: 0-day vuln...?  | Not give a flying fuck
             |      | Cupertino      | + Obstruct just. → iPhone 8+ | Say: That's a CRIME. | Encouraged/Supported  
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Apple has lost its core values, cause the gayest guy in Cupertino LOVES gag-orders. RIP Steve Jobs.               
+
+Apple has lost its core values, cause the gayest guy in Cupertino LOVES gag-orders. RIP Steve Jobs.
 ==================================================================================================================
 R. Nixon    | 10+* | Disgrace       | + involved in Watergate      | Investigate that     | Have him impeached    
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
 DEFINITELY a cocksucker/hypocrite, inspired GWB to take things to the next level with the USA-PATRIOT Act of 2001 
 ==================================================================================================================
 William     | 10+  | Did great job  | + get blowjob in Oval Office | Investigate that     | ALMOST impeached...   
 Clinton     |      |                | + Only pres w surplus budget | Say: Is that good?   | Wonders if that's BAD 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Earned my respect, definitely at the top of list of modern presidents that did a good job, thanks to his wife.    
+
+Earned my respect, definitely at the top of list of modern presidents that did a good job, thanks to his wife.
 ==================================================================================================================
 Hillary     | 10+  | Wildcard,      | + leaks classified materials | Investigate that     | Invoked privileges    
 Clinton     |      | changes        | + blacklist Monica Lewinsky  | Say: Oh well         | Remain indifferent    
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
 Varies day-to-day, despite many GOOD THINGS, is still responsible for a lot of SHITTY things, too.                
+[Hypocrisy 101]: https://youtu.be/rjyWKS1RePk
 ==================================================================================================================
 Andrew      | 8+*  | Disgrace       | + sexually harass 11+ women  | Investigate/allow it | Investigated, allowed 
 Cuomo       |      |                | + abuse auth./NYS resources  | Say: Oh well         | Ignored/ignored again 
             |      |                | + hand built Exit 3 on I-87  | Say: NO HE DIDN'T... | Extremely impressed   
             |      |                | + Malta Tech Park            | Say: Blown away      | Blown away into space 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Did plenty of good for the state, but should stop trying to fuck girls 1/3 his age.                               
+
+Did plenty of good for the state, but should stop trying to fuck girls 1/3 his age.
+[Douchebag]: https://drive.google.com/file/d/1conYSL_9y_oXdfC4Cqv_woXwG7junWI2
 ==================================================================================================================
 M. Cook Sr. | 1    | Fuck you, pal  | + invokes first amendment    | Say: Fuck you, pal.  | Say: Fuck you, pal.   
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Everyone says "Fuck you, pal" or, "It is, what it is, bro. Now fuck off, I've got more important shit to do."     
+
+Everyone says "Fuck you, pal" or, "It is, what it is, bro. Now fuck off, I've got more important shit to do."
 ==================================================================================================================
 "@)
  
-$Book.NewSection(8,"Control Program/Monitor",@"
+$Book.NewSection(8,"Excerpt","Control Program/Monitor",@"
 A man named Gary Kildall (https://en.wikipedia.org/wiki/Gary_Kildall) was the sole inspiration that caused 
 Microsoft to develop an operating system called Disk Operating System. I really don't exactly have the whole 
 entire story, maybe I have something wrong.
@@ -30017,7 +30407,7 @@ To say that Gary Kildall was NOT a very large influential character in the 80's,
 Donald Trump was one of the best presidents that ever lived…
 "@)
  
-$Book.NewSection(8,"Microsoft - Larger than Life",@"
+$Book.NewSection(8,"Excerpt","Microsoft - Larger than Life",@"
 Computers were PRETTY FUCKIN SLOW back then, and a lot of times people had to swap in a number of floppy disks
 to load up programs or really to do whatever with the computer.
 
@@ -30047,7 +30437,7 @@ property CP/M in order to conduct his deal with IBM, and gave Gary `$20,000 afte
 Here is why Mr. Gates FAILING to admit that, leaves a stain on his legacy... 
 "@)
  
-$Book.NewSection(8,"Intellectual Property Theft",@"
+$Book.NewSection(8,"Conjecture","Intellectual Property Theft",@"
 Intellectual property theft is a SERIOUS PROBLEM now. (← It's so serious, I had to write this entire book)
 I'm not going to say that I'm gonna stay upset with the guy for doin' that, cause obviously Kildall was seemingly
 careless with his IP. However, translate that problem to today. Now it's impossible to come up with ideas without
@@ -30073,7 +30463,7 @@ Well, they're gonna tell me to fuck off, they have U-turns to go sit at where th
 service. I can't treat all of them like that... but they seem to think they're smarter than I am.
 "@)
  
-$Book.NewSection(8,"Cool Factor",@"
+$Book.NewSection(8,"Conjecture","Cool Factor",@"
 Here's the REAL problem.
 
 If certain people LIKE you, then you're allowed to be cool to SOME degree. But, if a lot of people don't really 
@@ -30470,7 +30860,7 @@ documents he leaked. I'm not certain what's the most relevant or important docum
 "quick" rundown of our modern equivalent to a Colonial Minuteman, Edward "Paul Revere" Snowden...
 "@)
  
-$Book.NewSection(8,"Excerpt [~] Edward J. Snowden (Expert Cybercommando)",@"
+$Book.NewSection(8,"Excerpt","Edward J. Snowden (Expert Cybercommando)",@"
 
 Edward J. Snowden | Expert Cybercommando/Wizard/Keyboard Warrior | https://en.wikipedia.org/wiki/Edward_Snowden 
 _______________________________________________
@@ -30615,9 +31005,10 @@ give a shit...? Oh. Maybe that's how he got in the position he's in. Superiors t
 1000 Justin Belleville's swapping cash from one drawer to another.
 "@)
  
-$Book.NewSection(8,"Relevant Details",@"
+$Book.NewSection(8,"Conjecture","Relevant Details",@"
 As for General McKenzie, that dude has spent his entire life being in the military
-Marine Corps from 1979 to 2022, 43 years in total. If anyone's a fuckin' patriot, he sure as hell is. 
+Marine Corps from 1979 to 2022, 43 years in total. If anyone's a fuckin' patriot, he sure as hell is.
+
 Fuckin' dude has probably had his fair share of crawling under barbed wire in the mud, while being shot at, barely 
 making it out of enemy territory, alive... by the skin of his teeth at times, probably...
 
@@ -30673,7 +31064,7 @@ explanation, is that they were all paid to keep their fuckin' mouths shut. OooOo
 But, my mother will argue with me because she thinks that there's NO WAY that's possible. (← FALLACY ALERT)
 She's never ONCE looked in this box of documents my father left behind. Neither has anyone else in my family.
 The box of documents, I tried to show the (5) police officers that were at my house on:
-07/14/20 | SCSO-2020-040845 | (NYSP 2G62/Deputy Messines Jr.), Anthony Agresta, Paul Zurlo, NYSP 2G36, and NYSP 2G32
+07/14/20 | SCSO-2020-040845 | (NYSP 2G62/Deputy MISSENIS Jr.), Anthony Agresta, Paul Zurlo, NYSP 2G36, and NYSP 2G32
 The (1) dude from the NYSP had a conversation with me that went like this:
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -30711,7 +31102,10 @@ Setting themselves up for disappointment without hesitation.
 However, some people sat there and thought, "Well, if they did it this ONE time... how many OTHER times have 
 they done it...?" Hm. It's a great question. Not that many people really stop and ASK it, though.
 General McKenzie took accountability for a mistake that occurred where 7 children and 3 adults were killed,
-after the Kabul https://en.wikipedia.org/wiki/2021_Kabul_airport_attack
+after: 
+_____________________________________________________________________________________________
+| 08/26/21 | Kabul airport attack | https://en.wikipedia.org/wiki/2021_Kabul_airport_attack |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 I really hope that OTHER PEOPLE follow that example he set, where if someone made a fuckin' mistake...?
 Own up to it IMMEDIATELY. Sweeping it under the rug, pretending like it doesn't matter...
 ...nah, our BROKEN SOCIETY HAS CAUSED PEOPLE TO RATIONALIZE THAT, AND IT FUCKIN' DEFINITELY DOES MATTER.
@@ -30719,8 +31113,9 @@ Own up to it IMMEDIATELY. Sweeping it under the rug, pretending like it doesn't 
 Here's how it works.
 Someone orders a drone strike, and it kills a shitload of kids in Afghanistan. 
 Not a room full of Afghan SOLDIERS... but an entire school full of kids. Carelessness.
-THEN, the demon flies around the world, and causes KARMA to unfold as a gunman breaking into a school, whereby
-killing 19 kids and 2 teachers. But, amazingly, the numbers continue to pile up.
+
+THEN, the demon flies around the world, and causes KARMA to unfold as a gunman breaking into a school, 
+whereby killing 19 kids and 2 teachers. But, amazingly, the numbers continue to pile up.
 
 Most people don't bother to make that CORRELATION, as they never ask themselves a single question along the 
 lines of: "Has this happened BEFORE or SINCE...?" 
@@ -31009,7 +31404,7 @@ was mad cool and they could turn a profit off of it...? Then fuck me, AND my ide
 audio recording with such a COOL idea, and it wasn't even mine anymore once I stated it into the microphone. 
 "@)
  
-$Book.NewSection(8,"Original [~] The Uncanny Valley",@"
+$Book.NewSection(8,"Story","The Uncanny Valley",@"
 Go on an adventure with me.
 Step into the uncanny valley.
 You're uncertain what this adventure leads to...
@@ -31075,7 +31470,7 @@ To elaborate, it's a warning.
 Basically, intellectual property theft, but I mean, fuckin' way worse than that.
 "@)
  
-$Book.NewSection(8,"Injustice",@"
+$Book.NewSection(8,"Conjecture","Injustice",@"
 JULIEN ASSANGE's entire purpose with WikiLeaks was to be a modern Paul Revere. 
 He wasn't doing all this shit to be an annoying asshole trying to be correct all the time... nah. 
 He saw some people doing evil shit. 
@@ -31425,7 +31820,7 @@ Here's a look at General McKenzie's (resume/history)... it's worth noting that h
 Expendables movie with Sylvester Stallone. 
 "@)
  
-$Book.NewSection(8,"Excerpt [~] General Kenneth F. 'top-shelf commander' McKenzie Jr.",@"
+$Book.NewSection(8,"Excerpt","General Kenneth F. 'Top-shelf commander' McKenzie Jr.",@"
 Kenneth F. McKenzie Jr. | Birmingham, AL | USMC (top-shelf) General [Retired]
 _______________________________________________________________
 | 1979 : Naval Reserve Officers Training Corps at The Citadel |
@@ -31516,7 +31911,7 @@ Dude spent 43 years being a role model commander in the United States Marine Cor
 up his ass either, but it's a question that anybody should be asking…
 "@)
  
-$Book.NewSection(8,"Taking Accountability",@"
+$Book.NewSection(8,"Conjecture","Taking Accountability",@"
 This dude has integrity, he literally took accountability for the mistake AFTER the Kabul airport attack...
 ...and I think that if anyone's gonna have the moral high ground, sensibility, and capability to DO something,
 it might be this guy.
@@ -31603,11 +31998,10 @@ Someone IS bound to kill me at some point...
 Cause, somebody already tried (a few times I might add), and it's why I sorta lost my nerve.
 Can't ask the local sheriff cause he's "unable to be reached for comment"
 Can't ask Trooper Borden cause he will lie to my face about Pegasus/Phantom.
+
 Can't ask my family, cause ... they think I've lost my mind.
 Can't ask friends, cause they too... think I've lost my mind.
 Nobody lost their mind.
-
-\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 May 26th, 2020... 1200AM, it's the night I'm gonna remember until I kick the bucket.
 I really, don't understand why the government doesn't just take a lighter, and burn the constitution.
@@ -31674,10 +32068,12 @@ or redact that. Then nobody will know it was REAL treason, nah. Can't charge peo
 was classified... 
 
 So, tit for tat between suspected treasonists committing censorship against people like me...
-All while I write these stories about BOB LUTZ sitting in his favorite chair. 
+All while I write these stories about Bob Lutz, sitting in his favorite chair...
 "@)
  
-$Book.NewSection(8,"Skit [~] BOB LUTZ : Show us mortals how to run a car company",@"
+$Book.NewSection(8,"Skit","Show us mortals how to run a car company",@"
+Bob Lutz, "ran shit" at General Motors for like, 50 years.
+
 Sometimes he would grab some saran wrap right before he shit his pants in his favorite chair, 
 stick it under his ass... cause then it wouldn't seep out of his underwear. 
 
@@ -31755,9 +32151,10 @@ Engineer2 : Yeah man, each week, *waving hand around* you come in here...?
             
 That pissed Bob off, because, that guy was right.
 Bob didn't own the place at all. 
-He just ran shit. 
+He just ran shit.
+
 Whether it was down his leg...? 
-Or all over the company...? 
+Or, all over the company...? 
 The man knew how to run some shit, alright.
 
 Still, he had a habit of always wanting to know what the hell was going on a little too late.
@@ -31786,7 +32183,8 @@ Bob could draw a line anywhere...?
 
 After a while, the engineers started asking Bob for his input a lot more often. 
 Bob would come in, and just draw a line anywhere he fuckin' felt like.
-The engineers were actually surprised that the cars they kept building lasted as long as they did. 
+The engineers were actually surprised that the cars they kept building lasted as long as they did.
+
 They all thought for sure that people would die in them, or there would be recalls all the time... 
 ...or even that ALL OF THEIR VEHICLES WOULD BURN/LEAK OIL...
 Luckily, Bob had a knack for drawing a fuckin' line anywhere...
@@ -31805,6 +32203,7 @@ Like clockwork, every day, "Ah fuck. Not again."
 The pained look on everybody's faces, "Sir did you-"
 Bob ALWAYS got pissed off if somebody started asking him the most obvious question... 
 He would always snap back "You better not fuckin' finish that god damn sentence... I swear..." 
+
 They would put their hands up and be like "Ok. Sorry..."
 Once he waddled far enough away, they really couldn't contain the laughter. 
 He would get pissed off, but if he was far enough away, what the fuck can he really do about it...? 
@@ -31814,13 +32213,16 @@ He started bringing extra clothes with him to work.
 He really couldn't stand for this shit anymore, but couldn't do anything about it either.
 That really isn't that funny, CEO of General Motors was able to make short work of many of his competitors...
 ...but his recurring 1045AM nightmare, made short work of HIM every day.
+
 Determined to find some way around it, he had a routine he worked at for a long time.
 Once 1045AM came around, he shit his pants again, right on schedule.
       
 He was able to waddle back to his office, clean himself up, and then... 
 ...he didn't fuck around for the rest of the day.
+
 He might've fucked around for a fair amount of time before 1045AM, but AFTER 1045? 
 He'd clean himself up, and get back on his fuckin' horse.
+
 He could handle the rest of the day just fine.
 Cause when it came to building a lot of quality vehicles...? Nobody knew how to stop this fuckin' dude. 
 They were the best low quality vehicles money could buy... 
@@ -31855,7 +32257,7 @@ HIGHLY fuckin' likely. But, telling other people better be a damn good story, or
 Might be a total waste of effort.
 "@)
  
-$Book.NewSection(8,"Monarchy",@"
+$Book.NewSection(8,"Conjecture","Monarchy",@"
 The way I see it is like this, I can see clear as fucking day, that someone successfully converted America, 
 back into a monarchy, like, England. This time around, it wasn't some bullshit tea that Britain was forcing
 the people in America to pay for, now it's shitty vehicles that break a lot. Or, medicines that are dangerous 
@@ -31878,7 +32280,7 @@ so many of the things he highlighted... could very well be charged with crimes..
 GWB and Michael Hayden, among others. That is of course, IF everybody collectively gives a flying fuck.
 "@)
  
-$Book.NewSection(8,"Excerpt [~] Communist outpost in the heart of a 'democracy'",@"
+$Book.NewSection(8,"Excerpt","Communist outpost in the heart of a democracy",@"
 The problem is, I think that the part of America that USED to have integrity, died on September 11, 2001, 
 in Washington DC, and Manhattan. I am MOST POSITIVE, that BARACK OBAMA IS NOT THE GUY that I should be MAD at,
 because EDWARD SNOWDEN hasn't been given a trial. 
@@ -31887,7 +32289,7 @@ The Department of Homeland Security, will not allow that to happen if he comes b
 allowed back into the country. Cause, the ONLY person, that happens to be the MOST IMPORTANT GUY... 
 ...that EVERYBODY should be upset with, is George W. Bush.
 
-DHS basically does the same thing to GWB that Hannity does to Murdock, from what I can tell. 
+DHS basically does the same thing to GWB that Hannity does to Murdoch, from what I can tell. 
 GWB might say "Nah, they don't." But, he's lied before...
     
 Snowden was attempting to tell people that there's something SERIOUSLY fucking wrong, with the direction 
@@ -31902,10 +32304,10 @@ They can for a fair amount, but then, talking about what they read...?
 
 It's too hard because a lot of people are still plugged into society, they think: 
 ________________________________________________________________________________________________________________
-| commercials are cool | Murdock would never force Hannity to suck his dick | Lutz didn't shit his pants at GM |
+| commercials are cool | Murdoch would never force Hannity to suck his dick | Lutz didn't shit his pants at GM |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 But, commercials are meant to program people into buying some shit, even if you don't buy whatever it is.
-Murdock probably doesn't FORCE Hannity to suck his dick at all, since he does it WILLINGLY.
+Murdoch probably doesn't FORCE Hannity to suck his dick at all, since he does it WILLINGLY.
 BOB LUTZ prioritized making huge profits off of vehicles designed to last (5) years or less...
 ...over NOT having a serial, every-day, episode of pooping in his pants.
 
@@ -31996,7 +32398,7 @@ Korol never said anybody had some jizz-on-the-chin, it's just a colorful metapho
 A visually stunning, white, sticky, gooey metaphor...
 "@)
  
-$Book.NewSection(8,"Colorful Metaphors (1)",@"
+$Book.NewSection(8,"Conjecture","Colorful Metaphors (1)",@"
 Many of the girls I went to school with, even some of the teachers at Shenendehowa Central School district... 
 ...they might've had SOME jizz-on-the-chin here or there...
 ...but not nearly as much as the President of the United States, George W. Bush...
@@ -32168,7 +32570,7 @@ And from what I've seen, they don't like it when someone calls them out in an al
 Might even look 'accidental'...
 "@)
  
-$Book.NewSection(8,"Skit [~] Jeopardy! Champion, Ken Jennings",@"
+$Book.NewSection(8,"Skit","Jeopardy! Champion, Ken Jennings",@"
 Jeopardy! → Alex Trebek → Merv Griffin → Ken Jennings → 74 consecutive wins → `$4,522,700
 Ken Jennings probably isn't related to the late news anchor, Peter Jennings.
 
@@ -32214,7 +32616,7 @@ Griffin : Alex, chill out dude.
           I've got so much money, there's no need to get pissed at Ken Jennings.
 "@)
  
-$Book.NewSection(8,"Colorful Metaphors (2)",@"
+$Book.NewSection(8,"Conjecture","Colorful Metaphors (2)",@"
 Jizz-on-the-chin, is actually a metaphor, to be clear.
 The girl blowing me at school, isn't a metaphor... she was cool with havin' a smidge of jizz-on-the-chin. 
 No big deal.
@@ -32369,7 +32771,7 @@ that they're not ignoring what I'm writing, and just jumping to the conclusion t
 EVER LIE TO PEOPLE... because that's moronic. 
 "@)
  
-$Book.NewSection(8,"Excerpt [~] Presidents that have lied",@"
+$Book.NewSection(8,"Excerpt","Presidents that have lied",@"
 It's time to whip out the whole "Table of Presidents that have lied"
 ______________________________________________________________________________________________________________________
 |     [NAME]        [TERM]       [ACTION]                        [FALSE STATEMENT ISSUED TO PUBLIC]                  | 
@@ -32441,7 +32843,7 @@ But- not Andrew Cuomo. Ooooohhh no. It's why he's not the GOVERNOR anymore.
 I'm gonna leave that subject now.
 "@)
  
-$Book.NewSection(8,"Architects & Engineers for 9/11 Truth",@"
+$Book.NewSection(8,"Lesson","Architects & Engineers for 9/11 Truth",@"
 A lot of people probably don't know who Robert Korol is.
 _____________________________________________________________________________
 | Robert Korol | https://www.eng.mcmaster.ca/civil/people/faculty/bob-korol |
@@ -32488,7 +32890,7 @@ I'm layering in some humor and it's gonna fall flat on some people, because mayb
 respect people who lie. Not people that tell the truth... nor make people laugh, but rather...
 "@)
  
-$Book.NewSection(8,"When the government goes too far",@"
+$Book.NewSection(8,"Conjecture","When the government goes too far",@"
 "Woe to You Oh Earth and Sea…
 For the Devil sends the beast with wrath, because he knows the time is short
 Let him who have understanding reckon, the number of the beast…
@@ -32649,7 +33051,7 @@ They don't have any intention of getting back to you in either case.
 It's better than assaulting people.
 "@)
  
-$Book.NewSection(8,"Who do they go after? (1)",@"
+$Book.NewSection(8,"Conjecture","Who do they go after? (1)",@"
 Here's the bottom line. 
 They will not waste their effort going after a drug dealer unless they are REALLY starting to piss them off. 
 Unless the dealer was someone really important like Richard "Dick Tackler" Sackler. 
@@ -32795,7 +33197,7 @@ So, maybe I'll start the (CCTF/Cybercommando Coalition Task Force), and we'll be
 Or better yet, maybe it's time to talk about the (IC3/Internet & Computer Crime Cybercommando Task Force). 
 "@)
  
-$Book.NewSection(8,"Skit [~] IC3/Internet & Computer Crime Cybercommando Task Force",@"
+$Book.NewSection(8,"Skit","IC3/Internet & Computer Crime Cybercommando Task Force",@"
 That isn't the real name for this band of misfits that are essentially an entire division of the (Federal) 
 Bureau of Investigation. I've been writing a number of stories about so many other government agencies…? Heh.
 
@@ -32974,7 +33376,7 @@ IC3 : Well, Pavel is a Russian spy.
       They're dangerous.
 "@)
  
-$Book.NewSection(8,"Who do they go after? (2)",@"
+$Book.NewSection(8,"Conjecture","Who do they go after? (2)",@"
 So, IC3 isn't exactly the Internet & Computer Crime Cybercommando Task Force… 
 …but with enough greasing of the wheels, maybe it COULD be.
 The next best thing would be to enlist many of the people that work at IC3 that wanna get their hands dirty.
@@ -33420,7 +33822,7 @@ In some cases, it's literally BEING A (MAFIOSO/FRAMER).
 That's actually the reason why I keep saying that the police at the CLIFTON PARK PUBLIC SAFETY BUILDING…
 …they're dirty. Are they ALL dirty…? No, they're not. I've written elsewhere in the material who's clean.
 
-Messines, Bosco, Ruffas, they are mafiosos and they are highly corrupt.
+MISSENIS, Bosco, Ruffas, they are mafiosos and they are highly corrupt.
 
 As for Shenendehowa, well… the 13 years I went there wasn't ALL hell, but some people MADE it hell for me. 
 Because they probably don't care if our government committed treason that day.
@@ -33588,7 +33990,7 @@ At that point I begin to consider that person doesn't realize that I'm correct..
 So then the logic board has to be whipped out.
 "@)
  
-$Book.NewSection(8,"Logic Board",@"
+$Book.NewSection(8,"Lesson","Logic Board",@"
 Something violating the Constitution → Is illegal → Isn't supposed to happen → Happens anyway → Someone 
 hears all that → They find it hard to believe → It's accurate → They assume somebody should do something 
 about that → they fuck off.
@@ -33669,7 +34071,7 @@ Then, the kid winds up dead from an overdose.
 
 If this is America, and it still runs off of the Constitution... where is the line that needs to be crossed 
 before this son of a bitch is served his overdue justice...? Is justice all about dollar signs...?
-Is there no stack of cash too large for Murdock to tape up and throw at somebody, where they're not going to 
+Is there no stack of cash too large for Murdoch to tape up and throw at somebody, where they're not going to 
 allow themselves to be bought...? If people don't understand what questions they SHOULD be asking, then I
 have to show people how to do that. Yeah, I'm gonna annoy some people. Oh well. I'm not asking for permission
 to change the course of history... I'm just gonna keep going until I can't go anymore.
@@ -33788,12 +34190,12 @@ _________________________________________________________________________
 | Allows RUPERT MURDOCH to unload many jizzlings in his mouth every day |
 |                                                                       |
 | Hannity: Gotta go to work, honey.                                     |
-| Murdock: Sean...?                                                     |
+| Murdoch: Sean...?                                                     |
 |          Don't ever fuckin' call me honey, ever again...              |
 |          ...you got that?                                             |
 | Hannity: Sorry.                                                       |
 |          I won't.                                                     |
-| Murdock: Good, you better not.                                        |
+| Murdoch: Good, you better not.                                        |
 |          Tell people climate change doesn't exist.                    |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Look. Everybody has something they would prefer NOT to talk about...
@@ -34036,7 +34438,7 @@ documents, because... what the hell else can I do? If I offer to assault them fo
 might wake up later and realize how stupid that was... but then I'm gonna get myself in trouble.
 "@)
  
-$Book.NewSection(8,"Changing Direction",@"
+$Book.NewSection(8,"Conjecture","Changing Direction",@"
 I didn't go around being a miserable prick throwing my intellect around, insulting random people PRIOR, to the 
 night I was almost killed. In fact, maybe I should elaborate because I did do that after I noticed that an 
 employer owed me like `$4K. Somehow, I was expected to do a job, but- I was owed a lot of money. 
@@ -34118,7 +34520,7 @@ I'm going to cover the events of (06/13/20 → 06/22/20), though the first entry
 …(06/10/20 → 06/13/20).
 "@)
  
-$Book.NewSection(8,"June 13th, 2020 (1)",@"
+$Book.NewSection(8,"Excerpt","June 13th, 2020 (1)",@"
 I was in a verbal altercation with my mother and stepfather. 
 
 I'm going to tangent off to events BEFORE June 13th, 2020, so that when I explain what happened that day…? 
@@ -34432,7 +34834,7 @@ He says "I don't know what the password is."
 Oh. So, he doesn't know his password... Huh.
 "@)
  
-$Book.NewSection(8,"Skit [~] Kristin Johnson",@"
+$Book.NewSection(8,"Skit","Kristin Johnson",@"
 My kid just lied to me, for the 7 billionth time.
 Guess how I was able to get my sons password to his account...?
 It's cause I called ELIZABETH RILEY.
@@ -34564,7 +34966,7 @@ Realistically, I have to phrase it just like that...? Cause that happens to be t
 I've tried to get Oliver Robinson's attention too, but what the hell man...? 
 "@)
  
-$Book.NewSection(8,"June 13th, 2020 (2)",@"
+$Book.NewSection(8,"Excerpt","June 13th, 2020 (2)",@"
 As for the DAY OR TWO PRIOR to June 13th, 2020, when I walked to IMS, and realized I had to go back home…
 …as soon as I got back to the house to grab the laptop, I asked my son for his account and password. 
 He suddenly couldn't remember his password.
@@ -34990,7 +35392,7 @@ Ya know...?
 Anyway, I was stuck there for a couple more days, and I got out on the 16th.
 "@)
  
-$Book.NewSection(8,"June 16th, 2020",@"
+$Book.NewSection(8,"Excerpt","June 16th, 2020",@"
 When I was released, I went home, and that's when things started to get progressively worse, and FAST.
 You see, I didn't realize that every single time I said words to people...? They thought that I suddenly 
 learned how to speak Chinese, and THAT'S why they couldn't understand. Everybody thought I was speaking a 
@@ -35122,7 +35524,7 @@ view mirror. As soon as we "broke" this little staring contest, he pulled back o
 
 Fake Cop : Fuck it… I'm not turning LEFT into Parkwood Plaza. 
            Instead...?
-           I'm gonna fuckin' swing around in Astoia Vucetic's driving range property parking lot. 
+           I'm gonna fuckin' swing around in Ostoja Vucetic's driving range property parking lot. 
            Like a god damn ninja bro. 
            Just like RYAN WARD taught me to do.
            Dude's tougher than fuckin' nails...
@@ -35245,7 +35647,7 @@ me contained. I'm not exaggerating that.
 Therefore, I'm being censored because I'm embarrassing people with my first amendment right to free speech. 
 "@)
  
-$Book.NewSection(8,"June 17th, 2020",@"
+$Book.NewSection(8,"Excerpt","June 17th, 2020",@"
 I recorded a video of my attempt to extract some files from my secondary storage drive that I am well aware, had
 some type of "flag" in it, which means that if a specific file or folder is flagged, it will cause the folder to 
 load its content more slowly than it normally would. That's cause a cocksucker flagged it, remotely.
@@ -35469,7 +35871,7 @@ Guy4 : Nah the man has a way of knowing wasn't happening behind him, in front of
        He's basically like Batman.
 "@)
  
-$Book.NewSection(8,"June 18th, 2020 (1)",@"
+$Book.NewSection(8,"Excerpt","June 18th, 2020 (1)",@"
 Back in the early 1900's, they used to have these Sherlock Holmes-like dudes, wearin' a special hat, smokin' 
 on a pipe. Long ass trench coats for the rain. Now, look at what they've got. They've got cybercommandos that 
 basically do their job for em. Once you get a few cybercommandos on deck, your job becomes a HELL OF A LOT
@@ -35496,7 +35898,7 @@ attempted murder.
               ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(8,"Feiden Appliance Center",@"
+$Book.NewSection(8,"Excerpt","Feiden Appliance Center",@"
 I was looking for ANY EVIDENCE WHATSOEVER of (SCSO-2020-028501) the (record/interaction). 
 I wouldn't get this information until speaking to (SCSO Captain Jeffrey Brown) in February 2021. 
 So basically, I requested records, and, I didn't get the main record I was looking for. 
@@ -35695,7 +36097,7 @@ JAMES LEONARD COMMITTED. Ya know...? Ignoring the fact that I called 911 multipl
 right ahead and arrest me for a fuckin' kayak strap, sorry for trying to smack some sense into JAMES LEONARD.
 "@)
 
-$Book.NewSection(8,"Shenendehowa District Office",@"
+$Book.NewSection(8,"Excerpt","Shenendehowa District Office",@"
 I wrote a pretty long winded document or two, and left them with the superintendent at 5 Chelsea Place.     
 I had already left numerous documents there. I don't know if the guy has been reading them, or not. But- 
 there's a reason why I don't go to the police. It's cause I had evidence of 2 dudes trying to murder me
@@ -35968,7 +36370,7 @@ Me      : If everybody thinks that, then that is what makes society as flawed as
 
 "@)
 
-$Book.NewSection(8,"Center for Security",@"
+$Book.NewSection(8,"Excerpt","Center for Security",@"
 I wanted to get the footage for the 911 call that I made in front of the camera here. I had already been to 
 this place beforehand on 5/27/20, and the same blonde haired kid came up to me, and had this kinda dead-eyed 
 look when I asked him about it. He immediately asked me if I had a badge, and I don't. So, I said that and 
@@ -35987,7 +36389,7 @@ gotten posted on Facebook/Reddit. I'm dead serious. I think they were actually s
 The truth is, even if they were...? They're not gonna be obvious about it at all.
 "@)
 
-$Book.NewSection(8,"AAA Clifton Park",@"
+$Book.NewSection(8,"Excerpt","AAA Clifton Park",@"
 I went to this place as well, because on the night of the attack, I tried to leave some type of evidence that
 I was here. As for THIS date, I was at this location for approximately 15 minutes or so.
 
@@ -36010,7 +36412,7 @@ The people at this place were totally cooperative, and didn't really provide any
 I don't think they had the footage I needed.
 "@)
 
-$Book.NewSection(8,"Computer Answers",@"
+$Book.NewSection(8,"Excerpt","Computer Answers",@"
 So, I was thinking about how I had this incident where 2 dudes committed a ransomware attack like a couple 
 years before, and how this dude Dwayne, literally tells people that he can easily beat my numbers. 
 
@@ -36048,7 +36450,7 @@ That's a victory for me, bro. Nah, I just... came, cleaned house, and took off.
 Like a miracle that just stopped by, and had to go. Oh well, bro.
 "@)
 
-$Book.NewSection(8,"Trickshot Billiards/Wicked",@"
+$Book.NewSection(8,"Excerpt","Trickshot Billiards/Wicked",@"
 Then, I went to Trickshot Billiards, with a few items that I found on the side of the road since I walk around 
 town quite a lot. The cool thing is, even Judge James Hughes walks around town quite a bit. The literal town
 justice. The end all, be all, of awesome local judges. 
@@ -36098,7 +36500,7 @@ And that was that. Haven't really been back there ever since. It used to be one 
 But I think I just outgrew it.
 "@)
 
-$Book.NewSection(8,"Boomer-McCloud Plaza",@"
+$Book.NewSection(8,"Excerpt","Boomer-McCloud Plaza",@"
 So, I had a feeling that the DUDE DRIVING AN SUV that said 4130 on the plate, WAS ACTUALLY THE GUY WHO I
 CALLED... "SHOULDER-PHONE COP". I called him shoulder-phone cop (AKA "Scrotum Chin Pirrone", or "Scrotes") 
 cause this dude was actually the most AMAZING cop I've ever seen in my entire life... 
@@ -36213,7 +36615,7 @@ A highly advanced expert with technology...
 You really cannot come up with a FAR MORE INTERESTING STORY… than this, pal.
 "@)
 
-$Book.NewSection(8,"Walmart",@"
+$Book.NewSection(8,"Excerpt","Walmart",@"
 Shortly after the showdown between myself, and Mr. Catricala, (who happens to be alive, and well, believe it or   
 not...) SCSO Clayton Brownell felt like coming right up on me near Walmart, and nearly scaring the shit outta
 me. He got out of his SUV/vehicle, says "HEY MICHAEL~!", and then immediately has his hand over his holstered 
@@ -36243,7 +36645,7 @@ And that is when I saw a brigade of police cruisers, barreling down Route 9.
 Obviously, they needed about 6 of these guys to intercept a (1) man wrecking crew like myself...
 "@)
 
-$Book.NewSection(8,"Flashback [~] GT Toys/Trooper Borden/Clayton Brownell",@"
+$Book.NewSection(8,"Flashback","GT Toys (Trooper Borden + SCSO Clayton Brownell)",@"
 I attempted to get all the way through the parking lot, but I failed, because then all of a sudden, there's
 the man, the myth, the legend... It's Trooper Borden. Here's the thing about Trooper Borden...
 
@@ -36696,7 +37098,7 @@ Me       : The first amendment was written along with several others, just so yo
            You oughtta read the constitution sometime.
 "@)
  
-$Book.NewSection(8,"June 18th, 2020 (2)",@"
+$Book.NewSection(8,"Excerpt","June 18th, 2020 (2)",@"
 After Trooper Borden and crew decided to kick me loose, I walked all the way to my friend Samantha Caine's 
 house. She apparently, wasn't home. While I was walking there, I plugged the BATTERY back into the LOGIC 
 BOARD, and then all of a sudden... Whoa. A kid that I saw at my friend's house the night prior...?
@@ -36710,7 +37112,7 @@ I left a quarter behind her mailbox, to leave some type of clue that I was, in f
 Walked all the way back home...
 "@)
  
-$Book.NewSection(8,"June 19th, 2020",@"
+$Book.NewSection(8,"Excerpt","June 19th, 2020",@"
 At some point in the day, a woman named LAURA HUGHES showed up, knocking on the door.
 She seemed to have such GENUINE CONCERN about me almost being murdered... that she made no mention of it.
 She asked to speak with me, so I went and spoke to her outside at the table.
@@ -36848,7 +37250,7 @@ how many people worked together and didn't have their fuckin' facts straight... 
 like a long list of morons. 
 "@)
  
-$Book.NewSection(8,"June 20th, 2020",@"
+$Book.NewSection(8,"Excerpt","June 20th, 2020",@"
 
 Father's Day | Asked my mother for a ride to my aunt Nancy's house. She said "Nah", so I wound up walking the 
 entire way from Clifton Park → Menands → New Salem | Why...? Uh, because I still have the same suspicion NOW, 
@@ -37070,7 +37472,7 @@ Then, you'll never believe how much more compelling all of this BECAME after she
 Trooper Borden. Fucked it ALL up for ya...
 "@)
  
-$Book.NewSection(8,"June 21st, 2020",@"
+$Book.NewSection(8,"Excerpt","June 21st, 2020",@"
 First thing I did when I woke up, was to knock on the door to either my aunt Cindy's or Nancy's door.
 As soon as I managed to wake up, I looked in the DIRT for where I WROTE the license plate NYS/DVA-2450,
 but I really could not read it at all. I still remembered the plate number from the day before, I chanted
@@ -37214,7 +37616,7 @@ Cool...? That's what I've been saying for over 2 years now...? Did I go around s
 05/26/20...? Nope. I didn't. That's why I keep saying over and over, that some people are fuckin' stupid.
 "@)
  
-$Book.NewSection(8,"June 22nd, 2020",@"
+$Book.NewSection(8,"Excerpt","June 22nd, 2020",@"
 My aunt Nancy wound up driving me home. Wish my mother was as bright as she is, cause this woman actually 
 sounds smart when she talks. You can tell someone is smart by the way they ask COMPLEX QUESTIONS, and 
 provide RELEVANT STATEMENTS that fall in line with the direction of the conversation, so if this person 
@@ -37329,7 +37731,7 @@ Me     : So, you are REFUSING to run a suspects PLATE NUMBER, in front of ME, an
 Borden : Yeah.
 "@)
  
-$Book.NewSection(8,"Aftermath",@"
+$Book.NewSection(8,"Conjecture","Aftermath",@"
 Over time, I just started to drop the idea that I have to be nice to people. 
 Cause, when I'm nice, people will do what Trooper Borden did on June 18th, 2020 @ GT Toys. 
 Lying to my face.
@@ -37846,7 +38248,7 @@ Somebody might say "That's fuckin impressive." No shit.
 Dude ran Tesla WHILE conceptualizing this fuckin' thing, all while BOB LUTZ ran shit down his leg.
 "@)
  
-$Book.NewSection(8,"Smarter People Exist",@"
+$Book.NewSection(8,"Conjecture","Smarter People Exist",@"
 I'm gonna segue here, cause, I have more important shit to say, then telling a bunch of people, that smarter 
 people exist... 
     
@@ -38314,7 +38716,7 @@ They didn't understand, that I will tear a human being apart when I'm ready to d
 But sometimes I have to stop myself from thinking about being that intense.
 "@)
  
-$Book.NewSection(8,"Intensity",@"
+$Book.NewSection(8,"Lesson","Intensity",@"
 At some point, I have to curtail what was said cause I know someone will intentionally misunderstand what 
 I wrote. It's like this... Innocent people that aren't doing something stupid, they have no reason to be 
 worried about me. The people that think they are fuckin' dangerous, they probably know that I am on their 
@@ -38410,7 +38812,7 @@ Who gives a shit...? I do, believe it or not.
 But, somebody felt like it was best to slander me, or put me in a fuckin' bubble, and totally ignore me.
 "@)
  
-$Book.NewSection(8,"Turning the screws",@"
+$Book.NewSection(8,"Application","Turning the screws",@"
 If    SEAN HANNITY sucks RUPERT MURDOCHs' dick,                                      who gives a shit? Nobody.
 If        Ted Cruz gets fucked in the ass by Exxon Mobil,                            who gives a shit? Nobody.
 If Dwayne Coonradt gets killed by some Russian kids,                                 who gives a shit? Nobody.
@@ -38647,7 +39049,7 @@ Ted    : *snaps back* Listen pal, I worked my ass off to get all this.
 Nobody really knows what he means by that statement, because it's like double-speak or something.  
 "@)
  
-$Book.NewSection(8,"Narrative",@"
+$Book.NewSection(8,"Assertion","Narrative",@"
 All things considered, I should tell Daniel Pickett, sorry for being a douchebag.
 Yeah, Dan Pickett has some friends that can do what I feared the most.
 
@@ -39059,7 +39461,7 @@ I wouldn't say they're morons, if they weren't.
 However, someone's gonna have a hard time digesting the fact that there are plenty of them on their team.
 "@)
  
-$Book.NewSection(8,"Hiding Guilt (1)",@"
+$Book.NewSection(8,"Conjecture","Hiding Guilt (1)",@"
 When I record footage of something like that, and try to show it to them...? 
 ...it's like I'm trying to force my dog to look at a pile of shit he just left on the floor...
 ...cause he couldn't hold it, like BOB LUTZ, former director of GM who shit his pants everyday for 50 years.
@@ -39238,7 +39640,7 @@ Ya know, imagine that...? Is that how NICHOLAS DINOVA and PAUL AMATO managed to 
 
 Yeah. 
 It is. 
-You would have to be as fucking stupid as TROOPER RUFFAS or MESSINES, or BOSCO, to not understand what I'm saying.
+You would have to be as fucking stupid as TROOPER RUFFAS or MISSENIS, or BOSCO, to not understand what I'm saying.
 Because they are on the ILLEGAL CRIME MAFIOSO PAYROLL. SO IS MICHAEL FUCKING ZURLO.
 
 Fake cop car 8 minutes after I passed the bank, 6/16/20 ~ 2200 SCSO vehicle, 4184 SEDAN.
@@ -39259,7 +39661,7 @@ ________________________________________________________________________________
 | Side point |/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/|
 |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 | 06/28/22 - As far as I know, having THEORIES or IDEAS isn't illegal, nor unconstitutional, so when you're    | 
-| like me, spouting some of them off, and then TROOPER MESSINES or BOSCO have to have a conversation on the    | 
+| like me, spouting some of them off, and then TROOPER MISSENIS or BOSCO have to have a conversation on the    | 
 | side where they're not right in front of me. I have to assume that it's because they're discussing how to    | 
 | downplay the severity of the crime they're about to commit, like they did on 06/28/22.                       |
 |______________________________________________________________________________________________________________|
@@ -39368,12 +39770,12 @@ Me   : K, then...?
 Cop1 : THEN, I'm gonna tell ya to knock off the funny business, don't be a lame bastard...
        ...then you'll be free to go.
 Me   : Alright Mr. fuckin' Marty McFly from the future, who somehow knows what'll happen on 08/05/20...
-       ...what if RIGHT NOW DURING THIS INTERACTION, there just so happens to be DEPUTY MESSINES who is REPORTED 
+       ...what if RIGHT NOW DURING THIS INTERACTION, there just so happens to be DEPUTY MISSENIS who is REPORTED 
        as 2G62 but somehow he's wearin' an BLACK SCSO uniform, right...? 
        But he's reported in the interaction as NYSP.
        Black uniform, not gray. 
        He's alongside Paul Zurlo. 
-       Paul and MESSINES JR. are talkin' with my mother right now when this incident occurs. 
+       Paul and MISSENIS JR. are talkin' with my mother right now when this incident occurs. 
        It's DEFINITELY not Anthony Agresta, cause he's still standing right here. 
 AA   : Damn straight, I am. 
        That's me. 
@@ -39398,7 +39800,7 @@ Me   : TROOPER BORDEN has made a number of slip ups.
        06/18/20 is when I  first officially met this 'Robin'... 
 "@)
  
-$Book.NewSection(8,"Excerpt [~] Trooper Borden",@"
+$Book.NewSection(8,"Excerpt","Trooper Borden",@"
 BORDEN's (behaviors/responses) did not match a pattern where it caused any suspicion that he had ANY 
 involvement whatsoever, in the attack on 5/26/20. In short, he wasn't involved in the attack on 5/25-5/26 2020
 I am absolutely certain of that.
@@ -39431,7 +39833,7 @@ BORDEN → HERE'S SOME LEADS, BRO →
 _______________________________________________________________________________
 | #1) Date: 04/XX/20-05/XX/20           | Time: 10-11PM | Location: 1759 US-9 |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-- ASTOIA VUCETICS driving range property
+- Ostoja VUCETICS driving range property
 - I remember seeing a white SUV barreling into parking lot ~(APRIL/MAY) 20
 - As soon as it came onto the property, it immediately turned its lights off
 - SOMEHOW, my phone with NO SERVICE was giving this dude my GPS COORDINATES
@@ -39465,10 +39867,10 @@ ________________________________________________________________________________
 - as soon as I saw it, they started the vehicle, and drove away
 "@)
  
-$Book.NewSection(8,"Hiding Guilt (2)",@"
+$Book.NewSection(8,"Conjecture","Hiding Guilt (2)",@"
 Me   : Trooper Borden already SAW the PICTURES I took of Catricala's rear building, when he had to look through 
        my backpack at GT Toys on 06/18/20. I didn't know then, was that... ERIC CATRICALA was the guy in the 
-       WHITE SUV that was hunting me down on: 1) ASTOIA VUCETICS PROP. IN APRIL, 2) 06/20/20 NEW SALEM ROAD SOUTH
+       WHITE SUV that was hunting me down on: 1) Ostoja VUCETICS PROP. IN APRIL, 2) 06/20/20 NEW SALEM ROAD SOUTH
        CATRICALA FUNERAL HOME is DIRECTLY ACROSS THE STREET FROM COMPUTER ANSWERS. 
        I think that dude, just so we're clear on what dud I'm referring to...?
        It just so happens to be, NY State Assemblyman, ERIC CATRICALA.
@@ -39914,7 +40316,7 @@ Digital security, fuckface.
 You stick to driving your vehicle around, I'll stick to knowing what the fuck I'm talking about. Got it?
 "@)
  
-$Book.NewSection(8,"Asking the Accused",@"
+$Book.NewSection(8,"Conjecture","Asking the Accused",@"
 These guys don't like being put in check. It is literally that simple. 
 So if I tell them that Dwayne steals shit from customers and from software distributors, 
 ...that doesn't make sense to them... 
@@ -40074,7 +40476,7 @@ just say...
 We could've fuckin' avoided that whole disaster." -The police
 "@)
  
-$Book.NewSection(8,"Skit [~] Even a magic genie has limitations",@"
+$Book.NewSection(8,"Skit","Even a magic genie has limitations",@"
 That's why I tell people, so many people are morons.
 Some people aren't morons, but they're extremely rare.
 
@@ -40114,7 +40516,7 @@ Which means that I have to basically REPROGRAM people's sense of logic, and peop
 that... unless I explain parallels or analogies.
 "@)
  
-$Book.NewSection(8,"Exclusion",@"
+$Book.NewSection(8,"Lesson","Exclusion",@"
 Lets say that every single person, everything they ever said was a lie.
 Then the only way people would know for sure that they can trust what the hell's going on, is by ignoring 
 everything people say...
@@ -40439,7 +40841,7 @@ That motherfucker knows I cut his fuckin' phone line for a reason.
 Didn't say a word about that.
 "@)
  
-$Book.NewSection(8,"Verdict",@"
+$Book.NewSection(8,"Assertion","Verdict",@"
 Many companies (especially Facebook and Google), are probably using the USA-PATRIOT Act of 2001, to spy on 
 people. When I say "spy on people" what I mean is, literally watching what people do.
     
@@ -40510,13 +40912,13 @@ Function Chapter_8
 
 $Book.NewChapter("Chapter 8","The Rich Brat")
 
-$Book.NewSection(9,"Start",@"
+$Book.NewSection(9,"Lesson","Start",@"
 The "Rich brat", is someone that I intend to catch.
 The "Rich brat" just so happens to be, a serial killer working on behalf of the KGB/FSV/MI5 for Moscow/London. 
 Whether that (IS/IS NOT) the case, I'm going to cover a few topics of discussion.
 "@)
 
-$Book.NewSection(9,"Board of Possibilities",@"
+$Book.NewSection(9,"Application","Board of Possibilities",@"
 I'm throwing the above onto what I like to call the Board of Possibilities.
 The investigators at every police agency that exists, they do this too.
 They will literally stare at statements, pictures, documents, or timelines, in order to determine...
@@ -40545,7 +40947,7 @@ I'm going to list some things that I think this "rich brat" has in common with t
 associated already, AND, some of the things I've corroborated with other people in the community.
 "@)
  
-$Book.NewSection(9,"Clues",@"
+$Book.NewSection(9,"Lesson","Clues",@"
 The MOST important thing is, that I know for damn certain, that I caught these (2) guys on video attempting
 to murder me, and that they had their vehicles parked in places BEFORE the video started.
 
@@ -40629,7 +41031,7 @@ to murder me, and that they had their vehicles parked in places BEFORE the video
 - May have some CALENDAR APPOINTMENTS that YOU never set
 "@)
  
-$Book.NewSection(9,"Profile",@"
+$Book.NewSection(9,"Lesson","Profile",@"
 They are definitely dangerous, no question about it.
 These guys are dangerous for reasons that will be pretty difficult to recapture on video. 
 They are smart, otherwise they wouldn't be getting away with this over and over again.
@@ -40654,7 +41056,7 @@ However, they're not really all that bright if you apply PSYCHOLOGICAL MANIPULAT
 Then, they will EASILY reveal who they are.
 "@)
  
-$Book.NewSection(9,"Reviewing The Attack",@"
+$Book.NewSection(9,"Review","The Attack",@"
 SOMEONE with a small dick used (Pegasus/Phantom) because they felt like committing INTELLECTUAL PROPERTY 
 THEFT to ME. Intellectual property theft is basically when someone isn't as creative or intelligent as someone
 who comes up with their own original ideas, steals that persons ideas and then develops the shit out of them.
@@ -40687,7 +41089,7 @@ he does ALL of these things, but to some extent, this information can be DERIVED
 MANIPULATION.
 "@)
  
-$Book.NewSection(9,"Application of Psychological Manipulation",@"
+$Book.NewSection(9,"Application","Psychological Manipulation",@"
 Designing Facebook obviously involved smarter people than Mark. 
 
 He hired people that actually know what they're doing. Ever since then...? 
@@ -40996,7 +41398,7 @@ are SELECTIVELY concentrating on certain (KEY WORDS/TERMS). Now, some people mig
 ...and listen to it, and maybe they'll try to say that I sound like a lunatic...?
 "@)
  
-$Book.NewSection(9,"Allegation",@"
+$Book.NewSection(9,"Conjecture","Allegation",@"
 I'm pretty sure that I don't. I'm pretty sure that I clearly discuss some of my observations about:
 RUSSIANS ATTACKING ME, my EQUIPMENT, my SOCIAL MEDIA, etc.
 So, the allegation that I'm making, is that FACEBOOK's CEO, MARK ZUCKERBERG, works with RUSSIANS/BRITISH.
@@ -41014,6 +41416,7 @@ You have to be willing to DETECT THAT AT THAT TIME, and tell them to <insert som
 
 Because then you're putting them on the defensive by doing so. 
 This falls under PSYCHOLOGICAL MANIPULATION.
+
 They're doing that to ME in this recording.
 They're taking advantage of the fact that I'm literally telling them the truth, and I'm literally the 
 most intelligent person in that recording. They don't understand that, honestly. And, that's ok.
@@ -41026,6 +41429,7 @@ that caused my ENTIRE ARGUMENT, to collapse upon itself.
 
 Now, I used a lot of techniques in that recording, but I didn't apply everything I knew.
 Sometimes the MULTIPLE officers aren't there for PHYSICAL reasons, they're there for MENTAL reasons, too.
+
 Because, if 1 or 2 guys had been there...? I might've saved myself a lot of trouble and talked myself OUT
 of the scenario, which was basically "I have videos and evidence of someone attacking me, would you like to
 see some of it...?"
@@ -41042,19 +41446,24 @@ talking about AND has evidence... that they're used to causing people to just GI
 That is how bad the problem is.
 
 They weren't being assholes, up until they started injecting doubts and didn't even ask to look at evidence, 
-and nor do they EVER think to: call someone that can handle the case, like an FBI man. I asked them to do 
-just that. Why didn't they...? Oh yeah, it's because the FBI doesn't actually handle stuff unless you're a
-COMPANY like NFRASTRUCTURE, or a GUY like DANIEL PICKETT. Or, BRUCE TANSKI. Or, JOHN HOFFMAN. 
-Or, ERIC CATRICALA.
+and nor do they EVER think to: call someone that can handle the case, like an FBI man. 
+
+I asked them to do just that. Why didn't they...? 
+
+OH YEAH.... it's because the FBI doesn't actually handle stuff unless you're a COMPANY like NFRASTRUCTURE, 
+or a GUY like DANIEL PICKETT. Or, BRUCE TANSKI. Or, JOHN HOFFMAN. Or, ERIC CATRICALA.
+
 The local cops never ever think to call the FBI, if the thing happens to be too complex or complicated...
 The State Police don't do that EITHER.
+
 I'm sure if you catch the CORRECT OFFICER who has a set of MORALS that are INTACT, they will get you to 
 the right people... but even then, if they are ACTIVELY ASSISTING in getting a call escalated out of 
-their hands into a HIGHER JURISDICTION/CAPABILITY/SCOPE...? Then, they can just throw each ticket they
-receive into the garbage.
+their hands into a HIGHER JURISDICTION/CAPABILITY/SCOPE...?
+
+Then, they can just throw each ticket they receive into the garbage.
 "@)
  
-$Book.NewSection(9,"Incrimination",@"
+$Book.NewSection(9,"Lesson","Incrimination",@"
 I do in fact, believe that is what they do.
 I have called them before. 
 Good conversations with some of them sometimes, BUT- if something involves a PHYSICAL CRIME, and a 
@@ -41448,7 +41857,7 @@ Only problem is, that cop didn't realize they were the trash, and I'm the fuckin
 Cleanin' up the fuckin' trash, man.
 "@)
  
-$Book.NewSection(9,"Base Reality Certainty",@"
+$Book.NewSection(9,"Application","Base Reality Certainty",@"
 Actual criminals, they deserve to be in jail.
 Guys like me, don't deserve any of that shit at all.
 When the law and justice systems prevent the serious offenders from going to prison, 
@@ -41763,7 +42172,7 @@ They're not ALL corrupt, but the ones in charge are the only ones I'm worried ab
 They're corrupt.
 "@)
  
-$Book.NewSection(9,"Conviction",@"
+$Book.NewSection(9,"Application","Conviction",@"
 When I say stuff to people, they hear like, PORTIONS of what I'm saying. Not FULL SENTENCES, or MULTIPLE POINTS.
 Which is why I argue with my mother QUITE OFTEN. Because, she is literally that stupid.
 I really don't HATE my mother, but she is... one dumb bitch, I swear.
@@ -41795,7 +42204,7 @@ But, they do not actually EMPLOY ANY of those people. I'm fuckin' certain of tha
 However, the Central Intelligence Agency sure as fuck does. 
 "@)
  
-$Book.NewSection(9,"Review (1)",@"
+$Book.NewSection(9,"Review","Review (1)",@"
 In [Chapter 7 – USA-PATRIOT Act of 2001 and Surveillance Capitalism], I spoke about:
 ________________________________________________________________________________________________________________
 | Julien P. Assange | WikiLeaks | Vault 7 | EDWARD SNOWDEN | Gen. Kenneth McKenzie | My involvement w/ Vault 7 |
@@ -41906,7 +42315,7 @@ or the NYSP. Sometimes even the FBI. Or the NSA. Or the CIA. Or the DOD. Serious
 god damn meticulous, and it doesn't miss a fuckin' thing, dude.
 "@)
  
-$Book.NewSection(9,"Cerberus",@"
+$Book.NewSection(9,"Assertion","Cerberus",@"
 Back in 2016, I once worked for KeyCorp in the Enterprise Resolution Center... 
 ...this was during the First Niagra → KeyCorp merger.
 
@@ -42205,7 +42614,7 @@ ___________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
  
-$Book.NewSection(9,"Review (2)",@"
+$Book.NewSection(9,"Review","Review (2)",@"
 Pretty sure that I have a pretty rare set of skills and talents, and I think that these guys may agree.
 Not gonna say why. They probably have read what I've written about how to terminate my own network cables, and use 
 SSH and PowerShell to interact with routers, switches, and etc. remotely. 
@@ -42343,7 +42752,7 @@ I'm going to describe the profile of the person that has the capabilities, total
 immoral nature, that would readily define this "serial killer" type.
 "@)
  
-$Book.NewSection(9,"Intent (1)",@"
+$Book.NewSection(9,"Application","Intent (1)",@"
 James Leonard is a part of this group of people with (deadly/malicious/nefarious) intent.
 Does not seem to have a conscious from what I can tell.
 
@@ -42649,7 +43058,7 @@ Those people didn't realize that the Russians were watching them as they said 'n
 That's why Solorigate also goes by the name of:
 "@)
  
-$Book.NewSection(9,"The 2020 Federal Data Breach",@"
+$Book.NewSection(9,"Review","The 2020 Federal Data Breach",@"
 People should click that link, learn HOW BAD THAT ATTACK WAS.
 Because, I TRIED TO WARN PEOPLE.
 
@@ -42891,7 +43300,7 @@ So is like, the DEPARTMENT OF JUSTICE...
 So, the United States of America is the same EXACT thing, as a (COMMUNIST STATE/MONARCHY)
 "@)
  
-$Book.NewSection(9,"Intent (2)",@"
+$Book.NewSection(9,"Application","Intent (2)",@"
 _______________________________________________________________________________________________
 | 07/14/22 | Shen Campus - Clifton Park Public Safety Building | https://youtu.be/Lo5SFNd-ER4 |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -43309,7 +43718,7 @@ Cause I have a lot of fuckin' nerve, to have already done more research than any
 "NO way pal. You don't get to be more informed than us... fuckface."
 "@)
  
-$Book.NewSection(9,"Rotating Strategies",@"
+$Book.NewSection(9,"Application","Rotating Strategies",@"
 Look the truth is, I know I am pissin' some people off with this document, but I'm ROTATING STRATEGIES
 because wouldn't you know, it's like I'm hanging out in a coffin already. 
 I gotta try to leave some shit behind for somebody to look at, to avoid the seemingly unavoidable.
@@ -43421,7 +43830,7 @@ However, as soon as someone who was killing a bunch of people, routinely, with G
 ...cause he thought "Well, what the fuck does that even mean...?"
 "@)
  
-$Book.NewSection(9,"Exceptions",@"
+$Book.NewSection(9,"Conjecture","Exceptions",@"
 Making exceptions to the law, for certain people or companies, SHOULD be grounds for the military 
 to immediately dispatch an execution squad in order to shoot that person/people to death. No exceptions 
 should be made if we're all honest with ourselves and we believe in the constitution before ANY other 
@@ -43489,7 +43898,7 @@ At some point, people are gonna read all of this...?
 And it's gonna 'click' for them too.
 "@)
  
-$Book.NewSection(9,"Role Reversal",@"
+$Book.NewSection(9,"Lesson","Role Reversal",@"
 If anybody calls 911 and says:
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -43566,7 +43975,7 @@ Nah. They wouldn't actually have done anything about it by now, if EVERYONE make
 That's IF the 911 operator knows what the definition to the word "BRIBERY" is.
 "@)
  
-$Book.NewSection(9,"Bribery",@"
+$Book.NewSection(9,"Lesson","Bribery",@"
 It is basically PROGRAMMING A PERSON.
 bribery (NOUN: the giving or offering of a bribe)
 bribe   (VERB: to act in one's favor, typically illegally or dishonestly, by a gift/money/power)
@@ -43603,7 +44012,7 @@ An illegal version of bribery...
     "Ted Cruz gets `$500M, and asks Exxon Mobil to throw a BONER IN THE BUTTHOLE." ← COOL.
 "@)
  
-$Book.NewSection(9,"Expectations",@"
+$Book.NewSection(9,"Conjecture","Expectations",@"
 The truth is, over the last 3.5 years, I have made a consistently conscious effort, to rip apart 
 my expectations about society, and in this process is quite a mind fuck.
 
@@ -43706,18 +44115,45 @@ So like, out of 800 people in my class. 10 or 20 of those people, AT or ABOVE my
 That means like 95-99th percentile.
 "@)
  
-$Book.NewSection(9,"Summary (1)",@"
-In other words, the police. are. not. fucking. smart. at. All.
-Neither are a lot of people that CALL them, for ridiculous reasons.
-I mean, maybe they are. Who knows.
+$Book.NewSection(9,"Conjecture","Summary (1)",@"
+In other words, the police. Are. Not. Fucking. Smart. At. All.
+They're CONSTANTLY HEAVILY DISTRACTED, that's why.
+
+Neither are a lot of people who CALL them, for ridiculous reasons.
+Maybe I should start to use this phrase...
+__________________________________________________________________________________
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| Whoever appeals to the law against is fellow man is either a fool or a coward. |
+| Whoever cannot take care of themselves without that law is both.               |
+| For a wounded man shall say to his assailant...                                |
+| 'If I live, I will kill you. If I die, you are forgiven.'                      |
+| Such is the rule, of honor.                                                    |
+|________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+|  [Lamb Of God/Ashes of the Wake (2004): Omerta]                                |
+|________________________________________________________________________________|
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Basically what that phrase suggests, is that people who call the police are fools
+or cowards. It's pretty simple. Because people will RELY on the police FAR TOO OFTEN
+to DEAL with their OWN PROBLEMS.
+
+What's one way to deal with their own problems...?
+To 1) grow a nutsack, and 2) have a discussion with certain people.
+American society teaches people to RUN AWAY FROM THEIR PROBLEMS and CALL THE POLICE.
+It's pretty ismple stuff. Cowards and fools do this.
+
+It's ONE thing if it's like a CRIME occurring to a BUSINESS or whatever.
+It's a TOTALLY DIFFERENT THING if ... I'm not gonna get into that right now.
 
 Just think about it, I'm (1) dude that found out that ERIC CATRICALA and JOHN HOFFMAN, and BRUCE TANSKI,
 are NOT rich for being: intelligent. Nah. They're rich because they: kill people and steal their shit.
 Not just THEM either, but...
+
 Mark Zuckerberg → is a killer that steals people's ideas, and allows CERTAIN people to be REALLY COOL...
 and then he basically gives everybody a SOCIAL SCORE which allows SOME people to receive ENGAGEMENT on 
 their SOCIAL MEDIA ACCOUNT, so that SOME people are MUCH MORE LIKELY TO SUCCEED, while OTHERS, remain
-in a LIST OF PEOPLE that get LASER FOCUS from SERIAL KILLERS who steal: ideas, property, money, valuables...
+in a LIST OF PEOPLE that get LASER FOCUS from SERIAL KILLERS who steal: ideas, property, money, valuables.
+
 So, theoretically, I'm probably ABOVE 99th percentile to have come up with a way to capture these
 serial killers on video like I did on May 26th, 2020 whereby forcing the FBI to DISABLE my iPhone.
 
@@ -43729,7 +44165,7 @@ However, it's a lot more rare than they think.
 I should probably say 100 percent of the time, to piss them off even more.              (← Useful strategy sometimes)
 What can they do about it?
 
-Oh I'll tell you what they can do about being less intelligent than me in an interaction...
+Oh, I'll tell you what they can do about being less intelligent than me in an interaction...
 They have to incorrectly categorize somebody since that's a lot more convenient for them. 
 They get paid to do that.
     
@@ -43756,7 +44192,7 @@ Not because they'll get in trouble...
 ...but it's fucking annoying when I do things that keep pissing them off.
 "@)
  
-$Book.NewSection(9,"Audit the Audit",@"
+$Book.NewSection(9,"Excerpt","Audit the Audit",@"
 Audit the Audit, https://www.youtube.com/c/AuditTheAudit
 This YouTube channel focuses on videos where the police overextend themselves.
 This channel could have hundreds of new videos PER DAY... but it's just (1) guy I think.
@@ -43850,7 +44286,7 @@ There's NO WAY that I could've had … a lead or something like that...         
 ...which could've been a CLUE, by chance... right?
 "@)
  
-$Book.NewSection(9,"Superiority Complex",@"
+$Book.NewSection(9,"Conjecture","Superiority Complex",@"
 It might be a symptom of: Autism.
 I know people will read some of these things and think I have a superiority complex, but nah... THEY fucking do. 
 Not always, but many times they rest on their laurels... and then Solorigate makes em look like morons.
@@ -44263,7 +44699,7 @@ They merged the data between (2) completely different videos and made some CLUES
 A LOT MORE OBVIOUS.
 "@)
  
-$Book.NewSection(9,"Blatantly Obvious",@"
+$Book.NewSection(9,"Conjecture","Blatantly Obvious",@"
 When I was in Bennington, I had an argument with Scott Salvadore, who is former military. 
 He's never been sent into war, but he knows people in the military, and those people kept fucking with 
 me to no end. He kept saying "mutehammer", which basically means "censorship button". It's also when he
@@ -44547,7 +44983,7 @@ it's important to know if she'll fuckin' STAB YA AFTER THE SEX.   (← JAMES BON
 Or if it's someone who just TRUSTED SOMEONE THEY SHOULDN'T HAVE. 
 "@)
  
-$Book.NewSection(9,"Sleeping with the Enemy",@"
+$Book.NewSection(9,"Excerpt","Sleeping with the Enemy",@"
 (JAMES BOND/AKA 007) would still throw one in the enemy... if she was hot enough.
 Hell, even INDIANA JONES knew that sleeping with the enemy is a bad idea... 
 Indiana Jones and his dad, they have this conversation in the movie "Indiana Jones and the Last Crusade".
@@ -44580,7 +45016,7 @@ She'll even go against her own family, cause she fuckin' wants some more of that
 Look at Romeo and Juliet...
 "@)
  
-$Book.NewSection(9,"Wall of Trustworthy Characters",@"
+$Book.NewSection(9,"Conjecture","Wall of Trustworthy Characters",@"
 In contrast, when it concerns a MALE OFFICER who just LIES TO EVERYBODY... then you gotta worry about how many
 fuckin' people trust that dude. Cause the "WALL OF TRUSTWORTHY CHARACTERS" might consist of a FEW of these 
 guys. Then, everybody's basically fucked.
@@ -44595,7 +45031,7 @@ Then, the military might just have to look, standing back in wild fuckin' amazem
 ...when there's a huge ring of corruption right under their fuckin' noses.
 "@)
  
-$Book.NewSection(9,"Evidence",@"
+$Book.NewSection(9,"Lesson","Evidence",@"
 None of them will come to this conclusion UNLESS, there's a stack of SUPPORTING EVIDENCE in hand.
 
 Pictures         : Good, but not the best. These can help quite a lot of there's nothin' better.
@@ -44608,7 +45044,7 @@ Documents        : Not exactly seen as the best type of EVIDENCE. However, they 
                    They can also remind an AUTHOR what happened on what date/about the time it was written.
 "@)
  
-$Book.NewSection(9,"Conclusion",@"
+$Book.NewSection(9,"Conjecture","Conclusion",@"
 Not much anybody can really do when they have EVIDENCE of that POLICE OFFICER 
 1) breaking the LAW 
 2) COVERING UP A MURDER ATTEMPT  
@@ -44621,7 +45057,7 @@ that all of these fucks worked REAL HARD to try and contain evidence of a crime 
 Basically 100% of the people you go to will think you're insane. But- you're not insane at all. They're morons.
 "@)
  
-$Book.NewSection(9,"Catricala",@"
+$Book.NewSection(9,"Conjecture","Catricala",@"
 As for (06/18/20), (Criminal/State Assemblyman/Catricala) literally told the Sheriffs, that I was at the 
 Catricala Funeral Home that day. Which, nah I wasn't. Julie could attest to that. So could Dwayne. 
 
@@ -44739,7 +45175,7 @@ The ones that want to uphold the law, they will go and ask that dude...
 ...rather than to INVESTIGATE or CATCH that motherfucker in the act.                              (← STING OPERATION)
 "@)
  
-$Book.NewSection(9,"Skit [~] Conducting a Sting Operation",@"
+$Book.NewSection(9,"Skit","Conducting a Sting Operation",@"
 You can tell the police HOW to CONDUCT a STING OPERATION (all this shit)... 
 ...but, they won't even know how to read the instructions...
 
@@ -44867,7 +45303,7 @@ But it is also highly manipulative.
 However, sometimes it is true.
 "@)
  
-$Book.NewSection(9,"Intent (3)",@"
+$Book.NewSection(9,"Application","Intent (3)",@"
 The problem is, they will trust people that aren't very FORTHRIGHT about LYING to their faces.
 Like, Trooper Carter, literally has that dudes' mentality up above, because he will trust SCOTT SCHELLING.
 Not even exaggerating in the least. He is... not a real smart dude I'll tell ya that much.
@@ -44930,7 +45366,7 @@ Bitch was a moron, but somehow she got a promotion for that whole ordeal... whic
 The cops... sometimes they're actually fuckin' morons.
 "@)
  
-$Book.NewSection(9,"Application",@"
+$Book.NewSection(9,"Conjecture","Application",@"
 These fucks that tried to kill me, have had me on a SPECIAL LIST OF PEOPLE, because they SUSPECT that I'm
 just gonna pop outta fuckin' nowhere, like I'm literally Batman.
 
@@ -45201,7 +45637,7 @@ They both told me that the order needed to be rewritten.
 Then, I told Sarah Schellinger. 4 months later, she STILL hadn't gotten a "CHANCE" to get back to me.
 "@)
  
-$Book.NewSection(9,"Flashback [~] Family Court - April 6th, 2021",@"
+$Book.NewSection(9,"Flashback","Family Court - April 6th, 2021",@"
 Audio to the EXHIBIT below
 https://drive.google.com/file/d/1J0CzI1nW5xwmWbwUVwOEMbhLUiZYEr4p/view?usp=sharing 
 
@@ -45277,8 +45713,7 @@ So then people will be like "OoOoOhhHh, you're threatening to assault police off
 Well, sometimes people need to be provided with an attitude adjustment.
 "@)
  
-$Book.NewSection(9,"Attitude Adjustment",@"
-
+$Book.NewSection(9,"Conjecture","Attitude Adjustment",@"
 They're not gonna do it on their own.
 They have made the process of giving people attitude adjustments, "illegal".
 So now, they can basically act exactly like the Brits did in 1776.
@@ -45449,7 +45884,7 @@ These people don't know how to act when they've been caught red handed committin
 fuckin' asshole. That's why assaulting someone that does this, has to be done with documents like this.
 "@)
  
-$Book.NewSection(9,"Flashback [~] Eric Schnakenberg M.D. 1783 Route 9 Ste 204, Clifton Park, 12065",@"
+$Book.NewSection(9,"Flashback","Eric Schnakenberg M.D. 1783 Route 9 Ste 204, Clifton Park, 12065",@"
 Eric Schnakenberg, my family doctor for about 4-5 years, that my former doctor Susan Ferarry from SPARC Cohoes,
 recommended because I used to be prescribed BUPHRENORPHINE/Suboxone. I was a patient at SPARC for over 6 years, 
 on and off. Had a really good rapport with Jennifer Mansky, the former director of the clinic.
@@ -45574,8 +46009,7 @@ Not only am I NOT making that up, but, I ACTUALLY SHOWED THE VIDEO TO TROOPER LE
 DR. SCHNAKENBERG about that...? He literally stood up, and walked out of the fucking room.
 "@)
  
-$Book.NewSection(9,"Correlation",@"
-
+$Book.NewSection(9,"Conjecture","Correlation",@"
 I'm certain that it's all tied together, and when I explain it in great detail, some people really are fuckin'
 morons. Those same kids, attacked the Clifton Park Computer Answers network, that I was providing service for, 
 on January 15th, 2019. 
@@ -45625,7 +46059,7 @@ Rather than to HURT people, for ignoring me over and over...?
 I'll just keep writing up these documents and skits.
 "@)
  
-$Book.NewSection(9,"Compiling an effective motivator (1)",@"
+$Book.NewSection(9,"Conjecture","Compiling an effective motivator (1)",@"
 Ted Cruz might not like reading about how Exxon Mobil shoves a huge veiny dick in that dudes asshole, 
 but so long as he gets paid millions of dollars...? Ted Cruz will do it. So will Eric Schnackenberg. 
 So will SEAN HANNITY.
@@ -45681,7 +46115,7 @@ are combined. Then people will realize that... most people don't know how to do 
 Because, that requires a basic understanding of superposition...
 "@)
  
-$Book.NewSection(9,"Skit [~] Idea Competition",@"
+$Book.NewSection(9,"Skit","Idea Competition",@"
 Maybe I AM actually a lot more intelligent than most people... 
 But if I go around saying that, spamming the shit out of everybody that ever lived...? 
 It's likely gonna piss some people off...
@@ -45765,7 +46199,7 @@ Or, do stuff with the landscape. But, I'll tell ya, it'd probably make a real gr
 I'll have to write a totally separate book about.
 "@)
  
-$Book.NewSection(9,"Compiling an effective motivator (2)",@"
+$Book.NewSection(9,"Conjecture","Compiling an effective motivator (2)",@"
 As far as relevance, ideas, people, and compiling it all into an effective motivator, Dale Carnegies book isn't
 gonna work in every case. How to Win Friends and Influence People, is great when you want to understand the core
 concepts of "mutually exclusive best-interest". It's great at that.
@@ -45898,7 +46332,7 @@ What I know has a circle of people in CLIFTON PARK/HALFMOON and LOWER SARATOGA C
 Well, that dude is gonna be pretty worried about what I have to reveal.
 "@)
  
-$Book.NewSection(9,"Intent (4)",@"
+$Book.NewSection(9,"Application","Intent (4)",@"
 Dude is part of a group of serial killers that have the FBI, SCSO, NYSP on lock.
 Also, has several local businesses going around picking locks, breaking into security systems, using exploits, 
 stealing intellectual property, stealing documents, deeds, records, titles, then has these serial killers kill
@@ -45956,7 +46390,7 @@ The vehicle that was in the video I recorded between (05/25/20 1143 → 05/26/20
 ...I recorded that the night my son and I spoke to John Hoffman.
 "@)
  
-$Book.NewSection(9,"You sound like a broken record",@"
+$Book.NewSection(9,"Excerpt","You sound like a broken record",@"
 My mother always told me "You sound like a broken record", or "I've heard all this before".
 The assumption she is attempting to convey is that "I don't really care dude. Fuck you."
 Those statements do not convey "If somebody was trying to kill you, they would've done so by now."
@@ -46016,7 +46450,7 @@ That's 175 years. Just like JULIEN ASSANGE.
 See no evil, Hear no evil, Speak no evil... just do it. Who gives a shit...?
 "@)
  
-$Book.NewSection(9,"Ultimatum",@"
+$Book.NewSection(9,"Conjecture","Ultimatum",@"
 If Eric Schnackenberg sees someone and decides to tell that person to fuck off... 
 ...he'll get `$500 bucks to do that.
 If I work my ass off and outperform all of the people at Computer Answers...
@@ -46233,7 +46667,7 @@ The guys who ran the United States...?
 They weren't fuckin' gay by any means, and there was no jizz on ANY of their faces at all.
 "@)
  
-$Book.NewSection(9,"Summary (2)",@"
+$Book.NewSection(9,"Conjecture","Summary (2)",@"
 You have to be basically ROYALTY, in order to matter to people. 
 If you're not...? Oh well, dude. 
 Fuck you. 
@@ -46283,7 +46717,7 @@ Cause guys that aren't like him...?
 They sure as hell don't seem to know the definition to a lot of words. 
 "@)
  
-$Book.NewSection(9,"Excerpt [~] Room for one more...",@"
+$Book.NewSection(9,"Excerpt","Room for one more...",@"
 If Ted Cruz WAS being bribed, they will ALSO reason, that if this were the case...
 ...somebody would've arrested Ted Cruz by now. 
     
@@ -46368,9 +46802,11 @@ So, if everybody except ONE DUDE is wrong... they won't even fuckin' consider th
 That's why "Room for one more..." is the story of my life.
 "@)
  
-$Book.NewSection(9,"Summary (3)",@"
-So, if the police say "If Ted Cruz was accepting bribery, he would've been arrested by now"
+$Book.NewSection(9,"Application","Summary (3)",@"
+So, if the police say "If Ted Cruz was accepting bribery, he would've been arrested by now."
 You have to tell them "That's YOUR JOB, dipshit."
+Place a strong emphasis on the word 'dipshit'...
+
 And, if they don't feel like doing their job... 
 ...then what is the fuckin' solution...? 
 
@@ -46383,14 +46819,14 @@ He fuckin' LIKES that.
 He's ok with that... he gets millions of dollars for doin' that.
 
 If I try to tell people that, that might make people laugh.
-But not if I am being heavily censored, because someone sees me as a political opponent. 
+But not if I am being heavily censored, because someone sees me as a political opponent.
+
 Which forces me to use VARYING ALTERNATIVE of distribution. 
 In this process, even god damn Dr. Oliver fuckin' Robinson, superintendent of a school district...
 ...DOES NOT SEE THE FUCKING PROBLEM.
 "@)
  
-$Book.NewSection(9,"Intent (5)",@"
-
+$Book.NewSection(9,"Conjecture","Intent (5)",@"
 Sometimes the police will actually continue to make fools of themselves... 
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -46634,7 +47070,7 @@ So, if I meet an actual lawyer like "Lawyer Man 5000"...
 ...and courtrooms aren't actually staged at all.
 "@)
  
-$Book.NewSection(9,"Skit [~] Lawyer Man 5000",@"
+$Book.NewSection(9,"Skit","Lawyer Man 5000",@"
 When it comes to all of the law men out there in the wild...? 
 Well... sometimes you might need help from a guy like Lawyer Man 5000.
 
@@ -47005,7 +47441,7 @@ Well, I've got a lot more evidence than the stuff I've posted.
 But- I have to make an adamant example out of the agency, Saratoga County.
 "@)
  
-$Book.NewSection(9,"Excerpt [~] Taking the law into one's own hands",@"
+$Book.NewSection(9,"Excerpt","Taking the law into one's own hands",@"
 Just like I made an example out of Jeff Truesell, I was willing to provide my own sense of justice. 
 Because the kid kept breaking into my home.
 
@@ -47075,50 +47511,62 @@ When they wake up, they will say "What the hell did you do that for...?"
 Well, it was cause somebody needed an attitude adjustment. 
 "@)
  
-$Book.NewSection(9,"Skit [~] Ted Cruz (2)",@"
+$Book.NewSection(9,"Skit","Ted Cruz (2)",@"
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
 Cruz : I mean, jeez buddy. 
-If the police don't feel like doin' something, then they really don't have to...
+       If the police don't feel like doin' something, then they really don't have to...
 Me   : You're right Ted. 
-That's why it's OK to purchase a firearm, and shoot people in self defense. 
-Especially in YOUR state.
+       That's why it's OK to purchase a firearm, and shoot people in self defense. 
+       Especially in YOUR state.
 Cruz : We do love guns here... 
-But, we don't shoot people for every misunderstanding.
+       But, we don't shoot people for every misunderstanding.
 Me   : Ok...? 
-Good. 
-Never said that. 
-Why would you insinuate that at all...?
+       Good. 
+       Never said that. 
+       Why would you insinuate that at all...?
 Cruz : You appear to have a well written dialog where I'm supposedly having conversations with you, 
-...but I've never accepted bribery money from Exxon Mobil.
+       ...but I've never accepted bribery money from Exxon Mobil.
 Me   : You just lied. 
-People that lie, produce inflections in their demeanor and it is audibly produced...
-...sometimes more information can be extracted by what is NOT said...
-...or, the timing/delivery of what IS said.
-Basically, flat out denying that you've ever accepted bribery money...
-...isn't how an innocent person would respond to that, just so you understand... 
-Sometimes, when I explain to people what I know about psychology...
-...people will actually realize that I'm not babbling. 
-Having more understanding than them causes them to feel inferior...
-...and their only strategy when they're in over their head, is to try and distract me... 
-...or, say "you're nuts pal". 
-But, there's actually a reason that doesn't work. 
-It's cause I'm smarter than a lot of people. 
-I didn't always think that, but I do now. 
-Because people in society think that their position in social structures boils down to intelligence.
-Nah, the most popular person might be a moron (like my old buddy Dwayne Coonradt). 
-Or, the coolest kid might steal money from his best friend.
-Or, the family member might go around calling their other family member psychotic...
-...rather than to have a conversation.
-Basically, people prove that they are cowards quite often. 
-Cowards will understand what I'm saying, and then nod and smile, cause... 
-I just said a bunch of shit that went over their heads.
-They didn't get it. 
-Sounded like something a crazy person would say. 
-But... I know they just lied. 
-Then they may realize I'm onto them and so they start to say things like "That dude's crazy~!"
+       People that lie, produce inflections in their demeanor and it is audibly produced...
+       ...sometimes more information can be extracted by what is NOT said...
+       ...or, the timing/delivery of what IS said.
+
+       Basically, flat out denying that you've ever accepted bribery money...
+       ...isn't how an innocent person would respond to that, just so you understand... 
+
+       Sometimes, when I explain to people what I know about psychology...
+       ...people will actually realize that I'm not babbling. 
+
+       Having more understanding than them causes them to feel inferior...
+       ...and their only strategy when they're in over their head, is to try and distract me... 
+       ...or, say "you're nuts pal". 
+
+       But, there's actually a reason that doesn't work. 
+       It's cause I'm smarter than a lot of people. 
+       I didn't ALWAYS think that, but I DO now, because most people are PROGRAMMED by SOMEONE ELSE.
+
+       Because people in society think that their position in social structures boils down to intelligence.
+       Nah, the most popular person might be a moron (like my old buddy Dwayne Coonradt). 
+       Or, the coolest kid might steal money from his best friend.
+
+       Or, the family member might go around calling their other family member psychotic...
+       ...rather than to have a conversation.
+
+       Basically, people prove that they are cowards quite often. 
+       Cowards will understand what I'm saying, and then nod and smile, cause... 
+       I just said a bunch of shit that went over their heads.
+
+       They didn't get it.
+       Sounded like something a crazy person would say.
+
+       But... I know they just lied.
+       Then they may realize I'm onto them and so they start to say things like "That dude's crazy~!"
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 "@)
  
-$Book.NewSection(9,"Excerpt [~] That dudes crazy~!",@"
-
+$Book.NewSection(9,"Excerpt","That dudes crazy~!",@"
 Sometimes people will say that because [they're fuckin' stupid*]. 
 No better explanation, actually. 
 
@@ -47407,241 +47855,293 @@ Basically they don't want to end up like James Comey, trying to do the right thi
 jam a fuckin' huge dildo up their asshole unwillingly.
 "@)
  
-$Book.NewSection(9,"Skit [~] Ted Cruz (3)",@"
-    Me    : People will say "he's crazy" when they know I'm right.
-            Probably because they *really* enjoy a hot, flaming pecker in the asshole...
-            At least you though Ted... 
-            I'm pretty sure you like that idea a lot. 
-            Don't ya?
-    Cruz  : You keep alluding to ME somehow enjoying when stuff is shoved in my ass...
-    Me    : Maybe you don't actually ENJOY it... 
-            ...maybe you just TOLERATE it. 
-            But, it seems accurate either way, that's why I say it...
-    Cruz  : Says you.
-    Me:     Maybe you don't, Ted.
-    Cruz:   I don't.
-    Me:     Says you.
-    Cruz:   Someone would've arrested me by now if I was accepting bribery money from Exxon Mobil.	(← FALLACY ALERT)
-    Me:     The way that the law is WRITTEN, yeah... 
-            ...you would have been if anyone with the proper badge knew how to read.
-            The problem is, I know that most of them are morons. 
-            The few that aren't, don't like pissing off their coworkers.
-            But, a lot of people say this whole "something would've happened by now if such and such"
-            So like, if you WERE gay...
-            ….you probably would've gotten smacked in the face with a dick by now, right...?
-            But, that question doesn't consider... 
-            ...if you're NOT gay, are you STILL being smacked in the face with a dick at all...? 
-            Cause what if you're a straight guy, who just so happens to be smacked in the face by a dick?
-            These questions SOUND SILLY, but they are actually PHILOSOPHY. 
-            Basically, LOGIC BUILDING.
-            So, if a GIRL has SEX with a GUY and gets PUMPED full of JIZZLINGS... she MIGHT get pregnant.
-            Doesn't necessarily mean that she will.
-            Typically, those assertions make sense, unless there's a FACT hiding in plain sight.
-            Sometimes a person will say all of these things you've been saying in this conversation...
-            ...because they're attempting to pull a fast one.
-            But- some people really are that stupid...
-            ...where they'll try to pull a fast one on someone a lot more intelligent than they are.
-            It has the opposite effect actually. 
-            It just comes off looking like someone has some jizz-on-the-chin.
-            Now, Trooper Border has to move his hand to check real quick...
-            "No I don't..."
-            Well, why'd you move your hand?
-            Oh. 
-            It's cause that's how to manipulate people.
-            I just somehow have a way of ripping through all your responses...
-            ...and still having suspicion toward you, for accepting bribery money from Exxon Mobil.
-            Look on the bright side... 
-            I never once said you had a smidge of jizz-on-the-chin.
-    Cruz:   You know, if I just sit here, and don't say a word... 
-            ...I'll never get in trouble for being bribed.
-    Me:     You're probably right. 
-            Exxon Mobil didn't get in trouble for demolishing WTC 7 on September 11, 2001, did they?
-    Cruz:   Listen buddy, that's not what happened, Shayam Sundar and NIST-
-    Me:     ...had a dick in their mouth too. 
-            Don't worry, I've put a lot more thought into this, than anyone you have ever met. 
-            So, shut the fuck up.
-            Shayam Sundar was tasked with covering up the collapse of the Twin towers and WTC 7. 
-            Why...? 
-            Cause a former president probably committed treason on 9/11/2001.
-            The truth is Ted, I'm a lot smarter than most people.
-            People think intelligence is based on who you know, or how rich you are.
-    Cruz:   It is. 
-            Obviously.
-    Me:     Nah, idiots say that. 
-            It isn't, believe it or not. 
-            However, those things are not resultant to being intelligent. 
-            They're resultant to being social.
-            And, perhaps being respectful and polite.
-            Not being a condescending dickhead expecting to be respected, when they've done nothing to earn it.
-            So, I know bullshit when I hear it.
-            Everything out of your mouth so far, has been bullshit, assuming I don't know what the fuck is going on.
-    Cruz:   If someone thought that I was doing something I shouldn't have been doing...
-    Me:     Most people will assume that it would've been handled by now. 
-            So that means they will think it's impossible... OR highly unlikely...
-            Most people will confuse the terms:
-            - impossible (adjective: not able to occur, exist, or be done)
-            - unlikely   (adjective: not likely to be true or to happen)
-            Now, is it IMPOSSIBLE that you're being bribed by Exxon Mobil AND having a dick shoved up your ass?
-    Cruz:   It's UNLIKELY that I would be doing that and not have gotten in trouble for it by now.
-    Me:     Correct. 
-            That is... a true statement.
-            However, UNLIKELY just means not likely. 
-            Still could be very likely after all, ESPECIALLY when money is involved.
-            _____________________________________________________________________
-            | When MONEY is involved in something, you would be AMAZED as to... |
-            | ...how compelling the argument BECOMES. |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    Cruz:   Whatever dude. 
-            I don't have to answer to you, I've got shit to do. 
-            I'm too important.
-    Me:     Fallacies, dicks in the mouth, and falsehoods... 
-            ...all sounds the same to me, bud.
-            I mean, at least you're not being forced to suck RUPERT MURDOCHs dick like SEAN HANNITY.
-            In RUPERT MURDOCH's case, or Exxon Mobil's case...
-            ...they've got enough money to bribe every single police officer that would NORMALLY arrest you...
-            ...as well as Christopher Wray the director of the Federal Bureau of Investigation.
-            With enough of that bribery happening...
-            ...I could tell them to ignore those pesky little annoying opinions Michael C. Cook has...
-            ...OR EVEN, censor the dog shit out of him... 
-            ...limit his right to free speech... 
-            ...since his opinion goes against my stack of cash and how important I am...
-            ...then, make it appear as if the CIA isn't watching - when they're watchin'. 
-            For sure.
-    Cruz:   This is America dude, you have constitutional rights and liberties.
-            ________________________________________________            
-            | It's illegal to infringe upon your rights... |
-            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    Me:     It's SUPPOSED to be, I think.
-            Key term being: "SUPPOSED to be"
-            I don't think people actually ENFORCE something like that, I'm afraid.
-            A criminal activity like bribery being committed by Ted Cruz (senator from Texas),
-            ...won't be as "important" to enforce...
-            Because, everybody gets bribed. 
-            Right...?
-            It's not that rare to be bribed while in public office.
-            __________________________________________________________________
-            | Chuck Schumer probably doesn't do that shit... so, why do you? |
-            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    Cruz:   He's a good guy...
-    Me:     You're right~! 
-            He's like a role model politician that has to deal with fucks like you, breaking the law constantly.
-            He'll say "For Christ sake doesn't anyone have any integrity anymore...?"
-            But you're never there to laugh in his face.
-            Neither are people in the FBI.
-            Or the New York State police.
-            They all know a good bribery offer when they hear one. 
-            If it's too low, they'll fuckin' haul somebody's ass to jail. 
-            Once it's high enough though...?
-            Trooper Borden might say "That's... a real tempting offer there, buddy."
-            Once you've got James Comey, or Christopher Wray, or Trooper Borden in your back pocket...?
-            All bets are off. 
-            Start a fuckin' news organization, make that organization look a lot like a real news organization, 
-            ...and then report propaganda instead of news.
-            _______________________________________________________________________________________
-            | Used to be news...? But- now it's not news. Not News. Part of the Not News Network. |
-            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-            Then somebody can use a program like Pegasus/Phantom, and kill citizens that get too fucking nosy.
-            Not only do I know that's exactly what's happening, but... 
-            It costs a lot less money to guys like Ruperty Murdock, or Exxon Mobil... 
-            ...than taping together a brick of money, and throwin' it at this guy...
-            ...and knockin' him the fuck out with that heavy ass brick of cash.
-    Cruz:   You really can't possibly think that they would all do that, do you?
-    Me:     Yeah fuck face. 
-            I know they're doing it.
-            That's cause some do the same thing you do: allow Exxon Mobil to shove a super huge, veiny, 
-            ugly lookin dick, in their asshole, no lube... too.
-            My language, although colorful and probably offensive to a large degree, isn't nearly as offensive as the
-            truth, the principle in how money will cause people to do some incredibly evil, heinous shit.
-            Such as allowing serial killers to run amok with this fuckin' tool.
-            Pretty cool, huh?
-    Cruz:   I don't like the way that sounds though...
-    Me:     I don't really fuckin' care though...
-            Ya know?
-            ____________________________________________
-            | No one gives a shit what you think, Ted. |
-            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-            You probably shouldn't like the way it sounds, if you have any integrity at all.
-    Cruz:   I have integrity...
-    Me:     Alright, issue a press release tomorrow where you vow to say climate change is real...
-            and you've chosen to dedicate your time, to ensuring that municipalities within your jurisdiction...
-            ...are actually making the effort to meet the:
-            _________________________
-            | Paris Climate Accords |
-            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    Cruz:   That sounds like a lot of work though...
-    Me:     Well, that's what your job should already be, you fuckin' moron. 
-            You were paid to be doing something like that already.
-            Not to have sex with some guy, and get paid for it.
-            That's what porn stars do.
-            You weren't elected into office to get your asshole drilled out by some of your oil exec buddies.
-    Cruz:   Nah...?
-    Me:     Nah dude. 
-            That's totally gay.
-    Cruz:   I'm not gay, though.
-    Me:     Look. 
-            --------------------------------------------------------------------------------------
-            TUCKER CARLSON is a fuckin' lyin sack of shit who probably has a 4-inch pecker...
-            If he said he's not gay...? I'd believe him... 
-            …but the girls probably tell him "Aw, how cute" when they see how small his dick is.
-            --------------------------------------------------------------------------------------
-            BOB LUTZ is the former director of General Motors...
-            ...who spent 50 years there and just so happened to shit his pants every day...
-            If he said he's not gay, I'd believe him... 
-            ...even though he- *pauses* I don't know how a man shits his pants every day... but, whatever.
-            --------------------------------------------------------------------------------------
-            SEAN HANNITY is also a lying sack of shit who might have an 8 inch pecker...
-            If he said he's not gay, I would not believe him at all... 
-            ...cause the girls he probably tries to have sex with...
-            ...they may notice that he's definitely no small-dicked bastard, 
-            ...but it doesn't get hard when they play with it – that means, pretty gay, or his hearts not workin' right.
-            So then he's gotta have sex with guys like RUPERT MURDOCH, since that makes his dick hard probably.
-            But, RUPERT MURDOCH probably doesn't like the idea of doing *anything* gay...
-            except making SEAN HANNITY suck his dick sometimes, just for the power trip...
-            ...cause he's probably straight and fucks lots of women.
-            --------------------------------------------------------------------------------------
-            Look Ted, the point is, I know you're not gay at all. 
-            You just love cash, and don't mind allowing your asshole to get pounded out.
-            That's... the OPPOSITE of having integrity.
-            Even William Gates himself, probably thinks "My fuckin' god... That is... Wow. I'm fuckin' speechless Ted."
-            But then he'll say "Well.. it's a free country after all. What can anybody do?"
-            ...even though that dude can basically do more than 99% of the people on the planet.
-            That dude can't stop ya, Ted.
-            Neither can the police. 
-            Neither can Elon Musk.
-            Or Mark Zuckerberg.
-            All things considered, pretty sure Mark Zuckerberg would never be caught dead doin' what you do.
-            Nor these other guys.
-            I mean, Jeff Bezos probably briefly considers it every once in a while, but I don't know. 
-            Maybe he doesn't.
-    Cruz:   I don't really know what to say...
-    Me:     Well, climate change is real. 
-            You could tell SEAN HANNITY that he should stop saying that it isn't.
-            Otherwise, who the fuck are ya Ted...?
-    Cruz:   *pauses*
-    Me:     Oh, I'll tell ya.
-            You'll be the guy who wasn't actually gay, but... 
-            ...allowed himself to be clobbered by a penis, repeatedly...
-            Once a man who isn't gay, goes and gets himself clobbered by ONE penis...?
-            ...that man is bound to get himself clobbered by many, many more.
-            Do you know who does that, Ted...?
-    Cruz:   *eyebrows up* ...girls?
-    Me:     *nodding* That's right, Ted. And, gay guys.
-            You won't even fall into either of those categories, either.
-            It'll be WEIRD. 
-            People will shake their heads and say "Wow, Ted Cruz, the senator from Texas, isn't even gay...
-            ...but has sex with guys...? That's... disgraceful."
-            Then what, Ted? *shakes head*
+$Book.NewSection(9,"Skit","Ted Cruz (3)",@"
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Me    : People will say "he's crazy" when they know I'm right.
+        Probably because they *really* enjoy a hot, flaming pecker in the asshole...
+        At least you though Ted... 
+        I'm pretty sure you like that idea a lot. 
+        Don't ya...?
+Cruz  : You keep alluding to ME somehow enjoying when stuff is shoved in my ass...
+Me    : Maybe you don't actually ENJOY it... 
+        ...maybe you just TOLERATE it. 
+        But, it seems accurate either way, that's why I say it...
+Cruz  : Says you.
+Me:     Maybe you don't, Ted.
+Cruz:   I don't.
+Me:     Says you.
+Cruz:   Someone would've arrested me by now if I was accepting bribery money from Exxon Mobil.	(← FALLACY ALERT)
+Me:     The way that the law is WRITTEN, yeah... 
+        ...you would have been if anyone with the proper badge knew how to read.
+
+        The problem is, I know that most of them are morons. 
+        The few that aren't, don't like pissing off their coworkers.
+
+        But, a lot of people say this whole "something would've happened by now if such and such"
+        So like, if you WERE gay...
+        …you probably would've gotten smacked in the face with a dick by now, right...?
+
+        But, that question doesn't consider... 
+        ...if you're NOT gay, are you STILL being smacked in the face with a dick at all...?
+
+        Cause what if you're a straight guy, who just so happens to be smacked in the face by a dick?
+        These questions SOUND SILLY, but they are actually PHILOSOPHY.
+
+        Basically, LOGIC BUILDING.
+
+        So, if a GIRL has SEX with a GUY and gets PUMPED full of JIZZLINGS... she MIGHT get pregnant.
+        Doesn't necessarily mean that she will.
+
+        Typically, those assertions make sense, unless there's a FACT hiding in plain sight.
+        Sometimes a person will say all of these things you've been saying in this conversation...
+        ...because they're attempting to pull a fast one.
+
+        But- some people really are that stupid...
+        ...where they'll try to pull a fast one on someone a lot more intelligent than they are.
+
+        It has the opposite effect actually. 
+        It just comes off looking like someone has some jizz-on-the-chin.
+
+        Now, Trooper Border has to move his hand to check real quick...
+        "No I don't..."
+
+        Well, why'd you move your hand...?
+        Oh.
+
+        It's cause that's how to manipulate people.
+        I just somehow have a way of ripping through all your responses...
+        ...and still having suspicion toward you, for accepting bribery money from Exxon Mobil.
+        Look on the bright side... 
+        I never once said YOU had a smidge of jizz-on-the-chin.
+
+Cruz:   You know, if I just sit here, and don't say a word... 
+        ...I'll never get in trouble for being bribed.
+Me:     You're probably right. 
+        Exxon Mobil didn't get in trouble for demolishing WTC 7 on September 11, 2001, did they?
+Cruz:   Listen buddy, that's not what happened, Shayam Sundar and NIST-
+Me:     ...had a dick in their mouth too. 
+        Don't worry, I've put a lot more thought into this, than anyone you have ever met. 
+        So, shut the fuck up.
+
+        Shayam Sundar was tasked with covering up the collapse of the Twin towers and WTC 7. 
+        Why...? 
+        Cause a former president probably committed treason on 9/11/2001.
+        The truth is Ted, I'm a lot smarter than most people.
+        People think intelligence is based on who you know, or how rich you are.
+
+Cruz:   It is. 
+        Obviously.
+Me:     Nah, idiots say that. 
+        It isn't, believe it or not.
+
+        However, those things are not resultant to being intelligent. 
+        They're resultant to being social.
+        And, perhaps being respectful and polite.
+
+        Not being a condescending dickhead expecting to be respected, when they've done nothing to earn it.
+        So, I know bullshit when I hear it.
+        Everything out of your mouth so far, has been bullshit, assuming I don't know what the fuck is going on.
+Cruz:   If someone thought that I was doing something I shouldn't have been doing...
+Me:     Most people will assume that it would've been handled by now. 
+        So that means they will think it's impossible... OR highly unlikely...
+
+        Most people will confuse the terms:
+        __________________________________________________________________
+        |¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+        | Word       | Type      | Definition                            |
+        |____________|___________|_______________________________________|
+        |¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+        | IMPOSSIBLE | Adjective | not able to occur, exist, or be done  |
+        | UNLIKELY   | Adjective | not likely to be true or to happen    |
+        |____________|___________|_______________________________________|
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+        Now, is it IMPOSSIBLE that you're being bribed by Exxon Mobil AND having a dick shoved up your ass?
+Cruz:   It's UNLIKELY that I would be doing that and not have gotten in trouble for it by now.
+Me:     Correct. 
+        That is... a true statement.
+        However, UNLIKELY just means not likely. 
+        Still could be very likely after all, ESPECIALLY when money is involved.
+        _____________________________________________________________________
+        | When MONEY is involved in something, you would be AMAZED as to... |
+        | ...how compelling the argument BECOMES. |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Cruz:   Whatever dude. 
+        I don't have to answer to you, I've got shit to do. 
+        I'm too important.
+Me:     Fallacies, dicks in the mouth, and falsehoods... 
+        ...all sounds the same to me, bud.
+        I mean, at least you're not being forced to suck RUPERT MURDOCHs dick like SEAN HANNITY.
+
+        In RUPERT MURDOCH's case, or Exxon Mobil's case...
+        ...they've got enough money to bribe every single police officer that would NORMALLY arrest you...
+        ...as well as Christopher Wray the director of the Federal Bureau of Investigation.
+
+        With enough of that bribery happening...
+        ...I could tell them to ignore those pesky little annoying opinions Michael C. Cook has...
+        ...OR EVEN, censor the dog shit out of him... 
+        ...limit his right to free speech... 
+        ...since his opinion goes against my stack of cash and how important I am...
+        ...then, make it appear as if the CIA isn't watching - when they're watchin'. 
+
+        For sure.
+Cruz:   This is America dude, you have constitutional rights and liberties.
+        ________________________________________________            
+        | It's illegal to infringe upon your rights... |
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Me:     It's SUPPOSED to be, I think.
+        Key term being: "SUPPOSED to be"
+
+        I don't think people actually ENFORCE something like that, I'm afraid.
+        A criminal activity like bribery being committed by Ted Cruz (senator from Texas),
+        ...won't be as "important" to enforce...
+        Because, everybody gets bribed. 
+        Right...?
+        It's not that rare to be bribed while in public office.
+        __________________________________________________________________
+        | Chuck Schumer probably doesn't do that shit... so, why do you? |
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Cruz:   He's a good guy...
+Me:     You're right~! 
+        He's like a role model politician that has to deal with fucks like you, breaking the law constantly.
+
+        He'll say "For Christ sake doesn't anyone have any integrity anymore...?"
+        But, you're never there to laugh in his face.
+        Neither are people in the FBI.
+        Or the New York State police.
+
+        They all know a good bribery offer when they hear one. 
+        If it's too low, they'll fuckin' haul somebody's ass to jail. 
+        Once it's high enough though...?
+
+        Trooper Borden might say "That's... a real tempting offer there, buddy."
+        Once you've got James Comey, or Christopher Wray, or Trooper Borden in your back pocket...?
+        All bets are off. 
+
+        Start a fuckin' news organization, make that organization look a lot like a real news organization, 
+        ...and then report propaganda instead of news.
+        _______________________________________________________________________________________
+        | Used to be news...? But- now it's Not News. Not News. Part of the Not News Network. |
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+        Then somebody can use a program like Pegasus/Phantom, and kill citizens that get too fucking nosy.
+        Not only do I know that's exactly what's happening, but... 
+        It costs a lot less money to guys like Ruperty Murdoch, or Exxon Mobil... 
+        ...than taping together a brick of money, and throwin' it at this guy...
+        ...and knockin' him the fuck out with that heavy ass brick of cash.
+
+Cruz:   You really can't possibly think that they would all do that, do you?
+Me:     Yeah fuck face. 
+        I know they're doing it.
+
+        That's cause some do the same thing you do: allow Exxon Mobil to shove a super huge, veiny, 
+        ugly lookin' dick, in THEIR asshole, no lube... too.
+
+        My language, although colorful and probably offensive to a large degree, isn't nearly as offensive as the
+        truth, the principle in how money will cause people to do some incredibly evil, heinous shit.
+        Such as allowing serial killers to run amok with this fuckin' tool.
+        Pretty cool, huh...?
+
+Cruz:   I don't like the way that sounds though...
+Me:     I don't really fuckin' care though...
+        Ya know?
+        ____________________________________________
+        | No one gives a shit what you think, Ted. |
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+        You probably shouldn't like the way it sounds, if you have any integrity at all.
+Cruz:   I have integrity...
+Me:     Alright, issue a press release tomorrow where you vow to say climate change is real...
+        and you've chosen to dedicate your time, to ensuring that municipalities within your jurisdiction...
+        ...are actually making the effort to meet the:
+        _________________________
+        | Paris Climate Accords |
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Cruz:   That sounds like a lot of work though...
+Me:     Well, that's what your job should already be, you fuckin' moron.
+
+        You were paid to be doing something like that already.
+        Not to have sex with some guy, and get paid for it.
+        That's what porn stars do.
+        You weren't elected into office to get your asshole drilled out by some of your oil exec buddies.
+Cruz:   Nah...?
+Me:     Nah dude. 
+        That's totally gay.
+Cruz:   I'm not gay, though.
+Me:     Look. 
+        
+        [TUCKER CARLSON] is a fuckin' lyin sack of shit who probably has a 4-inch pecker...
+        If he said he's not gay...? I'd believe him... 
+        …but the girls probably tell him "Aw, how cute" when they see how small his dick is.
+        
+        [BOB LUTZ] is the former director of General Motors...
+        ...who spent 50 years there and just so happened to shit his pants every day...
+        If he said he's not gay, I'd believe him... 
+        ...even though he- *pauses* I don't know how a man shits his pants every day... but, whatever.
+        
+        [SEAN HANNITY] is also a lying sack of shit who might have an 8 inch pecker...
+        If he said he's not gay, I would not believe him at all... 
+        ...cause the girls he probably tries to have sex with...
+        ...they may notice that he's definitely no small-dicked bastard, 
+        ...but it doesn't get hard when they play with it – that means, pretty gay, or his hearts not workin' right.
+
+        So then he's gotta have sex with guys like RUPERT MURDOCH, since that makes his dick hard, probably.
+        But, RUPERT MURDOCH probably doesn't like the idea of doing *anything* gay...
+        ...except making SEAN HANNITY suck his dick sometimes, just for the POWER TRIP...
+        ...cause he's probably straight and fucks lots of women.
+        
+        Look Ted, the point is, I know you're not gay at all.
+
+        You just love cash, and don't mind allowing your asshole to get pounded out.
+        That's... the OPPOSITE of having integrity.
+
+        Even William Gates himself, probably thinks "My fuckin' god... That is... Wow. I'm fuckin' speechless Ted."
+        But then he'll say "Well.. it's a free country after all. What can anybody do...?"
+        ...even though that dude can basically do more than 99% of the people on the planet.
+
+        That dude can't stop ya, Ted.
+        Neither can the police. 
+        Neither can Elon Musk.
+        Or Mark Zuckerberg.
+
+        All things considered, pretty sure Mark Zuckerberg would never be caught dead doin' what you do.
+        Nor these other guys.
+        I mean, Jeff Bezos probably briefly considers it every once in a while, but I don't know. 
+        Maybe he doesn't.
+
+Cruz:   I don't really know what to say...
+Me:     Well, climate change is REAL. 
+        You could tell [SEAN HANNITY*] that he should stop saying that it isn't.
+        Otherwise, who the fuck are ya Ted...?
+Cruz:   *pauses*
+Me:     Oh, I'll tell ya.
+        You'll be the guy who wasn't actually gay, but... 
+        ...allowed himself to be clobbered by a penis, repeatedly...
+
+        Once a man who isn't gay, goes and gets himself clobbered by ONE penis...?
+        ...that man is bound to get himself clobbered by many, many more.
+
+        Do you know who does that, Ted...?
+Cruz:   *eyebrows up* ...girls?
+Me:     *nodding* That's right, Ted. And, gay guys.
+        You won't even fall into either of those categories, either.
+        It'll be WEIRD. 
+
+        People will shake their heads and say "Wow, Ted Cruz, the senator from Texas, isn't even gay...
+        ...but has sex with guys...? That's... disgraceful."
+
+        Then what, Ted? *shakes head*
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 "@)
  
-$Book.NewSection(9,"Hidden Government",@"
+$Book.NewSection(9,"Conjecture","Hidden Government",@"
 Guys like Ted Cruz (senator from Texas), SEAN HANNITY, TUCKER CARLSON...? 
 They each get a cool stack of cash from this dude, RUPERT MURDOCH and/or Exxon Mobil.
 Then they call this daily orgy on television, Fox News.
 
-This Murdock fella, isn't gay at all.
+This Murdoch fella, isn't gay at all.
 He still likes the idea of having a power trip, and forces SEAN HANNITY to blow him all the time.
 If you showed people a video of SEAN HANNITY, getting on his hands and knees...
-...with his head bobbing up and down in Murdock's lap, how do you think that would look?
+...with his head bobbing up and down in Murdoch's lap, how do you think that would look?
 
 Some people will probably say "You have some nerve to say all of that~!" 
 Nah, not really, each of these men have been paid hundreds of millions of dollars to say: 
@@ -47651,7 +48151,7 @@ It's not the only thing they get paid millions of dollars to DO though.
 Carlson is literally paid to talk shit to people...
 ...without alerting anybody that he does that every time he's on TV.
 
-Carlson told Rupe Murdock that he's not a cocksucker, and to never ask him again to blow him.
+Carlson told Rupert Murdoch that he's not a cocksucker, and to never ask him again to blow him.
 Hannity didn't put up much of a fight. Now it's a regular thing they do.
 
 Consider this... Think about some girl sucking some dudes dick.
@@ -47662,11 +48162,11 @@ They're not gonna care.
 The problem is, people are gonna get upset with me for being honest with everybody. 
 These guys aren't very straightforward or honest at all. 
 I can prove it, right now actually.
-Whenever Hannity doesn't have Murdock's dick in his mouth, he will say something like:
+Whenever Hannity doesn't have Murdoch's dick in his mouth, he will say something like:
 __________________________________________
 | Hannity: Climate change doesn't exist. |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-But, here's a "picture" of Murdock's dick in Hannity's mouth...
+But, here's a "picture" of Murdoch's dick in Hannity's mouth...
 
 Pretty sure I already said this earlier in this document, but check out this "picture".
 
@@ -47674,19 +48174,22 @@ Picture: Last year, was the hottest year on record, and the last 8 out of 10 yea
 were ALSO the hottest years on record. 
 
 A description of the WEATHER over the last year... 
-1) unprecedented wildfires, 
-2) unprecedented hurricane patterns, 
-3) unprecedented tornadoes patterns
-4) unprecedented drought seasons, 
-5) (INDIRECTLY caused by weather) unprecedented inflation, etc. need I go on...? 
+________________________________________
+| unprecedented wildfires              |
+| unprecedented hurricane patterns     |
+| unprecedented tornado patterns       |
+| unprecedented drought seasons        |                                       
+| (INDIRECTLY) unprecedented inflation |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+...need I go on...?
 
-These are the realities of Hannity having Murdock's dick in his mouth all the time... and climate change. 
+These are the REALITIES of Hannity having Murdoch's dick in his mouth all the time... and climate change. 
 Ted Cruz said for so many years, that all of that shit was a myth, but he was getting drilled between the 
 ass cheeks by Exxon Mobil after he said that. TUCKER CARLSON said some of that stuff too.
 
 That's why the Fox News Network, should be called the "Not News Network".
 __________________________________________________________________________________
-| Used to be News...? Now we're not news. Not News. Part of the Not News Network |
+| Used to be News...? Now we're Not News. Not News. Part of the Not News Network |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 The reason why they say all of it is a myth, is because:
 
@@ -47702,7 +48205,7 @@ The thing is, they could just admit that climate change is DEFINITELY real...
 
 Carlson, lies about how small his dick is.
 Hannity, probably has a dick twice the size as Carlson, but wishes it could get hard near a girl.
-...only one that will gladly suck on Murdock's dick every day.
+...only one that will gladly suck on Murdoch's dick every day.
 ...also has kids, which is fuckin' weird for a cocksucker like him.
 Cruz, isn't even gay, and cries when he gets blasted in the butthole by Exxon Mobil...
 ...always offers Exxon Mobil some KY jelly, but they never use it.
@@ -47727,8 +48230,8 @@ what SEAN HANNITY looks like having his head in RUPERT MURDOCH's lap, bobbing up
 Probably sounds gay, doesn't it?  
 That's cause it is.
 Very.
-No trickery here at all, Hannity spends an excessive amount of time gagging on Murdock's dick.
-Never ever says to Murdock, "Man, I really need to take a break dude, my fuckin' jaw hurts..."
+No trickery here at all, Hannity spends an excessive amount of time gagging on Murdoch's dick.
+Never ever says to Murdoch, "Man, I really need to take a break dude, my fuckin' jaw hurts..."
 Why...? Dude has a jaw of steel, from what I imagine.
 If a girl sucks my dick for hours at a time... they'll say that too.
 
@@ -47785,58 +48288,61 @@ Dude basically looks like he got lost at a museum and can't find his mom.
 RUPERT MURDOCH picked up on this, and he keeps messing with this dude...
 "@)
  
-$Book.NewSection(9,"Skit [~] Sky High Stacks",@"
-    Murdock: Hey kid...
-    Carlson: *eyebrows up* Yeah...?
-    Murdock: I'll help you find your mom, kid.
-    Carlson: You will...?
-    Murdock: Yep. Come with me.
+$Book.NewSection(9,"Skit","Sky High Stacks",@"
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+Murdoch: Hey kid...
+Carlson: *eyebrows up* Yeah...?
+Murdoch: I'll help you find your mom, kid.
+Carlson: You will...?
+Murdoch: Yep. Come with me.
 
-    And ever since then...? Murdock has been teaching this kid everything he knows.
-    Sorta like Anakin being taught by Obiwan Kenobi.
-    It's been decades now, Carlson totally forgot about finding his mom...
-    Murdock just kept teaching Carlson...
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
-    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
-    
-    Murdock: Alright kid, you wanna fuck with people? 
-             Check this out...
-    Carlson: *watching*
-    Murdock: This right here, is a stack of cash.
-             What you wanna DO with it, is keep it nice and sturdy like this...
-    Carlson: *watching*
-    Murdock: Then, you take some tape, and wrap it all the way around, like this...
-    Carlson: *watching*
-    Murdock: Once you get the tape ALL the way around... guess what we're gonna do with it...?
-    Carlson: I... I dunno.
-    Murdock: We're gonna go over to the window here, and open it up.
-             Go ahead boy, open up the window.
-    Carlson: *opens window*
-    Murdock: Alright, how high up do you think we are...?
-    Carlson: ...pretty high.
-    Murdock: That's right kid.
-             WAY too high up to even get in trouble for this...
-    Carlson: Ok...? 
-             What are you gonna do?
-    Murdock: Well, you see that person walkin' there...?
-    Carlson: ...yeah?
-    Murdock: In a minute, they're not even gonna know what the hell hit em.
-    Carlson: ...that might kill that person from this height...
-    Murdock: Well, you never know. 
-             It might...? 
-             Might not.
-             Who gives a shit?
-    Carlson: So... they might get hurt real bad...?
-    Murdock: I mean, that's the point kid.
-             Nobody is gonna believe that a stack of cash fell from the sky, and killed somebody.
-             That's how stupid people are.
-    Carlson: ...wow.
+And ever since then...? Murdoch has been teaching this kid everything he knows.
+Sorta like Anakin being taught by Obiwan Kenobi.
+It's been decades now, Carlson totally forgot about finding his mom...
+Murdoch just kept teaching Carlson...
+
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+
+Murdoch: Alright kid, you wanna fuck with people? 
+         Check this out...
+Carlson: *watching*
+Murdoch: This right here, is a stack of cash.
+         What you wanna DO with it, is keep it nice and sturdy like this...
+Carlson: *watching*
+Murdoch: Then, you take some tape, and wrap it all the way around, like this...
+Carlson: *watching*
+Murdoch: Once you get the tape ALL the way around... guess what we're gonna do with it...?
+Carlson: I... I dunno.
+Murdoch: We're gonna go over to the window here, and open it up.
+         Go ahead boy, open up the window.
+Carlson: *opens window*
+Murdoch: Alright, how high up do you think we are...?
+Carlson: ...pretty high.
+Murdoch: That's right kid.
+         WAY too high up to even get in trouble for this...
+Carlson: Ok...? 
+         What are you gonna do?
+Murdoch: Well, you see that person walkin' there...?
+Carlson: ...yeah?
+Murdoch: In a minute, they're not even gonna know what the hell hit em.
+Carlson: ...that might kill that person from this height...
+Murdoch: Well, you never know. 
+         It might...? 
+         Might not.
+         Who gives a shit?
+Carlson: So... they might get hurt real bad...?
+Murdoch: I mean, that's the point kid.
+         Nobody is gonna believe that a stack of cash fell from the sky, and killed somebody.
+         That's how stupid people are.
+Carlson: ...wow.
+
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 "@)
  
-$Book.NewSection(9,"Propaganda",@"
-
+$Book.NewSection(9,"Excerpt","Propaganda",@"
 Now, I know someone will probably say "You better not make fun of Rupert! He's a good guy...~!" 
 Those people should probably go fuck themselves though, cause he isn't.
 
@@ -47849,16 +48355,16 @@ They are paid top dollar, because they do what they're told.
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-Murdock: Sean...? 
+Murdoch: Sean...? 
          I want you to tell everybody that climate change is non-extistent...
 Hannity: Yes sir. 
          Obviously. 
          By the way, can I...?
-Murdock: Nah, Sean, not today. 
+Murdoch: Nah, Sean, not today. 
          The ol' dicks a little sore, today.
          You did a number on me yesterday.
 Hannity: *starts to cry a little* Alright, see ya later buddy.
-Murdock: Sean, you do realize that if you tell anybody that we do this shit...?  
+Murdoch: Sean, you do realize that if you tell anybody that we do this shit...?  
          I'll lose my fuckin marbles dude...
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -47921,11 +48427,11 @@ Function Chapter_9
 
 $Book.NewChapter("Chapter 9","News vs. Propaganda")
 
-$Book.NewSection(10,"Start",@"
+$Book.NewSection(10,"Lesson","Start",@"
 What EXACTLY is the difference between NEWS and PROPAGANDA...?
 "@)
 
-$Book.NewSection(10,"Overview",@"
+$Book.NewSection(10,"Lesson","Overview",@"
 NEWS, is when actual talented people in an actual news industry... 
 ...they've REPORTED a story without altering the FACTS...
 ...or forcing details to fit a certain AGENDA...
@@ -47944,7 +48450,7 @@ But, if I feel like shoving her head DOWNWARD...
 ...but with a cost where I've DISTORTED the story, and altered the FACTS that were originally REPORTED...
 ...by shoving something down her throat.
     
-Exactly like what Fox News actually is, and what Murdock does to Hannity.
+Exactly like what Fox News actually is, and what Murdoch does to Hannity.
 
 When an organization starts to DISTORT the facts, and FORCE details to FIT AN AGENDA, 
 That isn't NEWS.... That's called "PROPOGANDA/a dildo in someone's asshole".
@@ -47962,12 +48468,12 @@ That's why they should change their name, to Not News Network.
 
 Fox News
 __________________________________________________________________________________
-| Used to be News...? Now we're not news. Not News. Part of the Not News Network |
+| Used to be News...? Now we're Not News. Not News. Part of the Not News Network |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 See how cool that sounds now? Also, sorta looks kinda cool too, huh? That's technically a graphic.
 "@)
  
-$Book.NewSection(10,"Examination (1)",@"
+$Book.NewSection(10,"Conjecture","Examination (1)",@"
 When you want the most up to date information possible, on news...? 
 Put it on anything that isn't Fox News.
 And take a closer look at how the people reporting ACTUAL news, SOUND and CONVEY themselves.
@@ -48121,7 +48627,7 @@ good documentary about climate change, and that Leonardo Dicaprio did a decent j
 But- even if Ari Melber said that, AND Leo Dicaprio called Hannity a cocksucker too...? 
 Things will still be difficult to change. 
 
-The reason why, is cause what the hell man? Murdock, has the industry, by the balls... and doesn't care.
+The reason why, is cause what the hell man? Murdoch, has the industry, by the balls... and doesn't care.
 He's gettin' paid one way or the other... 
 So is Ted Cruz, and everybody else at the boardroom meeting of doom at Exxon Mobil.
 
@@ -48225,7 +48731,7 @@ Nah. It's a metaphor.
 Anyway... 
 New Not News Motto: 
 __________________________________________________________________________________
-| Used to be News...? Now we're not news. Not News. Part of the Not News Network |
+| Used to be News...? Now we're Not News. Not News. Part of the Not News Network |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 _______________________________________________________________________________________________
 | News       : Consists of [facts] being [reported]  where there is [       no rhetoric/bias] |
@@ -48253,7 +48759,7 @@ news isn't supposed to like, flirt with the story, or alter it.
 Fox News consists of people that get paid a lot of money to push an AGENDA.
 "@)
  
-$Book.NewSection(10,"Discussion [~] Oil Corporation [Agenda] → Deny Climate Change",@"
+$Book.NewSection(10,"Thesis","Oil Corporation Agenda, Deny Climate Change",@"
 TUCKER CARLSON, and SEAN HANNITY are (2) prime examples, of people that never got rich or famous for their 
 intelligence. Quite the opposite, actually. They're constantly pushing an AGENDA.
 
@@ -48315,7 +48821,7 @@ Because, he kept denying climate change that whole time, didn't stop for a singl
 that know what the hell they're talking about.
 "@)
  
-$Book.NewSection(10,"Shoutout [+] My Grandfather Thomas Cook",@"
+$Book.NewSection(10,"Excerpt","Thomas Cook",@"
 My grandfather was a trucker who delivered gasoline for the Amerada Hess Corporation all up and down the east 
 coast. About 20 years ago, he told me "The planet has about *checks watch* 35 years worth of oil left, by my
 calculations."
@@ -48421,7 +48927,7 @@ it's probably not their fault if their great grandfather was a tycoon that had v
 government and the economy...
 "@)
  
-$Book.NewSection(10,"Shoutout [+] Theodore Roosevelt: One of the greatest former presidents",@"
+$Book.NewSection(10,"Excerpt","Theodore Roosevelt",@"
 Theodore 'Teddy' Roosevelt had to deal with monopolies and create policies that needed to be set as an example 
 or a rule. The thing about Teddy Roosevelt, was that Teddy would knock a motherfucker out. 
 I'm not even kidding, he would kick the shit out of somebody if he felt like it, before he was even a president.
@@ -48487,8 +48993,7 @@ But, this dude would do stuff like that... when I say that he literally went to 
 canal, that's not an exaggeration at all. He did shit like that. However, some of this stuff is very accurate.
 "@)
 
-$Book.NewSection(10,"Examination (2)",@"
-
+$Book.NewSection(10,"Conjecture","Examination (2)",@"
 Yeah. SEAN HANNITY doesn't like to tell people this, but he gets paid `$100M a year to keep saying climate 
 change is not real. But, it is SO real, that I can practically see a dick in this guys mouth, every single 
 time he appears on television. It's a `$100M per year/dick in the mouth that Hannity, seems to enjoy hittin' 
@@ -48531,7 +49036,7 @@ The content doesn't need to be quality content at all, because the existence of 
 ...is so that this billionaire can continue to win this fuckin' bet that he made with another billionaire.
 
 And, RUPERT MURDOCH just crushes souls with how long he's been keeping the bet going. He's no idiot, that's 
-for sure. Murdock is NOT paying these guys because they "sound intelligent". They're basically actors.
+for sure. Murdoch is NOT paying these guys because they "sound intelligent". They're basically actors.
 Some people probably think that's why they're on all the time, to sound intelligent. Sure, we can call it "that".
 
 Yeah, maybe some nearly brain dead people DO watch them... and they think either one sounds intelligent.
@@ -48585,8 +49090,7 @@ Well, they needed an extension of the rollout, cause...
 Not with Carlson.
 "@)
 
-$Book.NewSection(10,"Skit [~] Lester Holt accidentally hurled an F bomb",@"
-
+$Book.NewSection(10,"Skit","Lester Holt accidentally hurled an F bomb",@"
 The rest of the people in the industry, they hurl a SINGLE F BOMB, they're probably gettin' let go.
 Maybe, MAYBE... Lester Holt might say it by accident, but even he would get a REAL stern talking to.
 
@@ -48616,7 +49120,7 @@ Holt   : Maybe I need like a week off or somethin'.
 Zucker : Dude. Nah. It's not like you're TUCKER CARLSON, dude. 
          That dude just threw like... 
          I don't even know.
-         He just cost Murdock a lot of money dude, in like 20 seconds the other day...
+         He just cost Murdoch a lot of money dude, in like 20 seconds the other day...
 Holt   : His ratings are really high though.
 Zucker : Look Lester.
          You're a straight up OG motherfucker. 
@@ -48675,12 +49179,11 @@ Nobody sounds less threatening than when they spell out the good ol' H E double 
 Anyway...
 "@)
 
-$Book.NewSection(10,"Examination (3)",@"
-
+$Book.NewSection(10,"Conjecture","Examination (3)",@"
 Fox News still needs to transition over to the new name. 
 Cause they know... it would make their lives easier. 
 __________________________________________________________________________________
-| Used to be News...? Now we're not news. Not News. Part of the Not News Network |
+| Used to be News...? Now we're Not News. Not News. Part of the Not News Network |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ^ That's emblematic. It's a slogan, it's a question, a statement, and basically a motto.
 Starting with a question "Used to be News...?"
@@ -48691,7 +49194,7 @@ But then at that exact moment where it was NEW news, it became Not News.
 If that sounds confusing, sorry I... 
 I'm just saying that they get the news → it's no longer news even though it used to be the second before.
 
-TUCKER CARLSON had this stint where he cost Murdock a couple of Primetime F bombs, and... that wasn't good.
+TUCKER CARLSON had this stint where he cost Murdoch a couple of Primetime F bombs, and... that wasn't good.
 If the president swears near a hot mic, when Obamacare is signed into law, yeh... he wasn't wrong.
 It was a BIG fuckin' deal, man.
 
@@ -48746,7 +49249,7 @@ Other kid would say "No WAY man... that stuff SCARES me..."
 Nothing like being a kid, scared shitless of aliens popping out of nowhere to abduct Scully or Mulder again.
 "@)
 
-$Book.NewSection(10,"Skit [~] X-Files: Elementary School Synopsis",@"
+$Book.NewSection(10,"Skit","X-Files: Elementary School Synopsis",@"
 Mulder : Scully... you can't go in there alone... too dangerous.
 Scully : *staring with intensity* Why not...?
 Mulder : *shakin head* Scully...? I don't wanna LOSE ya...
@@ -48762,8 +49265,7 @@ Mulder : *sniffles* I thought I lost ya last time... I'm not gonna lose you agai
 *suddenly an alien pops out of nowhere* (← and that's when I'd almost shit my pants like BOB LUTZ does)
 "@)
 
-$Book.NewSection(10,"Examination (4)",@"
-
+$Book.NewSection(10,"Conjecture","Examination (4)",@"
 X-Files was a good show. So was X-Men. Simpsons, Spiderman, then eventually Family Guy, and American Dad, a lot of 
 this stuff made it to many other networks on syndication. It's not like Fox had shit content all these years, that's 
 not the fuckin' problem. 
@@ -48828,7 +49330,7 @@ He just has no ability to recant when he goes way too far, and doesn't apologize
 Just like Putin. Mutual morons, joining forces, holding hands, giggling like a couple of love-struck idiots...
 The nature of egregiousness causes them both to be rather DANGEROUS.
 Trump, and Putin.
-Hannity, and Murdock.
+Hannity, and Murdoch.
 Carlson, by himself... invited some girl, but she said 'I'll pass'.
 That's how the 'Aw~! It's so cute!' comment will get ya if you're a small-dicked bastard like Carlson.
 
@@ -48913,7 +49415,7 @@ the camera as long as possible. Because, the more time they're in front of the c
 to read things like 1) books, 2) newspapers, 3) what educated people say, 4) anything educational...
 "@)
 
-$Book.NewSection(10,"Excerpt [~] Square peg, round hole",@"
+$Book.NewSection(10,"Excerpt","Square peg, round hole",@"
 I know someone's gonna say "But, they have a teleprompter that they read all the time..." Sure they do. 
 You really think these guys know how to read...? Words? Nah. 
 They don't have time to read WORDS, dude... 
@@ -48984,12 +49486,12 @@ Not News : Well, we WERE Fox News for about... oh... give or take 10 years?
            ...now we're the Not News Network. 
            Used to be Fox News.
 Not News : That's our calling card...
-           "Used to be news...? Now we're not news. Not News. Part of the Not News Network."
+           "Used to be news...? Now we're Not News. Not News. Part of the Not News Network."
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 __________________________________________________________________________________
-| Used to be News...? Now we're not news. Not News. Part of the Not News Network |
+| Used to be News...? Now we're Not News. Not News. Part of the Not News Network |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 If they called it the Not News Network, then it would make total sense. 
 Changing the name of Fox News to Not News, is actually FAR MORE BRILLIANT than it sounds.
@@ -48997,7 +49499,7 @@ No more having to get pissed at people cause NASCAR is on during a football game
 ...cause they won't even know what fuckin' channel the events are on anymore.
 "@)
 
-$Book.NewSection(10,"Skit [~] Dramatic Genius",@"
+$Book.NewSection(10,"Skit","Dramatic Genius",@"
     Person1 : What the hell happened to Fox News...? 
               It's just gone...
     Person2 : Ah, you didn't get the memo...?
@@ -49023,7 +49525,7 @@ $Book.NewSection(10,"Skit [~] Dramatic Genius",@"
               Well, now it's just business as usual, for the Not News Network.
 "@)
 
-$Book.NewSection(10,"Examination (5)",@"
+$Book.NewSection(10,"Conjecture","Examination (5)",@"
 
 What the fuck, can I get paid to roast these sons of bitches every day...? 
 Just call this dude a fuckin' moron each and every day, ALOT more often than John Oliver does...?
@@ -49117,7 +49619,7 @@ Dude would probably freak the fuck out, and have a fuckin' panic attack if you c
 So you gotta hold one behind your back so he doesn't see it... and just ask him.
 "@)
 
-$Book.NewSection(10,"Skit [~] You and your god damn books...~!",@"
+$Book.NewSection(10,"Skit","You and your god damn books...~!",@"
 You     : Hey, you wanna check out a book?
 Carlson : What, are you *voice very low, whispering* fuckin' crazy or something...? 
           How would it look...
@@ -49193,7 +49695,7 @@ Carlson: I'm gonna fuckin' crush it today.
          I can feel it.
 "@)
 
-$Book.NewSection(10,"Examination (6)",@"
+$Book.NewSection(10,"Conjecture","Examination (6)",@"
 I have to have respect for a dude who amps himself up that much every day, and yet...
 ...fails miserably at the thing he said he would do.
 Maybe he just gets overwhelmed after a few seconds of looking at the square peg.
@@ -49228,7 +49730,7 @@ He looks smart. And, probably is... just, not when the cameras are ever rolling 
 That's what America seems to be all about now, "Who gives a shit about the truth?"
 "@)
 
-$Book.NewSection(10,"Shoutout [+] Tribute to Lester Holt",@"
+$Book.NewSection(10,"Excerpt","Lester Holt",@"
 Lester Holt is like an oasis in the desert, well NBC is anyway... 
 They give a shit about the truth.
 
@@ -49246,7 +49748,7 @@ Lester Holt sure as hell does.
 He'll even tell ya that climate change is definitely real.
 "@)
  
-$Book.NewSection(10,"Reality",@"
+$Book.NewSection(10,"Conjecture","Reality",@"
 Every time people watch Fox news...? 
 People probably believe that its GOTTA be news... since it's part of the name, right? Wrong. 
 It's not news at all, its one long winded opinion with bits and pieces of truth that get squashed back down, 
@@ -49335,7 +49837,7 @@ getting injured, and then coming home to a country full of ungrateful fucks, may
 report actual news (like Hannity or Carlson), should do what Richard Engel does. 
 "@)
 
-$Book.NewSection(10,"Shoutout [+] Tribute to Richard Engel",@"
+$Book.NewSection(10,"Excerpt","Richard Engel",@"
 NBC has a shadow warrior named Richard Engel.
 Dude goes way deep into enemy territory, blends in like a soldier, whips out his camera, tells the facts, 
 gives falsehoods a middle finger.
@@ -49409,7 +49911,7 @@ Dude's probably able to sleep like a baby through actual gunfire.
 So, firecrackers aren't likely to get him to spaz the fuck out, man... Not him.
 "@)
 
-$Book.NewSection(10,"Examination (7)",@"
+$Book.NewSection(10,"Conjecture","Examination (7)",@"
 When groups of corporations work together to slander scientists, pollute the fuckin' planet... 
 ...kill animal species willy nilly, kill rainforests, allow hurricanes to get worse...
 ...tornadoes to get worse, wildfires to get worse...
@@ -49435,7 +49937,7 @@ For like... the last 10 years, man.
 The channel could probably be an enjoyable thing to watch if they changed their name to NOT NEWS. 
 "@)
 
-$Book.NewSection(10,"Excerpt [+] Not News Trailer (1)",@"
+$Book.NewSection(10,"Excerpt","Not News Trailer (1)",@"
 Trailer : Wanna see a grown ass man try to get a square peg through a round hole...?
           Well... look no further.
           Not only do you get the most up to date … details that happen to be Not News-worthy...?
@@ -49468,10 +49970,10 @@ Well, now they're fucked...
 
 They signed a non-disclosure agreement to ONLY report inaccurate shit all the time, NO EXCEPTIONS.
 Used to be news...? Now it's not news. Not News. Part of the Not News Network.
-"Don't believe a single fuckin' word we say~!" -Murdock
+"Don't believe a single fuckin' word we say~!" -Murdoch
 
 They should consider changing their name, to that.
-If Murdock chose to do that...?
+If Murdoch chose to do that...?
 Maybe no one will be able to tell.
 Might be considered going in a little close to the hip...
 
@@ -49518,7 +50020,7 @@ But- suppose they came right out and said that what they're reporting is some st
 "This is some straight-up, bullshit right here, man..."
 "@)
 
-$Book.NewSection(10,"Excerpt [+] Not News Trailer (2)",@"
+$Book.NewSection(10,"Excerpt","Not News Trailer (2)",@"
 Person  : This is the Not News Network, isn't it?
 Trailer : Yep.
           Sure as hell IS, buddy.
@@ -49538,7 +50040,7 @@ Trailer : Yep.
           We tell the bullshit stories, so that you don't EVER have to take us seriously.
 "@)
 
-$Book.NewSection(10,"Excerpt [+] Not News Trailer/Interview with TUCKER CARLSON",@"
+$Book.NewSection(10,"Excerpt","Not News Trailer/Interview with TUCKER CARLSON",@"
 Carlson : Jeez, how long have I been with Not News Network...? 
           Oh gosh... 
           It's been YEARS, hasn't it...? 
@@ -49566,7 +50068,7 @@ Carlson : Jeez, how long have I been with Not News Network...?
           It's something I'll take with me to my grave.
 "@)
 
-$Book.NewSection(10,"Excerpt [+] Not News Trailer/Interview with SEAN HANNITY",@"
+$Book.NewSection(10,"Excerpt","Not News Trailer/Interview with SEAN HANNITY",@"
 Hannity: Wow, I can't even tell ya how long I've been with the Not News Network... 
          Jeez. 
          Decades, I think...?
@@ -49597,7 +50099,7 @@ Hannity: Wow, I can't even tell ya how long I've been with the Not News Network.
          It really does have the perfect ring to it, doesn't it?
 "@)
 
-$Book.NewSection(10,"Examination (8)",@"
+$Book.NewSection(10,"Conjecture","Examination (8)",@"
 __________________________________________________________________________________
 | Used to be News...? Now we're Not News. Not News. Part of the Not News Network |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -49736,7 +50238,7 @@ His name is MARK ZUCKERBERG. HE is STILL, MORE PRODUCTIVE, than RUPERT MURDOCH w
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-Murdock : *rhetorically* Oh, you people want news...? Well, too bad. 
+Murdoch : *rhetorically* Oh, you people want news...? Well, too bad. 
           Here's a picture of my nutsack. 
           Oh wait, that's TUCKER CARLSON, same difference. 
           Better yet... do you people want to know what a smart guy 1) looks and 2) sounds like ...? 
@@ -49773,7 +50275,7 @@ I say MIGHT be, because, it IS possible, that someone a LOT less intelligent tha
 But, good luck convincing people that stick up for these guys on Fox News, it's a lost fucking cause. 
 "@)
  
-$Book.NewSection(10,"Conclusion (1)",@"
+$Book.NewSection(10,"Conjecture","Conclusion (1)",@"
 It's not a lost cause because their viewers aren't able to be reasoned with or are idiots necessarily.
 It's not a lost cause because Carlson or Hannity are bad PEOPLE, I never said these guys were bad people at all. 
 
@@ -50157,7 +50659,7 @@ Well, think again, ya fuck.
 That was a terrible idea, wasn't it? Guy would probably agree if he could stop puking, and does so for 
 several minutes. Then the guy offers him another `$100 to lick it. Didn't wanna do it cause of how degrading 
 it was...? But then hey... dude goes right ahead an does it. Basically the same thought process Hannity has 
-with Murdock.
+with Murdoch.
 
 When I see TUCKER CARLSON on TV, I get the feeling it's just some sick fuckin' joke somebody is playing 
 somewhere... I don't even ask anybody, because who the fuck even knows? Ya know...? So, I write these 
@@ -50358,7 +50860,7 @@ The guy who owns Fox, even he's fuckin' clueless too.
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-Murdock : *gritty voice* Why do people even watch us...? 
+Murdoch : *gritty voice* Why do people even watch us...? 
           It's like we are literally TRYING to NOT be liked, but then the opposite thing happens. 
           What the actual fuck, bro.
 
@@ -50369,8 +50871,8 @@ I would genuinely feel bad TUCKER CARLSON suddenly started bawling his eyes out.
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-Carlson : *starts crying* I've put EVERYTHING on the line for *points at Murdock* YOU Rupert!
-Murdock : *sighs* C'mon Tucker, don't cry, dude... 
+Carlson : *starts crying* I've put EVERYTHING on the line for *points at Murdoch* YOU Rupert!
+Murdoch : *sighs* C'mon Tucker, don't cry, dude... 
           Here, let me give ya a hug...
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
@@ -50380,19 +50882,19 @@ Fox News happens to be ACTUAL NEWS for that brief moment
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 _____________________________________________________________________________________
-| Headline : Carlson cries like a bitch for a minute, Murdock hugs him like his dad |
+| Headline : Carlson cries like a bitch for a minute, Murdoch hugs him like his dad |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Carlson : *eyes bloodshot and tears running down his face*
           *sniffle* You were always like a father to me...
-Murdock : Ugh, Tucker, please never say that shit to me ever again...
+Murdoch : Ugh, Tucker, please never say that shit to me ever again...
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
 At which point, everyone feels bad for TUCKER CARLSON... 
 Cause, he considers that man to be like a father to him, and Tucker doesn't understand...
-…Murdock doesn't like when people get too close. 
+…Murdoch doesn't like when people get too close. 
 While RUPERT MURDOCH WAS willing to fill the shoes of the father he never had...
-...Tucker doesn't realize that Murdock doesn't give a rats ass about Tucker...
+...Tucker doesn't realize that Murdoch doesn't give a rats ass about Tucker...
 ...cause that's why he pays him money to do a job.
 
 Probably does sound rather fuckin' cold to deliver that skit like that... but, I really cannot think of 
@@ -50437,7 +50939,7 @@ kid look like a total hopeless idiot, and somehow realized.
 "That's the fuckin' look of a millionaire right there."
 
 If people understood what I'm saying here, Tucker wouldn't last very long without Fox News. 
-He runs shit at Fox News and could tell Murdock to suck HIS dick, Murdock might actually do it. 
+He runs shit at Fox News and could tell Murdoch to suck HIS dick, Murdoch might actually do it. 
 But Carlson would never ask him to do that, pretty sure.
 
 Regardless... Tucker would probably find out, that everyone always thought something was off about him... 
@@ -50451,7 +50953,7 @@ Because, he looked like the type of dude who could cause people confusion...
 That's because, if someone can make up some bullshit on the fly...? It's him.
 "@)
 
-$Book.NewSection(10,"Skit [~] Tucker and Bob's golf match",@"
+$Book.NewSection(10,"Skit","Tucker and Bob's golf match",@"
 Tucker took inspiration from BOB LUTZ...
 He kept talking shit to this old man, about his golf game. 
 He had no fuckin' clue whether he played golf or not, but he felt like bothering *somebody*.
@@ -50594,7 +51096,7 @@ coincide in a story where Carlson doesn't have to play a single game of golf, to
 that they would shake his hand and play a game against some totally different person.
 "@)
 
-$Book.NewSection(10,"Conclusion (2)",@"
+$Book.NewSection(10,"Assertion","Conclusion (2)",@"
 That's because, if there is something this dude knows how to do, it's to manipulate people, for sure.
 That's what this dude gets `$100M+ for, per yer, if not more, and RUPERT MURDOCH is happy to give him 
 whatever he wants. What can anybody do about it?
@@ -50637,13 +51139,13 @@ Function Chapter_10
 
 $Book.NewChapter("Chapter 10","Expert Programming 101")
 
-$Book.NewSection(11,"Start",@"
+$Book.NewSection(11,"Lesson","Start",@"
 When you want to prove to people that think LYING or having TERRIBLE LOGIC doesn't matter...?
 Whip out the HOW TO PROGRAM toolbelt, to educate those people on HOW they're DUMBASSES.
 And then, publicly humiliate them for thinking this way.
 "@)
 
-$Book.NewSection(11,"Overview (1)",@"
+$Book.NewSection(11,"Story","Overview (1)",@"
 (Originally written between 05/13/22 → 05/18/22)
 
 Greetings (Reddit) PowerShell Community,
@@ -50733,7 +51235,7 @@ ________________________________________________________________________________
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(11,"Design Choices",@"
+$Book.NewSection(11,"Excerpt","Design Choices",@"
 Musk     : Guys, this isn't gonna work. 
            We need to throw ceramic tiles onto this thing...
 Engineer : Oh god. 
@@ -50763,7 +51265,7 @@ Musk     : You know it bro.
 Engineer : Yes sir.
 "@)
 
-$Book.NewSection(11,"Overview (2)",@"
+$Book.NewSection(11,"Conjecture","Overview (2)",@"
 I can imagine that when building PayPal, Elon didn't mess around.
 You wanna pay a pal of yours over the internet...? Well, now you can.
 Wanna know why you can pay a pal over the internet now...?
@@ -50827,7 +51329,7 @@ ___________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(11,"Can't just go reinventing stuff",@"
+$Book.NewSection(11,"Lesson","Can't just go reinventing stuff",@"
 It is one of the most challenging tasks I've ever decided to take on. The takeaway will be that I found a way to 
 integrate the threading of multiple runspaces via many custom classes that I wrote to drive the backend of the 
 utility. It is rather thorough in the information it collects, and it formats itself and saves a running system
@@ -50854,7 +51356,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(11,"<Editor> (1)",@"
+$Book.NewSection(11,"Lesson","<Editor> (1)",@"
 `$WMIList        = (Get-WMIObject Win32_Product)[0] 
 _________
 | or... |
@@ -50865,7 +51367,7 @@ __________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(11,"But Dad, you said...",@"
+$Book.NewSection(11,"Skit","But Dad, you said...",@"
 Kid : ...but Dad, you said to run 
 _______________________________
 | Get-WMIObject Win32_Product |
@@ -50888,7 +51390,7 @@ Kid : Yeah.
 Me  : Gladly.
 "@)
 
-$Book.NewSection(11,"Line #1: Breakdown",@"
+$Book.NewSection(11,"Lesson","Line #1: Breakdown",@"
            ______________________________3  6
 `$WMIList = ( Get-WMIObject Win32_Product )[ 0 ]
 ¯¯¯¯¯¯¯1 2   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯4  ¯¯¯¯5
@@ -50912,7 +51414,7 @@ If the command returns (1) or more, `$WMIList will NOT be `$Null/<empty>
 Here's some sample output that got returned by the console when I ran the above...
 "@)
 
-$Book.NewSection(11,"<Console> (1)",@"
+$Book.NewSection(11,"Lesson","<Console> (1)",@"
 PS Prompt:\> `$WMIList
 
 IdentifyingNumber : {2AF42320-5ECF-4BCA-B756-8F3677262D55}
@@ -50922,7 +51424,7 @@ Version           : 1.00.0009
 Caption           : Branding64
 "@)
 
-$Book.NewSection(11,"Kid sort of gets it now",@"
+$Book.NewSection(11,"Skit","Kid sort of gets it now",@"
 Kid : Alright... *adjusts his glasses* I sort of get it now.
 Me  : Cool.
 Kid : How do you know that Paul Allen said that everything starts with the number 0, though?
@@ -50948,7 +51450,7 @@ Kid : Alright.
       Feel free to proceed.
 "@)
  
-$Book.NewSection(11,"<Properties> (1)",@"
+$Book.NewSection(11,"Lesson","<Properties> (1)",@"
 Properties are in (EXECUTABLE/COMMAND/FUNCTION/TYPE/CLASS/METHOD/VARIABLE/PROPERTY/VALUE) list.
 Because we'll refer to this list right here a lot, let's define a MENTAL VARIABLE named `$List
 ___________________________________________________________________________________
@@ -50977,7 +51479,7 @@ object they are part of *instantaneously*.
 Before I can really dive deeper into properties though, I have to touch on the Lamda.
 "@)
 
-$Book.NewSection(11,"<Lambda>",@"
+$Book.NewSection(11,"Lesson","<Lambda>",@"
 I'm going to shorthand all (3) of these, 1) Commands, 2) Functions and 3) Methods, as "Lamda"
 
 A LAMBDA can either be:
@@ -50997,7 +51499,7 @@ _______________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(11,"From Executables to Values (1)",@"
+$Book.NewSection(11,"Lesson","From Executables to Values (1)",@"
 A dude named KEVIN came along, and then suddenly, a LAMBDA was invoked...
 ...now that dude's name is MARK.
 
@@ -51130,14 +51632,14 @@ or BUILD that .mp4 file...? That really depends on what those instructions actua
 Because, it could literally just be the same exact character repeated ...
 "@)
 
-$Book.NewSection(11,"<Console> (2)",@"
+$Book.NewSection(11,"Lesson","<Console> (2)",@"
 PS Prompt:\> `$Int = [Int64](10.7 * 1GB)
 PS Prompt:\> `$Int
 
 11489037517
 "@)
 
-$Book.NewSection(11,"From Executables to Values (2)",@"
+$Book.NewSection(11,"Lesson","From Executables to Values (2)",@"
 11489037517 many times. Yeah. It won't be an exciting, action-packed, thriller of a movie.
 If it is the same character repeated that many times, then that (*.mp4) file won't even open.
 That's pretty boring. But, there COULD actually be something WAY more boring, than a file that claims to be an 
@@ -51204,7 +51706,7 @@ That was the actual moral of the story of the 1997 movie CONTACT.
 What do these things have to do with the properties of `$WMIList, though...?
 "@)
 
-$Book.NewSection(11,"Properties, Strings, Serialization, Deserialization",@"
+$Book.NewSection(11,"Lesson","Properties, Strings, Serialization, Deserialization",@"
 ______________________________________________________________
 | Property          | Value                                  |
 |-------------------|----------------------------------------|
@@ -51276,7 +51778,7 @@ at least, whenever they're programmed to perform specific lambdas in response to
 That's the cinematic, long-winded explanation... for patterns in strings of serialized text.
 "@)
 
-$Book.NewSection(11,"Regular Expressions (1)",@"
+$Book.NewSection(11,"Lesson","Regular Expressions (1)",@"
 This specific (Regex/regular expression) pattern here...
 "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 ...can be used to match any GUID in existence, if the letters are lowercase. Not uppercase.
@@ -51298,7 +51800,7 @@ Does the value for property "IdentifyingNumber" for variable `$WMIList match the
 Let's find out...
 "@)
 
-$Book.NewSection(11,"<Console> (3)",@"
+$Book.NewSection(11,"Lesson","<Console> (3)",@"
 ____________________________________________________________________________________________________
 | 1) Assign [String]"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" to var `$Pattern |____________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -51321,7 +51823,7 @@ ________________________________________________________________________________
 UPPERCASE letters [A-F].
 "@)
 
-$Book.NewSection(11,"Regular Expressions (2)",@"
+$Book.NewSection(11,"Lesson","Regular Expressions (2)",@"
 If we're being serious, there's PLENTY we can do here.
 a) Drop 'c' from "-cmatch", or...
 b) change the pattern to consider uppercase letters.
@@ -51350,7 +51852,7 @@ being anywhere between:
 If we need ABSOLUTE CERTAINTY that our PATTERN will match regardless, CHANGE the PATTERN.
 "@)
 
-$Book.NewSection(11,"<Console> (4)",@"
+$Book.NewSection(11,"Lesson","<Console> (4)",@"
 ____________________________________________________________________________________________________
 | 1) Assign [String]"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" to var `$Pattern |____________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -51373,7 +51875,7 @@ ________________________________________________________________________________
 Typically, people will use -match in their scripts far more often than -cmatch
 "@)
 
-$Book.NewSection(11,"Regular Expressions (3)",@"
+$Book.NewSection(11,"Lesson","Regular Expressions (3)",@"
 The thing is, if we directly compare the Regex match pattern to the actual value...
 __________________________________________________________________________
 | Pattern | [0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12} |
@@ -51418,7 +51920,7 @@ I'll demonstrate a complicated way to create a class that generates a legitimate
 This class will actually perform ADDITIONAL roles/duties/methods, that the base class [Guid] doesn't.
 "@)
 
-$Book.NewSection(11,"<Complicated>",@"
+$Book.NewSection(11,"Lesson","<Complicated>",@"
 Kid : Dad, this sounds really complicated.
 Me  : Listen, Kid.
       The reason all of this SOUNDS incredibly complicated...?
@@ -51466,7 +51968,7 @@ Kid : *rolls his eyes* Whatever...
 Me  : Wait till you're ready to try some on, kid... all this stuff'll help.
 "@)
 
-$Book.NewSection(11,"Overly-Complicated Class Definition that Generates GUID's",@'
+$Book.NewSection(11,"Lesson","Overly-Complicated Class Definition that Generates GUID's",@'
 Using a (1) property named Guid, I want to (match/extend) the output for the [Guid] base class.
 There are comments within the class here, feel free to study it, as I suggest doing so. 
 
@@ -51571,7 +52073,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
-$Book.NewSection(11,"<Console> (5)",@"
+$Book.NewSection(11,"Lesson","<Console> (5)",@"
 We will use (2) manners of accessing the class I just wrote...
 ________________________________________________________________________________________
 | Manner 1) Direct value entry (unable to invoke methods within this class externally) |_______________________
@@ -51616,7 +52118,7 @@ That's because the command is accessing that specific type via that function/cmd
 However, there are other methods within the class that I'd like to access, so it shows more details.
 "@)
 
-$Book.NewSection(11,"Notes + Method Chaining",@"
+$Book.NewSection(11,"Lesson","Notes + Method Chaining",@"
 The other manner is to use a variable, which allows a user to have extended control over the methods within a
 class/type. Without casting it to a variable, there's no way to access those methods, unless you chain the method 
 on at the end. If you use the variable assignment manner, you don't have to do that.
@@ -51729,7 +52231,7 @@ Then, if one of those methods returns null...? Then object won't be wiped from e
 Nah. It'll still exist, the method just won't do anything to it. Then, you're good.
 "@)
 
-$Book.NewSection(11,"<Console> (6)",@"
+$Book.NewSection(11,"Lesson","<Console> (6)",@"
 ___________________________________________________________________________
 | 2) Variable usage (able to invoke methods within this class externally) |____________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -51797,7 +52299,7 @@ that things get lost in translation without a reference.
 Still, it is extremely useful, however, I won't cover that here.
 "@)
 
-$Book.NewSection(11,"<Properties> (2)",@"
+$Book.NewSection(11,"Lesson","<Properties> (2)",@"
 Let me return to the topic of properties. Below are the properties from the FIRST command we ran.
 ______________________________________________________________
 | Property          | Value                                  |
@@ -51880,7 +52382,7 @@ The point of elaborating on so many of these details, is so that now we can navi
 throwing a lot of them together just like I did in Line #1. Because, Line #1 is just the tip of the iceberg.
 "@)
 
-$Book.NewSection(11,"<Console> (7)",@'
+$Book.NewSection(11,"Lesson","<Console> (7)",@'
 Remember, $Pattern was set to "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 1) Return $WMIList.IdentifyingNumber as a) [String], b) [String][GUID] and c) [String][DemoGuid]
  ______________________________________________________________________________________________________________
@@ -51956,7 +52458,7 @@ I've now demonstrated how classes are conceptualized, and written.
          ¯¯¯¯¯¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯      ¯¯¯¯¯¯¯
 '@)
 
-$Book.NewSection(11,"Dissemination",@"
+$Book.NewSection(11,"Conjecture","Dissemination",@"
 I was also able to integrate these various details back into the overarching lesson plan after all. 
 Now, it IS definitely debatable as to whether or not anybody should go ahead, and reinvent the wheel, or 
 whatever pseudonym people want to use... but, that's not what I did at all.
@@ -52015,7 +52517,7 @@ ______________________________________________________________
 ...and that property I'm about to go over, is the Version property.
 "@)
 
-$Book.NewSection(11,"<Console> (8)",@'
+$Book.NewSection(11,"Lesson","<Console> (8)",@'
  ______________________________________________________________________________________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -52039,7 +52541,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
-$Book.NewSection(11,"<Properties> (3)",@"
+$Book.NewSection(11,"Lesson","<Properties> (3)",@"
 Now, this all started with some action jam packed into Line #1.
 It needed a breakdown, but now, I'm going to finish what I started in reference to properties.
 
@@ -52059,7 +52561,7 @@ PROPERTIES definitely qualify as VARIABLES.
 But, VARIABLES themselves aren't necessarily PROPERTIES, not unless they are attached to a specific OBJECT...
 "@)
 
-$Book.NewSection(11,"<Console> (9)",@'
+$Book.NewSection(11,"Lesson","<Console> (9)",@'
 In PowerShell, if a VARIABLE IS NOT attached to an [Object], then the VARIABLE is a property of the current
 (PowerShell host/execution context). THAT is the [Object] (that/those) VARIABLE(S) are properties of.
 
@@ -52142,7 +52644,7 @@ Hence, why you've seen the VARIABLE go back to "".
 Convinced yet...?
 '@)
 
-$Book.NewSection(11,"<Properties> (4) The final stanza, Tony Danza",@"
+$Book.NewSection(11,"Lesson","<Properties> (4) The final stanza, Tony Danza",@"
 I'm going to restate some things I just stated above slightly differently.
 
 If I know my stuff, what you just did...?
@@ -52228,7 +52730,7 @@ The property rundown is finito. Now, you just gotta ask yourself one question...
 Who's the boss, NOW, buddy? Is it you? Or Tony Danza? (Or, is it Angela...?)
 "@)
 
-$Book.NewSection(11,"Back to Work",@'
+$Book.NewSection(11,"Lesson","Back to Work",@'
 It's time to go all out beast mode with the $WMIList Object.
 Now we're going to start dynamically building a class definition, for WMIObject.
 
@@ -52254,7 +52756,7 @@ the dashed line below, it won't actually assign the output to anything. The one 
 will show you the table output, not the list.
 '@)
 
-$Book.NewSection(11,"Work for Real",@'
+$Book.NewSection(11,"Lesson","Work for Real",@'
 We want to format the class with the right spacing between elements, cause I'm a perfectionist AND precise. 
 All of the type names and property names will line up if we collect em all to find the length of the longest type.
 
@@ -52269,7 +52771,7 @@ To explain, it's a multifaceted ONE-LINER involving:
 - $True selects slot 1 in the array returning ($_ -Replace "System\.","")
 '@)
 
-$Book.NewSection(11,"<Commands> (1)",@'
+$Book.NewSection(11,"Lesson","<Commands> (1)",@'
 _________________________________________________________________________________________________
 | Assign variable $TypesMaxLength to the operation Types. Or, highlight them both and press F8  |______________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -52354,7 +52856,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
-$Book.NewSection(11,"<Class Definiton>",@'
+$Book.NewSection(11,"Lesson","<Class Definiton>",@'
 ________________________________________________________
 | Here is the OUTPUT of ALL that stuff we just did...  |_______________________________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -52452,7 +52954,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
-$Book.NewSection(11,"<Class Definition> Summary",@"
+$Book.NewSection(11,"Lesson","<Class Definition> Summary",@"
 Above, the newly constructed class has been cleanly formatted, and procedurally spaced out.
 But, here's why it's not all that COOL or USEFUL... yet.
 
@@ -52540,7 +53042,7 @@ Man. Guess I shouldn't haphazardly try to rhyme everything that comes to mind.
 That dude, sounds like he's been through the ringer... *shakes head*. 
 "@)
 
-$Book.NewSection(11,"Invoke `$ClassDefinition",@'
+$Book.NewSection(11,"Lesson","Invoke `$ClassDefinition",@'
 Anyway, yeah. If you want to invoke the class that was just created with the last several breaks of code, 
 then here is where that code gets turned into a class definition that can be invoked. 
 ________________________________________________________________
@@ -52584,7 +53086,7 @@ that at some point in the previous 1500+ lines.
 Well... a type is a class, and a class is a type... the terms, I'm fairly certain, are literally interchangeable.
 '@)
 
-$Book.NewSection(11,"Computer Updated - Press F1",@"
+$Book.NewSection(11,"Conjecture","Computer Updated - Press F1",@"
 Uh-oh... Matthew Caldwell didn't do any Google searches BEFORE having me image a thousand machines in the
 warehouse... Now I gotta do ALL that work all over again, because of this following article...
 
@@ -52653,7 +53155,7 @@ ________________________________________________________________________________
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(11,"<Console> (10)",@'
+$Book.NewSection(11,"Lesson","<Console> (10)",@'
 Checks both (32-bit/64-bit) registry paths | No games being played here...
  ______________________________________________________________________________________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -52696,7 +53198,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 
-$Book.NewSection(11,"Back to the Drawing Board",@"
+$Book.NewSection(11,"Lesson","Back to the Drawing Board",@"
 The problem is, now the class definition is out of date!
 We don't need the old one anymore, cause it doesn't have what we need.
 
@@ -52776,7 +53278,7 @@ To do this, lets start with a common application that was installed via MSI, sin
 and the most consistency (so, like Microsoft Edge, or Google Chrome...)
 "@)
 
-$Book.NewSection(11,"<Template>",@"
+$Book.NewSection(11,"Lesson","<Template>",@"
 I currently have Microsoft Edge installed on this machine, it is hands down, the best there is.
  ______________________________________________________________________________________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -52807,7 +53309,7 @@ ________________________________________________________________________________
  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 
-$Book.NewSection(11,"Non-Default Registry Keys",@"
+$Book.NewSection(11,"Lesson","Non-Default Registry Keys",@"
 This time, we want to add a property for NON-DEFAULT registry keys in this uninstall path folder.
 [Analogy]: Entries with NON-DEFAULT registry keys are similar to when somebody doesn't fit into
 the typical mold that most people in society fit into since they're different than everyone else.
@@ -52877,7 +53379,7 @@ each property. Then, we want to have a method that can format all of those objec
 the output.
 "@)
 
-$Book.NewSection(11,"<Commands> (2)",@'
+$Book.NewSection(11,"Lesson","<Commands> (2)",@'
 We'll run through the script again... but with a few added steps and more explanations.
 Get $Edge.PSObject.Properties where the name doesn't start with either "_" or "PS"
  ______________________________________________________________________________________________________________
@@ -52977,7 +53479,7 @@ help, lets call the .NET base type, via [PSNoteProperty]::New but, with a twist.
 BTW: "[PSNoteProperty]::New()" literally does the same thing as "New-Object PSNoteProperty"
 '@)
 
-$Book.NewSection(11,"[CLR/.Net Tricks Explained]: Auto Completion, and Overload Definitions",@'
+$Book.NewSection(11,"Lesson","[CLR/.Net Tricks Explained]: Auto Completion, and Overload Definitions",@'
 ______________________________
 | Trick #1 : Auto Completion |_________________________________________________________________________________
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -53049,7 +53551,7 @@ While there ARE very subtle differences and variations here, they ALL draw some 
 than just abstract similarity to one another. Can you spot the similarities?
 '@)
 
-$Book.NewSection(11,"PowerShell Class/Type Engine Assumptions",@'
+$Book.NewSection(11,"Lesson","PowerShell Class/Type Engine Assumptions",@'
 Not all of the labels appear in each instance. 
 With PowerShell, the console is pretty good about ASSUMING (classes/types) for each variable. 
 That's because of the PowerShell Class/Type engine.
@@ -53188,7 +53690,7 @@ scriptblock or curly braces where the ($_ / Null) variable works, then this nake
 fine... as long as you're not using exotic characterss, or spaces.
 '@)
 
-$Book.NewSection(11,"Excerpt [~] Comparing CSharp & PowerShell",@"
+$Book.NewSection(11,"Excerpt","Comparing CSharp & PowerShell",@"
 The take away from all of this explanation, is that PowerShell is LITERALLY the same exact thing as CSharp under 
 the skin, though I'm sure someone from Microsoft will pop out, and say:
 __________________
@@ -53245,7 +53747,7 @@ _____________________________
 But, maybe break is the wrong term here...
 "@)
 
-$Book.NewSection(11,"Embrace, Extend, and Enhance",@"
+$Book.NewSection(11,"Conjecture","Embrace, Extend, and Enhance",@"
 When is the last time you've ever heard anybody say:
 ______________________________________________________________________________________________
 | Someone: Hey, buddy. You better not go make something even cooler than it already was...~! |
@@ -53288,7 +53790,7 @@ That's cause they invented the idea of software. So, when they decide to do some
 They don't play games. One day they got together and said to Google...
 "@)
 
-$Book.NewSection(11,"Internet Explorer vs. Chrome vs. Edge",@"
+$Book.NewSection(11,"Story","Internet Explorer vs. Chrome vs. Edge",@"
 Microsoft : Hey Google. 
             Let us show you how to build a better web browser.
 Google    : Chrome is the best, pal.
@@ -53343,7 +53845,7 @@ Microsoft : It is.
             But- we did a lot more than just give it a facelift...
 "@)
 
-$Book.NewSection(11,"Skit [~] Dreaming Big, Building Bigger",@"
+$Book.NewSection(11,"Skit","Dreaming Big, Building Bigger",@"
 The truth is, when Microsoft really wants to do something...? 
 They will actually go right ahead, assign a whole football team worth of people that just so happen to be very 
 bright individuals, and they'll spend all day and night conceptualizing about the thing they set out to do.
@@ -53437,7 +53939,7 @@ ________________________________________________________________________________
 You wouldn't think that this story was really all that realistic, but... it probably is.
 "@)
 
-$Book.NewSection(11,"The Two Titans of Technology",@"
+$Book.NewSection(11,"Story","The Two Titans of Technology",@"
 The end result, is that Microsoft was able to build a version of Chrome that uses less resources, is snappier, 
 uses all of the same extensions Chrome does whereby making Edge have backward compatibility with other extensions, 
 and now they've incorporated what made Edge v1 actually pretty cool, useful, and performant. 
@@ -53455,7 +53957,7 @@ Written on a napkin.
 Decades in the making...
 "@)
 
-$Book.NewSection(11,"Continued, Language Construction/Similarities (Object-Oriented vs. Functional vs. String-based)",@"
+$Book.NewSection(11,"Lesson","Continued, Language Construction/Similarities (Object-Oriented vs. Functional vs. String-based)",@"
 Some may say that PowerShell is a functional language, but it really is a lot more than that.
 I suppose for the people that only know how to use commands that come with the operating system, then it's pretty 
 easy to think PowerShell is just a functional language.
@@ -53505,7 +54007,7 @@ Those nested objects might even have many properties with single values, or mult
 Now you probably have no idea if I'm stating things metaphorically, or specifically... do you?
 "@)
 
-$Book.NewSection(11,"Quantum Physics, Entanglement, and Superposition",@"
+$Book.NewSection(11,"Conjecture","Quantum Physics, Entanglement, and Superposition",@"
 The truth is, I could be stating one of those things. 
 Or, the other.
 
@@ -53560,7 +54062,7 @@ Them...? Thinking about how to reliably count the number of stars in the univers
 You...? Probably just getting a coffee at Starbucks to start your day.
 "@)
 
-$Book.NewSection(11,"Doing the Impossible",@"
+$Book.NewSection(11,"Conjecture","Doing the Impossible",@"
 If that just blew your mind...? Sorry. 
 
 It's easy to get carried away with how much control there is, especially when just casually stating these words 
@@ -53580,7 +54082,7 @@ calculated, translated, and duplicated with precision.
 The possibilities don't stop there, either. But, Allow me to return to the subject of:
 "@)
 
-$Book.NewSection(11,"Object-Oriented vs. Functional vs. String-based",@"
+$Book.NewSection(11,"Conjecture","Object-Oriented vs. Functional vs. String-based",@"
 String based languages like tsch ARE reliable, however...
 It is very old, as it originates from (UNICS/Uniplexed Information and Computing System)
 Which, eventually dropped the CS and traded it with an X, whereby changing UNICS to UNIX.
@@ -53636,7 +54138,7 @@ So, if you're using Linux or Mac OSX, THEN... Python is a GREAT choice. But, so 
 On Windows, you have access to PowerShell Desktop AND Core. Then, it isn't much of a question.
 "@)
 
-$Book.NewSection(11,"Should I install Python...? PowerShell is just WAY too convenient...",@"
+$Book.NewSection(11,"Conjecture","Should I install Python...? PowerShell is just WAY too convenient...",@"
 Guy : Should I use PowerShell (since it's already included on Windows) or, install Python...?
       Decisions, decisions...
       Do I use Python version 3.0.0, 3.1.0, or heck, maybe 3.9.4 is the way to go...? 
@@ -53723,7 +54225,7 @@ I'm sure that's an OVERSIMPLIFICATION, but Python causes me to FEEL as if, it is
 Now, bringing it all back to comparing and contrasting with CSharp, since that's where this started.
 "@)
 
-$Book.NewSection(11,"Comparing/Contrasting CSharp & PowerShell",@"
+$Book.NewSection(11,"Conjecture","Comparing/Contrasting CSharp & PowerShell",@"
 CSharp isn't your standard issue, do-it-in-a-jiffy type of programming language... Nah.
 It requires a LOT more meticulousness than PowerShell, as it is specifically, and strongly typed.
 
@@ -53933,7 +54435,7 @@ GM has ALMOST made a good electric vehicle many, many times... but each time tho
 to market... they somehow *vanished*.
 "@)
 
-$Book.NewSection(11,"The Terrible Magician",@"
+$Book.NewSection(11,"Conjecture","The Terrible Magician",@"
 This is a bit of a tangent and this is gonna be a bit DETAILED and LONG WINDED, but I promise you...?
 The tangent will coalesce back into the narrative of PROGRAMMING and the MORAL of the story will make itself
 PERFECTLY CLEAR and RELEVANT toward the end.
@@ -54022,7 +54524,7 @@ GM hasn't been an interesting vehicle manufacturer, since... like, WAAAAY back i
 Basically BEFORE BOB LUTZ began to run General Motors, that's when General Motors was actually respectable.
 "@)
 
-$Book.NewSection(11,"Microsoft's Golden Standards",@"
+$Book.NewSection(11,"Conjecture","Microsoft's Golden Standards",@"
 Microsoft doesn't have this issue where they perform magic tricks or tell stories...
 Well, let me rephrase that... They perform magic tricks that are SKILLFULLY executed, not TERRIBLY executed.
 Not only do THEY know how real climate change is, but they never sound moronic, like, ever.
@@ -54161,7 +54663,7 @@ Not theirs.
 Microsoft would never, ever, not in their entire existence, implement intentional design flaws.
 "@)
 
-$Book.NewSection(11,"Insulting General Motors and Big Oil",@"
+$Book.NewSection(11,"Conjecture","Insulting General Motors and Big Oil",@"
 Seriously. That's because they have ACTUAL gold standards... not "quote unquote gold standards".
 When the FBI guys drive around in the State issued GMC Yukon Denalis, they may say:
 
@@ -54505,7 +55007,7 @@ Too worried about BURNING and LEAKING oil... not about GAS MILEAGE or SUSTAINABI
 The MORE MONEY they can CONVINCE people to WASTE...? The BETTER.
 "@)
 
-$Book.NewSection(11,"Climate Change",@"
+$Book.NewSection(11,"Conjecture","Climate Change",@"
 That means they have MORE to give to RUPERT MURDOCH, SEAN HANNITY, or TUCKER CARLSON, which works great for them. 
 To them...? 
 They don't care about wildfires.
@@ -54634,7 +55136,7 @@ So, even though the dudes on Fox News constantly spam people with THEIR rhetoric
 else does that same exact thing in return.
 "@)
 
-$Book.NewSection(11,"Skit [~] Steve Jobs: 'You've baked a lovely cake...'",@"
+$Book.NewSection(11,"Skit","Steve Jobs: 'You've baked a lovely cake...'",@"
 What if everybody just showed up on their set, and just started phrasing rhetoric too.
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
@@ -54690,7 +55192,7 @@ Then whoever didn't prepare for the situation...?
 They're all screwed.
 "@)
 
-$Book.NewSection(11,"Martial Law",@"
+$Book.NewSection(11,"Conjecture","Martial Law",@"
 It stands to reason, that this idiot might actually be surprised when he tries to go to the store and use some 
 of those millions, when the world is in a state of martial law.
 
@@ -54848,7 +55350,7 @@ Repeating the gospels of fools, while also foreshadowing the certain inevitable 
 ...of the day where everything began to fall apart.
 "@)
 
-$Book.NewSection(11,"Judgement Day",@"
+$Book.NewSection(11,"Conjecture","Judgement Day",@"
 That's because, the day of reckoning finally arrived, with the skies torched and blackened, and the sun drowned 
 out like a faint glimmer in a seemingly endless void, an oasis in the desert... 
 
@@ -54986,7 +55488,7 @@ And that's how it ALLLLLLLL ties back into the original lesson plan.
 Cyberterrorism.
 "@)
  
-$Book.NewSection(11,"Cyberterrorism",@"
+$Book.NewSection(11,"Conjecture","Cyberterrorism",@"
 If you contact the local boys, they will laugh at you cause they don't know about stuff like Pegasus. 
 Some of them are pretty gay about it too. 
 
@@ -55019,7 +55521,7 @@ at GM for 50 years. A long chapter of time where some blindfolded noob just swun
 called THAT.... "being a role model citizen".
 "@)
 
-$Book.NewSection(11,"Greatest Challenge of our Time",@"
+$Book.NewSection(11,"Conjecture","Greatest Challenge of our Time",@"
 But, it could also branch back to global warming and climate change. 
 Al Gore. 
 Leonardo DiCaprio.
@@ -55095,7 +55597,7 @@ Former President George W. Bush, is a saint, of all sainthood, in comparison to 
 GM for 50 years (though to be clear, GWB is no saint). 
 "@)
 
-$Book.NewSection(11,"The Adventures of Starman",@"
+$Book.NewSection(11,"Conjecture","The Adventures of Starman",@"
 I realize someone will probably tell BOB LUTZ about this entire document, and if he reads it, he may cry. 
 And, that's ok. Elon just went right ahead, and upended everything this man BOB LUTZ ever did for 50 years 
 straight... Elon had the (1) company he owns/runs, one who doesn't make a single bad vehicle... make a Tesla 
@@ -55130,7 +55632,7 @@ lazy as BOB LUTZ always has been. And that's fine. So it really isn't Elons faul
 many negative people, who couldnt do a fifth of what he's done, if they all tried together...?
 "@)
 
-$Book.NewSection(11,"Almost",@"
+$Book.NewSection(11,"Conjecture","Almost",@"
 Yeah. George Bush was a perfect president, when compared to this moron, BOB LUTZ. 
 Bob made lot of really bad vehicles. When I say BAD, I mean...
 ...in his entire 50 year tenure, the man never completed (1) single thing to be proud of...
@@ -55431,7 +55933,7 @@ You're not ALMOST gettin' the best there is in the industry... Nah.
 You're DEFINITELY gettin' that, and that's all there is to it.
 "@)
 
-$Book.NewSection(11,"Back to the Lesson Plan",@'
+$Book.NewSection(11,"Lesson","Back to the Lesson Plan",@'
 The tangent I just went on, caused me to begin writing Top Deck Awareness – Not News.
 But, I'm gonna finish out this lesson plan.
 
@@ -55940,7 +56442,7 @@ $ClassDefinition = @("Class $($Def.Name)","{",($Def.Type -join "`n"),
                      "}") -join "`n"
 '@)
 
-$Book.NewSection(11,"<Class Definition> Template",@'
+$Book.NewSection(11,"Lesson","<Class Definition> Template",@'
 Now, I'll develop these above variables as (2) separate classes, one for the container, one for the class object, 
 and the class object needs to be written FIRST so that the type can be used in the container class. 
 
@@ -56169,7 +56671,7 @@ ________________________________________________________________________________
 $ClassDefinition | Set-Clipboard
 '@)
 
-$Book.NewSection(11,"Output",@'
+$Book.NewSection(11,"Lesson","Output",@'
 Class Uninstall
 {
     [String]        $DisplayName
@@ -56249,7 +56751,7 @@ Things become harder to do when you're writing CODE that does what you as a huma
 content, and that's when design choices might change.
 '@)
 
-$Book.NewSection(11,"Comparison",@'
+$Book.NewSection(11,"Lesson","Comparison",@'
 _________________________________________________________________________________________________________________
 | FIRST CLASS, [UninstallStack] |/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/|
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -56835,200 +57337,202 @@ Maybe some of them do, I don't know.
 From what some of my friends tell me they say it's ONLY fun AFTER you get paid.
 '@)
 
-$Book.NewSection(11,"Conclusion",@'
-    Anyway, that's it for the lesson, hope you enjoyed it.
-    I've gone ahead and pasted additional copies of the classes below in a comment block.
-     ______________________________________________________________________________________________________________
-    /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    Class Win32_Product
+$Book.NewSection(11,"Lesson","Conclusion",@'
+Anyway, that's it for the lesson, hope you enjoyed it.
+I've gone ahead and pasted additional copies of the classes below in a comment block.
+ ______________________________________________________________________________________________________________
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+Class Win32_Product
+{
+    [UInt16]                                 $AssignmentType
+    [String]                                        $Caption
+    [String]                                    $Description
+    [String]                                    $ElementName
+    [String]                                       $HelpLink
+    [String]                                  $HelpTelephone
+    [String]                              $IdentifyingNumber
+    [String]                                    $InstallDate
+    [String]                                   $InstallDate2
+    [String]                                $InstallLocation
+    [String]                                  $InstallSource
+    [Int16]                                    $InstallState
+    [String]                                     $InstanceID
+    [String]                                       $Language
+    [String]                                   $LocalPackage
+    [String]                                           $Name
+    [String]                                   $PackageCache
+    [String]                                    $PackageCode
+    [String]                                    $PackageName
+    [String]                                      $ProductID
+    [String]                                     $RegCompany
+    [String]                                       $RegOwner
+    [String]                                      $SKUNumber
+    [String]                                     $Transforms
+    [String]                                   $URLInfoAbout
+    [String]                                  $URLUpdateInfo
+    [String]                                         $Vendor
+    [String]                                        $Version
+    [UInt32]                               $WarrantyDuration
+    [String]                              $WarrantyStartDate
+    [UInt32]                                      $WordCount
+    [Management.ManagementScope]                      $Scope
+    [Management.ManagementPath]                        $Path
+    [Management.ObjectGetOptions]                   $Options
+    [Management.ManagementPath]                   $ClassPath
+    [Management.PropertyDataCollection]          $Properties
+    [Management.PropertyDataCollection]    $SystemProperties
+    [Management.QualifierDataCollection]         $Qualifiers
+    [ComponentModel.ISite]                             $Site
+    [ComponentModel.IContainer]                   $Container
+    Win32_Product([Object]$WMIObject)
     {
-        [UInt16]                                 $AssignmentType
-        [String]                                        $Caption
-        [String]                                    $Description
-        [String]                                    $ElementName
-        [String]                                       $HelpLink
-        [String]                                  $HelpTelephone
-        [String]                              $IdentifyingNumber
-        [String]                                    $InstallDate
-        [String]                                   $InstallDate2
-        [String]                                $InstallLocation
-        [String]                                  $InstallSource
-        [Int16]                                    $InstallState
-        [String]                                     $InstanceID
-        [String]                                       $Language
-        [String]                                   $LocalPackage
-        [String]                                           $Name
-        [String]                                   $PackageCache
-        [String]                                    $PackageCode
-        [String]                                    $PackageName
-        [String]                                      $ProductID
-        [String]                                     $RegCompany
-        [String]                                       $RegOwner
-        [String]                                      $SKUNumber
-        [String]                                     $Transforms
-        [String]                                   $URLInfoAbout
-        [String]                                  $URLUpdateInfo
-        [String]                                         $Vendor
-        [String]                                        $Version
-        [UInt32]                               $WarrantyDuration
-        [String]                              $WarrantyStartDate
-        [UInt32]                                      $WordCount
-        [Management.ManagementScope]                      $Scope
-        [Management.ManagementPath]                        $Path
-        [Management.ObjectGetOptions]                   $Options
-        [Management.ManagementPath]                   $ClassPath
-        [Management.PropertyDataCollection]          $Properties
-        [Management.PropertyDataCollection]    $SystemProperties
-        [Management.QualifierDataCollection]         $Qualifiers
-        [ComponentModel.ISite]                             $Site
-        [ComponentModel.IContainer]                   $Container
-        Win32_Product([Object]$WMIObject)
-        {
-            $This.AssignmentType     = $WMIObject.AssignmentType
-            $This.Caption            = $WMIObject.Caption
-            $This.Description        = $WMIObject.Description
-            $This.ElementName        = $WMIObject.ElementName
-            $This.HelpLink           = $WMIObject.HelpLink
-            $This.HelpTelephone      = $WMIObject.HelpTelephone
-            $This.IdentifyingNumber  = $WMIObject.IdentifyingNumber
-            $This.InstallDate        = $WMIObject.InstallDate
-            $This.InstallDate2       = $WMIObject.InstallDate2
-            $This.InstallLocation    = $WMIObject.InstallLocation
-            $This.InstallSource      = $WMIObject.InstallSource
-            $This.InstallState       = $WMIObject.InstallState
-            $This.InstanceID         = $WMIObject.InstanceID
-            $This.Language           = $WMIObject.Language
-            $This.LocalPackage       = $WMIObject.LocalPackage
-            $This.Name               = $WMIObject.Name
-            $This.PackageCache       = $WMIObject.PackageCache
-            $This.PackageCode        = $WMIObject.PackageCode
-            $This.PackageName        = $WMIObject.PackageName
-            $This.ProductID          = $WMIObject.ProductID
-            $This.RegCompany         = $WMIObject.RegCompany
-            $This.RegOwner           = $WMIObject.RegOwner
-            $This.SKUNumber          = $WMIObject.SKUNumber
-            $This.Transforms         = $WMIObject.Transforms
-            $This.URLInfoAbout       = $WMIObject.URLInfoAbout
-            $This.URLUpdateInfo      = $WMIObject.URLUpdateInfo
-            $This.Vendor             = $WMIObject.Vendor
-            $This.Version            = $WMIObject.Version
-            $This.WarrantyDuration   = $WMIObject.WarrantyDuration
-            $This.WarrantyStartDate  = $WMIObject.WarrantyStartDate
-            $This.WordCount          = $WMIObject.WordCount
-            $This.Scope              = $WMIObject.Scope
-            $This.Path               = $WMIObject.Path
-            $This.Options            = $WMIObject.Options
-            $This.ClassPath          = $WMIObject.ClassPath
-            $This.Properties         = $WMIObject.Properties
-            $This.SystemProperties   = $WMIObject.SystemProperties
-            $This.Qualifiers         = $WMIObject.Qualifiers
-            $This.Site               = $WMIObject.Site
-            $This.Container          = $WMIObject.Container
-        }
+        $This.AssignmentType     = $WMIObject.AssignmentType
+        $This.Caption            = $WMIObject.Caption
+        $This.Description        = $WMIObject.Description
+        $This.ElementName        = $WMIObject.ElementName
+        $This.HelpLink           = $WMIObject.HelpLink
+        $This.HelpTelephone      = $WMIObject.HelpTelephone
+        $This.IdentifyingNumber  = $WMIObject.IdentifyingNumber
+        $This.InstallDate        = $WMIObject.InstallDate
+        $This.InstallDate2       = $WMIObject.InstallDate2
+        $This.InstallLocation    = $WMIObject.InstallLocation
+        $This.InstallSource      = $WMIObject.InstallSource
+        $This.InstallState       = $WMIObject.InstallState
+        $This.InstanceID         = $WMIObject.InstanceID
+        $This.Language           = $WMIObject.Language
+        $This.LocalPackage       = $WMIObject.LocalPackage
+        $This.Name               = $WMIObject.Name
+        $This.PackageCache       = $WMIObject.PackageCache
+        $This.PackageCode        = $WMIObject.PackageCode
+        $This.PackageName        = $WMIObject.PackageName
+        $This.ProductID          = $WMIObject.ProductID
+        $This.RegCompany         = $WMIObject.RegCompany
+        $This.RegOwner           = $WMIObject.RegOwner
+        $This.SKUNumber          = $WMIObject.SKUNumber
+        $This.Transforms         = $WMIObject.Transforms
+        $This.URLInfoAbout       = $WMIObject.URLInfoAbout
+        $This.URLUpdateInfo      = $WMIObject.URLUpdateInfo
+        $This.Vendor             = $WMIObject.Vendor
+        $This.Version            = $WMIObject.Version
+        $This.WarrantyDuration   = $WMIObject.WarrantyDuration
+        $This.WarrantyStartDate  = $WMIObject.WarrantyStartDate
+        $This.WordCount          = $WMIObject.WordCount
+        $This.Scope              = $WMIObject.Scope
+        $This.Path               = $WMIObject.Path
+        $This.Options            = $WMIObject.Options
+        $This.ClassPath          = $WMIObject.ClassPath
+        $This.Properties         = $WMIObject.Properties
+        $This.SystemProperties   = $WMIObject.SystemProperties
+        $This.Qualifiers         = $WMIObject.Qualifiers
+        $This.Site               = $WMIObject.Site
+        $This.Container          = $WMIObject.Container
     }
-    
-    Class Uninstall
+}
+
+Class Uninstall
+{
+    [String]        $DisplayName
+    [String]     $DisplayVersion
+    [String]            $Version
+    [Int32]            $NoRemove
+    [String]         $ModifyPath
+    [String]    $UninstallString
+    [String]    $InstallLocation
+    [String]        $DisplayIcon
+    [Int32]            $NoRepair
+    [String]          $Publisher
+    [String]        $InstallDate
+    [Int32]        $VersionMajor
+    [Int32]        $VersionMinor
+    [Object[]]      $EntryUnique
+    Uninstall([Object]$Registry)
     {
-        [String]        $DisplayName
-        [String]     $DisplayVersion
-        [String]            $Version
-        [Int32]            $NoRemove
-        [String]         $ModifyPath
-        [String]    $UninstallString
-        [String]    $InstallLocation
-        [String]        $DisplayIcon
-        [Int32]            $NoRepair
-        [String]          $Publisher
-        [String]        $InstallDate
-        [Int32]        $VersionMajor
-        [Int32]        $VersionMinor
-        [Object[]]      $EntryUnique
-        Uninstall([Object]$Registry)
-        {
-            $This.DisplayName      = $Registry.DisplayName
-            $This.DisplayVersion   = $Registry.DisplayVersion
-            $This.Version          = $Registry.Version
-            $This.NoRemove         = $Registry.NoRemove
-            $This.ModifyPath       = $Registry.ModifyPath
-            $This.UninstallString  = $Registry.UninstallString
-            $This.InstallLocation  = $Registry.InstallLocation
-            $This.DisplayIcon      = $Registry.DisplayIcon
-            $This.NoRepair         = $Registry.NoRepair
-            $This.Publisher        = $Registry.Publisher
-            $This.InstallDate      = $Registry.InstallDate
-            $This.VersionMajor     = $Registry.VersionMajor
-            $This.VersionMinor     = $Registry.VersionMinor
-            $This.EntryUnique      = $This.GetEntryUniqueProperties($Registry)
-        }
-        [String[]] Properties()
-        {
-            Return $This.PSObject.Properties | ? Name -notmatch EntryUnique | % Name
-        }
-        [Object[]] GetEntryUniqueProperties([Object]$Param)
-        {
-            Return @(
-            $Param.PSObject.Properties | ? Name -notmatch "(^PS|$($This.Properties() -join "|"))") | Select Name, Value
-        }
-        [Object[]] Output([UInt32]$Buff)
-        {
-            $X  = @( )
-            $X += ("-" * 120 -join ""), "[$($This.DisplayName)]", ("-" * 120 -join ""), " "
-            $This.Properties() | % { 
-            $X += "{0}{1} : {2}" -f $_, (" " * ($Buff - $_.Length + 1) -join ""), $This.$_ 
-            }
-            $X += (" " * $Buff -join "")
-            $This.EntryUnique  | % { 
-            $X += "{0}{1} : {2}" -f $_.Name, (" " * ($Buff - $_.Name.Length + 1 ) -join ""), $_.Value 
-            }
-            $X += (" " * $Buff -join "")
-            Return $X
-        }
+        $This.DisplayName      = $Registry.DisplayName
+        $This.DisplayVersion   = $Registry.DisplayVersion
+        $This.Version          = $Registry.Version
+        $This.NoRemove         = $Registry.NoRemove
+        $This.ModifyPath       = $Registry.ModifyPath
+        $This.UninstallString  = $Registry.UninstallString
+        $This.InstallLocation  = $Registry.InstallLocation
+        $This.DisplayIcon      = $Registry.DisplayIcon
+        $This.NoRepair         = $Registry.NoRepair
+        $This.Publisher        = $Registry.Publisher
+        $This.InstallDate      = $Registry.InstallDate
+        $This.VersionMajor     = $Registry.VersionMajor
+        $This.VersionMinor     = $Registry.VersionMinor
+        $This.EntryUnique      = $This.GetEntryUniqueProperties($Registry)
     }
-    
-    Class UninstallStack
+    [String[]] Properties()
     {
-        [UInt32] $Buffer
-        [Object] $Output
-        UninstallStack()
-        {
-            $Apps            = "\Wow6432Node","" | % { 
-    
-                               Get-ChildItem "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall" 
-    
-                               } | Get-ItemProperty
-            $Edge            = $Apps | ? DisplayName -match "(^Microsoft Edge$)"
-            $Properties      = $Edge.PSObject.Properties | ? Name -notmatch "(^_|^PS)"
-            $Properties     += [PSNoteProperty]::New("EntryUnique",@( ))
-            $This.Output     = $Apps | % { [Uninstall]::New($_) }
-            $This.Buffer     = ($This.Output.EntryUnique.Name | Sort-Object Length)[-1].Length
-        }
-        [Object[]] GetOutput()
-        {
-            Return @( $This.Output.Output($This.Buffer) )
-        }
+        Return $This.PSObject.Properties | ? Name -notmatch EntryUnique | % Name
     }
-    ________________________________________________________________________________________________________________
-    \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
-     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    [Object[]] GetEntryUniqueProperties([Object]$Param)
+    {
+        Return @(
+        $Param.PSObject.Properties | ? Name -notmatch "(^PS|$($This.Properties() -join "|"))") | Select Name, Value
+    }
+    [Object[]] Output([UInt32]$Buff)
+    {
+        $X  = @( )
+        $X += ("-" * 120 -join ""), "[$($This.DisplayName)]", ("-" * 120 -join ""), " "
+        $This.Properties() | % { 
+        $X += "{0}{1} : {2}" -f $_, (" " * ($Buff - $_.Length + 1) -join ""), $This.$_ 
+        }
+        $X += (" " * $Buff -join "")
+        $This.EntryUnique  | % { 
+        $X += "{0}{1} : {2}" -f $_.Name, (" " * ($Buff - $_.Name.Length + 1 ) -join ""), $_.Value 
+        }
+        $X += (" " * $Buff -join "")
+        Return $X
+    }
+}
+
+Class UninstallStack
+{
+    [UInt32] $Buffer
+    [Object] $Output
+    UninstallStack()
+    {
+        $Apps            = "\Wow6432Node","" | % { 
+
+                           Get-ChildItem "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall" 
+
+                           } | Get-ItemProperty
+        $Edge            = $Apps | ? DisplayName -match "(^Microsoft Edge$)"
+        $Properties      = $Edge.PSObject.Properties | ? Name -notmatch "(^_|^PS)"
+        $Properties     += [PSNoteProperty]::New("EntryUnique",@( ))
+        $This.Output     = $Apps | % { [Uninstall]::New($_) }
+        $This.Buffer     = ($This.Output.EntryUnique.Name | Sort-Object Length)[-1].Length
+    }
+    [Object[]] GetOutput()
+    {
+        Return @( $This.Output.Output($This.Buffer) )
+    }
+}
+________________________________________________________________________________________________________________
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+ ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 '@)
 }
 
-$Book       = Write-Book -Name "Top Deck Awareness - Not News"
-$Book | % { 
+    $Book | % { 
 
-    Prologue    $_
-    Resume      $_
-    Chapter_1   $_
-    Chapter_2   $_
-    Chapter_3   $_
-    Chapter_4   $_
-    Chapter_5   $_
-    Chapter_6   $_
-    Chapter_7   $_
-    Chapter_8   $_  
-    Chapter_9   $_
-    Chapter_10  $_
+        Prologue    $_
+        Resume      $_
+        Chapter_1   $_
+        Chapter_2   $_
+        Chapter_3   $_
+        Chapter_4   $_
+        Chapter_5   $_
+        Chapter_6   $_
+        Chapter_7   $_
+        Chapter_8   $_
+        Chapter_9   $_
+        Chapter_10  $_
+    }
+
+    $Book.GetTable()
 }
 
 <#
