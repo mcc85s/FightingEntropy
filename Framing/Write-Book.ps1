@@ -4450,9 +4450,7 @@ $Hash = @{ }
 $Hash.Add(0, @"
 Portfolio Development for Applications, as well as Investigative Journalism:
 ________________________________________________________________________________________________________
-| 08/02/22 | Top Deck Awareness - Not News | drive.google.com/file/d/1NoqGcpDVYnCF6zWx-7HPQBV3-MgeCzsT |
-| 06/23/22 | Archimedes (CIA+Zuckerberg)   | https://youtu.be/QP25FbNhakQ                              |
-| 02/15/22 | A Matter of National Security | https://youtu.be/e4VnZObiez8 (Links in video description) |
+| 10/08/22 | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1008_TDA_Not_News.pdf       |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 $Hash.Add(1, "Main development focus: (C/PowerShell/.NET) module development, codename [FightingEntropy(π)]")
@@ -4875,7 +4873,7 @@ To anyone who wants to say that...?
 Make yourself useful, and go suck a fuckin' dick like MARK ZUCKERBERG does.
 "@)
 
-$Resume.Person.AddSkill("Top Deck Awareness - Not News","08/2022","https://drive.google.com/file/d/1XWGSsZ-rGQHfB8eY2Xm6uu51wuj1MqFW",@"
+$Resume.Person.AddSkill("Top Deck Awareness - Not News","10/2022","https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1008_TDA_Not_News.pdf",@"
 My master thesis about the following subjects:                                                              
 ________________________________________________________________________________________________________
 | U.S. CONSTITUTION | PSYCHOLOGICAL MANIPULATION | PRIVATE INVESTIGATION   |     COOL/SMART RICH DUDES |
