@@ -1,6 +1,5 @@
 [Reflection.Assembly]::LoadWithPartialName("System.Drawing")
 
-
 Function Write-Theme
 {
     [CmdletBinding(DefaultParameterSetName=0)]
@@ -2577,21 +2576,6 @@ Function Get-FoundingFathers
     $FF.Output | % Output | % { $Out += $_ }
 
     $Out
-}
-
-Class Label
-{
-    [String] $String
-    Label([UInt32]$Depth,[String]$Line)
-    {
-        $Name        = ($Line -Split "\[")[0].TrimEnd(" ")
-        $Time        = ($Line -Split "\]")[1].TrimStart(" ")
-        If ($Name.Length -le $Depth)
-        {
-            $Name    = "{0}{1}" -f $Name, (" " * ($Depth-$Name.Length) -join '')
-        }
-        $This.String = $Name + " [|] " + $Time
-    }
 }
 Function Write-Book
 {
@@ -11060,11 +11044,11 @@ It is NOT competition, when a company SAYS it is competitive, however, it still 
 to people and does the same thing to the connection that Mr. Gates did with CP/M... 
 
 Or what JESSE PICKETT did to my father MICHAEL E. COOK in 1988-1989
-                      _____________________________________________________________________
-                      | Side 1 | MICHAEL COOK, DR. KITE, ST. PETERS, July 21, 1989        |
-                      | Side 2 | Jesse Pickett 785-3221 ← written by my dead father.      |
-                      | https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD |
-                      ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+        ____________________________________________________________________________________________
+        | Side 1 | MICHAEL COOK, DR. KITE, ST. PETERS, July 21, 1989                               |
+        | Side 2 | Jesse Pickett 785-3221 ← written by my dead father.                             |
+        | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf |
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ...slap your name on it, call it a fuckin' day. (← I later explain why that happened)
 
 In the case of (Kildall/Digital Research/CP-M) → (Gates-Allen/Microsoft/Q-DOS,86-DOS,MS-DOS)... 
@@ -37132,11 +37116,11 @@ MICHAEL WHITACRE seemed to have some genuine concern, until this dude DEPUTY CAP
 As soon as CAPTAIN COOPER showed up...? He immediately said the words "NFRASTRUCTURE is not involved in this."
 
 Well, dipshit. Here's a good way to prove how far up your own ass, your head was that day...
-                    _____________________________________________________________________                        
-                    | Side 1 | MICHAEL COOK, DR. KITE, ST. PETERS, July 21, 1989        |
-                    | Side 2 | Jesse Pickett 785-3221 ← written by my dead father.      |
-                    | https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD |
-                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+        ____________________________________________________________________________________________
+        | Side 1 | MICHAEL COOK, DR. KITE, ST. PETERS, July 21, 1989                               |
+        | Side 2 | Jesse Pickett 785-3221 ← written by my dead father.                             |
+        | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf |
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Oh, man. What if SCSO CAPTAIN COOPER wasn't such a lazy cocksucker...? Ya know?
 Sorta looks exactly like maybe JESSE PICKETT might have some fuckin' involvement after all, numbnuts.
 What, you're like a CAPTAIN at SCSO...? And I just miraculously outperformed your ass, as well as all of your
@@ -39093,11 +39077,11 @@ But I know someone got a hold of that recording, and I was right about what I sa
 That's why I left that fuckin' thumb drive and letter back on 02/26/20. Maybe it was the 27th.
 
 Still, nah, despite all the things I said, it's pretty apparent that I had DAN PICKETT, pegged incorrectly.
-                    _____________________________________________________________________                            
-                    | Side 1 | MICHAEL COOK, DR. KITE, ST. PETERS, July 21, 1989        |
-                    | Side 2 | Jesse Pickett 785-3221 ← written by my dead father.      |
-                    | https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD |
-                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+        ____________________________________________________________________________________________
+        | Side 1 | MICHAEL COOK, DR. KITE, ST. PETERS, July 21, 1989                               |
+        | Side 2 | Jesse Pickett 785-3221 ← written by my dead father.                             |
+        | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf |
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 What that is, is a direct link between Jesse Pickett, and my deceased father.
 Even sending a copy of this to Oliver Robinson yielded no additional change in status, or care...
 ...at least it seems that way. So there's some sort of association here that isn't be verbally addressed.
@@ -44730,11 +44714,11 @@ was watching me do work at Computer Answers, and had a friend or buddy watching 
 If all of that is inaccurate, that's fine. But there is no person on earth that can actually PROVE THAT.
 Because if anything, there's a fuckin' clue that nobody ever collected from me that made me reliably
 determine that it is MORE THAN JUST PLAUSIBLE.
-                    _____________________________________________________________________                            
-                    | Side 1 | MICHAEL COOK, DR. KITE, ST. PETERS, July 21, 1989        |
-                    | Side 2 | Jesse Pickett 785-3221 ← written by my dead father.      |
-                    | https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD |
-                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+        ____________________________________________________________________________________________
+        | Side 1 | MICHAEL COOK, DR. KITE, ST. PETERS, July 21, 1989                               |
+        | Side 2 | Jesse Pickett 785-3221 ← written by my dead father.                             |
+        | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf |
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 So then, when SCSO Deputy Cooper came to my house on 06/19/20 and said "Nfrastructure is not involved" in
 front of LAURA HUGHES... well...? I think you deserve to be DEMOTED and probably handcuffed and brought to 
 your own jail. For: committing OBSTRUCTION OF JUSTICE.
