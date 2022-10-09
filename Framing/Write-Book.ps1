@@ -11444,7 +11444,7 @@ genuinely concerned... whereas the individual will have PLENTY of time.
 In other words, making audio logs and recording one's own thought process or rhetoric, is helpful. 
 Sometimes I will spend several days in a row doing this. Each time I am done making these recordings, I will
 immediately listen to them. Walking around making these recordings is difficult to do without being DISTRACTED, 
-and if I get DISTRACTRED, then I will often fail to return to a prior point that I had made... so I gotta listen
+and if I get DISTRACTED, then I will often fail to return to a prior point that I had made... so I gotta listen
 to the recording again and then write stuff down, like BULLET POINTS.
 
 But sometimes those distractions are HELPFUL. Why...? 
@@ -12604,7 +12604,7 @@ I'd even go so far as to say probably 90% of the people that have ever worked at
 A lot of people prefer to press CTRL+C over work someone ELSE did, and then hit CTRL+V. Copy, paste, done.
 
 Here's why I added NFRASTRUCTURE to that list... 
-https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD/view?usp=sharing     
+https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf
 It looks like JESSE PICKETT may have been hittin' CTRL+C, and then CTRL+V like, before NFRASTRUCTURE existed.
 Like, in 1988-1989. Just gonna keep casually dropping such a CRITICAL PIECE OF EVIDENCE like that, in this book.
 
@@ -12817,44 +12817,44 @@ this place with some other pretty hot broad (typical behavior for this girl, act
 
 /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
-  Girl 1 : Damn. 
-           Look at THAT dude, parked right there in the most obnoxious spot possible...
-           I know who that guy is...
-  Girl 2 : Oh do you...?
-  Girl 1 : Yep, I do alright.
-  Me     : *scoffs, shakes head* You don't know who I am...
-  Girl 1 : Yeah I do.
-  Me     : Yeah...?
-  Girl 1 : Yyyyyyyup.
-  Me     : *eyebrows making a question, slight head nod* Alright, what's my name then...?
-           Hm...?
-  Girl 1 : Michael.
-  Me     : Well, shit.
-           Guess you DO know who I am...
-  Girl 1 : Yyyyyyyup. 
-  Me     : Yeah, well...
-           I know who YOU are, too.
-  Girl 1 : Oh yeah...?
-  Me     : Yep.
-  Girl 2 : Yeah...?
-           Well, who is she then...?
-  Me     : That's literally the hottest girl in high school.
-           Or at least she WAS.
-           Obviously still pretty fuckin' hot too...
-           So...
-  Girl 2 : Yeah, but you didn't say her NAME.
-  Girl 1 : Yeah, Michael~!
-  Me     : Look, *checks watch* I gotta get back to work.
-           *opens car door, gets in* 
-           You were the hottest girl in high school, can't remember your name though...
-  Girl 1 : *gasps* No fucking way dude...
-           You did not just compliment me twice, and then forget MY name...
-  Girl 2 : Who does that...?
-           You just *hand wavin' around* park in the most obnoxious spot possible, like you own the place,
-           compliment this girl right here, and then take off...?
-  Me     : Starts with a T ends in an A. Later. *drives off cause he's mad busy*
-  Girl 1 : ...he's right though.
-  Girl 2 : Wow. Thought he was bullshittin' ya.
+Girl 1 : Damn. 
+         Look at THAT dude, parked right there in the most obnoxious spot possible...
+         I know who that guy is...
+Girl 2 : Oh do you...?
+Girl 1 : Yep, I do alright.
+Me     : *scoffs, shakes head* You don't know who I am...
+Girl 1 : Yeah I do.
+Me     : Yeah...?
+Girl 1 : Yyyyyyyup.
+Me     : *eyebrows making a question, slight head nod* Alright, what's my name then...?
+         Hm...?
+Girl 1 : Michael.
+Me     : Well, shit.
+         Guess you DO know who I am...
+Girl 1 : Yyyyyyyup. 
+Me     : Yeah, well...
+         I know who YOU are, too.
+Girl 1 : Oh yeah...?
+Me     : Yep.
+Girl 2 : Yeah...?
+         Well, who is she then...?
+Me     : That's literally the hottest girl in high school.
+         Or at least she WAS.
+         Obviously still pretty fuckin' hot too...
+         So...
+Girl 2 : Yeah, but you didn't say her NAME.
+Girl 1 : Yeah, Michael~!
+Me     : Look, *checks watch* I gotta get back to work.
+         *opens car door, gets in* 
+         You were the hottest girl in high school, can't remember your name though...
+Girl 1 : *gasps* No fucking way dude...
+         You did not just compliment me twice, and then forget MY name...
+Girl 2 : Who does that...?
+         You just *hand wavin' around* park in the most obnoxious spot possible, like you own the place,
+         compliment this girl right here, and then take off...?
+Me     : Starts with a T ends in an A. Later. *drives off cause he's mad busy*
+Girl 1 : ...he's right though.
+Girl 2 : Wow. Thought he was bullshittin' ya.
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
@@ -14443,18 +14443,31 @@ Which is why I wound up going to Innisbrook the following day.
 $Book.NewSection(5,"Excerpt","Solar Drive              [|] (05/24/20 2200)",@"
 Took some pictures on Solar Drive, found a meter that was not running at the cell phone tower, among some
 other stuff. Note how some pictures are perfectly stable, and the others aren't...? Well, that is a perfect
-indication of a COCKSUCKER being involved somehow... The details are not so apparent until you apply this
-additional property where the content of the particular image may show that some cocksucker doesn't want
-people to see something in particular. Sometimes you can be like me, right...? Tell people like SARAH
-SCHELLINGER, KRISTIN JOHNSON, or LAURA HUGHES...? And, THESE <unspecified> will ignore that COMPLETELY. Shucks.
+indication of a COCKSUCKER being involved somehow... 
+
+The details are not so apparent until you apply this additional property where the content of the particular 
+image may show that some cocksucker doesn't want people to see something in particular. Sometimes you can be 
+like me, right...? Tell people like SARAH SCHELLINGER, KRISTIN JOHNSON, or LAURA HUGHES...? 
+
+And, THESE <unspecified> will ignore that COMPLETELY. Shucks.
 ___________________________________________________________________________________________________________
-| Index   Name     Date    Time   Focus                (URL/Uniform Resource Locator)                     |
-|---/--------|---------\------\-----|--------------------\-------------|------------/---------------------|
+|¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| #### | Name     | Date     Time | % | URL/Uniform Resource Locator [%: Focus, 0=Perfect, 3=Very Blurry  |
+|______|__________|_______________|___|___________________________________________________________________|
+|¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 | 0001 | IMG_0585 | 05/24/20 2239 | 0 | https://drive.google.com/file/d/1y4f8SmcgZf_vJ8ohXVSFFWQlC19QEDZe | 
 | 0002 | IMG_0590 | 05/24/20 2242 | 0 | https://drive.google.com/file/d/1_QUY6XrDIBIJJvjaYw02B-1OdEOXm5zk |
 | 0003 | IMG_0591 | 05/24/20 2243 | 3 | https://drive.google.com/file/d/1BrGQnWB2xPNudtUdItlJm29PqQMVltGh |
 | 0004 | IMG_0594 | 05/24/20 2248 | 1 | https://drive.google.com/file/d/10r3SnCMggf2BRmlST4fdX5f104mwNxau |
 | 0005 | IMG_0595 | 05/24/20 2249 | 1 | https://drive.google.com/file/d/1BnoTT0-IHk0TNvIDIYPj_H4q6fk4EkF7 |
+|______|__________|_______________|___|___________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [0001]: Blue streak as I look at the box. Suspicious. [0002]: Seemingly abandoned building, possible    |
+| secret base. [0003]: GHOST ON THE RIGHT SIDE. Eyebrow, closed eye, white tee shirt. Reminds me of ME,   |
+| it could have been me taking a picture of myself accidentally, but I don't think so. It also has the    |
+| white streak in the picture. [0004]: Fire occurred here in February 2020. [0005]: Cell tower 1          |
+|_________________________________________________________________________________________________________|
+|¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 | 0006 | IMG_0596 | 05/24/20 2249 | 1 | https://drive.google.com/file/d/1aZFTnKVwQXakRMHbCt9WIpKxpJUV2Q8G |
 | 0007 | IMG_0597 | 05/24/20 2249 | 0 | https://drive.google.com/file/d/11GDlXvkiMVnt4iu8zqhzphbEjogAkvqY |
 | 0008 | IMG_0598 | 05/24/20 2249 | 0 | https://drive.google.com/file/d/1eaT4t3viNY_j02BMbV_TxJJ-e2zCPtjq |
@@ -14468,6 +14481,14 @@ ________________________________________________________________________________
 | 0016 | IMG_0606 | 05/24/20 2251 | 1 | https://drive.google.com/file/d/1U0A_lsgspUeU7AJQ9m-KebOPdkKHJsRS |
 | 0017 | IMG_0607 | 05/24/20 2253 | 1 | https://drive.google.com/file/d/1jNHmvr66KZMoX0JiT3Cbs43Buu6zADIE |
 | 0018 |*IMG_0608 | 05/24/20 2255 | 1 | https://drive.google.com/file/d/1hv3JhYKD--0BQg-x66sO0fomgAy3kFFi |
+|______|__________|_______________|___|___________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [0006]: NM. [0007]: Cell Tower Ref# | Crown Castle | SiteID # 8077228 | FCC Reg # 1009721               |
+| [0008..0010]: NM. [0011]: Does not make a whole lot of sense that this 'accidental' picture was taken,  |
+| not sure why. [0012]: Inspection tag for the first tower. June 14th, 2019. [0013..0017]: NM.            |
+| [0018]: Possibility that the blurriness in this picture is masking something.                           |
+|_________________________________________________________________________________________________________|
+|¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|¯¯¯|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
 | 0019 | IMG_0609 | 05/24/20 2255 | 1 | https://drive.google.com/file/d/1shrLewHORf86sf4TIp3ykAe6WosZ4Q2J |
 | 0020 | IMG_0611 | 05/24/20 2256 | 1 | https://drive.google.com/file/d/1UfA4j-wAO1VfehUwUUJWOGJc6N9SCMFl |
 | 0021 |*IMG_0612 | 05/24/20 2256 | 0 | https://drive.google.com/file/d/1qhhH-kHGxCqUuR-8BLWjBzONOWvoEoMB |
@@ -14480,39 +14501,16 @@ ________________________________________________________________________________
 | 0028 | IMG_0619 | 05/24/20 2257 | 0 | https://drive.google.com/file/d/1mtARlTxYGR7_UvkTBoz31Alfh6EyR9dO |
 | 0029 | IMG_0620 | 05/24/20 2257 | 0 | https://drive.google.com/file/d/1iun2RJ-pToqMlUUQMdKl_yWvJWxKioON |
 | 0030 | IMG_0621 | 05/24/20 2310 | 1 | https://drive.google.com/file/d/19qa9qfALiWRJQwTHwvMhmyZldxBmuEZT |
-|___\________|_________/______/_____|____________________/_____________|____________\_____________________|
-| Index   Name     Date    Time   Focus                (URL/Uniform Resource Locator)                     |
+|______|__________|_______________|___|___________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| [0019..0023]: NM. [0024]: Cell Tower Ref# | American Tower | SiteID# 307091 | FCC Reg# 1003986          |
+| [0025]: What the meters do automatically, clears itself. [0026]: Goes to 0.00KwH... I have a video      |
+| version of this picture. [0027]: ...then it goes to a readable number. (different meter). [0028]: Meter |
+| running, looks vandalized. [0029]: Better view of reading. [0030]: I believe the blurriness in this     |
+| picture is SPIRTUAL BASED. [2020 0524 Solar Drive Cell Tower Power Scam]: https://youtu.be/ZgVTHK172O8  |
+|                             (^ Aw... That one meter stays at 0.00 for like a while, doesn't it...?)     |
+|_________________________________________________________________________________________________________|
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-Items marked with ASTERISK may not have been accidental, or are suspicious.
-
-\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
-
-( 1) - Blue streak as I look at the box. Suspicious 
-( 2) – Seemingly abandoned building, possible secret base.
-( 3) - GHOST ON THE RIGHT SIDE. Eyebrow, closed eye, white tee shirt.
-       Reminds me of ME, it could have been me taking a picture of myself accidentally, but I don't think so. 
-       It also has the white streak in the picture.
-( 4) - Fire occurred here in February 2020.
-( 5) - Cell tower 1
-( 6 + 8..10 + 13..17 + 19..23 ) - Not exactly a whole lot goin' on.
-( 7) - Cell Tower Reference | Crown          | Site ID # 8077228 | FCC Registration # 1009721
-(11) – Does not make a whole lot of sense that this 'accidental' picture was taken, not sure why.
-(18) – Possibility that the blurriness in this picture is masking something.
-(12) - Last inspected | June 14th, 2019
-(24) - Cell Tower Reference | American Tower | Site ID #  307091 | FCC Registration # 1003986
-(25) - What the meters do automatically, clears itself...
-(26) - goes to 0.00KwH... (I have a video version of this picture)
-(27) - and then it goes to a readable number. (different meter)
-(28) - Meter is running, but it looks vandalized.
-(29) - Better view of reading.
-(30) - I believe the blurriness in this picture is SPIRTUAL BASED.
-
-/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
-
-By the way, here's the VIDEO that I made of some of these same shots.
-2020 0524 Solar Drive Cell Tower Power Scam - https://youtu.be/ZgVTHK172O8
-(^ Aw... That one meter stays at 0.00 for like a while, doesn't it...?)
 "@)
  
 $Book.NewSection(5,"Excerpt","Mission Complete         [|] (05/24/20 2300)",@"
@@ -15066,10 +15064,10 @@ ANYBODY TO DO... HUH. WEIRD. Well, it could be because the police would rather H
 I felt an urge to go talk to my aunt TERRI COOK. Also, RYAN WARD. 
 Because I had some unshakable SUSPICIONS.
 Having a comedic dialog probably won't break the tension with the ALLEGATIONS I have to assign at this point.
-
-| <INSERT IMG_0625.MOV> |
-| <INSERT IMG_0627.MOV> |
-
+____________________________________________________________________________________________________
+| 05/25/20 1028 | IMG_0625.mov | https://drive.google.com/file/d/1SDTqxE12WiYfD3WhgYHzXXlVJ2h9aU-D |
+| 05/25/20 1054 | IMG_0627.mov | https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 I had a feeling that SOMEONE I KNEW was actually preventing some of my files from being uploaded.
 Because they had my fuckin' device hacked – with no fuckin' service on the device, either. 
 
@@ -16494,7 +16492,8 @@ That probably sounds like a CONTRADICTION.
 Allow me to make myself perfectly fucking clear for people who are as retarded as DWAYNE COONRADT…
 I am [NOT CONTRADICTING MYSELF AT ALL*], but RETARDED PEOPLE will ASSUME that is what I'm doing right now. 
 
-So, to CLARIFY for RETARDED PEOPLE like DWAYNE COONRADT… I WAS PISSING (EXPERTS/PEOPLE) OFF THAT HAD MY DEVICE HACKED.
+So, to CLARIFY for RETARDED PEOPLE like DWAYNE COONRADT… 
+I WAS PISSING (EXPERTS/PEOPLE) OFF THAT HAD MY DEVICE HACKED.
 
 IT WAS HACKED FOR WELL OVER A WEEK AT THIS POINT…? AND, I HAD EVERY INTENTION OF JUST CONTINUING TO RECORD WHATEVER 
 CAME TO MIND, WITH THE SOLE INTENTION OF PISSING THESE PEOPLE OFF. IT WORKED A LITTLE TOO WELL TO BE PERFECTLY CLEAR.
@@ -16597,7 +16596,7 @@ GRABBED BASEBALL BAT → RAN ONTO MY PROPERTY → HIT THE SIDE OF HIS HOUSE WITH
 ON MY PROPERTY NEAR MY PORCH → HIS WIFE JANET + MY STEP FATHER MICHAEL STREETER HELD HIM FROM SWINGING THE 
 BASEBALL BAT AT ME NEAR MY PORCH/LILAC BUSH → I CALLED 911 BECAUSE I WASN'T HAVING A MENTAL EPISODE AT ALL 
 and REPORTED THE INCIDENT → I TELL MARK SHEEHAN THAT RUSSIANS AND US GOV'T HACKING MY EQUIPMENT + CENSORING 
-MY SOCIAL MEDIA POSTS → MARK SHEEHAN TAKES EVERYONES STATEMENT BUT MINE → BRINGS ME TO SARATOGA HOSPITAL → 
+MY SOCIAL MEDIA POSTS → MARK SHEEHAN TAKES EVERYONE'S STATEMENT BUT MINE → BRINGS ME TO SARATOGA HOSPITAL → 
 RICHARD TODD LOEBER IGNORES MY EVIDENCE AS WELL → COMMITS MEDICAL FRAUD WHILE ACCUSING ME OF BEING BIPOLAR 
 SCHIZOPHRENIC IN 5 MINUTES WHICH IS IMPOSSIBLE BY THE WAY → NEVER READ A DSM5 → NEVER LOOKED AT EVIDENCE → 
 HUH...? Wow. Somewhere along this entire trajectory, people accuse me of something I'm not, COOL. 
@@ -16618,7 +16617,7 @@ Or, I tell ERIC CATRICALA that he should stop throwing dead bodies into concrete
 Look. All that stuff is gonna be difficult to read later on. 
 Do I have "concrete" evidence that they're involved...?
 
-Uh, no, but I've obviously done a LOT more work than the people that call themselve the "POLICE".
+Uh, no, but I've obviously done a LOT more work than the people that call themselves the "POLICE".
 
 The video I showed Trooper Leavey was the closest fucking thing I had to being "concrete".  
 I have a VISUAL INDICATION that there's a CORRELATION by MISSING DETAILS making my SUSPICIONS...
@@ -16797,11 +16796,11 @@ People that heard all that, know who these (2) kids are that tried to kill me. O
 
 I found (a tree with markings on it that date back to 1989 - https://youtu.be/-JQp_Cl_TUA), some of those 
 markings are probably relevant to the EVIDENCE IN THE BOX my FATHER left behind… 
-            _____________________________________________________________________
-            | side 1 | MICHAEL COOK, DR. KITE, ST. PETERS, July 21, 1989        |
-            | side 2 | Jesse Pickett 785-3221 ← written by my dead father.      |
-            | https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD |
-            ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+        ____________________________________________________________________________________________
+        | Side 1 | MICHAEL COOK, DR. KITE, ST. PETERS, July 21, 1989                               |
+        | Side 2 | Jesse Pickett 785-3221 ← written by my dead father.                             |
+        | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf |
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Sorta told the Federal Bureau of Investigation about…
 (^ this particular piece of evidence on 07/29/20… https://drive.google.com/file/d/1IHISY3w94uPiFnOAY68iISMYfe3w68S4) 
 …and even recently left a copy of it with Oliver Robinson at the Shenendehowa District office at 5 Chelsea Place.
@@ -16981,86 +16980,86 @@ When I was just about halfway to Latham, Catricala calls James Leonard.
 "@)
  
 $Book.NewSection(5,"Skit","Eric Catricala and James Leonard",@"
-    Catricala : Hey bro... 
-                This fuckin' guy needs an attitude adjustment.
-    Leonard   : Oh, I agree with ya there.
-                Dude cut a phone line trying to call 911 the other night.
-                What type of sick fuck would do such a thing...?
-                TOO BAD I NEVER THOUGHT TO ARREST HIM FOR IT...
-    Catricala : Listen.
-                I'm losin' my patience.
-                Can we break the law and shit...?
-    Leonard   : Obviously.
-                What do you want to do, bro...?
-                Say YOU called, left a voicemail or somethin'...?
-                ...say you wanna have your property patrolled for the foreseeable future...?
-    Catricala : Yeah, that's brilliant. 
-                Fuckin' do that... 
-                Say that he is outta control, and that we see his ass on my surveillance equipment.
-                Don't mention anything about Bruce on the ticket though.
-                Can't say *ANYTHING* about Bruce Tanski, Kelly/Lester Wormuth, or the Town of Halfmoon Supervisor. 
-    Leonard   : ...why not?
-    Catricala : The kid said he was being investigated, I don't fuckin' wanna even know if he's just sayin' that.
-    Leonard   : Dude. You're gonna have to call it in.
-    Catricala : That's what I'm doin' right now.
-    Leonard   : Nah, you gotta ACTUALLY call the main line, not "call it in" by telling me in person.
-                Then the switchboard can switch you over to me.
-    Catricala : When...?
-    Leonard   : Well, we're sitting right here at Snyders eatin' breakfast, right...?
-    Catricala : Yeah. 
-                Obviously.
-                This place has the best fuckin' breakfast in town, I'll tell ya that much...
-    Leonard   : It does. That's … why we're here bro.
-    Catricala : Alright, so, after breakfast you're gonna...?
-    Leonard   : ...drive to the station.
-    Catricala : Yeah. 
-                That kid is literally walking by right now. 
-                I can see him right there. 
-                That's him *points*
-    Leonard   : *sigh* BRO.
-                You're tellin' me THAT DUDE has your panties in a bunch...?
-    Catricala : Yeh, yeh yeh, yeh, yeh.
-                That's him, alright.
-    Leonard   : You realize that it's gonna look SUPER SUSPICIOUS if I try to arrest him after the Karel incident...?
-                I gotta wait till later today to report that.
-                Should've done it like 2 days ago, but I'm a fuckin' dumbass like that... 
-                Oh well.
-    Catricala : *sigh* So, we're just gonna let this dude get away with it...?
-    Leonard   : Nah, gotta space out the incidents... 
-                ...can't do it all at once... 
-                That'd be stupid.                       
-    Catricala : LOOK pal, I want this called in as soon as possible.
-                Not gonna just let this fuckin' dude take pictures of my property and tell me that...
-                ...Bruce Tanski's being investigated alongside Kelly and Lester Wormuth...
-                ...or the Town of Halfmoon Supervisor that's in jail.
-                It'd look pretty fuckin' stupid, for a dude that WALKS a bunch of places, to somehow
-                make a god damn State Assemblyman look like a fuckin' criminal...
-    Leonard   : Look. 
-                Shut the fuck up, alright?
-    Catricala : ...what the fuck did you just say...?
-    Leonard   : Told ya ta shut the fuck up, dude.
-                You're startin' to piss me off.
-                I don't care if you're a state assemblyman or not...
-                I will fuckin' punch you, in the fuckin' face.
-                Got me...?
-    Catricala : … 
-    Leonard   : Give me about a half hour to get to SCSO.
-                When I'm there, you gotta call it in, and I'll have Scott Carpenter take a gander.
-    Catricala : Fine. *sips his coffee*
-                Maybe I'm just getting ahead of myself...
-    Leonard   : Yeah man, you're actin' like a fuckin' woman.
-                Maybe you need a Midol, or some shit...
-                You're like, havin' your period right now, aren't ya...?
-    Catricala : BRO... *defuses the anger*
-                *sighs* this dude says I'm burying bodies in the concrete foundations and shit.
-    Leonard   : Dude, that's the oldest trick in the book.
-                Who's never thrown a dead body or two in a bunch of concrete...?
-                I do that shit all the time, dude.
-    Catricala : YEAH RIGHT BRO.
-                You've never once in your life killed anybody, admit it.
-    Leonard   : *gives Catricala who runs a fuckin funeral home, a cold dead stare he'll never forget*
-                ...I've killed a LOTTA people, buddy...
-    Catricala : Alright, Jesus.
+Catricala : Hey bro... 
+            This fuckin' guy needs an attitude adjustment.
+Leonard   : Oh, I agree with ya there.
+            Dude cut a phone line trying to call 911 the other night.
+            What type of sick fuck would do such a thing...?
+            TOO BAD I NEVER THOUGHT TO ARREST HIM FOR IT...
+Catricala : Listen.
+            I'm losin' my patience.
+            Can we break the law and shit...?
+Leonard   : Obviously.
+            What do you want to do, bro...?
+            Say YOU called, left a voicemail or somethin'...?
+            ...say you wanna have your property patrolled for the foreseeable future...?
+Catricala : Yeah, that's brilliant. 
+            Fuckin' do that... 
+            Say that he is outta control, and that we see his ass on my surveillance equipment.
+            Don't mention anything about Bruce on the ticket though.
+            Can't say *ANYTHING* about Bruce Tanski, Kelly/Lester Wormuth, or the Town of Halfmoon Supervisor. 
+Leonard   : ...why not?
+Catricala : The kid said he was being investigated, I don't fuckin' wanna even know if he's just sayin' that.
+Leonard   : Dude. You're gonna have to call it in.
+Catricala : That's what I'm doin' right now.
+Leonard   : Nah, you gotta ACTUALLY call the main line, not "call it in" by telling me in person.
+            Then the switchboard can switch you over to me.
+Catricala : When...?
+Leonard   : Well, we're sitting right here at Snyders eatin' breakfast, right...?
+Catricala : Yeah. 
+            Obviously.
+            This place has the best fuckin' breakfast in town, I'll tell ya that much...
+Leonard   : It does. That's … why we're here bro.
+Catricala : Alright, so, after breakfast you're gonna...?
+Leonard   : ...drive to the station.
+Catricala : Yeah. 
+            That kid is literally walking by right now. 
+            I can see him right there. 
+            That's him *points*
+Leonard   : *sigh* BRO.
+            You're tellin' me THAT DUDE has your panties in a bunch...?
+Catricala : Yeh, yeh yeh, yeh, yeh.
+            That's him, alright.
+Leonard   : You realize that it's gonna look SUPER SUSPICIOUS if I try to arrest him after the Karel incident...?
+            I gotta wait till later today to report that.
+            Should've done it like 2 days ago, but I'm a fuckin' dumbass like that... 
+            Oh well.
+Catricala : *sigh* So, we're just gonna let this dude get away with it...?
+Leonard   : Nah, gotta space out the incidents... 
+            ...can't do it all at once... 
+            That'd be stupid.                       
+Catricala : LOOK pal, I want this called in as soon as possible.
+            Not gonna just let this fuckin' dude take pictures of my property and tell me that...
+            ...Bruce Tanski's being investigated alongside Kelly and Lester Wormuth...
+            ...or the Town of Halfmoon Supervisor that's in jail.
+            It'd look pretty fuckin' stupid, for a dude that WALKS a bunch of places, to somehow
+            make a god damn State Assemblyman look like a fuckin' criminal...
+Leonard   : Look. 
+            Shut the fuck up, alright?
+Catricala : ...what the fuck did you just say...?
+Leonard   : Told ya ta shut the fuck up, dude.
+            You're startin' to piss me off.
+            I don't care if you're a state assemblyman or not...
+            I will fuckin' punch you, in the fuckin' face.
+            Got me...?
+Catricala : … 
+Leonard   : Give me about a half hour to get to SCSO.
+            When I'm there, you gotta call it in, and I'll have Scott Carpenter take a gander.
+Catricala : Fine. *sips his coffee*
+            Maybe I'm just getting ahead of myself...
+Leonard   : Yeah man, you're actin' like a fuckin' woman.
+            Maybe you need a Midol, or some shit...
+            You're like, havin' your period right now, aren't ya...?
+Catricala : BRO... *defuses the anger*
+            *sighs* this dude says I'm burying bodies in the concrete foundations and shit.
+Leonard   : Dude, that's the oldest trick in the book.
+            Who's never thrown a dead body or two in a bunch of concrete...?
+            I do that shit all the time, dude.
+Catricala : YEAH RIGHT BRO.
+            You've never once in your life killed anybody, admit it.
+Leonard   : *gives Catricala who runs a fuckin funeral home, a cold dead stare he'll never forget*
+            ...I've killed a LOTTA people, buddy...
+Catricala : Alright, Jesus.
 "@)
  
 $Book.NewSection(5,"Excerpt","Day After the Attack (2)",@"
@@ -20739,10 +20738,10 @@ just like in the movie THE BODYGUARD starring KEVIN COSTNER, and WHITNEY HOUSTON
 ...stick around for the remainder of that president's life. 
 
 That means: 
-______________________________________________________________________________________________________________________
-| bulletproof cars | never driving themselves | anything they want is delivered by a dude with sunglasses and a suit |
-| they all know SOME CQC/MMA/karate/kung-fu/maui thai | trained w/ weapon(s) | they protect the VIP in a firefight   |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+________________________________________________________________________________________________________________
+| bulletproof cars | never driving themselves | anything they want is delivered by a dude with sunglasses/suit |
+| they all know SOME CQC/MMA/karate/kung-fu/maui thai | trained w/ weapon(s) | protect the VIP in a firefight  |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 NOBODY will get ANYWHERE EVEN REMOTELY CLOSE to people like (BILL/HILLARY)... 
 NOR fuck with their bank accounts, or estate, without them even knowing. 
 	
@@ -21756,7 +21755,6 @@ Bezos became quite a leader actually, and for a very long time, he knew how to p
 "@)
  
 $Book.NewSection(6,"Excerpt","Elon Musk",@"
-
 In the early days of the internet, this guy was part of a team of ninja-assassins that knew 
 programming inside and out... 
 
@@ -21895,7 +21893,7 @@ The company is still very active, throws elbows 'n shit...
 Satya Nadella runs the show now. Doin' a great job.
 "@)
  
-$Book.NewSection(6,"Excerpt","Amazon - The Bookstore and so much (1)",@"
+$Book.NewSection(6,"Excerpt","Amazon - The Bookstore and so much more (1)",@"
 In reference to Amazon, the bookstore and so much more...? 
 	
 You're talkin' about a series of smart bastards that went into board meetings, looked at bar graphs
@@ -21944,7 +21942,7 @@ Person2 : ...Amazon Web Services...?
 Person1 : *nods* Yep. 
 "@)
  
-$Book.NewSection(6,"Excerpt","Amazon - The Bookstore and so much (2)",@"
+$Book.NewSection(6,"Excerpt","Amazon - The Bookstore and so much more (2)",@"
 I might get on Jeff's case sometimes with a light insult or two, but... he didn't build Amazon 
 by himself. McKenzie helped with that immensely, and so did that board room full of geniuses.
 He had a team of REAL smart bastards helpin' him out...
@@ -23464,7 +23462,6 @@ Whereas, Tucker is a mass manipulator.
 "@)
  
 $Book.NewSection(7,"Conjecture","Identification (3)",@"
-
 While Tucker will (SAY/DO) questionable shit that proves what a moron he is...
 ...the idea of cobbin' on another mans knob, like Hannity does to Murdoch...
 ...OR spreading his ass cheeks for anybody at Exxon Mobil like Ted Cruz...
@@ -23521,7 +23518,6 @@ That's just how America works, and I REALLY don't think people understand the gr
 "@)
  
 $Book.NewSection(7,"Thesis","Change the name of Fox News → Not News",@"
-
 The idea that any of these fucks would ever admit that they do this shit, OR, change the god damn name of...
 Fox News → Not News...? 
 
@@ -24183,7 +24179,7 @@ So allow me to be clear here... people's constitutional rights are being overrid
 It has been happening since October 26th, 2001.
 "@)
  
-$Book.NewSection(7,"Excerpt","Familiar with the Technology",@"
+$Book.NewSection(7,"Excerpt","Familiar with the Technology (Link)",@"
 An excerpt that I wrote following the situation where SCSO SCOTT SCHELLING REFUSED TO COLLECT EVIDENCE FROM MY
 DEVICE ON 05/26/20. Original:  https://docs.google.com/document/d/11Q11HnRmAuCd_HAJZPLEoWJIujv9Jpyq1O1I5MODqWk
 
@@ -24808,10 +24804,12 @@ Pirrone  : I know, right~! LOL~!
 Look, whether that conversation happened or not, isn't what matters. What matters, is if people READ THAT, and 
 some people start to to question "...those dudes probably WOULD have that conversation..."
 
-In anyone elses case where they just arrest some innocent person, the next time that this prick brags about being 
+In anyone elses' case where they just arrest some innocent person, the next time that this prick brags about being 
 able to cuff you and cause you to have to get your car out of the impound, the whatever bullshit ticket, plus
 additional charges for any hint of added douchebaggery that the officer in question feels is appropriate for the 
-given situation at hand…? It is literally what the system is designed to do to people.
+given situation at hand…? 
+
+It is literally what the system is designed to do to people.
 To top it all off… let's say that you always paid all of those fines off like a good little boy or girl… 
 Well, nobody is even proud of you for doing that at all. If anything...? People will consider you to be a SCUMBAG,
 even if you were INNOCENT, or you have PROOF. (← Typically morons)
@@ -24896,17 +24894,20 @@ cause HIM to be arrested by a fellow officer pretty quickly. And that's just how
 Facial recognition and/or ID matches…?
 Then that's who you are cowboy. If a situation is suggested that it's a clone…?
 Then we investigate further.
+
 But, this will only be a reality for people after me and many others that like this idea, get killed by a serial 
 killer police officer who ALSO, thinks that it would be a good idea to have these things… BUT- works a lot harder 
 to prevent them from becoming a reality (such as TROOPER RUFFAS), than they do about SUPPORTING the ideas where 
 they use more brain power and become slightly less useless (like TROOPER RUFFAS).
 It isn't a blanket 'fuck you' to all cops… just the ones like TROOPER RUFFAS.
+
 I'm just saying, it would be nice if cops didn't have to DRIVE their own VEHICLE, nor SPEND MONEY ON GAS, 
 nor lie about not knowing how to charge a phone to pull pictures or video from… because, as if their job wasn't
 already fucking easy enough...? It would be a standard thing that the academy would teach all recruits.
 Because of how much more easy their job would BE, if they implemented ALL of these ideas.
 The only reason these solutions aren't in place ALREADY, is because they have their PRIORITIES all fucked up.
 They would rather track me, and follow me everywhere I go, because…? 
+
 Maybe some people in the government are looking at prison time if they get CAUGHT AGAIN. 
 Now, I say the word AGAIN, because they've already been caught NUMEROUS times.
 But, the MAGIC of being in the GOVERNMENT, is that you have ACCESS to doing some REAL EVIL SHIT to people.
@@ -24942,6 +24943,7 @@ That is why they are watching me constantly, 24/7.
 Though, some of them do it because they're trying to protect me, they know that if they stop watching, I will 
 get killed or go missing. They also know that I intend to manipulate these cocksuckers into attacking me again.
 So, they've labeled me as a REAL BALLSY MOTHERFUCKER, ALRIGHT...
+
 At any rate, these malicious actors in the government don't realize, I already HAVE a team of people that are 
 EXACTLY where they need to be. For THEIR protection, and so I don't somehow get CHARGED WITH ESPIONAGE ACT OF 1917,
 they have to use the same tools that a MALICIOUS ACTOR like APT29 or CERBERUS would use, to commit ESPIONAGE and
@@ -24961,12 +24963,15 @@ So, I just have to ACCUMULATE MORE EVIDENCE and get a FEW MORE PIECES of EVIDENC
 compromised, that way, two locker's hash values can be compared... one hash value has the evidence pulled from 
 the NAND via desoldering from the logic board, and then reinserted into a totally separate logic board, in a 
 process called "iPhone Data Recovery to be used in a criminal investigation"...
+
 The other hash value would be the version that I already submitted in which the evidence that was uploaded could 
 be changed and swapped in, made up evidence that the team serial killer police officers had submitted… 
 But, because that team sucks dick at knowing how to stop someone like me…?
+
 I already know their entire plan and, it just so happens that the backups were already made and shipped out.
 Now, I don't actually KNOW this, but I SPECULATE it because, if you're someone working with matters of national
 security, you'll wanna copy EVERYTHING.
+
 Who knew, that whole time I was standing in front of the FBI gate… they were pulling the data off of my phone. 
 Weird. I don't actually know that EITHER, but I SPECULATE as such...
 
@@ -24976,11 +24981,14 @@ THEN they would actually be VERY INVOLVED in INVESTIGATING the murder, but not i
 
 Which is a sad state of affairs, that a person has to be killed, in order for them to DECIDE on whether to do this
 process where they surgically move parts around without damaging the DATA, and then filing criminal charges against
-the individuals I recorded on video. Wanna know why...? It's mainly because of LAW AVOIDANCE OFFICERS like:
-NYSP TROOPER RUFFAS. I have NO DOUBT in my mind, that someone heard SHAEMUS LEAVEY confirm the existence of the 
-video, and THEN, a chain of phone calls and text messages were sent from person to person, and then eventually, 
-like MAGIC... ah. My iPhone 8+ that had a video of (2) cocksuckers attempting to kill me, is gone, along with ALL 
-of the OTHER SENTIMENTAL STUFF ON THAT DEVICE.
+the individuals I recorded on video. Wanna know why...? 
+
+It's mainly because of LAW AVOIDANCE OFFICERS like: NYSP TROOPER RUFFAS. 
+
+I have NO DOUBT in my mind, that someone heard SHAEMUS LEAVEY confirm the existence of the video, and THEN, a 
+chain of phone calls and text messages were sent from person to person, and then eventually, like MAGIC... ah. 
+My iPhone 8+ that had a video of (2) cocksuckers attempting to kill me, is gone, along with ALL of the OTHER 
+SENTIMENTAL STUFF ON THAT DEVICE.
 
 So, if I had a conversation with my son on his 10th birthday for about 4 hours...?
 Gone, dude. That shit was basically killed with vengeance.
@@ -24999,195 +25007,204 @@ $Book.NewSection(7,"Assertion","Reasons They Want Me Dead",@"
 ______________
 | Free Power |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯
- NYSEG was giving free power to T-Mobile and AT&T Cell Towers in Clifton Park, NY. 
- That means that every customer had to pay their bill, but NYSEG and T-Mobile didn't.
- 
- Therefore, they're both getting paid for the same amount of non-switch-flipping douchebaggery. 
- The type of professional that just conveniently somehow forgot to measure how many KwH that the tower was 
- blowing through…
+NYSEG was giving free power to T-Mobile and AT&T Cell Towers in Clifton Park, NY. 
+That means that every customer had to pay their bill, but NYSEG and T-Mobile didn't.
 
- Sorta like some stupid fuck would do, one that shouldn't have the fucking job to begin with. 
- I'd do that too if I was a lazy cocksucker (like TROOPER RUFFAS) that didn't feel like getting out of my NYSEG 
- truck to record the KwH at each and every fucking meter in the town. 
- That's sort of what that person's job is, and it isn't getting done.
+Therefore, they're both getting paid for the same amount of non-switch-flipping douchebaggery. 
+The type of professional that just conveniently somehow forgot to measure how many KwH that the tower was 
+blowing through…
 
- So, then you get pictures that are super rare, of me taking a few million dollars away from these (2) companies.
- Because, the (pictures+video) shows a criminal act happening… NYSEG and T-Mobile, STEALING MONEY from people.
+Sorta like some stupid fuck would do, one that shouldn't have the fucking job to begin with. 
+I'd do that too if I was a lazy cocksucker (like TROOPER RUFFAS) that didn't feel like getting out of my NYSEG 
+truck to record the KwH at each and every fucking meter in the town. 
+That's sort of what that person's job is, and it isn't getting done.
 
- Once the cocksuckers officially write me a check for said amount, then… 
- I will use all of that money to continue investigating this RICO/Sherman Anti-Trust case against 
- Verizon/Bell/AT&T… which aims to do the same exact thing to them, but more of like a `$500B lawsuit… 
- …not like a standard `$15M pay with free HBO… this one is more like "permanently shut down".
- ______________
- | Censorship |
- ¯¯¯¯¯¯¯¯¯¯¯¯¯¯
- All of the internet service providers around here, they take part of this series of events where it is totally ok, 
- for people to hit a button that overrides this thing called "freedom of speech". 
+So, then you get pictures that are super rare, of me taking a few million dollars away from these (2) companies.
+Because, the (pictures+video) shows a criminal act happening… NYSEG and T-Mobile, STEALING MONEY from people.
 
- This thing that I am referring to, it is called "Censorship". 
- It's when, you're making a recording on your cell phone, and for whatever reason, during specific parts of a 
- recording that you've made… some <unspecified> gets to blow wind into the microphone that they're using to shadow 
- your movement… 
+Once the cocksuckers officially write me a check for said amount, then… 
+I will use all of that money to continue investigating this RICO/Sherman Anti-Trust case against 
+Verizon/Bell/AT&T… which aims to do the same exact thing to them, but more of like a `$500B lawsuit… 
+…not like a standard `$15M pay with free HBO… this one is more like "permanently shut down".
+______________
+| Censorship |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+All of the internet service providers around here, they take part of this series of events where it is totally ok, 
+for people to hit a button that overrides this thing called "freedom of speech". 
 
- So, it'll sound a lot like actual wind… but- it isn't actual wind. 
- It's somebody like Andrew Cuomo, attempting to dry off his boyfriend's nutsack… 
- Sounds like it MIGHT be actual wind...? 
- But- it might not be NATURAL wind. 
+This thing that I am referring to, it is called "Censorship". 
+It's when, you're making a recording on your cell phone, and for whatever reason, during specific parts of a 
+recording that you've made… some <unspecified> gets to blow wind into the microphone that they're using to shadow 
+your movement… 
 
- Nah, cause it might be Andrew "Don't Touch Me, Grandpa" Cuomo … trying to dry off his buddy's nutsack that he 
- just had in his mouth… that's what they do and I refer to this level of douchebaggery as… "Censorship"
+So, it'll sound a lot like actual wind… but- it isn't actual wind. 
+It's somebody like Andrew Cuomo, attempting to dry off his boyfriend's nutsack… 
+Sounds like it MIGHT be actual wind...? 
+But- it might not be NATURAL wind. 
 
- Facebook, Nfrastructure, Google, all of these companies play a pivotal role in mass censorship of users data and
- opinion sharing… Though, I believe to VARYING DEGREES. I had this theory a LONG time ago, that perhaps the reason 
- why MANY of my posts, or things that I write or share…? 
+Nah, cause it might be Andrew "Don't Touch Me, Grandpa" Cuomo … trying to dry off his buddy's nutsack that he 
+just had in his mouth… that's what they do and I refer to this level of douchebaggery as… "Censorship"
 
- MAYBE, it is constantly JUDGED by some nutsack dryer breath grade censorship… and that the mediums in which 
- Facebook or Google in general, they're all curtailed according to whoever the fuck feels like running the show. 
+Facebook, Nfrastructure, Google, all of these companies play a pivotal role in mass censorship of users data and
+opinion sharing… Though, I believe to VARYING DEGREES. I had this theory a LONG time ago, that perhaps the reason 
+why MANY of my posts, or things that I write or share…? 
 
- So if MARK ZUCKERBERG wants to SELL FACEBOOK'S USER DATA to CAMBRIDGE ANALYTICA...? 
- Well, who the FUCK is gonna STOP THAT FROM HAPPENING and DO SOMETHING ABOUT IT...?
+MAYBE, it is constantly JUDGED by some nutsack dryer breath grade censorship… and that the mediums in which 
+Facebook or Google in general, they're all curtailed according to whoever the fuck feels like running the show. 
 
- Theodore Roosevelt, that's who.
- I wish I knew of a better way to say this, but… it's not a REAL look into the opinions or ideas that people 
- have, when the platform AGGRESSIVELY censors SOME people, or even goes so far as to hire a team of HACKERS to use
- a program like (ARCHIMEDES https://youtu.be/QP25FbNhakQ), or even to be a general, all-around fuckface that uses
- (AFTER MIDNIGHT/ASSASSIN https://youtu.be/LYVUMLpofWg) (BSOD https://youtu.be/40sQXpVh_8Y), or just LIMITING MY
- COMMENTS ON THE PLATFORM LIKE THIS (CENSORSHIP https://youtu.be/Jmq4yBqGhTs).
+So if MARK ZUCKERBERG wants to SELL FACEBOOK'S USER DATA to CAMBRIDGE ANALYTICA...? 
+Well, who the FUCK is gonna STOP THAT FROM HAPPENING and DO SOMETHING ABOUT IT...?
 
- Because, I have seen wildly fluctuating sets of data for different parts of (the last 4 years). 
- In fact, I have meticulously watched the activity of my content, and I can see that people have been fucking 
- with it the entire time. Wanna know why people fuck with MY posts, social media content, or reputation...? 
+Theodore Roosevelt, that's who.
+I wish I knew of a better way to say this, but… it's not a REAL look into the opinions or ideas that people 
+have, when the platform AGGRESSIVELY censors SOME people, or even goes so far as to hire a team of HACKERS to use
+a program like (ARCHIMEDES https://youtu.be/QP25FbNhakQ), or even to be a general, all-around fuckface that uses
+(AFTER MIDNIGHT/ASSASSIN https://youtu.be/LYVUMLpofWg) (BSOD https://youtu.be/40sQXpVh_8Y), or just LIMITING MY
+COMMENTS ON THE PLATFORM LIKE THIS (CENSORSHIP https://youtu.be/Jmq4yBqGhTs).
 
- It's because I am manipulating CERTAIN PEOPLE that have no fear of being shot to death.
- They like to CONTAIN me because they like to play GOD.
- But eventually, ALL of those people who have this line of reasoning will inevitably be shot to death in a violent
- manner. That probably sounds rather EXTREME, right...?
+Because, I have seen wildly fluctuating sets of data for different parts of (the last 4 years). 
+In fact, I have meticulously watched the activity of my content, and I can see that people have been fucking 
+with it the entire time. Wanna know why people fuck with MY posts, social media content, or reputation...? 
 
- Well, the measures that these people have gone, to CONTAIN or RESTRICT my FREEDOMS and RIGHTS...?
- Is akin to them having already violently killed me. I'm not being hyperbolic at all, these people have attempted
- to murder me already, and they're not just gonna stop at ALMOST murdering me. Nah. 
+It's because I am manipulating CERTAIN PEOPLE that have no fear of being shot to death.
+They like to CONTAIN me because they like to play GOD.
+But eventually, ALL of those people who have this line of reasoning will inevitably be shot to death in a violent
+manner. That probably sounds rather EXTREME, right...?
 
- They're gonna DISILLUSION nearly EVERYONE I KNOW, and make me out to be some scapegoat or psycho... 
- But the thing is, these people are psychotic, for thinking that they're gonna get away with almost killing me.
+Well, the measures that these people have gone, to CONTAIN or RESTRICT my FREEDOMS and RIGHTS...?
+Is akin to them having already violently killed me. I'm not being hyperbolic at all, these people have attempted
+to murder me already, and they're not just gonna stop at ALMOST murdering me. Nah. 
 
- As for FACEBOOK, if you're like ME and you make a post, it is graded.
- Even if it causes MARK ZUCKERBERG to laugh his ass off...? 
- He will make damn certain that other people can't see it.
+They're gonna DISILLUSION nearly EVERYONE I KNOW, and make me out to be some scapegoat or psycho... 
+But the thing is, these people are psychotic, for thinking that they're gonna get away with almost killing me.
 
- He might even sell some of my material to some other company that has COOL, RESPECTABLE PEOPLE that wind up
- building an entire SKIT or SHOW, based around MY IDEAS that I've posted.
+As for FACEBOOK, if you're like ME and you make a post, it is graded.
+Even if it causes MARK ZUCKERBERG to laugh his ass off...? 
+He will make damn certain that other people can't see it.
 
- If it sucks, it STILL isn't shown to other people. 
- So, it just sits there, unseen by anyone else.
- People that go to my profile MIGHT see it then…?
- But they're not gonna get the impression that I have more experience than MARK ZUCKERBERG does...
- ...at building websites. https://web.archive.org/web/20220000000000*/planetquake.com/bfg20k (← 2001)
+He might even sell some of my material to some other company that has COOL, RESPECTABLE PEOPLE that wind up
+building an entire SKIT or SHOW, based around MY IDEAS that I've posted.
 
- Or configuring network devices, or basically anything with a computer where you need TALENT, and you do something
- PRODUCTIVE...? Because, I have a FELONY on my record from 2002. So that is what put me in this position. But also,
- my father was murdered when I was 10 years old. 
+If it sucks, it STILL isn't shown to other people. 
+So, it just sits there, unseen by anyone else.
+People that go to my profile MIGHT see it then…?
+But they're not gonna get the impression that I have more experience than MARK ZUCKERBERG does...
+...at building websites. https://web.archive.org/web/20220000000000*/planetquake.com/bfg20k (← 2001)
 
- These things are laughed about by people like MARK ZUCKERBERG and his buddies in the ASHKENAZI, they like the 
- idea of spiritual warfare, but the problem is that I am more intelligent than this motherfucker and it pisses him
- off that I ALWAYS FIND SOME WAY TO PISS HIM OFF EVEN MORE.
+Or configuring network devices, or basically anything with a computer where you need TALENT, and you do something
+PRODUCTIVE...? Because, I have a FELONY on my record from 2002. So that is what put me in this position. But also,
+my father was murdered when I was 10 years old. 
 
- Wanna know why...?
- It's because I wrote about how I think he should go to prison over CAMBRIDGE ANALYTICA.
- However, that has evolved WAYYYYYY past that.
+These things are laughed about by people like MARK ZUCKERBERG and his buddies in the ASHKENAZI, they like the 
+idea of spiritual warfare, but the problem is that I am more intelligent than this motherfucker and it pisses him
+off that I ALWAYS FIND SOME WAY TO PISS HIM OFF EVEN MORE.
 
- My material has been being censored on a platform that goes around telling people that it is a PUBLIC ENTITY.
- FACEBOOK is NOT a public entity, nor is it really a PUBLIC FORUM, either.
+Wanna know why...?
+It's because I wrote about how I think he should go to prison over CAMBRIDGE ANALYTICA.
+However, that has evolved WAYYYYYY past that.
 
- People are morons and they think that it is, and they ALSO think that some of the shit I write VIOLATES 
- COMMUNITY STANDARDS... so for instance, if I say the word "FUCK", then, that is a swear word.
+My material has been being censored on a platform that goes around telling people that it is a PUBLIC ENTITY.
+FACEBOOK is NOT a public entity, nor is it really a PUBLIC FORUM, either.
 
- That... is essentially against FACEBOOK COMMUNITY LAW.
- You're not ALLOWED to say the word FUCK at all, if you want people to think you have any common public decency.
- Nope. Fuck you dude. You said the word "FUCK" on FACEBOOK, and EVEN THOUGH you have to be OLDER THAN 13 TO HAVE A
- FUCKING ACCOUNT...? Doesn't matter. Children could STILL wind up seeing it.
+People are morons and they think that it is, and they ALSO think that some of the shit I write VIOLATES 
+COMMUNITY STANDARDS... so for instance, if I say the word "FUCK", then, that is a swear word.
 
- But, if some hot bitch says the word FUCK and ALSO posts a picture of her in her bathing suit...?
- That's ALLOWED. Wanna know why...? She's a hot bitch that said something erotic with the WAY that SHE said FUCK.
+That... is essentially against FACEBOOK COMMUNITY LAW.
+You're not ALLOWED to say the word FUCK at all, if you want people to think you have any common public decency.
+Nope. Fuck you dude. You said the word "FUCK" on FACEBOOK, and EVEN THOUGH you have to be OLDER THAN 13 TO HAVE A
+FUCKING ACCOUNT...? Doesn't matter. Children could STILL wind up seeing it.
 
- When I said it, it was just fuckin' annoying, and it violated community standards.
- When SHE said it...? It gave MARK a reason to start cranking on his pud...? 
- Then he jizzed right into some potting soil... cause he's trying to go green with his greenthumb capabilities.
+But, if some hot bitch says the word FUCK and ALSO posts a picture of her in her bathing suit...?
+That's ALLOWED. Wanna know why...? She's a hot bitch that said something erotic with the WAY that SHE said FUCK.
 
- /¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
+When I said it, it was just fuckin' annoying, and it violated community standards.
+When SHE said it...? It gave MARK a reason to start cranking on his pud...? 
+Then he jizzed right into some potting soil... cause he's trying to go green with his greenthumb capabilities.
 
- Mark : Gotta be more considerate of the environment, dude.
-        Plants need protein, too.
+/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\
 
- \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
+Mark : Gotta be more considerate of the environment, dude.
+       Plants need protein, too.
 
- Look, I've gotten MORE than a FEELING, that my FACEBOOK CONTENT or POSTS doesn't just show up by itself on other
- people's NEWS FEEDS. Because, if you insult a dude who made a fortune off of selling data to CAMBRIDGE ANALYTICA,
- then you're goin' right into the PROBLEMATIC USAGE category, and then you're REAL fucked, dude.
+\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
 
- So, here's the thing… spent the better part of the last (4 years) INTENTIONALLY writing, and checking to see if
- this was the case. I just ACCUMULATE ADDITIONAL EVIDENCE. If I can get a single post on Scott Salvadores page to 
- hit a certain number of comments...? 
+Look, I've gotten MORE than a FEELING, that my FACEBOOK CONTENT or POSTS doesn't just show up by itself on other
+people's NEWS FEEDS. Because, if you insult a dude who made a fortune off of selling data to CAMBRIDGE ANALYTICA,
+then you're goin' right into the PROBLEMATIC USAGE category, and then you're REAL fucked, dude.
 
- Then POPULARITY NOR ENGAGEMENT has NOTHING to do with the CONTENT I POST or UPLOAD having its EXPOSURE LIMITED.
- What my content does, is… proves that Mr Salvadore could be the most popular kid in all of history, but if he 
- has to have his friends assist him in censoring me, or like, just being an overall pain in the ass that abuses 
- this ability to make someone MORE INTERESTING than SCOTT (such as myself) from being MORE POPULAR and/or MORE 
- RICH than him/his family…
- Then that is the PERFECT PLAN, and it is what I'd do if I had a SMALL DICK and the last name SALVADORE.
- Because, there's NO WAY that ANYBODY would EVER KNOW... that a casually placed insult by MICHAEL COOK, was SO
- ACCURATE, that it caused some popular little rich boy to get SO UPSET WITH HIMSELF... that he just, paid MARK 
- to get me to SHUT THE HELL UP.
- But, that's why the American colonists shot a lot of BRITISH SOLDIERS to death in 1776...
+So, here's the thing… spent the better part of the last (4 years) INTENTIONALLY writing, and checking to see if
+this was the case. I just ACCUMULATE ADDITIONAL EVIDENCE. If I can get a single post on Scott Salvadores page to 
+hit a certain number of comments...? 
 
- I'm not gonna keep writing about SCOTT SALVADORE because I think he's just a low ranking moron that somehow
- knew someone POWERFUL and COOL, and THEY thought that I was just being a real ASSHOLE, and then they kept eyes
- on me... and then I eventually started WINNING PEOPLE OVER, with my written material.
+Then POPULARITY NOR ENGAGEMENT has NOTHING to do with the CONTENT I POST or UPLOAD having its EXPOSURE LIMITED.
+What my content does, is… proves that Mr Salvadore could be the most popular kid in all of history, but if he 
+has to have his friends assist him in censoring me, or like, just being an overall pain in the ass that abuses 
+this ability to make someone MORE INTERESTING than SCOTT (such as myself) from being MORE POPULAR and/or MORE 
+RICH than him/his family…
 
- They kept hiring a new crew of people to watch me all the time, but I kept causing the people who watched me,
- to fuckin laugh their asses off... Once a new person starts LAUGHING at what I'm writing...? Well, fuck.
- THEN, it's time to ship them off to some other project and get someone else with no sense of humor to watch me.
+Then that is the PERFECT PLAN, and it is what I'd do if I had a SMALL DICK and the last name SALVADORE.
+Because, there's NO WAY that ANYBODY would EVER KNOW... that a casually placed insult by MICHAEL COOK, was SO
+ACCURATE, that it caused some popular little rich boy to get SO UPSET WITH HIMSELF... that he just, paid MARK 
+to get me to SHUT THE HELL UP.
 
- But, the process kept repeating itself, and the process has cost these rich powerful people A LOT OF FUCKIN 
- MONEY... I'm not exaggerating. I have probably TANKED these people billions of dollars already.
-    
- Anyway, I want to get back to the technology based police officers that should already exist, but they don't yet…
- These technology cops… they wouldn't need to even drive around either.
+But, that's why the American colonists shot a lot of BRITISH SOLDIERS to death in 1776...
 
- Wasting taxpayer resources on vehicles that just float around on gasoline, when they could be solar/battery 
- powered instead… Wouldn't need a company like NYSEG to give free power to T-Mobile/AT&T when everything has its 
- own solar panels and batteries… 
- So, this right here, would eliminate the need to have utility bills… 
- Sure, it causes people to generate less revenue… but the thing is, a lot about revenue is a lie, just look at the 
- US NATIONAL DEBT, sitting pretty at a real cool `$30T. That's because DEBT and REVENUE are being COMBINED and the 
- DEBT just continues to be LARGER than the REVENUE...? 
+I'm not gonna keep writing about SCOTT SALVADORE because I think he's just a low ranking moron that somehow
+knew someone POWERFUL and COOL, and THEY thought that I was just being a real ASSHOLE, and then they kept eyes
+on me... and then I eventually started WINNING PEOPLE OVER, with my written material.
 
- That's why it keeps rising. Nothing anybody can do about it.
+They kept hiring a new crew of people to watch me all the time, but I kept causing the people who watched me,
+to fuckin laugh their asses off... Once a new person starts LAUGHING at what I'm writing...? Well, fuck.
+THEN, it's time to ship them off to some other project and get someone else with no sense of humor to watch me.
 
- Realistically, if NYSEG and T-Mobile get free power… who's generating the most profit there?
- The answer is, both companies are ripping everyone off.
- Not even remotely kidding.
- I try to curtail the talk about eliminating the concept of 'money'... because… it is easy for these dickheads to 
- just forget to turn the meter on, because… they aren't paying each other anything at all… are they.
+But, the process kept repeating itself, and the process has cost these rich powerful people A LOT OF FUCKIN 
+MONEY... I'm not exaggerating. I have probably TANKED these people billions of dollars already.
 
- The problem with transmission of power over power lines, is that power gets dissipated by about 80% over the     
- infrastructure… generating a lot of wasted heat and power. The transformers have to crank the voltage or amperage 
- back up after every X feet, which is why the traditional telephone pole approach works here.
- However, batteries and solar panels could reduce the carbon footprint quite immensely… as well as eliminate the
- need for people to be dependent on an energy grid where the GRID ITSELF uses 80% of the fucking power.
- Combine that with LoS technologies for fiber optics, and you could have an infrastructure that works cohesively, 
- in order to combat wasted heat or energy. An example of where they use other techniques of 'biodiversity' to help 
- condition the surrounding air/combat wasted heat/energy, is in Germany… where they use these natural habitats that
- exist on rooftops, that have plants/greenhouse moisture which helps to reduce dependence on air conditioning.
+Anyway, I want to get back to the technology based police officers that should already exist, but they don't yet…
+These technology cops… they wouldn't need to even drive around either.
 
- (When I start to talk in my EDUCATIONAL mindset, this pisses MARK off even more cause he LEARNS stuff from me.)
- The greenhouse effect, is an extraordinary thing to use as an advantage, because then you're running off of 
- operations that normally take place separately, and you're integrating the way in which these systems complement 
- each other, to increase the efficiency of the entire system…
- In other words, it is similar to an exponent over a number. 
- When amplifying a number, the number that is amplified is the base, and the amplification factor is the exponent.
- In this case, the building being engineered to just be a building, it is the base.
- Adding a greenhouse full of plants that would ordinarily convert sunlight and carbon dioxide into oxygen and 
- water vapor… then what factors must be considered to get the best zero-sum impact on the environment?
+Wasting taxpayer resources on vehicles that just float around on gasoline, when they could be solar/battery 
+powered instead… Wouldn't need a company like NYSEG to give free power to T-Mobile/AT&T when everything has its 
+own solar panels and batteries… 
+
+So, this right here, would eliminate the need to have utility bills… 
+Sure, it causes people to generate less revenue… but the thing is, a lot about revenue is a lie, just look at the 
+US NATIONAL DEBT, sitting pretty at a real cool `$30T. That's because DEBT and REVENUE are being COMBINED and the 
+DEBT just continues to be LARGER than the REVENUE...? 
+
+That's why it keeps rising. Nothing anybody can do about it.
+
+Realistically, if NYSEG and T-Mobile get free power… who's generating the most profit there?
+The answer is, both companies are ripping everyone off.
+Not even remotely kidding.
+
+I try to curtail the talk about eliminating the concept of 'money'... because… it is easy for these dickheads to 
+just forget to turn the meter on, because… they aren't paying each other anything at all… are they.
+
+The problem with transmission of power over power lines, is that power gets dissipated by about 80% over the     
+infrastructure… generating a lot of wasted heat and power. The transformers have to crank the voltage or amperage 
+back up after every X feet, which is why the traditional telephone pole approach works here.
+
+However, batteries and solar panels could reduce the carbon footprint quite immensely… as well as eliminate the
+need for people to be dependent on an energy grid where the GRID ITSELF uses 80% of the fucking power.
+
+Combine that with LoS technologies for fiber optics, and you could have an infrastructure that works cohesively, 
+in order to combat wasted heat or energy. An example of where they use other techniques of 'biodiversity' to help 
+condition the surrounding air/combat wasted heat/energy, is in Germany… where they use these natural habitats that
+exist on rooftops, that have plants/greenhouse moisture which helps to reduce dependence on air conditioning.
+
+(When I start to talk in my EDUCATIONAL mindset, this pisses MARK off even more cause he LEARNS stuff from me.)
+The greenhouse effect, is an extraordinary thing to use as an advantage, because then you're running off of 
+operations that normally take place separately, and you're integrating the way in which these systems complement 
+each other, to increase the efficiency of the entire system…
+
+In other words, it is similar to an exponent over a number. 
+
+When amplifying a number, the number that is amplified is the base, and the amplification factor is the exponent.
+In this case, the building being engineered to just be a building, it is the base.
+
+Adding a greenhouse full of plants that would ordinarily convert sunlight and carbon dioxide into oxygen and 
+water vapor… then what factors must be considered to get the best zero-sum impact on the environment?
 "@)
  
 $Book.NewSection(7,"Conjecture","Shaping the Question",@"
@@ -28876,8 +28893,9 @@ ________________________________________________________________________________
 ___________________________________________________________________________________________
 | 05/25/20 | IMG_0627 | https://drive.google.com/file/d/1zhiwa9hvh5Lg58gHTjDT9TpM0k6NRZVx |                                
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-You would be AMAZED as to how many SLOW PEOPLE there just so happens to be, in a town I grew up in and spent ALMOST 
-my entire life. It's called CLIFTON PARK, NEW YORK 12065. But hey, I make recordings talking about stuff for a reason.
+You would be AMAZED as to how many SLOW PEOPLE there just so happens to be, in a town I grew up in and spent 
+ALMOST my entire life. It's called CLIFTON PARK, NEW YORK 12065. But hey, I make recordings talking about stuff 
+for a reason.
 
 The other videos I had ALREADY, would paint a very clear picture of how these programs are all connected to:
     _________________________________________________________________________________________
@@ -28888,8 +28906,9 @@ Well, these assholes disabled my device remotely. (← Almost as if someone is A
 My PHONE was DISABLED by the MANUFACTURER, to commit: OBSTRUCTION OF JUSTICE. That's a perfect reason for violence.
 
 When I say "Almost as if someone is ASKING to be KILLED very VIOLENTLY...?"
-Well, what I mean is that there aren't enough bullets in the entire planet, for the MILITARY FIRING SQUAD, to unload
-them at a target that they have been instructed to EXECUTE WITH EXTREME PREDJUDICE. That sort of very violently.
+Well, what I mean is that there aren't enough bullets in the entire planet, for the MILITARY FIRING SQUAD, to 
+unload them at a target that they have been instructed to EXECUTE WITH EXTREME PREDJUDICE. 
+That sort of very violently.
 
 OBSTRUCTION OF JUSTICE is basically when someone commits a crime and (destroys/tampers with) evidence.
 The reason why Pegasus/Phantom is as deadly as it is, is that it allows the police to destroy your evidence.
@@ -29232,7 +29251,6 @@ Filled, with content.
 Filled with joy, even.
 Whichever way you want to state the obvious, Exxon Mobil is makin' this man, 
 ...Ted Cruz (senator from Texas), his bitch.
-
 That's what guys like Ted Cruz (senator from Texas) are all about.
         
 What is not so obvious here, is that ...Ted Cruz (senator from Texas), is a grown ass man... Not a woman. 
@@ -29559,11 +29577,12 @@ Jean  : It's a rape whistle...
         You blow on this thing, and somebody with a REAL GUN, will show up and help ya out.
 
 It's not realistic at all. BUT- it's still one of my favorite cop movies to be fair.
+"@)
 
-\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
-
-Last Action Hero → In no way realistic at all (But it is probably one of my favorite childhood cop movies...)
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+$Book.NewSection(8,"Excerpt","Last Action Hero",@"
+______________________________________________________________________________________________
+| In no way realistic at all (But it is probably one of my favorite childhood cop movies...) |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 The movie starts off with a scene where tons of cop cars are literally surrounding an elementary school, where 
 Arnold Shwarzenegger shows up as Jack fuckin' god damn Slater... Walking on the tops of a bunch of cop cars,
 where all the cops are being big pussies cause Jack the Ripper has the kids up on the roof.
@@ -30487,7 +30506,7 @@ that particular document right in plain view, within those pictures...
 
 Just so we're adamantly clear here, I have EVERY REASON TO SUSPECT THAT NFRASTRUCTURE 1) COULD, 2) WOULD, and 
 3) HAS already stolen intellectual property from ME, as well as my FATHER, in the past.
-https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD
+https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf
 
 I gotta be careful about putting a CRITICAL PIECE OF EVIDENCE right there in the open like that, right...?
 At any given moment, somebody could really just, come along and steal that evidence. Then I'd be SUPER fucked.
@@ -30724,9 +30743,10 @@ it's worth somethin'... all in all, some people owe me a lot more than a fuckin'
 Yeah, if people didn't think I had an idea that's what I detected, or thought was going on...? It's the reason 
 why I made a recording on January 11th, 2019.
                           ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-_______________________________________________________________________________________________________________
-| 785-3221 Jesse Pickett | https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD/view?usp=sharing |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+____________________________________________________________________________________________
+| 07/21/89 | 785-3221 Jesse Pickett                                                        | 
+| https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2021_0414-(Jesse%20Pickett).pdf |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 So, the above link goes to a couple of documents that I found in a box that my father tucked away in the
 attic, it wasn't collected or anything, nor looked at by the police like Joe Pugeliese, the Albany District 
 Attorney who charged Zontell Gordon, Clifton Williamson, and Tyrell Crawford with murdering my father on 10/23/95.
@@ -30825,7 +30845,6 @@ documents he leaked. I'm not certain what's the most relevant or important docum
 "@)
  
 $Book.NewSection(8,"Excerpt","Edward J. Snowden (Expert Cybercommando)",@"
-
 Edward J. Snowden | Expert Cybercommando/Wizard/Keyboard Warrior | https://en.wikipedia.org/wiki/Edward_Snowden 
 _______________________________________________
 | 2004 : US Army | Special Forces (Candidate) |
@@ -30848,7 +30867,7 @@ ________________________________________________________________________________
   - Adv. Training for 6 mo.
   - Stationed in Geneva with diplomatic cover
   - Hand picked by CIA to support the president at 2008 NATO Summit in Romania 
-  - Top Technical any Cybersecurity Expert
+  - Top Technical and Cybersecurity Expert
   - Formative → Team manipulated Swiss banker into D&D, Banker later arrested
   - CIA Ops offered help in exchange for Banker to become Informant 
 _______________________________________________________________________________________________
@@ -30986,9 +31005,8 @@ I will go over relevant subjects before I take a dive into his resume.
 
 Look, Collateral Murder is pretty bad, no way around it. Anyone involved in the murder of a bunch of JOURNALISTS,
 probably made a mistake. The mistake part isn't what made the situation as bad as it was. Trying to cover it up 
-with some white out, deny a FOIL request, and not give the grieving families just makes that entire chain of
-command... questionable. I have no doubt that this dude probably had no involvement with that directly...
-...but he WAS stationed in Iraq at or about that time.
+with some white out, denying the FOIL request, and not giving the grieving families ANY CLOSURE…? It just makes 
+that entire chain of command... questionable. 
 
 If releasing a video like "Collateral Murder" pissed of some people in the US government, it 
 stands to reason that SOMEBODY was pretty fucking embarrassed by it. Whether it was HIM, or someone else, 
@@ -32742,21 +32760,21 @@ EVER LIE TO PEOPLE... because that's moronic.
  
 $Book.NewSection(8,"Excerpt","Presidents that have lied",@"
 It's time to whip out the whole "Table of Presidents that have lied"
-______________________________________________________________________________________________________________________
-|     [NAME]        [TERM]       [ACTION]                        [FALSE STATEMENT ISSUED TO PUBLIC]                  | 
-|-------\-------------/--------------\---------------------------------------------/---------------------------------|
-| William Clinton | 93-00 | Had Monica Lewinsky suck his dick  | I did NOT have sexual relations with that woman     |
-|                 |       | in the oval office                 |                                                     |
-|--------------------------------------------------------------------------------------------------------------------|
-| George W. Bush  | 01-08 | Had Michael Hayden (CIA/NSA)       | Stated during re-election campaign: "Look…          |
-|                 |       | reverse engineer ThinThread to spy | Constitutional guarantees are in place, alright...? |
-|                 |       | on U.S. citizens comm. Data        | Just, relax guys… and vote for me on election day.  |
-|--------------------------------------------------------------------------------------------------------------------|
-| Barack Obama    | 09-16 | Undermined his own election bid by | Stated that the government is not looking through   |
-|                 |       | flip-flopping on transparency      | the content of people's data on the internet.       |
-|--------------------------------------------------------------------------------------------------------------------|
-| Donald Trump    | 17-20 | Wrote "The Art of the Deal"        | This man constantly lies. But also, 01/06/21        |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+_____________________________________________________________________________________________________________________
+|     [NAME]        [TERM]       [ACTION]                        [FALSE STATEMENT ISSUED TO PUBLIC]                 | 
+|-------\-------------/--------------\---------------------------------------------/--------------------------------|
+| William Clinton | 93-00 | Had Monica Lewinsky suck his dick  | I did NOT have sexual relations with that woman    |
+|                 |       | in the oval office                 |                                                    |
+|-------------------------------------------------------------------------------------------------------------------|
+| George W. Bush  | 01-08 | Had Michael Hayden (CIA/NSA)       | Stated during re-election campaign: "Look…         |
+|                 |       | reverse engineer ThinThread to spy | Constitutional guarantees are in place, alright?   |
+|                 |       | on U.S. citizens comm. Data        | Just, relax guys… and vote for me on election day. |
+|-------------------------------------------------------------------------------------------------------------------|
+| Barack Obama    | 09-16 | Undermined his own election bid by | Stated that the government is not looking through  |
+|                 |       | flip-flopping on transparency      | the content of people's data on the internet.      |
+|-------------------------------------------------------------------------------------------------------------------|
+| Donald Trump    | 17-20 | Wrote "The Art of the Deal"        | This man constantly lies. But also, 01/06/21       |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 I'm not even gonna put President Biden on this table, because he has more political experience than ALL of these
 people. Not even kidding, Biden's been doing this shit for a few years more than General McKenzie has been in
 the military, 1979-2022. That's fuckin' 53 years right there. I might have to break down President Biden into
@@ -34670,24 +34688,33 @@ I'm surrounded by fucking lazy careless morons like my mother, or my stepfather,
 Just like when I told SCOTT SCHELLING about my 911 call in front of Center for Security, he thought it was TOO
 DIFFICULT to COLLECT MY PICTURES or WATCH THE VIDEO, and WRITE NO NOTES WHATSOEVER in the CALL FOR SERVICE 
 SCSO-2020-028501… which amazingly, wasn't in my…
-_______________________________________________________________________________________________________
-| 09/04/20 | SCSO RECORDS REQUEST | https://drive.google.com/file/d/12JmI7Qsg1Ohcl7s_Asui9QuQxHq6wJJE |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+____________________________________________________________________________________________
+| 09/04/20 | SCSO RECORDS REQUEST                                                          | 
+| https://github.com/mcc85s/FightingEntropy/blob/main/Records/Cook%20%20request_000210.pdf |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 However, I STILL WAS able to OBTAIN the CORRECT RECORD after having a conversation with…
 _________________________________________________________________________________________________________________
 | 02/01/21 | SCSO CAPT. J. BROWN | https://drive.google.com/drive/u/2/folders/1MpqD7AmxYA1IoAZHfsA3tZ_xwTGRwPPY |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 And, once I submitted a FOIL request for THAT specific incident number…?
-_______________________________________________________________________________________________________
-| 02/02/21 | SCSO RECORDS REQUEST | https://drive.google.com/file/d/12UZLRdCaHh4o1dPShFrcHn_jkTDZaAIA |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+____________________________________________________________________________________________
+| 02/02/21 | SCSO RECORDS REQUEST                                                          | 
+| https://github.com/mcc85s/FightingEntropy/blob/main/Records/2020-028501%20Cook%20req.pdf |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Ahhhhh… You would never believe how many months the SARATOGA COUNTY SHERIFFS OFFICE kept trying to HIDE…
 …the NUMEROUS CRIMINAL ACTIVITIES IT COMMITTED… 
 …on 05/26/20. 
+_____________________________________________________________________________________________________________
+| 10/04/22 | Records | https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1004-(RecordsList).pdf |
+|          | GodMode | https://youtu.be/dU_5rdVkCD8                                                         |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 But, hey… SCSO commits 7 felonies, doesn't face any trouble or anything like that for any of it, IGNORES MY 
 EVIDENCE IN CHAPTER "THE WEEK", TRIES TO KILL ME, HAD CPS TAKE MY KIDS AWAY… 
 
 But, hey. Look on the bright side.
+Somebody with access to the GOD MODE CURSOR, thinks something is fishy about SCSO-2020-003173, which is the
+INCIDENT that FRED RENCH defended me for, regarding CRIMINAL MISCHIEF in the FOURTH DEGREE.
+
 These guys, are doing this county a fucking AMAZING service, by having FRED RENCH defend me for KARELS kayak 
 strap. Not the PHONE LINE that I cut. Not the MURDER ATTEMPT that I was subjected to. Nah. All of that shit 
 was annoying. Too much work for ANYBODY TO INVESTIGATE THAT SHIT, right…?
@@ -37395,25 +37422,38 @@ This exact scenario went down in the letter I dropped off with Oliver Robinson, 
 park in the middle of route 9 staring at me, only to turn around in the driving range parking lot. Just
 so we're clear here, this is a picture of the EXACT VEHICLE THAT I SAW...
 _____________________________________________________________________________________________________
-| ERIC CATRICALA - 20 Anchor Drive, Waterford NY (Old address)                                      |
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| ERIC CATRICALA - 20 Anchor Drive, Waterford NY (Old address)                                (1/3) |
+|- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
 | https://drive.google.com/file/d/1GEm-mKSjgV72818UB7MguM8f-Zum4Mqw                                 |
-|---------------------------------------------------------------------------------------------------|
+|___________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| ERIC CATRICALA - 20 Anchor Drive, Waterford NY (Old address)                                (2/3) |
+|- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
 | This is the SUV that was AGGRESSIVELY hunting me, about a mile away from New Salem, NY            |
 | about 2 hours after I found the license plate on a black Dodge Dart for NYS/DVA-2450 at           |
 | 1134 New Scotland Road, Albany NY                                                                 |
 | https://drive.google.com/file/d/1yW83zEWYc8n0y_UXAztIx2GQF2EAI8Z4                                 |
-|--------------------|------------------------------------------------------------------------------|
+|___________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| ERIC CATRICALA - 20 Anchor Drive, Waterford NY (Old address)                                (3/3) |
+|- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
 | This car was parked in the Cul De Sac near 26C, at some point in (APRIL/MAY) 2022, I looked out   |
 | my window, saw it sitting there. THAT'S when it DROVE AWAY. Interesting.                          |
-| https://drive.google.com/file/d/1aT35fdotBVr382x6xXLZWgIEnrqcKBXL
-|--------------------|------------------------------------------------------------------------------|
-| NYS Correctional Services Training Academy, 1134 New Scotland Rd, Albany NY. 
-| Where I found the BLACK DODGE DART with the license plate NYS/DVA-2450
-| https://drive.google.com/file/d/1bdwna7HG8Y7GEk3BqRF6poxS8RaLzPbi
-|--------------------|------------------------------------------------------------------------------|
-| NYS Correctional Services Training Academy, 1134 New Scotland Rd, Albany NY. This is the vehicle  |
-| that I believe I recorded in... IMG_0646.mov on 05/25/20 (2343 – 0004) approx 21m                 ||
-| https://drive.google.com/file/d/1wbjBoS-5zLUKbWCU0oiRR0z4B4xOr9wC    
+| https://drive.google.com/file/d/1aT35fdotBVr382x6xXLZWgIEnrqcKBXL                                 |
+|___________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| NYS Correctional Services Training Academy, 1134 New Scotland Rd, Albany NY                 (2/2) |
+|- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
+| Where I found the BLACK DODGE DART with the license plate NYS/DVA-2450                            |
+| https://drive.google.com/file/d/1bdwna7HG8Y7GEk3BqRF6poxS8RaLzPbi                                 |
+|___________________________________________________________________________________________________|
+|¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+| NYS Correctional Services Training Academy, 1134 New Scotland Rd, Albany NY                 (2/2) |
+|- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -|
+| This is the vehicle that I believe I recorded in... IMG_0646.mov on 05/25/20 (2343 – 0004) ~21m   |
+| https://drive.google.com/file/d/1wbjBoS-5zLUKbWCU0oiRR0z4B4xOr9wC                                 |
+|___________________________________________________________________________________________________|
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 Now, the COOL thing is, I would've NEVER MADE THAT CORRELATION, if... these people weren't so fucking blatant.
 I mean, one way they COULD'VE prevented me from FINDING this vehicle, OR, discovering the FRAUD SCHEME with the 
@@ -40102,7 +40142,8 @@ They stapled a verbal admission report with a TOTALLY INCORRECT TIME on it.
      Cool.
      By the way, I spoke to Trooper Leavey like, LONG before this ticket was written, as well as the other one.
      [SAME SUPERIOR OFFICER, JAMES LEONARD*] handled BOTH of these tickets. 
-     Which causes me to believe that [ZACKARY KAREL] and [ERIC CATRICALA] are [ASSOCIATED*]. (← EXCELLENT WORK, MORONS)
+     Which causes me to believe that [ZACKARY KAREL] and [ERIC CATRICALA] are [ASSOCIATED*]. 
+     (^ EXCELLENT WORK, MORONS)
 [02] Probably wasn't lying about who he really is.
 [03] Dude's not my friend on Facebook, whether my profile, or commentary is public or not...?
      Who the fuck is giving him this information...?
@@ -40146,13 +40187,13 @@ They stapled a verbal admission report with a TOTALLY INCORRECT TIME on it.
 [10] Well, I'm really saddened by the fact that I'm not allowed there anymore. Oh nos. 
      I might cry myself to death... Nah, really I don't care.
 [11] At the time, I did not know what the hell was going on at this house, BUT- I do know, that the 2 dudes that were
-     trying to RUN ME OVER, were in his house. At that time that I cut the 1) strap, AND the 2) phone line at about 0130AM.
-     My phone was DEAD, I was terrified of going into the woods by myself, I had a feeling that unless I got somebody's
-    attention somehow, I was a dead man.
-[12] ^ . [13] Oh well. [14] Bummer. [15] ACOD which means it's basically a bullshit charge anyway. It was ONLY meant to 
-     prevent me from being able to have somebody arrested for using this program PEGASUS/PHANTOM. It's fucking dangerous.
-     I don't really know how I caught these guys, but I used every trick in the fuckin' book and I caught a number of 
-     exhibits.
+     trying to RUN ME OVER, were in his house. At that time that I cut the 1) strap, AND the 2) phone line at 
+     about 0130AM. My phone was DEAD, I was terrified of going into the woods by myself, I had a feeling that 
+     unless I got somebody's attention somehow, I was a dead man.
+     [12] ^ . [13] Oh well. [14] Bummer. [15] ACOD which means it's basically a bullshit charge anyway. 
+     It was ONLY meant to prevent me from being able to have somebody arrested for using this program
+     PEGASUS/PHANTOM. It's fucking dangerous. I don't really know how I caught these guys, but I used every 
+     trick in the fuckin' book and I caught a number of exhibits.
 
 ----
 
@@ -41663,9 +41704,11 @@ Nobody really seems to see the problem with that, right?
 The problem is, that happens to be the guy in CHARGE OF SCSO.
 SO, PEOPLE THAT TAKE A REPORT LIKE THAT ARE IMMEDIATELY GONNA THINK ITS FUCKIN' BOGUS.
 Apply this concept, to a long list of things in this document.
+
 That means, I will have to contact a totally different FBI field office, right...?
 One in another state where I might actually see a real person that isn't a SECURITY GUARD...
 ...but is instead, an actual FBI employee.
+
 Cause, suppose my cousin Ryan KNEW that I was on my way to 200 McCarty Ave, with all types of fuckin' 
 evidence, pictures, doodads, videos, links, posterboards, and maybe even DNA samples from dead bodies.
 
@@ -41687,7 +41730,8 @@ have ANOTHER job to do. Ignoring that call that just came in. Or, covering it up
 
 If that's not what's happening...? Well, that's what it fuckin' looks like.
 I expect, that SCSO has been calling people that make complaints about me, and what they do is say 
-"Ah yeh, that's Michael Cook. He's... just delusional man. Don't mind him."  
+"Ah yeh, that's Michael Cook. He's... just delusional man. Don't mind him." 
+
 What if I go around telling people that Michael Zurlo is delusional. People that aren't that bright, aren't
 able to tell that he's delusional, and he basically bribed his way past the evaluations with a doctor, or a
 psychologist, and that he's fuckin' totally off the rails, man. He's delusional.
@@ -41695,6 +41739,7 @@ psychologist, and that he's fuckin' totally off the rails, man. He's delusional.
 Well, that wouldn't be fair to him.
 Cause, he cheated his way into that position, he's gonna be damned if anybody cheats him out of it.
 So, naturally, can't just tell people the truth, cause that'd be offensive.
+
 I am actually joking around here, that dude probably worked his ass off to get where he is, and now he 
 can actually help guys like Bruce Tanski, John Hoffman, and Eric Catricala, just commit as much fraud as
 humanly possible. Took a lot of hard work to get there, too.
@@ -41845,12 +41890,14 @@ for 3+ years, I began to understand very clearly, that there is something evil g
 I can't expect that people are gonna give a shit... 
 ...that my iPhone was disabled AFTER showing a VIDEO of a serial killer to a NYS Trooper.
 Can't expect the police to collect the pictures I was able to successfully extract from the device...
+
 I don't say that I'm smarter than most people, to brag about it... 
 I say it because it seems quite apparent.
 Humanity is literally giving each other, and the planet... a huge middle finger.
 
 I grew up believing that the police collect evidence of a crime, when it has happened.
 Now I know that some of them will actually DESTROY it.
+
 Once I saw that some of them will DESTROY evidence of a crime when it has happened...?
 THEN, that caused me to believe that something about the VIDEO I recorded, was EXTREMELY RARE.
 
@@ -41875,6 +41922,7 @@ Well, holy shit.
 It's almost like telling the police might be useless, UNLESS, I tell various police agencies.
 People might not understand what the hell I mean by the former statement.
 But, here's what it REALLY means...
+
 If I tell the police about something ILLEGAL and SERIOUS, and they don't do anything HELPFUL...? 
 Then the assumption everybody ELSE will make, is that the police didn't find anything they care about.
 
@@ -42075,10 +42123,12 @@ Shenendehowa School District issued to my children. Or tablets, OR iPads, or Xbo
 Yeah, the thing is, SHENENDEHOWA thought I was outside of my fucking mind on 6/18/20.
 I went there to talk about the ticket I submitted for the hotspot A FEW DAYS BEFORE AT THAT SAME PLACE. 
 The woman at the front counter actually submitted the ticket FOR me... 
-...because I couldn't log into my kids account. 
+...because I couldn't log into my kids account.
+
 Needed to log into HIS or HER account, while connected to the internet that I didn't have.
 Maybe, I'm a fuckin douchebag because I didn't have a way to teleport to the school district and THEN,
 read my kids minds and enter the password in, and THEN... I guess, whatever.
+
 Nah, I went to the district office instead of this bullshit they were trying to have me do.
 I later gave the ticket number to Dr. Robinson and his assistant at some point in October 2020.
 Kristin Johnson went RIGHT AHEAD and CALLED CPS ON ME, committing CPS FRAUD, and had NO FUCKING IDEA, that I
@@ -42133,7 +42183,8 @@ people. So, I must be PSYCHOTIC to say stuff that's SO CORRECT... that it just S
  
 If that SHOULD be illegal...? Then it should have been an ARRESTABLE OFFENSE. 
 But, since it WASN'T, then what the fuck can they do except write a VERBATIM REPORT, that isn't verbatim at all?  
-Yeah, what I did, is not a fucking CRIME. 
+Yeah, what I did, is not a fucking CRIME.
+
 The Constitution sorta overrides someone's feelings about FREEDOM OF EXPRESSION.
 They're sending people around taking reports and shit, it makes NO FUCKING SENSE. 
 I'm telling people that I'm afraid of the police because they're corrupt.
@@ -42484,7 +42535,8 @@ Dan  : *nodding* Damn straight dude.
 Matt : Uh, I'd prefer if my head didn't spin...?
 Dan  : Whoa, now hold up a minute there, frosted flakes...
        Did I just hear you say you'd prefer if your head didn't spin...?
-Matt : Yeah, I'm all for goin a bunch of places, but I really would prefer that my head not start recklessly spinning...
+Matt : Yeah, I'm all for goin a bunch of places, but I really would prefer that my head not start 
+       recklessly spinning...
        ...cause that'd probably kill me. 
        I mean, to be fair, I'm still excited.
 Dan  : Yeah, well, it WAS a metaphor, but- you were supposed to go with the metaphor, dude.
@@ -49411,7 +49463,7 @@ People don't like realizing how much of a moron he is... but he can't read.
 
 He just knows shapes and colors.
 Doesn't know that a square peg will NEVER fit into a round hole...
-But, whatever man, he's getting' $100M+ a year to TRY to get it through, anyway.
+But, whatever man, he's getting' `$100M+ a year to TRY to get it through, anyway.
 The analogy is far more applicable, than people think.
 
 The executives at Fox news... they said to themselves... 
@@ -49458,7 +49510,6 @@ Not News : That's our calling card...
            "Used to be news...? Now we're Not News. Not News. Part of the Not News Network."
 
 \__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/¯¯\__/
-
 __________________________________________________________________________________
 | Used to be News...? Now we're Not News. Not News. Part of the Not News Network |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -49469,33 +49520,32 @@ No more having to get pissed at people cause NASCAR is on during a football game
 "@)
 
 $Book.NewSection(10,"Skit","Dramatic Genius",@"
-    Person1 : What the hell happened to Fox News...? 
-              It's just gone...
-    Person2 : Ah, you didn't get the memo...?
-              Now they're the triple N Network. 
-              Not News Network. 
-    Person1 : What the fuck...?
-              Then what fuckin' channel is NASCAR...?
-    Person2 : *shrugs* I dunno man.
-              They changed their name to Not News, they probably didn't change the channel number.
-    Person1 : Well, what the...
-              ...why on earth would they even consider doing that...?
-    Genius  : *comes out of a shadowy alcove* Well, it's because it fuckin' sucks ass...
-              ...at broadcasting anything that COULD be taken with any degree of credibility at all.
-    Person1 : *points* Who the hell is this guy?
-    Genius  : *gritty voice* I'm the most intelligent man around... 
-              You wanna know why they changed their name to Not News...?
-              Well... I would imagine, that news networks that had a habit of not telling the truth...
-              ...way back in the middle ages...
-              ...that they'd catch a fuckin' sword to the throat.
-              Time finally caught up with em, I guess.
-    Person2 : Sounds dramatic.
-    Genius  : Yeah? 
-              Well, now it's just business as usual, for the Not News Network.
+Person1 : What the hell happened to Fox News...? 
+          It's just gone...
+Person2 : Ah, you didn't get the memo...?
+          Now they're the triple N Network. 
+          Not News Network. 
+Person1 : What the fuck...?
+          Then what fuckin' channel is NASCAR...?
+Person2 : *shrugs* I dunno man.
+          They changed their name to Not News, they probably didn't change the channel number.
+Person1 : Well, what the...
+          ...why on earth would they even consider doing that...?
+Genius  : *comes out of a shadowy alcove* Well, it's because it fuckin' sucks ass...
+          ...at broadcasting anything that COULD be taken with any degree of credibility at all.
+Person1 : *points* Who the hell is this guy?
+Genius  : *gritty voice* I'm the most intelligent man around... 
+          You wanna know why they changed their name to Not News...?
+          Well... I would imagine, that news networks that had a habit of not telling the truth...
+          ...way back in the middle ages...
+          ...that they'd catch a fuckin' sword to the throat.
+          Time finally caught up with em, I guess.
+Person2 : Sounds dramatic.
+Genius  : Yeah? 
+          Well, now it's just business as usual, for the Not News Network.
 "@)
 
 $Book.NewSection(10,"Conjecture","Examination (5)",@"
-
 What the fuck, can I get paid to roast these sons of bitches every day...? 
 Just call this dude a fuckin' moron each and every day, ALOT more often than John Oliver does...?
 
@@ -51580,8 +51630,8 @@ an outcome, and store the output in a VARIABLE, PROPERTY, FILE, or MEMORY ADDRES
 time with EVERYTHING THEY SAY/DO... then that is DANGEROUS.)
 
 To refine our mental variable `$List, lambdas DO occupy most of that list.
-But really, LAMBDAS specifically are the MOST difficult to CLASSIFY, and thus other definitions need to be considered,
-in order to ACCURATELY classify their TYPES. (Not that different from INVESTIGATION)
+But really, LAMBDAS specifically are the MOST difficult to CLASSIFY, and thus other definitions need to be
+considered, in order to ACCURATELY classify their TYPES. (Not that different from INVESTIGATION)
 
 (EXECUTABLE/COMMAND/FUNCTION/TYPE/CLASS/METHOD/VARIABLE/PROPERTY/VALUE)
 
@@ -51686,20 +51736,20 @@ ______________________________________________________________
 | Caption           | Branding64                             |
 ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 These PROPERTIES all happen to be STRINGS. Nothing wicked exciting about these particular values.
-Except the vendor field is actually something to get excited about after all... in 2017, this company released a 
-brand new (CPU/computer processing architecture) that took the industry to new heights. 
+Except the vendor field is actually something to get excited about after all... in 2017, this company 
+released a brand new (CPU/computer processing architecture) that took the industry to new heights. 
     
 This new architecture, believe it or not, was fabricated < 10 miles from where I live... side point.
 
-In reference to these properties, each of them could in fact, be TRANSLATED, into something else, when a particular
-STRATEGY is seen. Doesn't necessarily have to be SEEN either. Because, there's a particular strategy that can be used, 
-to detect someone elses particular strategy, via a PATTERN.
+In reference to these properties, each of them could in fact, be TRANSLATED, into something else, when a 
+particular STRATEGY is seen. Doesn't necessarily have to be SEEN either. Because, there's a particular 
+strategy that can be used, to detect someone elses particular strategy, via a PATTERN.
 
-Probably sounds like 10-dimensional chess or something, using a strategy to detect a pattern that detects someone 
-elses strategy... but, that's actually what computers are programmed to do.
+Probably sounds like 10-dimensional chess or something, using a strategy to detect a pattern that detects 
+someone elses strategy... but, that's actually what computers are programmed to do.
 
-The fact of the matter is, while they are *all* PROPERTIES, some are specific (types/classes), in addition to being a
-property and a value. For instance, IdentifyingNumber is a (GUID/globally-unique identifier).
+The fact of the matter is, while they are *all* PROPERTIES, some are specific (types/classes), in addition
+to being a property and a value. For instance, IdentifyingNumber is a (GUID/globally-unique identifier).
 The reason I know this, is because GUID's all follow a specific "convention" or "pattern".
 
 When an object is serialized, it turns an object, its properties, and values, into a string.
