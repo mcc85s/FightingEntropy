@@ -9,12 +9,27 @@
 | ![logo] | <b>Secure Digits Plus (π) LLC</b> | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime |
 
 # About
-[FightingEntropy(π)] is a modification for Windows PowerShell that is meant for various tasks related to system administration,
-networking, virtualization, security, graphic design, and system management/maintenance. 
+[FightingEntropy(π)] is a modification for Windows PowerShell that is meant for various tasks related to
+| ## | Thing                         |
+|:---|:------------------------------|
+| 1) | system administration         |
+| 2) | networking                    | 
+| 3) | virtualization                |
+| 4) | security                      |
+| 5) | graphic design                | 
+| 6) | system management/maintenance |
 
 This module is rather experimental and incorporates a lot of moving parts, so it has many areas of development.
-The end goal of this module, is to provide protection against identity theft, cybercriminals, malware, viruses, ransomware,
-and hackers who have malicious intent.
+The end goal of this module, is to provide protection against:
+| ## | Thing
+|:---|:----------------------------------|
+| 1) | identity theft                    |
+| 2) | cybercriminals                    |
+| 3) | douchebags                        |
+| 3) | malware                           |
+| 4) | viruses                           |
+| 5) | ransomware                        |
+| 6) | hackers who have malicious intent |
 
 Many of the tools in the wild are able to be circumvented by some of these hackers and cybercriminals.
 
