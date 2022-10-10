@@ -2,22 +2,22 @@
 [banner]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png
 
 # ![banner][] 
-| Project              | Company                    | Objective                                           |
-| ---------------------| ---------------------------| ----------------------------------------------------|
-| [FightingEntropy(π)] | Secure Digits Plus (π) LLC | Beginning the fight against ID theft and cybercrime |
+| Company                    | Project              | Objective                                           |
+|:---------------------------|:---------------------|:----------------------------------------------------|
+| Secure Digits Plus (π) LLC | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime |
 
 # ![logo][]
 
 | Version    | Date       |
-| -----------| -----------|
+|:-----------|:-----------|
 | 2022.10.0  | 10/10/2022 | 
 
-| Operation  | Instructions
-| -----------| ----------------------------------------------------------------------------------------------------------|
-| Install    | `Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true) | Invoke-Expression` | 
-| Remove     | `Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Remove.ps1?raw=true)  | Invoke-Expression` |
+| Operation  | PowerShell Instructions
+|:-----------|:----------------------------------------------------------------------------------------------------------|
+| Install    | `Invoke-Expression (Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true) ` | 
+| Remove     | `Invoke-Expression (Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Remove.ps1?raw=true)  ` |
 
 # Author
 | Name                | Motto                                          | Contact                    |
-| --------------------| -----------------------------------------------| ---------------------------|
+|:--------------------|:-----------------------------------------------|:---------------------------|
 | Michael C. Cook Sr. | Sometimes you gotta take the throttle in life. | securedigitsplus@gmail.com |
