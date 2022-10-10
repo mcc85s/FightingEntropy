@@ -1,12 +1,11 @@
-# ![logo][] PowerShell
 
-[logo]: https://raw.githubusercontent.com/PowerShell/PowerShell/master/assets/ps_black_64.svg?sanitize=true
+
+# ![logo][] FightingEntropy
+
+[logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/sdplogo.png
+PowerShell/PowerShell/master/assets/ps_black_64.svg?sanitize=true
 
 ## Windows PowerShell vs. PowerShell Core
-
-
-[issues]: https://github.com/PowerShell/PowerShell/issues
-[feedback-hub]: https://support.microsoft.com/windows/send-feedback-to-microsoft-with-the-feedback-hub-app-f59187f8-8739-22d6-ba93-f66612949332
 
 ## New to PowerShell?
 
