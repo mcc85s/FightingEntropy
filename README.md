@@ -1,22 +1,20 @@
-# ![banner][] 
-| Company                    | Author              | Project              | Objective                                           |
-| ---------------------------| --------------------| ---------------------| ----------------------------------------------------|
-| Secure Digits Plus (π) LLC | Michael C. Cook Sr. | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime |
-
+[logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
 [banner]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png
 
-# ![logo][] FightingEntropy 2022.10.0
+# ![banner][] 
+| Project              | Company                    | Author              | Objective                                           |
+| ---------------------| ---------------------------| --------------------| ----------------------------------------------------|
+| [FightingEntropy(π)] | Secure Digits Plus (π) LLC | Michael C. Cook Sr. | Beginning the fight against ID theft and cybercrime |
 
-[logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
+# ![logo][]
 
 | Version    | Date       |
 | -----------| -----------|
-| `2022.10.0`  | `10/10/2022` | 
+| 2022.10.0  | 10/10/2022 | 
 
-| Operation  | Command                                                                                                |
-| -----------| -------------------------------------------------------------------------------------------------------|
-| Install    | Invoke-Expression (Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true) | 
-| Remove     | Invoke-Expression (Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Remove.ps1?raw=true)  |
+| -----------| ----------------------------------------------------------------------------------------------------------|
+| Install    | `Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true) | Invoke-Expression` | 
+| Remove     | `Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Remove.ps1?raw=true)  | Invoke-Expression` |
 
 # About
 
