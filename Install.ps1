@@ -374,7 +374,7 @@ Function FightingEntropy
                                        "System.Runtime.WindowsRuntime",
                                        "System.IO.Compression", 
                                        "System.IO.Compression.Filesystem", 
-                                       "System.Windows.Forms",
+                                       "System.Windows.Forms"
             }                        | % { New-ModuleManifest @_ }
         }
         [String] ToString()
