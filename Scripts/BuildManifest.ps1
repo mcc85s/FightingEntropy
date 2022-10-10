@@ -82,6 +82,24 @@ Class ManifestList
 
         Return $This.Output[$Index]
     }
+    [Object[]] Illustrate()
+    {
+        $Out = @{ }
+        If ($This.Output.Count -lt 2)
+        {
+            Throw "Insufficient items"
+        }
+
+        ForEach ($X in 0..($This.Output.Count-1))
+        {
+            $Item = "{0}`n[FightingEntropy()][{1}]`n{2}`n{3}`n{4}`n{4}`n{5}`n{5}`nN/A`n{6}`nN/A" -f $This.Output[$X].Name,
+            $This.Version,$This.Output[$X].Description,$This.Author,$This.Contact,$This.Date,"0.0.0 - () - Finalized functional version 1."
+
+            $Out.Add($Out.Count,(Write-Theme -ScriptNotes $Item -Text | % TrimStart "#"))
+        }
+        
+        Return $Out[0..($Out.Count-1)]
+    }
 }
 
 $List = [ManifestList]::New("2022.10.0")
@@ -121,6 +139,7 @@ $List.Add("Get-ViperBomb.ps1","For managing Windows services.")
 $List.Add("Get-WhoisUtility.ps1","For obtaining information related to a particular IP address.")
 $List.Add("Install-BossMode.ps1","Installs custom theme for Visual Studio Code.")
 $List.Add("Install-IISServer.ps1","To install, stage, and configure an IIS Server for the Microsoft Deployment Toolkit/PSD modification.")
+$List.Add("Install-PSD.ps1","Installer for PSD ")
 $List.Add("Invoke-cimdb.ps1","Launches the [FightingEntropy(p)] Company Inventory Management Database.")
 $List.Add("Invoke-KeyEntry.ps1","For isolating keys in a virtual machine guest from a Hyper-V host.")
 $List.Add("New-EnvironmentKey.ps1","Instantiates an environment key for FightingEntropy.")
@@ -137,3 +156,5 @@ $List.Add("Set-ScreenResolution.ps1","Allows the resolution to be changed in a P
 $List.Add("Show-ToastNotification.ps1","Almost like Burnt Toast (which is probably cooler than this is).")
 $List.Add("Update-PowerShell.ps1","Gets the current releases for PowerShell from the official PowerShell Github Repository.")
 $List.Add("Write-Theme.ps1","The lifeblood of [FightingEntropy()]... With it? You can stylize the hell out a PowerShell command prompt console.")
+
+$Script = $List.Illustrate()
