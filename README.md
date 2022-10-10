@@ -34,4 +34,4 @@ Many of the tools in the wild are able to be circumvented by some of these hacke
 # Author
 | Name                | Motto                                          | Contact                    | Resume           |
 |:--------------------|:-----------------------------------------------|:---------------------------|:-----------------|
-| Michael C. Cook Sr. | Sometimes you gotta take the throttle in life. | securedigitsplus@gmail.com | [Resume Short](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1010-(MCC%20Short%20Resume).pdf)
+| Michael C. Cook Sr. | Sometimes you gotta take the throttle in life. | securedigitsplus@gmail.com | [Short](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1010-(MCC%20Short%20Resume).pdf)/[Full]( https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1010-(MCC%20Full%20Resume).pdf) |
