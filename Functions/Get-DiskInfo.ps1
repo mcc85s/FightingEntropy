@@ -1,24 +1,33 @@
 <#
 .SYNOPSIS
-
 .DESCRIPTION
-
 .LINK
-
 .NOTES
-          FileName: Get-DiskInfo.ps1
-          Solution: FightingEntropy Module
-          Purpose: For retrieving information about installed hard drives
-          Author: Michael C. Cook Sr.
-          Contact: @mcc85s
-          Primary: @mcc85s
-          Created: 2021-10-09
-          Modified: 2021-10-17
-          
-          Version - 2021.10.0 - () - Finalized functional version 1.
-
-          TODO:
-
+    ____                                                                                                    ________    
+   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\   
+   //¯¯\\__[ [FightingEntropy()][2022.10.0] ]______________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\   
+   //¯¯¯                                                                                                           //   
+   \\                                                                                                              \\   
+   //        FileName   : Get-DiskInfo.ps1                                                                         //   
+   \\        Solution   : [FightingEntropy()][2022.10.0]                                                           \\   
+   //        Purpose    : For retrieving information about installed hard drives.                                  //   
+   \\        Author     : Michael C. Cook Sr.                                                                      \\   
+   //        Contact    : @mcc85s                                                                                  //   
+   \\        Primary    : @mcc85s                                                                                  \\   
+   //        Created    : 2022-10-10                                                                               //   
+   \\        Modified   : 2022-10-10                                                                               \\   
+   //        Demo       : N/A                                                                                      //   
+   \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
+   //        TODO       : N/A                                                                                      //   
+   \\                                                                                                              \\   
+   //                                                                                                           ___//   
+   \\___                                                                                                    ___//¯¯\\   
+   //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+    ¯¯¯\\__[ 2022-10-10 16:25:42    ]______________________________________________________________________//¯¯¯        
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 Function Get-DiskInfo
@@ -51,3 +60,4 @@ Function Get-DiskInfo
         [DiskDrive]::New($Disk)
     }
 }
+

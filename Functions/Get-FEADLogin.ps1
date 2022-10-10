@@ -1,26 +1,36 @@
 <#
 .SYNOPSIS
-
 .DESCRIPTION
-
 .LINK
-
 .NOTES
-          FileName: Get-FEADLogin.ps1
-          Solution: FightingEntropy Module
-          Purpose: For validating an ADDS login, and then accessing NTDS information
-          Author: Michael C. Cook Sr.
-          Contact: @mcc85s
-          Primary: @mcc85s
-          Created: 2021-10-09
-          Modified: 2021-11-07
-          
-          Version - 2021.10.0 - () - Finalized functional version 1.
-
-          TODO:
-
+    ____                                                                                                    ________    
+   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\   
+   //¯¯\\__[ [FightingEntropy()][2022.10.0] ]______________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\   
+   //¯¯¯                                                                                                           //   
+   \\                                                                                                              \\   
+   //        FileName   : Get-FEADLogin.ps1                                                                        //   
+   \\        Solution   : [FightingEntropy()][2022.10.0]                                                           \\   
+   //        Purpose    : For validating an ADDS login, and then accessing NTDS information.                       //   
+   \\        Author     : Michael C. Cook Sr.                                                                      \\   
+   //        Contact    : @mcc85s                                                                                  //   
+   \\        Primary    : @mcc85s                                                                                  \\   
+   //        Created    : 2022-10-10                                                                               //   
+   \\        Modified   : 2022-10-10                                                                               \\   
+   //        Demo       : N/A                                                                                      //   
+   \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
+   //        TODO       : N/A                                                                                      //   
+   \\                                                                                                              \\   
+   //                                                                                                           ___//   
+   \\___                                                                                                    ___//¯¯\\   
+   //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+    ¯¯¯\\__[ 2022-10-10 16:25:42    ]______________________________________________________________________//¯¯¯        
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
+
 Function Get-FEADLogin
 {
     [CmdLetBinding(DefaultParameterSetName=0)]
@@ -618,3 +628,4 @@ Function Get-FEADLogin
         Write-Theme "Error [!] Either the user cancelled or the dialog failed" 12,4,15,0
     }
 }
+

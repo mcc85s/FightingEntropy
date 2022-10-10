@@ -1,24 +1,33 @@
 <#
 .SYNOPSIS
-
 .DESCRIPTION
-
 .LINK
-
 .NOTES
-          FileName: Install-IISServer.ps1
-          Solution: FightingEntropy Module
-          Purpose: To install, stage, and configure an IIS Server for the Microsoft Deployment Toolkit/PSD modification
-          Author: Michael C. Cook Sr.
-          Contact: @mcc85s
-          Primary: @mcc85s
-          Created: 2021-10-08
-          Modified: 2021-10-08
-
-          Version - 2021.10.0 - () - Finalized functional version 1.
-
-          TODO:
-
+    ____                                                                                                    ________    
+   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\   
+   //¯¯\\__[ [FightingEntropy()][2022.10.0] ]______________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\   
+   //¯¯¯                                                                                                           //   
+   \\                                                                                                              \\   
+   //        FileName   : Install-IISServer.ps1                                                                    //   
+   \\        Solution   : [FightingEntropy()][2022.10.0]                                                           \\   
+   //        Purpose    : To install, stage, and configure an IIS Server for the Microsoft Deployme                //   
+   \\                     nt Toolkit/PSD modification.                                                             \\   
+   //        Author     : Michael C. Cook Sr.                                                                      //   
+   \\        Contact    : @mcc85s                                                                                  \\   
+   //        Primary    : @mcc85s                                                                                  //   
+   \\        Created    : 2022-10-10                                                                               \\   
+   //        Modified   : 2022-10-10                                                                               //   
+   \\        Demo       : N/A                                                                                      \\   
+   //        Version    : 0.0.0 - () - Finalized functional version 1.                                             //   
+   \\        TODO       : N/A                                                                                      \\   
+   //                                                                                                           ___//   
+   \\___                                                                                                    ___//¯¯\\   
+   //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+    ¯¯¯\\__[ 2022-10-10 16:25:44    ]______________________________________________________________________//¯¯¯        
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 Function Install-IISServer
@@ -463,3 +472,4 @@ Function Install-IISServer
     [SecurityChannel]::New() | Out-Null
     [TLS]::New() | Out-Null
 }
+

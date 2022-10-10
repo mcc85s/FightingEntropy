@@ -1,184 +1,178 @@
 <#
 .SYNOPSIS
-
 .DESCRIPTION
-
 .LINK
-
 .NOTES
-          FileName: Show-ToastNotification.ps1
-          Solution: FightingEntropy Module
-          Purpose: Almost like Burnt Toast (which is probably cooler than this is)
-          Author: Michael C. Cook Sr.
-          Contact: @mcc85s
-          Primary: @mcc85s
-          Created: 2021-10-07
-          Modified: 2022-02-25
-          
-          Version - 2021.10.0 - () - Finalized functional version 1.
-          TODO: Gotta figure out how to automatically toggle between the default stuff and other templates
-                AKA, it's not broken, but needs some additional logical structuring and renaming: ($Message,$Header,$Footer, etc)
-                I have some ideas but they're not developed enough quite yet.
+    ____                                                                                                    ________    
+   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\   
+   //¯¯\\__[ [FightingEntropy()][2022.10.0] ]______________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\   
+   //¯¯¯                                                                                                           //   
+   \\                                                                                                              \\   
+   //        FileName   : Show-ToastNotification.ps1                                                               //   
+   \\        Solution   : [FightingEntropy()][2022.10.0]                                                           \\   
+   //        Purpose    : Almost like Burnt Toast (which is probably cooler than this is).                         //   
+   \\        Author     : Michael C. Cook Sr.                                                                      \\   
+   //        Contact    : @mcc85s                                                                                  //   
+   \\        Primary    : @mcc85s                                                                                  \\   
+   //        Created    : 2022-10-10                                                                               //   
+   \\        Modified   : 2022-10-10                                                                               \\   
+   //        Demo       : N/A                                                                                      //   
+   \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
+   //        TODO       : N/A                                                                                      //   
+   \\                                                                                                              \\   
+   //                                                                                                           ___//   
+   \\___                                                                                                    ___//¯¯\\   
+   //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+    ¯¯¯\\__[ 2022-10-10 16:25:45    ]______________________________________________________________________//¯¯¯        
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
-Show-ToastNotification -Type Image -Mode 4 -Image "C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\OEMlogo.bmp" -Message "Kickass notification"
-Show-ToastNotification -Type Text  -Mode 2 -Header "Wireless connection established" -Message "Network name"
 #>
 
 Function Show-ToastNotification
 {
-    [CmdLetBinding()]
-    Param (
-    [Parameter(ParameterSetName=0,Position=0,Mandatory)]
-    [Parameter(ParameterSetName=1,Position=0,Mandatory)]
-    [ValidateSet("Text","Image")]
-    [String] $Type,
+    [CmdLetBinding(DefaultParameterSetName="Text")]Param(
+        [ValidateSet(1,2,3,4)]
+        [Parameter(ParameterSetName= "Text",Position=0)]
+        [Parameter(ParameterSetName="Image",Position=0)]                                 [Int32]    $Type ,
+        [Parameter(ParameterSetName="Image",Position=1,HelpMessage=     "Web/File Path")][String]  $Image ,
+        [Parameter(ParameterSetName= "Text",Position=1,HelpMessage= "New/Existing GUID")]
+        [Parameter(ParameterSetName="Image",Position=2,HelpMessage= "New/Existing GUID")][String]   $GUID = (New-GUID),
+        [Parameter(ParameterSetName= "Text",Position=2,HelpMessage=            "Header")]
+        [Parameter(ParameterSetName="Image",Position=3,HelpMessage=            "Header")][String] $Header ,
+        [Parameter(ParameterSetName= "Text",Position=3,HelpMessage=              "Body")]
+        [Parameter(ParameterSetName="Image",Position=4,HelpMessage=              "Body")][String]   $Body ,
+        [Parameter(ParameterSetName= "Text",Position=4,HelpMessage=              "Foot")]
+        [Parameter(ParameterSetName="Image",Position=5,HelpMessage=              "Foot")][String] $Footer )
 
-    [Parameter(ParameterSetName=0,Position=1,Mandatory)]
-    [Parameter(ParameterSetName=1,Position=1,Mandatory)]
-    [ValidateSet(1,2,3,4)]
-    [UInt32] $Mode,
+    Invoke-Expression ("using namespace System.{0}
+    [{0}.ToastNotificationManager,{0},{1}]
+    [{0}.ToastNotification,{0},{1}]
+    [{2},{2},{1}]" -f "Windows.UI.Notifications","ContentType = WindowsRuntime","Windows.Data.Xml.Dom.XmlDocument")
 
-    [Parameter(ParameterSetName=1,Position=2,Mandatory)]
-    [ValidateScript({$_ -match "((http[s]*://)|(\w+:\\\w+)|(ms-app)+([x|data])+(:///))"})]
-    [String] $Image,
-
-    [Parameter(ParameterSetName=0,Position=2)]
-    [Parameter(ParameterSetName=1,Position=3)]
-    [ValidateScript({$_ -match (@(8,4,4,4,12 | % { "[a-zA-Z0-9]{$_}"}) -join "-")})]
-    [String] $Guid = (New-Guid),
-
-    [Parameter(ParameterSetName=0,Position=3,Mandatory)]
-    [Parameter(ParameterSetName=1,Position=4,Mandatory)]
-    [String] $Message,
-
-    [Parameter(ParameterSetName=0,Position=4)]
-    [Parameter(ParameterSetName=1,Position=5)]
-    [String] $Header,
-
-    [Parameter(ParameterSetName=0,Position=5)]
-    [Parameter(ParameterSetName=1,Position=6)]
-    [String] $Body,
-
-    [Parameter(ParameterSetName=0,Position=6)]
-    [Parameter(ParameterSetName=1,Position=7)]
-    [String] $Footer)
-
-    Class Toast
+    Class Cache
     {
-        [String]          $Module = "[FightingEntropy(π)]"
-        [String]            $Type
-        [Validateset(1,2,3,4)]
-        [UInt32]            $Mode
-        [Object]         $Message
-        [String]            $Guid
-        [String]            $Time = (Get-Date)
-        [Object]            $File
-        [String]          $Header
-        [String]            $Body
-        [String]          $Footer
-        [String]        $Template
-        [Object]             $XML
-        [Object]           $Toast
-        Toast([String]$Type,[UInt32]$Mode,[Object]$Message,[String]$GUID)
+        [String] $Path
+        [Object] $File
+        Cache([Object]$Image)
         {
-            $This.Type       = $Type
-            $This.Mode       = $Mode
-            $This.Message    = $Message
-            $This.GUID       = $Guid
-            $This.File       = $Null
-            $This.GetTemplate()
-        }
-        Toast([String]$Type,[UInt32]$Mode,[Object]$Message,[String]$GUID,[String]$File)
-        {
-            $This.Type       = $Type
-            $This.Mode       = $Mode
-            $This.Message    = $Message
-            $This.GUID       = $Guid
-            $This.GetFile($File)
-            $This.GetTemplate()
-        }
-        GetFile([String]$Path)
-        {
-            $Temp            = $Null
-            Switch -Regex ($Path)
+            Switch -Regex ($Image)
             {
                 "http[s]*://" 
                 {
                     [Net.ServicePointManager]::SecurityProtocol = 3072
-                    $Temp = "$Env:Temp\$(Split-Path -Leaf $Path)"
-                    Start-BitsTransfer -Source $Path -Destination $Temp
-                    If (Test-Path $Temp)
-                    {   
-                        $This.File = "file:///{0}" -f $Temp.Replace("\","/")
-                    }
-                    Else
-                    {
-                        Throw "File could not be loaded"
-                    }
+                    $This.Path            = $Image
+                    $This.File            = "$Env:Temp{0}" -f (Split-Path -Leaf $Image)
+                    Invoke-WebRequest -URI $This.Path -OutFile $This.File #| ? StatusDescription -ne OK | % { Throw "Exception" }
+                    $This.Path            = "file:///{0}" -f $This.File.Replace("\","/")
                 }
+
                 "(\w+:\\\w+)"
                 {
-                    If (Test-Path $Path)
+                    If ( ! ( Test-Path $Image ) )
                     {
-                        $This.File = "file:///{0}" -f $Path.Replace("\","/")
+                        Throw "Invalid path to image" 
                     }
-                    Else
-                    {
-                        Throw "Invalid path to image"
-                    }
+
+                    $This.Path            = "file:///{0}" -f $Image.Replace("\","/")
                 }
+
                 "(ms-app)+([x|data])+(:///)"
                 {
                     Throw "ms-app* Not yet implemented"
                 }
             }
         }
-        GetTemplate()
-        {
-            $Temp = @('<toast>',
-            '    <visual>';
-            If ($This.File -eq $Null)
-            {
-                "        <binding template='ToastText0$($This.Mode)'>"
-            }
-            If ($This.File -ne $Null)
-            {
-                "        <binding template='ToastImageAndText0$($This.Mode)'>",
-                "            <image id='1' src='$($This.File)' alt='$($This.File)'/>"
-            }
-
-            ForEach ($X in @( Switch ($This.Mode) { 1 { 1 } 2 { 1,2 } 3 { 1,2,3 } 4 { 1,2,3 } }))
-            {
-                "            <text id='$X'>{$($X-1)}</text>";
-            } 
-            "        </binding>",
-            "    </visual>",
-            "</toast>")
-
-            $This.Template = $Temp -join "`n"
-        }
-        Display()
-        {
-            [Windows.UI.Notifications.ToastNotificationManager,Windows.UI.Notifications,ContentType = WindowsRuntime] > $Null
-            [Windows.UI.Notifications.ToastNotification,Windows.UI.Notifications,ContentType = WindowsRuntime] > $Null
-            [Windows.Data.Xml.Dom.XmlDocument,Windows.Data.Xml.Dom.XmlDocument,ContentType = WindowsRuntime] > $Null
-
-            $This.XML             = [Windows.Data.Xml.Dom.XmlDocument]::new()
-            $This.XML.LoadXml($This.Template)
-            $This.Toast           = [Windows.UI.Notifications.ToastNotification]::new($This.XML)
-            [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($This.Module).Show($This.Toast)
-        }
     }
 
-    $Return    = Switch ($Image -eq $Null)
+    Class Toast
     {
-        $True  { [Toast]::New($Type,$Mode,$Message,$GUID)        }
-        $False { [Toast]::New($Type,$Mode,$Message,$GUID,$Image) }
+        [Validateset(1,2,3,4)]
+        [Int32]             $Type
+        [Object]         $Message
+        [String]            $GUID
+        [String]            $Time = (Get-Date)
+        [Object]            $File
+        [String]          $Header
+        [String]            $Body
+        [String]          $Footer
+        Hidden [Hashtable]  $Temp
+        Hidden [Int32] $TempCount
+        [String]        $Template
+        [Object]             $XML
+        [Object]           $Toast
+        Toast([Int32]$Type,[Object]$Message,[String]$GUID)
+        {
+            $This.Type       = $Type
+            $This.Message    = $Message
+            $This.GUID       = $GUID
+            $This.File       = $Null
+            $This.Load()
+        }
+        Toast([Int32]$Type,[Object]$Message,[String]$GUID,[String]$File)
+        {
+            $This.Type       = $Type
+            $This.Message    = $Message
+            $This.GUID       = $GUID
+            $This.File       = [Cache]::New($File)
+            $This.Load()
+        }
+        Load()
+        {
+            $This.Temp            = @{ }
+            $This.TempCount       = 0
+
+            $This.Temp.Add($This.TempCount++,"<toast>")
+            $This.Temp.Add($This.TempCount++,"_<visual>")
+
+            @( Switch ([Int32]($This.File -ne $Null))
+            {  
+                0 { $This.Temp.Add($This.TempCount++,"__<binding template=`"ToastText0$($This.Type)`">;")  }
+                1 { $This.Temp.Add($This.TempCount++,"__<binding template=`"ToastImageAndText0$($This.Type)`">;")
+                        $This.Temp.Add($This.TempCount++,"___<image id=`"1`" src=`"$($This.File.Path)`" alt=`"$($This.File.Path)`"/>;") }
+            })
+
+            @( Switch ([Int32]($This.Type))
+            {
+                1 { 1 } 
+                2 { 1,2 } 
+                3 { 1,2,3 } 
+                4 { 1,2,3 } 
+
+            }) | % { $This.Temp.Add($This.TempCount++,"___<text id=`"$_`">{$($_-1)}</text>" ) } 
+
+            $This.Temp.Add($This.TempCount++,"__</binding>")
+            $This.Temp.Add($This.TempCount++,"_</visual>")
+            $This.Temp.Add($This.TempCount++,"</toast>")
+
+            $This.Template        = ( $This.Temp.GetEnumerator() | Sort Name | % Value ).Replace("_","    ") -join "`n"
+        }
+        GetXML()
+        {
+            $This.XML             = Invoke-Expression "[Windows.Data.Xml.Dom.XmlDocument]::new()"
+            $This.XML.LoadXml($This.Template)
+            $This.Toast           = Invoke-Expression ( "[Windows.UI.Notifications.ToastNotification]::new({0})" -f $This.XML )
+        }
+        ShowMessage()
+        {
+            Invoke-Expression ( "[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier({0}).Show({1})" -f $This.GUID,$This.Toast )
+        }
     }
 
-    $Return.Header                = @($Header,$Return.Module)[!$Header]
-    $Return.Body                  = $Message
-    $Return.Footer                = @($Footer,$Return.Time)[!$Footer]
+    $Return                       = Switch([Int32]($Image -eq $Null)) 
+    { 
+        0 { [Toast]::New($Type,$Message,$GUID,$Image) } 
+        1 { [Toast]::New($Type,$Message,$GUID) }
+    }
+    
+    $Return.Header                = If ( $Header -eq $Null ) {    "Message" } Else { $Header }
+    $Return.Body                  = If ( $Body   -eq $Null ) {        $GUID } Else { $Body   }
+    $Return.Footer                = If ( $Footer -eq $Null ) { $Return.Time } Else { $Footer }
+
     $Return.Template              = $Return.Template -f $Return.Header, $Return.Body, $Return.Footer
-    $Return.Display()
+    $Return.GetXML()
+    $Return.ShowMessage()
 }
+

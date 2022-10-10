@@ -1,30 +1,33 @@
 <#
 .SYNOPSIS
-
 .DESCRIPTION
-
 .LINK
-
 .NOTES
-          FileName: Get-MadBomb.ps1
-          Solution: FightingEntropy Module
-          Purpose: For tweaking various Windows settings, featuring MadBomb122's customization script (not complete)
-          Author: Michael C. Cook Sr.
-          Contact: @mcc85s
-          Primary: @mcc85s
-          Created: 2021-10-09
-          Modified: 2021-10-22
-          
-          Version - 2021.10.0 - () - Finalized functional version 1.
-      
-	      Updated: 10/22/2021 - Took some snapshots of the UI design
-                                  - Changed the look of the UI
-	  		          - Fixed datagrid stuff
-			          - Working to integrate the classes for editing registry
-	                          - AppX stuff added back in
-	      Updated: 10/21/2021 - Many new classes added to reintegrate the original script by MadBomb122, not finished yet. 
-              TODO: 10/17/2021    - Get items bound to the class structures
-
+    ____                                                                                                    ________    
+   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\   
+   //¯¯\\__[ [FightingEntropy()][2022.10.0] ]______________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\   
+   //¯¯¯                                                                                                           //   
+   \\                                                                                                              \\   
+   //        FileName   : Get-MadBomb.ps1                                                                          //   
+   \\        Solution   : [FightingEntropy()][2022.10.0]                                                           \\   
+   //        Purpose    : For tweaking various Windows settings, featuring MadBomb122's customization              //   
+   \\                     script (not complete).                                                                   \\   
+   //        Author     : Michael C. Cook Sr.                                                                      //   
+   \\        Contact    : @mcc85s                                                                                  \\   
+   //        Primary    : @mcc85s                                                                                  //   
+   \\        Created    : 2022-10-10                                                                               \\   
+   //        Modified   : 2022-10-10                                                                               //   
+   \\        Demo       : N/A                                                                                      \\   
+   //        Version    : 0.0.0 - () - Finalized functional version 1.                                             //   
+   \\        TODO       : N/A                                                                                      \\   
+   //                                                                                                           ___//   
+   \\___                                                                                                    ___//¯¯\\   
+   //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+    ¯¯¯\\__[ 2022-10-10 16:25:43    ]______________________________________________________________________//¯¯¯        
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 Function Get-MadBomb
@@ -6164,3 +6167,4 @@ Function Get-MadBomb
 
     $Xaml.Invoke()
 }
+

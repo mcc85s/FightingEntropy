@@ -6,18 +6,31 @@
 .LINK
     https://github.com/FriendsOfMDT/PSD
 .NOTES
-          FileName: Get-POSDLog.ps1
-          Solution: [FightingEntropy(PSDMaster)]
-          Purpose:  This builds everything from the log files. Insert the smsts.log file for TSManager stuff
-          Author:   mcc85s
-          Contact:  @mcc85s
-          Primary:  @mcc85s
-          Created: 
-          Modified: 2021-12-27
-
-          Version - 0.0.0 - () - Finalized functional version 1.
-          
-          Notes: Usage -> point to the folder where all of the log files were written to.
+    ____                                                                                                    ________    
+   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\   
+   //¯¯\\__[ [FightingEntropy()][2022.10.0] ]______________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\   
+   //¯¯¯                                                                                                           //   
+   \\                                                                                                              \\   
+   //        FileName   : Get-PSDLog.ps1                                                                           //   
+   \\        Solution   : [FightingEntropy()][2022.10.0]                                                           \\   
+   //        Purpose    : This builds everything from the log files.                                               //   
+   \\                     Insert the smsts.log file for TSManager stuff                                            \\   
+   //        Author     : Michael C. Cook Sr.                                                                      //   
+   \\        Contact    : @mcc85s                                                                                  \\   
+   //        Primary    : @mcc85s                                                                                  //   
+   \\        Created    : 2022-10-10                                                                               \\   
+   //        Modified   : 2022-10-10                                                                               //   
+   \\        Demo       : N/A                                                                                      \\   
+   //        Version    : 0.0.0 - () - Finalized functional version 1.                                             //   
+   \\        TODO       : N/A                                                                                      \\   
+   //                                                                                                           ___//   
+   \\___                                                                                                    ___//¯¯\\   
+   //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+    ¯¯¯\\__[ 2022-10-10 16:25:44    ]______________________________________________________________________//¯¯¯        
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 

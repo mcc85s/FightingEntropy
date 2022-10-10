@@ -1,24 +1,34 @@
 <#
 .SYNOPSIS
-
 .DESCRIPTION
-
 .LINK
           Original: https://stackoverflow.com/questions/2434133/progress-during-large-file-copy-copy-item-write-progress
 .NOTES
-          FileName: Copy-FileStream.ps1
-          Solution: FightingEntropy Module
-          Purpose: For copying larger files with a progress indicator (Modified version of the above script)
-          Author: Michael C. Cook Sr.
-          Contact: @mcc85s
-          Primary: @mcc85s
-          Created: 2021-10-09
-          Modified: 2021-10-17
-          
-          Version - 2021.10.0 - () - Finalized functional version 1.
-
-          TODO:
-
+    ____                                                                                                    ________    
+   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\   
+   //¯¯\\__[ [FightingEntropy()][2022.10.0] ]______________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\   
+   //¯¯¯                                                                                                           //   
+   \\                                                                                                              \\   
+   //        FileName   : Copy-FileStream.ps1                                                                      //   
+   \\        Solution   : [FightingEntropy()][2022.10.0]                                                           \\   
+   //        Purpose    : For copying larger files with a progress indicator.                                      //   
+   \\        Author     : Michael C. Cook Sr.                                                                      \\   
+   //        Contact    : @mcc85s                                                                                  //   
+   \\        Primary    : @mcc85s                                                                                  \\   
+   //        Created    : 2022-10-10                                                                               //   
+   \\        Modified   : 2022-10-10                                                                               \\   
+   //        Demo       : N/A                                                                                      //   
+   \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
+   //        TODO       : N/A                                                                                      //   
+   \\                                                                                                              \\   
+   //                                                                                                           ___//   
+   \\___                                                                                                    ___//¯¯\\   
+   //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+    ¯¯¯\\__[ 2022-10-10 16:25:41    ]______________________________________________________________________//¯¯¯        
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 Function Copy-FileStream
@@ -74,3 +84,4 @@ Function Copy-FileStream
     [FileStream]::New($Source,$Destination) | Out-Null
     Get-Item $Destination
 }
+
