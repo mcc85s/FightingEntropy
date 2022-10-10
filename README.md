@@ -2,7 +2,7 @@
 
 # ![logo][] FightingEntropy
 
-[logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/sdplogo.png
+[logo 120x120]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/sdplogo.png
 PowerShell/PowerShell/master/assets/ps_black_64.svg?sanitize=true
 
 ## Windows PowerShell vs. PowerShell Core
