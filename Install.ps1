@@ -33,7 +33,7 @@ Function FightingEntropy
         }
         Write([UInt32]$PSVersion)
         {
-            If ( $This.Name -match "\.+(jpg|jpeg|png|bmp|ico)" )
+            If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
             {
                 Switch([UInt32]($PSVersion -le 5))
                 {
@@ -100,14 +100,26 @@ Function FightingEntropy
 
     Class Manifest
     {
-        [String[]]      $Names = "Classes","Control","Functions","Graphics"
-        [String[]]    $Classes = @("FirewallRule Drive Drives ViperBomb File Cache Icons Shortcut".Split(" ") | % { "_$_.ps1" })
-        [String[]]    $Control = "Computer.png success.png failure.png DefaultApps.xml header-image.png MDT_LanguageUI.xml vendorlist.txt zipcode.txt $( "FE","MDT","PSD" | % { "$_`Client","$_`Server" } | % { "$_`Mod.xml" } )" -Split " "
-        [String[]]  $Functions = ("Copy-FileStream","Get-DiskInfo","Get-EnvironmentKey","Get-FEADLogin","Get-FEDCPromo","Get-FEHost","Get-FEImageManifest",
-                                  "Get-FEInfo","Get-FEManifest","Get-FEModule","Get-FENetwork","Get-FEOS","Get-FEProcess","Get-FERole","Get-FEService",
-                                  "Get-MadBomb","Get-MDTModule","Get-PSDModule","Get-ViperBomb","Install-IISServer","Invoke-cimdb","Invoke-KeyEntry",
-                                  "New-EnvironmentKey","New-FEInfrastructure","Set-ScreenResolution","Show-ToastNotification","Write-Theme","Get-FESitemap" | % { "$_.ps1" })
-        [String[]]   $Graphics = "background.jpg banner.png icon.ico OEMbg.jpg OEMlogo.bmp sdplogo.png" -Split " "
+        [String[]]      $Names = @("Classes","Control","Functions","Graphics")
+        [String[]]    $Classes = @("_FirewallRule.ps1","_Drive.ps1","_Drives.ps1","_ViperBomb.ps1","_File.ps1","_Cache.ps1",
+                                   "_Icons.ps1","_Shortcut.ps1")
+        [String[]]    $Control = @("Computer.png","success.png","failure.png","DefaultApps.xml","header-image.png","MDT_LanguageUI.xml",
+                                   "vendorlist.txt","zipcode.txt","FEClientMod.xml","FEServerMod.xml","MDTClientMod.xml","MDTServerMod.xml",
+                                   "PSDClientMod.xml","PSDServerMod.xml")
+        [String[]]  $Functions = @("Copy-FileStream.ps1","Get-AssemblyList.ps1","Get-ControlExtension.ps1","Get-DiskInfo.ps1",
+                                   "Get-EnvironmentKey.ps1","Get-EventLogArchive.ps1","Get-EventLogConfigExtension.ps1",
+                                   "Get-EventLogController.ps1","Get-EventLogProject.ps1","Get-EventLogRecordExtension.ps1",
+                                   "Get-FEADLogin.ps1","Get-FEDCPromo.ps1","Get-FEHost.ps1","Get-FEImageManifest.ps1",
+                                   "Get-FEInfo.ps1","Get-FEManifest.ps1","Get-FEModule.ps1","Get-FENetwork.ps1","Get-FEOS.ps1",
+                                   "Get-FEProcess.ps1","Get-FERole.ps1","Get-FEService.ps1","Get-FESitemap.ps1","Get-MadBomb.ps1",
+                                   "Get-MDTModule.ps1","Get-PowerShell.ps1","Get-PropertyItem.ps1","Get-PropertyObject.ps1",
+                                   "Get-PSDLog.ps1","Get-PSDLogGUI.ps1","Get-PSDModule.ps1","Get-SystemDetails.ps1",
+                                   "Get-ViperBomb.ps1","Get-WhoisUtility.ps1","Install-BossMode.ps1","Install-IISServer.ps1",
+                                   "Install-PSD.ps1","Invoke-cimdb.ps1","Invoke-KeyEntry.ps1","New-EnvironmentKey.ps1",
+                                   "New-FEInfrastructure.ps1","PSDController.psm1","PSDDeploymentShare.psm1","PSDFinal.ps1",
+                                   "PSDGather.psm1","PSDStart.ps1","PSDUtility.psm1","PSDWizard.psm1","Search-WirelessNetwork.ps1",
+                                   "Set-ScreenResolution.ps1","Show-ToastNotification.ps1","Update-PowerShell.ps1","Write-Theme.ps1")
+        [String[]]   $Graphics = @("background.jpg","banner.png","icon.ico","OEMbg.jpg","OEMlogo.bmp","sdplogo.png","PSDBackground.bmp")
         Manifest()
         {
 
@@ -194,8 +206,8 @@ Function FightingEntropy
         [String] $Description = "Beginning the fight against ID theft and cybercrime"
         [String]      $Author = "Michael C. Cook Sr."
         [String]     $Company = "Secure Digits Plus LLC"
-        [String]   $Copyright = "(c) 2021 (mcc85s/mcc85sx/sdp). All rights reserved."
-        [String]        $GUID = "64ab3ba6-064a-4929-b9a1-ffe27a55972a"
+        [String]   $Copyright = "(c) 2022 (mcc85s/mcc85sx/sdp). All rights reserved."
+        [String]        $GUID = "95023676-e2a6-405c-a9d3-dfa548c4d106"
         [String]     $Version = ""
         [Object]          $OS = [OS]::New()
         [Object]    $Manifest = [Manifest]::New()
@@ -358,7 +370,12 @@ Function FightingEntropy
                 Author               = $This.Author
                 Description          = $This.Description
                 RootModule           = $This.ModPath
-                RequiredAssemblies   = "PresentationFramework"
+                RequiredAssemblies   = "PresentationFramework",
+                                       "System.Runtime.WindowsRuntime",
+                                       "System.IO.Compression", 
+                                       "System.IO.Compression.Filesystem", 
+                                       "System.Windows.Forms",
+                                       "Windows.UI.Notifications"
             }                        | % { New-ModuleManifest @_ }
         }
         [String] ToString()
@@ -367,7 +384,7 @@ Function FightingEntropy
         }
     }
     
-    [FEModule]::New("2021.10.0")
+    [FEModule]::New("2022.10.0")
     
     $Path              = "$Env:Public\Desktop\FightingEntropy.lnk" 
     $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut($Path)
