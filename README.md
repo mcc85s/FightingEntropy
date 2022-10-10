@@ -10,8 +10,15 @@
 
 # About
 [FightingEntropy(π)] is a modification for Windows PowerShell that is meant for various tasks related to system administration,
-networking, security, elements of graphic design, and system management. This module is rather experimental and incorporates
-a lot of moving parts, so it has many areas of development.
+networking, virtualization, security, graphic design, and system management/maintenance. 
+
+This module is rather experimental and incorporates a lot of moving parts, so it has many areas of development.
+The end goal of this module, is to provide protection against identity theft, cybercriminals, malware, viruses, ransomware,
+and hackers who have malicious intent.
+
+Many of the tools in the wild are able to be circumvented by some of these hackers and cybercriminals.
+
+[FightingEntropy(π)] is meant to extend many of the capabilities that come with Windows.
 
 # Current
 | Version    | Date       |
