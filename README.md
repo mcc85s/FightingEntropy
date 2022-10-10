@@ -2,9 +2,9 @@
 [banner]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png
 
 # ![banner]
-| Company                    | Project              | Objective                                           |
-|:---------------------------|:---------------------|:----------------------------------------------------|
-| <b>Secure Digits Plus (π) LLC</b> | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime |
+| Company                           | Logo      | Project              | Objective                                           |
+|:----------------------------------|:----------|:---------------------|:----------------------------------------------------|
+| <b>Secure Digits Plus (π) LLC</b> | # ![logo] | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime |
 
 # ![logo]
 
