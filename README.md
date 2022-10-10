@@ -1,7 +1,7 @@
 [logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
 
 <p align="center" width="100%">
-    <img width="33%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
+    <img width="100%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
 </p>
 
 | Logo    | Company                           | Project              | Objective                                           | Version    | Date       |
