@@ -1,16 +1,12 @@
 [logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
-[banner]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png
 
-# ![banner]
-| Company                           | Logo      | Project              | Objective                                           |
-|:----------------------------------|:----------|:---------------------|:----------------------------------------------------|
-| <b>Secure Digits Plus (π) LLC</b> | # ![logo] | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime |
+<p align="center" width="100%">
+    <img width="33%" src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png">
+</p>
 
-# ![logo]
-
-| Version    | Date       |
-|:-----------|:-----------|
-| 2022.10.0  | 10/10/2022 | 
+| Logo    | Company                           | Project              | Objective                                           | Version    | Date       |
+|:--------|:----------------------------------|:---------------------|:----------------------------------------------------|:-----------|:-----------|
+| ![logo] | <b>Secure Digits Plus (π) LLC</b> | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime | 2022.10.0  | 10/10/2022 | 
 
 | Operation  | PowerShell Instructions
 |:-----------|:----------------------------------------------------------------------------------------------------------|
