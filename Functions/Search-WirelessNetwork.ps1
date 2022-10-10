@@ -40,66 +40,7 @@
 .Example
 #>
 
-Class Privelege
-{
-    [Object] $Principal
-    [Bool]   $IsAdmin
-    [Object] $Execution
-    [Object] $Version
-    [Bool]   $IsDesktop
-    [Object] $Module
-    Privelege()
-    {
-        # Checks the current Windows Identity
-        $This.Principal = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
-        If (!$This.Principal.IsInRole("Administrators"))
-        {   
-            # Throws if it's not a member of Administrators, prevents unauthorized usage  
-            Throw "Insufficient privileges to run this program"
-        }
-
-        # Sets the IsAdmin flag
-        $This.IsAdmin   = $True
-
-        $This.Exec()
-    }
-    Requirements()
-    {
-        $This.Version   = Get-Variable PSVersionTable | % Value
-        If ($This.Version.PSEdition -ne "Desktop")
-        {
-            Throw "Must use a Windows PowerShell v5.1 host, in order to use this function."
-        }
-        $This.IsDesktop = $True
-
-        Try
-        {
-            Import-Module FightingEntropy
-            $This.Module = Get-FEModule
-        }
-        Catch
-        {
-            Throw "[FightingEntropy(π)][!] not installed, visit https://github.com/mcc85s/FightingEntropy" 
-        }
-    }
-    Exec()
-    {
-        $This.Execution = Get-ExecutionPolicy
-    }
-}
-
-$Srp = [Privelege]::New()
-If ($Srp)
-{
-    If ($Srp.ExecutionPolicy -ne "Bypass")
-    {
-        Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
-    }
-
-    $Srp.Requirements()
-}
-
-Function Use-Wlanapi
+Function Search-WirelessNetwork
 {
     Class wlanapi # https://github.com/jcwalker/WiFiProfileManagement/blob/dev/Classes/AddNativeWiFiFunctions.ps1
     {
@@ -462,13 +403,8 @@ Function Use-Wlanapi
         ');' -join "`n")
     }
 
-    [wlanapi]::Tab
-}
+    Add-Type -MemberDefinition ([wlanapi]::Tab) -Name ProfileManagement -Namespace WiFi -Using System.Text -Passthru | Out-Null
 
-Add-Type -MemberDefinition (Use-Wlanapi) -Name ProfileManagement -Namespace WiFi -Using System.Text -Passthru | Out-Null
-
-Function Search-WirelessNetwork
-{
     # Declare classes
     Class DGList
     {
