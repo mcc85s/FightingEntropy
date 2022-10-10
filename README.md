@@ -1,7 +1,8 @@
 [logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
-[banner]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png
 
+<div style="text-align:center"><img src="https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/banner.png"/></div>.
 # ![banner][] {: .center-image }
+
 | Company                    | Project              | Objective                                           |
 |:---------------------------|:---------------------|:----------------------------------------------------|
 | Secure Digits Plus (π) LLC | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime |
