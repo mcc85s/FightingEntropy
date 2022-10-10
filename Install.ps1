@@ -375,7 +375,6 @@ Function FightingEntropy
                                        "System.IO.Compression", 
                                        "System.IO.Compression.Filesystem", 
                                        "System.Windows.Forms",
-                                       "Windows.UI.Notifications"
             }                        | % { New-ModuleManifest @_ }
         }
         [String] ToString()
