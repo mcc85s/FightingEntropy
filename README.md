@@ -1,8 +1,7 @@
-# ![logo][] FightingEntropy
+# ![logo][] FightingEntropy 2022.10.0
 
 [logo]: https://github.com/mcc85s/FightingEntropy/blob/main/Graphics/OEMlogo.bmp
 
-# FightingEntropy 2022.10.0
 | Operation  | Command                                                                     |
 | -----------| ----------------------------------------------------------------------------|
 | Install    | IRM github.com/mcc85s/FightingEntropy/blob/main/Install.ps1?raw=true | IEX  | 
