@@ -4,7 +4,7 @@
 # ![banner]
 | Company                    | Project              | Objective                                           |
 |:---------------------------|:---------------------|:----------------------------------------------------|
-| Secure Digits Plus (π) LLC | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime |
+| <b>Secure Digits Plus (π) LLC</b> | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime |
 
 # ![logo]
 
