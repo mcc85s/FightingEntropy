@@ -3,34 +3,55 @@
 .DESCRIPTION
 .LINK
 .NOTES
-          FileName: Write-Theme.ps1
-          Solution: FightingEntropy Write Theme
-          Purpose: The lifeblood of [FightingEntropy([char]960)]... With it? You can stylize the hell out a PowerShell command prompt console.
-          Author: Michael C. Cook Sr.
-          Contact: @mcc85s
-          Primary: @mcc85s
-          Created: 2021-10-02
-          Modified: 2021-11-11
-          Version - 0.0.0 - () - Finalized functional version 1.
-          TODO:
+    ____                                                                                                    ________    
+   //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\   
+   //¯¯\\__[ [FightingEntropy()][2022.10.0] ]______________________________________________________________//¯¯\\__//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\   
+   //¯¯¯                                                                                                           //   
+   \\                                                                                                              \\   
+   //        FileName   : Write-Theme.ps1                                                                          //   
+   \\        Solution   : [FightingEntropy()][2022.10.0]                                                           \\   
+   //        Purpose    : The lifeblood of [FightingEntropy()]... With it? You can stylize the hell                //   
+   \\                     out a PowerShell command prompt console.                                                 \\   
+   //        Author     : Michael C. Cook Sr.                                                                      //   
+   \\        Contact    : @mcc85s                                                                                  \\   
+   //        Primary    : @mcc85s                                                                                  //   
+   \\        Created    : 2022-10-10                                                                               \\   
+   //        Modified   : 2022-10-10                                                                               //   
+   \\        Demo       : N/A                                                                                      \\   
+   //        Version    : 0.0.0 - () - Finalized functional version 1.                                             //   
+   \\        TODO       : N/A                                                                                      \\   
+   //                                                                                                           ___//   
+   \\___                                                                                                    ___//¯¯\\   
+   //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
+   \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
+    ¯¯¯\\__[ 2022-10-10 10:54:29    ]______________________________________________________________________//¯¯¯        
+        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 
 Function Write-Theme
 {
-    [CmdletBinding(DefaultParameterSetName=0)]
-    Param(
-        [Parameter(ParameterSetName=0,Mandatory,Position=0)][Object]$InputObject,
-        [Parameter(ParameterSetName=0)][String] $Title,
-        [Parameter(ParameterSetName=0)][String] $Prompt,
-        [Parameter(ParameterSetName=0,Position=1)][UInt32[]] $Palette = @(10,12,15,0),
-        [Parameter(ParameterSetName=1,Mandatory)][Switch] $Banner,
-        [Parameter(ParameterSetName=2,Mandatory)][Switch] $Flag,
-        [Parameter(ParameterSetName=0)]
-        [Parameter(ParameterSetName=1)]
-        [Parameter(ParameterSetName=2)][Switch] $Text)
+    [CmdLetBinding(DefaultParameterSetName=0)]Param(
+    [Parameter(ParameterSetName=0,Mandatory,Position=0)][Object]$InputObject,
+    [Parameter(ParameterSetName=0)][String] $Title,
+    [Parameter(ParameterSetName=0)][String] $Prompt,
+    [Parameter(ParameterSetName=1,Mandatory)][Switch] $Banner,
+    [Parameter(ParameterSetName=2,Mandatory)][Switch] $Flag,
+    [Parameter(ParameterSetName=3,Mandatory)][String] $ScriptNotes,
+    [Parameter(ParameterSetName=0)]
+    [Parameter(ParameterSetName=3,Position=1)][UInt32[]] $Palette = @(10,12,15,0),
+    [Parameter(ParameterSetName=0)]
+    [Parameter(ParameterSetName=1)]
+    [Parameter(ParameterSetName=2)]
+    [Parameter(ParameterSetName=3)][Switch] $Text)
     
-    Class ThemeMask       # Creates a guide for the function and debugging/editing
+    # // __________________________________________________________
+    # // | Creates a guide for the function and debugging/editing |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ThemeMask
     {
         [UInt32] $Index
         [String] $Face
@@ -47,7 +68,11 @@ Function Write-Theme
         }
     }
 
-    Class ThemeFace       # This is an array of character codes that create the desired blocks for the theme/mask
+    # // _________________________________________________________________________________________
+    # // | This is an array of character codes that create the desired blocks for the theme/mask |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ThemeFace
     {
         Static [Object] $Mask = @{  0  =  32, 32, 32, 32; 1  =  95, 95, 95, 95; 2  = 175,175,175,175; 3  =  45, 45, 45, 45;
                                     4  =  32, 32, 32, 47; 5  =  92, 32, 32, 32; 6  =  32, 32, 32, 92; 7  =  47, 32, 32, 32;
@@ -70,7 +95,11 @@ Function Write-Theme
         }
     }
 
-    Class ThemeBlock      # This is a 1x[track] x 4[char] chunk of information for Write-Host
+    # // _____________________________________________________________________
+    # // | This is a 1x[track] x 4[char] chunk of information for Write-Host |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ThemeBlock
     {
         [Int32]              $Index
         [Object]            $Object
@@ -90,7 +119,11 @@ Function Write-Theme
         }
     }
 
-    Class ThemeTrack      # Represents a 1x[track] in a stack of tracks
+    # // _______________________________________________
+    # // | Represents a 1x[track] in a stack of tracks |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ThemeTrack
     {
         [UInt32]        $Index
         [String[]]     $Object
@@ -158,7 +191,11 @@ Function Write-Theme
         }
     }
 
-    Class ThemeTemplate   # Generates a range of templates based on InputObject types/mixtures # @(4;9;27;14;@(1)*21;29;30;9;8;7)
+    # // ______________________________________________________________________
+    # // | Generates a range of templates based on InputObject types/mixtures |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ThemeTemplate
     {
         Hidden [String[]] $StringStr = (("0;1;@(0)*25;1;1;0 4;9;12;@(1)*23;13;9;8;7 6;8;10;@(2)*23;11;8;10;0 0;11;27;28;@(1)*21;29;30;10;0;0" +
         " 0;0;@(2)*25;0;0;0 0;1;0;@(1)*25;0;0 4;9;8;10;@(2)*23;11;12;0 6;8;10;28;@(0)*23;13;9;5 0;11;12;@(1)*23;13;9;8;7 0;0;@(2)*25;0" + 
@@ -223,7 +260,11 @@ Function Write-Theme
         }
     }
 
-    Class ThemeInput      # Manhandles a range of inputs
+    # // ________________________________
+    # // | Manhandles a range of inputs |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ThemeInput
     {
         [String] $Type
         Hidden [String] $Buffer
@@ -332,7 +373,11 @@ Function Write-Theme
         }
     }
 
-    Class ThemeObject     # Prepares the entire input stack
+    # // ___________________________________
+    # // | Prepares the entire input stack |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ThemeObject
     {
         [String] $Type
         [String] $Height
@@ -452,7 +497,11 @@ Function Write-Theme
         }
     }
 
-    Class ThemeOutput     # Collects everything for output
+    # // __________________________________
+    # // | Collects everything for output |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ThemeOutput
     {
         [Object] $Type
         [Object] $Template
@@ -699,6 +748,10 @@ Function Write-Theme
         }
     }
 
+    # // _______________________________________________
+    # // | Shows the banner for Secure Digits Plus LLC |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
     Class Banner
     {
         Hidden [String[]] $Faces   = [ThemeFace]::New().Output
@@ -766,6 +819,10 @@ Function Write-Theme
             Return @( 0..($This.Output.Count-1) | % { "#$($This.Output[$_].Mask.Object -join '')" } )
         }
     }
+
+    # // ___________________________
+    # // | Shows the American flag |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
     Class Flag
     {
@@ -869,6 +926,36 @@ Function Write-Theme
         }
     }
 
+    Class ScriptNotes 
+    {
+        [String] $FileName
+        [String] $Solution
+        [String] $Purpose
+        [String] $Author
+        [String] $Contact
+        [String] $Primary
+        [String] $Created
+        [String] $Modified
+        [String] $Demo
+        [String] $Version
+        [String] $TODO
+        ScriptNotes([String]$ScriptNotes)
+        {
+            $S             = $ScriptNotes -Split "`n"
+            $This.FileName = $S[0]
+            $This.Solution = $S[1]
+            $This.Purpose  = $S[2]
+            $This.Author   = $S[3]
+            $This.Contact  = $S[4]
+            $This.Primary  = $S[5]
+            $This.Created  = $S[6]
+            $This.Modified = $S[7]
+            $This.Demo     = $S[8]
+            $This.Version  = $S[9]
+            $This.TODO     = $S[10]
+        }
+    }
+
     $Item = Switch($PSCmdlet.ParameterSetName)
     {
         0
@@ -895,6 +982,15 @@ Function Write-Theme
         2
         {
             [Flag]::New()
+        }
+        3
+        {
+            If ($ScriptNotes.Split("`n").Count -ne 11)
+            {
+                Throw "Invalid input"
+            }
+
+            [ThemeOutput]::New([ScriptNotes]::New($ScriptNotes),"[FightingEntropy()][2022.10.0]",[DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss"))
         }
     }
 
