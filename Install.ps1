@@ -117,8 +117,9 @@ Function FightingEntropy
                                    "Get-ViperBomb.ps1","Get-WhoisUtility.ps1","Install-BossMode.ps1","Install-IISServer.ps1",
                                    "Install-PSD.ps1","Invoke-cimdb.ps1","Invoke-KeyEntry.ps1","New-EnvironmentKey.ps1",
                                    "New-FEInfrastructure.ps1","PSDController.psm1","PSDDeploymentShare.psm1","PSDFinal.ps1",
-                                   "PSDGather.psm1","PSDStart.ps1","PSDUtility.psm1","PSDWizard.psm1","Search-WirelessNetwork.ps1",
-                                   "Set-ScreenResolution.ps1","Show-ToastNotification.ps1","Update-PowerShell.ps1","Write-Theme.ps1")
+                                   "PSDGather.psm1","PSDStart.ps1","PSDUtility.psm1","PSDWizard.psm1","Load-WirelessNetwork.ps1",
+                                   "Search-WirelessNetwork.ps1","Set-ScreenResolution.ps1","Show-ToastNotification.ps1",
+                                   "Update-PowerShell.ps1","Write-Theme.ps1")
         [String[]]   $Graphics = @("background.jpg","banner.png","icon.ico","OEMbg.jpg","OEMlogo.bmp","sdplogo.png","PSDBackground.bmp")
         Manifest()
         {
