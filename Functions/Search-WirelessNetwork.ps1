@@ -403,8 +403,10 @@ Function Search-WirelessNetwork
         ');' -join "`n")
     }
 
-    Add-Type -MemberDefinition ([wlanapi]::Tab) -Name ProfileManagement -Namespace WiFi -Using System.Text -Passthru | Out-Null
+    $pinvoke = [wlanapi]::Tab
 
+    Add-Type -MemberDefinition $pinvoke -Name ProfileManagement -Namespace WiFi -Using System.Text -Passthru | Out-Null
+    
     # Declare classes
     Class DGList
     {
