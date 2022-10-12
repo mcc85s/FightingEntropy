@@ -5,7 +5,6 @@ Class _Drives
     [Object[]]            $Network
     [Object[]]          $CertStore
     [Object[]]              $Samba
-        
     _Drives()
     {
         $This.PSDrives            = Get-PSDrive      | % { [_Drive]::New($_) } | Sort-Object Mode
