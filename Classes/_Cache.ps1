@@ -2,7 +2,6 @@ Class _Cache
 {
     [String] $Path
     [Object] $File
-
     _Cache([Object]$Image)
     {
         Switch -Regex ($Image)
