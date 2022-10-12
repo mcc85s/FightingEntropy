@@ -1,7 +1,6 @@
 Class _Shortcut
 {
     [Object]               $Item
-    
     _Shortcut(
     [String]               $Path ,
     [String]         $TargetPath ,
