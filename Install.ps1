@@ -344,7 +344,7 @@ Function FightingEntropy
                 $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
             }
             $Module       += "# </Functions>"
-            $Module       += "Write-Theme `"Loaded Module [+] FightingEntropy [$($This.Version)]`" 10,3,15,0"
+            $Module       += "Write-Theme `"Loaded Module [+] FightingEntropy [$($This.Version)]`" @(10,3,15,0)"
 
             If (!(Test-Path $This.Main))
             {
