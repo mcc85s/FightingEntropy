@@ -39,9 +39,7 @@ Function Write-Theme
     [Parameter(ParameterSetName=0)][String] $Prompt,
     [Parameter(ParameterSetName=1,Mandatory)][Switch] $Banner,
     [Parameter(ParameterSetName=2,Mandatory)][Switch] $Flag,
-    [Parameter(ParameterSetName=3,Mandatory)][String] $ScriptNotes,
-    [Parameter(ParameterSetName=0)]
-    [Parameter(ParameterSetName=3,Position=1)][UInt32[]] $Palette = @(10,12,15,0),
+    [Parameter(ParameterSetName=0)][UInt32[]] $Palette = @(10,12,15,0),
     [Parameter(ParameterSetName=0)]
     [Parameter(ParameterSetName=1)]
     [Parameter(ParameterSetName=2)]
@@ -926,36 +924,6 @@ Function Write-Theme
         }
     }
 
-    Class ScriptNotes 
-    {
-        [String] $FileName
-        [String] $Solution
-        [String] $Purpose
-        [String] $Author
-        [String] $Contact
-        [String] $Primary
-        [String] $Created
-        [String] $Modified
-        [String] $Demo
-        [String] $Version
-        [String] $TODO
-        ScriptNotes([String]$ScriptNotes)
-        {
-            $S             = $ScriptNotes -Split "`n"
-            $This.FileName = $S[0]
-            $This.Solution = $S[1]
-            $This.Purpose  = $S[2]
-            $This.Author   = $S[3]
-            $This.Contact  = $S[4]
-            $This.Primary  = $S[5]
-            $This.Created  = $S[6]
-            $This.Modified = $S[7]
-            $This.Demo     = $S[8]
-            $This.Version  = $S[9]
-            $This.TODO     = $S[10]
-        }
-    }
-
     $Item = Switch($PSCmdlet.ParameterSetName)
     {
         0
@@ -982,15 +950,6 @@ Function Write-Theme
         2
         {
             [Flag]::New()
-        }
-        3
-        {
-            If ($ScriptNotes.Split("`n").Count -ne 11)
-            {
-                Throw "Invalid input"
-            }
-
-            [ThemeOutput]::New([ScriptNotes]::New($ScriptNotes),"[FightingEntropy()][2022.10.0]",[DateTime]::Now.ToString("yyyy-MM-dd HH:mm:ss"))
         }
     }
 
