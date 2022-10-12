@@ -35,15 +35,11 @@ Function FightingEntropy
         {
             If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
             {
-                Switch([UInt32]($PSVersion -le 5))
-                {
-                    0 { Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -AsByteStream  }
-                    1 { Set-Content -Path $This.Path -Value ([Byte[]]$This.Content) -Encoding Byte }
-                }
+                [System.IO.File]::WriteAllBytes($this.Path,[Byte[]]$This.Content)
             }
             Else
             {
-                Set-Content -Path $This.Path -Value $This.Content
+                [System.IO.File]::WriteAllLines($This.Path,$This.Content)
             }
         }
     }
@@ -116,10 +112,8 @@ Function FightingEntropy
                                    "Get-PSDLog.ps1","Get-PSDLogGUI.ps1","Get-PSDModule.ps1","Get-SystemDetails.ps1",
                                    "Get-ViperBomb.ps1","Get-WhoisUtility.ps1","Install-BossMode.ps1","Install-IISServer.ps1",
                                    "Install-PSD.ps1","Invoke-cimdb.ps1","Invoke-KeyEntry.ps1","New-EnvironmentKey.ps1",
-                                   "New-FEInfrastructure.ps1","PSDController.psm1","PSDDeploymentShare.psm1","PSDFinal.ps1",
-                                   "PSDGather.psm1","PSDStart.ps1","PSDUtility.psm1","PSDWizard.psm1","Load-WirelessNetwork.ps1",
-                                   "Search-WirelessNetwork.ps1","Set-ScreenResolution.ps1","Show-ToastNotification.ps1",
-                                   "Update-PowerShell.ps1","Use-Wlanapi.ps1","Write-Theme.ps1")
+                                   "New-FEInfrastructure.ps1","Load-WirelessNetwork.ps1","Search-WirelessNetwork.ps1",
+                                   "Set-ScreenResolution.ps1","Show-ToastNotification.ps1","Update-PowerShell.ps1","Use-Wlanapi.ps1","Write-Theme.ps1")
         [String[]]   $Graphics = @("background.jpg","banner.png","icon.ico","OEMbg.jpg","OEMlogo.bmp","sdplogo.png","PSDBackground.bmp")
         Manifest()
         {
@@ -325,20 +319,23 @@ Function FightingEntropy
             $Module       += "# Downloaded from {0}" -f $This.Base
             $Module       += "# {0}" -f $This.Path
             $Module       += "# {0}" -f $This.Version
-
+            $Module       += "# <Types>"
+            $Assemblies    = "PresentationFramework",
+                             "System.Runtime.WindowsRuntime",
+                             "System.IO.Compression", 
+                             "System.IO.Compression.Filesystem", 
+                             "System.Windows.Forms"
+            $Assemblies    | % { $Module += "Add-Type -AssemblyName $_" }
             $Module       += "# <Classes>"
-
-            $This.Classes    | % { 
+            $This.Classes  | % { 
 
                 $Module   += "# <{0}/{1}>" -f $_.Type, $_.Name
                 $Module   += "# {0}" -f $_.Path
                 $Module   += $_.Content
                 $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
             }
-
             $Module       += "# </Classes>"
             $Module       += "# <Functions>"
-
             $This.Functions  | % { 
 
                 $Module   += "# <{0}/{1}>" -f $_.Type, $_.Name
@@ -346,9 +343,8 @@ Function FightingEntropy
                 $Module   += $_.Content
                 $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
             }
-
             $Module       += "# </Functions>"
-            $Module         += "Write-Theme `"Loaded Module [+] FightingEntropy [$($This.Version)]`" 10,3,15,0"
+            $Module       += "Write-Theme `"Loaded Module [+] FightingEntropy [$($This.Version)]`" 10,3,15,0"
 
             If (!(Test-Path $This.Main))
             {
@@ -371,11 +367,7 @@ Function FightingEntropy
                 Author               = $This.Author
                 Description          = $This.Description
                 RootModule           = $This.ModPath
-                RequiredAssemblies   = "PresentationFramework",
-                                       "System.Runtime.WindowsRuntime",
-                                       "System.IO.Compression", 
-                                       "System.IO.Compression.Filesystem", 
-                                       "System.Windows.Forms"
+                RequiredAssemblies   = $Assemblies
             }                        | % { New-ModuleManifest @_ }
         }
         [String] ToString()
@@ -407,3 +399,5 @@ $Line    = (@("-")*120 -join "")
 $Line, "[Installation Details (stored under variable `$Install)]"
 $Install
 $Line, "[Command (Get-FEModule) provides an extension of the above information]", $Line
+
+# Invoke-Expression (Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Remove.ps1?raw=true)
