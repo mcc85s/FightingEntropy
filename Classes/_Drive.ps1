@@ -7,7 +7,6 @@ Class _Drive
     [String]         $DisplayRoot
     [String]         $Description
     [Int32]                 $Mode
-    
     _Drive([Object]$Drive)
     {
         $This.Name                = $Drive.Name
