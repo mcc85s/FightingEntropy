@@ -585,7 +585,7 @@ Function Get-ThreadController
             $This.Status.Current()
             Return $This.Status.Last()
         }
-        [Object] Update([UInt32]$State,[String]$Status)
+        [Object] Update([Int32]$State,[String]$Status)
         {
             $This.Status.Update($State,$Status)
             Return $This.Status.Last()
@@ -720,7 +720,7 @@ Function Get-ThreadController
             $This.Last = $This.Status.Current()
             Return $This.Last
         }
-        [Object] Update([UInt32]$State,[String]$Status)
+        [Object] Update([Int32]$State,[String]$Status)
         {
             $This.Last = $This.Status.Update($State,$Status)
             Return $This.Last
@@ -804,7 +804,7 @@ Function Get-ThreadController
             $This.Last = $This.Status.Current()
             Return $This.Last
         }
-        [Object] Update([UInt32]$State,[String]$Status)
+        [Object] Update([Int32]$State,[String]$Status)
         {
             $This.Last = $This.Status.Update($State,$Status)
             Return $This.Last
