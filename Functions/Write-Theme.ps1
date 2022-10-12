@@ -39,7 +39,6 @@ Function Write-Theme
     [Parameter(ParameterSetName=2,Mandatory,Position=0)][Object]$InputObject,
     [Parameter(ParameterSetName=1,Mandatory,Position=1)]
     [Parameter(ParameterSetName=2,Mandatory,Position=1)][String]$Title,
-    [Parameter(ParameterSetName=1,Mandatory,Position=2)]
     [Parameter(ParameterSetName=2,Mandatory,Position=2)][String]$Prompt,
     [Parameter(ParameterSetName=0,Position=1)]
     [Parameter(ParameterSetName=1,Position=2)]
@@ -49,7 +48,8 @@ Function Write-Theme
     [Parameter(ParameterSetName=0)]
     [Parameter(ParameterSetName=1)]
     [Parameter(ParameterSetName=2)]
-    [Parameter(ParameterSetName=3)][Switch] $Text)
+    [Parameter(ParameterSetName=3)]
+    [Parameter(ParameterSetName=4)][Switch] $Text)
     
     # // __________________________________________________________
     # // | Creates a guide for the function and debugging/editing |
@@ -930,7 +930,7 @@ Function Write-Theme
         }
     }
 
-    $Item = Switch($PSCmdlet.ParameterSetName)
+    $Item = Switch ($PSCmdlet.ParameterSetName)
     {
         0
         {
@@ -962,6 +962,13 @@ Function Write-Theme
     }
     If (!$Text)
     {
-        $Item.Output.Draw(@($Palette))
+        If ($PsCmdlet.ParameterSetName -lt 3)
+        {
+            $Item.Output.Draw(@($Palette))
+        }
+        Else
+        {
+            $Item.Draw()
+        }
     }
 }
