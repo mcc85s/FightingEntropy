@@ -6,7 +6,6 @@ Class _FirewallRule
     [Object]       $Program
     [Object] $RemoteAddress
     [Object]        $Action
-
     _FirewallRule(    
     [String]          $Name ,
     [String]   $DisplayName ,
