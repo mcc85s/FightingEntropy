@@ -39,6 +39,7 @@
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
+
 Function Search-WirelessNetwork
 { 
     Add-Type -MemberDefinition (Use-Wlanapi) -Name ProfileManagement -Namespace WiFi -Using System.Text -Passthru | Out-Null
@@ -892,7 +893,10 @@ Function Search-WirelessNetwork
         {
             $stringBuilder          = New-Object -TypeName Text.StringBuilder
             $stringBuilder.Capacity = 1024
-            $result                 = [WiFi.ProfileManagement]::WlanReasonCodeToString($ReasonCode.ToInt32(),$stringBuilder.Capacity,$stringBuilder,[IntPtr]::zero)
+            $result                 = "[WiFi.ProfileManagement]::WlanReasonCodeToString({0},{1},{2},{3})" -f $ReasonCode.ToInt32(),
+                                      $stringBuilder.Capacity,
+                                      $stringBuilder,
+                                      [IntPtr]::zero | Invoke-Expression
 
             If ($result -ne 0)
             {
@@ -903,14 +907,17 @@ Function Search-WirelessNetwork
         }
         [Void] WlanFreeMemory([IntPtr]$Pointer)
         {
-            [WiFi.ProfileManagement]::WlanFreeMemory($Pointer)
+            "[WiFi.ProfileManagement]::WlanFreeMemory({0})" -f $Pointer | Invoke-Expression
         }
         [IntPtr] NewWifiHandle()
         {
             $maxClient               = 2
             [Ref] $negotiatedVersion = 0
             $clientHandle            = [IntPtr]::zero
-            $result                  = [WiFi.ProfileManagement]::WlanOpenHandle($maxClient,[IntPtr]::Zero,$negotiatedVersion,[Ref]$clientHandle)
+            $result                  = "[WiFi.ProfileManagement]::WlanOpenHandle({0}, {1}, {2}, {3})" -f $maxClient,
+                                       [IntPtr]::Zero,
+                                       $negotiatedVersion,
+                                       [Ref]$clientHandle | Invoke-Expression
 
             If ($result -eq 0)
             {
@@ -923,7 +930,7 @@ Function Search-WirelessNetwork
         }
         [Void] RemoveWifiHandle([IntPtr]$ClientHandle)
         {
-            $result = [WiFi.ProfileManagement]::WlanCloseHandle($ClientHandle, [IntPtr]::zero)
+            $result = "[WiFi.ProfileManagement]::WlanCloseHandle({0}, {1})" -f $ClientHandle, [IntPtr]::zero | Invoke-Expression
 
             If ($result -ne 0)
             {
