@@ -60,7 +60,11 @@ Function Get-AssemblyList
         {
             $Split                    = $Assembly.Fullname.Split(",")
             $This.Name                = $Split[0]
-            $This.Version             = $Split[1].Split("=")[1]
+            $This.Version             = Switch -Regex ($Split[1])
+            {
+                "=" { $Split[1].Split("=")[1] } Default { $Split[1] }
+            }
+            
             $This.CodeBase            = $Assembly.CodeBase 
             $This.CustomAttributes    = $Assembly.CustomAttributes 
             $This.DefinedTypes        = $Assembly.DefinedTypes 
