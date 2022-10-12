@@ -39,11 +39,10 @@
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
-
-Load-WirelessNetwork
-
 Function Search-WirelessNetwork
-{   
+{ 
+    Add-Type -MemberDefinition (Use-Wlanapi) -Name ProfileManagement -Namespace WiFi -Using System.Text -Passthru | Out-Null
+
     # Declare classes
     Class DGList
     {
