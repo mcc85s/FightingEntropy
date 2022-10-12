@@ -300,7 +300,7 @@ Function Get-ThreadController
         {
             $This.Output.Add($This.Status)
         }
-        [Object] Update([UInt32]$State,[String]$Status)
+        [Object] Update([Int32]$State,[String]$Status)
         {
             $This.SetStatus($State,$Status)
             $This.Write()
