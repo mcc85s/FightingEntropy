@@ -5,7 +5,6 @@ Class _File
     [Int32]                $Depth
     [String]                $Name
     [String]            $FullName
-
     _File([String]$Path)
     {
         [System.IO.FileInfo]::New($Path) | % {
