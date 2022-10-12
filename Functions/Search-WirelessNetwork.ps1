@@ -887,16 +887,88 @@ Function Search-WirelessNetwork
         }
         [String] Win32Exception([UInt32]$ReturnCode)
         {
-            Return ("[System.ComponentModel.Win32Exception]::new($ReturnCode)" | Invoke-Expression)
+            Return "[System.ComponentModel.Win32Exception]::new($ReturnCode)" | Invoke-Expression
+        }
+        [Object] WlanReasonCodeToString([UInt32]$ReasonCode,[UInt32]$BufferSize,[Object]$StringBuilder,[IntPtr]$Reserved)
+        {
+            Return "[WiFi.ProfileManagement]::WlanReasonCodeToString($ReasonCode, $BufferSize,$StringBuilder,$Reserved)" | Invoke-Expression
+        }
+        [Void] WlanFreeMemory([IntPtr]$Pointer)
+        {
+            "[WiFi.ProfileManagement]::WlanFreeMemory($Pointer)" | Invoke-Expression
+        }
+        [Object] WlanOpenHandle([UInt32]$ClientVersion,[IntPtr]$pReserved,[UInt32]$NegotiatedVersion,[IntPtr]$ClientHandle)
+        {
+            Return "[WiFi.ProfileManagement]::WlanOpenHandle($ClientVersion, $pReserved, $negotiatedVersion, $clientHandle)" | Invoke-Expression
+        }
+        [Object] WlanCloseHandle([IntPtr]$ClientHandle,[IntPtr]$Reserved)
+        {
+            Return "[WiFi.ProfileManagement]::WlanCloseHandle($ClientHandle, $Reserved)" | Invoke-Expression
+        }
+        [Object] WlanEnumInterfaces([IntPtr]$hClientHandle,[IntPtr]$pReserved,[IntPtr]$ppInterfaceList)
+        {
+            Return "[WiFi.ProfileManagement]::WlanEnumInterfaces($hClientHandle, $pReserved, $ppInterfaceList)" | Invoke-Expression
+        }
+        [Object] WlanInterfaceList([IntPtr]$ppInterfaceInfoList)
+        {
+            Return "[WiFi.ProfileManagement+WLAN_INTERFACE_INFO_LIST]::new($ppInterfaceInfoList)" | Invoke-Expression
+        }
+        [Object] WlanInterfaceInfo([Object]$WlanInterfaceInfo)
+        {
+            Return "[WiFi.ProfileManagement+WLAN_INTERFACE_INFO]$WlanInterfaceInfo" | Invoke-Expression
+        }
+        [Object] WlanGetProfileList([IntPtr]$ClientHandle,[guid]$InterfaceGuid,[IntPtr]$pReserved,[IntPtr]$ProfileList)
+        {
+            Return "[WiFi.ProfileManagement]::WlanGetProfileList($ClientHandle,$interfaceGUID,$pReserved,$profileList)" | Invoke-Expression
+        }
+        [Object[]] WlanGetProfileListFromPtr([IntPtr]$ProfileListPointer)
+        {
+            Return "[WiFi.ProfileManagement+WLAN_PROFILE_INFO_LIST]::new($profileListPointer).ProfileInfo" | Invoke-Expression
+        }
+        [Object] WlanGetProfile([IntPtr]$ClientHandle,[Guid]$InterfaceGuid,[String]$ProfileName,[IntPtr]$pReserved,[String]$Xml,[UInt32]$Flags,[UInt32]$Access)
+        {
+            Return "[WiFi.ProfileManagement]::WlanGetProfile($ClientHandle, $InterfaceGuid, $ProfileName, $pReserved, $Xml, $Flags, $Access)" | Invoke-Expression
+        }
+        [Object] WlanProfileInfoObject()
+        {
+            Return "[WiFi.ProfileManagement+ProfileInfo]::New()" | Invoke-Expression
+        }
+        [Object] WlanConnectionParams()
+        {
+            Return "[WiFi.ProfileManagement+WLAN_CONNECTION_PARAMETERS]::new()" | Invoke-Expression
+        }
+        [Object] WlanConnectionMode([String]$ConnectionMode)
+        {
+            Return "[WiFi.ProfileManagement+WLAN_CONNECTION_MODE]::$ConnectionMode" | Invoke-Expression
+        }
+        [Object] WlanDot11BssType([String]$Dot11BssType)
+        {
+            Return "[WiFi.ProfileManagement+DOT11_BSS_TYPE]::$Dot11BssType" | Invoke-Expression
+        }
+        [Object] WlanConnectionFlag([String]$Flag)
+        {
+            Return "[WiFi.ProfileManagement+WlanConnectionFlag]::$Flag" | Invoke-Expression
+        }
+        [Object] WlanSetProfile([Uint32]$ClientHandle,[Guid]$InterfaceGuid,[UInt32]$Flags,[IntPtr]$ProfileXml,[IntPtr]$ProfileSecurity,[Bool]$Overwrite,[IntPtr]$pReserved,[IntPtr]$pdwReasonCode)
+        {
+            Return "[WiFi.ProfileManagement]::WlanSetProfile($clientHandle,$InterfaceGuid,$Flags,$ProfileXml,$ProfileSecurity,$Overwrite,$pReserved,$pdwReasonCode)" | Invoke-Expression
+        }
+        [Void] WlanDeleteProfile([IntPtr]$ClientHandle,[Guid]$InterfaceGuid,[String]$ProfileName,[IntPtr]$pReserved)
+        {
+            "[WiFi.ProfileManagement]::WlanDeleteProfile($ClientHandle,$InterfaceGuid,$ProfileName,$pReserved)" | Invoke-Expression
+        }
+        [Void] WlanDisconnect([IntPtr]$hClientHandle,[Guid]$InterfaceGuid,[IntPtr]$pReserved)
+        {
+            "[WiFi.ProfileManagement]::WlanDisconnect($hClientHandle,$InterfaceGuid,$pReserved)" | Invoke-Expression
+        }
+        [Void] WlanConnect([IntPtr]$hClientHandle,[Guid]$InterfaceGuid,[Object]$ConnectionParameters,[IntPtr]$pReserved)
+        {
+            "[WiFi.ProfileManagement]::WlanConnect($hClientHandle,$InterfaceGuid,$ConnectionParameters,$pReserved" | Invoke-Expression
         }
         [String] WiFiReasonCode([IntPtr]$ReasonCode)
         {
-            $stringBuilder          = New-Object -TypeName Text.StringBuilder
-            $stringBuilder.Capacity = 1024
-            $result                 = "[WiFi.ProfileManagement]::WlanReasonCodeToString({0},{1},{2},{3})" -f $ReasonCode.ToInt32(),
-                                      $stringBuilder.Capacity,
-                                      $stringBuilder,
-                                      [IntPtr]::zero | Invoke-Expression
+            $stringBuilder          = [Text.StringBuilder]::New(1024)
+            $result                 = $This.WlanReasonCodeToString($ReasonCode.ToInt32(),$stringBuilder.Capacity,$stringBuilder,[IntPtr]::zero)
 
             If ($result -ne 0)
             {
@@ -905,19 +977,12 @@ Function Search-WirelessNetwork
 
             Return $stringBuilder.ToString()
         }
-        [Void] WlanFreeMemory([IntPtr]$Pointer)
-        {
-            "[WiFi.ProfileManagement]::WlanFreeMemory({0})" -f $Pointer | Invoke-Expression
-        }
         [IntPtr] NewWifiHandle()
         {
             $maxClient               = 2
             [Ref] $negotiatedVersion = 0
             $clientHandle            = [IntPtr]::zero
-            $result                  = "[WiFi.ProfileManagement]::WlanOpenHandle({0}, {1}, {2}, {3})" -f $maxClient,
-                                       [IntPtr]::Zero,
-                                       $negotiatedVersion,
-                                       [Ref]$clientHandle | Invoke-Expression
+            $result                  = $This.WlanOpenHandle($maxClient,[IntPtr]::Zero,$negotiatedVersion,[Ref]$clientHandle)
 
             If ($result -eq 0)
             {
@@ -930,9 +995,9 @@ Function Search-WirelessNetwork
         }
         [Void] RemoveWifiHandle([IntPtr]$ClientHandle)
         {
-            $result = "[WiFi.ProfileManagement]::WlanCloseHandle({0}, {1})" -f $ClientHandle, [IntPtr]::zero | Invoke-Expression
+            $Result = $This.WlanCloseHandle($ClientHandle,[IntPtr]::zero)
 
-            If ($result -ne 0)
+            If ($Result -ne 0)
             {
                 Throw $This.Win32Exception($Result)
             }
@@ -963,11 +1028,11 @@ Function Search-WirelessNetwork
             $Return           = @( )
             Try
             {
-                [void][WiFi.ProfileManagement]::WlanEnumInterfaces($clientHandle, [IntPtr]::zero, [ref] $interfaceListPtr)
-                $wiFiInterfaceList = [WiFi.ProfileManagement+WLAN_INTERFACE_INFO_LIST]::new($interfaceListPtr)
+                [Void]$This.WlanEnumInterfaces($ClientHandle,[IntPtr]::zero,[ref]$InterfaceListPtr)
+                $wiFiInterfaceList = $This.WlanInterfaceList($interfaceListPtr)
                 ForEach ($wlanInterfaceInfo in $wiFiInterfaceList.wlanInterfaceInfo)
                 {
-                    $Info      = [WiFi.ProfileManagement+WLAN_INTERFACE_INFO]$wlanInterfaceInfo
+                    $Info      = $this.WlanInterfaceInfo($wlanInterfaceInfo)
                     $Interface = $This.Adapters | ? InterfaceDescription -eq $Info.Description
                     $Return   += [InterfaceObject]::New($Info,$Interface)
                 }
@@ -991,9 +1056,9 @@ Function Search-WirelessNetwork
             $ClientHandle       = $This.NewWifiHandle()
             $Return             = @( )
 
-            [WiFi.ProfileManagement]::WlanGetProfileList($ClientHandle,$interface.GUID,[IntPtr]::zero,[ref] $profileListPointer)
+            $This.WlanGetProfileList($ClientHandle,$interface.GUID,[IntPtr]::zero,[ref] $profileListPointer)
             
-            $ProfileList        = [WiFi.ProfileManagement+WLAN_PROFILE_INFO_LIST]::new($profileListPointer).ProfileInfo
+            $ProfileList        = $This.WlanGetProfileListFromPtr($profileListPointer)
 
             ForEach ($ProfileName in $ProfileList)
             {
@@ -1022,12 +1087,12 @@ Function Search-WirelessNetwork
             $This.RemoveWiFiHandle($ClientHandle)
             Return $Return
         }
-        [Object] WiFiProfileInfo([String]$ProfileName,[Guid]$InterfaceGuid,[IntPtr]$ClientHandle,[Int16]$WlanProfileFlagsInput)
+        [Object] WiFiProfileInfo([String]$ProfileName,[Guid]$IntGuid,[IntPtr]$ClientHandle,[Int16]$WlanProfileFlagsInput)
         {
             [String] $pstrProfileXml = $null
             $wlanAccess              = 0
             $WlanProfileFlags        = $WlanProfileFlagsInput
-            $result                  = [WiFi.ProfileManagement]::WlanGetProfile($ClientHandle, $InterfaceGuid, $ProfileName, [IntPtr]::Zero, [ref] $pstrProfileXml, [ref] $WlanProfileFlags, [ref] $wlanAccess)
+            $result                  = $This.WlanGetProfile($ClientHandle, $IntGuid, $ProfileName, [IntPtr]::Zero, [ref] $pstrProfileXml, [ref] $WlanProfileFlags, [ref] $wlanAccess)
             $Password                = $Null
             $connectHiddenSSID       = $Null
             $EapType                 = $Null
@@ -1112,18 +1177,17 @@ Function Search-WirelessNetwork
                 }
             }
 
-            $Return               = [WiFi.ProfileManagement+ProfileInfo]@{
-                ProfileName       = $wlanProfile.WLANProfile.SSIDConfig.SSID.name
-                ConnectionMode    = $wlanProfile.WLANProfile.connectionMode
-                Authentication    = $wlanProfile.WLANProfile.MSM.security.authEncryption.authentication
-                Encryption        = $wlanProfile.WLANProfile.MSM.security.authEncryption.encryption
-                Password          = $password
-                ConnectHiddenSSID = $connectHiddenSSID
-                EAPType           = $EapType
-                ServerNames       = $serverNames
-                TrustedRootCA     = $trustedRootCa
-                Xml               = $pstrProfileXml
-            }
+            $Return                   = $This.WlanProfileInfoObject()
+            $Return.ProfileName       = $wlanProfile.WLANProfile.SSIDConfig.SSID.name
+            $Return.ConnectionMode    = $wlanProfile.WLANProfile.connectionMode
+            $Return.Authentication    = $wlanProfile.WLANProfile.MSM.security.authEncryption.authentication
+            $Return.Encryption        = $wlanProfile.WLANProfile.MSM.security.authEncryption.encryption
+            $Return.Password          = $password
+            $Return.ConnectHiddenSSID = $connectHiddenSSID
+            $Return.EAPType           = $EapType
+            $Return.ServerNames       = $serverNames
+            $Return.TrustedRootCA     = $trustedRootCa
+            $Return.Xml               = $pstrProfileXml
             
             $xmlPtr               = [System.Runtime.InteropServices.Marshal]::StringToHGlobalAuto($pstrProfileXml)
             $This.WlanFreeMemory($xmlPtr)
@@ -1164,11 +1228,11 @@ Function Search-WirelessNetwork
                     Auto              = 'WLAN_CONNECTION_MODE_AUTO'
                 }
 
-                $connectionParameters                    = [WiFi.ProfileManagement+WLAN_CONNECTION_PARAMETERS]::new()
+                $connectionParameters                    = $This.WlanConnectionParams()
                 $connectionParameters.strProfile         = $ProfileName
-                $connectionParameters.wlanConnectionMode = [WiFi.ProfileManagement+WLAN_CONNECTION_MODE]::$($connectionModeResolver[$ConnectionMode])
-                $connectionParameters.dot11BssType       = [WiFi.ProfileManagement+DOT11_BSS_TYPE]::$Dot11BssType
-                $connectionParameters.dwFlags            = [WiFi.ProfileManagement+WlanConnectionFlag]::$Flag
+                $connectionParameters.wlanConnectionMode = $This.WlanConnectionMode($connectionModeResolver[$ConnectionMode])
+                $connectionParameters.dot11BssType       = $This.WlanDot11BssType($Dot11BssType)
+                $connectionParameters.dwFlags            = $This.WlanConnectionFlag($Flag)
             }
             Catch
             {
@@ -1581,7 +1645,7 @@ Function Search-WirelessNetwork
                 $flags               = 0
                 $reasonCode          = [IntPtr]::Zero
                 $profilePointer      = [System.Runtime.InteropServices.Marshal]::StringToHGlobalUni($profileXML)    
-                $returnCode          = [WiFi.ProfileManagement]::WlanSetProfile($clientHandle,[ref] $interfaceGuid,$flags,$profilePointer,[IntPtr]::Zero,$Overwrite,[IntPtr]::Zero,[ref]$reasonCode)
+                $returnCode          = $This.WlanSetProfile($clientHandle,[ref] $interfaceGuid,$flags,$profilePointer,[IntPtr]::Zero,$Overwrite,[IntPtr]::Zero,[ref]$reasonCode)
                 $returnCodeMessage   = $This.Win32Exception($ReturnCode)
                 $reasonCodeMessage   = $This.WiFiReasonCode($ReasonCode)
 
@@ -1622,7 +1686,7 @@ Function Search-WirelessNetwork
         RemoveWifiProfile([String]$ProfileName)
         {
             $ClientHandle = $This.NewWiFiHandle()
-            [WiFi.ProfileManagement]::WlanDeleteProfile($clientHandle,[Ref]$This.Selected.Guid,$ProfileName,[IntPtr]::Zero)
+            $This.WlanDeleteProfile($clientHandle,[Ref]$This.Selected.Guid,$ProfileName,[IntPtr]::Zero)
             $This.RemoveWifiHandle($ClientHandle)
         }
         Select([String]$Description)
@@ -1653,7 +1717,7 @@ Function Search-WirelessNetwork
             If ($This.Selected.State -eq "CONNECTED")
             {
                 $ClientHandle                      = $This.NewWiFiHandle()
-                [WiFi.ProfileManagement]::WlanDisconnect($ClientHandle, [Ref] $This.Selected.Guid, [IntPtr]::Zero)
+                $This.WlanDisconnect($ClientHandle, [Ref] $This.Selected.Guid, [IntPtr]::Zero)
                 $This.RemoveWifiHandle($ClientHandle)
 
                 <# For Testing
@@ -1696,7 +1760,7 @@ Function Search-WirelessNetwork
                         $Param  = $This.GetWiFiConnectionParameter($SSID)
 
                         $ClientHandle                      = $This.NewWiFiHandle()
-                        [WiFi.ProfileManagement]::WlanConnect($ClientHandle, [Ref] $This.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
+                        $This.WlanConnect($ClientHandle, [Ref] $This.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
                         $This.RemoveWifiHandle($ClientHandle)
 
                         <# For Testing
@@ -1750,7 +1814,7 @@ Function Search-WirelessNetwork
                     
                 $Param         = $Ctrl.GetWiFiConnectionParameter($Network.Name)
                 $ClientHandle  = $Ctrl.NewWiFiHandle()
-                [WiFi.ProfileManagement]::WlanConnect($ClientHandle, [Ref] $Ctrl.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
+                $This.WlanConnect($ClientHandle, [Ref] $Ctrl.Selected.Guid, [Ref] $Param, [IntPtr]::Zero)
                 $Ctrl.RemoveWifiHandle($ClientHandle)
 
                 Start-Sleep 3
