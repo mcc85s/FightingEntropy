@@ -34,12 +34,18 @@
 Function Write-Theme
 {
     [CmdLetBinding(DefaultParameterSetName=0)]Param(
-    [Parameter(ParameterSetName=0,Mandatory,Position=0)][Object]$InputObject,
-    [Parameter(ParameterSetName=0)][String] $Title,
-    [Parameter(ParameterSetName=0)][String] $Prompt,
-    [Parameter(ParameterSetName=1,Mandatory)][Switch] $Banner,
-    [Parameter(ParameterSetName=2,Mandatory)][Switch] $Flag,
-    [Parameter(ParameterSetName=0)][UInt32[]] $Palette = @(10,12,15,0),
+    [Parameter(ParameterSetName=0,Mandatory,Position=0)]
+    [Parameter(ParameterSetName=1,Mandatory,Position=0)]
+    [Parameter(ParameterSetName=2,Mandatory,Position=0)][Object]$InputObject,
+    [Parameter(ParameterSetName=1,Mandatory,Position=1)]
+    [Parameter(ParameterSetName=2,Mandatory,Position=1)][String]$Title,
+    [Parameter(ParameterSetName=1,Mandatory,Position=2)]
+    [Parameter(ParameterSetName=2,Mandatory,Position=2)][String]$Prompt,
+    [Parameter(ParameterSetName=0,Position=1)]
+    [Parameter(ParameterSetName=1,Position=2)]
+    [Parameter(ParameterSetName=2,Position=3)][UInt32[]] $Palette = @(10,12,15,0),
+    [Parameter(ParameterSetName=3,Mandatory)][Switch] $Banner,
+    [Parameter(ParameterSetName=4,Mandatory)][Switch] $Flag,
     [Parameter(ParameterSetName=0)]
     [Parameter(ParameterSetName=1)]
     [Parameter(ParameterSetName=2)]
@@ -928,26 +934,23 @@ Function Write-Theme
     {
         0
         {
-            If ($Title -and $Prompt)
-            {
-                [ThemeOutput]::New($InputObject,$Title,$Prompt)
-            }
-            ElseIf ($Title)
-            {
-                [ThemeOutput]::New($InputObject,$Title)
-            }
-            Else
-            {
-                [ThemeOutput]::New($InputObject)
-            }
+            [ThemeOutput]::New($InputObject)
+        }
+        1
+        {
+            [ThemeOutput]::New($InputObject,$Title)
+        }
+        2
+        {
+            [ThemeOutput]::New($InputObject,$Title,$Prompt)
         }
 
-        1
+        3
         {
             [Banner]::New()
         }
 
-        2
+        4
         {
             [Flag]::New()
         }
