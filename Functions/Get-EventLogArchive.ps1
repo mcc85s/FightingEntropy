@@ -40,8 +40,6 @@ Function Get-EventLogArchive
         [Parameter(Mandatory,ParameterSetName=2)][Object]$InputObject
     )
 
-    Add-Type -Assembly System.IO.Compression, System.IO.Compression.Filesystem
-
     Class EventLogArchive
     {
         [String]           $Mode
