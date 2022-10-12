@@ -43,7 +43,6 @@ Class _ViperBomb
     Hidden [String[]]      $Type = "10H:D+ 10H:D- 10P:D+ 10P:D- DT:S+ DT:S- DT:T+ DT:T- LT:S+ LT:S-".Split(" ")
     Hidden [String[]]     $Title = (("{0} Home | {1};{0} Pro | {1};{2} | Safe;{2} | Tweaked;Laptop | Safe" -f "Windows 10","Default","Desktop"
                                  ).Split(";") | % { "$_ Max" , "$_ Min" })
-
     Hidden [Hashtable]  $Display = @{ 
                             Xbox = ("XblAuthManager XblGameSave XboxNetApiSvc XboxGipSvc xbgm" -Split " ")
                           NetTCP = ("Msmq Pipe Tcp" -Split " " | % { "Net$_`Activator" })
@@ -54,7 +53,6 @@ Class _ViperBomb
                                            "{0}_{1}" -f $_,(( Get-Service *_* | ? ServiceType -eq 224 )[0].Name -Split '_')[-1] 
                                         }) | Sort-Object )
     }
-
     [String]         $PassedArgs = $Null
     [Int32]      $TermsOfService = 0
     [Int32]             $ByBuild = 0
@@ -77,9 +75,7 @@ Class _ViperBomb
     [String]           $CsvLabel = "Backup.csv"
     [String]       $ServiceLabel = "Black Viper (Sparks v1.0)"
     [String]        $ScriptLabel = "DevOPS (MC/SDP v1.0)"
-
     [Object]           $Services
-    
     _ViperBomb()
     {
         
