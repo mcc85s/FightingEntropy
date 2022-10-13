@@ -50,20 +50,20 @@ If you don't believe me...? That's fine. That's why [this link to a particular w
 
 # Videos
 These various videos demonstrate some portion of [FightingEntropy(π)]
-| Index | Name                                   | Date    | Url                          |
-|:------|:---------------------------------------|:--------|:-----------------------------|
-|     0 | [FightingEntropy(π)][FEInfrastructure] | 12/2021 | https://youtu.be/6yQr06_rA4I |
-|     1 | Advanced Domain Controller Promotion   | 10/2021 | https://youtu.be/O8A2PDfQOBs |
-|     2 | A Deep Dive: PowerShell and XAML       | 03/2021 | https://youtu.be/NK4NuQrraCI |
-|     3 | Wireless Network Scanning Utility      | 05/2022 | https://youtu.be/35EabWfh8dQ |
-|     4 | PowerShell Deployment FE Wizard        | 09/2021 | https://youtu.be/lZX5fAgczz0 |
-|     5 | 2019_0125-(Computer Answers - MDT)     | 01/2019 | https://youtu.be/5Cyp3pqIMRs |
-|     6 | Install-pfSense                        | 06/2021 | https://youtu.be/E_uFbzS0blQ |
-|     7 | Advanced System Administration Lab     | 06/2021 | https://youtu.be/xgffIccX1eg |
-|     8 | Windows Image Extraction               | 06/2021 | https://youtu.be/G10EuwlNAyo |
-|     9 | Flight Test Part 1                     | 08/2021 | https://drive.google.com/file/d/1qdS_UVcLTsxHFCpuwK16NQs0xJL7fv0W |
-|    10 | Flight Test Part 2                     | 08/2021 | https://youtu.be/vg359UlYVp8 |
-|    11 | Advanced Domain Controller Promotion   | 10/2021 | https://youtu.be/O8A2PDfQOBs |
-|    12 | Hybrid | Desired State Controller      | 05/2019 | https://youtu.be/C8NYaaqJAlI |
-|    13 | Methodologies                          | 11/2019 | https://youtu.be/bZuSgBK36CE |
-|    14 | Education/Exhibition Program Design     | 08/2019 | https://youtu.be/v6RrrzR5v2E |
+| Index | Date    | Name                                   | Url                          |
+|:------|:--------|:---------------------------------------|:-----------------------------|
+|     0 | 12/2021 | [FightingEntropy(π)][FEInfrastructure] | https://youtu.be/6yQr06_rA4I |
+|     1 | 10/2021 | Advanced Domain Controller Promotion   | https://youtu.be/O8A2PDfQOBs |
+|     2 | 03/2021 | A Deep Dive: PowerShell and XAML       | https://youtu.be/NK4NuQrraCI |
+|     3 | 05/2022 | Wireless Network Scanning Utility      | https://youtu.be/35EabWfh8dQ |
+|     4 | 09/2021 | PowerShell Deployment FE Wizard        | https://youtu.be/lZX5fAgczz0 |
+|     5 | 01/2019 | 2019_0125-(Computer Answers - MDT)     | https://youtu.be/5Cyp3pqIMRs |
+|     6 | 06/2021 | Install-pfSense                        | https://youtu.be/E_uFbzS0blQ |
+|     7 | 06/2021 | Advanced System Administration Lab     | https://youtu.be/xgffIccX1eg |
+|     8 | 06/2021 | Windows Image Extraction               | https://youtu.be/G10EuwlNAyo |
+|     9 | 08/2021 | Flight Test Part 1                     | https://drive.google.com/file/d/1qdS_UVcLTsxHFCpuwK16NQs0xJL7fv0W |
+|    10 | 08/2021 | Flight Test Part 2                     | https://youtu.be/vg359UlYVp8 |
+|    11 | 10/2021 | Advanced Domain Controller Promotion   | https://youtu.be/O8A2PDfQOBs |
+|    12 | 05/2019 | Hybrid | Desired State Controller      | https://youtu.be/C8NYaaqJAlI |
+|    13 | 11/2019 | Methodologies                          | https://youtu.be/bZuSgBK36CE |
+|    14 | 08/2019 | Education/Exhibition Program Design    | https://youtu.be/v6RrrzR5v2E |
