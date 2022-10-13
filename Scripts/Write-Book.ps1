@@ -4485,11 +4485,11 @@ $Resume.Person.AddEmployer("Secure Digits Plus LLC (π)","Clifton Park, NY","10/
 $Hash = @{ }
 $Hash.Add(0, @"
 Portfolio Development for Applications, as well as Investigative Journalism:
-________________________________________________________________________________________________________
-| 08/02/22 | Top Deck Awareness - Not News | drive.google.com/file/d/1NoqGcpDVYnCF6zWx-7HPQBV3-MgeCzsT |
-| 06/23/22 | Archimedes (CIA+Zuckerberg)   | https://youtu.be/QP25FbNhakQ                              |
-| 02/15/22 | A Matter of National Security | https://youtu.be/e4VnZObiez8 (Links in video description) |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+_______________________________________________________________________________________
+| 10/08/22 | Top Deck Awareness – Not News                                            | 
+| Used to be news…? Now it’s Not News. Not News. Part of the Not News Network         |
+| https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1008_TDA_Not_News.pdf |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 "@)
 $Hash.Add(1, "Main development focus: (C/PowerShell/.NET) module development, codename [FightingEntropy(π)]")
 $Hash.Add(2, @"
@@ -51168,9 +51168,11 @@ But as I wrote this lesson plan, and then I realized that the TANGENTS I later g
 lesson plan REQUIRED SOME SERIOUS EXPANSION. 
 
 Thus, I started to write this 685 page book...
-__________________________________________________________________________________________________________
-| 08/03/2022 | Top Deck Awareness - Not News | drive.google.com/file/d/1zdUXHdU0DG7MlbxeFJDXfZR03ImQcAdg |
-¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+_______________________________________________________________________________________
+| 10/08/22 | Top Deck Awareness – Not News                                            | 
+| Used to be news…? Now it’s Not News. Not News. Part of the Not News Network         |
+| https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1008_TDA_Not_News.pdf |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 ...and teach people WHY classes are really... incredibly USEFUL and UNDERUSED. 
 If people only knew that I look for ways to turn C# code into PowerShell code... 
 
