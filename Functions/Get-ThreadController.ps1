@@ -590,23 +590,21 @@ Function Get-ThreadController
             $This.Status.Update($State,$Status)
             Return $This.Status.Last()
         }
-        [Bool] Query()
+        Query()
         {
-            ForEach ($Thread in $This.Thread | ? Complete -eq 0)
+            ForEach ($Thread in $This.Thread)
             {
-                If ($Thread.Handle.IsCompleted)
+                If ($Thread.Handle.IsCompleted -and $Thread.Complete -eq 0)
                 {
                     $Thread.IsComplete()
                     $This.Update(1,"Complete [+] Thread[$($Thread.Index)]")
                 }
-            }
 
-            If ($False -notin $This.Thread.Handle.IsCompleted)
-            {
-                $This.Complete = 1
+                If ($False -notin $This.Thread.Handle.IsCompleted)
+                {
+                    $This.Complete = 1
+                }
             }
-
-            Return $This.Complete
         }
         AddThread([UInt32]$Slot,[UInt32]$Index,[Object]$Factory)
         {
