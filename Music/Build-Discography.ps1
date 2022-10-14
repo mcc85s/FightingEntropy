@@ -1,6 +1,6 @@
 Function Build-Discography
 {
-    [CmdLetBinding()]Param([Parameter(Mandatory)][String]$Name)
+    [CmdLetBinding()]Param([Parameter(Mandatory,Position=0)][String]$Name)
 
     Class Track
     {
