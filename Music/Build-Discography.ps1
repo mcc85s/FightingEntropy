@@ -86,6 +86,15 @@ Function Build-Discography
 
             Return $This.Album | ? Index -eq $Index 
         }
+        SetPosition()
+        {
+            ForEach ($X in 0..($This.Album.Count-1))
+            {
+                $Item = $This.Get($X)
+                $Item.SetPosition()
+                Write-Host "Set [+] Album: [$($Item.Name)], Length: [$($Item.Length)]"
+            }
+        }
     }
 
     [Discography]::New($Name)
