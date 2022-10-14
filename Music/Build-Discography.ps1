@@ -33,10 +33,20 @@ Function Build-Discography
             $This.Length = [TimeSpan]"00:00:00"
             $This.Track  = @()
         }
-        AddTrack([String]$Name,[String]$Length)
+        AddTrack([String]$Name,[String]$xLength)
         {
-            $This.Track += [Track]::New($This.Track.Count,$Name,$Length)
-            Write-Host "Added [+] Track: [$Name], Length: [$Length]"
+            If ($xLength -match "^\d{1}:\d{2}$")
+            {
+                $xLength = "0$xLength"
+            }
+
+            If ($xLength -match "\d{2}:\d{2}")
+            {
+                $xLength = "00:$xLength"
+            }
+
+            $This.Track += [Track]::New($This.Track.Count,$Name,$xLength)
+            Write-Host "Added [+] Track: [$Name], Length: [$xLength]"
         }
         SetPosition()
         {
@@ -64,16 +74,6 @@ Function Build-Discography
         }
         AddTrack([UInt32]$Index,[String]$Name,[String]$Length)
         {
-            If ($Length -match "^\d{1}:\d{2}$")
-            {
-                $Length = "0$Length"
-            }
-
-            If ($Length -match "\d{2}:\d{2}")
-            {
-                $Length = "00:$Length"
-            }
-
             $Item       = $This.Get($Index)
             $Item.AddTrack($Name,$Length)
         }
