@@ -1259,7 +1259,7 @@ $String = ( "https://n137.network-auth.com/splash/?mac=88%3A15%3A44%3AA3%3AB7"+
                 $False
                 {
                     $WFAI = Get-WmiObject Win32_NetworkAdapter | ? NetConnectionID -eq $WFAN
-                    $IG   = Get-WmiObject Win32_NetworkAdapterConfiguration | ? { 
+                    $IG   = Get-WmiObject Win32_NetworkAdapterConfiguration | ? { 
 
                         $_.Description -eq $WFAI.Name | % SettingID
                     }
@@ -2307,16 +2307,66 @@ $String = ( "https://n137.network-auth.com/splash/?mac=88%3A15%3A44%3AA3%3AB7"+
     # // | So let's try to use $WiFi.Output | Format-Table                   |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
+    # // ________________________________________________________________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | PS Prompt:\> $Wifi.Output | Format-Table                                                                     |
+    # // | Index Name               Bssid             Type     Uptime              Netw. Auth.     Enc. Str. Beacon Int |
+    # // | ----- ----               -----             ----     ------              ----- --------- ---- ---- ---------- |
+    # // |     0                    8A:15:04:A2:44:F4 802.11n  11h 22m 41s 027     Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |     1                    8A:15:04:A2:44:F7 802.11n  11h 22m 41s 028     Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |     2                    8A:15:04:A2:44:F3 802.11n  11h 22m 41s 027     Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |     3                    8A:15:04:A2:44:FF 802.11n  11h 22m 41s 024     Infr. Open80211 Wep     3 00:00:00~  |
+    # // |     4 Market 32          8A:15:04:A2:44:F0 802.11n  11h 22m 40s 981     Infr. Open80211 None    3 00:00:00~  |
+    # // |     5                    8A:15:04:A2:E3:44 802.11n  19h 38m 30s 275     Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |     6                    8A:15:04:A2:96:5F 802.11n  2d 13h 57m 15s 904  Infr. Open80211 Wep     3 00:00:00~  |
+    # // |     7                    8A:15:04:A2:F0:27 802.11n  4d 08h 11m 17s 380  Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |     8                    8A:15:04:A2:CC:37 802.11n  1d 09h 05m 17s 111  Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |     9                    8A:15:04:A2:44:F6 802.11n  11h 22m 41s 027     Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |    10 Market 32          8A:15:04:A3:A8:10 802.11n  1d 07h 30m 06s 865  Infr. Open80211 None    3 00:00:00~  |
+    # // |    11 HP-Print-71-Off... 80:CE:62:93:8B:71 Unknown  10d 04h 27m 11s 766 Infr. RsnaPsk   Ccmp    3 00:00:00~  |
+    # // |    12                    8A:15:04:A3:B7:13 802.11n  2d 07h 17m 33s 111  Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |    13                    8A:15:04:A3:B7:14 802.11n  2d 07h 17m 33s 111  Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |    14                    8A:15:04:A3:B7:1F 802.11n  2d 07h 17m 33s 108  Infr. Open80211 Wep     3 00:00:00~  |
+    # // |    15 Market 32          8A:15:04:A3:B7:10 802.11n  2d 07h 17m 33s 029  Infr. Open80211 None    3 00:00:00~  |
+    # // |    16                    8A:15:04:A3:B7:11 802.11n  2d 07h 17m 33s 110  Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |    17                    8A:15:04:A2:E3:4F 802.11n  19h 38m 30s 886     Infr. Open80211 Wep     3 00:00:00~  |
+    # // |    18                    8A:15:04:A2:E3:46 802.11n  19h 38m 30s 275     Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |    19                    8A:15:04:A2:44:F1 802.11n  11h 22m 41s 026     Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |    20                    8A:15:04:A3:B7:16 802.11n  2d 07h 17m 33s 111  Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |    21                    8A:15:04:A3:B7:17 802.11n  2d 07h 17m 33s 112  Infr. Rsna      Ccmp    3 00:00:00~  |
+    # // |    22 Marks Car          00:6F:F2:31:0E:66 802.11n  00h 29m 23s 581     Infr. RsnaPsk   Ccmp    2 00:00:00~  |
+    # // |    23 JOY                E4:71:85:17:7C:80 802.11n  37d 05h 07m 17s 427 Infr. RsnaPsk   Ccmp    2 00:00:00~  |
+    # // |    24 MarksAutomotive... E6:F4:C6:08:DA:43 802.11n  6d 23h 33m 16s 214  Infr. RsnaPsk   Ccmp    2 00:00:00~  |
+    # // |    25                    00:30:44:39:FC:01 802.11n  15h 29m 38s 201     Infr. RsnaPsk   Ccmp    2 00:00:00~  |
+    # // |    26                    8A:15:04:A2:E3:40 802.11n  19h 38m 30s 274     Infr. Open80211 None    2 00:00:00~  |
+    # // |    27 TheShop            C0:56:27:3D:6D:F4 802.11ac 37d 05h 07m 35s 966 Infr. RsnaPsk   Ccmp    2 00:00:00~  |
+    # // |    28 DIRECT-epson-se... E2:BB:9E:56:AC:F4 802.11n  1d 07h 08m 19s 032  Infr. RsnaPsk   Ccmp    2 00:00:00~  |
+    # // |______________________________________________________________________________________________________________|
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    
     # // _________________________________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
     # // | Sorta looks like I know what I'm doing, doesn't it...?                        |
     # // | There's plenty more that can be done with this particular radio class.        |
-    # // | I spent quite a lot of time today heavily modifying the class, and it is      |
-    # // | apparent that I still have to cover the original reason for this function.    |
     # // |                                                                               |
     # // | The point of this, is to exhibit the following statement:                     |
-    # // | I'm an actual expert that knows what he is doing, and saying.                 |
+    # // | I'm an actual expert who knows what he is doing/saying.                       |
+    # // |     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                        |
+    # // | Sometimes I even know how to EXPOSE people who either KNOW they're lying...   |
+    # // | ...or DON'T KNOW they're lying. That's the quality that causes me to be...    |
+    # // | ...a CUT ABOVE THE REST.                                                      |
     # // |                                                                               |
-    # // | I realize that some people have just been looking at each other, saying:      |
+    # // | Before I came along...? You had people giving each other high fives, a real   |
+    # // | comfortable pat on the back, or a thumbs up. George W. Bush inspired Facebook |
+    # // | and Google to adopt the "thumbs up" button, as a direct result of this:       |
+    # // |                                                                               |
+    # // | [Mission Accomplished]                                                        |
+    # // | 05/01/03 | https://drive.google.com/file/d/1EDBRJHxcPKOkbJ75hfPik7rxD2zERtt3  |
+    # // |                                                                               |
+    # // | I realize that some people will look at that picture or read my commentary,   |
+    # // | and they'll just casually pretend as if they don't see how much sense I make, |
+    # // | in THAT PICTURE, as well as the rest of the lesson plan, and the videos that  |
+    # // | some guys talk about in the following dialog...                               |
     # // |_______________________________________________________________________________|
     # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
     # // | Guy[1]: Maybe if we just pretend like we can't HEAR him, he'll go away.       |
@@ -2438,14 +2488,14 @@ $String = ( "https://n137.network-auth.com/splash/?mac=88%3A15%3A44%3AA3%3AB7"+
     # // | Write-Progress indicator, so that people can throw whatever number they want at this thing. |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-    # // _________________________________________________________________________________________________________
-    # // | This right here, is your regular, ordinary, every-day-at-the-park, standard-issue FizzBuzz object...  |
-    # // | Basically, the console output is saved here, and each object will calculate whether it is:            |
-    # // | 1) a Fizz object,                                                                                     |
-    # // | 2) a Buzz object,                                                                                     |
-    # // | 3) a Fizz Buzz object,                                                                                |
-    # // | 4) or a number if it's none of those objects/items...                                                 |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // ______________________________________________________________________________________________________
+    # // | This right here, is your regular, ordinary, every-day-at-the-park, standard-issue FizzBuzz object. |
+    # // | Basically, the console output is saved here, and each object will calculate whether it is:         |
+    # // | 1) a Fizz object,                                                                                  |
+    # // | 2) a Buzz object,                                                                                  |
+    # // | 3) a Fizz Buzz object,                                                                             |
+    # // | 4) or a number if it's none of those objects/items...                                              |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
     Class FizzBuzzObject
     {
@@ -2492,16 +2542,16 @@ $String = ( "https://n137.network-auth.com/splash/?mac=88%3A15%3A44%3AA3%3AB7"+
             $Slot[-1]      = $Total
             $Hash          = @{ }
 
-            Write-Progress -Activity "Calculating [FizzBuzz]" -Status $This.Status(0) -PercentComplete 0
+            Write-Progress -Activity "Calc. [FizzBuzz]" -Status $This.Status(0) -PercentComplete 0
             ForEach ($X in 1..$Total)
             { 
                 $Hash.Add($Hash.Count,[FizzBuzzObject]::New($X))
                 If ($X -in $Slot)
                 {
-                    Write-Progress -Activity "Calculating" -Status $This.Status($X) -PercentComplete $This.Percent($X)
+                    Write-Progress -Activity "Calc." -Status $This.Status($X) -PercentComplete $This.Percent($X)
                 }
             }
-            Write-Progress -Activity "Calculating [FizzBuzz]" -Status $This.Status($This.Total) -Complete
+            Write-Progress -Activity "Calc. [FizzBuzz]" -Status $This.Status($This.Total) -Complete
 
             $This.Output = $Hash[0..($Hash.Count-1)]
         }
@@ -2538,3 +2588,272 @@ $String = ( "https://n137.network-auth.com/splash/?mac=88%3A15%3A44%3AA3%3AB7"+
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
     $List = [FizzBuzzContainer]::New(10000)
+
+    # // ________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | PS Prompt:\> $List = [FizzBuzzContainer]::New(10000) |
+    # // | PS Prompt:\> $List                                   |
+    # // |                                                      |
+    # // | Total Depth Output                                   |
+    # // | ----- ----- ------                                   |
+    # // | 10000     5 {1, 2, Fizz, 4...}                       |
+    # // |                                                      |
+    # // | PS Prompt:\>                                         |
+    # // |______________________________________________________|
+    # // 
+    
+
+    # // ______________________________________________________________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | PS Prompt:\> $WiFi                                                                                         |
+    # // |                                                                                                            |
+    # // | Adapters  : {MSFT_NetAdapter (CreationClassName = "MSFT_NetAdapter", DeviceID = "{E3A47A46-9920-469E-9...} |
+    # // | Request   : System.Threading.Tasks.Task`1[Windows.Devices.Radios.RadioAccessStatus]                        |
+    # // | Radios    : System.Threading.Tasks.Task`1[System.Collections.Generic.IReadOnlyList`1[Windows.Devices.R...  |
+    # // | List      : System.Threading.Tasks.Task`1[System.Collections.Generic.IReadOnlyList`1[Windows.Devices...    |
+    # // | Output    : {Subway, SubSecure, Uncommon Grounds, SKMW...}                                                 |
+    # // | Selected  :                                                                                                |
+    # // | Connected :                                                                                                |
+    # // |                                                                                                            |
+    # // | PS Prompt:\>                                                                                               |
+    # // |____________________________________________________________________________________________________________|
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    # // ________________________________________________________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | PS Prompt:\> $WiFi.Adapters                                                                          |
+    # // |                                                                                                      |
+    # // | Name   InterfaceDescription                    ifIndex Status       MacAddress             LinkSpeed |
+    # // | ----   --------------------                    ------- ------       ----------             --------- |
+    # // | Wi-Fi  1x1 11bgn Wireless LAN PCI Express H...      22 Disconnected 9C-B7-0D-20-08-FE        72 Mbps |
+    # // |______________________________________________________________________________________________________|
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    # // __________________________________________________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | So, this is covering an adapter in my laptop which isn't integrated into the motherboard.      |
+    # // | That means at any time, I can swap it out with another wireless adapter and not have to worry. |
+    # // |                                                                                                |
+    # // | Doesn't necessarily mean that I'm PARANOID and feel a need to swap out the WiFi adapter...     |
+    # // | ...I'm just saying, with a SMARTPHONE that MOST PEOPLE HAVE...                                 |
+    # // | Then, uh-oh. Chances are, if someone's got your MAC ADDRESS...?                                |
+    # // | You'll need a brand new phone/adapter, and someone to service it, if someone has your device   |
+    # // | address pegged.                                                                                |
+    # // |                                                                                                |
+    # // | Uh-oh. What can anybody do if that's the case...?                                              |
+    # // | That's actually a real problem.                                                                |
+    # // | Most people will think NOTHING OF IT, and be like "Whatever bro... Nobody's watchin' me."      |
+    # // |________________________________________________________________________________________________|
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    # // ______________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | PS Prompt:\> $WiFi.Request                                 |
+    # // |                                                            |
+    # // | Result                 : Allowed                           |
+    # // | Id                     : 841                               |
+    # // | Exception              :                                   |
+    # // | Status                 : RanToCompletion                   |
+    # // | IsCanceled             : False                             |
+    # // | IsCompleted            : True                              |
+    # // | CreationOptions        : None                              |
+    # // | AsyncState             :                                   |
+    # // | IsFaulted              : False                             |
+    # // | AsyncWaitHandle        : System.Threading.ManualResetEvent |
+    # // | CompletedSynchronously : False                             |
+    # // |                                                            |
+    # // | PS Prompt:\>                                               |
+    # // |____________________________________________________________|
+    # // 
+    
+    # // _________________________________________________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | This is essentially a task object, it is not all that different from a PowerShell runspace... |
+    # // | or, IDK how to explain the concept of MULTITHREADING, but when a processor is focused on      |
+    # // | a particular TASK...? That's the OBJECT that the system uses, in order to accomplish its'     |
+    # // | multiple goals, in tandem.                                                                    |
+    # // |                                                                                               |
+    # // | Asynchronous operations are basically like this...                                            |
+    # // |                                                                                               |
+    # // | Suppose you have (8) friends, right...?                                                       |
+    # // | They all live somewhere.                                                                      |
+    # // | If you tell them ALL, to:                                                                     |
+    # // | 1) Go home                                                                                    |
+    # // | 2) change their clothes                                                                       |
+    # // | 3) come right back...                                                                         |
+    # // |                                                                                               |
+    # // | Chances are that they will NOT all return at the same exact time.                             |
+    # // | That's because they all have different routes to travel, and they may all                     |
+    # // | encounter different circumstances...                                                          |
+    # // | Yeah, the ACTIVITY that they are all doing is the same...?                                    |
+    # // | But- the actual work they each individually have to do, is NOT the same.                      |
+    # // |                                                                                               |
+    # // | That's the idea behind asynchronous operations.                                               |
+    # // |                                                                                               |
+    # // | That's what this is, right here.                                                              |
+    # // |_______________________________________________________________________________________________|
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    # // ______________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | PS Prompt:\> $Wifi.Radios                                  |
+    # // |                                                            |
+    # // | Result                 : System.__ComObject                |
+    # // | Id                     : 668                               |
+    # // | Exception              :                                   |
+    # // | Status                 : RanToCompletion                   |
+    # // | IsCanceled             : False                             |
+    # // | IsCompleted            : True                              |
+    # // | CreationOptions        : None                              |
+    # // | AsyncState             :                                   |
+    # // | IsFaulted              : False                             |
+    # // | AsyncWaitHandle        : System.Threading.ManualResetEvent |
+    # // | CompletedSynchronously : False                             |
+    # // |                                                            |
+    # // | PS Prompt:\>                                               |
+    # // |____________________________________________________________|
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    # // ________________________________________________________________________________
+    # // | This is the same type of object as up above. However, the TASK is different. |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    # // ______________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | PS Prompt:\> $Wifi.List                                    |
+    # // |                                                            |
+    # // | Result                 : System.__ComObject                |
+    # // | Id                     : 669                               |
+    # // | Exception              :                                   |
+    # // | Status                 : RanToCompletion                   |
+    # // | IsCanceled             : False                             |
+    # // | IsCompleted            : True                              |
+    # // | CreationOptions        : None                              |
+    # // | AsyncState             :                                   |
+    # // | IsFaulted              : False                             |
+    # // | AsyncWaitHandle        : System.Threading.ManualResetEvent |
+    # // | CompletedSynchronously : False                             |
+    # // |                                                            |
+    # // | PS Prompt:\>                                               |
+    # // |____________________________________________________________|
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    # // ___________________________________________________________________________
+    # // | Again, this is the same type of object. However, the TASK is different. |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    # // ____________________________________________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | Index Name                Bssid       Type     Uptime          Netw. Auth.     Enc. Str. |
+    # // | ----- ----                -----       ----     ------          ----- --------- ---- ---- |
+    # // |     0 Subway          ... CE:2D:E0... 802.11n  7d 18h 57m 59s  Infr. Open80211 None    4 |
+    # // |     1 SubSecure       ... CC:2D:E0... 802.11n  7d 18h 57m 59s  Infr. RsnaPsk   Ccmp    4 |
+    # // |     2 Uncommon Grounds... F0:9F:C2... 802.11n  7d 19h 04m 12s  Infr. Open80211 None    4 |
+    # // |     3 SKMW            ... E2:CB:FC... 802.11n  13h 23m 38s     Infr. RsnaPsk   Ccmp    3 |
+    # // |     4                 ... E2:CB:FC... 802.11n  13h 23m 39s     Infr. RsnaPsk   Ccmp    3 |
+    # // |     5 CCR's Wi-Fi Netw... C4:B3:01... 802.11n  7d 18h 57m 52s  Infr. RsnaPsk   Ccmp    3 |
+    # // |     6 Continuum       ... 38:4C:90... 802.11n  7d 18h 54m 02s  Infr. RsnaPsk   Ccmp    3 |
+    # // |     7 SK-Guest        ... E2:CB:FC... 802.11n  13h 23m 38s     Infr. Open80211 None    3 |
+    # // |     8                 ... F8:ED:A5... 802.11n  7d 18h 57m 08s  Infr. RsnaPsk   Ccmp    3 |
+    # // |     9                 ... 6C:B0:CE... 802.11ac 7d 18h 56m 53s  Infr. RsnaPsk   Ccmp    3 |
+    # // |    10 Uncommon Grounds... D4:05:98... 802.11n  7d 18h 53m 25s  Infr. RsnaPsk   Ccmp    3 |
+    # // |    11 YANE100         ... BE:75:36... 802.11n  00h 09m 51s     Infr. RsnaPsk   Ccmp    3 |
+    # // |    12 iCryo           ... 14:59:C0... 802.11ac 26d 00h 11m 04s Infr. RsnaPsk   Ccmp    2 |
+    # // |    13 hum07823        ... B8:9F:09... 802.11n  01h 38m 31s     Infr. RsnaPsk   Ccmp    2 |
+    # // |__________________________________________________________________________________________|
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    # // ____________________________________________________________________
+    # // | Here, we've got the same information that I posted WAY up above. |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    # // ______________________________________________________________________________________
+    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+    # // | PS Prompt:\> $Wifi | Get-Member                                                    |
+    # // |                                                                                    |
+    # // | TypeName: Wireless                                                                 |
+    # // |                                                                                    |
+    # // | Name                       MemberType Definition                                   |
+    # // | ----                       ---------- ----------                                   |
+    # // | Connect                    Method     void Connect(string SSID)                    |
+    # // | Disconnect                 Method     void Disconnect()                            |
+    # // | Equals                     Method     bool Equals(System.Object obj)               |
+    # // | FormatXml                  Method     System.Object FormatXml(System.Object Co     |
+    # // | GetHashCode                Method     int GetHashCode()                            |
+    # // | GetType                    Method     type GetType()                               |
+    # // | GetWiFiConnectionParameter Method     System.Object GetWiFiConnectionParameter     |
+    # // | GetWiFiInterface           Method     System.Object[] GetWiFiInterface()           |
+    # // | GetWiFiInterfaceGuid       Method     System.Object GetWiFiInterfaceGuid(strin     |
+    # // | GetWiFiProfileInfo         Method     System.Object GetWiFiProfileInfo(string      |
+    # // | GetWiFiProfileList         Method     System.Object[] GetWiFiProfileList(strin     |
+    # // | Hex                        Method     string Hex(string PN)                        |
+    # // | NetshShowInterface         Method     System.Object NetshShowInterface(string      |
+    # // | NewWifiHandle              Method     System.IntPtr NewWifiHandle()                |
+    # // | NewWifiProfile             Method     void NewWifiProfile(string PX, string WF     |
+    # // | NewWifiProfileEap          Method     System.Object NewWifiProfileEap(string P     |
+    # // | NewWiFiProfilePsk          Method     System.Object NewWiFiProfilePsk(string P     |
+    # // | NewWifiProfileXml          Method     System.Object NewWifiProfileXml(string P     |
+    # // | NewWifiProfileXmlEap       Method     string NewWifiProfileXmlEap(string PN, s     |
+    # // | NewWiFiProfileXmlPsk       Method     string NewWiFiProfileXmlPsk(string PN, s     |
+    # // | Passphrase                 Method     void Passphrase(System.Object NW)            |
+    # // | RaAsync                    Method     System.Object[] RaAsync()                    |
+    # // | RadioFindAllAdaptersAsync  Method     System.Object RadioFindAllAdaptersAsync(     |
+    # // | RadioRequestAccess         Method     System.Object RadioRequestAccess()           |
+    # // | RadioSynchronization       Method     System.Object RadioSynchronization()         |
+    # // | RaList                     Method     System.Object RaList()                       |
+    # // | Refresh                    Method     void Refresh()                               |
+    # // | RefreshAdapterList         Method     System.Object[] RefreshAdapterList()         |
+    # // | RemoveWifiHandle           Method     void RemoveWifiHandle(System.IntPtr CH)      |
+    # // | RemoveWifiProfile          Method     void RemoveWifiProfile(string PN)            |
+    # // | RsAsync                    Method     System.Object[] RsAsync()                    |
+    # // | RsList                     Method     System.Object RsList()                       |
+    # // | RxAsync                    Method     System.Object[] RxAsync()                    |
+    # // | RxStatus                   Method     System.Object RxStatus()                     |
+    # // | Scan                       Method     void Scan()                                  |
+    # // | Select                     Method     void Select(string D)                        |
+    # // | Task                       Method     System.Object Task()                         |
+    # // | ToString                   Method     string ToString()                            |
+    # // | Unselect                   Method     void Unselect()                              |
+    # // | Update                     Method     void Update()                                |
+    # // | WifiConnectionParameter    Method     System.Object WifiConnectionParameter(st     |
+    # // | WiFiProfileInfo            Method     System.Object WiFiProfileInfo(string PN,     |
+    # // | WiFiReasonCode             Method     string WiFiReasonCode(System.IntPtr RC)      |
+    # // | Win32Exception             Method     string Win32Exception(uint32 RC)             |
+    # // | WlanCloseHandle            Method     System.Object WlanCloseHandle(System.Int     |
+    # // | WlanConnect                Method     void WlanConnect(System.IntPtr HCH, guid     |
+    # // | WlanConnectionFlag         Method     System.Object WlanConnectionFlag(string      |
+    # // | WlanConnectionMode         Method     System.Object WlanConnectionMode(string      |
+    # // | WlanConnectionParams       Method     System.Object WlanConnectionParams()         |
+    # // | WlanDeleteProfile          Method     void WlanDeleteProfile(System.IntPtr CH,     |
+    # // | WlanDisconnect             Method     void WlanDisconnect(System.IntPtr HCH, g     |
+    # // | WlanDot11BssType           Method     System.Object WlanDot11BssType(string D)     |
+    # // | WlanEnumInterfaces         Method     System.Object WlanEnumInterfaces(System.     |
+    # // | WlanFreeMemory             Method     void WlanFreeMemory(System.IntPtr P)         |
+    # // | WlanGetProfile             Method     System.Object WlanGetProfile(System.IntP     |
+    # // | WlanGetProfileList         Method     System.Object WlanGetProfileList(System.     |
+    # // | WlanGetProfileListFromPtr  Method     System.Object[] WlanGetProfileListFromPt     |
+    # // | WlanInterfaceInfo          Method     System.Object WlanInterfaceInfo(System.O     |
+    # // | WlanInterfaceList          Method     System.Object WlanInterfaceList(System.I     |
+    # // | WlanOpenHandle             Method     System.Object WlanOpenHandle(uint32 CV,      |
+    # // | WlanProfileInfoObject      Method     System.Object WlanProfileInfoObject()        |
+    # // | WlanReasonCodeToString     Method     System.Object WlanReasonCodeToString(uin     |
+    # // | WlanSetProfile             Method     System.Object WlanSetProfile(uint32 CH,      |
+    # // | XmlTemplate                Method     System.Object XmlTemplate(uint32 Type)       |
+    # // | Adapters                   Property   System.Object Adapters {get;set;}            |
+    # // | Connected                  Property   System.Object Connected {get;set;}           |
+    # // | List                       Property   System.Object List {get;set;}                |
+    # // | Output                     Property   System.Object Output {get;set;}              |
+    # // | Radios                     Property   System.Object Radios {get;set;}              |
+    # // | Request                    Property   System.Object Request {get;set;}             |
+    # // | Selected                   Property   System.Object Selected {get;set;}            |
+    # // |                                                                                    |
+    # // | PS Prompt:\>                                                                       |
+    # // |____________________________________________________________________________________|
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+
+#---------------------------------------------------------------------------------------------------------------
+@'
+
+'@ | Write-Comment -I 4 | Set-Clipboard
+#>
