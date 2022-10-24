@@ -86,6 +86,15 @@ Function New-MockZip
             }
             Return (($Rank/$This.Box.Count)*100)
         }
+        [Hashtable] Progress([String]$Activity,[UInt32]$Rank)
+        {
+            Return [Hashtable]@{
+
+                Activity = $Activity
+                Status   = $This.Status($Rank)
+                Percent  = $This.Percent($Rank)
+            }
+        }
         MockBook([String]$Path,[Object]$Box)
         {
             # // __________________________________________
@@ -129,7 +138,9 @@ Function New-MockZip
             # // | Create the book by casting individual pages to hashtable $Book |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            Write-Progress -Activity "Generating [~]" -Status $This.Status(0) -PercentComplete 0
+            $Splat = $This.Progress("Generating [~]",0)
+            Write-Progress @Splat
+
             ForEach ($X in 0..($This.Box.Count-1))
             {
                 $Page    = @{ }
@@ -155,10 +166,12 @@ Function New-MockZip
 
                 If ($X -in $Slot)
                 {
-                    Write-Progress -Activity "Generating [~]" -Status $This.Status($X) -PercentComplete $This.Percent($X)
+                    $Splat = $This.Progress("Generating [~]",$X)
+                    Write-Progress @Splat
                 }
             }
-            Write-Progress -Activity "Generating [~]" -Status $This.Status(100) -Complete
+            $Splat = $This.Progress("Generating [~]",100)
+            Write-Progress @Splat -Complete
 
             # // _________________________________________________________
             # // | Save the hashtable content to the array, $This.Output |
