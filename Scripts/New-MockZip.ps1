@@ -46,11 +46,22 @@ Function New-MockZip
     {
         [Object] $Base64
         [UInt32] $Count
-        [UInt32] $Length
-        [UInt32] $Width
+        [Object] $Box
         [String] $Path
         [Object] $Output
-        MockBook([String]$Path,[UInt32]$Count,[UInt32]$Length,[UInt32]$Width)
+        [String] Status([UInt32]$Rank)
+        {
+            Return "({0:d$($This.Box.Depth)}/{1})" -f $Rank, $This.Box.Count
+        }
+        [UInt32] Percent([UInt32]$Rank)
+        {
+            If ($Rank -eq 0)
+            {
+                $Rank = $Rank + 1
+            }
+            Return (($Rank/$This.Box.Count)*100)
+        }
+        MockBook([String]$Path,[Object]$Box)
         {
             # // __________________________________________
             # // | Cast all Base64 characters to an array |
@@ -58,17 +69,43 @@ Function New-MockZip
 
             $This.Base64 = 065..090+097..122+048..057+043,047 | % { [Char]$_ }
             $This.Path   = $Path
-            $This.Count  = $Count
-            $This.Length = $Length
-            $This.Width  = $Width
-            $Book        = @{ }
+            $This.Box    = $Box
+
+            # // _______________________________________________________
+            # // | Divides the workload cleanly for process indication |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $Slot = Switch ($This.Box.Count)
+            {
+                {$_ -lt 100}
+                {
+                    $Div   = [Math]::Round(100/$This.Box.Count,[MidpointRounding]::AwayFromZero)
+                    $Step  = [Math]::Round(100/$Div)
+                    0..($Div-1) | % { $_ * $Step }
+                }
+                {$_ -eq 100}
+                {
+                    $Div   = 100
+                    $Step  = 1
+                    0..99 | % { $_ * $Step }
+                    
+                }
+                {$_ -gt 100}
+                {
+                    $Div   = $This.Box.Count/100
+                    0..99 | % { [Math]::Round($_ * $Div) }
+                }
+            }
+
+            $Slot[-1]      = $This.Box.Count
+            $Book          = @{ }
 
             # // __________________________________________________________________
             # // | Create the book by casting individual pages to hashtable $Book |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            Write-Progress -Activity Writing -Status "(000/100)" -PercentComplete 0
-            ForEach ($X in 0..($This.Count-1))
+            Write-Progress -Activity "Generating [~]" -Status $This.Status(0) -PercentComplete 0
+            ForEach ($X in 0..($This.Box.Count-1))
             {
                 $Page    = @{ }
              
@@ -76,7 +113,7 @@ Function New-MockZip
                 # // | Create the page by casting individual lines to hashtable $Page |
                 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-                ForEach ($I in 0..($This.Length-1))
+                ForEach ($I in 0..($This.Box.Length-1))
                 {
                     # // __________________________________________________
                     # // | Create the line by randomly generating numbers |
@@ -88,9 +125,12 @@ Function New-MockZip
 
                 $Book.Add($Book.Count,[MockPage]::New($Book.Count,$Page[0..($Page.Count-1)]))
 
-                Write-Progress -Activity Writing -Status ("({0:d3}/100" -f $X) -PercentComplete $X
+                If ($X -in $Slot)
+                {
+                    Write-Progress -Activity "Generating [~]" -Status $This.Status($X) -PercentComplete $This.Percent($X)
+                }
             }
-            Write-Progress -Activity Writing -Status "(100/100)" -Complete
+            Write-Progress -Activity "Generating [~]" -Status $This.Status(100) -Complete
 
             # // _________________________________________________________
             # // | Save the hashtable content to the array, $This.Output |
@@ -102,9 +142,30 @@ Function New-MockZip
         {
             $Hash = @{ }
             
-            0..($This.Width-1) | % { $Hash.Add($Hash.Count,(Get-Random -Maximum 63)) }
+            0..($This.Box.Width-1) | % { $Hash.Add($Hash.Count,(Get-Random -Maximum 63)) }
 
             Return $Hash[0..($Hash.Count-1)]
+        }
+    }
+
+    # // _________________________________________________
+    # // | Maintains the dimensions of the output object |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class MockBox
+    {
+        [UInt32] $Factor
+        [UInt32] $Count
+        [UInt32] $Depth
+        [UInt32] $Length
+        [UInt32] $Width
+        MockBox([UInt32]$Factor,[UInt32]$Count,[UInt32]$Length,[Uint32]$Width)
+        {
+            $This.Factor = $Factor
+            $This.Count  = $Count
+            $This.Depth  = ([String]$This.Count).Length
+            $This.Length = $Length
+            $This.Width  = $Width
         }
     }
 
@@ -118,6 +179,7 @@ Function New-MockZip
         [String] $Path
         [String] $Fullname
         [UInt32] $Exists
+        [Object] $Box
         [Object] $Archive
         [Object] $Book
         MockZip([String]$Path,[UInt32]$Factor,[UInt32]$Count,[UInt32]$Length,[UInt32]$Width)
@@ -174,6 +236,7 @@ Function New-MockZip
             $This.Name       = [DateTime]::Now.ToString("yyyy_MMdd_HHmmss")
             $This.Path       = "{0}\{1}" -f $Path, $This.Name
             $This.Fullname   = "{0}\{1}.zip" -f $Path, $This.Name
+            $This.Box        = $This.GenerateBox($Factor,$Count,$Length,$Width)
 
             # // ______________________
             # // | Establish new base |
@@ -185,22 +248,65 @@ Function New-MockZip
             # // | Establish random data to insert into zip file |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            $This.Book       = [MockBook]::New($This.Path,$Count,$Length,$Width)
+            $This.Book       = $This.GenerateBook()
 
             # // _________________________________________________
             # // | Create the zip file, and then inject the book |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            $This.NewZip()
-            $This.InjectBook($Factor)
+            $This.Create()
+            $This.Open()
+            $This.InjectBook()
 
             # // _____________________
             # // | Save the zip file |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            $This.Archive.Dispose()
+            $This.Close()
+            $This.RemoveBase()
+        }
+        [Object] GenerateBox([UInt32]$Factor,[UInt32]$Count,[UInt32]$Length,[UInt32]$Width)
+        {
+            Return [MockBox]::New($Factor,$Count,$Length,$Width)
+        }
+        [Object] GenerateBook()
+        {
+            Return [MockBook]::New($This.Path,$This.Box)
+        }
+        InjectBook()
+        {
+            If (!$This.Book)
+            {
+                Throw "Must create a book first..."
+            }
 
-            $This.Path
+            $Depth = ([String]$This.Book.Output.Count).Length
+            ForEach ($X in 0..($This.Book.Output.Count-1))
+            {
+                $Item      = $This.Book.Output[$X]
+                $Item.Path = "{0}\{1:d$Depth}.txt" -f $This.Path, $X
+                $Hash      = @{ }
+
+                Switch ($This.Box.Factor)
+                {
+                    {$_ -gt 1}
+                    {
+                        ForEach ($I in 0..($This.Box.Factor-1))
+                        {
+                            $Hash.Add($I,$This.Book.Output[$X].Content)
+                        }
+                    }
+                    {$_ -eq 1}
+                    {
+                        $Hash.Add(0,$This.Book.Output[$X].Content)
+                    }
+                }
+
+                $Content   = $Hash[0..($Hash.Count-1)]
+                [System.IO.File]::WriteAllLines($Item.Path,$Content)
+
+                $This.AddFile($Item.Path)
+            }
         }
         CheckBase()
         {
@@ -212,40 +318,66 @@ Function New-MockZip
             If (!$This.Exists)
             {
                 [System.IO.Directory]::CreateDirectory($This.Path)
+                Write-Host "Created [+] Directory: [$($This.Path)]"
                 $This.Exists = 1
             }
         }
-        NewZip()
+        RemoveBase()
         {
-            [System.IO.Compression.ZipFile]::Open($This.Fullname,"Create").Dispose()
-            $This.Archive  = [System.IO.Compression.ZipFile]::Open($This.Fullname,"Update")
-        }
-        InjectBook([UInt32]$Factor)
-        {
-            $Depth = ([String]$This.Book.Output.Count).Length
-            ForEach ($X in 0..($This.Book.Output.Count-1))
+            $This.CheckBase()
+            If ($This.Exists)
             {
-                $Item      = $This.Book.Output[$X]
-                $Item.Path = "{0}\{1:d$Depth}.txt" -f $This.Path, $X
-                $Hash      = @{ }
-
-                If ($Factor -gt 1)
-                {
-                    ForEach ($I in 0..($Factor-1))
-                    {
-                        $Hash.Add($I,$This.Book.Output[$X].Content)
-                    }
-                }
-                If ($Factor -eq 1)
-                {
-                    $Hash.Add(0,$This.Book.Output[$X].Content)
-                }
-
-                $Content   = $Hash[0..($Hash.Count-1)]
-                [System.IO.File]::WriteAllLines($Item.Path,$Content)
-
-                $This.AddFile($Item.Path)
+                [System.IO.Directory]::Delete($This.Path)
+                Write-Host "Removed [+] Directory: [$($This.Path)]"
+                $This.Exists = 0
             }
+        }
+        Create()
+        {
+            If ([System.IO.File]::Exists($This.FullName))
+            {
+                Throw "Exception [!] File: [$($This.Fullname)] already exists"
+            }
+
+            $Item = [System.IO.Compression.ZipFile]::Open($This.Fullname,"Create")
+            
+            If (![System.IO.File]::Exists($This.Fullname))
+            {
+                Throw "Exception [!] File: [$($This.Fullname)] was NOT created"
+            }
+
+            Write-Host "Created [+] File: [$($This.Fullname)]"
+            $Item.Dispose()
+        }
+        Open()
+        {
+            If (![System.IO.File]::Exists($This.Fullname))
+            {
+                Throw "Exception [!] File: [$($This.Fullname)] does not exist"
+            }
+
+            $This.Archive = [System.IO.Compression.ZipFile]::Open($This.Fullname,"Update")
+            
+            If (!$This.Archive)
+            {
+                Throw "Exception [!] File: [$($This.Fullname)] could not be opened"
+            }
+
+            Write-Host "Opened [+] File: [$($This.Fullname)]"
+        }
+        Close()
+        {
+            If (!$This.Archive)
+            {
+                Throw "Exception [!] File: [$($This.Fullname)] is not yet opened"
+            }
+
+            Write-Host "Closing [~] File: [$($This.Fullname)]"
+            $This.Archive.Dispose()
+
+            $This.Archive = $Null
+
+            Write-Host "Closed [+] File: [$($This.Fullname)]"
         }
         AddFile([String]$Path)
         {
