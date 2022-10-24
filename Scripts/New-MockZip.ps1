@@ -119,8 +119,11 @@ Function New-MockZip
                     # // | Create the line by randomly generating numbers |
                     # // | and using the variable $This.Base64            |
                     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-                    $Page.Add($Page.Count,@($This.Random() | % { $This.Base64[$_] }) -join '')
+                    
+                    $Random = $This.Random()
+                    $Line   = $This.Base64[$Random] -join ''
+                    
+                    $Page.Add($Page.Count,$Line)
                 }
 
                 $Book.Add($Book.Count,[MockPage]::New($Book.Count,$Page[0..($Page.Count-1)]))
