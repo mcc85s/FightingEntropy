@@ -469,9 +469,13 @@ Function Get-ThreadController
         }
         EndInvoke()
         {
-            $This.Status.Finalize()
-            $This.Time           = $This.Status.Span
-            $This.Complete       = 1
+            If ($This.Complete -ne 1)
+            {
+                $This.Status.Finalize()
+                $This.Time       = $This.Status.Span
+                $This.Complete   = 1
+            }
+            
             $This.Output         = $This.PowerShell.EndInvoke($This.Handle)
             $This.PowerShell.Dispose()
         }
@@ -485,11 +489,22 @@ Function Get-ThreadController
         }
         IsComplete()
         {
-            $This.Time           = $This.Status.Elapsed()
-            $This.Status.Current()
-            If ($This.Handle.IsCompleted)
+            If ($This.Complete -eq 0)
             {
-                $This.EndInvoke()
+                Switch ([UInt32]$This.Handle.IsCompleted)
+                {
+                    0 
+                    { 
+                        $This.Time         = $This.Status.Elapsed()
+                        $This.Status.Current()
+                    }
+                    1
+                    {
+                        $This.Time         = $This.Status.Elapsed()
+                        $This.Status.Finalize()
+                        $This.Complete     = 1
+                    }
+                }
             }
         }
         [Object] Config()
@@ -508,11 +523,11 @@ Function Get-ThreadController
 
     Class ThreadSlot
     {
-        [UInt32]    $Index
-        [String]     $Name
-        [UInt32]    $Count
-        [Object]  $Factory
-        [Object]   $Status
+        [UInt32]           $Index
+        [String]            $Name
+        [UInt32]           $Count
+        [Object]         $Factory
+        [Object]          $Status
         [Object]            $Time
         [Object]          $Thread
         Hidden [UInt32] $Complete
@@ -592,18 +607,27 @@ Function Get-ThreadController
         }
         Query()
         {
-            ForEach ($Thread in $This.Thread)
+            Try
             {
-                If ($Thread.Handle.IsCompleted -and $Thread.Complete -eq 0)
+                If ($This.Complete -eq 0 -and $False -in $This.Thread.Handle.IsCompleted)
                 {
-                    $Thread.IsComplete()
-                    $This.Update(1,"Complete [+] Thread[$($Thread.Index)]")
+                    ForEach ($Thread in $This.Thread)
+                    {
+                        If ($Thread.Handle.IsCompleted -and $Thread.Complete -eq 0)
+                        {
+                            $Thread.IsComplete()
+                            $This.Update(1,"Complete [+] Thread[$($Thread.Index)]")
+                        }
+                    }
                 }
-
-                If ($False -notin $This.Thread.Handle.IsCompleted)
+                Else
                 {
                     $This.Complete = 1
                 }
+            }
+            Catch
+            {
+                
             }
         }
         AddThread([UInt32]$Slot,[UInt32]$Index,[Object]$Factory)
