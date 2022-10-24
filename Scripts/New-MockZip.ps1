@@ -406,7 +406,12 @@ Function New-MockZip
         AddFile([String]$Path)
         {
             $ID = $Path | Split-Path -Leaf
-            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($This.Archive,$Path,$ID,[System.IO.Compression.CompressionLevel]::Fastest) | Out-Null
+            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+                $This.Archive,
+                $Path,
+                $ID,
+                [System.IO.Compression.CompressionLevel]::Fastest
+            ) | Out-Null
             [System.IO.File]::Delete($Path)
         }
     }
