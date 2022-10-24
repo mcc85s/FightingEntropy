@@ -11,7 +11,12 @@ Add-Type -AssemblyName System.IO.Compression, System.IO.Compression.Filesystem
 
 Function New-MockZip
 {
-    [CmdLetBinding()]Param([Parameter(Mandatory,Position=0)][String]$Path)
+    [CmdLetBinding()]Param(
+    [Parameter(Mandatory,Position=0)][String]$Path,
+    [Parameter(Position=1)][UInt32]$Factor=1000,
+    [Parameter(Position=2)][UInt32]$Count=100,
+    [Parameter(Position=3)][UInt32]$Length=100,
+    [Parameter(Position=4)][UInt32]$Width=120)
 
     # // _____________________________________________
     # // | A single page of random Base64 characters |
@@ -40,9 +45,12 @@ Function New-MockZip
     Class MockBook
     {
         [Object] $Base64
+        [UInt32] $Count
+        [UInt32] $Length
+        [UInt32] $Width
         [String] $Path
         [Object] $Output
-        MockBook([String]$Path)
+        MockBook([String]$Path,[UInt32]$Count,[UInt32]$Length,[UInt32]$Width)
         {
             # // __________________________________________
             # // | Cast all Base64 characters to an array |
@@ -50,6 +58,9 @@ Function New-MockZip
 
             $This.Base64 = 065..090+097..122+048..057+043,047 | % { [Char]$_ }
             $This.Path   = $Path
+            $This.Count  = $Count
+            $This.Length = $Length
+            $This.Width  = $Width
             $Book        = @{ }
 
             # // __________________________________________________________________
@@ -57,7 +68,7 @@ Function New-MockZip
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
             Write-Progress -Activity Writing -Status "(000/100)" -PercentComplete 0
-            ForEach ($X in 0..99)
+            ForEach ($X in 0..($This.Count-1))
             {
                 $Page    = @{ }
              
@@ -65,14 +76,14 @@ Function New-MockZip
                 # // | Create the page by casting individual lines to hashtable $Page |
                 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-                ForEach ($I in 0..99)
+                ForEach ($I in 0..($This.Length-1))
                 {
                     # // __________________________________________________
                     # // | Create the line by randomly generating numbers |
                     # // | and using the variable $This.Base64            |
                     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-                    $Page.Add($Page.Count,@($this.Random() | % { $This.Base64[$_] }) -join '')
+                    $Page.Add($Page.Count,@($This.Random() | % { $This.Base64[$_] }) -join '')
                 }
 
                 $Book.Add($Book.Count,[MockPage]::New($Book.Count,$Page[0..($Page.Count-1)]))
@@ -91,7 +102,7 @@ Function New-MockZip
         {
             $Hash = @{ }
             
-            0..119 | % { $Hash.Add($Hash.Count,(Get-Random -Maximum 63)) }
+            0..($This.Width-1) | % { $Hash.Add($Hash.Count,(Get-Random -Maximum 63)) }
 
             Return $Hash[0..($Hash.Count-1)]
         }
@@ -109,7 +120,7 @@ Function New-MockZip
         [UInt32] $Exists
         [Object] $Archive
         [Object] $Book
-        MockZip([String]$Path)
+        MockZip([String]$Path,[UInt32]$Factor,[UInt32]$Count,[UInt32]$Length,[UInt32]$Width)
         {
             # // _____________________________
             # // | Test for the initial path |
@@ -118,6 +129,42 @@ Function New-MockZip
             If (![System.IO.Directory]::Exists($Path))
             {
                 Throw "Invalid Path"
+            }
+
+            If ($Factor -le 0)
+            {
+                # // __________________________________________________________________________________________________
+                # // | Factor determines how many times each individual page's content is repeated in the output file |
+                # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                Throw "Exception [!] Factor must be higher than 0, suggested: 1000"
+            }
+
+            If ($Count -le 1)
+            {
+                # // ______________________________________________________________
+                # // | Count determines how many individual pages will be written |
+                # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                Throw "Exception [!] Count must be higher than 1, suggested: 100"
+            }
+
+            If ($Length -le 1)
+            {
+                # // _____________________________________________________________
+                # // | Length determines how many lines will be written per page |
+                # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                Throw "Exception [!] Length must be higher than 1, suggested: 100"
+            }
+
+            If ($Width -le 1)
+            {
+                # // __________________________________________________________
+                # // | Width determines how many characters each line will be |
+                # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                Throw "Exception [!] Width must be higher than 1, suggested: 120"
             }
 
             # // ___________________________________________________
@@ -138,20 +185,22 @@ Function New-MockZip
             # // | Establish random data to insert into zip file |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            $This.Book       = [MockBook]::New($This.Path)
+            $This.Book       = [MockBook]::New($This.Path,$Count,$Length,$Width)
 
             # // _________________________________________________
             # // | Create the zip file, and then inject the book |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
             $This.NewZip()
-            $This.InjectBook()
+            $This.InjectBook($Factor)
 
             # // _____________________
             # // | Save the zip file |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            $This.Dispose()
+            $This.Archive.Dispose()
+
+            $This.Path
         }
         CheckBase()
         {
@@ -171,7 +220,7 @@ Function New-MockZip
             [System.IO.Compression.ZipFile]::Open($This.Fullname,"Create").Dispose()
             $This.Archive  = [System.IO.Compression.ZipFile]::Open($This.Fullname,"Update")
         }
-        InjectBook()
+        InjectBook([UInt32]$Factor)
         {
             $Depth = ([String]$This.Book.Output.Count).Length
             ForEach ($X in 0..($This.Book.Output.Count-1))
@@ -179,9 +228,17 @@ Function New-MockZip
                 $Item      = $This.Book.Output[$X]
                 $Item.Path = "{0}\{1:d$Depth}.txt" -f $This.Path, $X
                 $Hash      = @{ }
-                ForEach ($I in 0..999)
+
+                If ($Factor -gt 1)
                 {
-                    $Hash.Add($I,$This.Book.Output[$X].Content)
+                    ForEach ($I in 0..($Factor-1))
+                    {
+                        $Hash.Add($I,$This.Book.Output[$X].Content)
+                    }
+                }
+                If ($Factor -eq 1)
+                {
+                    $Hash.Add(0,$This.Book.Output[$X].Content)
                 }
 
                 $Content   = $Hash[0..($Hash.Count-1)]
@@ -198,5 +255,5 @@ Function New-MockZip
         }
     }
 
-    [MockZip]::New($Path)
+    [MockZip]::New($Path,$Factor,$Count,$Length,$Width)
 }
