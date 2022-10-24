@@ -210,11 +210,11 @@ Function Get-EventLogProject
         {
             $Item            = $This.Index[$Token/$This.Segment]
             $Item.Time       = $This.Time()
-            If ($Item.Slot -eq 0)
+            If ($Item.Index -eq 0)
             {
                 $Item.Remain = [Timespan]::FromTicks(1)
             }
-            If ($Item.Slot -ne 0) 
+            If ($Item.Index -ne 0) 
             { 
                 $Item.Remain = ($Item.Time.TotalSeconds / $Item.Percent) * (100-$Item.Percent) | % { [Timespan]::FromSeconds($_) } 
             }
