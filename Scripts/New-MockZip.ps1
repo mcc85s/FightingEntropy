@@ -18,6 +18,31 @@ Function New-MockZip
     [Parameter(Position=3)][UInt32]$Length=100,
     [Parameter(Position=4)][UInt32]$Width=120)
 
+    # // _________________________________________________
+    # // | Maintains the dimensions of the output object |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class MockBox
+    {
+        [UInt32] $Factor
+        [UInt32] $Count
+        [UInt32] $Depth
+        [UInt32] $Length
+        [UInt32] $Width
+        MockBox([UInt32]$Factor,[UInt32]$Count,[UInt32]$Length,[Uint32]$Width)
+        {
+            $This.Factor = $Factor
+            $This.Count  = $Count
+            $This.Depth  = ([String]$This.Count).Length
+            $This.Length = $Length
+            $This.Width  = $Width
+        }
+        [String] ToString()
+        {
+            Return ($This.PSObject.Properties | % { "{0}: [{1}]" -f $_.Name, $_.Value }) -join ', '            
+        }
+    }
+    
     # // _____________________________________________
     # // | A single page of random Base64 characters |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -34,7 +59,7 @@ Function New-MockZip
         }
         [String] ToString()
         {
-            Return $This.Content -join "`n"
+            Return "<[MockPage]>"
         }
     }
 
@@ -119,10 +144,10 @@ Function New-MockZip
                     # // | Create the line by randomly generating numbers |
                     # // | and using the variable $This.Base64            |
                     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-                    
+
                     $Random = $This.Random()
                     $Line   = $This.Base64[$Random] -join ''
-                    
+
                     $Page.Add($Page.Count,$Line)
                 }
 
@@ -149,26 +174,9 @@ Function New-MockZip
 
             Return $Hash[0..($Hash.Count-1)]
         }
-    }
-
-    # // _________________________________________________
-    # // | Maintains the dimensions of the output object |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-    Class MockBox
-    {
-        [UInt32] $Factor
-        [UInt32] $Count
-        [UInt32] $Depth
-        [UInt32] $Length
-        [UInt32] $Width
-        MockBox([UInt32]$Factor,[UInt32]$Count,[UInt32]$Length,[Uint32]$Width)
+        [String] ToString()
         {
-            $This.Factor = $Factor
-            $This.Count  = $Count
-            $This.Depth  = ([String]$This.Count).Length
-            $This.Length = $Length
-            $This.Width  = $Width
+            Return "<[MockBook]>"
         }
     }
 
