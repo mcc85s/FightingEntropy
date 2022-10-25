@@ -9,7 +9,7 @@
 | ![logo] | <b>Secure Digits Plus (π) LLC</b> | [FightingEntropy(π)] | Beginning the fight against ID theft and cybercrime |
 
 # About
-[FightingEntropy(π)] is a modification for Windows PowerShell that is meant for various tasks related to
+**[FightingEntropy(π)]** is a modification for **Windows PowerShell** that is meant for various tasks related to:
 - system administration
 - networking
 - virtualization
@@ -17,7 +17,7 @@
 - graphic design
 - system management/maintenance
 
-This module is rather experimental and incorporates a lot of moving parts, so it has many areas of development.
+This module is rather _experimental_ and incorporates a lot of moving parts, so it has many areas of development.
 The end goal of this module, is to provide protection against:
 - identity theft
 - cybercriminals
@@ -30,7 +30,7 @@ The end goal of this module, is to provide protection against:
 Many of the tools in the wild are able to be circumvented by some of these hackers and cybercriminals.
 If you don't believe me...? That's fine. That's why [this link to a particular website about a particular event](https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach), exists.
 
-[FightingEntropy(π)] is meant to extend many of the capabilities that come with Windows.
+**[FightingEntropy(π)]** is meant to extend many of the capabilities that come with Windows.
 
 # Current
 | Version    | Date       |
@@ -63,7 +63,7 @@ These various videos demonstrate some portion of [FightingEntropy(π)]
 |     8 | 06/2021 | Windows Image Extraction               | https://youtu.be/G10EuwlNAyo |
 |     9 | 08/2021 | Flight Test Part 1                     | https://drive.google.com/file/d/1qdS_UVcLTsxHFCpuwK16NQs0xJL7fv0W |
 |    10 | 08/2021 | Flight Test Part 2                     | https://youtu.be/vg359UlYVp8 |
-|    11 | 10/2021 | Advanced Domain Controller Promotion   | https://youtu.be/O8A2PDfQOBs |
-|    12 | 05/2019 | Hybrid | Desired State Controller      | https://youtu.be/C8NYaaqJAlI |
-|    13 | 11/2019 | Methodologies                          | https://youtu.be/bZuSgBK36CE |
-|    14 | 08/2019 | Education/Exhibition Program Design    | https://youtu.be/v6RrrzR5v2E |
+|    11 | 09/2021 | cimdb                                  | https://youtu.be/vA8_HLZ--mQ |
+|    11 | 05/2019 | Hybrid | Desired State Controller      | https://youtu.be/C8NYaaqJAlI |
+|    12 | 11/2019 | Methodologies                          | https://youtu.be/bZuSgBK36CE |
+|    13 | 08/2019 | Education/Exhibition Program Design    | https://youtu.be/v6RrrzR5v2E |
