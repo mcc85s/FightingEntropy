@@ -1,3 +1,4 @@
+
 Function FightingEntropy
 {
     # // _________________________________________________________________________________________
@@ -91,12 +92,30 @@ Function FightingEntropy
         
     Class ModuleThemeStack
     {
-        [Object]         $Face
-        [Object]        $Track
-        ModuleThemeStack()
+        Hidden [Object]  $Face
+        Hidden [Object] $Track
+        ModuleThemeStack([String]$Message)
         {
             $This.Face   = [ModuleThemeFace]::New().String
             $This.Reset()
+            $This.Insert($Message)
+            $This.Draw()
+        }
+        ModuleThemeStack([UInt32]$Color,[String]$Message)
+        {
+            $Palette = Switch ($Color)
+            {
+                0 { 10,12,15,00 }
+                1 { 10,02,15,00 }
+                2 { 14,06,15,00 }
+                3 { 12,04,15,00 }
+                4 { 11,03,15,00 }
+                5 { 11,06,15,00 }
+            }
+            $This.Face  = [ModuleThemeFace]::New().String
+            $This.Reset()
+            $This.Insert($Message)
+            $This.Draw($Palette)
         }
         Add([String]$Mask,[String]$Fore)
         {
@@ -122,7 +141,7 @@ Function FightingEntropy
                 }
                 $Hash.Add($Hash.Count,$Item)
             }
-            $This.Track  += [ModuleThemeTrack]::New($This.Output.Count,$Hash[0..($Hash.Count-1)])
+            $This.Track  += [ModuleThemeTrack]::New($This.Track.Count,$Hash[0..($Hash.Count-1)])
         }
         [Void] Reset()
         {
@@ -301,14 +320,14 @@ Function FightingEntropy
 
     Class ModuleFile
     {
-        [UInt32] $Index
-        [String] $Type
-        [String] $Name
-        [Object] $Hash
-        [String] $Fullname
-        [UInt32] $Exists
-        [String] $Source
-        [Object] $Content
+        Hidden [UInt32]    $Index
+        [String]            $Type
+        [String]            $Name
+        [Object]            $Hash
+        [UInt32]          $Exists
+        Hidden [String] $Fullname
+        Hidden [String]   $Source
+        Hidden [Object]  $Content
         ModuleFile([UInt32]$Index,[UInt32]$Type,[String]$Name,[String]$Hash)
         {
             $This.Index  = $Index
@@ -400,7 +419,6 @@ Function FightingEntropy
             {
                 Throw "Exception [!] An unspecified error has occurred"
             }
-            
         }
         [String] ToString()
         {
@@ -578,6 +596,10 @@ Function FightingEntropy
 
             Return $Out -join "`n"
         }
+        [Object] List()
+        {
+            Return $This.Output
+        }
         [String] ToString()
         {
             Return "<FightingEntropy.ModuleManifest>"
@@ -668,6 +690,7 @@ Function FightingEntropy
         [String] $Type
         [String] $Name
         [String] $Fullname
+        [UInt32] $Exists
         Hidden [String] $Path
         ModuleRootProperty([String]$Name,[UInt32]$Type,[String]$Fullname)
         {
@@ -675,6 +698,33 @@ Function FightingEntropy
             $This.Name     = $Name
             $This.Fullname = $Fullname
             $This.Path     = $Fullname
+            $This.TestPath()
+        }
+        TestPath()
+        {
+            $This.Exists   = Test-Path $This.Path
+        }
+        Create()
+        {
+            $This.TestPath()
+
+            If ($This.Exists)
+            {
+                Throw "Exception [!] Item already exists, overwrite with another method"
+            }
+
+            New-Item $This.Fullname -ItemType $This.Type -Verbose
+        }
+        Delete()
+        {
+            $This.TestPath()
+
+            If (!$This.Exists)
+            {
+                Throw "Exception [!] Cannot delete an item that does not exist"
+            }
+
+            Remove-Item $This.Fullname -Recurse -Verbose -Confirm:$False
         }
         [String] ToString()
         {
@@ -690,7 +740,6 @@ Function FightingEntropy
     {
         [Object] $Registry
         [Object] $Resource
-        [Object]     $Root
         [Object]   $Module
         [Object]     $File
         [Object] $Manifest
@@ -698,53 +747,25 @@ Function FightingEntropy
         {
             $This.Registry = $This.Set(0,0,"HKLM:\Software\Policies\Secure Digits Plus LLC\FightingEntropy\$Version")
             $This.Resource = $This.Set(1,0,"$Resource")
-            $This.Root     = $This.Set(2,0,"$Path")
-            $This.Module   = $This.Set(3,0,"$Path\FightingEntropy")
-            $This.File     = $This.Set(4,1,"$Path\FightingEntropy\FightingEntropy.psm1")
-            $This.Manifest = $This.Set(5,1,"$Path\FightingEntropy\FightingEntropy.psd1")
-
-            $This.Populate()
-        }
-        [Void] Populate()
-        {
-            ForEach ($Branch in $This.Registry.Path, $This.Resource.Path)
-            {
-                ForEach ($Type in "Classes","Control","Functions","Graphics")
-                {
-                    If (!(Test-Path "$Branch\$Type"))
-                    {
-                        New-Item "$Branch\$Type" -ItemType Directory -Verbose
-                    }
-                }
-            }
+            $This.Module   = $This.Set(2,0,"$Path\FightingEntropy")
+            $This.File     = $This.Set(3,1,"$Path\FightingEntropy\FightingEntropy.psm1")
+            $This.Manifest = $This.Set(4,1,"$Path\FightingEntropy\FightingEntropy.psd1")
         }
         [String] Slot([UInt32]$Type)
         {
-            Return @("Registry","Resource","Base","Module","File","Manifest")[$Type]
+            Return @("Registry","Resource","Module","File","Manifest")[$Type]
         }
         [Object] Set([UInt32]$Index,[UInt32]$Type,[String]$Path)
         {
-            If ($Type -ne 1)
-            {
-                $This.TestPath($Path)
-            }
-
             Return [ModuleRootProperty]::New($This.Slot($Index),$Type,$Path)
         }
-        [Void] TestPath ([String]$Path)
+        [Void] Refresh()
         {
-            $Test = @( )
-            ForEach ($Item in $Path -Split "/")
-            {
-                $Test  += $Item
-                $Test -join "/" | % { 
-
-                    If (!(Test-Path $_))
-                    {
-                        New-Item $_ -ItemType Directory -Verbose
-                    }
-                }
-            }
+            $This.List() | % { $_.TestPath() }
+        }
+        [Object[]] List()
+        {
+            Return @( $This.PSObject.Properties.Name | % { $This.$_ } )
         }
         [String] ToString()
         {
@@ -827,7 +848,11 @@ Function FightingEntropy
             $This.Guid     = [Guid]"95023676-e2a6-405c-a9d3-dfa548c4d106"
             $This.Date     = [DateTime]"10/10/2022 17:29:00"
             $This.Version  = [Version]"2022.10.1"
+
+            $This.Write("Loading [~] $($This.Label())")
             $This.Main()
+
+            $This
         }
         ModuleMain([UInt32]$New)
         {
@@ -835,13 +860,28 @@ Function FightingEntropy
             $This.Date     = [DateTime]::Now.ToString("M/d/yyyy HH:mm:ss")
             $This.Version  = [Version]$This.Version
             $This.Version.Build ++
+
+            $This.Write("Loading [~] $($This.Label())")
             $This.Main()
+        }
+        [String] Label()
+        {
+            Return "{0}[{1}]" -f $This.Name, $This.Version.ToString()
         }
         Main()
         {
             $This.OS       = $This.GetOS()
+            Write-Host "[+] Operating System"
+
             $This.Root     = $This.GetRoot()
+            Write-Host "[+] Module Root"
+
             $This.Manifest = $This.GetManifest($This.Source,$This.Root.Resource)
+            Write-Host "[+] Module Manifest"
+        }
+        [Object[]] List()
+        {
+            Return $This.PSObject.Properties.Name | % { $This.$_ }
         }
         [Object] GetOS()
         {
@@ -866,23 +906,75 @@ Function FightingEntropy
         {
             Return [ModuleRegistry]::New($This.Root.Registry)
         }
+        [Void] Write([String]$Message)
+        {        
+            [ModuleThemeStack]::New($Message) > $Null
+        }
+        [Void] Write([UInt32]$Color,[String]$Message)
+        {
+            [ModuleThemeStack]::New($Color,$Message) > $Null
+        }
         [Void] Remove()
         {
-            ForEach ($Item in "Registry","Resource","Module")
+            $This.Write(2,"Removing [~] $($This.Label())")
+
+            ForEach ($Item in "Manifest","File","Module","Resource","Registry")
             {
-                Write-Host "Removing [~] FightingEntropy: [$Item]" -ForegroundColor Yellow
                 Remove-Item $This.Root.$Item -Recurse -Verbose -Confirm:$False
                 If ($? -eq $True)
                 {
-                    Write-Host "Removed [+] FightingEntropy: [$Item]" -ForegroundColor Green
+                    Write-Host "Removed [+] $Item"
+                }
+                Else
+                {
+                    Write-Warning "Missing [+] $Item"
                 }
             }
+
+            $This.Write(2,"Removed [~] $($This.Label())")
         }
         [Void] Install()
         {
-            Write-Host "Installing [~] [FightingEntropy($([char]960))]"
+            $This.Write(1,"Installing [~] $($This.Label())")
+            <#
+            $This.Populate()
+            [Void] Populate()
+            {
+                ForEach ($Branch in $This.Registry.Path, $This.Resource.Path)
+                {
+                    ForEach ($Type in "Classes","Control","Functions","Graphics")
+                    {
+                        If (!(Test-Path "$Branch\$Type"))
+                        {
+                            New-Item "$Branch\$Type" -ItemType Directory -Verbose
+                        }
+                    }
+                }
+            }
+            If ($Type -ne 1)
+            {
+                $This.TestPath($Path)
+            }
+            [Void] TestPath ([String]$Path)
+            {
+                $Test = @( )
+                ForEach ($Item in $Path -Split "/")
+                {
+                    $Test  += $Item
+                    $Test -join "/" | % { 
+
+                        If (!(Test-Path $_))
+                        {
+                            New-Item $_ -ItemType Directory -Verbose
+                        }
+                    }
+                }
+            }
+            #>
         }
     }
 
     [ModuleMain]::New()
 }
+
+# $Module = FightingEntropy
