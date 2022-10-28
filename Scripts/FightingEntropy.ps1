@@ -1,23 +1,10 @@
+
+# // ___________________________________________________________________
+# // | Installs the PowerShell module, [FightingEntropy(π)][2022.10.1] |
+# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
 Function FightingEntropy.Module
 {
-
-    # // ______________________________________________________________________
-    # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
-    # // | Source      : https://www.github.com/mcc85s/FightingEntropy        |
-    # // | Name        : [FightingEntropy(π)]                                 |
-    # // | Description : Beginning the fight against ID theft and cybercrime  |
-    # // | Author      : Michael C. Cook Sr.                                  |
-    # // | Company     : Secure Digits Plus LLC                               |
-    # // | Copyright   : (c) 2022 (mcc85s/mcc85sx/sdp). All rights reserved.  |
-    # // | Guid        : 95023676-e2a6-405c-a9d3-dfa548c4d106                 |
-    # // | Date        : 10/10/2022 5:29:00 PM                                |
-    # // | Version     : 2022.10.0                                            |
-    # // | OS          : [Win32_Client/7.2.7]                                 |
-    # // | Root        : <FightingEntropy.ModuleRoot>                         |
-    # // | Manifest    : <FightingEntropy.ModuleManifest>                     |
-    # // |____________________________________________________________________|
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
     # // _____________________________________________________________________
     # // | This is a 1x[track] x 4[char] chunk of information for Write-Host |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -861,25 +848,21 @@ Function FightingEntropy.Module
         {
             $This.TestPath()
 
-            If ($This.Exists)
+            If (!$This.Exists)
             {
-                Throw "Exception [!] Item already exists, overwrite with another method"
+                New-Item $This.Fullname -ItemType $This.Type -Verbose
+                $This.Exists = 1
             }
-
-            New-Item $This.Fullname -ItemType $This.Type -Verbose
-            $This.Exists = 1
         }
-        Delete()
+        Remove()
         {
             $This.TestPath()
 
-            If (!$This.Exists)
+            If ($This.Exists)
             {
-                Throw "Exception [!] Cannot delete an item that does not exist"
+                Remove-Item $This.Fullname -Recurse -Verbose -Confirm:$False
+                $This.Exists = 0
             }
-
-            Remove-Item $This.Fullname -Recurse -Verbose -Confirm:$False
-            $This.Exists = 0
         }
         [String] ToString()
         {
@@ -1175,11 +1158,13 @@ Function FightingEntropy.Module
             # // | Tests all manifest (folder/file) entries |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
+
             $This.Manifest.Output | % { $_.TestPath(); $_.Item | % TestPath }
+            
             $This.Registry.TestPath()
             If ($This.Registry.Exists)
             {
-                $This.Registry.Property | % { $_.TestPath() }
+                $This.Root.Registry.Exists = 1
             }
             $This.Root.Manifest.TestPath()
             $This.Root.File.TestPath()
@@ -1285,6 +1270,20 @@ Function FightingEntropy.Module
 
                 $This.Root.Manifest.TestPath()
             }
+
+            $Path              = "$Env:Public\Desktop\FightingEntropy.lnk" 
+            $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut($Path)
+        
+            $Item.TargetPath   = "powershell"
+            $Item.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command `"Add-Type -AssemblyName PresentationFramework;Import-Module FightingEntropy;`$Module = Get-FEModule;`$Module`""
+            $Item.Description  = "Beginning the fight against identity theft and cybercriminal activities."
+            $Item.IconLocation = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico"
+            $Item.Save()
+            
+            $bytes             = [System.IO.File]::ReadAllBytes($Path)
+            $bytes[0x15]       = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
+            [System.IO.File]::WriteAllBytes($Path, $bytes)
+
             $This.Write(2,"Installed [+] $($This.Label())")
         }
     }
