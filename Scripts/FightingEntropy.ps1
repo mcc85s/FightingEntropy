@@ -781,6 +781,10 @@ Function FightingEntropy.Module
                 $Folder | % Item
             })
         }
+        [Object] Files([UInt32]$Index)
+        {
+            Return $This.Output[$Index] | % Item
+        }
         [String] ToString()
         {
             Return "<FightingEntropy.Module.Manifest>"
@@ -863,6 +867,7 @@ Function FightingEntropy.Module
             }
 
             New-Item $This.Fullname -ItemType $This.Type -Verbose
+            $This.Exists = 1
         }
         Delete()
         {
@@ -874,6 +879,7 @@ Function FightingEntropy.Module
             }
 
             Remove-Item $This.Fullname -Recurse -Verbose -Confirm:$False
+            $This.Exists = 0
         }
         [String] ToString()
         {
@@ -1018,8 +1024,7 @@ Function FightingEntropy.Module
             }
 
             Remove-Item $This.Path -Recurse -Verbose -Confirm:$False
-
-            $This.TestPath()
+            $This.Exists = 0
         }
         [Object[]] List()
         {
@@ -1171,29 +1176,116 @@ Function FightingEntropy.Module
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
             $This.Manifest.Output | % { $_.TestPath(); $_.Item | % TestPath }
+            $This.Registry.TestPath()
+            If ($This.Registry.Exists)
+            {
+                $This.Registry.Property | % { $_.TestPath() }
+            }
+            $This.Root.Manifest.TestPath()
+            $This.Root.File.TestPath()
+            $This.Root.Module.TestPath()
         }
         [Void] Remove()
         {
             $This.Write(1,"Removing [~] $($This.Label())")
+            
+            # // ___________________________________________
+            # // | Removing [Module]: (Manifest/File/Path) |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            ForEach ($Item in "Manifest","File","Module","Resource","Registry")
+            ForEach ($Item in "Manifest","File","Module")
             {
-                Remove-Item $This.Root.$Item -Recurse -Verbose -Confirm:$False
-                If ($? -eq $True)
-                {
-                    Write-Host "Removed [+] $Item"
-                }
-                Else
-                {
-                    Write-Warning "Missing [+] $Item"
-                }
+                $This.Root.$Item.Remove()
+                Write-Host "Removed [+] $Item"
             }
 
-            $This.Write(0,"Removed [~] $($This.Label())")
+            # // ________________________________________________
+            # // | Removing [Manifest/Registry]: (Content/Path) |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            ForEach ($Item in "Manifest","Registry")
+            {     
+                $This.$Item.Remove()
+                Write-Host "Removed [+] $Item"
+            }
+
+            $This.Write(1,"Removed [~] $($This.Label())")
         }
         [Void] Install()
         {
-            $This.Write(0,"Installing [~] $($This.Label())")
+            $This.Write(2,"Installing [~] $($This.Label())")
+
+            $This.Manifest.Install()
+            $This.Registry.Install()
+            $This.Root.Module.Create()
+            $This.Root.File.Create()
+
+            # PS Core
+            # PS Server
+
+            # // ___________________
+            # // | PowerShell Full |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            If ($This.Resource.Exists)
+            {
+                $Module        = @( )
+                $Module       += "# Downloaded from {0}" -f $This.Source
+                $Module       += "# {0}" -f $This.Resource
+                $Module       += "# {0}" -f $This.Version.ToString()
+                $Module       += "# <Types>"
+                $Assemblies    = "PresentationFramework",
+                                 "System.Runtime.WindowsRuntime",
+                                 "System.IO.Compression", 
+                                 "System.IO.Compression.Filesystem", 
+                                 "System.Windows.Forms"
+                $Assemblies    | % { $Module += "Add-Type -AssemblyName $_" }
+                $Module       += "# <Classes>"
+                $This.Manifest.Files(0) | % {
+            
+                    $Module   += "# <{0}/{1}>" -f $_.Type, $_.Name
+                    $Module   += "# {0}" -f $_.Fullname
+                    If (!$_.Content)
+                    {
+                        $_.GetContent()
+                    }
+                    $Module   += $_.Content
+                    $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
+                }
+                $Module       += "# </Classes>"
+                $Module       += "# <Functions>"
+                $This.Manifest.Files(2)  | % { 
+            
+                    $Module   += "# <{0}/{1}>" -f $_.Type, $_.Name
+                    $Module   += "# {0}" -f $_.Fullname
+                    If (!$_.Content)
+                    {
+                        $_.GetContent()
+                    }
+                    $Module   += $_.Content
+                    $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
+                }
+                $Module       += "# </Functions>"
+                $Module       += "Write-Theme `"Loaded Module [+] FightingEntropy [$($This.Version)]`" @(10,3,15,0)"
+        
+                [System.IO.File]::WriteAllLines($This.Root.File,$Module,[System.Text.UTF8Encoding]$False)
+            
+                @{  
+                    GUID                 = $This.GUID
+                    Path                 = $This.Root.Manifest
+                    ModuleVersion        = $This.Version
+                    Copyright            = $This.Copyright
+                    CompanyName          = $This.Company
+                    Author               = $This.Author
+                    Description          = $This.Description
+                    RootModule           = $This.Root.File
+                    RequiredAssemblies   = $Assemblies
+
+                }                        | % { New-ModuleManifest @_ }
+
+                $This.Root.Manifest.TestPath()
+            }
+            $This.Write(2,"Installed [+] $($This.Label())")
         }
     }
 
