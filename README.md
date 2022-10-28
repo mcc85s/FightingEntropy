@@ -33,9 +33,10 @@ If you don't believe me...? That's fine. That's why [this link to a particular w
 **[FightingEntropy(π)]** is meant to extend many of the capabilities that come with Windows.
 
 # Current
-| Version    | Date       |
-|:-----------|:-----------|
-| 2022.10.0  | 10/10/2022 | 
+| Version    | Date                | Guid                                 |
+|:-----------|:--------------------|:-------------------------------------|
+| 2022.10.0  | 10/10/2022 17:29:00 | 95023676-e2a6-405c-a9d3-dfa548c4d106 |
+| 2022.10.1  | 10/27/2022 20:00:08 | b139e090-db90-4536-95e8-91ea49ab74a9 |
 
 # Instructions
 | Operation  | PowerShell Instructions
