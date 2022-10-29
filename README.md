@@ -65,6 +65,6 @@ These various videos demonstrate some portion of [FightingEntropy(π)]
 |     9 | 08/2021 | Flight Test Part 1                     | https://drive.google.com/file/d/1qdS_UVcLTsxHFCpuwK16NQs0xJL7fv0W |
 |    10 | 08/2021 | Flight Test Part 2                     | https://youtu.be/vg359UlYVp8 |
 |    11 | 09/2021 | cimdb                                  | https://youtu.be/vA8_HLZ--mQ |
-|    11 | 05/2019 | Hybrid | Desired State Controller      | https://youtu.be/C8NYaaqJAlI |
+|    11 | 05/2019 | Hybrid - Desired State Controller      | https://youtu.be/C8NYaaqJAlI |
 |    12 | 11/2019 | Methodologies                          | https://youtu.be/bZuSgBK36CE |
 |    13 | 08/2019 | Education/Exhibition Program Design    | https://youtu.be/v6RrrzR5v2E |
