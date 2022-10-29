@@ -400,7 +400,7 @@ Function FightingEntropy.Module
 
             If (!$This.Exists)
             {
-                New-Item $This.Fullname -ItemType File -Verbose
+                [System.IO.File]::Create($This.Fullname).Dispose()
                 $This.Exists = 1
             }
         }
@@ -410,7 +410,7 @@ Function FightingEntropy.Module
 
             If ($This.Exists)
             {
-                Remove-Item $This.Fullname -Verbose
+                [System.IO.File]::Delete($This.Fullname)
                 $This.Exists = 0
             }
         }
@@ -434,6 +434,11 @@ Function FightingEntropy.Module
             If (!$This.Content)
             {
                 Throw "Exception [!] Content not assigned, cannot (write/set) content."
+            }
+
+            If (!$This.Exists)
+            {
+                Throw "Exception [!] File does not exist."
             }
 
             Try
@@ -530,7 +535,7 @@ Function FightingEntropy.Module
 
             If (!$This.Exists)
             {
-                New-Item $This.Fullname -ItemType Directory -Verbose
+                [System.IO.Directory]::CreateDirectory($This.Fullname)
                 $This.Exists = 1
             }
         }
@@ -540,7 +545,7 @@ Function FightingEntropy.Module
 
             If ($This.Exists)
             {
-                Remove-Item $This.Fullname -Recurse -Verbose -Confirm:$False
+                [System.IO.Directory]::Delete($This.Fullname)
                 $This.Exists = 0
             }
         }
@@ -701,16 +706,13 @@ Function FightingEntropy.Module
         {
             $This.Output += [Folder]::New($This.Output.Count,$Type,$This.Resource,$Name)
         }
-        Progress([String]$Activity,[UInt32]$Rank)
+        [String] Status([UInt32]$Rank)
         {
-            $Splat       = @{ 
-
-                Activity        = $Activity
-                Status          = "({0:d$($This.Depth)}/{1})" -f $Rank, $This.Total
-                Complete        = (($Rank/$This.Total) * 100)
-            }
-
-            Write-Progress @Splat
+            Return "({0:d$($This.Depth)}/{1})" -f ($Rank+1), $This.Total
+        }
+        [String] Percent([UInt32]$Rank)
+        {   
+            Return "{0:n2}" -f (($Rank/$This.Total) * 100)
         }
         Refresh()
         {
@@ -723,7 +725,6 @@ Function FightingEntropy.Module
             $This.Output | ? Exists -eq 0 | % Create
 
             $List = $This.Output | % Item
-            $This.Progress("Installing [~]",0)
             ForEach ($X in 0..($List.Count-1))
             {
                 $File = $List[$X]
@@ -735,16 +736,14 @@ Function FightingEntropy.Module
                     $File.Write()
                     $File.TestPath()
                 }
-                $This.Progress("Installing [~]",$X)
+                Write-Host ("Installed [~] {0} {1}% -> {2}" -f $This.Status($X), $This.Percent($X), $File.Name)
             }
-            $This.Progress("Installing [~]",100)
         }
         Remove()
         {
             $This.Refresh()
 
-            $List = $This.Output | % Item
-            $This.Progress("Removing [~]",0)
+            $List  = $This.Output | % Item
             ForEach ($X in 0..($List.Count-1))
             {
                 $File = $List[$X]
@@ -754,9 +753,8 @@ Function FightingEntropy.Module
                     $File.Delete()
                     $File.TestPath()
                 }
-                $This.Progress("Removing [~]",$X)
+                Write-Host ("Removed [+] {0} {1:n2}% -> {2}" -f $This.Status($X), $This.Percent($X), $File.Name)
             }
-            $This.Progress("Removing [~]",100)
 
             $This.Output | ? Exists -eq 1 | % Delete
         }
@@ -850,8 +848,19 @@ Function FightingEntropy.Module
 
             If (!$This.Exists)
             {
-                New-Item $This.Fullname -ItemType $This.Type -Verbose
-                $This.Exists = 1
+                Switch -Regex ($This.Name)
+                {
+                    "(Resource|Module)"
+                    {
+                        [System.IO.Directory]::CreateDirectory($This.Fullname)
+                    }
+                    "(File|Manifest)"
+                    {
+                        [System.IO.File]::Create($This.Fullname).Dispose()
+                    }
+                }
+
+                $This.TestPath()
             }
         }
         Remove()
@@ -860,7 +869,17 @@ Function FightingEntropy.Module
 
             If ($This.Exists)
             {
-                Remove-Item $This.Fullname -Recurse -Verbose -Confirm:$False
+                Switch -Regex ($This.Name)
+                {
+                    "(Resource|Module)"
+                    {
+                        [System.IO.Directory]::Delete($This.Fullname)
+                    }
+                    "(File|Manifest)"
+                    {
+                        [System.IO.File]::Delete($This.Fullname)
+                    }
+                }
                 $This.Exists = 0
             }
         }
@@ -881,6 +900,7 @@ Function FightingEntropy.Module
         [Object]   $Module
         [Object]     $File
         [Object] $Manifest
+        [Object] $Shortcut
         Root([String]$Version,[String]$Resource,[String]$Path)
         {
             $This.Registry = $This.Set(0,0,"HKLM:\Software\Policies\Secure Digits Plus LLC\FightingEntropy\$Version")
@@ -888,10 +908,11 @@ Function FightingEntropy.Module
             $This.Module   = $This.Set(2,0,"$Path\FightingEntropy")
             $This.File     = $This.Set(3,1,"$Path\FightingEntropy\FightingEntropy.psm1")
             $This.Manifest = $This.Set(4,1,"$Path\FightingEntropy\FightingEntropy.psd1")
+            $This.Shortcut = $This.Set(5,1,"$Env:Public\Desktop\FightingEntropy.lnk")
         }
         [String] Slot([UInt32]$Type)
         {
-            Return @("Registry","Resource","Module","File","Manifest")[$Type]
+            Return @("Registry","Resource","Module","File","Manifest","Shortcut")[$Type]
         }
         [Object] Set([UInt32]$Index,[UInt32]$Type,[String]$Path)
         {
@@ -903,11 +924,81 @@ Function FightingEntropy.Module
         }
         [Object[]] List()
         {
-            Return @( $This.PSObject.Properties.Name | % { $This.$_ } )
+            Return $This.PSObject.Properties.Name | % { $This.$_ }
         }
         [String] ToString()
         {
             Return "<FightingEntropy.Module.Root>"
+        }
+    }
+
+    Class RegistryKeyTemp
+    {
+        Hidden [Microsoft.Win32.RegistryKey] $Key
+        Hidden [Microsoft.Win32.RegistryKey] $Subkey
+        [String]            $Enum
+        [String]            $Hive
+        [String]            $Path
+        [String]            $Name
+        Hidden [String] $Fullname
+        RegistryKeyTemp([String]$Path)
+        {
+            $This.Fullname = $Path
+            $Split         = $Path -Split "\\"
+            $This.Hive     = $Split[0]
+            $This.Name     = $Split[-1]
+            $This.Enum     = Switch -Regex ($This.Hive)
+            {
+                HKLM: {"LocalMachine"} HKCU: {"CurrentUser"} HKCR: {"ClassesRoot"} 
+            }
+            $This.Path     = $Path -Replace "$($This.Hive)\\", "" | Split-Path -Parent
+        }
+        Open()
+        {
+            $X             = $This.Enum
+            $This.Key      = [Microsoft.Win32.Registry]::$X.CreateSubKey($This.Path)
+        }
+        Create()
+        {
+            If (!$This.Key)
+            {
+                Throw "Must open the key first."
+            }
+
+            $This.Subkey = $This.Key.CreateSubKey($This.Name)
+            Write-Host "Registry [+] Path: [$($This.Fullname)]"
+        }
+        Add([String]$Name,[Object]$Value)
+        {
+            If (!$This.Subkey)
+            {
+                Throw "Must create the subkey first."
+            }
+
+            $This.Subkey.SetValue($Name,$Value)
+            Write-Host "Key [+] Property: [$Name], Value: [$Value]"
+        }
+        [Void] Delete()
+        {
+            If ($This.Key)
+            {
+                $This.Key.DeleteSubKeyTree($This.Name)
+                Write-Host "Registry [-] Path [$($This.Fullname)"
+            }
+        }
+        [Void] Dispose()
+        {
+            If ($This.Subkey)
+            {
+                $This.Subkey.Flush()
+                $This.Subkey.Dispose()
+            }
+
+            If ($This.Key)
+            {
+                $This.Key.Flush()
+                $This.Key.Dispose()
+            }
         }
     }
 
@@ -973,6 +1064,11 @@ Function FightingEntropy.Module
         {
             $This.Exists = Test-Path $This.Path
         }
+        [String] Status([UInt32]$Rank)
+        {
+            $D = ([String]$This.Property.Count).Length
+            Return "({0:d$D}/{1})" -f $Rank, $This.Property.Count
+        }
         Install()
         {
             $This.TestPath()
@@ -982,14 +1078,19 @@ Function FightingEntropy.Module
                 Throw "Exception [!] Path already exists"
             }
 
-            New-Item $This.Path -ItemType Directory -Verbose
-            $This.Exists = 1
+            $Key            = $This.RegistryKeyTemp($This.Path)
+            $Key.Open()
+            $Key.Create()
 
-            ForEach ($Item in $This.Property)
+            $This.Exists    = 1
+            
+            ForEach ($X in 0..($This.Property.Count-1))
             {
-                Set-ItemProperty -Path $This.Path -Name $Item.Name -Value $Item.Value -Verbose
+                $Item        = $This.Property[$X]
+                $Key.Add($Item.Name,$Item.Value)
                 $Item.Exists = 1
             }
+            $Key.Dispose()
         }
         Remove()
         {
@@ -1000,14 +1101,18 @@ Function FightingEntropy.Module
                 Throw "Exception [!] Registry path does not exist"
             }
 
+            $Key             = $This.RegistryKeyTemp($This.Path)
+            $Key.Open()
+            $Key.Create()
+            $Key.Delete()
+
             ForEach ($Item in $This.Property)
             {
-                Remove-ItemProperty -Path $This.Path -Name $Item.Name -Verbose
                 $Item.Exists = 0
             }
 
-            Remove-Item $This.Path -Recurse -Verbose -Confirm:$False
-            $This.Exists = 0
+            $This.Exists     =   0
+            $Key.Dispose()
         }
         [Object[]] List()
         {
@@ -1016,6 +1121,10 @@ Function FightingEntropy.Module
         [Object] Key([UInt32]$Index,[String]$Name,[Object]$Value)
         {
             Return [RegistryKeyProperty]::New($Index,$Name,$Value)
+        }
+        [Object] RegistryKeyTemp([String]$Path)
+        {
+            Return [RegistryKeyTemp]::New($Path)
         }
         [String] ToString()
         {
@@ -1152,6 +1261,27 @@ Function FightingEntropy.Module
         {
             [ThemeStack]::New($Slot,$Message)
         }
+        [Object] File([String]$Type,[String]$Name)
+        {
+            Return $This.Manifest.List() | ? Type -eq $Type | ? Name -eq $Name
+        }
+        [Object] Class([String]$Name)
+        {
+            Return $This.File("Class",$Name)
+        }
+        [Object] Control([String]$Name)
+        {
+            Return $This.File("Control",$Name)
+        }
+        [Object] Function([String]$Name)
+        {
+            Return $This.File("Function",$Name)
+        }
+        [Object] Graphic([String]$Name)
+        {
+            Return $This.File("Graphic",$Name)
+        }
+
         [Void] Refresh()
         {
             # // ____________________________________________
@@ -1178,23 +1308,25 @@ Function FightingEntropy.Module
             # // | Removing [Module]: (Manifest/File/Path) |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            ForEach ($Item in "Manifest","File","Module")
-            {
-                $This.Root.$Item.Remove()
-                Write-Host "Removed [+] $Item"
+            "Shortcut","Manifest","File","Module" | % { 
+
+                $Item = $This.Root.$_
+                $Item.Remove()
+                Write-Host "Removed [+] $_ | $($Item.Fullname)"
             }
 
             # // ________________________________________________
             # // | Removing [Manifest/Registry]: (Content/Path) |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            ForEach ($Item in "Manifest","Registry")
-            {     
-                $This.$Item.Remove()
-                Write-Host "Removed [+] $Item"
+            "Manifest","Registry" | % {
+
+                Write-Host "Removing [~] $_"
+                $This.$_.Remove()
+                Write-Host "Removed [+] $_"
             }
 
-            $This.Write(1,"Removed [~] $($This.Label())")
+            $This.Write(1,"Removed [+] $($This.Label())")
         }
         [Void] Install()
         {
@@ -1212,7 +1344,7 @@ Function FightingEntropy.Module
             # // | PowerShell Full |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            If ($This.Resource.Exists)
+            If ($This.Root.Resource.Exists)
             {
                 $Module        = @( )
                 $Module       += "# Downloaded from {0}" -f $This.Source
@@ -1271,18 +1403,33 @@ Function FightingEntropy.Module
                 $This.Root.Manifest.TestPath()
             }
 
-            $Path              = "$Env:Public\Desktop\FightingEntropy.lnk" 
-            $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut($Path)
+            # // _____________________________________________
+            # // | Installs a shortcut to the module console |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut($This.Root.Shortcut.Path)
         
-            $Item.TargetPath   = "powershell"
-            $Item.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command `"Add-Type -AssemblyName PresentationFramework;Import-Module FightingEntropy;`$Module = Get-FEModule;`$Module`""
-            $Item.Description  = "Beginning the fight against identity theft and cybercriminal activities."
-            $Item.IconLocation = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy\Graphics\icon.ico"
+            # // ___________________________________
+            # // | Assigns details to the shortcut |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $Item.TargetPath   = "PowerShell"
+            $Item.Arguments    = '-NoExit -ExecutionPolicy Bypass -Command {0}' -f @(
+            'Add-Type -AssemblyName PresentationFramework','Import-Module FightingEntropy',
+            '$Module = Get-FEModule','$Module' -join ";" )
+            $Item.Description  = $This.Description
+            $Item.IconLocation = $This.Graphic("icon.ico").Fullname
             $Item.Save()
             
-            $bytes             = [System.IO.File]::ReadAllBytes($Path)
-            $bytes[0x15]       = $bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
-            [System.IO.File]::WriteAllBytes($Path, $bytes)
+            # // _____________________________________________________
+            # // | Assigns administrative privileges to the shortcut |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $Bytes             = [System.IO.File]::ReadAllBytes($This.Root.Shortcut)
+            $Bytes[0x15]       = $Bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
+            [System.IO.File]::WriteAllBytes($This.Root.Shortcut, $Bytes)
+
+            $This.Root.Shortcut.TestPath()
 
             $This.Write(2,"Installed [+] $($This.Label())")
         }
