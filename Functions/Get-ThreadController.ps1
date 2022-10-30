@@ -653,8 +653,8 @@ Function Get-ThreadController
         {
             If ($False -in $This.Thread.Handle.IsCompleted)
             {
-                $Count = $This.Thread.Handle | ? IsCompleted -eq 0 | % Count
-                Throw "Exception [!] ($Count) threads are still running."
+                $Ct = $This.Thread.Handle | ? IsCompleted -eq 0 | % Count
+                Throw "Exception [!] ($Ct) threads are still running."
             }
             Else
             {
