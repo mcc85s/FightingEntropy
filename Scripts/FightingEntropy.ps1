@@ -1,3 +1,8 @@
+#     ____    ____________________________________________________________________________________________________        
+#    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+#    \\__//¯¯¯ [FightingEntropy(π)][2022.10.1]: 10/30/2022 18:30:48                                           ___//¯¯\\   
+#     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
 # // ___________________________________________________________________
 # // | Installs the PowerShell module, [FightingEntropy(π)][2022.10.1] |
@@ -318,9 +323,13 @@ Function FightingEntropy.Module
         {
             $This.Output += [OSPropertySet]::New($This.Output.Count,$Name)
         }
+        [String] GetWinCaption()
+        {
+            Return "[wmiclass]'Win32_OperatingSystem' | % GetInstances | % Caption"
+        }
         [String] GetWinType()
         {
-            Return @( Switch -Regex ( Invoke-Expression "[wmiclass]'Win32_OperatingSystem' | % GetInstances | % Caption" )
+            Return @(Switch -Regex (Invoke-Expression $This.GetWinCaption())
             {
                 "Windows (10|11)" { "Win32_Client" } "Windows Server" { "Win32_Server" }
             })
@@ -360,10 +369,11 @@ Function FightingEntropy.Module
         Hidden [UInt32]    $Index
         [String]            $Type
         [String]            $Name
-        [Object]            $Hash
+        [String]            $Hash
         [UInt32]          $Exists
         Hidden [String] $Fullname
         Hidden [String]   $Source
+        Hidden [UInt32]    $Match
         Hidden [Object]  $Content
         File([UInt32]$Index,[String]$Type,[String]$Parent,[String]$Name,[String]$Hash)
         {
@@ -387,11 +397,6 @@ Function FightingEntropy.Module
         }
         TestPath()
         {
-            If (!$This.Fullname)
-            {
-                Throw "Exception [!] Resource path not set"
-            }
-
             $This.Exists   = [System.IO.File]::Exists($This.Fullname)
         }
         [Void] Create()
@@ -449,7 +454,9 @@ Function FightingEntropy.Module
                 }
                 Else
                 {
-                    [System.IO.File]::WriteAllLines($This.Fullname,$This.Content,[System.Text.UTF8Encoding]$False)
+                    [System.IO.File]::WriteAllText($This.Fullname,
+                                                   $This.Content,
+                                                   [System.Text.UTF8Encoding]$False)
                 }
             }
             Catch
@@ -472,7 +479,8 @@ Function FightingEntropy.Module
                 }
                 Else
                 {
-                    $This.Content = [System.IO.File]::ReadAllLines($This.Fullname,[System.Text.UTF8Encoding]::New($False))
+                    $This.Content = [System.IO.File]::ReadAllLines($This.Fullname,
+                                                                   [System.Text.UTF8Encoding]$False)
                 }
             }
             Catch
@@ -512,9 +520,14 @@ Function FightingEntropy.Module
             $File           = [File]::New($This.Item.Count,$This.Type,$This.Fullname,$Name,$Hash)
             If ($File.Exists)
             {
-                If ((Get-FileHash $File.Fullname).Hash -ne $Hash)
+                $Hash       = Get-FileHash $File.Fullname | % Hash
+                If ($Hash -eq $File.Hash)
                 {
-                    Throw "Exception [!] File exists, and the hash does not match"
+                    $File.Match = 1
+                }
+                If ($Hash -ne $File.Hash)
+                {
+                    $File.Match = 0
                 }
             }
 
@@ -579,14 +592,14 @@ Function FightingEntropy.Module
 
             $This.AddFolder("Class","Classes")
 
-            ("_Cache.ps1"                      , "7530C30D1F61B272D39BE12B0BB93B26301B052819891F23551AC2AA2F114925") ,
-            ("_Drive.ps1"                      , "86DCAF296E9DFD05A6030765D40E6B830C9BA956235F86D9F4A871874F581AF1") ,
-            ("_Drives.ps1"                     , "B7CFC0271E1FE7ADAC9ACD430ED79A1B46BC117DBCF7D310DE89A78A5D6F10DF") ,
-            ("_File.ps1"                       , "4F3DFE27626A658B94C171EE292A3BF7C2EE7E0C8E0F20204BF225D4FED911D9") ,
-            ("_FirewallRule.ps1"               , "812F160D050F0F5BC44D98A149CCA8B3E51B5FEA75E6967F871B62F50D0ABB6B") ,
-            ("_Icons.ps1"                      , "7B87C1910C239D75FCADC937CE7801340B08BCFC0AF87EBD1A75063E1D017CB7") ,
-            ("_Shortcut.ps1"                   , "3A31216D0FAF9D24F30129BDAB915E1EB1D89C6046EB0C9213A7A5B064E76E16") ,
-            ("_ViperBomb.ps1"                  , "E2D20F3C730A15DEBAE26EB55B82A2F584C3CB5AD05E2B8EF84305E131148C95") | % { 
+            ("_Cache.ps1"                       , "DA2DAF257EB99FFF7E414B83D3659B55646D54DE338D81DB0675D98E76EAE630") ,
+            ("_Drive.ps1"                       , "B6CE9795F97896C64C991D7C1314E36939C92C514312C0630C8C5B9A1A972388") ,
+            ("_Drives.ps1"                      , "0B1E99226B2345B596B0EC6CF03E85235B43F07862A43C6ACDB74144E176C744") ,
+            ("_File.ps1"                        , "26E3C8D2C23A96F75E953603B7C4F028609FBE78444CF8AEAE53FE89B41B5904") ,
+            ("_FirewallRule.ps1"                , "4E0B2B8849674C2A36D16E32D9914E95B1F18C5645F393CFA321322CB2122EC3") ,
+            ("_Icons.ps1"                       , "D469DB44301A69F832417744A58EE60D03AC4C83F8C8AFA3D4D5E765C02BD9F2") ,
+            ("_Shortcut.ps1"                    , "FCA9DC157A2BDF9D66AA9A2803D9A419F28D375A7C4ABFFA23A925F544778B6C") ,
+            ("_ViperBomb.ps1"                   , "82D3FDBA40360D8E0123CDAEFF3A0A8F0AE0105CC4D6791EBF8B40BD0BF64162") | % { 
                 
                 $This.Add(0,$_[0],$_[1])
             }
@@ -597,20 +610,20 @@ Function FightingEntropy.Module
 
             $This.AddFolder("Control","Control")
 
-            ("Computer.png"                    , "87EAB4F74B38494A960BEBF69E472AB0764C3C7E782A3F74111F993EA31D1075") ,
-            ("DefaultApps.xml"                 , "766124051F5EBABF097B88513D9672EB5720C76A1CDA7F0DED30CDEF6365CC92") ,
-            ("failure.png"                     , "59D479A0277CFFDD57AD8B9733912EE1F3095404D65AB630F4638FA1F40D4E99") ,
-            ("FEClientMod.xml"                 , "46B0A31FAFC5616AAFC54751C785B0DDE1CEED387EAB8E544CBA7D3C231C0134") ,
-            ("FEServerMod.xml"                 , "4CABB2EDFBB31571300ACA37C9A303CB586A8989C216AB494F8B64A4B87DDE39") ,
-            ("header-image.png"                , "38F1E2D061218D31555F35C729197A32C9190999EF548BF98A2E2C2217BBCB88") ,
-            ("MDTClientMod.xml"                , "7653012A93B133E15887A2E3EBCA5FB69C5E76EE84E8DDB602BC91C65A5BBEF1") ,
-            ("MDTServerMod.xml"                , "87984E8F1E3A75C3CBE9CB4261D270E03BAEF6D18E8A7E17EC4570ABE55C9EBB") ,
-            ("MDT_LanguageUI.xml"              , "02E6D26D13AE710145C39D33DA8B3830EF6163DF7049874CB8D0600286BCB774") ,
-            ("PSDClientMod.xml"                , "AAE5DF95C2BCD756AC0CE153478ED1A7DFA2F4A6F53FA128F234C525E5BB8F80") ,
-            ("PSDServerMod.xml"                , "AAE5DF95C2BCD756AC0CE153478ED1A7DFA2F4A6F53FA128F234C525E5BB8F80") ,
-            ("success.png"                     , "46757AB0E2D3FFFFDBA93558A34AC8E36F972B6F33D00C4ADFB912AE1F6D6CE2") ,
-            ("vendorlist.txt"                  , "7FFA7BFB487DEA9961BAFFDA7443FB492F0B85AE9B2C131E543B387E62FCC94E") ,
-            ("zipcode.txt"                     , "38DF0D09C1093CF8571CF6C48BA6335C0314C437808CEDBCD725448742694277") | % { 
+            ("Computer.png"                     , "87EAB4F74B38494A960BEBF69E472AB0764C3C7E782A3F74111F993EA31D1075") ,
+            ("DefaultApps.xml"                  , "939CE697246AAC96C6F6A4A285C8EE285D7C5090523DB77831FF76D5D4A31539") ,
+            ("failure.png"                      , "59D479A0277CFFDD57AD8B9733912EE1F3095404D65AB630F4638FA1F40D4E99") ,
+            ("FEClientMod.xml"                  , "B3EB870C6B4206D11C921E70C6D058777A5F69FD1D9DEA8B6071759CAFCD2593") ,
+            ("FEServerMod.xml"                  , "55A881BFE436EF18C104BFA51ECF6D12583076D576BA3276F53A682E056ACA5C") ,
+            ("header-image.png"                 , "38F1E2D061218D31555F35C729197A32C9190999EF548BF98A2E2C2217BBCB88") ,
+            ("MDT_LanguageUI.xml"               , "100B5CA10BCF99E2A8680C394266042DEA5ECA300FBDA33289F6E4A17E44CBCF") ,
+            ("MDTClientMod.xml"                 , "C22C53DAAB87AAC06DC3AC64F66C8F6DF4B7EAE259EC5D80D60E51AF82055231") ,
+            ("MDTServerMod.xml"                 , "3724FE189D8D2CFBA17BC2A576469735B1DAAA18A83D1115169EFF0AF5D42A2F") ,
+            ("PSDClientMod.xml"                 , "4175C9569C8DFC1F14BADF70395D883BDD983948C2A6633CBBB6611430A872C7") ,
+            ("PSDServerMod.xml"                 , "4175C9569C8DFC1F14BADF70395D883BDD983948C2A6633CBBB6611430A872C7") ,
+            ("success.png"                      , "46757AB0E2D3FFFFDBA93558A34AC8E36F972B6F33D00C4ADFB912AE1F6D6CE2") ,
+            ("vendorlist.txt"                   , "9BD91057A1870DB087765914EAA5057D673CDC33145D804BBF4B024A11D66934") ,
+            ("zipcode.txt"                      , "45D5F4B9B50782CEC4767A7660583C68A6643C02FC7CC4F0AE5A79CCABE83021") | % { 
                 
                 $This.Add(1,$_[0],$_[1])
             }
@@ -621,55 +634,55 @@ Function FightingEntropy.Module
 
             $This.AddFolder("Function","Functions")
 
-            ("Copy-FileStream.ps1"             , "53F003D63FE1EF88D0C5BEFA19AA63339A4121C9023AC9A3CB82E7DE4F2F6F6B") ,
-            ("Get-AssemblyList.ps1"            , "6B69D03AECAF357F4568F65AF8BFA7B3A3D94DFCE1D8A06E42591361542B6BD3") ,
-            ("Get-ControlExtension.ps1"        , "1872FC091A03B09840997F439179F9450696C5D86A4884FA41E1BB0A11930D6E") ,
-            ("Get-DiskInfo.ps1"                , "DEDCC7E1BF1476208B99B4ECFEEC8EF0681732AFE89DE21D92D60103B79C6A11") ,
-            ("Get-EnvironmentKey.ps1"          , "7757E194F5C223A67AD90619CDC2BCBF60A72139FD22D1A329FA034ED3323FEC") ,
-            ("Get-EventLogArchive.ps1"         , "A410CF4F4F4A9A65CA51F5A6F414701E1A51501974762823BEA38AA77F3FF654") ,
-            ("Get-EventLogConfigExtension.ps1" , "B6A101C08FD1EB475BA6F9C85F14A4C8D0274417A4D994C9711828A535E7A5C9") ,
-            ("Get-EventLogController.ps1"      , "305C47991270A80DE4758779822177D247FF248B4FFEE42922128294013D62AA") ,
-            ("Get-EventLogProject.ps1"         , "7CB8C9560DBA50E500BFA23C468FAD6C87D6EE6FDAF3815E6CFF2565DE768373") ,
-            ("Get-EventLogRecordExtension.ps1" , "043C11C918468DCEED7DB6518335C6D69DCC95396784EE9859278CB9C1C0045D") ,
-            ("Get-EventLogXaml.ps1"            , "2E20D3ACD2C705E4FFFCC759E42A77C8DCC139AD03B1ADEA80E002F5EE84FDCA") ,
-            ("Get-FEADLogin.ps1"               , "96A2C343D8D0CA5D990920FECEC819BF566603A95E5AED87DDE79C165A8D3FBC") ,
-            ("Get-FEDCPromo.ps1"               , "0D14EE381A210CDF54DED9FC32B7F71247DA60DFF08BE6EF56AF602AF52529F2") ,
-            ("Get-FEHost.ps1"                  , "BE8B599E180EA8B4702D56FA97DF45F745265664DE72B7A077F5DC1692CFC915") ,
-            ("Get-FEImageManifest.ps1"         , "8E17EDBD40594D58D0FB59D2D7D7F2331DC11054838A45FB2E4714F09F1E78C6") ,
-            ("Get-FEInfo.ps1"                  , "B3F3C0278F5B4A6FFD91D0B9D06C8F782AE55CA110876E46399CF1121AF2864E") ,
-            ("Get-FEManifest.ps1"              , "0EAB7303554870B4CAA4422D7C4FACBCC28CF902DE0C3AAFA58D8BF1C8FF5289") ,
-            ("Get-FEModule.ps1"                , "3FB46DE2EC5E08512F230EA9C9D0222E9CF618EA6C1FAE8D63D0D5320A79FF7F") ,
-            ("Get-FENetwork.ps1"               , "07B204F33B7AD3C69BB23F5AD7F858B61175521A4946B243DCB7BB4A23FB4949") ,
-            ("Get-FEOS.ps1"                    , "541931942778EEC5F107BB5F64B9D6631948461DCC8BB5FE57402F7CF0D590C1") ,
-            ("Get-FEProcess.ps1"               , "1F5B7E0F734039731536599B056BAD2AC367D1BE7E70A48C2FA3B53E9BD8A88C") ,
-            ("Get-FERole.ps1"                  , "E56D281B1CC7754FA6D04825F2FB35702690D3D65630B744F72F847D69CA2C9A") ,
-            ("Get-FEService.ps1"               , "C7CBF1273C4789E0E6253A2F3E26979D13A4EF065CF62BFAF9DBF557F0A37B7A") ,
-            ("Get-FESitemap.ps1"               , "57E248072385BD311A4D34FD4F818287CB5309D8E0DCF982F22982B44B719907") ,
-            ("Get-MadBomb.ps1"                 , "5686719FA0C340817FF62559ADE460CD27E3641FE6D87916FD860EE4DB7EB3C2") ,
-            ("Get-MDTModule.ps1"               , "A3798D5BD9C9962925D4854E9C3296D44B2EA51C375BA6A369E5596E9168C9E9") ,
-            ("Get-PowerShell.ps1"              , "5D9AD290272CB912FF32D3BA5CF32100403D6CF0BDA0BBB8DD5E83062483C31F") ,
-            ("Get-PropertyItem.ps1"            , "A85038A552AABF058D5BC16F45D168EDE98781BC2A66CF14FD87AD78E34F2C2A") ,
-            ("Get-PropertyObject.ps1"          , "5FE79E566CCF05910FE1D98A77BC5C238AA58606E1D081712D1DDAC9DD72761F") ,
-            ("Get-PSDLog.ps1"                  , "FCEAAA2C6B30549DF518AD4C1D120F06D721AA3830E6C43F78B98E0A76ACAE49") ,
-            ("Get-PSDLogGUI.ps1"               , "D4AA8D559722BBB5920FCC4636C604324F0752A81365D581EDB3DB5B646CDEA6") ,
-            ("Get-PSDModule.ps1"               , "F14856CCD15F88C818F6D5F845A85277558343517BA376ECF194A587E813514F") ,
-            ("Get-SystemDetails.ps1"           , "84C8A1A8221815DBF4437E64DCE340EECD0CD8F41B7F4E12B922C0B500646359") ,
-            ("Get-ThreadController.ps1"        , "3541207F754EBE1C2A2C0F3948AFFAE6DFC81A835AAD9B9876BA973706B265C8") ,
-            ("Get-ViperBomb.ps1"               , "82826D97915837BE55BBB49305951551730DE90A9D9DB5EE1522E9A0EA00A99F") ,
-            ("Get-WhoisUtility.ps1"            , "7ACE708D974C4B92E8B925AC7BF37C2E6C4D858B26DA364FD08610712257502F") ,
-            ("Install-BossMode.ps1"            , "1C59499BBCE8109EB0834ED537DFCE360482498CB1CD7C23EB6EEDD39102E1B0") ,
-            ("Install-IISServer.ps1"           , "250C7F76E32B1DC8E3A834083D144A998ACB49693BAFA80CE310E493217A8FBC") ,
-            ("Install-PSD.ps1"                 , "3A0D35C9F5FF754EB5ED6FC587BC0D17021E9E767B38532EE6DFD8FB44E12C7F") ,
-            ("Invoke-cimdb.ps1"                , "6C09A4D4EBEDCDE2A4EB94F1073F86574EC3BD5B104C541F4C04D1D37340355E") ,
-            ("Invoke-KeyEntry.ps1"             , "BEA1ADDD6379CF1FDB9EA1F21045B47F861FFA2A48459AEF942C3F20023C26F6") ,
-            ("New-EnvironmentKey.ps1"          , "35FA7E730063BF9FB1D7A1638B02C60533D300FA44A4EABC2F93E2CF940331FA") ,
-            ("New-FEInfrastructure.ps1"        , "200A6A8EE10C4180AB4F118A0FA2CAE330A376A92CE5397BF6E2B20EA31347A4") ,
-            ("Search-WirelessNetwork.ps1"      , "C97AC96001EB6937D8B90BC4A3BA37CAA629612BEF3B9120887F6E767C74CD5D") ,
-            ("Set-ScreenResolution.ps1"        , "BB83B58369EBC8E80BB6B1E7D056DAEB7067999D463EB3FB16A898F040FBB838") ,
-            ("Show-ToastNotification.ps1"      , "E0450188039CB8A0064E87F6A99E2C98A2741804118B2BDB825AEC9C98016BC6") ,
-            ("Update-PowerShell.ps1"           , "F55BC8401B301D25BB37D4E24D544752D092D8EF072C0734EEBA916B5DCFBA13") ,
-            ("Use-Wlanapi.ps1"                 , "2680580442927F1F17B0D27383BC4EF71B14C77F627EA62613659772250A3F17") ,
-            ("Write-Theme.ps1"                 , "4AD5960F09A89CB9C20C6C5FC9AFBEF9A5FCC0232BE8E7B7B1A9F033CC5272AA") | % { 
+            ("Copy-FileStream.ps1"              , "F80662EF865682E3DF17EA8F30E31E3D0F1650C8DD5A129D4F8B9539F92A61B3") ,
+            ("Get-AssemblyList.ps1"             , "1610574E514AAF500FF8CEDCCF2B46EDF28287D9E3EFB612C3C0320320A4E7A3") ,
+            ("Get-ControlExtension.ps1"         , "8CC5D1320C51498AF2BE365F38949926331339E7CB6B3101C4A46FAD05CF2092") ,
+            ("Get-DiskInfo.ps1"                 , "1D68ED1AD277CCF0B860332C1501570B39C49B67D7F9AF7F309ADC9E99B409D0") ,
+            ("Get-EnvironmentKey.ps1"           , "C7C6D0D422A93F803F6F7539C42E057DA213661F9F2212679C6DCF10F5F3AA51") ,
+            ("Get-EventLogArchive.ps1"          , "E411B5B741F98B1F483B1F4E62DF0B64D536EB61ADE427D8793BEC1E99B51021") ,
+            ("Get-EventLogConfigExtension.ps1"  , "CE7FC970662A07DAED28F3E29FD2E449ED691315CB312039D0FDB61E0B587C45") ,
+            ("Get-EventLogController.ps1"       , "B3F1DB7A018A22E378637E170CA016F250572A2DA5113CF1AE3CC393A732091A") ,
+            ("Get-EventLogProject.ps1"          , "37BD731836ABC26EA2D4D478860A74E3D835B00BD130C4D25848B172B5D22BC1") ,
+            ("Get-EventLogRecordExtension.ps1"  , "5722717C4A51D0069DD78FD31E72F239211BC26C10D9CFF5202659B50A026A56") ,
+            ("Get-EventLogXaml.ps1"             , "3D5BCF8F6FAAB73F2CF113C4778A7556C908C055D472E313224FD05BC470D48C") ,
+            ("Get-FEADLogin.ps1"                , "4297453E04EB27552ABD8C3C14104273C60F221A8248CEA1C65A4D30B99C7203") ,
+            ("Get-FEDCPromo.ps1"                , "06CD65C5C5ABDB7A5A625DE510C7CDA4FD9575E7976D7C65FA713714DDC01DFB") ,
+            ("Get-FEHost.ps1"                   , "02904EA751DB13D32FC18577D8780DE8B7E4ADB43EC94FC11621BA6CE5DC2488") ,
+            ("Get-FEImageManifest.ps1"          , "C45D927563C29E8E5AF173ACD635AED75A963582389D39B3A9D2CDF9E9849ECC") ,
+            ("Get-FEInfo.ps1"                   , "2C3E7209FFEE695E7187972B2AB0EF2B50CB5C8F89680ED1E9A14A388B376A59") ,
+            ("Get-FEManifest.ps1"               , "93CD40C06942BCCCBD67ECD950AA3B8F8D9A4162EAE1681C352CA20D7B6CC3F1") ,
+            ("Get-FEModule.ps1"                 , "12FD9079144EFABD7E0ECB923401CB3294C9642004B9259160712E963E99A89B") ,
+            ("Get-FENetwork.ps1"                , "88C28DF03BC1EC0E79E250D3496E6E9C6E26DFCBCEBC4EBA647AA1540BA8C438") ,
+            ("Get-FEOS.ps1"                     , "8C32694CE87CC1CCCB46E106C210F36B84EFCBF4D85C5240BB66D0C0840303BF") ,
+            ("Get-FEProcess.ps1"                , "0CB2B46E14790BA89FC2F60A12B67C9F1E435A8A20DBF011A130D26A291E094D") ,
+            ("Get-FERole.ps1"                   , "1E52DFB5820ACDC711D232DC18E5DCFCF390EF71721E2BE4DDADB885B675A529") ,
+            ("Get-FEService.ps1"                , "3D7F947ADCDCDF0A139AFFA9E92D125A581275BDC2B74247F437BA5A4985C2D6") ,
+            ("Get-FESitemap.ps1"                , "45A571D62EE528F05E0D4EA43995FB0B7C4A1DD7D1839A8D7EEB8754E8AB3009") ,
+            ("Get-MadBomb.ps1"                  , "87550BBEE679E62DF45F44F5BC871030B833FA9DCC8C9956AF422707444EAB68") ,
+            ("Get-MDTModule.ps1"                , "409B59C64ABEBAC3DE884954E40C433B6CDA3145A2EE2D82B503D0ABA1EDBE3D") ,
+            ("Get-PowerShell.ps1"               , "3E2C7F2FBCED55C73F393070F425AA6C66861EDA2D0CDE794F85BA962A3A0348") ,
+            ("Get-PropertyItem.ps1"             , "F9CFE6862B912B4D181A65FAF6BFBC1892ABBEED016FF14FAB3A8AD55B6C9151") ,
+            ("Get-PropertyObject.ps1"           , "A279B9F61B2633DB09D6D574D07B94A2C2D4429BC5DD539412E142F11AB49525") ,
+            ("Get-PSDLog.ps1"                   , "75F2F974CAE0153EB3987389A8EECD88255F58833273F84CC847C14BF80D3269") ,
+            ("Get-PSDLogGUI.ps1"                , "8716E3EC075E03E86BB28C495A359449445BC879F02F47AE5AEBCACCCE5BA679") ,
+            ("Get-PSDModule.ps1"                , "FCD86A877C9F8D5559E6849230AE41E169B31FEB197E0CF722C0CEA95B70CAAB") ,
+            ("Get-SystemDetails.ps1"            , "7B4713132FC595DC85A65286A370822A9F8A68897AD72432FCEC5385BF702EF1") ,
+            ("Get-ThreadController.ps1"         , "8196A7A298364599D72859E761FCD5ED370E99825283C46B83C10DE9E6ACD2DC") ,
+            ("Get-ViperBomb.ps1"                , "DF93D10B9C6ACEEEF21EC3AA6B0D32D1130900A363C3D654A529DF46B017541C") ,
+            ("Get-WhoisUtility.ps1"             , "9181508E7AE447FE317A50614FB83F1A4BD0B35490A0C5149F50A71D4C4AA451") ,
+            ("Install-BossMode.ps1"             , "2739086EB9BCDB520D0B20C17081EF5FB516C2E1387864CC38C9452EA16F0CC3") ,
+            ("Install-IISServer.ps1"            , "2D7DEEDB3F844183215609F72D63C24BA5B7C1D0D901120708172164EAA4A4E0") ,
+            ("Install-PSD.ps1"                  , "989B34030F75F0A6EFACC574361C170B2D51C6F5FA031032ECCE29119EC3B5A4") ,
+            ("Invoke-cimdb.ps1"                 , "4852D60255F5F2715703A38CF82C98B159B588E1B7A1BEA9D0E9AE2EC7530190") ,
+            ("Invoke-KeyEntry.ps1"              , "B1300999BF1A6ABEEDCFDEC1B0C150228D7FE03623D22DBCEBBC18C3BAF6C134") ,
+            ("New-EnvironmentKey.ps1"           , "A06CFAEAA6DCE65C6E3C6168A3AA2AD9230A81D16706BA82E8D89B0CD376BBE9") ,
+            ("New-FEInfrastructure.ps1"         , "966B36D105A6E02299F47B425A32612F17FB2AD16CEC68726D9D6006371206B0") ,
+            ("Search-WirelessNetwork.ps1"       , "AF3D312ECA04C87103D5F921F0D35B5B3C3B34EE83E571AA1594DA7C17ECFF5D") ,
+            ("Set-ScreenResolution.ps1"         , "FFF86F4CD863BBC59168BDD821362B274C3723A888896F225F6EF04DF5D7C32E") ,
+            ("Show-ToastNotification.ps1"       , "0002209685C3D83A4D08E4265B9285DEDD71C381B6EB8A8F7D86F4E949927969") ,
+            ("Update-PowerShell.ps1"            , "446878FCADA300B44691053ABF02FF96772B5FCE1A5434FB61A81FE3C1B416E4") ,
+            ("Use-Wlanapi.ps1"                  , "1113CEC8BE5E352B09698928995ED840B5EE7A3F90DE1A5537DF339E7D10E5FF") ,
+            ("Write-Theme.ps1"                  , "3B385DF0CC0E44AB1C6991A115B0466463AB3FDFA81371278B0D05028AA62703") | % { 
                 
                 $This.Add(2,$_[0],$_[1])
             }
@@ -680,13 +693,13 @@ Function FightingEntropy.Module
 
             $This.AddFolder("Graphic","Graphics")
 
-            ("background.jpg"                  , "94FD6CB32F8FF9DD360B4F98CEAA046B9AFCD717DA532AFEF2E230C981DAFEB5") ,
-            ("banner.png"                      , "057AF2EC2B9EC35399D3475AE42505CDBCE314B9945EF7C7BCB91374A8116F37") ,
-            ("icon.ico"                        , "594DAAFF448F5306B8B46B8DB1B420C1EE53FFD55EC65D17E2D361830659E58E") ,
-            ("OEMbg.jpg"                       , "D4331207D471F799A520D5C7697E84421B0FA0F9B574737EF06FC95C92786A32") ,
-            ("OEMlogo.bmp"                     , "98BF79CAE27E85C77222564A3113C52D1E75BD6328398871873072F6B363D1A8") ,
-            ("PSDBackground.bmp"               , "05ABBABDC9F67A95D5A4AF466149681C2F5E8ECD68F11433D32F4C0D04446F7E") ,
-            ("sdplogo.png"                     , "87C2B016401CA3F8F8FAD5F629AFB3553C4762E14CD60792823D388F87E2B16C") | % { 
+            ("background.jpg"                   , "94FD6CB32F8FF9DD360B4F98CEAA046B9AFCD717DA532AFEF2E230C981DAFEB5") ,
+            ("banner.png"                       , "057AF2EC2B9EC35399D3475AE42505CDBCE314B9945EF7C7BCB91374A8116F37") ,
+            ("icon.ico"                         , "594DAAFF448F5306B8B46B8DB1B420C1EE53FFD55EC65D17E2D361830659E58E") ,
+            ("OEMbg.jpg"                        , "D4331207D471F799A520D5C7697E84421B0FA0F9B574737EF06FC95C92786A32") ,
+            ("OEMlogo.bmp"                      , "98BF79CAE27E85C77222564A3113C52D1E75BD6328398871873072F6B363D1A8") ,
+            ("PSDBackground.bmp"                , "05ABBABDC9F67A95D5A4AF466149681C2F5E8ECD68F11433D32F4C0D04446F7E") ,
+            ("sdplogo.png"                      , "87C2B016401CA3F8F8FAD5F629AFB3553C4762E14CD60792823D388F87E2B16C") | % { 
                 
                 $This.Add(3,$_[0],$_[1])
             }
@@ -736,7 +749,9 @@ Function FightingEntropy.Module
                     $File.Write()
                     $File.TestPath()
                 }
-                Write-Host ("Installed [~] {0} {1}% -> {2}" -f $This.Status($X), $This.Percent($X), $File.Name)
+                Write-Host ("Installed [~] {0} {1}% -> {2}" -f $This.Status($X), 
+                                                               $This.Percent($X), 
+                                                               $File.Name)
             }
         }
         Remove()
@@ -753,7 +768,9 @@ Function FightingEntropy.Module
                     $File.Delete()
                     $File.TestPath()
                 }
-                Write-Host ("Removed [+] {0} {1:n2}% -> {2}" -f $This.Status($X), $This.Percent($X), $File.Name)
+                Write-Host ("Removed [+] {0} {1:n2}% -> {2}" -f $This.Status($X), 
+                                                                $This.Percent($X), 
+                                                                $File.Name)
             }
 
             $This.Output | ? Exists -eq 1 | % Delete
@@ -903,12 +920,14 @@ Function FightingEntropy.Module
         [Object] $Shortcut
         Root([String]$Version,[String]$Resource,[String]$Path)
         {
-            $This.Registry = $This.Set(0,0,"HKLM:\Software\Policies\Secure Digits Plus LLC\FightingEntropy\$Version")
+            $SDP = "Secure Digits Plus LLC"
+            $FE  = "FightingEntropy"
+            $This.Registry = $This.Set(0,0,"HKLM:\Software\Policies\$SDP\$FE\$Version")
             $This.Resource = $This.Set(1,0,"$Resource")
-            $This.Module   = $This.Set(2,0,"$Path\FightingEntropy")
-            $This.File     = $This.Set(3,1,"$Path\FightingEntropy\FightingEntropy.psm1")
-            $This.Manifest = $This.Set(4,1,"$Path\FightingEntropy\FightingEntropy.psd1")
-            $This.Shortcut = $This.Set(5,1,"$Env:Public\Desktop\FightingEntropy.lnk")
+            $This.Module   = $This.Set(2,0,"$Path\$FE")
+            $This.File     = $This.Set(3,1,"$Path\$FE\$FE.psm1")
+            $This.Manifest = $This.Set(4,1,"$Path\$FE\$FE.psd1")
+            $This.Shortcut = $This.Set(5,1,"$Env:Public\Desktop\$FE.lnk")
         }
         [String] Slot([UInt32]$Type)
         {
@@ -931,6 +950,10 @@ Function FightingEntropy.Module
             Return "<FightingEntropy.Module.Root>"
         }
     }
+
+    # // ___________________________________________
+    # // | Works as a PowerShell Registry provider |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
     Class RegistryKeyTemp
     {
@@ -1132,6 +1155,10 @@ Function FightingEntropy.Module
         }
     }
 
+    # // ___________________________________________
+    # // | Collects/creates versions of the module |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
     Class FEVersion
     {
         [Version]      $Version
@@ -1169,8 +1196,111 @@ Function FightingEntropy.Module
         }
         [String] ToString()
         {
-            Return "| {0} | {1} | {2} |" -f $This.Version, $This.Date.ToString("MM/dd/yyyy HH:mm:ss"), $This.Guid
+            Return "| {0} | {1} | {2} |" -f $This.Version, 
+                                            $This.Date.ToString("MM/dd/yyyy HH:mm:ss"), 
+                                            $This.Guid
         } 
+    }
+
+    # // ________________________________________________________
+    # // | Specifically used for file hash validation/integrity |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ValidateFile
+    {
+        [String] $Type
+        [String] $Name
+        Hidden [String] $Fullname
+        Hidden [String] $Source
+        [String] $Hash
+        [UInt32] $Match
+        [String] $Compare
+        ValidateFile([String]$Leaf,[Object]$File)
+        {
+            $This.Type     = $File.Type
+            $This.Name     = $File.Name
+            $This.Fullname = $File.Fullname
+            $This.Hash     = $File.Hash
+            $This.Source   = $File.Source
+            
+            # // _______________________
+            # // | Temporary variables |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $Content       = Invoke-WebRequest $This.Source -UseBasicParsing | % Content
+            $Target        = "{0}\{1}" -f $Env:Temp, $This.Name
+
+            If ([System.IO.File]::Exists($Target))
+            {
+                [System.IO.File]::Delete($Target)
+            }
+
+            If ($This.Name -match "\.+(jpg|jpeg|png|bmp|ico)")
+            {
+                [System.IO.File]::WriteAllBytes($Target,[Byte[]]$Content)
+            }
+            Else
+            {
+                [System.IO.File]::WriteAllText($Target,$Content,[System.Text.UTF8Encoding]$False)
+            }
+
+            # // ________________________________________
+            # // | Get target hash and final comparison |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $This.Compare  = $This.GetFileHash($Target)
+            $This.Match    = $This.Hash -eq $This.Compare
+
+            [System.IO.File]::Delete($Target)
+        }
+        [String] GetFileHash([String]$Path)
+        {
+            If (![System.IO.File]::Exists($Path))
+            {
+                Throw "Invalid path"
+            }
+
+            Return Get-FileHash $Path | % Hash
+        }
+    }
+
+    # // __________________________________________________
+    # // | Container class for (manifest/file) validation |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class Validate
+    {
+        [Object] $Output
+        Validate([Object]$Module)
+        {
+            $Hash     = @{ }
+            ForEach ($Branch in $Module.Manifest.Output)
+            {
+                Write-Host ("Path [~] [{0}]" -f $Branch.Fullname)
+                ForEach ($File in $Branch.Item)
+                {
+                    Write-Host "File [~] [$($File.Fullname)]"
+                    $Hash.Add($Hash.Count,$This.ValidateFile($Branch.Name,$File))
+                }
+            }
+
+            $This.Output = $Hash[0..($Hash.Count-1)]
+        }
+        [Object] ValidateFile([String]$Name,[Object]$File)
+        {
+            Return [ValidateFile]::New($Name,$File)
+        }
+        [String] BuildManifest()
+        {
+            $MaxName = ($This.Output.Name | Sort-Object Length)[-1]
+            Return @( $This.Output | % { 
+
+                "            (`"{0}`"{1}, `"{2}`") ," -f $_.Name,
+                (@(" ") * ($MaxName.Length - $_.Name.Length + 1) -join ''), 
+                $_.Hash
+
+            }) -join "`n"
+        }
     }
 
     # // ______________________________________________________________
@@ -1236,11 +1366,14 @@ Function FightingEntropy.Module
         }
         [Object] GetRoot()
         {
-            $Resource = $Env:ProgramData, $This.Company, "FightingEntropy", $This.Version.ToString() -join "\"
+            $Resource = $Env:ProgramData, 
+                        $This.Company, 
+                        "FightingEntropy", 
+                        $This.Version.ToString() -join "\"
             $Path     = Switch -Regex ($This.OS.Type)
             {
                 ^Win32_ { $Env:PSModulePath -Split ";" -match [Regex]::Escape($Env:Windir) }
-                Default { $Env:PSModulePath -Split ":" -Match "PowerShell"                 }
+                Default { $Env:PSModulePath -Split ":" -match "PowerShell"                 }
             }
 
             Return [Root]::New($This.Version,$Resource,$Path)
@@ -1281,13 +1414,11 @@ Function FightingEntropy.Module
         {
             Return $This.File("Graphic",$Name)
         }
-
         [Void] Refresh()
         {
             # // ____________________________________________
             # // | Tests all manifest (folder/file) entries |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
 
             $This.Manifest.Output | % { $_.TestPath(); $_.Item | % TestPath }
             
@@ -1337,86 +1468,68 @@ Function FightingEntropy.Module
             $This.Root.Module.Create()
             $This.Root.File.Create()
 
-            # PS Core
-            # PS Server
-
             # // ___________________
             # // | PowerShell Full |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
             If ($This.Root.Resource.Exists)
             {
-                $Module        = @( )
-                $Module       += "# Downloaded from {0}" -f $This.Source
-                $Module       += "# {0}" -f $This.Resource
-                $Module       += "# {0}" -f $This.Version.ToString()
-                $Module       += "# <Types>"
-                $Assemblies    = "PresentationFramework",
-                                 "System.Runtime.WindowsRuntime",
-                                 "System.IO.Compression", 
-                                 "System.IO.Compression.Filesystem", 
-                                 "System.Windows.Forms"
-                $Assemblies    | % { $Module += "Add-Type -AssemblyName $_" }
-                $Module       += "# <Classes>"
-                $This.Manifest.Files(0) | % {
-            
-                    $Module   += "# <{0}/{1}>" -f $_.Type, $_.Name
-                    $Module   += "# {0}" -f $_.Fullname
-                    If (!$_.Content)
-                    {
-                        $_.GetContent()
-                    }
-                    $Module   += $_.Content
-                    $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
-                }
-                $Module       += "# </Classes>"
-                $Module       += "# <Functions>"
-                $This.Manifest.Files(2)  | % { 
-            
-                    $Module   += "# <{0}/{1}>" -f $_.Type, $_.Name
-                    $Module   += "# {0}" -f $_.Fullname
-                    If (!$_.Content)
-                    {
-                        $_.GetContent()
-                    }
-                    $Module   += $_.Content
-                    $Module   += "# </{0}/{1}>" -f $_.Type, $_.Name
-                }
-                $Module       += "# </Functions>"
-                $Module       += "Write-Theme `"Loaded Module [+] FightingEntropy [$($This.Version)]`" @(10,3,15,0)"
-        
-                [System.IO.File]::WriteAllLines($This.Root.File,$Module,[System.Text.UTF8Encoding]$False)
-            
-                @{  
-                    GUID                 = $This.GUID
-                    Path                 = $This.Root.Manifest
-                    ModuleVersion        = $This.Version
-                    Copyright            = $This.Copyright
-                    CompanyName          = $This.Company
-                    Author               = $This.Author
-                    Description          = $This.Description
-                    RootModule           = $This.Root.File
-                    RequiredAssemblies   = $Assemblies
+                # // ______________________________
+                # // | Cobble together assemblies |
+                # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-                }                        | % { New-ModuleManifest @_ }
+                $Bin = "PresentationFramework",
+                       "System.Runtime.WindowsRuntime",
+                       "System.IO.Compression", 
+                       "System.IO.Compression.Filesystem", 
+                       "System.Windows.Forms"
+
+                # // _____________________________________________
+                # // | Write the module file to disk using PSM() |
+                # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                [System.IO.File]::WriteAllLines($This.Root.File,
+                                                $This.PSM($Bin),
+                                                [System.Text.UTF8Encoding]$False)
+
+                # // ____________________________________
+                # // | Splat the Module Manifest params |
+                # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                $Splat = $This.PSDParam($Bin)
+
+                # // ________________________________________________
+                # // | Write the PowerShell module manifest to disk |
+                # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+                New-ModuleManifest @Splat
 
                 $This.Root.Manifest.TestPath()
             }
+
+            # // ___________________________________________________________________
+            # // | Todo | PS Core | PS Server | <- Just a manner of file selection |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
             # // _____________________________________________
             # // | Installs a shortcut to the module console |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            $Item              = (New-Object -ComObject WScript.Shell).CreateShortcut($This.Root.Shortcut.Path)
+            $Com  = New-Object -ComObject WScript.Shell
+            $Item = $Com.CreateShortcut($This.Root.Shortcut.Path)
         
             # // ___________________________________
             # // | Assigns details to the shortcut |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
             $Item.TargetPath   = "PowerShell"
-            $Item.Arguments    = '-NoExit -ExecutionPolicy Bypass -Command {0}' -f @(
-            'Add-Type -AssemblyName PresentationFramework','Import-Module FightingEntropy',
-            '$Module = Get-FEModule','$Module' -join ";" )
+
+            $Command           = 'Add-Type -AssemblyName PresentationFramework',
+                                 'Import-Module FightingEntropy',
+                                 '$Module = Get-FEModule',
+                                 '$Module' -join ";"
+            $Item.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command $Command"
+
             $Item.Description  = $This.Description
             $Item.IconLocation = $This.Graphic("icon.ico").Fullname
             $Item.Save()
@@ -1426,16 +1539,115 @@ Function FightingEntropy.Module
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
             $Bytes             = [System.IO.File]::ReadAllBytes($This.Root.Shortcut)
-            $Bytes[0x15]       = $Bytes[0x15] -bor 0x20 #set byte 21 (0x15) bit 6 (0x20) ON
+            $Bytes[0x15]       = $Bytes[0x15] -bor 0x20 
+                                 # Set [byte] (21/0x15) bit 6 (0x20) ON... or else.
             [System.IO.File]::WriteAllBytes($This.Root.Shortcut, $Bytes)
 
             $This.Root.Shortcut.TestPath()
 
             $This.Write(2,"Installed [+] $($This.Label())")
         }
+        [String] PSM([String[]]$Bin)
+        {
+            $F  = @( )
+
+            # // __________
+            # // | Header |
+            # // ¯¯¯¯¯¯¯¯¯¯
+
+            $F += "# Downloaded from {0}" -f $This.Source
+            $F += "# {0}" -f $This.Resource
+            $F += "# {0}" -f $This.Version.ToString()
+            $F += "# <Types>"
+            $Bin | % { $F += "Add-Type -AssemblyName $_" }
+
+            # // ____________________________________________
+            # // | Classes (To be phased out at some point) |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $F += "# <Classes>"
+            $This.Manifest.Files(0) | % {
+        
+                $F += "# <{0}/{1}>" -f $_.Type, $_.Name
+                $F += "# {0}" -f $_.Fullname
+                If (!$_.Content)
+                {
+                    $_.GetContent()
+                }
+                $F += $_.Content
+                $F += "# </{0}/{1}>" -f $_.Type, $_.Name
+            }
+            $F += "# </Classes>"
+
+            # // _____________
+            # // | Functions |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $F += "# <Functions>"
+            $This.Manifest.Files(2)  | % { 
+        
+                $F += "# <{0}/{1}>" -f $_.Type, $_.Name
+                $F += "# {0}" -f $_.Fullname
+                If (!$_.Content)
+                {
+                    $_.GetContent()
+                }
+                $F += $_.Content
+                $F += "# </{0}/{1}>" -f $_.Type, $_.Name
+            }
+            $F += "# </Functions>"
+            $F += "Write-Theme `"Module [+] [$($This.Label())]`" @(10,3,15,0)"
+
+            Return $F -join "`n"
+        }
+        [Hashtable] PSDParam([String[]]$Bin)
+        {
+            Return @{  
+
+                GUID                 = $This.GUID
+                Path                 = $This.Root.Manifest
+                ModuleVersion        = $This.Version
+                Copyright            = $This.Copyright
+                CompanyName          = $This.Company
+                Author               = $This.Author
+                Description          = $This.Description
+                RootModule           = $This.Root.File
+                RequiredAssemblies   = $Bin
+            }
+        }
+        [Object] Validation()
+        {
+            $This.Write(3,"Validation [~] Module manifest")
+
+            $Validate = [Validate]::New($This)
+            $Ct       = $Validate.Output | ? Match -eq 0
+
+            Switch ($Ct.Count)
+            {
+                {$_ -eq 0}
+                {
+                    $This.Write(3,"Validation [+] All files passed validation")
+                }
+                {$_ -gt 0}
+                {
+                    $This.Write(1,"Validation [!] ($($Ct.Count)) files failed validation")
+                    $Ct
+                }
+            }
+
+            Return $Validate
+        }
     }
 
-    [Main]::New()
-}
+        # // __________________________________________________________
+        # // | < ... where all of the above classes actually go ... > |
+        # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-$Module = FightingEntropy.Module
+        # // _______________________________________________________
+        # // | Single class that controls all of the above classes |
+        # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+        [Main]::New()
+    }
+
+    $Module = FightingEntropy.Module
