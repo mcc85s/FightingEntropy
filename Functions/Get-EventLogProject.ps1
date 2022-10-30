@@ -111,7 +111,11 @@ Function Get-EventLogProject
         }
         [TimeSpan] Remain()
         {
-            $Remain = ($This.Elapsed() / $This.Percent) * (100-$This.Percent)
+            $Remain = Switch ($This.Percent)
+            {
+                0 { 0 } Default { ($This.Elapsed() / $This.Percent) * (100-$This.Percent) }
+            }
+            
             Return [TimeSpan]::FromSeconds($Remain)
         }
         Current()
