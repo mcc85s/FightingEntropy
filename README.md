@@ -17,6 +17,11 @@
 - graphic design
 - system management/maintenance
 
+# Demo
+| Date     | Name                                   | Url                          |
+|:---------|:---------------------------------------|:-----------------------------|
+| 10/28/22 | [FightingEntropy(π)][2022.10.1]        | https://youtu.be/S7k4lZdPE-I |
+
 This module is rather _experimental_ and incorporates a lot of moving parts, so it has many areas of development.
 The end goal of this module, is to provide protection against:
 - identity theft
