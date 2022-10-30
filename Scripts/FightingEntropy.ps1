@@ -1639,15 +1639,7 @@ Function FightingEntropy.Module
         }
     }
 
-        # // __________________________________________________________
-        # // | < ... where all of the above classes actually go ... > |
-        # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    [Main]::New()
+}
 
-        # // _______________________________________________________
-        # // | Single class that controls all of the above classes |
-        # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-        [Main]::New()
-    }
-
-    $Module = FightingEntropy.Module
+$Module = FightingEntropy.Module
