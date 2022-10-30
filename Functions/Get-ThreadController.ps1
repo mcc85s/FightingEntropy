@@ -670,6 +670,7 @@ Function Get-ThreadController
             }
 
             $This.Update(1,"ThreadSlot [+] Initialized Invocation: EndInvoke()")
+            $This.Status.Finalize()
 
             $This.IsComplete()
         }
