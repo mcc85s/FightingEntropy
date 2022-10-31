@@ -613,6 +613,10 @@ Function Get-ThreadController
             $This.Thread      += [ThreadObject]::New($Slot,$Index,$PowerShell)
             $This.Update(1,"ThreadSlot [+] Added thread [$Index]")
         }
+        [UInt32] Query()
+        {
+            Return $This.Thread.Handle | ? IsCompleted -eq 0 | % Count
+        }
         BeginInvoke()
         {
             $This.Update(0,"ThreadSlot [~] Initializing Invocation: BeginInvoke()")
@@ -626,60 +630,51 @@ Function Get-ThreadController
         }
         CheckInvoke()
         {
-            Try
+            If ($This.Complete -ne 1)
             {
-                If ($This.Complete -eq 0 -and $False -in $This.Thread.Handle.IsCompleted)
+                ForEach ($Thread in $This.Thread)
                 {
-                    ForEach ($Thread in $This.Thread)
+                    If ($Thread.Handle.IsCompleted -and $Thread.Complete -eq 0)
                     {
-                        If ($Thread.Handle.IsCompleted -and $Thread.Complete -eq 0)
-                        {
-                            $Thread.IsComplete()
-                            $This.Update(1,"Complete [+] Thread[$($Thread.Index)]")
-                        }
+                        $Thread.IsComplete()
+                        $This.Update(1,"Complete [+] Thread[$($Thread.Index)]")
                     }
                 }
-                Else
+
+                If ($This.Query() -eq 0)
                 {
                     $This.Complete = 1
                 }
             }
-            Catch
-            {
-                $This.Update(1,"Exception [!] An exception occurred, and was caught.")
-            }
         }
         EndInvoke()
         {
-            $Ct = $This.Thread.Handle | ? IsCompleted -eq 0 | % Count
-            Switch ($Ct)
+            If ($This.Complete -ne 1)
             {
-                {$_ -gt 0}
+                $Ct = $This.Query()
+                Throw "Exception [!] ($Ct) threads are still running."
+            }
+            If ($This.Complete -eq 1)
+            {
+                $This.Update(0,"ThreadSlot [~] Initializing Invocation: EndInvoke()")
+                ForEach ($Thread in $This.Thread)
                 {
-                    Throw "Exception [!] ($Ct) threads are still running."
-                }
-                {$_ -eq 0}
-                {
-                    $This.Update(0,"ThreadSlot [~] Initializing Invocation: EndInvoke()")
-                    ForEach ($Thread in $This.Thread)
+                    Switch ($Thread.Complete)
                     {
-                        Switch ($Thread.Complete)
+                        0 
                         {
-                            0 
-                            {
-                                $Thread.EndInvoke()
-                                $This.Update(1,"Closing [~] [Thread]://(Rank: $($Thread.Rank), InstanceId: ($($Thread.PowerShell.InstanceId))")
-                            }
-                            1
-                            {
-                                $This.Update(1,"Closed [!] [Thread]://(Rank: $($Thread.Rank), InstanceId: ($($Thread.PowerShell.InstanceId))")
-                            }
+                            $Thread.EndInvoke()
+                            $This.Update(1,"Closing [~] [Thread]://(Rank: $($Thread.Rank), InstanceId: ($($Thread.PowerShell.InstanceId))")
+                        }
+                        1
+                        {
+                            $This.Update(1,"Closed [!] [Thread]://(Rank: $($Thread.Rank), InstanceId: ($($Thread.PowerShell.InstanceId))")
                         }
                     }
-    
-                    $This.Update(1,"ThreadSlot [+] Initialized Invocation: EndInvoke()")
-                    $This.Status.Finalize()
                 }
+    
+                $This.Update(1,"ThreadSlot [+] Initialized Invocation: EndInvoke()")
+                $This.Status.Finalize()
             }
         }
         [Void] Dispose()
