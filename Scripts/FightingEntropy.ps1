@@ -675,7 +675,7 @@ Function FightingEntropy.Module
             ("Get-PSDLogGUI.ps1"                , "8716E3EC075E03E86BB28C495A359449445BC879F02F47AE5AEBCACCCE5BA679") ,
             ("Get-PSDModule.ps1"                , "FCD86A877C9F8D5559E6849230AE41E169B31FEB197E0CF722C0CEA95B70CAAB") ,
             ("Get-SystemDetails.ps1"            , "7B4713132FC595DC85A65286A370822A9F8A68897AD72432FCEC5385BF702EF1") ,
-            ("Get-ThreadController.ps1"         , "D88F08AA9956015C9CBD039EF187FDFAE5A418E7284ABACCE5B0D7520DDC5C0A") ,
+            ("Get-ThreadController.ps1"         , "6BC2C4092188A2B9A8787513AD289CEB66AC11064C64230B6A1BE9A2AB15A42E") ,
             ("Get-ViperBomb.ps1"                , "DF93D10B9C6ACEEEF21EC3AA6B0D32D1130900A363C3D654A529DF46B017541C") ,
             ("Get-WhoisUtility.ps1"             , "9181508E7AE447FE317A50614FB83F1A4BD0B35490A0C5149F50A71D4C4AA451") ,
             ("Install-BossMode.ps1"             , "2739086EB9BCDB520D0B20C17081EF5FB516C2E1387864CC38C9452EA16F0CC3") ,
@@ -791,13 +791,14 @@ Function FightingEntropy.Module
                 $Folder | % Item
             })
         }
-        [String[]] Detail()
-        {
-            Return "Type Name Hash Exists Match Source Fullname" -Split " "
-        }
         [Object] Files([UInt32]$Index)
         {
-            Return $This.Output[$Index] | % Item | Select-Object $This.Detail()
+            Return $This.Output[$Index] | % Item
+        }
+        [Object] Full()
+        {
+            $D = "Index Type Name Hash Exists Fullname Source Match" -Split " "
+            Return $This.Output | % Item | Select-Object $D
         }
         [String] ToString()
         {
@@ -1480,6 +1481,85 @@ Function FightingEntropy.Module
             $This.Root.Module.Create()
             $This.Root.File.Create()
 
+            # // _____________________
+            # // | Build the PSM/PSD |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $This.Build()
+
+            # // _____________________________________________
+            # // | Installs a shortcut to the module console |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $Com  = New-Object -ComObject WScript.Shell
+            $Item = $Com.CreateShortcut($This.Root.Shortcut.Path)
+        
+            # // ___________________________________
+            # // | Assigns details to the shortcut |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $Item.TargetPath   = "PowerShell"
+
+            $Command           = 'Add-Type -AssemblyName PresentationFramework',
+                                 'Import-Module FightingEntropy',
+                                 '$Module = Get-FEModule',
+                                 '$Module' -join ";"
+            $Item.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command $Command"
+
+            $Item.Description  = $This.Description
+            $Item.IconLocation = $This.Graphic("icon.ico").Fullname
+            $Item.Save()
+            
+            # // _____________________________________________________
+            # // | Assigns administrative privileges to the shortcut |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            $Bytes             = [System.IO.File]::ReadAllBytes($This.Root.Shortcut)
+            $Bytes[0x15]       = $Bytes[0x15] -bor 0x20 
+                                 # Set [byte] (21/0x15) bit 6 (0x20) ON... or else.
+            [System.IO.File]::WriteAllBytes($This.Root.Shortcut, $Bytes)
+
+            $This.Root.Shortcut.TestPath()
+
+            $This.Write(2,"Installed [+] $($This.Label())")
+        }
+        [Void] Update()
+        {
+            $This.Root.File.Remove()
+            $This.Root.Manifest.Remove()
+
+            ForEach ($File in $This.Manifest.Output | % Item)
+            {
+                $Hash = Get-FileHash $File.Fullname | % Hash
+                If ($Hash -ne $File.Hash)
+                {
+                    $Message = @(
+                    "Exception [!] Type: [{0}]" -f $File.Type;
+                    "              File: [{0}]" -f $File.Fullname;
+                    "              Hash: [{0}]" -f $File.Hash;
+                    "          Mismatch: [{0}]" -f $Hash)
+
+                    Switch ((Get-Host).UI.PromptForChoice($Message,"Replace...?",@("&Yes","&No"),1))
+                    {
+                        0
+                        {
+                            $File.Hash = $Hash
+                            Write-Host ("Updated [+] File: [{0}]" -f $File.Name)
+                            $File.GetContent()
+                        }
+
+                        1
+                        {
+                            Throw ("Exception [!] Hash mismatch, file: [{0}]" -f $File.Name)
+                        }
+                    }
+                }
+            }
+
+            $This.Module()
+        }
+        [Void] Module()
+        {
             # // ___________________
             # // | PowerShell Full |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -1522,42 +1602,6 @@ Function FightingEntropy.Module
             # // ___________________________________________________________________
             # // | Todo | PS Core | PS Server | <- Just a manner of file selection |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-            # // _____________________________________________
-            # // | Installs a shortcut to the module console |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-            $Com  = New-Object -ComObject WScript.Shell
-            $Item = $Com.CreateShortcut($This.Root.Shortcut.Path)
-        
-            # // ___________________________________
-            # // | Assigns details to the shortcut |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-            $Item.TargetPath   = "PowerShell"
-
-            $Command           = 'Add-Type -AssemblyName PresentationFramework',
-                                 'Import-Module FightingEntropy',
-                                 '$Module = Get-FEModule',
-                                 '$Module' -join ";"
-            $Item.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command $Command"
-
-            $Item.Description  = $This.Description
-            $Item.IconLocation = $This.Graphic("icon.ico").Fullname
-            $Item.Save()
-            
-            # // _____________________________________________________
-            # // | Assigns administrative privileges to the shortcut |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-            $Bytes             = [System.IO.File]::ReadAllBytes($This.Root.Shortcut)
-            $Bytes[0x15]       = $Bytes[0x15] -bor 0x20 
-                                 # Set [byte] (21/0x15) bit 6 (0x20) ON... or else.
-            [System.IO.File]::WriteAllBytes($This.Root.Shortcut, $Bytes)
-
-            $This.Root.Shortcut.TestPath()
-
-            $This.Write(2,"Installed [+] $($This.Label())")
         }
         [String] PSM([String[]]$Bin)
         {
@@ -1608,7 +1652,7 @@ Function FightingEntropy.Module
                 $F += "# </{0}/{1}>" -f $_.Type, $_.Name
             }
             $F += "# </Functions>"
-            $F += "Write-Theme `"Module [+] [$($This.Label())]`" @(10,3,15,0)"
+            $F += "Write-Theme `"Module [+] [FightingEntropy($([Char]960)][$($This.Version)]`" @(10,3,15,0)"
 
             Return $F -join "`n"
         }
