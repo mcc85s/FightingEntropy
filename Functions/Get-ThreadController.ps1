@@ -651,30 +651,19 @@ Function Get-ThreadController
         {
             If ($This.Complete -ne 1)
             {
-                Throw "Exception [!] ($($This.Query(0))) threads are still running."
+                $Ct = $This.Query(0)
+                Throw "Exception [!] ($Ct) threads still running."
             }
-            If ($This.Complete -eq 1)
-            {
-                $This.Update(0,"ThreadSlot [~] Initializing Invocation: EndInvoke()")
-                ForEach ($Thread in $This.Thread)
-                {
-                    Switch ($Thread.Complete)
-                    {
-                        0 
-                        {
-                            $Thread.EndInvoke()
-                            $This.Update(1,"Closing [~] [Thread]://(Rank: $($Thread.Rank), InstanceId: ($($Thread.PowerShell.InstanceId))")
-                        }
-                        1
-                        {
-                            $This.Update(1,"Closed [!] [Thread]://(Rank: $($Thread.Rank), InstanceId: ($($Thread.PowerShell.InstanceId))")
-                        }
-                    }
-                }
-    
-                $This.Update(1,"ThreadSlot [+] Initialized Invocation: EndInvoke()")
-                $This.Status.Finalize()
+
+            $This.Update(0,"ThreadSlot [~] Initializing Invocation: EndInvoke()")
+            $This.Thread | % { 
+                
+                $_.EndInvoke()
+                $This.Update(1,"Closing [~] [Thread]://(Rank: $($_.Rank), InstanceId: ($($_.PowerShell.InstanceId))")    
             }
+
+            $This.Update(1,"ThreadSlot [+] Initialized Invocation: EndInvoke()")
+            $This.Status.Finalize()
         }
         [Void] Dispose()
         {
