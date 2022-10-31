@@ -675,7 +675,7 @@ Function FightingEntropy.Module
             ("Get-PSDLogGUI.ps1"                , "8716E3EC075E03E86BB28C495A359449445BC879F02F47AE5AEBCACCCE5BA679") ,
             ("Get-PSDModule.ps1"                , "FCD86A877C9F8D5559E6849230AE41E169B31FEB197E0CF722C0CEA95B70CAAB") ,
             ("Get-SystemDetails.ps1"            , "7B4713132FC595DC85A65286A370822A9F8A68897AD72432FCEC5385BF702EF1") ,
-            ("Get-ThreadController.ps1"         , "5B4071AD8DBC67F2C474DF20E64C87DF2C38B260E76AC7401040B81A8532EA58") ,
+            ("Get-ThreadController.ps1"         , "D88F08AA9956015C9CBD039EF187FDFAE5A418E7284ABACCE5B0D7520DDC5C0A") ,
             ("Get-ViperBomb.ps1"                , "DF93D10B9C6ACEEEF21EC3AA6B0D32D1130900A363C3D654A529DF46B017541C") ,
             ("Get-WhoisUtility.ps1"             , "9181508E7AE447FE317A50614FB83F1A4BD0B35490A0C5149F50A71D4C4AA451") ,
             ("Install-BossMode.ps1"             , "2739086EB9BCDB520D0B20C17081EF5FB516C2E1387864CC38C9452EA16F0CC3") ,
@@ -791,9 +791,13 @@ Function FightingEntropy.Module
                 $Folder | % Item
             })
         }
+        [String[]] Detail()
+        {
+            Return "Type Name Hash Exists Match Source Fullname" -Split " "
+        }
         [Object] Files([UInt32]$Index)
         {
-            Return $This.Output[$Index] | % Item
+            Return $This.Output[$Index] | % Item | Select-Object $This.Detail()
         }
         [String] ToString()
         {
