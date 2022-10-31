@@ -613,9 +613,9 @@ Function Get-ThreadController
             $This.Thread      += [ThreadObject]::New($Slot,$Index,$PowerShell)
             $This.Update(1,"ThreadSlot [+] Added thread [$Index]")
         }
-        [UInt32] Query()
+        [UInt32] Query([UInt32]$Mode)
         {
-            Return $This.Thread.Handle | ? IsCompleted -eq 0 | % Count
+            Return ($This.Thread.Handle | ? IsCompleted -eq $Mode).Count
         }
         BeginInvoke()
         {
@@ -641,7 +641,7 @@ Function Get-ThreadController
                     }
                 }
 
-                If ($This.Query() -eq 0)
+                If ($This.Query(0) -eq 0)
                 {
                     $This.Complete = 1
                 }
@@ -651,8 +651,7 @@ Function Get-ThreadController
         {
             If ($This.Complete -ne 1)
             {
-                $Ct = $This.Query()
-                Throw "Exception [!] ($Ct) threads are still running."
+                Throw "Exception [!] ($($This.Query(0))) threads are still running."
             }
             If ($This.Complete -eq 1)
             {
