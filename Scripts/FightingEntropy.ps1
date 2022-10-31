@@ -1485,7 +1485,7 @@ Function FightingEntropy.Module
             # // | Build the PSM/PSD |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            $This.Build()
+            $This.Module()
 
             # // _____________________________________________
             # // | Installs a shortcut to the module console |
@@ -1652,7 +1652,7 @@ Function FightingEntropy.Module
                 $F += "# </{0}/{1}>" -f $_.Type, $_.Name
             }
             $F += "# </Functions>"
-            $F += "Write-Theme `"Module [+] [FightingEntropy($([Char]960)][$($This.Version)]`" @(10,3,15,0)"
+            $F += "Write-Theme `"Module [+] [FightingEntropy(`$([Char]960))][$($This.Version)]`" @(10,3,15,0)"
 
             Return $F -join "`n"
         }
