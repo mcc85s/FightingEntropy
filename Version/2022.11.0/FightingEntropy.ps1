@@ -84,12 +84,14 @@ Function FightingEntropy.Module
         ThemeStack([UInt32]$Slot,[String]$Message)
         {
             $This.Main($Message)
-            $This.Write($This.Palette($Slot))
+            $Object = $This.Palette($Slot)
+            $This.Write($Object)
         }
         ThemeStack([String]$Message)
         {
             $This.Main($Message)
-            $This.Write($This.Palette(0))
+            $Object = $This.Palette(0)
+            $This.Write($Object)
         }
         Main([String]$Message)
         {
@@ -127,7 +129,7 @@ Function FightingEntropy.Module
         }
         [String] Convert([String]$Line)
         {
-            Return [Char[]]@(0,2,4,6 | % { [Convert]::FromHexString($Line.Substring($_,2)) }) -join ''
+            Return [Char[]]@(0,2,4,6 | % { "0x$($Line.Substring($_,2))" | IEX }) -join ''
         }
         Add([String]$Mask,[String]$Fore)
         {
@@ -204,7 +206,14 @@ Function FightingEntropy.Module
         }
         [Void] Write([UInt32[]]$Palette)
         {
-            $This.Track | % Content | % Write $Palette
+            $0,$1,$2,$3 = $Palette
+            ForEach ($Track in $This.Track)
+            {
+                ForEach ($Item in $Track.Content)
+                {
+                   $Item.Write($0,$1,$2,$3)
+                }
+            }
         }
         [String] ToString()
         {
@@ -308,6 +317,12 @@ Function FightingEntropy.Module
             $This.AddPropertySet("PowerShell")
 
             (Get-Variable PSVersionTable | % Value).GetEnumerator() | % { $This.Add(3,$_.Name,$_.Value) }
+
+            If ($This.Tx("PowerShell","PSedition") -eq "Desktop")
+            {
+                Get-CimInstance Win32_OperatingSystem | % { $This.Add(3,"OS","Microsoft Windows $($_.Version)") }
+                $This.Add(3,"Platform","Win32NT")
+            }
 
             # // ____________________________________
             # // | Assign hashtable to output array |
@@ -1411,19 +1426,19 @@ Function FightingEntropy.Module
         {
             Return $This.Manifest.List() | ? Type -eq $Type | ? Name -eq $Name
         }
-        [Object] Class([String]$Name)
+        [Object] _Class([String]$Name)
         {
             Return $This.File("Class",$Name)
         }
-        [Object] Control([String]$Name)
+        [Object] _Control([String]$Name)
         {
             Return $This.File("Control",$Name)
         }
-        [Object] Function([String]$Name)
+        [Object] _Function([String]$Name)
         {
             Return $This.File("Function",$Name)
         }
-        [Object] Graphic([String]$Name)
+        [Object] _Graphic([String]$Name)
         {
             Return $This.File("Graphic",$Name)
         }
@@ -1485,7 +1500,7 @@ Function FightingEntropy.Module
             # // | Build the PSM/PSD |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            $This.Module()
+            $This._Module()
 
             # // _____________________________________________
             # // | Installs a shortcut to the module console |
@@ -1556,9 +1571,9 @@ Function FightingEntropy.Module
                 }
             }
 
-            $This.Module()
+            $This._Module()
         }
-        [Void] Module()
+        [Void] _Module()
         {
             # // ___________________
             # // | PowerShell Full |
