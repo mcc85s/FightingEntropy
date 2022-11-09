@@ -1,6 +1,6 @@
 # About
-This is an extension of the PSD module on FriendsOfMdt (Nystrom/Arwidmark/Niehaus), and it isn't complete.
-This is meant to implement additions made via [FightingEntropy(π)]
+This is an extension of the PSD module on **FriendsOfMdt** (Nystrom/Arwidmark/Niehaus), and it isn't complete.
+This is meant to implement additions made by **[FightingEntropy(π)]**
 
 # To Do
 | Name                         | Last     | 
