@@ -35,8 +35,10 @@ Function New-FEFormat
     [CmdLetBinding()]Param(
     [Parameter(ParameterSetName=0,Position=0)][Object]$Table,
     [Parameter(ParameterSetName=1,Position=0)][Object]$Section,
+    [Parameter(ParameterSetName=2,Position=0)][Object]$Block,
     [Parameter(ParameterSetName=0,Position=1)]
-    [Parameter(ParameterSetName=1,Position=1)][String[]]$Property)
+    [Parameter(ParameterSetName=1,Position=1)]
+    [Parameter(ParameterSetName=2,Position=1)][String[]]$Property)
 
     # // ______________________________________________________
     # // | Meant to adjust the (width/display) of output data |
