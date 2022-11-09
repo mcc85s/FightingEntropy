@@ -1,4 +1,8 @@
-# ToDo
+# About
+This is an extension of the PSD module on FriendsOfMdt (Nystrom/Arwidmark/Niehaus), and it isn't complete.
+This is meant to implement additions made via [FightingEntropy(π)]
+
+# To Do
 | Name                         | Last     | 
 |:-----------------------------|:---------|
 | PSDController.psm1           | 11/08/22 |
