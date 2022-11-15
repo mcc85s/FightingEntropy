@@ -1,6 +1,6 @@
 #     ____    ____________________________________________________________________________________________________        
 #    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-#    \\__//¯¯¯ [FightingEntropy(π)][2022.11.0]: 11-14-2022 22:19:27                                           ___//¯¯\\   
+#    \\__//¯¯¯ [FightingEntropy(π)][2022.11.0]: 11-15-2022 14:23:27                                           ___//¯¯\\   
 #     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
 #         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
@@ -627,7 +627,7 @@ Function FightingEntropy.Module
             ("PSDServerMod.xml"                , "4175C9569C8DFC1F14BADF70395D883BDD983948C2A6633CBBB6611430A872C7") ,
             ("success.png"                     , "46757AB0E2D3FFFFDBA93558A34AC8E36F972B6F33D00C4ADFB912AE1F6D6CE2") ,
             ("vendorlist.txt"                  , "9BD91057A1870DB087765914EAA5057D673CDC33145D804BBF4B024A11D66934") ,
-            ("Wifi.dll"                        , "69006D2B529E20A7CC15FB87470EFF906D47346DA49B19D42B904F9F6761C282") ,
+            ("Wifi.cs"                         , "698AA48C98F500C6ED98305BCCA3C59C52784A664E01526D965A07AB24E47A2A") ,
             ("zipcode.txt"                     , "45D5F4B9B50782CEC4767A7660583C68A6643C02FC7CC4F0AE5A79CCABE83021") | % { 
                 
                 $This.Add(0,$_[0],$_[1])
@@ -655,7 +655,7 @@ Function FightingEntropy.Module
             ("Get-FEHost.ps1"                  , "E8668F9FA2E8741F7C8B99F4BB25C2604EC61AAC0FA162C9B8BEFF94D9AB3528") ,
             ("Get-FEImageManifest.ps1"         , "3665C48E2A0A947F6DDACF6F036ED88D33318595F67129718A1CB5F17D9A5D80") ,
             ("Get-FEInfo.ps1"                  , "BCBEDC6B56D8657841ABB89AAF25E6E2D1A98670D40E7371EF8C88CDA2259A48") ,
-            ("Get-FEModule.ps1"                , "006AB653D83AB4CD65991206784AEB4636836DA18AC6039DBAB70484CD1F618A") ,
+            ("Get-FEModule.ps1"                , "20188EAFBCCDD907FCAF7ED7ED6BC1941DF026E69B66DEE5022686D8CD66F369") ,
             ("Get-FENetwork.ps1"               , "8251CC0215D4B83D1D1A465C0D89FB3C97E5B07B4A2ECC8BB86A39B3D8C8ADB7") ,
             ("Get-FEOS.ps1"                    , "4224DB2FFAB564F85B7FD8998B7311751DFD3C5F22BE4547412CF910BBA605F4") ,
             ("Get-FEProcess.ps1"               , "053AF12E5C31360F1A91778D997A9D7AC9D1C7BF65CAD5F34544482F9BBD872A") ,
@@ -681,7 +681,7 @@ Function FightingEntropy.Module
             ("New-EnvironmentKey.ps1"          , "4783E3A5AFE777F91A59AB73A0D2B7311BD4E9760EA6BDDCB366FAFE52FB5CDD") ,
             ("New-FEFormat.ps1"                , "C2F51D3D1DAAA7EBA993DC93640AB934B30DF37EDDE040569A5A7E13D2CE0E39") ,
             ("New-FEInfrastructure.ps1"        , "D8AD33C0609552850AA3A36F2DE9C5ED116A0057D16883DA9BD85311EB869E18") ,
-            ("Search-WirelessNetwork.ps1"      , "22CB56D237C2BBF7CABCA7E507C602E35C6B8770681B61B5A51ABE97766AB6A2") ,
+            ("Search-WirelessNetwork.ps1"      , "EE54995EA3AD491F464FFE0CA226BA14E56AFC8E912CA50AA462C9F81F201760") ,
             ("Set-ScreenResolution.ps1"        , "550BABB4ECCB26E835A952E1A749EDC857816B202881DC68C22F2727EB3493F7") ,
             ("Show-ToastNotification.ps1"      , "0D70C7CD52FE5C34A29C0EE64581F2FC4DA6CEC1171C58FCB0EBFD2464F66973") ,
             ("Update-PowerShell.ps1"           , "0D803B07A9FF514B2376CEB4EB5E792F526785EBE89CCA7E5E9FA9CAF2A9154F") ,
@@ -1319,7 +1319,7 @@ Function FightingEntropy.Module
     Class Main
     {
         [String]      $Source = "https://www.github.com/mcc85s/FightingEntropy"
-        [String]        $Name = "[FightingEntropy(π)]"
+        [String]        $Name = "[FightingEntropy($([Char]960))]"
         [String] $Description = "Beginning the fight against ID theft and cybercrime"
         [String]      $Author = "Michael C. Cook Sr."
         [String]     $Company = "Secure Digits Plus LLC"
@@ -1566,8 +1566,7 @@ Function FightingEntropy.Module
                        "System.Runtime.WindowsRuntime",
                        "System.IO.Compression", 
                        "System.IO.Compression.Filesystem", 
-                       "System.Windows.Forms",
-                       $This._Control("Wifi.dll").Fullname
+                       "System.Windows.Forms"
 
                 # // _____________________________________________
                 # // | Write the module file to disk using PSM() |
@@ -1627,7 +1626,7 @@ Function FightingEntropy.Module
                 $F += "# </{0}/{1}>" -f $_.Type, $_.Name
             }
             $F += "# </Functions>"
-            $F += "Write-Theme `"Module [+] [FightingEntropy(`$([Char]960))][$($This.Version)]`" @(10,3,15,0)"
+            $F += "Write-Theme -InputObject `"Module [+] [FightingEntropy())][$($This.Version)]`" -Palette 2"
 
             Return $F -join "`n"
         }
