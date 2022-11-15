@@ -17,7 +17,7 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-10-10                                                                               //   
-   \\        Modified   : 2022-11-08                                                                               \\   
+   \\        Modified   : 2022-11-14                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
    //        TODO       : N/A                                                                                      //   
@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11/08/2022 18:43:03    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-14-2022 21:40:32    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -36,9 +36,8 @@ Function Get-FEModule
                     HelpUri                 = "http://www.github.com/mcc85s/FightingEntropy" )]
     Param(                
         [Parameter(ParameterSetName =   "Default" )][Switch]       $All ,
-        [Parameter(ParameterSetName =   "Classes" )][Switch]   $Classes , 
-        [Parameter(ParameterSetName = "Functions" )][Switch] $Functions , 
-        [Parameter(ParameterSetName =   "Control" )][Switch]   $Control , 
+        [Parameter(ParameterSetName =   "Control" )][Switch]   $Control ,
+        [Parameter(ParameterSetName = "Functions" )][Switch] $Functions ,  
         [Parameter(ParameterSetName =  "Graphics" )][Switch]  $Graphics )
 
     # // _____________________________________________________________________
@@ -434,7 +433,6 @@ Function Get-FEModule
         {
             Return @{ 
 
-                Class    = "Classes"
                 Control  = "Control"
                 Function = "Functions"
                 Graphic  = "Graphics"
@@ -467,7 +465,8 @@ Function Get-FEModule
         }
         SetSource([String]$Source)
         {
-            $This.Source   = "{0}/blob/main/{1}/{2}?raw=true" -f $Source, $This.FolderName(), $This.Name
+            $Version = [Regex]::Matches($This.Fullname,"\d{4}\.\d{2}\.\d+").Value
+            $This.Source   = "{0}/blob/main/Version/{1}/{2}/{3}?raw=true" -f $Source, $Version, $This.FolderName(), $This.Name
         }
         Download()
         {
@@ -631,24 +630,6 @@ Function Get-FEModule
             $This.Source   = $Source
             $This.Resource = $Resource
             $This.Output   = @( )
-
-            # // ___________
-            # // | Classes |
-            # // ¯¯¯¯¯¯¯¯¯¯¯
-
-            $This.AddFolder("Class","Classes")
-
-            ("_Cache.ps1"                       , "DA2DAF257EB99FFF7E414B83D3659B55646D54DE338D81DB0675D98E76EAE630") ,
-            ("_Drive.ps1"                       , "B6CE9795F97896C64C991D7C1314E36939C92C514312C0630C8C5B9A1A972388") ,
-            ("_Drives.ps1"                      , "0B1E99226B2345B596B0EC6CF03E85235B43F07862A43C6ACDB74144E176C744") ,
-            ("_File.ps1"                        , "26E3C8D2C23A96F75E953603B7C4F028609FBE78444CF8AEAE53FE89B41B5904") ,
-            ("_FirewallRule.ps1"                , "4E0B2B8849674C2A36D16E32D9914E95B1F18C5645F393CFA321322CB2122EC3") ,
-            ("_Icons.ps1"                       , "D469DB44301A69F832417744A58EE60D03AC4C83F8C8AFA3D4D5E765C02BD9F2") ,
-            ("_Shortcut.ps1"                    , "FCA9DC157A2BDF9D66AA9A2803D9A419F28D375A7C4ABFFA23A925F544778B6C") ,
-            ("_ViperBomb.ps1"                   , "82D3FDBA40360D8E0123CDAEFF3A0A8F0AE0105CC4D6791EBF8B40BD0BF64162") | % { 
-                
-                $This.Add(0,$_[0],$_[1])
-            }
             
             # // ___________
             # // | Control |
@@ -656,22 +637,23 @@ Function Get-FEModule
 
             $This.AddFolder("Control","Control")
 
-            ("Computer.png"                     , "87EAB4F74B38494A960BEBF69E472AB0764C3C7E782A3F74111F993EA31D1075") ,
-            ("DefaultApps.xml"                  , "939CE697246AAC96C6F6A4A285C8EE285D7C5090523DB77831FF76D5D4A31539") ,
-            ("failure.png"                      , "59D479A0277CFFDD57AD8B9733912EE1F3095404D65AB630F4638FA1F40D4E99") ,
-            ("FEClientMod.xml"                  , "B3EB870C6B4206D11C921E70C6D058777A5F69FD1D9DEA8B6071759CAFCD2593") ,
-            ("FEServerMod.xml"                  , "55A881BFE436EF18C104BFA51ECF6D12583076D576BA3276F53A682E056ACA5C") ,
-            ("header-image.png"                 , "38F1E2D061218D31555F35C729197A32C9190999EF548BF98A2E2C2217BBCB88") ,
-            ("MDT_LanguageUI.xml"               , "100B5CA10BCF99E2A8680C394266042DEA5ECA300FBDA33289F6E4A17E44CBCF") ,
-            ("MDTClientMod.xml"                 , "C22C53DAAB87AAC06DC3AC64F66C8F6DF4B7EAE259EC5D80D60E51AF82055231") ,
-            ("MDTServerMod.xml"                 , "3724FE189D8D2CFBA17BC2A576469735B1DAAA18A83D1115169EFF0AF5D42A2F") ,
-            ("PSDClientMod.xml"                 , "4175C9569C8DFC1F14BADF70395D883BDD983948C2A6633CBBB6611430A872C7") ,
-            ("PSDServerMod.xml"                 , "4175C9569C8DFC1F14BADF70395D883BDD983948C2A6633CBBB6611430A872C7") ,
-            ("success.png"                      , "46757AB0E2D3FFFFDBA93558A34AC8E36F972B6F33D00C4ADFB912AE1F6D6CE2") ,
-            ("vendorlist.txt"                   , "9BD91057A1870DB087765914EAA5057D673CDC33145D804BBF4B024A11D66934") ,
-            ("zipcode.txt"                      , "45D5F4B9B50782CEC4767A7660583C68A6643C02FC7CC4F0AE5A79CCABE83021") | % { 
+            ("Computer.png"                    , "87EAB4F74B38494A960BEBF69E472AB0764C3C7E782A3F74111F993EA31D1075") ,
+            ("DefaultApps.xml"                 , "939CE697246AAC96C6F6A4A285C8EE285D7C5090523DB77831FF76D5D4A31539") ,
+            ("failure.png"                     , "59D479A0277CFFDD57AD8B9733912EE1F3095404D65AB630F4638FA1F40D4E99") ,
+            ("FEClientMod.xml"                 , "B3EB870C6B4206D11C921E70C6D058777A5F69FD1D9DEA8B6071759CAFCD2593") ,
+            ("FEServerMod.xml"                 , "55A881BFE436EF18C104BFA51ECF6D12583076D576BA3276F53A682E056ACA5C") ,
+            ("header-image.png"                , "38F1E2D061218D31555F35C729197A32C9190999EF548BF98A2E2C2217BBCB88") ,
+            ("MDTClientMod.xml"                , "C22C53DAAB87AAC06DC3AC64F66C8F6DF4B7EAE259EC5D80D60E51AF82055231") ,
+            ("MDTServerMod.xml"                , "3724FE189D8D2CFBA17BC2A576469735B1DAAA18A83D1115169EFF0AF5D42A2F") ,
+            ("MDT_LanguageUI.xml"              , "100B5CA10BCF99E2A8680C394266042DEA5ECA300FBDA33289F6E4A17E44CBCF") ,
+            ("PSDClientMod.xml"                , "4175C9569C8DFC1F14BADF70395D883BDD983948C2A6633CBBB6611430A872C7") ,
+            ("PSDServerMod.xml"                , "4175C9569C8DFC1F14BADF70395D883BDD983948C2A6633CBBB6611430A872C7") ,
+            ("success.png"                     , "46757AB0E2D3FFFFDBA93558A34AC8E36F972B6F33D00C4ADFB912AE1F6D6CE2") ,
+            ("vendorlist.txt"                  , "9BD91057A1870DB087765914EAA5057D673CDC33145D804BBF4B024A11D66934") ,
+            ("Wifi.dll"                        , "A63BA85320167B3E6B9334808B7F1029C5F140DA94C5362ADF4AF7F8A3C1C876") ,
+            ("zipcode.txt"                     , "45D5F4B9B50782CEC4767A7660583C68A6643C02FC7CC4F0AE5A79CCABE83021") | % { 
                 
-                $This.Add(1,$_[0],$_[1])
+                $This.Add(0,$_[0],$_[1])
             }
 
             # // _____________
@@ -680,58 +662,56 @@ Function Get-FEModule
 
             $This.AddFolder("Function","Functions")
 
-            ("Copy-FileStream.ps1"              , "F80662EF865682E3DF17EA8F30E31E3D0F1650C8DD5A129D4F8B9539F92A61B3") ,
-            ("Get-AssemblyList.ps1"             , "1610574E514AAF500FF8CEDCCF2B46EDF28287D9E3EFB612C3C0320320A4E7A3") ,
-            ("Get-ControlExtension.ps1"         , "8CC5D1320C51498AF2BE365F38949926331339E7CB6B3101C4A46FAD05CF2092") ,
-            ("Get-DiskInfo.ps1"                 , "1D68ED1AD277CCF0B860332C1501570B39C49B67D7F9AF7F309ADC9E99B409D0") ,
-            ("Get-EnvironmentKey.ps1"           , "C7C6D0D422A93F803F6F7539C42E057DA213661F9F2212679C6DCF10F5F3AA51") ,
-            ("Get-EventLogArchive.ps1"          , "E411B5B741F98B1F483B1F4E62DF0B64D536EB61ADE427D8793BEC1E99B51021") ,
-            ("Get-EventLogConfigExtension.ps1"  , "CE7FC970662A07DAED28F3E29FD2E449ED691315CB312039D0FDB61E0B587C45") ,
-            ("Get-EventLogController.ps1"       , "B3F1DB7A018A22E378637E170CA016F250572A2DA5113CF1AE3CC393A732091A") ,
-            ("Get-EventLogProject.ps1"          , "37BD731836ABC26EA2D4D478860A74E3D835B00BD130C4D25848B172B5D22BC1") ,
-            ("Get-EventLogRecordExtension.ps1"  , "5722717C4A51D0069DD78FD31E72F239211BC26C10D9CFF5202659B50A026A56") ,
-            ("Get-EventLogXaml.ps1"             , "3D5BCF8F6FAAB73F2CF113C4778A7556C908C055D472E313224FD05BC470D48C") ,
-            ("Get-FEADLogin.ps1"                , "4297453E04EB27552ABD8C3C14104273C60F221A8248CEA1C65A4D30B99C7203") ,
-            ("Get-FEDCPromo.ps1"                , "06CD65C5C5ABDB7A5A625DE510C7CDA4FD9575E7976D7C65FA713714DDC01DFB") ,
-            ("Get-FEHost.ps1"                   , "02904EA751DB13D32FC18577D8780DE8B7E4ADB43EC94FC11621BA6CE5DC2488") ,
-            ("Get-FEImageManifest.ps1"          , "C45D927563C29E8E5AF173ACD635AED75A963582389D39B3A9D2CDF9E9849ECC") ,
-            ("Get-FEInfo.ps1"                   , "2C3E7209FFEE695E7187972B2AB0EF2B50CB5C8F89680ED1E9A14A388B376A59") ,
-            ("Get-FEManifest.ps1"               , "93CD40C06942BCCCBD67ECD950AA3B8F8D9A4162EAE1681C352CA20D7B6CC3F1") ,
-            ("Get-FEModule.ps1"                 , "12FD9079144EFABD7E0ECB923401CB3294C9642004B9259160712E963E99A89B") ,
-            ("Get-FENetwork.ps1"                , "88C28DF03BC1EC0E79E250D3496E6E9C6E26DFCBCEBC4EBA647AA1540BA8C438") ,
-            ("Get-FEOS.ps1"                     , "8C32694CE87CC1CCCB46E106C210F36B84EFCBF4D85C5240BB66D0C0840303BF") ,
-            ("Get-FEProcess.ps1"                , "0CB2B46E14790BA89FC2F60A12B67C9F1E435A8A20DBF011A130D26A291E094D") ,
-            ("Get-FERole.ps1"                   , "1E52DFB5820ACDC711D232DC18E5DCFCF390EF71721E2BE4DDADB885B675A529") ,
-            ("Get-FEService.ps1"                , "3D7F947ADCDCDF0A139AFFA9E92D125A581275BDC2B74247F437BA5A4985C2D6") ,
-            ("Get-FESitemap.ps1"                , "45A571D62EE528F05E0D4EA43995FB0B7C4A1DD7D1839A8D7EEB8754E8AB3009") ,
-            ("Get-MadBomb.ps1"                  , "87550BBEE679E62DF45F44F5BC871030B833FA9DCC8C9956AF422707444EAB68") ,
-            ("Get-MDTModule.ps1"                , "409B59C64ABEBAC3DE884954E40C433B6CDA3145A2EE2D82B503D0ABA1EDBE3D") ,
-            ("Get-PowerShell.ps1"               , "3E2C7F2FBCED55C73F393070F425AA6C66861EDA2D0CDE794F85BA962A3A0348") ,
-            ("Get-PropertyItem.ps1"             , "F9CFE6862B912B4D181A65FAF6BFBC1892ABBEED016FF14FAB3A8AD55B6C9151") ,
-            ("Get-PropertyObject.ps1"           , "A279B9F61B2633DB09D6D574D07B94A2C2D4429BC5DD539412E142F11AB49525") ,
-            ("Get-PSDLog.ps1"                   , "75F2F974CAE0153EB3987389A8EECD88255F58833273F84CC847C14BF80D3269") ,
-            ("Get-PSDLogGUI.ps1"                , "8716E3EC075E03E86BB28C495A359449445BC879F02F47AE5AEBCACCCE5BA679") ,
-            ("Get-PSDModule.ps1"                , "FCD86A877C9F8D5559E6849230AE41E169B31FEB197E0CF722C0CEA95B70CAAB") ,
-            ("Get-SystemDetails.ps1"            , "7B4713132FC595DC85A65286A370822A9F8A68897AD72432FCEC5385BF702EF1") ,
-            ("Get-ThreadController.ps1"         , "6BC2C4092188A2B9A8787513AD289CEB66AC11064C64230B6A1BE9A2AB15A42E") ,
-            ("Get-ViperBomb.ps1"                , "DF93D10B9C6ACEEEF21EC3AA6B0D32D1130900A363C3D654A529DF46B017541C") ,
-            ("Get-WhoisUtility.ps1"             , "9181508E7AE447FE317A50614FB83F1A4BD0B35490A0C5149F50A71D4C4AA451") ,
-            ("Install-BossMode.ps1"             , "2739086EB9BCDB520D0B20C17081EF5FB516C2E1387864CC38C9452EA16F0CC3") ,
-            ("Install-IISServer.ps1"            , "2D7DEEDB3F844183215609F72D63C24BA5B7C1D0D901120708172164EAA4A4E0") ,
-            ("Install-PSD.ps1"                  , "989B34030F75F0A6EFACC574361C170B2D51C6F5FA031032ECCE29119EC3B5A4") ,
-            ("Invoke-cimdb.ps1"                 , "4852D60255F5F2715703A38CF82C98B159B588E1B7A1BEA9D0E9AE2EC7530190") ,
-            ("Invoke-KeyEntry.ps1"              , "B1300999BF1A6ABEEDCFDEC1B0C150228D7FE03623D22DBCEBBC18C3BAF6C134") ,
-            ("New-FEFormat.ps1"                 , "61F2A67D52C8DC609492E1CB1E358B009299D54ADD8C8E6F4ADF177423391338") ,
-            ("New-EnvironmentKey.ps1"           , "A06CFAEAA6DCE65C6E3C6168A3AA2AD9230A81D16706BA82E8D89B0CD376BBE9") ,
-            ("New-FEInfrastructure.ps1"         , "966B36D105A6E02299F47B425A32612F17FB2AD16CEC68726D9D6006371206B0") ,
-            ("Search-WirelessNetwork.ps1"       , "AF3D312ECA04C87103D5F921F0D35B5B3C3B34EE83E571AA1594DA7C17ECFF5D") ,
-            ("Set-ScreenResolution.ps1"         , "FFF86F4CD863BBC59168BDD821362B274C3723A888896F225F6EF04DF5D7C32E") ,
-            ("Show-ToastNotification.ps1"       , "0002209685C3D83A4D08E4265B9285DEDD71C381B6EB8A8F7D86F4E949927969") ,
-            ("Update-PowerShell.ps1"            , "446878FCADA300B44691053ABF02FF96772B5FCE1A5434FB61A81FE3C1B416E4") ,
-            ("Use-Wlanapi.ps1"                  , "1113CEC8BE5E352B09698928995ED840B5EE7A3F90DE1A5537DF339E7D10E5FF") ,
-            ("Write-Theme.ps1"                  , "3B385DF0CC0E44AB1C6991A115B0466463AB3FDFA81371278B0D05028AA62703") | % { 
+            ("Copy-FileStream.ps1"             , "51691C4F53482684E2BF2619E33452E69F7EEBC2B081A0CD64C0BCBA1A14BA13") ,
+            ("Get-AssemblyList.ps1"            , "303CE72974C50EDDBD880FCF5B72FED0D2AB5CBFBA7B2D7DE2310703612AF069") ,
+            ("Get-ControlExtension.ps1"        , "4923A7C734BD01047502006027A8054C7C0B87BD37E48D60C0BF38ABC376376A") ,
+            ("Get-DiskInfo.ps1"                , "4C0443779422E187BE870520F43BA6156550ACE053AB5C9DBC9844D4E218A230") ,
+            ("Get-EnvironmentKey.ps1"          , "3CB3DF68CF3E49DDAF5B1E79C1D82E82B11D9FBCA4AD2253554D97D8AE63D63B") ,
+            ("Get-EventLogArchive.ps1"         , "90FD0564822E764CB602536E45410230E09A628AEA303EA7D3A025A34DBF5308") ,
+            ("Get-EventLogConfigExtension.ps1" , "A32987DFDECDDD8D1976E7BABB1B00EA4993C6EB4430E0ED14AB61BC101C5458") ,
+            ("Get-EventLogController.ps1"      , "7E5674C6AB6A1E82934FBC5589F2DA5905DF180AD1745B375F431A98F74E72B8") ,
+            ("Get-EventLogProject.ps1"         , "5AE177E8FE9985369673BA3D159F57A9F65439C048896197B752D7362E4E73A5") ,
+            ("Get-EventLogRecordExtension.ps1" , "46BDD7B43F1221E1691B2B9079AE8F62099099C2298F30AF050E576F8C818DDD") ,
+            ("Get-EventLogXaml.ps1"            , "5BA7F7099DD7EF55498A889E7AC83CA5EAC1F335EDA53ACF1D7EA23864BF5180") ,
+            ("Get-FEADLogin.ps1"               , "18EE877EAA00F60D8A8C8334CD2162D540C02A1F4870BBE1458F35CD80B95432") ,
+            ("Get-FEDCPromo.ps1"               , "35ED8C1A1B2CD0694E28AA478DEE4BC04D8E640BBD06EB6630CA4F33B9D12931") ,
+            ("Get-FEHost.ps1"                  , "E8668F9FA2E8741F7C8B99F4BB25C2604EC61AAC0FA162C9B8BEFF94D9AB3528") ,
+            ("Get-FEImageManifest.ps1"         , "3665C48E2A0A947F6DDACF6F036ED88D33318595F67129718A1CB5F17D9A5D80") ,
+            ("Get-FEInfo.ps1"                  , "BCBEDC6B56D8657841ABB89AAF25E6E2D1A98670D40E7371EF8C88CDA2259A48") ,
+            ("Get-FEModule.ps1"                , "634A9A26578D5DB9389EA8703706951BF4FB027A15E815ADF9948F6EA00FC0AC") ,
+            ("Get-FENetwork.ps1"               , "8251CC0215D4B83D1D1A465C0D89FB3C97E5B07B4A2ECC8BB86A39B3D8C8ADB7") ,
+            ("Get-FEOS.ps1"                    , "4224DB2FFAB564F85B7FD8998B7311751DFD3C5F22BE4547412CF910BBA605F4") ,
+            ("Get-FEProcess.ps1"               , "053AF12E5C31360F1A91778D997A9D7AC9D1C7BF65CAD5F34544482F9BBD872A") ,
+            ("Get-FERole.ps1"                  , "A26A3D36FADC3FA27B6E6978561EF4A3B532442EAB9D97FC9A0F6950B250F8C4") ,
+            ("Get-FEService.ps1"               , "29C1183826832E84B3EE51F2B040E425822019E362EF663E646A40A8E7BFDAD4") ,
+            ("Get-FESitemap.ps1"               , "135A1DCCB8F300EEBA13A76FE5E7609274DA6C4C7D6CA3C8FB1669D2440E04CF") ,
+            ("Get-MadBomb.ps1"                 , "61DF4057A586B8DF396F85C621B30C7F411EACCD7B5A8FE7824B09DAA5361928") ,
+            ("Get-MDTModule.ps1"               , "A867850639534E9D24A5EA0EEECBC6F9E078BB4E2FCFAE1D82486BA0BE654C51") ,
+            ("Get-PowerShell.ps1"              , "3D778E96A8134D4E43DD0C93101727B98BECCBD1E1829B2495668DB3B60AA7B0") ,
+            ("Get-PropertyItem.ps1"            , "DED775999AAACA8DB127C40B1C0E0F7CFCCE6409F64B9332CC21771E81C39198") ,
+            ("Get-PropertyObject.ps1"          , "1B0BD523F33DE4B50C83B0561579AD57F348DB2384BD8E70F06CC268D92E7323") ,
+            ("Get-PSDLog.ps1"                  , "6FA5187C71FBEDA668811BE166E0EAFC9135EB90948B563AAC040FC4D3DC5DB1") ,
+            ("Get-PSDLogGUI.ps1"               , "B9084471E0906694B8469501B2E280E9F3163EFF63BCD006E162B7B3FD3B49CD") ,
+            ("Get-PSDModule.ps1"               , "A3B4984BFF3835A0938E82D9501FAA63A852C82064559638232134E96F672A3B") ,
+            ("Get-SystemDetails.ps1"           , "9D2DD38A076A2373CB22C33CC61E31FF74ADB425193C2D15184C6F0519FF20B7") ,
+            ("Get-ThreadController.ps1"        , "7E573D21AB6A96450CBBEF9D87AF23797D4A8CFE822D543BE2B4BF696EADE2D8") ,
+            ("Get-ViperBomb.ps1"               , "1C2B26F6B6C7D05AF0EEF296DA4E2E0C9AA43CBFB4663C1DA74DAC1EC5236BC7") ,
+            ("Get-WhoisUtility.ps1"            , "8F397C28276878C615672B653A82C58A5894956AC14DE431C030E80326BCDEE7") ,
+            ("Install-BossMode.ps1"            , "93CC648B8DB4F78225F7EF8F36FC081DBB8FD0A1ACF6C9CE7E6861AA33F10B94") ,
+            ("Install-IISServer.ps1"           , "A52DA72273CF1F24CB774003BC645AA8A6DA37A0D05E108D60D868159404095C") ,
+            ("Install-PSD.ps1"                 , "3487614D00E8175941FB4EEFC9E83BAA37CE8B43A1D86858AB6E6E3D43180A94") ,
+            ("Invoke-cimdb.ps1"                , "FAEB8030E3FF7AA205B02DB720DBA19E2FB3B9D10C274FBAFF814A059CA6B114") ,
+            ("New-EnvironmentKey.ps1"          , "4783E3A5AFE777F91A59AB73A0D2B7311BD4E9760EA6BDDCB366FAFE52FB5CDD") ,
+            ("New-FEFormat.ps1"                , "C2F51D3D1DAAA7EBA993DC93640AB934B30DF37EDDE040569A5A7E13D2CE0E39") ,
+            ("New-FEInfrastructure.ps1"        , "D8AD33C0609552850AA3A36F2DE9C5ED116A0057D16883DA9BD85311EB869E18") ,
+            ("Search-WirelessNetwork.ps1"      , "22CB56D237C2BBF7CABCA7E507C602E35C6B8770681B61B5A51ABE97766AB6A2") ,
+            ("Set-ScreenResolution.ps1"        , "550BABB4ECCB26E835A952E1A749EDC857816B202881DC68C22F2727EB3493F7") ,
+            ("Show-ToastNotification.ps1"      , "0D70C7CD52FE5C34A29C0EE64581F2FC4DA6CEC1171C58FCB0EBFD2464F66973") ,
+            ("Update-PowerShell.ps1"           , "0D803B07A9FF514B2376CEB4EB5E792F526785EBE89CCA7E5E9FA9CAF2A9154F") ,
+            ("Use-Wlanapi.ps1"                 , "4178F1C9039ED6BADC339911D54E19907E69C35A2DD65F795C549BF1C64A2A75") ,
+            ("Write-Theme.ps1"                 , "9B75801191BF001F1C47A63E00E17AA2254ADF3C4FC9CDE381FA749ED300D88D") | % { 
                 
-                $This.Add(2,$_[0],$_[1])
+                $This.Add(1,$_[0],$_[1])
             }
 
             # // ____________
@@ -740,15 +720,15 @@ Function Get-FEModule
 
             $This.AddFolder("Graphic","Graphics")
 
-            ("background.jpg"                   , "94FD6CB32F8FF9DD360B4F98CEAA046B9AFCD717DA532AFEF2E230C981DAFEB5") ,
-            ("banner.png"                       , "057AF2EC2B9EC35399D3475AE42505CDBCE314B9945EF7C7BCB91374A8116F37") ,
-            ("icon.ico"                         , "594DAAFF448F5306B8B46B8DB1B420C1EE53FFD55EC65D17E2D361830659E58E") ,
-            ("OEMbg.jpg"                        , "D4331207D471F799A520D5C7697E84421B0FA0F9B574737EF06FC95C92786A32") ,
-            ("OEMlogo.bmp"                      , "98BF79CAE27E85C77222564A3113C52D1E75BD6328398871873072F6B363D1A8") ,
-            ("PSDBackground.bmp"                , "05ABBABDC9F67A95D5A4AF466149681C2F5E8ECD68F11433D32F4C0D04446F7E") ,
-            ("sdplogo.png"                      , "87C2B016401CA3F8F8FAD5F629AFB3553C4762E14CD60792823D388F87E2B16C") | % { 
+            ("background.jpg"                  , "94FD6CB32F8FF9DD360B4F98CEAA046B9AFCD717DA532AFEF2E230C981DAFEB5") ,
+            ("banner.png"                      , "057AF2EC2B9EC35399D3475AE42505CDBCE314B9945EF7C7BCB91374A8116F37") ,
+            ("icon.ico"                        , "594DAAFF448F5306B8B46B8DB1B420C1EE53FFD55EC65D17E2D361830659E58E") ,
+            ("OEMbg.jpg"                       , "D4331207D471F799A520D5C7697E84421B0FA0F9B574737EF06FC95C92786A32") ,
+            ("OEMlogo.bmp"                     , "98BF79CAE27E85C77222564A3113C52D1E75BD6328398871873072F6B363D1A8") ,
+            ("PSDBackground.bmp"               , "05ABBABDC9F67A95D5A4AF466149681C2F5E8ECD68F11433D32F4C0D04446F7E") ,
+            ("sdplogo.png"                     , "87C2B016401CA3F8F8FAD5F629AFB3553C4762E14CD60792823D388F87E2B16C") | % { 
                 
-                $This.Add(3,$_[0],$_[1])
+                $This.Add(2,$_[0],$_[1])
             }
 
             $This.Total = ($This.Output | % Item).Count
@@ -1378,22 +1358,17 @@ Function Get-FEModule
         {
             $This.Write("Loading [~] $($This.Label())")
 
-            $This.Load()
-        }
-        Main([UInt32]$Quiet)
-        {
-            $This.Load()
-        }
-        Load()
-        {
-            $This.OS           = $This.GetOS()
-            $This.Root         = $This.GetRoot()
-            $This.Manifest     = $This.GetManifest($This.Source,$This.Root.Resource)
+            $This.OS       = $This.GetOS()
+            Write-Host "[+] Operating System"
 
-            If ($This.OS.Caption -match "Windows")
-            {
-                $This.Registry = $This.GetRegistry()
-            }
+            $This.Root     = $This.GetRoot()
+            Write-Host "[+] Module Root"
+
+            $This.Manifest = $This.GetManifest($This.Source,$This.Root.Resource)
+            Write-Host "[+] Module Manifest"
+
+            $This.Registry = $This.GetRegistry()
+            Write-Host "[+] Module Registry"
         }
         [Object] NewVersion([String]$Version)
         {
@@ -1454,10 +1429,6 @@ Function Get-FEModule
         [Object] File([String]$Type,[String]$Name)
         {
             Return $This.Manifest.List() | ? Type -eq $Type | ? Name -eq $Name
-        }
-        [Object] _Class([String]$Name)
-        {
-            Return $This.File("Class",$Name)
         }
         [Object] _Control([String]$Name)
         {
@@ -1661,30 +1632,12 @@ Function Get-FEModule
             $F += "# <Types>"
             $Bin | % { $F += "Add-Type -AssemblyName $_" }
 
-            # // ____________________________________________
-            # // | Classes (To be phased out at some point) |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-            $F += "# <Classes>"
-            $This.Manifest.Files(0) | % {
-        
-                $F += "# <{0}/{1}>" -f $_.Type, $_.Name
-                $F += "# {0}" -f $_.Fullname
-                If (!$_.Content)
-                {
-                    $_.GetContent()
-                }
-                $F += $_.Content
-                $F += "# </{0}/{1}>" -f $_.Type, $_.Name
-            }
-            $F += "# </Classes>"
-
             # // _____________
             # // | Functions |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯
 
             $F += "# <Functions>"
-            $This.Manifest.Files(2)  | % { 
+            $This.Manifest.Files(1)  | % { 
         
                 $F += "# <{0}/{1}>" -f $_.Type, $_.Name
                 $F += "# {0}" -f $_.Fullname
@@ -1747,7 +1700,7 @@ Function Get-FEModule
         {
             $Main
         }
-        Classes
+        Control
         {
             $Main.Manifest.Files(0)
         }
@@ -1755,13 +1708,9 @@ Function Get-FEModule
         {
             $Main.Manifest.Files(1)
         }
-        Control
-        {
-            $Main.Manifest.Files(2)
-        }
         Graphics
         {
-            $Main.Manifest.Files(3)
+            $Main.Manifest.Files(2)
         }
     }
 }
