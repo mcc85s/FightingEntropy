@@ -1342,7 +1342,7 @@ Function Get-FEModule
     Class Main
     {
         [String]      $Source = "https://www.github.com/mcc85s/FightingEntropy"
-        [String]        $Name = "[FightingEntropy(π)]"
+        [String]        $Name = "[FightingEntropy($([Char]960))]"
         [String] $Description = "Beginning the fight against ID theft and cybercrime"
         [String]      $Author = "Michael C. Cook Sr."
         [String]     $Company = "Secure Digits Plus LLC"
