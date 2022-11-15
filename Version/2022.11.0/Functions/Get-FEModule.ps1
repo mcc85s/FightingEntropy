@@ -650,7 +650,7 @@ Function Get-FEModule
             ("PSDServerMod.xml"                , "4175C9569C8DFC1F14BADF70395D883BDD983948C2A6633CBBB6611430A872C7") ,
             ("success.png"                     , "46757AB0E2D3FFFFDBA93558A34AC8E36F972B6F33D00C4ADFB912AE1F6D6CE2") ,
             ("vendorlist.txt"                  , "9BD91057A1870DB087765914EAA5057D673CDC33145D804BBF4B024A11D66934") ,
-            ("Wifi.dll"                        , "A63BA85320167B3E6B9334808B7F1029C5F140DA94C5362ADF4AF7F8A3C1C876") ,
+            ("Wifi.dll"                        , "69006D2B529E20A7CC15FB87470EFF906D47346DA49B19D42B904F9F6761C282") ,
             ("zipcode.txt"                     , "45D5F4B9B50782CEC4767A7660583C68A6643C02FC7CC4F0AE5A79CCABE83021") | % { 
                 
                 $This.Add(0,$_[0],$_[1])
