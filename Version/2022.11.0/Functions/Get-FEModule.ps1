@@ -1590,6 +1590,7 @@ Function Get-FEModule
                        "System.IO.Compression", 
                        "System.IO.Compression.Filesystem", 
                        "System.Windows.Forms"
+                       $This._Control("Wifi.dll").Fullname
 
                 # // _____________________________________________
                 # // | Write the module file to disk using PSM() |
