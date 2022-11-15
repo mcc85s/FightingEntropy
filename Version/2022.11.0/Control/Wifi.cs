@@ -1,3 +1,5 @@
+// Originally written by [jcwalker] https://github.com/jcwalker/WiFiProfileManagement/blob/dev/Classes/AddNativeWiFiFunctions.ps1
+// Slight modifications implemented
 using System;
 using System.Text;
 using System.Runtime.InteropServices;
