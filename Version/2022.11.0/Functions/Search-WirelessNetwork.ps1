@@ -44,25 +44,96 @@ Function Search-WirelessNetwork
 {
     [CmdLetBinding()]Param([Parameter()][UInt32]$Mode)
 
-    # // _________________________
-    # // | XAML for the main GUI |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    # // _____________________________________________________________________________________________________________
+    # // | ## | Type  | Name                   | Description                                                         |
+    # // |----|-------|------------------------|---------------------------------------------------------------------|
+    # // |  0 | Class | WirelessNetworkXaml    | Main GUI/Xaml string                                                |
+    # // |  1 | Class | PassphraseXaml         | Passphrase GUI/Xaml                                                 |
+    # // |  2 | Class | XamlProperty           | Used to index/catalog the Xaml control objects                      |
+    # // |  3 | Class | XamlWindow             | Constructs the XamlWindow object                                    |
+    # // |  4 | Enum  | PhysicalType           | Enum for an SSID's physical network type                            |
+    # // |  5 | Class | PhysicalSlot           | Object for an SSID's physical network type                          |
+    # // |  6 | Class | PhysicalList           | A list of potential SSID physical network types                     |
+    # // |  7 | Enum  | AuthenticationType     | Enum for an SSID's authentication type                              |
+    # // |  8 | Class | AuthenticationSlot     | Object for an SSID's authentication type                            |
+    # // |  9 | Class | AuthenticationList     | A list of potential SSID's authentication types                     |
+    # // | 10 | Enum  | EncryptionType         | Enum for an SSID's encryption type                                  |
+    # // | 11 | Class | EncryptionSlot         | Object for an SSID's encryption type                                |
+    # // | 12 | Class | EncryptionList         | A list of potential SSID's encryption types                         | 
+    # // | 13 | Class | SsidSubcontroller      | Subcontroller for Ssid information injection                        |
+    # // | 14 | Class | Ssid                   | Representation of each SSID collected by the wireless radio(s)      |
+    # // | 15 | Class | WiFiProfile            | Handles the profile objects                                         |
+    # // | 16 | Class | InterfaceObject        | Represents an individual wireless interface on the host             |
+    # // | 17 | Class | WlanInterface          | Parses WLAN adapter information returned from the netsh             |
+    # // | 18 | Class | RtMethod               | Specifically for selecting/filtering a Runtime IAsyncTask           |
+    # // | 19 | Class | ConnectionModeResolver | Better than a hashtable                                             |
+    # // | 20 | Class | Wireless               | Controller class for the function, this encapsulates the XAML/GUI   |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
     Class WirelessNetworkXaml
     {
-        Static [String] $Tab = (
-        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Wireless Network Scanner" Width="800" Height="650" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+        Static [String] $Content = @(
+        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Wireless Network Scanner" Width="800" Height="650" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\icon.ico" FontFamily="Consolas" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
-        '        <Style TargetType="GroupBox">',
-        '            <Setter Property="Margin" Value="10"/>',
-        '            <Setter Property="Padding" Value="10"/>',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Center"/>',
+        '        <Style x:Key="DropShadow">',
+        '            <Setter Property="TextBlock.Effect">',
+        '                <Setter.Value>',
+        '                    <DropShadowEffect ShadowDepth="1"/>',
+        '                </Setter.Value>',
+        '            </Setter>',
+        '        </Style>',
+        '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="4"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="Foreground" Value="#000000"/>',
+        '            <Setter Property="TextWrapping" Value="Wrap"/>',
+        '            <Style.Resources>',
+        '                <Style TargetType="Border">',
+        '                    <Setter Property="CornerRadius" Value="2"/>',
+        '                </Style>',
+        '            </Style.Resources>',
+        '        </Style>',
+        '        <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource DropShadow}">',
+        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
+        '            <Setter Property="Margin" Value="4"/>',
+        '            <Setter Property="Height" Value="24"/>',
+        '        </Style>',
+        '        <Style TargetType="CheckBox">',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="5"/>',
+        '        </Style>',
+        '        <Style TargetType="ToolTip">',
+        '            <Setter Property="Background" Value="#000000"/>',
+        '            <Setter Property="Foreground" Value="#66D066"/>',
+        '        </Style>',
+        '        <Style TargetType="TabItem">',
         '            <Setter Property="Template">',
         '                <Setter.Value>',
-        '                    <ControlTemplate TargetType="GroupBox">',
-        '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
-        '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
+        '                    <ControlTemplate TargetType="TabItem">',
+        '                        <Border Name="Border" BorderThickness="2" BorderBrush="Black" CornerRadius="2" Margin="2">',
+        '                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Right" ContentSource="Header" Margin="5"/>',
         '                        </Border>',
+        '                        <ControlTemplate.Triggers>',
+        '                            <Trigger Property="IsSelected" Value="True">',
+        '                                <Setter TargetName="Border" Property="Background" Value="#4444FF"/>',
+        '                                <Setter Property="Foreground" Value="#FFFFFF"/>',
+        '                            </Trigger>',
+        '                            <Trigger Property="IsSelected" Value="False">',
+        '                                <Setter TargetName="Border" Property="Background" Value="#DFFFBA"/>',
+        '                                <Setter Property="Foreground" Value="#000000"/>',
+        '                            </Trigger>',
+        '                            <Trigger Property="IsEnabled" Value="False">',
+        '                                <Setter TargetName="Border" Property="Background" Value="#6F6F6F"/>',
+        '                                <Setter Property="Foreground" Value="#9F9F9F"/>',
+        '                            </Trigger>',
+        '                        </ControlTemplate.Triggers>',
         '                    </ControlTemplate>',
         '                </Setter.Value>',
         '            </Setter>',
@@ -83,8 +154,41 @@ Function Search-WirelessNetwork
         '                </Style>',
         '            </Style.Resources>',
         '        </Style>',
-        '        <Style TargetType="DataGridCell">',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Left" />',
+        '        <Style TargetType="ComboBox">',
+        '            <Setter Property="Height" Value="24"/>',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '        </Style>',
+        '        <Style TargetType="TabControl">',
+        '            <Setter Property="TabStripPlacement" Value="Top"/>',
+        '            <Setter Property="HorizontalContentAlignment" Value="Center"/>',
+        '            <Setter Property="Background" Value="LightYellow"/>',
+        '        </Style>',
+        '        <Style TargetType="GroupBox">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="BorderBrush" Value="Black"/>',
+        '            <Setter Property="Foreground" Value="Black"/>',
+        '        </Style>',
+        '        <Style TargetType="TextBox" x:Key="Block">',
+        '            <Setter Property="Margin" Value="5"/>',
+        '            <Setter Property="Padding" Value="5"/>',
+        '            <Setter Property="FontFamily" Value="Consolas"/>',
+        '            <Setter Property="Height" Value="180"/>',
+        '            <Setter Property="FontSize" Value="10"/>',
+        '            <Setter Property="FontWeight" Value="Normal"/>',
+        '            <Setter Property="AcceptsReturn" Value="True"/>',
+        '            <Setter Property="VerticalAlignment" Value="Top"/>',
+        '            <Setter Property="TextAlignment" Value="Left"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Top"/>',
+        '            <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>',
+        '            <Setter Property="TextBlock.Effect">',
+        '                <Setter.Value>',
+        '                    <DropShadowEffect ShadowDepth="1"/>',
+        '                </Setter.Value>',
+        '            </Setter>',
         '        </Style>',
         '        <Style TargetType="DataGrid">',
         '            <Setter Property="Margin" Value="5"/>',
@@ -121,41 +225,15 @@ Function Search-WirelessNetwork
         '            <Setter Property="Margin" Value="2"/>',
         '            <Setter Property="Padding" Value="2"/>',
         '        </Style>',
-        '        <Style TargetType="ComboBox">',
-        '            <Setter Property="Height" Value="24"/>',
-        '            <Setter Property="Margin" Value="5"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
-        '            <Setter Property="FontWeight" Value="Normal"/>',
-        '        </Style>',
-        '        <Style x:Key="DropShadow">',
-        '            <Setter Property="TextBlock.Effect">',
-        '                <Setter.Value>',
-        '                    <DropShadowEffect ShadowDepth="1"/>',
-        '                </Setter.Value>',
-        '            </Setter>',
-        '        </Style>',
-        '        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource DropShadow}">',
-        '            <Setter Property="TextBlock.TextAlignment" Value="Left"/>',
-        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
-        '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-        '            <Setter Property="Height" Value="24"/>',
-        '            <Setter Property="Margin" Value="4"/>',
-        '            <Setter Property="FontSize" Value="12"/>',
-        '            <Setter Property="Foreground" Value="#000000"/>',
-        '            <Setter Property="TextWrapping" Value="Wrap"/>',
-        '            <Style.Resources>',
-        '                <Style TargetType="Border">',
-        '                    <Setter Property="CornerRadius" Value="2"/>',
-        '                </Style>',
-        '            </Style.Resources>',
-        '        </Style>',
         '        <Style TargetType="Label">',
         '            <Setter Property="Margin" Value="5"/>',
         '            <Setter Property="FontWeight" Value="Bold"/>',
+        '            <Setter Property="FontSize" Value="12"/>',
         '            <Setter Property="Background" Value="Black"/>',
         '            <Setter Property="Foreground" Value="White"/>',
         '            <Setter Property="BorderBrush" Value="Gray"/>',
         '            <Setter Property="BorderThickness" Value="2"/>',
+        '            <Setter Property="VerticalContentAlignment" Value="Center"/>',
         '            <Style.Resources>',
         '                <Style TargetType="Border">',
         '                    <Setter Property="CornerRadius" Value="5"/>',
@@ -167,150 +245,162 @@ Function Search-WirelessNetwork
         '        <Grid.Background>',
         '            <ImageBrush Stretch="Fill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\background.jpg"/>',
         '        </Grid.Background>',
-        '        <GroupBox>',
-        '            <Grid Margin="5">',
-        '                <Grid.RowDefinitions>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="*"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="40"/>',
-        '                    <RowDefinition Height="50"/>',
-        '                </Grid.RowDefinitions>',
-        '                <Grid Grid.Row="0">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="120"/>',
-        '                        <ColumnDefinition Width="120"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="120"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label Grid.Column="0" Content="[Search/Filter]:"/>',
-        '                    <ComboBox Grid.Column="1" Name="Type" SelectedIndex="0">',
-        '                        <ComboBoxItem Content="Name"/>',
-        '                        <ComboBoxItem Content="Index"/>',
-        '                        <ComboBoxItem Content="BSSID"/>',
-        '                        <ComboBoxItem Content="Type"/>',
-        '                        <ComboBoxItem Content="Encryption"/>',
-        '                        <ComboBoxItem Content="Strength"/>',
-        '                    </ComboBox>',
-        '                    <TextBox Grid.Column="2" Name="Filter"/>',
-        '                    <Button Grid.Column="3" Content="Refresh" Name="Refresh"/>',
-        '                </Grid>',
-        '                <DataGrid Grid.Row="1" Grid.Column="0" Name="Output">',
-        '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Index"  Width="35"  Binding="{Binding Index}"/>',
-        '                        <DataGridTextColumn Header="Name"   Width="150" Binding="{Binding Name}"/>',
-        '                        <DataGridTextColumn Header="Bssid"  Width="110" Binding="{Binding Bssid}"/>',
-        '                        <DataGridTextColumn Header="Type"   Width="60"  Binding="{Binding Type}"/>',
-        '                        <DataGridTextColumn Header="Uptime" Width="140" Binding="{Binding Uptime}"/>',
-        '                        <DataGridTemplateColumn Header="Authentication" Width="80">',
-        '                            <DataGridTemplateColumn.CellTemplate>',
-        '                                <DataTemplate>',
-        '                                    <ComboBox SelectedIndex="{Binding AuthenticationSlot}"  ToolTip="{Binding AuthenticationDescription}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
-        '                                        <ComboBoxItem Content="None"/>',
-        '                                        <ComboBoxItem Content="Unknown"/>',
-        '                                        <ComboBoxItem Content="Open80211"/>',
-        '                                        <ComboBoxItem Content="SharedKey80211"/>',
-        '                                        <ComboBoxItem Content="Wpa"/>',
-        '                                        <ComboBoxItem Content="WpaPsk"/>',
-        '                                        <ComboBoxItem Content="WpaNone"/>',
-        '                                        <ComboBoxItem Content="Rsna"/>',
-        '                                        <ComboBoxItem Content="RsnaPsk"/>',
-        '                                        <ComboBoxItem Content="Ihv"/>',
-        '                                        <ComboBoxItem Content="Wpa3Enterprise192Bits"/>',
-        '                                        <ComboBoxItem Content="Wpa3Sae"/>',
-        '                                        <ComboBoxItem Content="Owe"/>',
-        '                                        <ComboBoxItem Content="Wpa3Enterprise"/>',
-        '                                    </ComboBox>',
-        '                                </DataTemplate>',
-        '                            </DataGridTemplateColumn.CellTemplate>',
-        '                        </DataGridTemplateColumn>',
-        '                        <DataGridTemplateColumn Header="Encryption" Width="70">',
-        '                            <DataGridTemplateColumn.CellTemplate>',
-        '                                <DataTemplate>',
-        '                                    <ComboBox SelectedIndex="{Binding EncryptionSlot}" ToolTip="{Binding EncryptionDescription}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
-        '                                        <ComboBoxItem Content="None"/>',
-        '                                        <ComboBoxItem Content="Unknown"/>',
-        '                                        <ComboBoxItem Content="Wep"/>',
-        '                                        <ComboBoxItem Content="Wep40"/>',
-        '                                        <ComboBoxItem Content="Wep104"/>',
-        '                                        <ComboBoxItem Content="Tkip"/>',
-        '                                        <ComboBoxItem Content="Ccmp"/>',
-        '                                        <ComboBoxItem Content="WpaUseGroup"/>',
-        '                                        <ComboBoxItem Content="RsnUseGroup"/>',
-        '                                        <ComboBoxItem Content="Ihv"/>',
-        '                                        <ComboBoxItem Content="Gcmp"/>',
-        '                                        <ComboBoxItem Content="Gcmp256"/>',
-        '                                    </ComboBox>',
-        '                                </DataTemplate>',
-        '                            </DataGridTemplateColumn.CellTemplate>',
-        '                        </DataGridTemplateColumn>',
-        '                        <DataGridTemplateColumn Header="Strength" Width="50">',
-        '                            <DataGridTemplateColumn.CellTemplate>',
-        '                                <DataTemplate>',
-        '                                    <ComboBox SelectedIndex="{Binding Strength}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
-        '                                        <ComboBoxItem Content="0"/>',
-        '                                        <ComboBoxItem Content="1"/>',
-        '                                        <ComboBoxItem Content="2"/>',
-        '                                        <ComboBoxItem Content="3"/>',
-        '                                        <ComboBoxItem Content="4"/>',
-        '                                        <ComboBoxItem Content="5"/>',
-        '                                    </ComboBox>',
-        '                                </DataTemplate>',
-        '                            </DataGridTemplateColumn.CellTemplate>',
-        '                        </DataGridTemplateColumn>',
-        '                    </DataGrid.Columns>',
-        '                </DataGrid>',
-        '                <Grid Grid.Row="2">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                        <ColumnDefinition Width="300"/>',
-        '                        <ColumnDefinition Width="110"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="70"/>',
-        '                        <ColumnDefinition Width="40"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label Grid.Column="0" Content="[Interface]:"/>',
-        '                    <ComboBox Grid.Column="1" Name="Interface"/>',
-        '                    <Label Grid.Column="2" Content="[MacAddress]:"/>',
-        '                    <TextBox Grid.Column="3" Name="MacAddress" IsReadOnly="True"/>',
-        '                    <Label Grid.Column="4" Content="[Index]:"/>',
-        '                    <TextBox Grid.Column="5" Name="Index" IsReadOnly="True"/>',
-        '                </Grid>',
-        '                <Grid Grid.Row="3">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="100"/>',
-        '                        <ColumnDefinition Width="300"/>',
-        '                        <ColumnDefinition Width="110"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Label Grid.Column="0" Content="[SSID/Name]:"/>',
-        '                    <TextBox Grid.Column="1" Name="SSID" IsReadOnly="True"/>',
-        '                    <Label Grid.Column="2" Content="[BSSID]:"/>',
-        '                    <TextBox Grid.Column="3" Name="BSSID" IsReadOnly="True"/>',
-        '                </Grid>',
-        '                <Grid Grid.Row="4">',
-        '                    <Grid.ColumnDefinitions>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                        <ColumnDefinition Width="*"/>',
-        '                    </Grid.ColumnDefinitions>',
-        '                    <Button Grid.Row="1" Grid.Column="0" Name="Connect"    Content="Connect"    IsEnabled="False"/>',
-        '                    <Button Grid.Row="1" Grid.Column="1" Name="Disconnect" Content="Disconnect" IsEnabled="False"/>',
-        '                    <Button Grid.Row="1" Grid.Column="2" Name="Cancel"     Content="Cancel"/>',
-        '                </Grid>',
+        '        <Grid Margin="5">',
+        '            <Grid.RowDefinitions>',
+        '                <RowDefinition Height="40"/>',
+        '                <RowDefinition Height="*"/>',
+        '                <RowDefinition Height="40"/>',
+        '                <RowDefinition Height="40"/>',
+        '                <RowDefinition Height="50"/>',
+        '            </Grid.RowDefinitions>',
+        '            <Grid Grid.Row="0">',
+        '                <Grid.ColumnDefinitions>',
+        '                    <ColumnDefinition Width="130"/>',
+        '                    <ColumnDefinition Width="120"/>',
+        '                    <ColumnDefinition Width="*"/>',
+        '                    <ColumnDefinition Width="120"/>',
+        '                </Grid.ColumnDefinitions>',
+        '                <Label Grid.Column="0" Content="[Search/Filter]:"/>',
+        '                <ComboBox Grid.Column="1" Name="Type" SelectedIndex="0">',
+        '                    <ComboBoxItem Content="Name"/>',
+        '                    <ComboBoxItem Content="Index"/>',
+        '                    <ComboBoxItem Content="BSSID"/>',
+        '                    <ComboBoxItem Content="Type"/>',
+        '                    <ComboBoxItem Content="Encryption"/>',
+        '                    <ComboBoxItem Content="Strength"/>',
+        '                </ComboBox>',
+        '                <TextBox Grid.Column="2" Name="Filter"/>',
+        '                <Button Grid.Column="3" Content="Refresh" Name="Refresh"/>',
         '            </Grid>',
-        '        </GroupBox>',
+        '            <DataGrid Grid.Row="1" Grid.Column="0" Name="Output">',
+        '                <DataGrid.Columns>',
+        '                    <DataGridTextColumn Header="#"  Width="25"  Binding="{Binding Index}"/>',
+        '                    <DataGridTextColumn Header="Name"   Width="240" Binding="{Binding Name}"/>',
+        '                    <DataGridTextColumn Header="Bssid"  Width="120" Binding="{Binding Bssid}"/>',
+        '                    <DataGridTemplateColumn Header="Phy." Width="40">',
+        '                        <DataGridTemplateColumn.CellTemplate>',
+        '                            <DataTemplate>',
+        '                                <ComboBox SelectedIndex="{Binding Physical.Index}" ToolTip="{Binding Physical.Description}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                    <ComboBoxItem Content="Unknown"/>',
+        '                                    <ComboBoxItem Content="Fhss"/>',
+        '                                    <ComboBoxItem Content="Dsss"/>',
+        '                                    <ComboBoxItem Content="IRBaseband"/>',
+        '                                    <ComboBoxItem Content="Ofdm"/>',
+        '                                    <ComboBoxItem Content="Hrdsss"/>',
+        '                                    <ComboBoxItem Content="Erp"/>',
+        '                                    <ComboBoxItem Content="HT"/>',
+        '                                    <ComboBoxItem Content="Vht"/>',
+        '                                    <ComboBoxItem Content="Dmg"/>',
+        '                                    <ComboBoxItem Content="HE"/>',
+        '                                </ComboBox>',
+        '                            </DataTemplate>',
+        '                        </DataGridTemplateColumn.CellTemplate>',
+        '                    </DataGridTemplateColumn>',
+        '                    <DataGridTextColumn Header="Uptime" Width="100" Binding="{Binding Uptime}"/>',
+        '                    <DataGridTemplateColumn Header="Auth." Width="60">',
+        '                        <DataGridTemplateColumn.CellTemplate>',
+        '                            <DataTemplate>',
+        '                                <ComboBox SelectedIndex="{Binding Authentication.Index}"  ToolTip="{Binding Authentication.Description}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                    <ComboBoxItem Content="None"/>',
+        '                                    <ComboBoxItem Content="Unknown"/>',
+        '                                    <ComboBoxItem Content="Open80211"/>',
+        '                                    <ComboBoxItem Content="SharedKey80211"/>',
+        '                                    <ComboBoxItem Content="Wpa"/>',
+        '                                    <ComboBoxItem Content="WpaPsk"/>',
+        '                                    <ComboBoxItem Content="WpaNone"/>',
+        '                                    <ComboBoxItem Content="Rsna"/>',
+        '                                    <ComboBoxItem Content="RsnaPsk"/>',
+        '                                    <ComboBoxItem Content="Ihv"/>',
+        '                                    <ComboBoxItem Content="Wpa3Enterprise192Bits"/>',
+        '                                    <ComboBoxItem Content="Wpa3Sae"/>',
+        '                                    <ComboBoxItem Content="Owe"/>',
+        '                                    <ComboBoxItem Content="Wpa3Enterprise"/>',
+        '                                </ComboBox>',
+        '                            </DataTemplate>',
+        '                        </DataGridTemplateColumn.CellTemplate>',
+        '                    </DataGridTemplateColumn>',
+        '                    <DataGridTemplateColumn Header="Enc." Width="60">',
+        '                        <DataGridTemplateColumn.CellTemplate>',
+        '                            <DataTemplate>',
+        '                                <ComboBox SelectedIndex="{Binding Encryption.Index}" ToolTip="{Binding Encryption.Description}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                    <ComboBoxItem Content="None"/>',
+        '                                    <ComboBoxItem Content="Unknown"/>',
+        '                                    <ComboBoxItem Content="Wep"/>',
+        '                                    <ComboBoxItem Content="Wep40"/>',
+        '                                    <ComboBoxItem Content="Wep104"/>',
+        '                                    <ComboBoxItem Content="Tkip"/>',
+        '                                    <ComboBoxItem Content="Ccmp"/>',
+        '                                    <ComboBoxItem Content="WpaUseGroup"/>',
+        '                                    <ComboBoxItem Content="RsnUseGroup"/>',
+        '                                    <ComboBoxItem Content="Ihv"/>',
+        '                                    <ComboBoxItem Content="Gcmp"/>',
+        '                                    <ComboBoxItem Content="Gcmp256"/>',
+        '                                </ComboBox>',
+        '                            </DataTemplate>',
+        '                        </DataGridTemplateColumn.CellTemplate>',
+        '                    </DataGridTemplateColumn>',
+        '                    <DataGridTemplateColumn Header="Str." Width="40">',
+        '                        <DataGridTemplateColumn.CellTemplate>',
+        '                            <DataTemplate>',
+        '                                <ComboBox SelectedIndex="{Binding Strength}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                    <ComboBoxItem Content="0"/>',
+        '                                    <ComboBoxItem Content="1"/>',
+        '                                    <ComboBoxItem Content="2"/>',
+        '                                    <ComboBoxItem Content="3"/>',
+        '                                    <ComboBoxItem Content="4"/>',
+        '                                    <ComboBoxItem Content="5"/>',
+        '                                </ComboBox>',
+        '                            </DataTemplate>',
+        '                        </DataGridTemplateColumn.CellTemplate>',
+        '                    </DataGridTemplateColumn>',
+        '                </DataGrid.Columns>',
+        '            </DataGrid>',
+        '            <Grid Grid.Row="2">',
+        '                <Grid.ColumnDefinitions>',
+        '                    <ColumnDefinition Width="105"/>',
+        '                    <ColumnDefinition Width="300"/>',
+        '                    <ColumnDefinition Width="110"/>',
+        '                    <ColumnDefinition Width="*"/>',
+        '                    <ColumnDefinition Width="75"/>',
+        '                    <ColumnDefinition Width="40"/>',
+        '                </Grid.ColumnDefinitions>',
+        '                <Label Grid.Column="0" Content="[Interface]:"/>',
+        '                <ComboBox Grid.Column="1" Name="Interface"/>',
+        '                <Label Grid.Column="2" Content="[MacAddress]:"/>',
+        '                <TextBox Grid.Column="3" Name="MacAddress" IsReadOnly="True"/>',
+        '                <Label Grid.Column="4" Content="[Index]:"/>',
+        '                <TextBox Grid.Column="5" Name="Index" IsReadOnly="True"/>',
+        '            </Grid>',
+        '            <Grid Grid.Row="3">',
+        '                <Grid.ColumnDefinitions>',
+        '                    <ColumnDefinition Width="105"/>',
+        '                    <ColumnDefinition Width="300"/>',
+        '                    <ColumnDefinition Width="110"/>',
+        '                    <ColumnDefinition Width="*"/>',
+        '                </Grid.ColumnDefinitions>',
+        '                <Label Grid.Column="0" Content="[SSID/Name]:"/>',
+        '                <TextBox Grid.Column="1" Name="SSID" IsReadOnly="True"/>',
+        '                <Label Grid.Column="2" Content="[BSSID]:"/>',
+        '                <TextBox Grid.Column="3" Name="BSSID" IsReadOnly="True"/>',
+        '            </Grid>',
+        '            <Grid Grid.Row="4">',
+        '                <Grid.ColumnDefinitions>',
+        '                    <ColumnDefinition Width="*"/>',
+        '                    <ColumnDefinition Width="*"/>',
+        '                    <ColumnDefinition Width="*"/>',
+        '                </Grid.ColumnDefinitions>',
+        '                <Button Grid.Row="1" Grid.Column="0" Name="Connect"    Content="Connect"    IsEnabled="False"/>',
+        '                <Button Grid.Row="1" Grid.Column="1" Name="Disconnect" Content="Disconnect" IsEnabled="False"/>',
+        '                <Button Grid.Row="1" Grid.Column="2" Name="Cancel"     Content="Cancel"/>',
+        '            </Grid>',
+        '        </Grid>',
         '    </Grid>',
         '</Window>' -join "`n")
     }
-
-    # // _______________________________
-    # // | XAML for the passphrase GUI |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
+    
     Class PassphraseXaml
     {
-        Static [String] $Tab = @(
+        Static [String] $Content = @(
         '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Enter Passphrase" Width="400" Height="160" HorizontalAlignment="Center" Topmost="True" ResizeMode="CanResizeWithGrip" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style TargetType="GroupBox">',
@@ -412,10 +502,6 @@ Function Search-WirelessNetwork
         '</Window>' -join "`n") 
     }
 
-    # // __________________________________________________
-    # // | Used to index/catalog the Xaml control objects |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
     Class XamlProperty
     {
         [UInt32] $Index
@@ -435,10 +521,6 @@ Function Search-WirelessNetwork
         }
     }
 
-    # // ____________________________________
-    # // | Constructs the XamlWindow object |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
     Class XamlWindow
     {
         Hidden [Object]        $XAML
@@ -448,10 +530,6 @@ Function Search-WirelessNetwork
         [Object]               $Node
         [Object]                 $IO
         [String]          $Exception
-        [String[]] FindNames()
-        {
-            Return [Regex]::Matches($This.Xaml,"( Name\=\`"\w+`")").Value -Replace "( Name=|`")",""
-        }
         XamlWindow([String]$Xaml)
         {           
             If (!$Xaml)
@@ -479,6 +557,10 @@ Function Search-WirelessNetwork
                 }
             }
         }
+        [String[]] FindNames()
+        {
+            Return [Regex]::Matches($This.Xaml,"( Name\=\`"\w+`")").Value -Replace "( Name=|`")",""
+        }
         [Object] XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
         {
             Return [XamlProperty]::New($Index,$Name,$Object)
@@ -496,10 +578,6 @@ Function Search-WirelessNetwork
         }
     }
     
-    # // ____________________________________________
-    # // | Enum for an SSID's physical network type |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
     Enum PhysicalType
     {
         Unknown
@@ -514,10 +592,6 @@ Function Search-WirelessNetwork
         Dmg
         HE
     }
-    
-    # // ______________________________________________
-    # // | Object for an SSID's physical network type |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     
     Class PhysicalSlot
     {
@@ -534,10 +608,6 @@ Function Search-WirelessNetwork
             Return $This.Type
         }
     }
-    
-    # // __________________________________________________________________________________
-    # // | A container object that holds a list of potential SSID's physical network type |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     
     Class PhysicalList
     {
@@ -572,10 +642,6 @@ Function Search-WirelessNetwork
         }
     }
     
-    # // __________________________________________
-    # // | Enum for an SSID's authentication type |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
     Enum AuthenticationType
     {
         None
@@ -593,10 +659,6 @@ Function Search-WirelessNetwork
         Owe
         Wpa3Enterprise
     }
-    
-    # // ____________________________________________
-    # // | Object for an SSID's authentication type |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     
     Class AuthenticationSlot
     {
@@ -617,10 +679,6 @@ Function Search-WirelessNetwork
             Return $This.Type
         }
     }
-    
-    # // ________________________________________________________________________________
-    # // | A container object that holds a list of potential SSID's authentication type |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     
     Class AuthenticationList
     {
@@ -719,10 +777,6 @@ Function Search-WirelessNetwork
         }
     }
     
-    # // ______________________________________
-    # // | Enum for an SSID's encryption type |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
     Enum EncryptionType
     {
         None
@@ -739,10 +793,6 @@ Function Search-WirelessNetwork
         Gcmp256
     }
     
-    # // ________________________________________
-    # // | Object for an SSID's encryption type |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
     Class EncryptionSlot
     {
         [UInt32]         $Index
@@ -758,10 +808,6 @@ Function Search-WirelessNetwork
             Return $This.Type
         }
     }
-    
-    # // ____________________________________________________________________________
-    # // | A container object that holds a list of potential SSID's encryption type |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     
     Class EncryptionList
     {
@@ -843,10 +889,6 @@ Function Search-WirelessNetwork
         }
     }
     
-    # // ________________________________________________
-    # // | Subcontroller for Ssid information injection |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
     Class SsidSubcontroller
     {
         [Object] $Physical
@@ -885,10 +927,6 @@ Function Search-WirelessNetwork
         }
     }
     
-    # // _____________________________________________________________________________________________
-    # // | Provides an accurate representation of the information collected by the wireless radio(s) |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
     Class Ssid
     {
         [UInt32]            $Index
@@ -908,7 +946,7 @@ Function Search-WirelessNetwork
         {
             $This.Index              = $Index
             $This.Ssid               = $Object
-            $This.Name               = $Object.Ssid
+            $This.Name               = If (!$Object.Ssid) { "<Hidden>" } Else { $Object.Ssid }
             $This.Bssid              = $Object.Bssid.ToUpper()
             $This.Network            = $Object.NetworkKind
             $This.Strength           = $Object.SignalBars
@@ -921,10 +959,6 @@ Function Search-WirelessNetwork
             Return $This.Name
         }
     }
-    
-    # // _______________________________
-    # // | Handles the profile objects |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     
     Class WiFiProfile
     {
@@ -969,10 +1003,6 @@ Function Search-WirelessNetwork
             )
         }
     }
-
-    # // ____________________________________________________________
-    # // | Represents an individual wireless interface on the host. |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     
     Class InterfaceObject
     {
@@ -996,12 +1026,6 @@ Function Search-WirelessNetwork
             $This.State       = $Info.State
         }
     }
-    
-    # // ____________________________________________________________
-    # // | Parses WLAN adapter information returned from the netsh. |
-    # // | Not nearly as CLEAN as accessing wlanapi.dll...?         |
-    # // | But- it is included as a FALLBACK MECHANISM.             |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     
     Class WlanInterface
     {
@@ -1054,10 +1078,6 @@ Function Search-WirelessNetwork
         }
     }
     
-    # // _____________________________________________________________
-    # // | Specifically for selecting/filtering a Runtime IAsyncTask |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
     Class RtMethod
     {
         [String] $Name
@@ -1073,10 +1093,6 @@ Function Search-WirelessNetwork
         }
     }
     
-    # // ___________________________
-    # // | Better than a hashtable |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
     Class ConnectionModeResolver
     {
         [String] $Profile           = "WLAN_CONNECTION_MODE_PROFILE"
@@ -1085,11 +1101,6 @@ Function Search-WirelessNetwork
         [String] $Auto              = "WLAN_CONNECTION_MODE_AUTO"
         [String] $DiscoveryUnsecure = "WLAN_CONNECTION_MODE_DISCOVERY_UNSECURE"
     }
-
-    # // __________________________________________________________________________________
-    # // | Controller class for the function, this encapsulates the XAML/GUI, as well as  |
-    # // | ALL of the various classes and functions necessary to access the radios.       |
-    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
     Class Wireless
     {
@@ -1108,11 +1119,10 @@ Function Search-WirelessNetwork
         [Object] Task()
         {
             Return [System.WindowsRuntimeSystemExtensions].GetMethods() | ? Name -eq AsTask | % { 
-                [RtMethod]$_ } | ? Count -eq 1 | ? Name -eq IAsyncOperation``1 | % Object
-        }
-        [Object] ProfileManagement()
-        {
-            Return $This.Object
+
+                [RtMethod]$_ 
+            
+            } | ? Count -eq 1 | ? Name -eq IAsyncOperation``1 | % Object
         }
         [Object] RxStatus()
         {
@@ -1168,7 +1178,7 @@ Function Search-WirelessNetwork
         }
         [Object] WlanConnectionMode([String]$ConnectionMode)
         {   
-            # [System.Enum]::GetNames()
+            # [System.Enum]::GetNames([WiFi.ProfileManagement+WLAN_CONNECTION_MODE])
             # WLAN_CONNECTION_MODE_PROFILE
             # WLAN_CONNECTION_MODE_TEMPORARY_PROFILE 
             # WLAN_CONNECTION_MODE_DISCOVERY_SECURE  
@@ -1242,7 +1252,11 @@ Function Search-WirelessNetwork
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
             
             $SB          = [Text.StringBuilder]::New(1024)
-            $Result      = (New-Object WiFi.ProfileManagement)::WlanReasonCodeToString($RC.ToInt32(),$SB.Capacity,$SB,[IntPtr]::Zero)
+            $Result      = (New-Object WiFi.ProfileManagement)::WlanReasonCodeToString(
+                            $RC.ToInt32(),
+                            $SB.Capacity,
+                            $SB,
+                            [IntPtr]::Zero)
             
             If ($Result -ne 0)
             {
@@ -1260,7 +1274,11 @@ Function Search-WirelessNetwork
             $MC       = 2
             [Ref] $NV = 0
             $Ch       = [IntPtr]::Zero
-            $Result   = (New-Object WiFi.ProfileManagement)::WlanOpenHandle($Mc,[IntPtr]::Zero,$Nv,[Ref]$Ch)
+            $Result   = (New-Object WiFi.ProfileManagement)::WlanOpenHandle(
+                         $Mc,
+                         [IntPtr]::Zero,
+                         $Nv,
+                         [Ref]$Ch)
             
             If ($result -eq 0)
             {
@@ -1274,7 +1292,8 @@ Function Search-WirelessNetwork
         [Void] RemoveWifiHandle([IntPtr]$ClientHandle)
         {
             $Result = (New-Object WiFi.ProfileManagement)::WlanCloseHandle(
-                      $ClientHandle,[IntPtr]::Zero)
+                      $ClientHandle,
+                      [IntPtr]::Zero)
             
             If ($Result -ne 0)
             {
@@ -1402,20 +1421,20 @@ Function Search-WirelessNetwork
             # // | TRCA: TrustedRootCA | WP: WlanProfile                                          |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
             
-            [String] $PS = $null
+            [String] $PS = $Null
             $WA          = 0
             $WlanPF      = $WPFI
-            $result      = (New-Object WiFi.ProfileManagement)::WlanGetProfile($CH,
+            $Result      = (New-Object WiFi.ProfileManagement)::WlanGetProfile($CH,
                            $IG,$PN,[IntPtr]::Zero,[Ref]$PS,[Ref]$WlanPF,[Ref]$WA)
             $PW          = $Null
             $CHSSID      = $Null
             $Eap         = $Null
-            $xmlPtr      = $Null
+            $XmlPtr      = $Null
             $SN          = $Null
             $TRCA        = $Null
             $Return      = $Null
             
-            If ($result -ne 0)
+            If ($Result -ne 0)
             {
                 Return $This.Win32Exception($Result)
             }
@@ -1462,7 +1481,7 @@ Function Search-WirelessNetwork
             }
             Else
             {
-                $EAP = $null
+                $EAP = $Null
             }
             
             # // ________________________________
@@ -1521,8 +1540,8 @@ Function Search-WirelessNetwork
             $Return.TrustedRootCA     = $TRCA
             $Return.Xml               = $PS
             
-            $xmlPtr                   = [System.Runtime.InteropServices.Marshal]::StringToHGlobalAuto($PS)
-            (New-Object WiFi.ProfileManagement)::WlanFreeMemory($xmlPtr)
+            $XmlPtr                   = [System.Runtime.InteropServices.Marshal]::StringToHGlobalAuto($PS)
+            (New-Object WiFi.ProfileManagement)::WlanFreeMemory($XmlPtr)
             
             Return $Return
         }
@@ -1784,7 +1803,7 @@ Function Search-WirelessNetwork
                     # // | Set transition mode as true for WPA3-SAE |
                     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
             
-                    $N = [System.Xml.XmlNamespaceManager]::new($PX.NameTable)
+                    $N = [System.Xml.XmlNamespaceManager]::New($PX.NameTable)
                     $N.AddNamespace('WLANProfile', $PX.DocumentElement.GetAttribute('xmlns'))
                     $RN = $PX.SelectSingleNode('//WLANProfile:authEncryption', $N)
                     $XN = $PX.CreateElement('transitionMode', 
@@ -2035,7 +2054,7 @@ Function Search-WirelessNetwork
             # // | Load the module location |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
             
-            $This.Module   = Get-FEModule
+            $This.Module   = Get-FEModule -Mode 1
             $This.OEMLogo  = $This.Module._Graphic("OEMLogo.bmp").Fullname
 
             # // _________________________________________
@@ -2052,9 +2071,13 @@ Function Search-WirelessNetwork
 
             If ($This.Mode -eq 1)
             {
-                $This.Xaml = [XamlWindow][WirelessNetworkXaml]::Tab
+                $This.Xaml = [XamlWindow][WirelessNetworkXaml]::Content
             }
             
+            $This.Refresh()
+        }
+        Refresh()
+        {
             # // __________________________
             # // | Load the runtime types |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -2109,11 +2132,7 @@ Function Search-WirelessNetwork
             {
                 Throw "Unable to synchronize wireless radio(s)"
             }
-            
-            $This.Refresh()
-        }
-        Refresh()
-        {
+
             Start-Sleep -Milliseconds 150
             $This.Scan()
             
@@ -2357,7 +2376,7 @@ Function Search-WirelessNetwork
             }
             If ($This.Mode -eq 1)
             {
-                $Pass    = [XamlWindow][PassphraseXaml]::Tab
+                $Pass    = [XamlWindow][PassphraseXaml]::Content
                 $Auth    = $Null
                 $Enc     = $Null
                 $Pass.IO.Connect.Add_Click(
@@ -2543,10 +2562,8 @@ Function Search-WirelessNetwork
                 $Wifi.Xaml.IO.DialogResult = $False
             })
         
-            # Initial adapter selection
             $Wifi.Xaml.IO.Interface.SelectedIndex   = 0
         
-            # Show Dialog
             $Wifi.Xaml.Invoke()
         }
     }
