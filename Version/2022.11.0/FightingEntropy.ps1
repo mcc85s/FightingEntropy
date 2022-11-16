@@ -1,22 +1,40 @@
-#     ____    ____________________________________________________________________________________________________        
-#    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-#    \\__//¯¯¯ [FightingEntropy(π)][2022.11.0]: 11-15-2022 14:23:27                                           ___//¯¯\\   
-#     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+<#
+     ____    ____________________________________________________________________________________________________        
+    //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+    \\__//¯¯¯ [FightingEntropy(π)][2022.11.0]: 11-16-2022 10:43:05                                           ___//¯¯\\   
+     ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+\_______________________________________________________________________________________________________________________/
+  About /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+/¯¯¯¯¯¯¯                                                                                                                 
 
-# // ___________________________________________________________________
-# // | Installs the PowerShell module, [FightingEntropy(π)][2022.11.0] |
-# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    This file acts as the installation/removal process as well as for performing validation and testing purposes.
 
-# // _____________________________________________________________________________________________________
-# // | Todo                                                                                              |
-# // |---------------------------------------------------------------------------------------------------|
-# // | PS Core         | Filter out stuff for PS Core, by building a different manifest                  |
-# // | PS Server       | Filter out stuff for PS Server, **                                              |
-# // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    It is effectively a shell of the entire module, and can be used to implement updates to the module itself, in a 
+    similar manner to how (Continuous Integration/Continuous Development) works.
 
+    __________________________________________________________________________
+    | Installs the PowerShell module, [FightingEntropy(π)][2022.11.0]        |
+    |========================================================================|
+    | Version   | Date                | Guid                                 |
+    |-----------|---------------------|--------------------------------------|
+    | 2022.11.0 | 11/07/2022 16:01:21 | 0b36cfa4-dfad-4863-9171-f8afe65769cf |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________________________________________________________________________________________
+    | Todo                                                                                              |
+    |---------------------------------------------------------------------------------------------------|
+    | PS Core         | Filter out stuff for PS Core, by building a different manifest                  |
+    | PS Server       | Filter out stuff for PS Server, **                                              |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+                                                                                                                 _______/
+\_______________________________________________________________________________________________________________/ About  
+  Function /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+/¯¯¯¯¯¯¯¯¯¯                                                                                                              
+#>
 Function FightingEntropy.Module
 {
+    [CmdLetBinding()]Param([Parameter()][UInt32]$Mode=0)
+
     # // _____________________________________________________________________
     # // | This is a 1x[track] x 4[char] chunk of information for Write-Host |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -655,7 +673,7 @@ Function FightingEntropy.Module
             ("Get-FEHost.ps1"                  , "E8668F9FA2E8741F7C8B99F4BB25C2604EC61AAC0FA162C9B8BEFF94D9AB3528") ,
             ("Get-FEImageManifest.ps1"         , "3665C48E2A0A947F6DDACF6F036ED88D33318595F67129718A1CB5F17D9A5D80") ,
             ("Get-FEInfo.ps1"                  , "BCBEDC6B56D8657841ABB89AAF25E6E2D1A98670D40E7371EF8C88CDA2259A48") ,
-            ("Get-FEModule.ps1"                , "20188EAFBCCDD907FCAF7ED7ED6BC1941DF026E69B66DEE5022686D8CD66F369") ,
+            ("Get-FEModule.ps1"                , "D7B6D6A9692E3B006085A54260EBCBA88179A0B039F82A91BAE459BA383DAFB6") ,
             ("Get-FENetwork.ps1"               , "8251CC0215D4B83D1D1A465C0D89FB3C97E5B07B4A2ECC8BB86A39B3D8C8ADB7") ,
             ("Get-FEOS.ps1"                    , "4224DB2FFAB564F85B7FD8998B7311751DFD3C5F22BE4547412CF910BBA605F4") ,
             ("Get-FEProcess.ps1"               , "053AF12E5C31360F1A91778D997A9D7AC9D1C7BF65CAD5F34544482F9BBD872A") ,
@@ -1331,21 +1349,37 @@ Function FightingEntropy.Module
         [Object]        $Root
         [Object]    $Manifest
         [Object]    $Registry
-        Main()
+        Main([UInt32]$Mode)
         {
-            $This.Write("Loading [~] $($This.Label())")
+            If ($Mode -eq 0)
+            {
+                $This.Write("Loading [~] $($This.Label())")
+            }
 
             $This.OS       = $This.GetOS()
-            Write-Host "[+] Operating System"
+
+            If ($Mode -eq 0)
+            {
+                Write-Host "[+] Operating System"
+            }
 
             $This.Root     = $This.GetRoot()
-            Write-Host "[+] Module Root"
+            If ($Mode -eq 0)
+            {
+                Write-Host "[+] Module Root"
+            }
 
             $This.Manifest = $This.GetManifest($This.Source,$This.Root.Resource)
-            Write-Host "[+] Module Manifest"
+            If ($Mode -eq 0)
+            {
+                Write-Host "[+] Module Manifest"
+            }
 
             $This.Registry = $This.GetRegistry()
-            Write-Host "[+] Module Registry"
+            If ($Mode -eq 0)
+            {
+                Write-Host "[+] Module Registry"
+            }
         }
         [Object] NewVersion([String]$Version)
         {
@@ -1358,8 +1392,8 @@ Function FightingEntropy.Module
         }
         [Object[]] Versions()
         {
-            $MD       = Invoke-RestMethod "$($This.Source)/blob/main/README.md?raw=true"
-            Return [FEVersion[]]($MD -Split "`n" -match "\d{4}\.\d{2}\.\d+")
+            $Markdown = Invoke-RestMethod "$($This.Source)/blob/main/README.md?raw=true"
+            Return $Markdown -Split "`n" | ? { $_ -match "^\|\s\*\*\d{4}\.\d{2}\.\d+\*\*" } | % { [FEVersion]$_ }
         }
         [String] Label()
         {
@@ -1394,6 +1428,10 @@ Function FightingEntropy.Module
         [Object] GetRegistry()
         {
             Return [RegistryKey]::New($This)
+        }
+        [Object] GetFEVersion()
+        {
+            Return [FEVersion]::New("| $($This.Version) | $($This.Date) | $($This.Guid) |")
         }
         [Void] Write([String]$Message)
         {        
@@ -1669,7 +1707,54 @@ Function FightingEntropy.Module
         }
     }
 
-    [Main]::New()
+    [Main]::New($Mode)
 }
 
-$Module = FightingEntropy.Module
+$Module = FightingEntropy.Module -Mode 0 
+
+    # // ______________________________________________________________________________
+    # // | FightingEntropy.Module -Mode 1 (loads without writing stuff to the screen) |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+<#                                                                                                            __________/
+\____________________________________________________________________________________________________________/ Function  
+  Output /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+/¯¯¯¯¯¯¯¯                                                                                                                
+    _____________________________________________________________________
+    | Here is the output of the function above                          |
+    |===================================================================|
+    | PS Prompt:\> $Module                                              |
+    |                                                                   |
+    | Source      : https://www.github.com/mcc85s/FightingEntropy       |
+    | Name        : [FightingEntropy(π)]                                |
+    | Description : Beginning the fight against ID theft and cybercrime |
+    | Author      : Michael C. Cook Sr.                                 |
+    | Company     : Secure Digits Plus LLC                              |
+    | Copyright   : (c) 2022 (mcc85s/mcc85sx/sdp). All rights reserved. |
+    | Guid        : 0b36cfa4-dfad-4863-9171-f8afe65769cf                |
+    | Date        : 11/7/2022 4:01:21 PM                                |
+    | Version     : 2022.11.0                                           |
+    | OS          : <FightingEntropy.Module.OS>                         |
+    | Root        : <FightingEntropy.Module.Root>                       |
+    | Manifest    : <FightingEntropy.Module.Manifest>                   |
+    | Registry    : <FightingEntropy.Module.RegistryKey>                |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    ___________________________________________________________________________________________
+    | Suppose I'd like to see the current version of the module based on the script above...? |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    PS Prompt:\> $Module.GetFEVersion()
+
+    Version   Date                Guid
+    -------   ----                ----
+    2022.11.0 11/07/2022 16:01:21 0b36cfa4-dfad-4863-9171-f8afe65769cf
+
+                                                                                                               _________/
+\_____________________________________________________________________________________________________________/ Example  
+  Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+/¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
+    ____________________________________________________________________
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                                     ___________/
+\___________________________________________________________________________________________________________/ Signature
+/¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
+#>
