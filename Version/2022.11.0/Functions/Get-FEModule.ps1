@@ -1378,7 +1378,6 @@ Function Get-FEModule
                 Write-Host "[+] Module Manifest"
             }
 
-
             $This.Registry = $This.GetRegistry()
             If ($Mode -eq 0)
             {
