@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-16-2022 09:53:16    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-16-2022 10:30:12    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -1395,8 +1395,8 @@ Function Get-FEModule
         }
         [Object[]] Versions()
         {
-            $MD       = Invoke-RestMethod "$($This.Source)/blob/main/README.md?raw=true"
-            Return [FEVersion[]]($MD -Split "`n" -match "\d{4}\.\d{2}\.\d+")
+            $Markdown = Invoke-RestMethod "$($This.Source)/blob/main/README.md?raw=true"
+            Return $Markdown -Split "`n" | ? { $_ -match "^\|\s\*\*\d{4}\.\d{2}\.\d+\*\*" } | % { [FEVersion]$_ }
         }
         [String] Label()
         {
@@ -1431,6 +1431,10 @@ Function Get-FEModule
         [Object] GetRegistry()
         {
             Return [RegistryKey]::New($This)
+        }
+        [Object] GetFEVersion()
+        {
+            Return [FEVersion]::New("| $($This.Version) | $($This.Date) | $($This.Guid) |")
         }
         [Void] Write([String]$Message)
         {        
