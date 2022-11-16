@@ -17,28 +17,26 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-10-10                                                                               //   
-   \\        Modified   : 2022-11-14                                                                               \\   
+   \\        Modified   : 2022-11-16                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
-   //        TODO       : N/A                                                                                      //   
+   //        TODO       : Have the hash values restore themselves from registry                                    //   
    \\                                                                                                              \\   
    //                                                                                                           ___//   
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-14-2022 21:40:32    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-16-2022 09:53:16    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 Function Get-FEModule
 {
-    [CmdLetBinding( DefaultParameterSetName = "Default",
-                    HelpUri                 = "http://www.github.com/mcc85s/FightingEntropy" )]
-    Param(                
-        [Parameter(ParameterSetName =   "Default" )][Switch]       $All ,
-        [Parameter(ParameterSetName =   "Control" )][Switch]   $Control ,
-        [Parameter(ParameterSetName = "Functions" )][Switch] $Functions ,  
-        [Parameter(ParameterSetName =  "Graphics" )][Switch]  $Graphics )
+    [CmdLetBinding(DefaultParameterSetName=0)]Param(
+        [Parameter(ParameterSetName=0)][UInt32]      $Mode = 0,
+        [Parameter(ParameterSetName=1)][Switch]   $Control ,
+        [Parameter(ParameterSetName=2)][Switch] $Functions ,  
+        [Parameter(ParameterSetName=3)][Switch]  $Graphics )
 
     # // _____________________________________________________________________
     # // | This is a 1x[track] x 4[char] chunk of information for Write-Host |
@@ -678,7 +676,7 @@ Function Get-FEModule
             ("Get-FEHost.ps1"                  , "E8668F9FA2E8741F7C8B99F4BB25C2604EC61AAC0FA162C9B8BEFF94D9AB3528") ,
             ("Get-FEImageManifest.ps1"         , "3665C48E2A0A947F6DDACF6F036ED88D33318595F67129718A1CB5F17D9A5D80") ,
             ("Get-FEInfo.ps1"                  , "BCBEDC6B56D8657841ABB89AAF25E6E2D1A98670D40E7371EF8C88CDA2259A48") ,
-            ("Get-FEModule.ps1"                , "634A9A26578D5DB9389EA8703706951BF4FB027A15E815ADF9948F6EA00FC0AC") ,
+            ("Get-FEModule.ps1"                , "") ,
             ("Get-FENetwork.ps1"               , "8251CC0215D4B83D1D1A465C0D89FB3C97E5B07B4A2ECC8BB86A39B3D8C8ADB7") ,
             ("Get-FEOS.ps1"                    , "4224DB2FFAB564F85B7FD8998B7311751DFD3C5F22BE4547412CF910BBA605F4") ,
             ("Get-FEProcess.ps1"               , "053AF12E5C31360F1A91778D997A9D7AC9D1C7BF65CAD5F34544482F9BBD872A") ,
@@ -1354,21 +1352,38 @@ Function Get-FEModule
         [Object]        $Root
         [Object]    $Manifest
         [Object]    $Registry
-        Main()
+        Main([UInt32]$Mode)
         {
-            $This.Write("Loading [~] $($This.Label())")
+            If ($Mode -eq 0)
+            {
+                $This.Write("Loading [~] $($This.Label())")
+            }
 
             $This.OS       = $This.GetOS()
-            Write-Host "[+] Operating System"
+
+            If ($Mode -eq 0)
+            {
+                Write-Host "[+] Operating System"
+            }
 
             $This.Root     = $This.GetRoot()
-            Write-Host "[+] Module Root"
+            If ($Mode -eq 0)
+            {
+                Write-Host "[+] Module Root"
+            }
 
             $This.Manifest = $This.GetManifest($This.Source,$This.Root.Resource)
-            Write-Host "[+] Module Manifest"
+            If ($Mode -eq 0)
+            {
+                Write-Host "[+] Module Manifest"
+            }
+
 
             $This.Registry = $This.GetRegistry()
-            Write-Host "[+] Module Registry"
+            If ($Mode -eq 0)
+            {
+                Write-Host "[+] Module Registry"
+            }
         }
         [Object] NewVersion([String]$Version)
         {
@@ -1692,25 +1707,23 @@ Function Get-FEModule
         }
     }
 
-    $Main = [Main]::New()
-    
-    Switch ($PSCmdLet.ParameterSetName)
+    Switch ($PsCmdLet.ParameterSetName)
     {
-        Default   
+        0 
+        { 
+            [Main]::New($Mode)
+        } 
+        1
         {
-            $Main
+            [Main]::New(1).Manifest.Files(0)
         }
-        Control
+        2
         {
-            $Main.Manifest.Files(0)
+            [Main]::New(1).Manifest.Files(1)
         }
-        Functions
+        3
         {
-            $Main.Manifest.Files(1)
-        }
-        Graphics
-        {
-            $Main.Manifest.Files(2)
+            [Main]::New(1).Manifest.Files(2)
         }
     }
 }
