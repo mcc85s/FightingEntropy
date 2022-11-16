@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-16-2022 10:44:09    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-16-2022 16:57:48    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -702,9 +702,9 @@ Function Get-FEModule
             ("New-EnvironmentKey.ps1"          , "4783E3A5AFE777F91A59AB73A0D2B7311BD4E9760EA6BDDCB366FAFE52FB5CDD") ,
             ("New-FEFormat.ps1"                , "C2F51D3D1DAAA7EBA993DC93640AB934B30DF37EDDE040569A5A7E13D2CE0E39") ,
             ("New-FEInfrastructure.ps1"        , "D8AD33C0609552850AA3A36F2DE9C5ED116A0057D16883DA9BD85311EB869E18") ,
-            ("Search-WirelessNetwork.ps1"      , "EE54995EA3AD491F464FFE0CA226BA14E56AFC8E912CA50AA462C9F81F201760") ,
+            ("Search-WirelessNetwork.ps1"      , "22D63B63C256BEF8CAEDD736181BE588796E3558D814033F2AA11BFF872E1488") ,
             ("Set-ScreenResolution.ps1"        , "550BABB4ECCB26E835A952E1A749EDC857816B202881DC68C22F2727EB3493F7") ,
-            ("Show-ToastNotification.ps1"      , "0D70C7CD52FE5C34A29C0EE64581F2FC4DA6CEC1171C58FCB0EBFD2464F66973") ,
+            ("Show-ToastNotification.ps1"      , "B7D9BC8BF580EABFAFF35A7FF97DFCBB7BF7BEDEF30D1469AEB140F0D4A30DFE") ,
             ("Update-PowerShell.ps1"           , "0D803B07A9FF514B2376CEB4EB5E792F526785EBE89CCA7E5E9FA9CAF2A9154F") ,
             ("Use-Wlanapi.ps1"                 , "4178F1C9039ED6BADC339911D54E19907E69C35A2DD65F795C549BF1C64A2A75") ,
             ("Write-Theme.ps1"                 , "9B75801191BF001F1C47A63E00E17AA2254ADF3C4FC9CDE381FA749ED300D88D") | % { 
