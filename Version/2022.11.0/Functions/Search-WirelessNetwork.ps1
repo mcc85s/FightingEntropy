@@ -29,9 +29,7 @@
    \\        Modified   : 2022-11-15                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
-   //        TODO       : N/A                                                                                      //   
-   \\                                                                                                              \\   
-   //                                                                                                           ___//   
+   //        TODO       : N/A                                                                                   ___//   
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
@@ -1116,6 +1114,18 @@ Function Search-WirelessNetwork
         [Object]         $Output
         [Object]       $Selected
         [Object]      $Connected
+        [Object] GetWirelessNetworkXaml()
+        {
+            Return [XamlWindow][WirelessNetworkXaml]::Content
+        }
+        [Object] GetPassphraseXaml()
+        {
+            Return [XamlWindow][PassphraseXaml]::Content
+        }
+        [Object] GetSsidSubcontroller()
+        {
+            Return [SsidSubcontroller]::New()
+        }
         [Object] Task()
         {
             Return [System.WindowsRuntimeSystemExtensions].GetMethods() | ? Name -eq AsTask | % { 
@@ -1346,7 +1356,7 @@ Function Search-WirelessNetwork
                     $Info.Guid        = $IF.Guid
                     $Info.Description = $IF.Description
                     $Info.State       = $IF.State
-                    $Interface        = $IF.Adapters | ? InterfaceDescription -eq $Info.Description
+                    $Interface        = $This.Adapters | ? InterfaceDescription -eq $Info.Description
                     $Return          += [InterfaceObject]::New($Info,$Interface)
                 }
             }
@@ -2067,11 +2077,11 @@ Function Search-WirelessNetwork
             # // | Load the Ssid Subcontroller |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
             
-            $This.Sub      = [SsidSubcontroller]::New()
+            $This.Sub      = $This.GetSsidSubController()
 
             If ($This.Mode -eq 1)
             {
-                $This.Xaml = [XamlWindow][WirelessNetworkXaml]::Content
+                $This.Xaml = $This.GetWirelessNetworkXaml()
             }
             
             $This.Refresh()
@@ -2099,6 +2109,15 @@ Function Search-WirelessNetwork
             If ($This.Adapters.Count -eq 0)
             {
                 Throw "No existing wireless adapters on this system"
+            }
+
+            If ($This.Mode -eq 1)
+            {
+                $This.Xaml.IO.Interface.Items.Clear()
+                ForEach ($Adapter in $This.Adapters)
+                {
+                    $This.Xaml.IO.Interface.Items.Add($Adapter.InterfaceDescription)
+                }
             }
             
             # // ___________________________
@@ -2261,7 +2280,7 @@ Function Search-WirelessNetwork
                 $This.Select($Link)
             }
         }
-        Connect([String]$SSID)
+        Connect([Object]$Target)
         {
             If (!$This.Selected)
             {
@@ -2276,10 +2295,10 @@ Function Search-WirelessNetwork
             
                 If ($This.Selected.State -ne "CONNECTED")
                 {
-                    $Result = $This.GetWifiProfileInfo($SSID,$This.Selected.Guid)
+                    $Result    = $This.GetWifiProfileInfo($Target.Name,$This.Selected.Guid)
                     If ($Result)
                     {
-                        $Param = $This.GetWiFiConnectionParameter($SSID)
+                        $Param = $This.GetWiFiConnectionParameter($Target.Name)
                         $CH    = $This.NewWiFiHandle()
                         $This.WlanConnect($CH,[Ref]$This.Selected.Guid,[Ref]$Param,[IntPtr]::Zero)
                         $This.RemoveWifiHandle($CH)
@@ -2295,7 +2314,7 @@ Function Search-WirelessNetwork
                             Type    = "Image"
                             Mode    = 2
                             Image   = $This.OEMLogo
-                            Message = "Connected: $SSID"
+                            Message = "Connected: $($Target.Name)"
                         }
             
                         Show-ToastNotification @Splat
@@ -2313,30 +2332,46 @@ Function Search-WirelessNetwork
                         }
                     }
                 }
+                If ($This.Selected.State -eq "CONNECTED")
+                {
+                    [System.Windows.MessageBox]::Show("Already connected to a network, disconnect first")
+                }
             }
         }
-        Passphrase([Object]$Network)
+        ShowToast([String]$Message)
         {
+            $Splat = @{ 
+
+                Type    = "Image"
+                Mode    = 2
+                Image   = $This.OEMLogo
+                Message = $Message
+            }
+
+            Show-ToastNotification @Splat
+        }
+        Passphrase([Object]$Target)
+        {
+            $Auth      = $Null
+            $Enc       = $Null
+
+            If ($Target.Authentication -match "RsnaPsk")
+            {
+                $Auth  = "WPA2PSK"
+            }
+            If ($Target.Encryption -match "Ccmp")
+            {
+                $Enc   = "AES"
+            }
+
             If ($This.Mode -eq 0)
             {
-                $PW    = Read-Host -AsSecureString -Prompt "Enter passphrase for Network: [$($Network.SSID)]"
-                $PW    = Read-Host -AsSecureString -Prompt "Enter passphrase for Network: [$($Network.SSID)]"
-                $A     = $Null
-                $E     = $Null
+                $PW    = Read-Host -AsSecureString -Prompt "Enter passphrase for Network: [$($Target.SSID)]"
+
+                $ProfileXml = $This.NewWifiProfileXmlPsk($Target.Name,"Manual",$Auth,$Enc,$PW)
+                $This.NewWifiProfile($ProfileXml,$This.Selected.Name,$True)
                 
-                If ($Network.Authentication -match "RsnaPsk")
-                {
-                    $A = "WPA2PSK"
-                }
-                If ($Network.Encryption -match "Ccmp")
-                {
-                    $E = "AES"
-                }
-                
-                $PX    = $This.NewWifiProfileXmlPsk($Network.Name,"Manual",$A,$E,$PW)
-                $This.NewWifiProfile($PX,$This.Selected.Name,$True)
-                
-                $Param = $This.GetWiFiConnectionParameter($Network.Name)
+                $Param = $This.GetWiFiConnectionParameter($Target.Name)
                 $CH    = $This.NewWiFiHandle()
                 $This.WlanConnect($CH,[Ref]$This.Selected.Guid,[Ref]$Param,[IntPtr]::Zero)
                 $This.RemoveWifiHandle($CH)
@@ -2347,73 +2382,59 @@ Function Search-WirelessNetwork
                 $This.Select($Link)
                 
                 $This.Update()
-                If ($This.Connected)
+                Switch ([UInt32]!!$This.Connected)
                 {
-                    $Splat                             = @{
-                
-                        Type    = "Image"
-                        Mode    = 2
-                        Image   = $This.OEMLogo
-                        Message = "Connected: $($Network.Name)"
+                    0 
+                    { 
+                        $This.ShowToast("Connected: $($Target.Name)") 
                     }
-                
-                    Show-ToastNotification @Splat
-                }
-                If (!$This.Connected)
-                {
-                    $This.RemoveWifiProfile($Network.Name)
-                
-                    $Splat                             = @{
-                
-                        Type    = "Image"
-                        Mode    = 2
-                        Image   = $This.OEMLogo
-                        Message = "Unsuccessful: Passphrase failure"
+                    1 
+                    { 
+                        $This.RemoveWifiProfile($Target.Name)
+                        $This.ShowToast("Unsuccessful: Passphrase failure")
                     }
-                    Show-ToastNotification @Splat
                 }
-
             }
+
             If ($This.Mode -eq 1)
             {
-                $Pass    = [XamlWindow][PassphraseXaml]::Content
-                $Auth    = $Null
-                $Enc     = $Null
+                $Pass    = $This.GetPassphraseXaml()
                 $Pass.IO.Connect.Add_Click(
                 {
-                    If ($Network.Authentication -match "RsnaPsk")
+                    If ($Target.Authentication -match "RsnaPsk")
                     {
                         $Auth      = "WPA2PSK"
                     }
-                    If ($Network.Encryption -match "Ccmp")
+                    If ($Target.Encryption -match "Ccmp")
                     {
                         $Enc       = "AES"
                     }
+
                     $Password      = $Pass.IO.Passphrase.Password
-                    $SP            = $Password | ConvertTo-SecureString -AsPlainText -Force
-                    $ProfileXml    = $Ctrl.NewWifiProfileXmlPsk($Network.Name,"manual",$Auth,$Enc,$SP)
+                    $PW            = $Password | ConvertTo-SecureString -AsPlainText -Force
+                    $ProfileXml    = $This.NewWifiProfileXmlPsk($Network.Name,"manual",$Auth,$Enc,$PW)
                     $This.NewWifiProfile($ProfileXml,$Ctrl.Selected.Name,$True)
                         
-                    $Param         = $This.GetWiFiConnectionParameter($Network.Name)
+                    $Param         = $This.GetWiFiConnectionParameter($Target.Name)
                     $ClientHandle  = $This.NewWiFiHandle()
-                    $This.WlanConnect($ClientHandle,[Ref]$Ctrl.Selected.Guid,[Ref]$Param,[IntPtr]::Zero)
+                    $This.WlanConnect($ClientHandle,[Ref]$This.Selected.Guid,[Ref]$Param,[IntPtr]::Zero)
                     $This.RemoveWifiHandle($ClientHandle)
     
                     Start-Sleep 3
-                    $Link                              = $Ctrl.Selected.Description
+                    $Link           = $This.Selected.Description
                     $This.Unselect()
                     $This.Select($Link)
     
                     $This.Update()
                     If ($This.Connected)
                     {
-                        $Pass.IO.DialogResult = $True
-                        Show-ToastNotification -Type Image -Mode 2 -Image $This.OEMLogo -Message "Connected: $($Network.Name)"
+                        $Pass.IO.DialogResult = 1
+                        $This.ShowToast("Connected: $($Target.Name)")
                     }
                     If (!$This.Connected)
                     {
-                        $This.RemoveWifiProfile($Network.Name)
-                        Show-ToastNotification -Type Image -Mode 2 -Image $This.OEMLogo -Message "Unsuccessful: Passphrase failure"
+                        $This.RemoveWifiProfile($Target.Name)
+                        $This.ShowToast("Unsuccessful: Passphrase failure")
                     }
                 })
     
@@ -2568,3 +2589,36 @@ Function Search-WirelessNetwork
         }
     }
 }
+
+
+<# Test Area
+
+
+    $Target = $Wifi.Output[23]
+    $Test   = $Wifi.GetWifiProfileInfo($Target.Name,$Wifi.Selected.Guid)
+    Switch -Regex ($Test.GetType().Name)
+    {
+        ProfileInfo
+        {
+            $Wifi.Connect($Wifi.Xaml.IO.Output.SelectedItem.Name)
+            $Count             = 0
+            Do
+            {
+                Start-Sleep 1
+                $Wifi.Adapters = $Wifi.RefreshAdapterList()
+                $Link          = $Wifi.Selected.Description
+                $Wifi.Unselect()
+                $Wifi.Select($Link)
+                $Wifi.Update()
+                $Count ++
+            }
+            Until ($Wifi.Connected -or $Count -gt 5)
+        }
+        String
+        {
+            $Wifi.Passphrase($Target)
+            $Wifi.Update()
+        }
+    }
+
+#>
