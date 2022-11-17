@@ -33,7 +33,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-17-2022 07:49:15    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-17-2022 07:59:42    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -1195,7 +1195,7 @@ Function Search-WirelessNetwork
     Class WifiInterface
     {
         [String] $Name
-        [String] $Guid
+        [Guid]   $Guid
         [String] $Description
         [UInt32] $IfIndex 
         [String] $Status
@@ -1457,7 +1457,6 @@ Function Search-WirelessNetwork
         {
             $Ptr       = 0
             $Handle    = $This.NewWifiHandle()
-            $Adapter.Clear()
             
             # // _________________________________________
             # // | Get the profile list, save to pointer |
@@ -2075,10 +2074,10 @@ Function Search-WirelessNetwork
 
             If ($This.Mode -eq 1)
             {
-                $This.Xaml.IO.Interface.Items.Clear()
+                $This.Xaml.IO.Adapters.Items.Clear()
                 ForEach ($Adapter in $This.Adapters)
                 {
-                    $This.Xaml.IO.Interface.Items.Add($Adapter.InterfaceDescription)
+                    $This.Xaml.IO.Adapters.Items.Add($Adapter.InterfaceDescription)
                 }
             }
             
@@ -2119,7 +2118,7 @@ Function Search-WirelessNetwork
             
             If ($This.Mode -eq 1)
             {
-                $This.Xaml.IO.Output.Items.Clear()
+                $This.Xaml.IO.Networks.Items.Clear()
             }
 
             Write-Progress -Activity Scanning -Status Starting -PercentComplete 0  
@@ -2139,7 +2138,7 @@ Function Search-WirelessNetwork
             {
                 ForEach ($Object in $This.Output)
                 {
-                    $This.Xaml.IO.Output.Items.Add($Object)
+                    $This.Xaml.IO.Networks.Items.Add($Object)
                 }
             }
             Write-Progress -Activity Scanning -Status Complete -Completed
@@ -2151,7 +2150,7 @@ Function Search-WirelessNetwork
             # // | Select the adapter from its description |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
             
-            $This.Selected = $This.RefreshWirelessAdapterList() | ? Guid -eq $Adapter.Guid
+            $This.Selected = $This.Adapters | ? Guid -eq $Adapter.Guid
             $This.GetWiFiProfileList($This.Selected)
             
             # // _________________________
@@ -2388,13 +2387,13 @@ Function Search-WirelessNetwork
             If ($This.Xaml.IO.Filter.Text -ne "" -and $This.Output.Count -gt 0)
             {
                 Start-Sleep -Milliseconds 50
-                $This.Xaml.IO.Output.Items.Clear()
-                $This.Output | ? $This.Xaml.IO.Type.SelectedItem.Content -match $This.Xaml.IO.Filter.Text | % { $This.Xaml.IO.Output.Items.Add($_) }
+                $This.Xaml.IO.Networks.Items.Clear()
+                $This.Output | ? $This.Xaml.IO.Type.SelectedItem.Content -match $This.Xaml.IO.Filter.Text | % { $This.Xaml.IO.Networks.Items.Add($_) }
             }
             Else
             {
-                $This.Xaml.IO.Output.Items.Clear()
-                $This.Output | % { $This.Xaml.IO.Output.Items.Add($_) }
+                $This.Xaml.IO.Networks.Items.Clear()
+                $This.Output | % { $This.Xaml.IO.Networks.Items.Add($_) }
             }
         }
     }
@@ -2415,7 +2414,7 @@ Function Search-WirelessNetwork
 
             $Wifi.Xaml.IO.Adapters.Add_SelectionChanged(
             {
-                $Wifi.Select($Wifi.Xaml.IO.Interface.SelectedItem)
+                $Wifi.Select($Wifi.Xaml.IO.Adapters.SelectedItem)
                 If ($Wifi.Selected.Profile.Output -gt 0)
                 {
                     $Wifi.Xaml.IO.Profiles.Items.Clear()
@@ -2430,18 +2429,18 @@ Function Search-WirelessNetwork
                 }
             })
         
-            $Wifi.Xaml.IO.Output.Add_SelectionChanged(
+            $Wifi.Xaml.IO.Networks.Add_SelectionChanged(
             {
                 If (!$Wifi.Connected)
                 {
                     $Wifi.Xaml.IO.Disconnect.IsEnabled     = 0
         
-                    If ($Wifi.Xaml.IO.Output.SelectedIndex -eq -1)
+                    If ($Wifi.Xaml.IO.Networks.SelectedIndex -eq -1)
                     {
                         $Wifi.Xaml.IO.Connect.IsEnabled    = 0
                     }
         
-                    If ($Wifi.Xaml.IO.Output.SelectedIndex -ne -1)
+                    If ($Wifi.Xaml.IO.Networks.SelectedIndex -ne -1)
                     {
                         $Wifi.Xaml.IO.Connect.IsEnabled    = 1
                     }
@@ -2466,12 +2465,12 @@ Function Search-WirelessNetwork
         
             $Wifi.Xaml.IO.Connect.Add_Click(
             {
-                If (!$Wifi.Connected -and $Wifi.Xaml.IO.Output.SelectedIndex -ne -1)
+                If (!$Wifi.Connected -and $Wifi.Xaml.IO.Networks.SelectedIndex -ne -1)
                 {
-                    $Test = $Wifi.GetWifiProfileInfo($Wifi.Xaml.IO.Output.SelectedItem.Name,$Wifi.Selected.Guid)
+                    $Test = $Wifi.GetWifiProfileInfo($Wifi.Xaml.IO.Networks.SelectedItem.Name,$Wifi.Selected.Guid)
                     If ($Test -notmatch "Element not found")
                     {
-                        $Wifi.Connect($Wifi.Xaml.IO.Output.SelectedItem.Name)
+                        $Wifi.Connect($Wifi.Xaml.IO.Networks.SelectedItem.Name)
                         $Count             = 0
                         Do
                         {
@@ -2488,7 +2487,7 @@ Function Search-WirelessNetwork
                     }
                     If ($Test -match "Element not found")
                     {
-                        $Network = $Wifi.Xaml.IO.Output.SelectedItem
+                        $Network = $Wifi.Xaml.IO.Networks.SelectedItem
                         $Wifi.Passphrase($Wifi,$Network)
                         $Wifi.Update()
                     }
@@ -2528,7 +2527,7 @@ Function Search-WirelessNetwork
                 $Wifi.Xaml.IO.DialogResult = $False
             })
         
-            $Wifi.Xaml.IO.Interface.SelectedIndex   = 0
+            $Wifi.Xaml.IO.Adapters.SelectedIndex   = 0
         
             $Wifi.Xaml.Invoke()
         }
