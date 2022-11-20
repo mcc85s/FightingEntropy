@@ -11,7 +11,7 @@
 
     1) provide a detailed enumeration of [wireless network] adapter(s),
     2) (create/manage/view) [wireless network] profile(s),
-    3) scan for [wirelss network](s),
+    3) scan for [wireless network](s),
     4) (connect to/disconnect from) [wireless network](s) as well as password prompts,
     5) either from the (command line interface/CLI) (mode 0), 
     6) or from the (graphical user interface/GUI) (mode 1).
