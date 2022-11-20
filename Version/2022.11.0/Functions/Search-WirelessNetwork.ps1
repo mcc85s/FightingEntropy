@@ -93,7 +93,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-20-2022 12:30:51    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-20-2022 15:29:24    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
     _________________________________________________________________________________________________________
@@ -361,14 +361,14 @@ Function Search-WirelessNetwork
         '                            <RowDefinition Height="*"/>',
         '                            <RowDefinition Height="*"/>',
         '                        </Grid.RowDefinitions>',
-        '                        <DataGrid Grid.Row="0" Margin="10" Name="Profile">',
+        '                        <DataGrid Grid.Row="0" RowHeaderWidth="0" Name="Profile">',
         '                            <DataGrid.Columns>',
         '                                <DataGridTextColumn     Header="#"          Width="25"   Binding="{Binding Index}"/>',
         '                                <DataGridTextColumn     Header="Name"       Width="*"    Binding="{Binding ProfileName}"/>',
         '                                <DataGridTemplateColumn Header="Connection Mode" Width="140">',
         '                                    <DataGridTemplateColumn.CellTemplate>',
         '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding ConnectionMode.Index}"  ToolTip="{Binding ConnectionMode.Description}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                            <ComboBox SelectedIndex="{Binding ConnectionMode.Index}"  ToolTip="{Binding ConnectionMode.Description}" Margin="0" Padding="2" Height="18" FontSize="10" IsEnabled="False">',
         '                                                <ComboBoxItem Content="Manual"/>',
         '                                                <ComboBoxItem Content="Auto"/>',
         '                                            </ComboBox>',
@@ -378,7 +378,7 @@ Function Search-WirelessNetwork
         '                                <DataGridTemplateColumn Header="Authentication" Width="140">',
         '                                    <DataGridTemplateColumn.CellTemplate>',
         '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Authentication.Index}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                            <ComboBox SelectedIndex="{Binding Authentication.Index}" Margin="0" Padding="2" Height="18" FontSize="10" IsEnabled="False">',
         '                                                <ComboBoxItem Content="None"/>',
         '                                                <ComboBoxItem Content="Unknown"/>',
         '                                                <ComboBoxItem Content="Open80211"/>',
@@ -400,7 +400,7 @@ Function Search-WirelessNetwork
         '                                <DataGridTemplateColumn Header="Encryption" Width="140">',
         '                                    <DataGridTemplateColumn.CellTemplate>',
         '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Encryption.Index}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                            <ComboBox SelectedIndex="{Binding Encryption.Index}" Margin="0" Padding="2" Height="18" FontSize="10" IsEnabled="False">',
         '                                                <ComboBoxItem Content="None"/>',
         '                                                <ComboBoxItem Content="Unknown"/>',
         '                                                <ComboBoxItem Content="Wep"/>',
@@ -419,7 +419,7 @@ Function Search-WirelessNetwork
         '                                </DataGridTemplateColumn>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
-        '                        <DataGrid Grid.Row="1" Margin="10" Name="ProfileExtension" IsEnabled="False">',
+        '                        <DataGrid Grid.Row="1" Name="ProfileExtension" ScrollViewer.CanContentScroll="False" IsEnabled="False">',
         '                            <DataGrid.Columns>',
         '                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="100"/>',
         '                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
@@ -439,8 +439,8 @@ Function Search-WirelessNetwork
         '                                <ColumnDefinition Width="90"/>',
         '                                <ColumnDefinition Width="120"/>',
         '                                <ColumnDefinition Width="*"/>',
-        '                                <ColumnDefinition Width="*"/>',
         '                                <ColumnDefinition Width="100"/>',
+        '                                <ColumnDefinition Width="120"/>',
         '                            </Grid.ColumnDefinitions>',
         '                            <Label    Grid.Column="0" Content="[Filter]:"/>',
         '                            <ComboBox Grid.Column="1" Name="FilterProperty" SelectedIndex="0">',
@@ -453,9 +453,9 @@ Function Search-WirelessNetwork
         '                            </ComboBox>',
         '                            <TextBox Grid.Column="2" Name="FilterText"/>',
         '                            <ProgressBar Grid.Column="3" Margin="10" Name="Progress"/>',
-        '                            <Button  Grid.Column="4" Name="Refresh"    Content="Refresh"    IsEnabled="False"/>',
+        '                            <Button  Grid.Column="4" Name="Refresh"  Content="(Scan/Refresh)"    IsEnabled="False"/>',
         '                        </Grid>',
-        '                        <DataGrid Grid.Row="1" Margin="5" Grid.Column="0" Name="Network">',
+        '                        <DataGrid Grid.Row="1" Grid.Column="0" Name="Network" RowHeaderWidth="0">',
         '                            <DataGrid.Columns>',
         '                                <DataGridTextColumn Header="#"        Width="25"  Binding="{Binding Index}"/>',
         '                                <DataGridTextColumn Header="Name"     Width="240" Binding="{Binding Name}"/>',
@@ -463,7 +463,7 @@ Function Search-WirelessNetwork
         '                                <DataGridTemplateColumn Header="Phy." Width="40">',
         '                                    <DataGridTemplateColumn.CellTemplate>',
         '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Physical.Index}" ToolTip="{Binding Physical.Description}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                            <ComboBox SelectedIndex="{Binding Physical.Index}" ToolTip="{Binding Physical.Description}" Margin="0" Padding="2" Height="18" FontSize="10" IsEnabled="False">',
         '                                                <ComboBoxItem Content="Unknown"/>',
         '                                                <ComboBoxItem Content="Fhss"/>',
         '                                                <ComboBoxItem Content="Dsss"/>',
@@ -479,11 +479,11 @@ Function Search-WirelessNetwork
         '                                        </DataTemplate>',
         '                                    </DataGridTemplateColumn.CellTemplate>',
         '                                </DataGridTemplateColumn>',
-        '                                <DataGridTextColumn Header="Uptime" Width="100" Binding="{Binding Uptime}"/>',
+        '                                <DataGridTextColumn Header="Uptime" Width="120" Binding="{Binding Uptime}"/>',
         '                                <DataGridTemplateColumn Header="Auth." Width="75">',
         '                                    <DataGridTemplateColumn.CellTemplate>',
         '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Authentication.Index}"  ToolTip="{Binding Authentication.Description}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                            <ComboBox SelectedIndex="{Binding Authentication.Index}"  ToolTip="{Binding Authentication.Description}" Margin="0" Padding="2" Height="18" FontSize="10" IsEnabled="False">',
         '                                                <ComboBoxItem Content="None"/>',
         '                                                <ComboBoxItem Content="Unknown"/>',
         '                                                <ComboBoxItem Content="Open80211"/>',
@@ -505,7 +505,7 @@ Function Search-WirelessNetwork
         '                                <DataGridTemplateColumn Header="Enc." Width="75">',
         '                                    <DataGridTemplateColumn.CellTemplate>',
         '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Encryption.Index}" ToolTip="{Binding Encryption.Description}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                            <ComboBox SelectedIndex="{Binding Encryption.Index}" ToolTip="{Binding Encryption.Description}" Margin="0" Padding="2" Height="18" FontSize="10" IsEnabled="False">',
         '                                                <ComboBoxItem Content="None"/>',
         '                                                <ComboBoxItem Content="Unknown"/>',
         '                                                <ComboBoxItem Content="Wep"/>',
@@ -525,7 +525,7 @@ Function Search-WirelessNetwork
         '                                <DataGridTemplateColumn Header="Str." Width="40">',
         '                                    <DataGridTemplateColumn.CellTemplate>',
         '                                        <DataTemplate>',
-        '                                            <ComboBox SelectedIndex="{Binding Strength}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center" IsEnabled="False">',
+        '                                            <ComboBox SelectedIndex="{Binding Strength}" Margin="0" Padding="2" Height="18" FontSize="10" IsEnabled="False">',
         '                                                <ComboBoxItem Content="0"/>',
         '                                                <ComboBoxItem Content="1"/>',
         '                                                <ComboBoxItem Content="2"/>',
@@ -805,7 +805,6 @@ Function Search-WirelessNetwork
         None                  = 0
         Unknown               = 1
         Open80211             = 2
-        Open                  = 2
         SharedKey80211        = 3
         Wpa                   = 4
         WpaPsk                = 5
@@ -814,7 +813,6 @@ Function Search-WirelessNetwork
         RsnaPsk               = 8
         Ihv                   = 9
         Wpa3                  = 10
-        Wpa3Enterprise192Bits = 10
         Wpa3Sae               = 11
         Owe                   = 12
         Wpa3Enterprise        = 13
@@ -1197,6 +1195,33 @@ Function Search-WirelessNetwork
         }
     }
 
+    Class WifiProfileExtensionProperty
+    {
+        [UInt32] $Index
+        [String] $Name
+        [String] $Value
+        WifiProfileExtensionProperty([UInt32]$Index,[String]$Name,[Object]$Value)
+        {
+            $This.Index = $Index
+            $This.Name  = $Name
+            $This.Value = @(Switch ($Value.Count)
+            {
+                {$_ -eq 0}
+                {
+                    "-"
+                }
+                {$_ -eq 1}
+                {
+                    $Value
+                }
+                {$_ -gt 1}
+                {
+                    $Value -join "`n"
+                }
+            })
+        }
+    }
+
     Class WifiProfileExtension
     {
         [UInt32]               $Index
@@ -1239,17 +1264,14 @@ Function Search-WirelessNetwork
             $This.TrustedRootCA     = $xProfile.TrustedRootCA
             $This.Xml               = $xProfile.Xml
         }
-        [Object[]] Profile()
+        [Object] Profile()
         {
-            Return @(ForEach ($Item in "Password ConnectHiddenSSID EapType ServerNames TrustedRootCa Xml" -Split " ")
+            $Object = @( )
+            ForEach ($Item in "Password ConnectHiddenSSID EapType ServerNames TrustedRootCa Xml" -Split " ")
             {
-                $Value = $This.$Item
-                If (!$Value)
-                {
-                    $Value = "-"
-                }
-                [PSNoteProperty]::New($Item,$Value)
-            })
+                $Object += [WifiProfileExtensionProperty]::New($Object.Count,$Item,$This.$Item)
+            }
+            Return $Object
         }
     }
 
@@ -1373,12 +1395,22 @@ Function Search-WirelessNetwork
             $Template                = [WifiProfileExtension]::New($Interface)
             $Template.Index          = $Index
             $Template.ConnectionMode = $This.Connection.Get($xProfile.Detail.ConnectionMode)
-            If ($xProfile.Detail.Authentication -eq "Open")
-            {
-                $xProfile.Detail.Authentication = "Open80211"
-            }
             
+            Switch -Regex ($xProfile.Detail.Authentication)
+            {
+                ^Open$   { $xProfile.Detail.Authentication = "Open80211" }
+                ^WPA2PSK { $xProfile.Detail.Authentication = "WpaPsk"    }
+                Default  { }
+            }
+
             $Template.Authentication = $This.Authentication.Get($xProfile.Detail.Authentication)
+
+            Switch -Regex ($xProfile.Detail.Encryption)
+            {
+                ^AES$    { $xProfile.Detail.Encryption    = "Ccmp"       }
+                Default  { }
+            }
+
             $Template.Encryption     = $This.Encryption.Get($xProfile.Detail.Encryption)
             
             $Template.Load($xProfile.Detail)
@@ -1421,7 +1453,7 @@ Function Search-WirelessNetwork
         {
             $This.Adapter = @( ) 
             ForEach ($Adapter in Get-NetAdapter | ? PhysicalMediaType -match "(Native 802.11|Wireless (W|L)AN)")
-            {   
+            {
                 $Item          = [WifiInterface]::New($This.Adapter.Count,$Adapter)
                 $This.GetWiFiProfileList($Item)
                 $This.Adapter += $Item
@@ -1491,7 +1523,7 @@ Function Search-WirelessNetwork
         {
             Return [WifiInterfaceNetsh]::New((netsh wlan show interface $Name))
         }
-        [String] Win32Exception([UInt32]$ReasonCode)
+        [Object] Win32Exception([UInt32]$ReasonCode)
         {   
             Return [System.ComponentModel.Win32Exception]::New($ReasonCode)
         }
@@ -2007,12 +2039,12 @@ Function Search-WirelessNetwork
         }
         [Object] NewWiFiProfilePsk([String]$Tag,[String]$Pass,[String]$Mode,[String]$Auth,[String]$Enc,[String]$Name)
         {
-            $ProfileTemp     = $This.NewWifiProfileXmlPsk($Tag,$Mode,$Auth,$Enc,$Name)
+            $ProfileTemp = $This.NewWifiProfileXmlPsk($Tag,$Mode,$Auth,$Enc,$Name)
             Return $This.NewWifiProfile($ProfileTemp,$Name)
         }
         [Object] NewWifiProfileEap([String]$Tag,[String]$EAP,[String]$Name)
         {
-            $ProfileTemp   = $This.NewWifiProfileXmlEap($Tag,'Auto','WPA2PSK','AES',$EAP,'',$Null)
+            $ProfileTemp = $This.NewWifiProfileXmlEap($Tag,'Auto','WPA2PSK','AES',$EAP,'',$Null)
             Return $This.NewWifiProfile($ProfileTemp,$Name)
         }
         [Object] NewWifiProfileEap([String]$Tag,[String]$Mode,[String]$EAP,[String]$Name)
@@ -2508,17 +2540,18 @@ Function Search-WirelessNetwork
         }
         Disconnect()
         {
-            $xAdapter = $This.Selected
+            $Index    = $This.Selected.Index
+            $xAdapter = $This.Adapter[$Index]
             $xSSID    = $This.NetshShowInterface($xAdapter.Name)
 
             If (!$This.Selected)
             {
-                Write-Host "No network selected"
+                Write-Host "No adapter selected"
             }
 
             If ($This.Selected.State -eq "CONNECTED")
             {
-                $Handle           = $This.NewWiFiHandle()  
+                $Handle           = $This.NewWiFiHandle()
                 (New-Object WiFi.ProfileManagement)::WlanDisconnect($Handle,[Ref]$xAdapter.Guid,[IntPtr]::Zero)
                 $This.RemoveWifiHandle($Handle)
                 $This.Connected   = $Null
@@ -2526,54 +2559,37 @@ Function Search-WirelessNetwork
                 $This.ShowToast("Disconnected: ($($xSSID.SSID)/$($xSSID.BSSID))")
             
                 $This.Unselect()
-                $This.Select($xAdapter)
+                $This.Select($Index)
             }
         }
         Connect([Object]$Target)
         {
-            If (!$This.Selected)
+            $Index          = $This.Selected.Index
+            $This.Unselect()
+            $This.Select($Index)
+            
+            If ($Target.Name -in $This.Selected.Profile.Output.ProfileName)
             {
-                Write-Host "Must select an active interface"
-            }
-
-            If ($This.Selected)
-            {
-                $xAdapter       = $This.Selected
+                $Param  = $This.GetWiFiConnectionParameter($Target.Name)
+                $Handle = $This.NewWiFiHandle()
+                (New-Object WiFi.ProfileManagement)::WlanConnect($Handle,[Ref]$This.Selected.Guid,[Ref]$Param,[IntPtr]::Zero)
+                $This.RemoveWifiHandle($Handle)
+        
                 $This.Unselect()
-                $This.Select($xAdapter)
-            
-                If ($This.Selected.State -ne "CONNECTED")
+                $This.Select($Index)
+        
+                $This.Update()
+                $This.ShowToast("Connected: $($Target.Name)")
+            }
+            If ($Target.Name -notin $This.Selected.Profile.Output.ProfileName)
+            {
+                If ($Target.Authentication -match "PSK")
                 {
-                    $Result     = $Target.Name -in $This.Selected.Profile.Output.ProfileName
-                    If ($Result)
-                    {
-                        $Param  = $This.GetWiFiConnectionParameter($Target.Name)
-                        $Handle = $This.NewWiFiHandle()
-                        (New-Object WiFi.ProfileManagement)::WlanConnect($Handle,[Ref]$xAdapter.Guid,[Ref]$Param,[IntPtr]::Zero)
-                        $This.RemoveWifiHandle($Handle)
-            
-                        $This.Unselect()
-                        $This.Select($xAdapter)
-            
-                        $This.Update()
-            
-                        $This.ShowToast("Connected: $($Target.Name)")
-                    }
-                    If (!$Result)
-                    {
-                        If ($Target.Authentication -match "PSK")
-                        {
-                            $This.Passphrase($Target)
-                        }
-                        Else
-                        {
-                            Write-Host "Eas/Peap not yet implemented"
-                        }
-                    }
+                    $This.Passphrase($Target)
                 }
-                If ($This.Selected.State -eq "CONNECTED")
+                Else
                 {
-                    [System.Windows.MessageBox]::Show("Already connected to a network, disconnect first")
+                    Write-Host "Eas/Peap not yet implemented"
                 }
             }
         }
@@ -2582,7 +2598,7 @@ Function Search-WirelessNetwork
             $Splat = @{ 
 
                 Message = $Message
-                Header  = [DateTime]::Now()
+                Header  = [DateTime]::Now
                 Body    = $Message
                 Image   = $This.OEMLogo
             }
@@ -2591,9 +2607,10 @@ Function Search-WirelessNetwork
         }
         Passphrase([Object]$Target)
         {
+            $Index     = $This.Selected.Index
+            $xAdapter  = $This.Selected
             $Auth      = $Null
             $Enc       = $Null
-            $xAdapter  = $This.Adapter | ? Guid -eq $This.Selected.Guid
 
             If ($Target.Authentication -match "RsnaPsk")
             {
@@ -2622,7 +2639,7 @@ Function Search-WirelessNetwork
                 
                 Start-Sleep 3
                 $This.Unselect()
-                $This.Select($xAdapter)
+                $This.Select($Index)
                 
                 $This.Update()
                 Switch ([UInt32]!!$This.Connected)
@@ -2648,15 +2665,6 @@ Function Search-WirelessNetwork
                 $Pass    = $This.GetPassphraseXaml()
                 $Pass.IO.Connect.Add_Click(
                 {
-                    If ($Target.Authentication -match "RsnaPsk")
-                    {
-                        $Auth      = "WPA2PSK"
-                    }
-                    If ($Target.Encryption -match "Ccmp")
-                    {
-                        $Enc       = "AES"
-                    }
-
                     $Password      = $Pass.IO.Passphrase.Password
                     $PW            = $Password | ConvertTo-SecureString -AsPlainText -Force
                     $ProfileXml    = $This.NewWifiProfileXmlPsk($Network.Name,"manual",$Auth,$Enc,$PW)
@@ -2669,7 +2677,7 @@ Function Search-WirelessNetwork
     
                     Start-Sleep 3
                     $This.Unselect()
-                    $This.Select($xAdapter)
+                    $This.Select($Index)
     
                     $This.Update()
                     If ($This.Connected)
