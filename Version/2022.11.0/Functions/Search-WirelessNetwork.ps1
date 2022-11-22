@@ -71,6 +71,9 @@
     [jcwalker/Github]
     https://github.com/jcwalker/WiFiProfileManagement
 
+    [Wireless Network Scanner (former version)]
+    https://youtu.be/35EabWfh8dQ
+
 .NOTES
     ____                                                                                                    ________    
    //¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
@@ -86,47 +89,49 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-10-10                                                                               //   
-   \\        Modified   : 2022-11-20                                                                               \\   
-   //        Demo       : N/A                                                                                      //   
+   \\        Modified   : 2022-11-22                                                                               \\   
+   //        Demo       : https://youtu.be/35EabWfh8dQ                                                             //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
    //        TODO       : N/A                                                                                   ___//   
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-20-2022 17:57:33    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-22-2022 16:25:04    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 
-    _________________________________________________________________________________________________________
-    | Type  | Name                     | Description                                                        |
-    |-------|--------------------------|--------------------------------------------------------------------|
-    | Class | WirelessNetworkXaml      | Main GUI/Xaml string                                               |
-    | Class | PassphraseXaml           | Passphrase GUI/Xaml                                                |
-    | Class | XamlProperty             | Used to index/catalog the Xaml control objects                     |
-    | Class | XamlWindow               | Constructs the XamlWindow object                                   |
-    | Enum  | PhysicalType             | Enum for an SSID's physical network type                           |
-    | Class | PhysicalSlot             | Object for an SSID's physical network type                         |
-    | Class | PhysicalList             | A list of potential SSID physical network types                    |
-    | Enum  | AuthenticationType       | Enum for an SSID's authentication type                             |
-    | Class | AuthenticationSlot       | Object for an SSID's authentication type                           |
-    | Class | AuthenticationList       | A list of potential SSID's authentication types                    |
-    | Enum  | EncryptionType           | Enum for an SSID's encryption type                                 |
-    | Class | EncryptionSlot           | Object for an SSID's encryption type                               |
-    | Class | EncryptionList           | A list of potential SSID's encryption types                        |
-    | Class | Ssid                     | Representation of each SSID collected by the wireless radio(s)     |
-    | Class | SsidSubcontroller        | Subcontroller for Ssid information injection                       |
-    | Class | ConnectionModeResolver   | (Struct), better than a hashtable                                  |
-    | Enum  | ConnectionModeType       | Enumerates the connection mode in profile object                   |
-    | Class | ConnectionModeSlot       | Object for a profile's range of available options                  |
-    | Class | ConnectionModeList       | A list for connection modes                                        |
-    | Class | WifiProfileSubcontroller | Handles the profile objects                                        |
-    | Class | WiFiProfile              | Shorthand version of the profile object                            |
-    | Class | WifiProfileExtension     | Expanded version of the profile object, includes adapter/interface |
-    | Class | WifiProfileList          | Object that handles a list of profiles on a given adapter          |
-    | Class | WifiInterface            | This deals exclusively with Wireless network adapters              |
-    | Class | WifiInterfaceNetsh       | This retrieves SOME information from netsh                         |
-    | Class | RtMethod                 | Specifically for selecting/filtering a Runtime IAsyncTask          |
-    | Class | Wireless                 | Controller class for the function, this encapsulates the XAML/GUI  |
-    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+    _____________________________________________________________________________________________________________
+    | Type  | Name                         | Description                                                        |
+    |-------|------------------------------|--------------------------------------------------------------------|
+    | Class | WirelessNetworkXaml          | Main GUI/Xaml string                                               |
+    | Class | PassphraseXaml               | Passphrase GUI/Xaml                                                |
+    | Class | XamlProperty                 | Used to index/catalog the Xaml control objects                     |
+    | Class | XamlWindow                   | Constructs the XamlWindow object                                   |
+    | Enum  | PhysicalType                 | Enum for an SSID's physical network type                           |
+    | Class | PhysicalSlot                 | Object for an SSID's physical network type                         |
+    | Class | PhysicalList                 | A list of potential SSID physical network types                    |
+    | Enum  | AuthenticationType           | Enum for an SSID's authentication type                             |
+    | Class | AuthenticationSlot           | Object for an SSID's authentication type                           |
+    | Class | AuthenticationList           | A list of potential SSID's authentication types                    |
+    | Enum  | EncryptionType               | Enum for an SSID's encryption type                                 |
+    | Class | EncryptionSlot               | Object for an SSID's encryption type                               |
+    | Class | EncryptionList               | A list of potential SSID's encryption types                        |
+    | Class | Ssid                         | Representation of each SSID collected by the wireless radio(s)     |
+    | Class | SsidSubcontroller            | Subcontroller for Ssid information injection                       |
+    | Class | ConnectionModeResolver       | (Struct), better than a hashtable                                  |
+    | Enum  | ConnectionModeType           | Enumerates the connection mode in profile object                   |
+    | Class | ConnectionModeSlot           | Object for a profile's range of available options                  |
+    | Class | ConnectionModeList           | A list for connection modes                                        |
+    | Class | WiFiProfile                  | Shorthand version of the profile object                            |
+    | Class | WiFiProfileExtensionProperty | Compartmentalizes the properties for the WiFiProfile in the Xaml   |
+    | Class | WifiProfileExtension         | Expanded version of the profile object, includes adapter/interface |
+    | Class | WifiProfileList              | Object that handles a list of profiles on a given adapter          |
+    | Class | WifiInterface                | This deals exclusively with Wireless network adapters              |
+    | Class | WifiInterfaceNetsh           | This retrieves SOME information from netsh                         |
+    | Class | WifiProfileSubcontroller     | Handles the profile objects                                        |
+    | Class | RtMethod                     | Specifically for selecting/filtering a Runtime IAsyncTask          |
+    | Class | WirelessSubcontroller        | Specifically for handling (adapters/interfaces), or networks       |
+    | Class | WirelessController           | Controller class for the function, this encapsulates the XAML/GUI  |
+    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 .Example
 #>
 
@@ -313,7 +318,7 @@ Function Search-WirelessNetwork
         '            <Grid.RowDefinitions>',
         '                <RowDefinition Height="80"/>',
         '                <RowDefinition Height="40"/>',
-        '                <RowDefinition Height="40"/>',
+        '                <RowDefinition Height="85"/>',
         '                <RowDefinition Height="*"/>',
         '            </Grid.RowDefinitions>',
         '            <DataGrid Grid.Row="0" Name="Adapter">',
@@ -325,34 +330,29 @@ Function Search-WirelessNetwork
         '            </DataGrid>',
         '            <Grid Grid.Row="1">',
         '                <Grid.ColumnDefinitions>',
-        '                    <ColumnDefinition Width="90"/>',
-        '                    <ColumnDefinition Width="50"/>',
-        '                    <ColumnDefinition Width="90"/>',
-        '                    <ColumnDefinition Width="165"/>',
-        '                    <ColumnDefinition Width="85"/>',
+        '                    <ColumnDefinition Width="*"/>',
         '                    <ColumnDefinition Width="*"/>',
         '                </Grid.ColumnDefinitions>',
-        '                <Label   Grid.Column="0" Content="[Index]:"/>',
-        '                <TextBox Grid.Column="1" Name="Index" IsReadOnly="True"/>',
-        '                <Label   Grid.Column="2" Content="[Status]:"/>',
-        '                <TextBox Grid.Column="3" Name="Status" IsReadOnly="True"/>',
-        '                <Label   Grid.Column="4" Content="[Mac]:"/>',
-        '                <TextBox Grid.Column="5" Name="MacAddress" IsReadOnly="True"/>',
+        '                <Label Grid.Column="0" Content="[Details]:"/>',
+        '                <Label Grid.Column="1" Content="[Connected]:"/>',
         '            </Grid>',
         '            <Grid Grid.Row="2">',
         '                <Grid.ColumnDefinitions>',
-        '                    <ColumnDefinition Width="85"/>',
-        '                    <ColumnDefinition Width="310"/>',
-        '                    <ColumnDefinition Width="85"/>',
+        '                    <ColumnDefinition Width="*"/>',
         '                    <ColumnDefinition Width="*"/>',
         '                </Grid.ColumnDefinitions>',
-        '                <Grid.RowDefinitions>',
-        '                    <RowDefinition Height="*"/>',
-        '                </Grid.RowDefinitions>',
-        '                <Label   Grid.Column="0" Content="[SSID]:"/>',
-        '                <TextBox Grid.Column="1" Name="SSID" IsReadOnly="True"/>',
-        '                <Label   Grid.Column="2" Content="[BSSID]:"/>',
-        '                <TextBox Grid.Column="3" Name="BSSID" IsReadOnly="True"/>',
+        '                <DataGrid Grid.Column="0" Name="AdapterExtension" HeadersVisibility="None">',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="Name"   Width="150" Binding="{Binding Name}"/>',
+        '                        <DataGridTextColumn Header="Value"  Width="*"   Binding="{Binding Value}"/>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
+        '                <DataGrid Grid.Column="1" Name="AdapterConnected" HeadersVisibility="None">',
+        '                    <DataGrid.Columns>',
+        '                        <DataGridTextColumn Header="Name"   Width="150" Binding="{Binding Name}"/>',
+        '                        <DataGridTextColumn Header="Value"  Width="*"   Binding="{Binding Value}"/>',
+        '                    </DataGrid.Columns>',
+        '                </DataGrid>',
         '            </Grid>',
         '            <TabControl Grid.Row="3">',
         '                <TabItem Header="Profile">',
@@ -360,6 +360,7 @@ Function Search-WirelessNetwork
         '                        <Grid.RowDefinitions>',
         '                            <RowDefinition Height="*"/>',
         '                            <RowDefinition Height="*"/>',
+        '                            <RowDefinition Height="40"/>',
         '                        </Grid.RowDefinitions>',
         '                        <DataGrid Grid.Row="0" RowHeaderWidth="0" Name="Profile">',
         '                            <DataGrid.Columns>',
@@ -419,12 +420,20 @@ Function Search-WirelessNetwork
         '                                </DataGridTemplateColumn>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
-        '                        <DataGrid Grid.Row="1" Name="ProfileExtension" ScrollViewer.CanContentScroll="False" IsEnabled="False">',
+        '                        <DataGrid Grid.Row="1" Name="ProfileExtension" HeadersVisibility="None" ScrollViewer.CanContentScroll="False" IsEnabled="False">',
         '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="100"/>',
+        '                                <DataGridTextColumn Header="Name"  Binding="{Binding Name}"  Width="125"/>',
         '                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
+        '                        <Grid Grid.Row="2">',
+        '                            <Grid.ColumnDefinitions>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                                <ColumnDefinition Width="*"/>',
+        '                            </Grid.ColumnDefinitions>',
+        '                            <Button Grid.Column="0" Name="CreateProfile" Content="Create"/>',
+        '                            <Button Grid.Column="1" Name="DeleteProfile" Content="Delete"/>',
+        '                        </Grid>',
         '                    </Grid>',
         '                </TabItem>',
         '                <TabItem Header="Network">',
@@ -1050,7 +1059,7 @@ Function Search-WirelessNetwork
     Class Ssid
     {
         [UInt32]            $Index
-        [Object]             $Ssid
+        Hidden [Object]      $Ssid
         [String]             $Name
         [Object]            $Bssid
         [Object]         $Physical
@@ -1273,6 +1282,12 @@ Function Search-WirelessNetwork
             }
             Return $Object
         }
+        Full()
+        {
+            $This | Select-Object Index, Name, Guid, Description, IfIndex, Status, MacAddress,
+            LinkSpeed, State, ProfileName, ConnectionMode, Authentication, Encryption, Password,
+            ConnectHiddenSSID, EapType, ServerNames, TrustedRootCA, Xml
+        }
     }
 
     Class WifiProfileList
@@ -1304,6 +1319,7 @@ Function Search-WirelessNetwork
         [String] $LinkSpeed
         [String] $State
         [Object] $Profile
+        Hidden [Object] $Connected
         WifiInterface([UInt32]$Index,[Object]$Interface)
         {
             $This.Index       = $Index
@@ -1358,7 +1374,8 @@ Function Search-WirelessNetwork
             $This.GUID                   = $This.Tx($In,"GUID")
             $This.MacAddress             = $This.Tx($In,"Physical address")
             $This.InterfaceType          = $This.Tx($In,"Interface type")
-            $This.State                  = $This.Tx($In,"State")
+            $xState                      = $This.Tx($In,"State")
+            $This.State                  = $xState.Substring(0,1).ToUpper() + $xState.Substring(1)
             $This.Ssid                   = $This.Tx($In,"SSID")
             $This.Bssid                  = $This.Tx($In,"BSSID") | % ToUpper
             $This.NetworkType            = $This.Tx($In,"Network type")
@@ -1372,6 +1389,25 @@ Function Search-WirelessNetwork
             $This.Transmit               = $This.Tx($In,"Transmit rate \(Mbps\)")
             $This.Signal                 = $This.Tx($In,"Signal")
             $This.Profile                = $This.Tx($In,"Profile")
+
+            # // _________________________
+            # // | Populate empty fields |
+            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+            If ($This.Ssid -eq "")
+            {
+                $This.Ssid  = "<Not connected>"
+            }
+
+            If ($This.Bssid -eq "")
+            {
+                $This.Bssid = "<Not connected>"
+            }
+
+            If ($This.Profile -eq "")
+            {
+                $This.Profile = "<Non-existent>"
+            }
         }
         [String] Tx([Object]$In,[String]$String)
         {
@@ -1417,7 +1453,7 @@ Function Search-WirelessNetwork
             Return $Template
         }
     }
-    
+
     Class RtMethod
     {
         [String] $Name
@@ -1447,7 +1483,6 @@ Function Search-WirelessNetwork
         Clear()
         {
             $This.List     = @( )
-            $This.Selected = $Null
             $This.Total    = 0
             $This.Index    = -1
         }
@@ -1473,13 +1508,12 @@ Function Search-WirelessNetwork
         {
             If ($This.Index -eq -1)
             {
-                Throw "No adapter selected"
+                Throw ("No {0} selected" -f $This.Type)
             }
 
             Return $This.List[$This.Index]
         }
     }
-
 
     Class WirelessController
     {
@@ -1494,7 +1528,6 @@ Function Search-WirelessNetwork
         Hidden [Object]   $Radios
         Hidden [Object]     $List
         [Object]         $Network
-        [Object]       $Connected
         WirelessController([UInt32]$Mode)
         {
             $This.Mode     = $Mode
@@ -1506,7 +1539,7 @@ Function Search-WirelessNetwork
             $This.Module   = Get-FEModule -Mode 1
             If (!$This.Module)
             {
-                Throw "Must install [FightingEntropy($([char]960))]"
+                Throw "Must install [FightingEntropy($([Char]960))]"
             }
     
             $This.OEMLogo  = $This.Module._Graphic("OEMLogo.bmp").Fullname
@@ -1544,7 +1577,7 @@ Function Search-WirelessNetwork
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
             
             $This.RefreshWirelessAdapterList()
-    
+            
             # // __________________________________________
             # // | Throw if no existing wireless adapters |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -1661,8 +1694,9 @@ Function Search-WirelessNetwork
             $This.Adapter.Clear()
             ForEach ($Adapter in Get-NetAdapter | ? PhysicalMediaType -match "(Native 802.11|Wireless (W|L)AN)")
             {
-                $Item          = [WifiInterface]::New($This.Adapter.Total,$Adapter)
+                $Item           = [WifiInterface]::New($This.Adapter.Total,$Adapter)
                 $This.GetWiFiProfileList($Item)
+                $Item.Connected = $This.NetshShowInterface($Item.Name)
                 $This.Adapter.Add($Item)
             }
         }
@@ -1712,7 +1746,11 @@ Function Search-WirelessNetwork
         {   
             $String = [Text.StringBuilder]::New(1024)
             $Result = (New-Object WiFi.ProfileManagement)::WlanReasonCodeToString(
-                       $Reason.ToInt32(),$String.Capacity,$String,[IntPtr]::Zero)
+                          $Reason.ToInt32(),
+                          $String.Capacity,
+                          $String,
+                          [IntPtr]::Zero)
+
             If ($Result -ne 0)
             {
                 Return $This.Win32Exception($Result)
@@ -1725,7 +1763,12 @@ Function Search-WirelessNetwork
             $Max       = 2
             [Ref] $Neg = 0
             $Handle    = [IntPtr]::Zero
-            $Result    = (New-Object WiFi.ProfileManagement)::WlanOpenHandle($Max,[IntPtr]::Zero,$Neg,[Ref]$Handle)
+            $Result    = (New-Object WiFi.ProfileManagement)::WlanOpenHandle(
+                             $Max,
+                             [IntPtr]::Zero,
+                             $Neg,
+                             [Ref]$Handle)
+
             If ($Result -eq 0)
             {
                 Return $Handle
@@ -1905,6 +1948,7 @@ Function Search-WirelessNetwork
             $Return.Xml               = $pstrXml
             
             $XmlPtr                   = [System.Runtime.InteropServices.Marshal]::StringToHGlobalAuto($pstrXml)
+
             (New-Object WiFi.ProfileManagement)::WlanFreeMemory($XmlPtr)
             
             Return $Return
@@ -2075,7 +2119,7 @@ Function Search-WirelessNetwork
                 $ProfileXml = [XML]($This.XmlTemplate(0) -f $Tag, $Hex, $Mode, $Auth, $Enc, $Plain)
                 If (!$Plain)
                 {
-                    $Null = $ProfileXml.WlanProfile.Msm.Security.RemoveChild($ProfileXml.WlanProfile.Msm.Security.SharedKey)
+                    $ProfileXml.WlanProfile.Msm.Security | % { $Null = $_.RemoveChild($_.SharedKey) }
                 }
             
                 If ($Auth -eq 'WPA3SAE')
@@ -2087,7 +2131,9 @@ Function Search-WirelessNetwork
                     $Names   = [System.Xml.XmlNamespaceManager]::new($ProfileXml.NameTable)
                     $Names.AddNamespace('WLANProfile',$ProfileXml.DocumentElement.GetAttribute('xmlns'))
                     $RefNode = $ProfileXml.SelectSingleNode('//WLANProfile:authEncryption', $Names)
-                    $XmlNode = $ProfileXml.CreateElement('transitionMode','http://www.microsoft.com/networking/WLAN/profile/v4')
+                    $XmlNode = $ProfileXml.CreateElement(
+                               'transitionMode',
+                               'http://www.microsoft.com/networking/WLAN/profile/v4')
                     $XmlNode.InnerText = 'True'
                     $Null    = $RefNode.AppendChild($XmlNode)
                 }
@@ -2148,7 +2194,9 @@ Function Search-WirelessNetwork
                     $Names   = [System.Xml.XmlNamespaceManager]::New($ProfileXml.NameTable)
                     $Names.AddNamespace('WLANProfile', $ProfileXml.DocumentElement.GetAttribute('xmlns'))
                     $RefNode = $ProfileXml.SelectSingleNode('//WLANProfile:authEncryption', $Names)
-                    $XmlNode = $ProfileXml.CreateElement('transitionMode','http://www.microsoft.com/networking/WLAN/profile/v4')
+                    $XmlNode = $ProfileXml.CreateElement(
+                               'transitionMode',
+                               'http://www.microsoft.com/networking/WLAN/profile/v4')
                     $XmlNode.InnerText = 'true'
                     $Null    = $RefNode.AppendChild($XmlNode)
                 }
@@ -2160,63 +2208,114 @@ Function Search-WirelessNetwork
                 Throw "Failed to create a new profile"
             }
         }
-        [Object] NewWiFiProfilePsk([String]$Tag,[String]$Pass,[String]$Name)
+        [Object] NewWiFiProfilePsk(
+            [String]$Tag,
+            [String]$Pass,
+            [String]$Name)
         {
-            $ProfileTemp = $This.NewWifiProfileXmlPsk($Tag,'Auto','WPA2PSK','AES',$Pass)
-            Return $This.NewWifiProfile($ProfileTemp,$Name)
+            $ProfileXml = $This.NewWifiProfileXmlPsk($Tag,'Auto','WPA2PSK','AES',$Pass)
+            Return $This.NewWifiProfile($ProfileXml,$Name)
         }
-        [Object] NewWiFiProfilePsk([String]$Tag,[String]$Pass,[String]$Mode,[String]$Name)
+        [Object] NewWiFiProfilePsk(
+            [String]$Tag,
+            [String]$Pass,
+            [String]$Mode,
+            [String]$Name)
         {
-            $ProfileTemp = $This.NewWifiProfileXmlPsk($Tag,$Mode,'WPA2PSK',"AES")
-            Return $This.NewWifiProfile($ProfileTemp,$Name)
+            $ProfileXml = $This.NewWifiProfileXmlPsk($Tag,$Mode,'WPA2PSK',"AES")
+            Return $This.NewWifiProfile($ProfileXml,$Name)
         }
-        [Object] NewWiFiProfilePsk([String]$Tag,[String]$Pass,[String]$Mode,[String]$Auth,[String]$Name)
+        [Object] NewWiFiProfilePsk(
+            [String]$Tag,
+            [String]$Pass,
+            [String]$Mode,
+            [String]$Auth,
+            [String]$Name)
         {
-            $ProfileTemp = $This.NewWifiProfileXmlPsk($Tag,$Mode,$Auth,'AES',$Name)
-            Return $This.NewWifiProfile($ProfileTemp,$Name)
+            $ProfileXml = $This.NewWifiProfileXmlPsk($Tag,$Mode,$Auth,'AES',$Name)
+            Return $This.NewWifiProfile($ProfileXml,$Name)
         }
-        [Object] NewWiFiProfilePsk([String]$Tag,[String]$Pass,[String]$Mode,[String]$Auth,[String]$Enc,[String]$Name)
+        [Object] NewWiFiProfilePsk(
+            [String]$Tag,
+            [String]$Pass,
+            [String]$Mode,
+            [String]$Auth,
+            [String]$Enc,
+            [String]$Name)
         {
-            $ProfileTemp = $This.NewWifiProfileXmlPsk($Tag,$Mode,$Auth,$Enc,$Name)
-            Return $This.NewWifiProfile($ProfileTemp,$Name)
+            $ProfileXml = $This.NewWifiProfileXmlPsk($Tag,$Mode,$Auth,$Enc,$Name)
+            Return $This.NewWifiProfile($ProfileXml,1)
         }
-        [Object] NewWifiProfileEap([String]$Tag,[String]$EAP,[String]$Name)
+        [Object] NewWifiProfileEap(
+            [String]$Tag,
+            [String]$EAP,
+            [String]$Name)
         {
-            $ProfileTemp = $This.NewWifiProfileXmlEap($Tag,'Auto','WPA2PSK','AES',$EAP,'',$Null)
-            Return $This.NewWifiProfile($ProfileTemp,$Name)
+            $ProfileXml = $This.NewWifiProfileXmlEap($Tag,'Auto','WPA2PSK','AES',$EAP,'',$Null)
+            Return $This.NewWifiProfile($ProfileXml,1)
         }
-        [Object] NewWifiProfileEap([String]$Tag,[String]$Mode,[String]$EAP,[String]$Name)
+        [Object] NewWifiProfileEap(
+            [String]$Tag,
+            [String]$Mode,
+            [String]$EAP,
+            [String]$Name)
         {
-            $ProfileTemp = $This.NewWifiProfileXmlEap($Tag,$Mode,'WPA2PSK','AES',$EAP,'',$Null)
-            Return $This.NewWifiProfile($ProfileTemp,$Name)
+            $ProfileXml = $This.NewWifiProfileXmlEap($Tag,$Mode,'WPA2PSK','AES',$EAP,'',$Null)
+            Return $This.NewWifiProfile($ProfileXml,1)
         }
-        [Object] NewWifiProfileEap([String]$Tag,[String]$Mode,[String]$Auth,[String]$EAP,[String]$Name)
+        [Object] NewWifiProfileEap(
+            [String]$Tag,
+            [String]$Mode,
+            [String]$Auth,
+            [String]$EAP,
+            [String]$Name)
         {
-            $ProfileTemp = $This.NewWifiProfileXmlEap($Tag,$Mode,$Auth,'AES',$EAP,'',$Null)
-            Return $This.NewWifiProfile($ProfileTemp,$Name)
+            $ProfileXml = $This.NewWifiProfileXmlEap($Tag,$Mode,$Auth,'AES',$EAP,'',$Null)
+            Return $This.NewWifiProfile($ProfileXml,1)
         }
-        [Object] NewWifiProfileEap([String]$Tag,[String]$Mode,[String]$Auth,[String]$Enc,[String]$EAP,[String]$Name)
+        [Object] NewWifiProfileEap(
+            [String]$Tag,
+            [String]$Mode,
+            [String]$Auth,
+            [String]$Enc,
+            [String]$EAP,
+            [String]$Name)
         {            
-            $ProfileTemp = $This.NewWifiProfileXmlEap($Tag,$Mode,$Auth,$Enc,$EAP,'',$Null)
-            Return $This.NewWifiProfile($ProfileTemp,$Name)
+            $ProfileXml = $This.NewWifiProfileXmlEap($Tag,$Mode,$Auth,$Enc,$EAP,'',$Null)
+            Return $This.NewWifiProfile($ProfileXml,1)
         }
-        [Object] NewWifiProfileEap([String]$Tag,[String]$Mode,[String]$Auth,[String]$Enc,[String]$Eap,
-        [String[]]$ServerNames,[String]$Name)
+        [Object] NewWifiProfileEap(
+            [String]$Tag,
+            [String]$Mode,
+            [String]$Auth,
+            [String]$Enc,
+            [String]$Eap,
+            [String[]]$ServerNames,
+            [String]$Name)
         {   
-            $ProfileTemp = $This.NewWifiProfileXmlEap($Tag,$Mode,$Auth,$Enc,$EAP,$ServerNames,$Null)
-            Return $This.NewWifiProfile($ProfileTemp,$Name)
+            $ProfileXml = $This.NewWifiProfileXmlEap($Tag,$Mode,$Auth,$Enc,$EAP,$ServerNames,$Null)
+            Return $This.NewWifiProfile($ProfileXml,1)
         }
-        [Object] NewWifiProfileEap([String]$Tag,[String]$Mode,[String]$Auth,[String]$Enc,[String]$Eap,
-        [String[]]$ServerNames,[String]$RootCA,[String]$Name)
+        [Object] NewWifiProfileEap(
+            [String]$Tag,
+            [String]$Mode,
+            [String]$Auth,
+            [String]$Enc,
+            [String]$Eap,
+            [String[]]$ServerNames,
+            [String]$RootCA,
+            [String]$Name)
         {
-            $ProfileTemp = $This.NewWifiProfileXmlEap($Tag,$Mode,$Auth,$Enc,$EAP,$ServerNames,$RootCA)
-            Return $This.NewWifiProfile($ProfileTemp,$Name)
+            $ProfileXml = $This.NewWifiProfileXmlEap($Tag,$Mode,$Auth,$Enc,$EAP,$ServerNames,$RootCA)
+            Return $This.NewWifiProfile($ProfileXml,1)
         }
-        [Object] NewWifiProfileXml([String]$Type,[String]$Name,[Bool]$Overwrite)
+        [Object] NewWifiProfileXml(
+            [String]$ProfileXml,
+            [Bool]$Overwrite)
         {
-            Return $This.NewWifiProfile($Type,$Name)
+            Return $This.NewWifiProfile($ProfileXml,$Overwrite)
         }
-        NewWifiProfile([String]$Type,[String]$Name,[Bool]$Overwrite)
+        NewWifiProfile([String]$ProfileXml,[Bool]$Overwrite)
         {
             Try
             {
@@ -2224,9 +2323,16 @@ Function Search-WirelessNetwork
                 $Handle        = $This.NewWiFiHandle()
                 $Flags         = 0
                 $ReasonCode    = [IntPtr]::Zero
-                $Ptr           = [System.Runtime.InteropServices.Marshal]::StringToHGlobalUni($Type)    
-                $ReturnCode    = $This.WlanSetProfile($Handle,[Ref]$Guid,$Flags,$Ptr,[IntPtr]::Zero,
-                                 $Overwrite,[IntPtr]::Zero,[Ref]$ReasonCode)
+                $Ptr           = [System.Runtime.InteropServices.Marshal]::StringToHGlobalUni($ProfileXml)    
+                $ReturnCode    = $This.WlanSetProfile(
+                                 $Handle,
+                                 [Ref]$Guid,
+                                 $Flags,
+                                 $Ptr,
+                                 [IntPtr]::Zero,
+                                 $Overwrite,
+                                 [IntPtr]::Zero,
+                                 [Ref]$ReasonCode)
                 $ReturnCodeMsg = $This.Win32Exception($ReturnCode)
                 $ReasonCodeMsg = $This.WiFiReasonCode($ReasonCode)
             
@@ -2257,7 +2363,9 @@ Function Search-WirelessNetwork
         {   
             $Handle   = $This.NewWiFiHandle()
             $xAdapter = $This.Adapter.Selected()
+
             (New-Object WiFi.ProfileManagement)::WlanDeleteProfile($Handle,[Ref]$xAdapter.Guid,$Tag,[IntPtr]::Zero)
+
             $This.RemoveWifiHandle($Handle)
         }
         StageXamlEvent()
@@ -2272,29 +2380,12 @@ Function Search-WirelessNetwork
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     
             $Wifi         = $This
-    
             $This.Xaml.IO.Adapter.Add_SelectionChanged(
             {
-                $Index = $Wifi.Xaml.IO.Adapter.SelectedItem.Index
+                $Index    = $Wifi.Xaml.IO.Adapter.SelectedItem.Index
                 If ($Index -gt -1)
                 {
-                    $Wifi.Adapter.Select($Index)
-                    If ($Wifi.Adapter.Selected().Profile.Output.Count -gt 0)
-                    {
-                        $Wifi.Xaml.IO.Profile.Items.Clear()
-                        $Wifi.Xaml.IO.ProfileExtension.Items.Clear()
-                        $Wifi.Xaml.IO.ProfileExtension.IsEnabled = 0
-                        ForEach ($Item in $Wifi.Adapter.Selected().Profile.Output)
-                        {
-                            [Void]$Wifi.Xaml.IO.Profile.Items.Add($Item)
-                        }
-                    }
-    
-                    If ($Wifi.Adapter.Selected().Status -eq "Connected")
-                    {
-                        $Wifi.Update()
-                        $Wifi.Refresh()
-                    } 
+                    $Wifi.SelectAdapter($Index)
                 }
             })
     
@@ -2330,10 +2421,10 @@ Function Search-WirelessNetwork
     
             $This.Xaml.IO.Network.Add_SelectionChanged(
             {
-                $Index = $Wifi.Xaml.IO.Network.SelectedItem.Index
+                $Index        = $Wifi.Xaml.IO.Network.SelectedItem.Index
                 If ($Index -ne -1)
                 {
-                    $Wifi.Network.Select($Index)
+                    $Wifi.SelectNetwork($Index)
                 }
             })
     
@@ -2381,20 +2472,19 @@ Function Search-WirelessNetwork
                                 $Adapter       = $Wifi.Adapters | ? Guid -eq $Guid
                                 $Wifi.UnselectAdapter()
                                 $Wifi.SelectAdapter($Adapter)
-                                $Wifi.Update()
                             }
                         }
                     }
                     Else
                     {
                         $Wifi.Passphrase($Target)
-                        $Wifi.Update()
                     }
                 }
             })
         
             $This.Xaml.IO.Disconnect.Add_Click(
             {
+                $Wifi.Disconnect()
                 If ($Wifi.Connected)
                 {
                     # // __________________________________
@@ -2422,7 +2512,6 @@ Function Search-WirelessNetwork
                     $Adapter       = $Wifi.Adapters | ? Guid -eq $Guid
                     $Wifi.UnselectAdapter()
                     $Wifi.SelectAdapter($Adapter)
-                    $Wifi.Update()        
                     $Wifi.Refresh()
                 }
                 If (!$Wifi.Connect)
@@ -2438,14 +2527,14 @@ Function Search-WirelessNetwork
         }
         Scan()
         {
-            $This.List               = @( )
+            $This.List = @( )
             $This.Network.Clear()
             [Void][Windows.Devices.WiFi.WiFiAdapter, Windows.System.Devices, ContentType=WindowsRuntime]
-            $This.List               = $This.RadioFindAllAdaptersAsync()
+            $This.List = $This.RadioFindAllAdaptersAsync()
             $This.List.Wait(-1) > $Null
     
-            $Array                   = @($This.List.Result.NetworkReport.AvailableNetworks | Sort-Object -Descending SignalBars)
-            $Ct                      = $Array.Count
+            $Array     = @($This.List.Result.NetworkReport.AvailableNetworks | Sort-Object -Descending SignalBars)
+            $Ct        = $Array.Count
     
             Switch ($This.Mode)
             {
@@ -2532,34 +2621,105 @@ Function Search-WirelessNetwork
                 }
             }
         }
+        UpdateAdapter()
+        {
+            $xAdapter           = $This.Adapter.Selected()
+            $xAdapter.Connected = $This.NetshShowInterface($xAdapter.Name)
+
+            If ($This.Mode -eq 1)
+            {
+                $This.Xaml.IO.AdapterExtension.Items.Clear()
+                ForEach ($Item in $This.GetAdapterExtension())
+                {
+                    $This.Xaml.IO.AdapterExtension.Items.Add($Item) 
+                }
+
+                $This.Xaml.IO.AdapterConnected.Items.Clear()
+                ForEach ($Item in $This.GetAdapterConnected())
+                {
+                    $This.Xaml.IO.AdapterConnected.Items.Add($Item) 
+                }
+
+                $This.Xaml.IO.Profile.Items.Clear()
+                ForEach ($Item in $xAdapter.Profile.Output)
+                { 
+                    $This.Xaml.IO.Profile.Items.Add($Item)
+                }
+
+                $This.Xaml.IO.ProfileExtension.Items.Clear()
+                Switch -Regex ($xAdapter.Connected.State)
+                {
+                    Connected
+                    {
+                        $This.Xaml.IO.Disconnect.IsEnabled = 1
+                        $This.Xaml.IO.Connect.IsEnabled    = 0
+                    }
+                    Default
+                    {
+                        $This.Xaml.IO.Disconnect.IsEnabled = 0
+                        $This.Xaml.IO.Connect.IsEnabled    = 0
+                    }
+                }
+            }
+        }
+        [Object[]] GetAdapterExtension()
+        {
+            $Object      = $This.Adapter.Selected()
+            $Return      = @( )
+            ForEach ($Item in "IfIndex","Status","MacAddress","LinkSpeed")
+            {
+                $Return += [PSNoteProperty]::New($Item,$Object.$Item) 
+            }
+
+            Return $Return
+        }
+        [Object[]] GetAdapterConnected()
+        {
+            $Object      = $This.Adapter.Selected().Connected
+            $Return      = @( )
+            ForEach ($Item in "State","Ssid","Bssid","Profile")
+            { 
+                $Return += [PSNoteProperty]::New($Item,$Object.$Item) 
+            }
+
+            Return $Return
+        }
         SelectAdapter([UInt32]$Index)
-        {   
-            # // ___________________________________________
-            # // | Select the adapter from its description |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-            
+        {            
             If ($Index -gt $This.Adapter.Total)
             {
                 Throw "(Selection/Index) outside of the bounds of the array"
             }
     
             $This.Adapter.Select($Index)
-            $xAdapter = $This.Adapter.Selected()
-    
-            If ($This.Mode -eq 1)
-            {
-                $This.Xaml.IO.Index.Text           = $xAdapter.IfIndex
-                $This.Xaml.IO.Status.Text          = $xAdapter.Status
-                $This.Xaml.IO.MacAddress.Text      = $xAdapter.MacAddress
-            }
-    
-            $This.Update()
+            $This.UpdateAdapter()
         }
         UnselectAdapter()
         {
             $This.Adapter.Unselect()
             $This.RefreshWirelessAdapterList()
-            $This.Update()
+            $This.UpdateAdapter()
+        }
+        UpdateNetwork()
+        {
+            $xAdapter = $This.Adapter.Selected()
+
+            If ($This.Mode -eq 1)
+            {
+                Switch ($xAdapter.Connected.State)
+                {
+                    Disconnected
+                    {
+                        $This.Xaml.IO.Connect.IsEnabled    = 1
+                        $This.Xaml.IO.Disconnect.IsEnabled = 0
+                    }
+                    Connected
+                    {
+                        $This.Xaml.IO.Connect.IsEnabled    = 0
+                        $This.Xaml.IO.Disconnect.IsEnabled = 1
+                    }
+                }
+            }
         }
         SelectNetwork([UInt32]$Index)
         {
@@ -2569,126 +2729,107 @@ Function Search-WirelessNetwork
             }
     
             $This.Network.Select($Index)
+            $This.UpdateNetwork()
         }
         UnselectNetwork()
         {
             $This.Network.Unselect()
-        }
-        Update()
-        {
-            # // __________________________________
-            # // | Determine/Set connection state |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-    
-            Switch -Regex ($This.Adapter.Selected.Status)
-            {
-                Up
-                {
-                    $This.Connected                        = $This.NetshShowInterface($This.Adapter.Selected.Name)
-                    If ($This.Mode -eq 1)
-                    {
-                        $This.Xaml.IO.Ssid.Text            = $This.Connected.Ssid
-                        $This.Xaml.IO.Bssid.Text           = $This.Connected.Bssid
-                        $This.Xaml.IO.Disconnect.IsEnabled = 1
-                        $This.Xaml.IO.Connect.IsEnabled    = 0
-                    }
-                }
-                Default
-                {
-                    $This.Connected                        = $Null
-                    If ($This.Mode -eq 1)
-                    {                    
-                        $This.Xaml.IO.Ssid.Text            = "<Not connected>"
-                        $This.Xaml.IO.Bssid.Text           = "<Not connected>"
-                        $This.Xaml.IO.Disconnect.IsEnabled = 0
-                        $This.Xaml.IO.Connect.IsEnabled    = 0
-                    }
-                }
-            }
+            $This.UpdateNetwork()
         }
         Disconnect()
         {
-            If ($This.Adapter.Index -eq -1)
+            $Index      = $This.Adapter.Index
+
+            If ($Index -eq -1)
             {
                 Throw "Adapter not selected"
             }
-    
-            $Index    = $This.Adapter.Index
-            $xAdapter = $This.Adapter.Selected()
-            $xSSID    = $This.NetshShowInterface($xAdapter.Name)
+            
+            $xAdapter   = $This.Adapter.Selected()
+            $xSSID      = $xAdapter.Connected
     
             If ($This.Adapter.Selected().State -eq "CONNECTED")
             {
-                $Handle           = $This.NewWiFiHandle()
+                $Handle = $This.NewWiFiHandle()
+                
                 (New-Object WiFi.ProfileManagement)::WlanDisconnect($Handle,[Ref]$xAdapter.Guid,[IntPtr]::Zero)
+
                 $This.RemoveWifiHandle($Handle)
             
                 $This.ShowToast("Disconnected: ($($xSSID.SSID)/$($xSSID.BSSID))")
-                $This.Connected   = $Null
-    
-                $This.Adapter.Unselect()
-                $This.Adapter.Select($Index)
-            }
-        }
-        Connect([Object]$Target)
-        {
-            $Index          = $This.Adapter.Selected().Index
-            $This.Adapter.Unselect()
-            $This.Adapter.Select($Index)
-            
-            If ($Target.Name -in $This.Adapter.Selected().Profile.Output.ProfileName)
-            {
-                $Param  = $This.GetWiFiConnectionParameter($Target.Name)
-                $Handle = $This.NewWiFiHandle()
-                (New-Object WiFi.ProfileManagement)::WlanConnect($Handle,[Ref]$This.Adapter.Selected().Guid,[Ref]$Param,[IntPtr]::Zero)
-                $This.RemoveWifiHandle($Handle)
-        
+
                 $This.UnselectAdapter()
                 $This.SelectAdapter($Index)
-        
-                $This.Update()
-                $This.ShowToast("Connected: $($Target.Name)")
-                $This.Connected = $This.NetshShowInterface($This.Adapter.Selected().Name)
             }
-            If ($Target.Name -notin $This.Adapter.Selected().Profile.Output.ProfileName)
+        }
+        Connect()
+        {
+            $Index      = $This.Adapter.Index
+            $xAdapter   = $This.Adapter.Selected()
+            $Target     = $This.Network.Selected()
+
+            $This.UnselectAdapter()
+            $This.SelectAdapter($Index)
+            
+            Switch ($Target.Name -in $xAdapter.Profile.Output.ProfileName)
             {
-                If ($Target.Authentication -match "PSK")
+                0
                 {
-                    $This.Passphrase($Target)
-                    $This.Connected = $This.NetshShowInterface($This.Adapter.Selected().Name)
+                    $Param  = $This.GetWiFiConnectionParameter($Target.Name)
+                    $Handle = $This.NewWiFiHandle()
+
+                    (New-Object WiFi.ProfileManagement)::WlanConnect($Handle,[Ref]$xAdapter.Guid,[Ref]$Param,[IntPtr]::Zero)
+    
+                    $This.RemoveWifiHandle($Handle)
+            
+                    $This.UnselectAdapter()
+                    $This.SelectAdapter($Index)
+            
+                    $This.ShowToast("Connected: $($Target.Name)")
                 }
-                Else
+                1
                 {
-                    Write-Host "Eas/Peap not yet implemented"
+                    If ($Target.Authentication -match "PSK")
+                    {
+                        $This.Passphrase($Target)
+                        $This.UpdateAdapter()
+                    }
+                    Else
+                    {
+                        Write-Host "Eas/Peap not yet implemented"
+                    }
                 }
             }
         }
         ShowToast([String]$Message)
         {
-            $Splat = @{ 
+            $Splat              = @{ 
     
-                Message = $Message
-                Header  = [DateTime]::Now
-                Body    = $Message
-                Image   = $This.OEMLogo
+                Message         = $Message
+                Header          = [DateTime]::Now
+                Body            = $Message
+                Image           = $This.OEMLogo
             }
     
             Show-ToastNotification @Splat
         }
-        Passphrase([Object]$Target)
+        Passphrase()
         {
-            $Index     = $This.Selected.Index
-            $xAdapter  = $This.Selected
-            $Auth      = $Null
-            $Enc       = $Null
+            $Index              = $This.Adapter.Index
+            $xAdapter           = $This.Adapter.Selected()
+
+            $Target             = $This.Network.Selected()
+
+            $Auth               = $Null
+            $Enc                = $Null
     
             If ($Target.Authentication -match "RsnaPsk")
             {
-                $Auth  = "WPA2PSK"
+                $Auth           = "WPA2PSK"
             }
             If ($Target.Encryption -match "Ccmp")
             {
-                $Enc   = "AES"
+                $Enc            = "AES"
             }
     
             # // __________________________________________________________________
@@ -2697,31 +2838,34 @@ Function Search-WirelessNetwork
     
             If ($This.Mode -eq 0)
             {
-                $PW     = Read-Host -AsSecureString -Prompt "Enter passphrase for Network: [$($Target.SSID)]"
+                $PW             = Read-Host -AsSecureString -Prompt "Enter passphrase for Network: [$($Target.SSID)]"
     
-                $ProfileXml = $This.NewWifiProfileXmlPsk($Target.Name,"Manual",$Auth,$Enc,$PW)
+                $ProfileXml     = $This.NewWifiProfileXmlPsk($Target.Name,"Manual",$Auth,$Enc,$PW)
+
                 $This.NewWifiProfile($ProfileXml,$This.Selected.Name,$True)
                 
-                $Param  = $This.GetWiFiConnectionParameter($Target.Name)
-                $Handle = $This.NewWiFiHandle()
-                $This.WlanConnect($Handle,[Ref]$xAdapter.Guid,[Ref]$Param,[IntPtr]::Zero)
+                $Param          = $This.GetWiFiConnectionParameter($Target.Name)
+                $Handle         = $This.NewWiFiHandle()
+
+                (New-Object WiFi.ProfileManagement)::WlanConnect($Handle,[Ref]$xAdapter.Guid,[Ref]$Param,[IntPtr]::Zero)
+
                 $This.RemoveWifiHandle($Handle)
                 
                 Start-Sleep 3
                 $This.UnselectAdapter()
                 $This.SelectAdapter($Index)
+                $xAdapter       = $This.Adapter.Selected()
                 
-                $This.Update()
-                Switch ([UInt32]!!$This.Connected)
+                Switch ([UInt32]$xAdapter.Connected.State -eq "Connected")
                 {
-                    0 
-                    { 
-                        $This.ShowToast("Connected: $($Target.Name)") 
-                    }
-                    1 
+                    0
                     { 
                         $This.RemoveWifiProfile($Target.Name)
                         $This.ShowToast("Unsuccessful: Passphrase failure")
+                    }
+                    1
+                    { 
+                        $This.ShowToast("Connected: $($Target.Name)") 
                     }
                 }
             }
@@ -2732,33 +2876,39 @@ Function Search-WirelessNetwork
     
             If ($This.Mode -eq 1)
             {
-                $Pass    = $This.GetPassphraseXaml()
+                $Pass           = $This.GetPassphraseXaml()
                 $Pass.IO.Connect.Add_Click(
                 {
-                    $Password      = $Pass.IO.Passphrase.Password
-                    $PW            = $Password | ConvertTo-SecureString -AsPlainText -Force
-                    $ProfileXml    = $This.NewWifiProfileXmlPsk($Network.Name,"manual",$Auth,$Enc,$PW)
-                    $This.NewWifiProfile($ProfileXml,$Target.Name,$True)
+                    $Password   = $Pass.IO.Passphrase.Password
+                    $PW         = $Password | ConvertTo-SecureString -AsPlainText -Force
+
+                    $ProfileXml = $This.NewWifiProfileXmlPsk($Network.Name,"manual",$Auth,$Enc,$PW)
+                    $This.NewWifiProfile($ProfileXml,$True)
                         
-                    $Param         = $This.GetWiFiConnectionParameter($Target.Name)
-                    $Handle        = $This.NewWiFiHandle()
-                    $This.WlanConnect($Handle,[Ref]$xAdapter.Guid,[Ref]$Param,[IntPtr]::Zero)
+                    $Param      = $This.GetWiFiConnectionParameter($Target.Name)
+                    $Handle     = $This.NewWiFiHandle()
+
+                    (New-Object WiFi.ProfileManagement)::WlanConnect($Handle,[Ref]$xAdapter.Guid,[Ref]$Param,[IntPtr]::Zero)
+
                     $This.RemoveWifiHandle($Handle)
     
                     Start-Sleep 3
                     $This.UnselectAdapter()
                     $This.SelectAdapter($Index)
-    
-                    $This.Update()
-                    If ($This.Connected)
+                    $xAdapter   = $This.Adapter.Selected()
+
+                    Switch ([UInt32]$xAdapter.Connected.State -eq "Connected")
                     {
-                        $Pass.IO.DialogResult = 1
-                        $This.ShowToast("Connected: $($Target.Name)")
-                    }
-                    If (!$This.Connected)
-                    {
-                        $This.RemoveWifiProfile($Target.Name)
-                        $This.ShowToast("Unsuccessful: Passphrase failure")
+                        1
+                        { 
+                            $Pass.IO.DialogResult = 1
+                            $This.ShowToast("Connected: $($Target.Name)")
+                        }
+                        0
+                        {
+                            $This.RemoveWifiProfile($Target.Name)
+                            $This.ShowToast("Unsuccessful: Passphrase failure")
+                        }
                     }
                 })
     
@@ -2772,16 +2922,26 @@ Function Search-WirelessNetwork
         }
         SearchFilter()
         {
-            If ($This.Xaml.IO.FilterText.Text -ne "" -and $This.Output.Count -gt 0)
+            Start-Sleep -Milliseconds 50
+            $Property  = $This.Xaml.IO.FilterProperty.SelectedItem.Content
+            $Text      = $This.Xaml.IO.FilterText.Text
+            $This.Xaml.IO.Network.Items.Clear()
+
+            $xList     = Switch ([UInt32]($Text -ne "" -and $This.Network.List.Count -gt 0))
             {
-                Start-Sleep -Milliseconds 50
-                $This.Xaml.IO.Network.Items.Clear()
-                $This.Output | ? $This.Xaml.IO.FilterProperty.SelectedItem.Content -match $This.Xaml.IO.FilterText.Text | % { $This.Xaml.IO.Network.Items.Add($_) }
+                0
+                {
+                    $This.Network.List | ? $Property -match $Text
+                }
+                1
+                {
+                    $This.Network.List
+                }
             }
-            Else
-            {
-                $This.Xaml.IO.Network.Items.Clear()
-                $This.Output | % { $This.Xaml.IO.Network.Items.Add($_) }
+
+            ForEach ($Item in $xList)
+            { 
+                $This.Xaml.IO.Network.Items.Add($Item) 
             }
         }
     }
