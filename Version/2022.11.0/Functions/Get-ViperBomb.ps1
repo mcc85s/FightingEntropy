@@ -17,7 +17,7 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-10-10                                                                               //   
-   \\        Modified   : 2022-11-23                                                                               \\   
+   \\        Modified   : 2022-11-24                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
    //        TODO       : AKA "System Control Extension Utility"                                                   //   
@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-23-2022 19:57:01    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-24-2022 14:22:03    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -415,7 +415,7 @@ Function Get-ViperBomb
         '                                <Label Grid.Column="3" Background="#FFFF66" Foreground="Black" HorizontalContentAlignment="Center" Content="Unspecified"/>',
         '                                <Label Grid.Column="4" Background="#FF6666" Foreground="Black" HorizontalContentAlignment="Center" Content="Non Compliant"/>',
         '                            </Grid>',
-        '                            <DataGrid Grid.Row="1" Grid.Column="0" Name="Service"',
+        '                            <DataGrid Grid.Row="1" Grid.Column="0" Name="Service" RowHeaderWidth="0"',
         '                                      ScrollViewer.CanContentScroll="True" ',
         '                                      ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -1372,684 +1372,691 @@ Function Get-ViperBomb
             }
         }
     }
-    Function PrivacyList
+    
+    Class ControlTemplate
     {
-        Class Telemetry
+        [String]        $Name
+        [String] $DisplayName
+        [UInt32]       $Value
+        [String] $Description
+        [String[]]   $Options
+        [Object]      $Output
+        ControlTemplate()
         {
-            [String]        $Name = "Telemetry"
-            [String] $DisplayName = "Telemetry"
-            [UInt32]       $Value = 1
-            [String] $Description = "Various location and tracking features"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]      $Stack
-            Telemetry()
-            {
-                $This.Stack       = @( )
-
-                ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection','AllowTelemetry'),
-                ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection','AllowTelemetry'),
-                ('HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection','AllowTelemetry'),
-                ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\PreviewBuilds','AllowBuildPreview'),
-                ('HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Software Protection Platform','NoGenTicket'),
-                ('HKLM:\SOFTWARE\Policies\Microsoft\SQMClient\Windows','CEIPEnable'),
-                ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat','AITEnable'),
-                ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat','DisableInventory'),
-                ('HKLM:\SOFTWARE\Policies\Microsoft\AppV\CEIP','CEIPEnable'),
-                ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\TabletPC','PreventHandwritingDataSharing'),
-                ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\TextInput','AllowLinguisticDataCollection') | % { 
-
-                    $This.Registry($_[0],$_[1])
-                }
-            }
-            Registry([String]$Path,[String]$Name)
-            {
-                $This.Stack += [Registry]::New($Path,$Name)
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Telemetry"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Telemetry"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                        If ([Environment]::Is64BitProcess)
-                        {
-                            $This.Stack[2].Set(0)
-                        }
-                        $This.Stack[ 3].Remove()
-                        $This.Stack[ 4].Remove()
-                        $This.Stack[ 5].Remove()
-                        $This.Stack[ 6].Remove()
-                        $This.Stack[ 7].Remove()
-                        $This.Stack[ 8].Remove()
-                        $This.Stack[ 9].Remove()
-                        $This.Stack[10].Remove()
-                        $This.TelemetryTask() | % { Enable-ScheduledTask -TaskName $_ }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Telemetry"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                        If ([Environment]::Is64BitProcess)
-                        {
-                            $This.Stack[2].Set(0)
-                        }
-                        $This.Stack[ 3].Set(0)
-                        $This.Stack[ 4].Set(1)
-                        $This.Stack[ 5].Set(0)
-                        $This.Stack[ 6].Set(0)
-                        $This.Stack[ 7].Set(1)
-                        $This.Stack[ 8].Set(0)
-                        $This.Stack[ 9].Set(1)
-                        $This.Stack[10].Set(0)
-                        $This.TelemetryTask() | % { Disable-ScheduledTask -TaskName $_ }
-                    }
-                }
-            }
-            [String[]] TelemetryTask()
-            {
-                Return @(('{0}\{2}\Microsoft Compatibility Appraiser;{0}\{2}\ProgramDataUpdater;{0}\Autochk\Proxy;{0}\{3}\Consolidator;{0}\{3}\UsbCeip;{0}\DiskDiagnostic',
-                '\Microsoft-Windows-DiskDiagnosticDataCollector;{1}\Office ClickToRun Service Monitor;{1}\{4}FallBack2016;{1}\{4}LogOn2016' -join '') -f "Microsoft\Windows",
-                "Microsoft\Office","Application Experience","Customer Experience Improvement Program","OfficeTelemetryAgent").Split(";")
-            }
+            $This.Output  = @( )
         }
-
-        Class WiFiSense
+        Registry([String]$Path,[String]$Name)
         {
-            [String]        $Name = "WifiSense"
-            [String] $DisplayName = "Wi-Fi Sense"
-            [UInt32]       $Value = 1
-            [String] $Description = "Lets devices more easily connect to a WiFi network"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            WiFiSense()
-            {
-                $This.Stack = @( 
-                [Registry]::New('HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting','Value')
-                [Registry]::New('HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowConnectToWiFiSenseHotspots','Value')
-                [Registry]::New('HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config','AutoConnectAllowedOEM')
-                [Registry]::New('HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config','WiFiSenseAllowed')
-                )
-            }
-            SetMode([UInt32]$Mode,[Uint32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [-] Wi-Fi Sense"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Wi-Fi Sense"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(1)
-                        $This.Stack[2].Set(0)
-                        $This.Stack[3].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Wi-Fi Sense"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                        $This.Stack[2].Remove()
-                        $This.Stack[3].Remove()
-                    }
-                }
-            }
+            $This.Output += [Registry]::New($Path,$Name)
         }
-
-        Class SmartScreen
+        [UInt32] GetWinVersion()
         {
-            [String]        $Name = "SmartScreen"
-            [String] $DisplayName = "SmartScreen"
-            [UInt32]       $Value = 1
-            [String] $Description = "Cloud-based anti-phishing and anti-malware component"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            SmartScreen()
-            {
-                $Path = Switch($This.GetWinVersion() -ge 1703)
-                { 
-                    $False 
-                    { 
-                        $Null 
-                    }
-                    $True  
-                    { 
-                        Get-AppxPackage | ? Name -eq Microsoft.MicrosoftEdge | % PackageFamilyName
-                    }
-                }
-
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer","SmartScreenEnabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost","EnableWebContentEvaluation")
-                [Registry]::New("HKCU:\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppContainer\Storage\$Path\MicrosoftEdge\PhishingFilter","EnabledV9")
-                [Registry]::New("HKCU:\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppContainer\Storage\$Path\MicrosoftEdge\PhishingFilter","PreventOverride")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [-] SmartScreen Filter"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] SmartScreen Filter"
-                        $This.Stack[0].Set("String","RequireAdmin")
-                        1..3 | % { $This.Stack[$_].Remove() }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] SmartScreen Filter"
-                        $This.Stack[0].Set("String","Off")
-                        1..3 | % { $This.Stack[$_].Set(0) }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
+            Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
         }
-
-        Class LocationTracking
-        {
-            [String]        $Name = "LocationTracking"
-            [String] $DisplayName = "Location Tracking"
-            [UInt32]       $Value = 1
-            [String] $Description = "Monitors the current location of the system and manages geofences"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            LocationTracking()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}','SensorPermissionState')
-                [Registry]::New('HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration','Status')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Location Tracking"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Location Tracking"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Location Tracking"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class Feedback
-        {
-            [String]        $Name = "Feedback"
-            [String] $DisplayName = "Feedback"
-            [UInt32]       $Value = 1
-            [String] $Description = "System Initiated User Feedback"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            Feedback()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKCU:\SOFTWARE\Microsoft\Siuf\Rules','NumberOfSIUFInPeriod')
-                [Registry]::New('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection','DoNotShowFeedbackNotifications')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Feedback"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Feedback"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                        "Microsoft\Windows\Feedback\Siuf\DmClient" | % { $_,"$_`OnScenarioDownload" } | % { Enable-ScheduledTask -TaskName $_ | Out-Null }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Feedback"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(1)
-                        "Microsoft\Windows\Feedback\Siuf\DmClient" | % { $_,"$_`OnScenarioDownload" } | % { Disable-ScheduledTask -TaskName $_ | Out-Null }
-                    }
-                }
-            }
-        }
-
-        Class AdvertisingID
-        {
-            [String]        $Name = "AdvertisingID"
-            [String] $DisplayName = "Advertising ID"
-            [UInt32]       $Value = 1
-            [String] $Description = "Allows Microsoft to display targeted ads"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AdvertisingID()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo','Enabled')
-                [Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy','TailoredExperiencesWithDiagnosticDataEnabled')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Advertising ID"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Advertising ID"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Set(2)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Advertising ID"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class Cortana
-        {
-            [String]        $Name = "Cortana"
-            [String] $DisplayName = "Cortana"
-            [UInt32]       $Value = 1
-            [String] $Description = "(Master Chief/Microsoft)'s personal voice assistant"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            Cortana()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Personalization\Settings","AcceptedPrivacyPolicy")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore","HarvestContacts")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\InputPersonalization","RestrictImplicitTextCollection")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\InputPersonalization","RestrictImplicitInkCollection")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","AllowCortanaAboveLock")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","ConnectedSearchUseWeb")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","ConnectedSearchPrivacy")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","DisableWebSearch")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Preferences","VoiceActivationEnableAboveLockscreen")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization","AllowInputPersonalization")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced","ShowCortanaButton")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Cortana"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Cortana"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                        $This.Stack[2].Set(0)
-                        $This.Stack[3].Set(0)
-                        $This.Stack[4].Remove()
-                        $This.Stack[5].Remove()
-                        $This.Stack[6].Remove()
-                        $This.Stack[7].Set(1)
-                        $This.Stack[8].Remove()
-                        $This.Stack[9].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Cortana"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(1)
-                        $This.Stack[2].Set(1)
-                        $This.Stack[3].Set(0)
-                        $This.Stack[4].Set(0)
-                        $This.Stack[5].Set(1)
-                        $This.Stack[6].Set(3)
-                        $This.Stack[7].Set(0)
-                        $This.Stack[8].Set(0)
-                        $This.Stack[9].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class CortanaSearch
-        {
-            [String]        $Name = "CortanaSearch"
-            [String] $DisplayName = "Cortana Search"
-            [UInt32]       $Value = 1
-            [String] $Description = "Allows Cortana to create search indexing for faster system search results"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            CortanaSearch()
-            {
-                $This.Stack = @([Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","AllowCortana"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Cortana Search"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Cortana Search"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Cortana Search"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class ErrorReporting
-        {
-            [String]        $Name = "ErrorReporting"
-            [String] $DisplayName = "Error Reporting"
-            [UInt32]       $Value = 1
-            [String] $Description = "If Windows has an issue, it sends Microsoft a detailed report"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            ErrorReporting()
-            {
-                $This.Stack = @([Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting","Disabled"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Error Reporting"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Error Reporting"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Error Reporting"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class AutoLoggerFile
-        {
-            [String]        $Name = "AutoLoggerFile"
-            [String] $DisplayName = "Automatic Logger File"
-            [UInt32]       $Value = 1
-            [String] $Description = "This feature lets you trace the actions of a trace provider while Windows is booting"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AutoLoggerFile()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SYSTEM\ControlSet001\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener","Start")
-                [Registry]::New("HKLM:\SYSTEM\ControlSet001\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener\{DD17FA14-CDA6-7191-9B61-37A28F7A10DA}","Start")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] AutoLogger"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Unrestricting [~] AutoLogger"
-                        icacls $Env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger /grant:r SYSTEM:`(OI`)`(CI`)F #| Out-Null
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Removing [~] AutoLogger, and restricting directory"
-                        icacls $Env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger /deny SYSTEM:`(OI`)`(CI`)F #| Out-Null
-                        Remove-Item $Env:ProgramData\Microsoft\Diagnosis\ETLLogs\AutoLogger\AutoLogger-Diagtrack-Listener.etl -EA 0 -Verbose
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class DiagTrack
-        {
-            [String]        $Name = "DiagTracking"
-            [String] $DisplayName = "Diagnostics Tracking"
-            [UInt32]       $Value = 1
-            [String] $Description = "Connected User Experiences and Telemetry"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [String]       $Stack
-            DiagTrack()
-            {
-                $This.Stack = @()
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Diagnostics Tracking"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Diagnostics Tracking"
-                        Get-Service -Name DiagTrack
-                        Set-Service -Name DiagTrack -StartupType Automatic
-                        Start-Service -Name DiagTrack
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Diagnostics Tracking"
-                        Stop-Service -Name DiagTrack
-                        Set-Service -Name DiagTrack -StartupType Disabled
-                        Get-Service -Name DiagTrack
-                    }
-                }
-            }
-        }
-
-        Class WAPPush
-        {
-            [String]        $Name = "WAPPush"
-            [String] $DisplayName = "WAP Push"
-            [UInt32]       $Value = 1
-            [String] $Description = "Device Management Wireless Application Protocol"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack 
-            WAPPush()
-            {
-                $This.Stack = @([Registry]::New("HKLM:\SYSTEM\CurrentControlSet\Services\dmwappushservice","DelayedAutoStart"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] WAP Push"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] WAP Push Service"
-                        Set-Service -Name dmwappushservice -StartupType Automatic
-                        Start-Service -Name dmwappushservice
-                        $This.Stack[0].Set(1)
-                        Get-Service -Name dmwappushservice
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] WAP Push Service"
-                        Stop-Service -Name dmwappushservice
-                        Set-Service -Name dmwappushservice -StartupType Disabled
-                        Get-Service -Name dmwappushservice
-                    }
-                }
-            }
-        }
-
-        Class Privacy
-        {
-            [String[]] $Names = ("Telemetry WifiSense SmartScreen LocationTracking Feedback AdvertisingID Cortana CortanaSearch ",
-                                 "ErrorReporting AutologgerFile DiagTrack WAPPush" -join "").Split(" ")
-            [Object]  $Output
-            Privacy()
-            {
-                $This.Output = ForEach ($Name in $This.Names)
-                {
-                    Switch($Name)
-                    {
-                        Telemetry        { [Telemetry]::New()        }
-                        WiFiSense        { [WiFiSense]::New()        }
-                        SmartScreen      { [SmartScreen]::New()      }
-                        LocationTracking { [LocationTracking]::New() } 
-                        Feedback         { [Feedback]::New()         }
-                        AdvertisingID    { [AdvertisingID]::New()    } 
-                        Cortana          { [Cortana]::New()          }
-                        CortanaSearch    { [CortanaSearch]::New()    } 
-                        ErrorReporting   { [ErrorReporting]::New()   }
-                        AutologgerFile   { [AutologgerFile]::New()   } 
-                        DiagTrack        { [DiagTrack]::New()        }
-                        WAPPush          { [WAPPush]::New()          }
-                    }
-                }
-            }
-        }
-        [Privacy]::New().Output
     }
-    Function WindowsUpdateList
+    
+    Class Telemetry : ControlTemplate
     {
-        Class UpdateMSProducts
+        Telemetry() : base()
         {
-            [String]        $Name = "UpdateMSProducts"
-            [String] $DisplayName = "Update MS Products"
-            [UInt32]       $Value = 2
-            [String] $Description = "Searches Windows Update for Microsoft Products"
-            [String[]]   $Options = "Skip", "Enable", "Disable*"
-            [Object]       $Stack
-            UpdateMSProducts()
-            {
-                $This.Stack = @()
+            $This.Name        = "Telemetry"
+            $This.DisplayName = "Telemetry"
+            $This.Value       = 1
+            $This.Description = "Various location and tracking features"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection','AllowTelemetry'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection','AllowTelemetry'),
+            ('HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection','AllowTelemetry'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\PreviewBuilds','AllowBuildPreview'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Software Protection Platform','NoGenTicket'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\SQMClient\Windows','CEIPEnable'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat','AITEnable'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat','DisableInventory'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\AppV\CEIP','CEIPEnable'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\TabletPC','PreventHandwritingDataSharing'),
+            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\TextInput','AllowLinguisticDataCollection') | % {
+    
+                $This.Registry($_[0],$_[1])
             }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
             {
-                Switch ($Mode)
+                0
                 {
-                    0
+                    If ($ShowSkipped)
                     {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Update Microsoft Products"
-                        }
+                        Write-Host "Skipping [!] Telemetry"
                     }
-                    1
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Telemetry"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
+                    If ([Environment]::Is64BitProcess)
                     {
-                        Write-Host "Enabling [~] Update Microsoft Products"
-                        (New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+                        $This.Output[2].Set(0)
                     }
-                    2
+                    3..10 | % { $This.Output[$_].Remove() }
+                    $This.TelemetryTask() | % { Enable-ScheduledTask -TaskName $_ }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Telemetry"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
+                    If ([Environment]::Is64BitProcess)
                     {
-                        Write-Host "Disabling [~] Update Microsoft Products"
-                        (New-Object -ComObject Microsoft.Update.ServiceManager).RemoveService("7971f918-a847-4430-9279-4a52d1efe18d")
+                        $This.Output[2].Set(0)
                     }
+                    $This.Ouptut[ 3].Set(0)
+                    $This.Ouptut[ 4].Set(1)
+                    $This.Ouptut[ 5].Set(0)
+                    $This.Ouptut[ 6].Set(0)
+                    $This.Ouptut[ 7].Set(1)
+                    $This.Ouptut[ 8].Set(0)
+                    $This.Ouptut[ 9].Set(1)
+                    $This.Ouptut[10].Set(0)
+                    $This.TelemetryTask() | % { Disable-ScheduledTask -TaskName $_ }
                 }
             }
         }
-
-        Class CheckForWindowsUpdate
+        [String[]] TelemetryTask()
         {
-            [String]        $Name = "CheckForWindowsUpdate"
-            [String] $DisplayName = "Check for Windows Updates"
-            [UInt32]       $Value = 1
-            [String] $Description = "Allows Windows Update to work automatically"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
+            Return @(('{0}\{2}\Microsoft Compatibility Appraiser;{0}\{2}\ProgramDataUpdater;{0}\Autochk\Proxy;{0}\{3}\Consolidator;{0}\{3}\UsbCeip;{0}\DiskDiagnostic',
+            '\Microsoft-Windows-DiskDiagnosticDataCollector;{1}\Office ClickToRun Service Monitor;{1}\{4}FallBack2016;{1}\{4}LogOn2016' -join '') -f "Microsoft\Windows",
+            "Microsoft\Office","Application Experience","Customer Experience Improvement Program","OfficeTelemetryAgent").Split(";")
+        }
+    }
+    
+    Class WiFiSense : ControlTemplate
+    {
+        WiFiSense()
+        {
+            $This.Name        = "WifiSense"
+            $This.DisplayName = "Wi-Fi Sense"
+            $This.Value       = 1
+            $This.Description = "Lets devices more easily connect to a WiFi network"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            ('HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowWiFiHotSpotReporting','Value'),
+            ('HKLM:\SOFTWARE\Microsoft\PolicyManager\default\WiFi\AllowConnectToWiFiSenseHotspots','Value'),
+            ('HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config','AutoConnectAllowedOEM'),
+            ('HKLM:\SOFTWARE\Microsoft\WcmSvc\wifinetworkmanager\config','WiFiSenseAllowed') | % {
+                 
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [-] Wi-Fi Sense"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Wi-Fi Sense"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(1)
+                    $This.Output[2].Set(0)
+                    $This.Output[3].Set(0)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Wi-Fi Sense"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
+                    $This.Output[2].Remove()
+                    $This.Output[3].Remove()
+                }
+            }
+        }
+    }
+    
+    Class SmartScreen : ControlTemplate
+    {
+        SmartScreen()
+        {
+            $This.Name        = "SmartScreen"
+            $This.DisplayName = "SmartScreen"
+            $This.Value       = 1
+            $This.Description = "Cloud-based anti-phishing and anti-malware component"
+            $This.Options     = "Skip","Enable*","Disable"
+    
+            $Path             = Switch ($This.GetWinVersion() -ge 1703)
+            { 
+                $False { $Null } $True { Get-AppxPackage | ? Name -eq Microsoft.MicrosoftEdge | % PackageFamilyName }
+            }
+    
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer","SmartScreenEnabled"),
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost","EnableWebContentEvaluation"),
+            ("HKCU:\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppContainer\Storage\$Path\MicrosoftEdge\PhishingFilter","EnabledV9"),
+            ("HKCU:\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppContainer\Storage\$Path\MicrosoftEdge\PhishingFilter","PreventOverride") | % {
+            
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [-] SmartScreen Filter"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] SmartScreen Filter"
+                    $This.Output[0].Set("String","RequireAdmin")
+                    1..3 | % { $This.Output[$_].Remove() }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] SmartScreen Filter"
+                    $This.Output[0].Set("String","Off")
+                    1..3 | % { $This.Output[$_].Set(0) }
+                }
+            }
+        }
+    }
+    
+    Class LocationTracking : ControlTemplate
+    {
+        LocationTracking()
+        {
+            $This.Name        = "LocationTracking"
+            $This.DisplayName = "Location Tracking"
+            $This.Value       = 1
+            $This.Description = "Monitors the current location of the system and manages geofences"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            ('HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Sensor\Overrides\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}','SensorPermissionState'),
+            ('HKLM:\SYSTEM\CurrentControlSet\Services\lfsvc\Service\Configuration','Status') | % {
+            
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Location Tracking"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Location Tracking"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Location Tracking"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
+                }
+            }
+        }
+    }
+    
+    Class Feedback : ControlTemplate
+    {
+        Feedback()
+        {
+            $This.Name        = "Feedback"
+            $This.DisplayName = "Feedback"
+            $This.Value       = 1
+            $This.Description = "System Initiated User Feedback"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            ('HKCU:\SOFTWARE\Microsoft\Siuf\Rules','NumberOfSIUFInPeriod'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection','DoNotShowFeedbackNotifications') | % {
+        
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Feedback"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Feedback"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    "Microsoft\Windows\Feedback\Siuf\DmClient" | % { $_,"$_`OnScenarioDownload" } | % { Enable-ScheduledTask -TaskName $_ | Out-Null }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Feedback"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(1)
+                    "Microsoft\Windows\Feedback\Siuf\DmClient" | % { $_,"$_`OnScenarioDownload" } | % { Disable-ScheduledTask -TaskName $_ | Out-Null }
+                }
+            }
+        }
+    }
+    
+    Class AdvertisingID : ControlTemplate
+    {
+        AdvertisingID()
+        {
+            $This.Name        = "AdvertisingID"
+            $This.DisplayName = "Advertising ID"
+            $This.Value       = 1
+            $This.Description = "Allows Microsoft to display targeted ads"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo','Enabled'),
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy','TailoredExperiencesWithDiagnosticDataEnabled') | % {
+    
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Advertising ID"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Advertising ID"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Set(2)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Advertising ID"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
+                }
+            }
+        }
+    }
+    
+    Class Cortana : ControlTemplate
+    {
+        Cortana()
+        {
+            $This.Name        = "Cortana"
+            $This.DisplayName = "Cortana"
+            $This.Value       = 1
+            $This.Description = "(Master Chief/Microsoft)'s personal voice assistant"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            ("HKCU:\SOFTWARE\Microsoft\Personalization\Settings","AcceptedPrivacyPolicy"),
+            ("HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore","HarvestContacts"),
+            ("HKCU:\SOFTWARE\Microsoft\InputPersonalization","RestrictImplicitTextCollection"),
+            ("HKCU:\SOFTWARE\Microsoft\InputPersonalization","RestrictImplicitInkCollection"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","AllowCortanaAboveLock"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","ConnectedSearchUseWeb"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","ConnectedSearchPrivacy"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","DisableWebSearch"),
+            ("HKCU:\SOFTWARE\Microsoft\Speech_OneCore\Preferences","VoiceActivationEnableAboveLockscreen"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization","AllowInputPersonalization"),
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced","ShowCortanaButton") | % {
+    
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Cortana"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Cortana"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    $This.Output[2].Set(0)
+                    $This.Output[3].Set(0)
+                    $This.Output[4].Remove()
+                    $This.Output[5].Remove()
+                    $This.Output[6].Remove()
+                    $This.Output[7].Set(1)
+                    $This.Output[8].Remove()
+                    $This.Output[9].Set(0)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Cortana"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(1)
+                    $This.Output[2].Set(1)
+                    $This.Output[3].Set(0)
+                    $This.Output[4].Set(0)
+                    $This.Output[5].Set(1)
+                    $This.Output[6].Set(3)
+                    $This.Output[7].Set(0)
+                    $This.Output[8].Set(0)
+                    $This.Output[9].Set(1)
+                }
+            }
+        }
+    }
+    
+    Class CortanaSearch : ControlTemplate
+    {
+        CortanaSearch()
+        {
+            $This.Name        = "CortanaSearch"
+            $This.DisplayName = "Cortana Search"
+            $This.Value       = 1
+            $This.Description = "Allows Cortana to create search indexing for faster system search results"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search","AllowCortana")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Cortana Search"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Cortana Search"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Cortana Search"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+    
+    Class ErrorReporting : ControlTemplate
+    {
+        ErrorReporting()
+        {
+            $This.Name        = "ErrorReporting"
+            $This.DisplayName = "Error Reporting"
+            $This.Value       = 1
+            $This.Description = "If Windows has an issue, it sends Microsoft a detailed report"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            $This.Registry("HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting","Disabled")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Error Reporting"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Error Reporting"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Error Reporting"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+    
+    Class AutoLoggerFile : ControlTemplate
+    {
+        AutoLoggerFile()
+        {
+            $This.Name        = "AutoLoggerFile"
+            $This.DisplayName = "Automatic Logger File"
+            $This.Value       = 1
+            $This.Description = "This feature lets you trace the actions of a trace provider while Windows is booting"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            ("HKLM:\SYSTEM\ControlSet001\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener","Start"),
+            ("HKLM:\SYSTEM\ControlSet001\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener\{DD17FA14-CDA6-7191-9B61-37A28F7A10DA}","Start") | % {
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] AutoLogger"
+                    }
+                }
+                1
+                {
+                    Write-Host "Unrestricting [~] AutoLogger"
+                    icacls $Env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger /grant:r SYSTEM:`(OI`)`(CI`)F
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(1)
+                }
+                2
+                {
+                    Write-Host "Removing [~] AutoLogger, and restricting directory"
+                    icacls $Env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger /deny SYSTEM:`(OI`)`(CI`)F
+                    Remove-Item $Env:ProgramData\Microsoft\Diagnosis\ETLLogs\AutoLogger\AutoLogger-Diagtrack-Listener.etl -EA 0 -Verbose
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
+                }
+            }
+        }
+    }
+    
+    Class DiagTrack : ControlTemplate
+    {
+        DiagTrack()
+        {
+            $This.Name        = "DiagTracking"
+            $This.DisplayName = "Diagnostics Tracking"
+            $This.Value       = 1
+            $This.Description = "Connected User Experiences and Telemetry"
+            $This.Options     = "Skip", "Enable*", "Disable"
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Diagnostics Tracking"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Diagnostics Tracking"
+                    Get-Service -Name DiagTrack
+                    Set-Service -Name DiagTrack -StartupType Automatic
+                    Start-Service -Name DiagTrack
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Diagnostics Tracking"
+                    Stop-Service -Name DiagTrack
+                    Set-Service -Name DiagTrack -StartupType Disabled
+                    Get-Service -Name DiagTrack
+                }
+            }
+        }
+    }
+    
+    Class WAPPush : ControlTemplate
+    {
+        WAPPush()
+        {
+            $This.Name        = "WAPPush"
+            $This.DisplayName = "WAP Push"
+            $This.Value       = 1
+            $This.Description = "Device Management Wireless Application Protocol"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            $This.Registry("HKLM:\SYSTEM\CurrentControlSet\Services\dmwappushservice","DelayedAutoStart")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] WAP Push"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] WAP Push Service"
+                    Set-Service -Name dmwappushservice -StartupType Automatic
+                    Start-Service -Name dmwappushservice
+                    $This.Output[0].Set(1)
+                    Get-Service -Name dmwappushservice
+                }
+                2
+                {
+                    Write-Host "Disabling [~] WAP Push Service"
+                    Stop-Service -Name dmwappushservice
+                    Set-Service -Name dmwappushservice -StartupType Disabled
+                    Get-Service -Name dmwappushservice
+                }
+            }
+        }
+    }
+    
+    Enum PrivacyType
+    {
+        Telemetry
+        WifiSense
+        SmartScreen
+        LocationTracking
+        Feedback
+        AdvertisingID
+        Cortana
+        CortanaSearch
+        ErrorReporting
+        AutologgerFile
+        DiagTrack
+        WAPPush
+    }
+    
+    Class PrivacyList
+    {
+        [Object]  $Output
+        PrivacyList()
+        {
+            $This.Output = ForEach ($Name in [System.Enum]::GetNames([PrivacyType]))
+            {
+                Switch ($Name)
+                {
+                    Telemetry        { [Telemetry]::New()        }
+                    WiFiSense        { [WiFiSense]::New()        }
+                    SmartScreen      { [SmartScreen]::New()      }
+                    LocationTracking { [LocationTracking]::New() } 
+                    Feedback         { [Feedback]::New()         }
+                    AdvertisingID    { [AdvertisingID]::New()    } 
+                    Cortana          { [Cortana]::New()          }
+                    CortanaSearch    { [CortanaSearch]::New()    } 
+                    ErrorReporting   { [ErrorReporting]::New()   }
+                    AutologgerFile   { [AutologgerFile]::New()   } 
+                    DiagTrack        { [DiagTrack]::New()        }
+                    WAPPush          { [WAPPush]::New()          }
+                }
+            }
+        }
+    }
+    
+    Class UpdateMSProducts : ControlTemplate
+    {
+        UpdateMSProducts()
+        {
+            $This.Name        = "UpdateMSProducts"
+            $This.DisplayName = "Update MS Products"
+            $This.Value       = 2
+            $This.Description = "Searches Windows Update for Microsoft Products"
+            $This.Options     = "Skip", "Enable", "Disable*"
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Update Microsoft Products"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Update Microsoft Products"
+                    (New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Update Microsoft Products"
+                    (New-Object -ComObject Microsoft.Update.ServiceManager).RemoveService("7971f918-a847-4430-9279-4a52d1efe18d")
+                }
+            }
+        }
+    }
+    
+    Class CheckForWindowsUpdate : ControlTemplate
+    {
             CheckForWindowsUpdate()
             {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate","SetDisableUXWUAccess")
-                )
+                $This.Name        = "CheckForWindowsUpdate"
+                $This.DisplayName = "Check for Windows Updates"
+                $This.Value       = 1
+                $This.Description = "Allows Windows Update to work automatically"
+                $This.Options     = "Skip", "Enable*", "Disable"
+    
+                $This.Registry("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate","SetDisableUXWUAccess")
             }
             SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
             {
@@ -2065,417 +2072,2579 @@ Function Get-ViperBomb
                     1
                     {
                         Write-Host "Enabling [~] Check for Windows Updates"
-                        $This.Stack[0].Set(0)
+                        $This.Output[0].Set(0)
                     }
                     2
                     {
                         Write-Host "Disabling [~] Check for Windows Updates"
-                        $This.Stack[0].Set(1)
+                        $This.Output[0].Set(1)
                     }
                 }
             }
-        }
-
-        Class WinUpdateType
-        {
-            [String]        $Name = "WinUpdateType"
-            [String] $DisplayName = "Windows Update Type"
-            [UInt32]       $Value = 3
-            [String] $Description = "Allows Windows Update to work automatically"
-            [String[]]   $Options = "Skip", "Notify", "Auto DL", "Auto DL+Install*", "Manual"
-            [Object]       $Stack
-            WinUpdateType()
-            {
-                $This.Stack = @([Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU","AUOptions"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Windows Update Check Type"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Notify for Windows Update downloads, notify to install"
-                        $This.Stack[0].Set(2)
-                    }
-                    2
-                    {
-                        Write-Host "Enabling [~] Automatically download Windows Updates, notify to install"
-                        $This.Stack[0].Set(3)
-                    }
-                    3
-                    {
-                        Write-Host "Enabling [~] Automatically download Windows Updates, schedule to install"
-                        $This.Stack[0].Set(4)
-                    }
-                    4
-                    {
-                        Write-Host "Enabling [~] Allow local administrator to choose automatic updates"
-                        $This.Stack[0].Set(5)
-                    }
-                }
-            }
-        }
-
-        Class WinUpdateDownload
-        {
-            [String]        $Name = "WinUpdateDownload"
-            [String] $DisplayName = "Windows Update Download"
-            [UInt32]       $Value = 1
-            [String] $Description = "Selects a source from which to pull Windows Updates"
-            [String[]]   $Options = "Skip", "P2P*", "Local Only", "Disable"
-            [Object]       $Stack
-            WinUpdateDownload()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config","DODownloadMode")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization","SystemSettingsDownloadMode")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization","SystemSettingsDownloadMode")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization","DODownloadMode")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] "
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Unrestricting Windows Update P2P to Internet"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Enabling [~] Restricting Windows Update P2P only to local network"
-                        $This.Stack[1].Set(3)
-                        Switch($This.GetWinVersion())
-                        {
-                            1507
-                            {
-                                $This.Stack[0]
-                            }
-                            {$_ -gt 1507 -and $_ -le 1607}
-                            {
-                                $This.Stack[0].Set(1)
-                            }
-                            Default
-                            {
-                                $This.Stack[0].Remove()
-                            }
-                        }
-                    }
-                    3
-                    {
-                        Write-Host "Disabling [~] Windows Update P2P"
-                        $This.Stack[1].Set(3)
-                        Switch ($This.GetWinVersion())
-                        {
-                            1507
-                            {
-                                $This.Stack[0].Set(0)
-                            }
-                            Default
-                            {
-                                $This.Stack[3].Set(100)
-                            }
-                        }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
-
-        Class UpdateMSRT
-        {
-            [String]        $Name = "UpdateMSRT"
-            [String] $DisplayName = "Update MSRT"
-            [UInt32]       $Value = 1
-            [String] $Description = "Allows updates for the Malware Software Removal Tool"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            UpdateMSRT()
-            {
-                $This.Stack = @([Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\MRT","DontOfferThroughWUAU"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Malicious Software Removal Tool Update"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Malicious Software Removal Tool Update"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Malicious Software Removal Tool Update"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class UpdateDriver
-        {
-            [String]        $Name = "UpdateDriver"
-            [String] $DisplayName = "Update Driver"
-            [UInt32]       $Value = 1
-            [String] $Description = "Allows drivers to be downloaded from Windows Update"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            UpdateDriver()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching","SearchOrderConfig")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate","ExcludeWUDriversInQualityUpdate")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata","PreventDeviceMetadataFromNetwork")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Driver update through Windows Update"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Driver update through Windows Update"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                        $This.Stack[2].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Driver update through Windows Update"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(1)
-                        $This.Stack[2].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class RestartOnUpdate
-        {
-            [String]        $Name = "RestartOnUpdate"
-            [String] $DisplayName = "Restart on Update"
-            [UInt32]       $Value = 1
-            [String] $Description = "Reboots the machine when an update is installed and requires it"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            RestartOnUpdate()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings","UxOption")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU","NoAutoRebootWithLoggOnUsers")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU","AUPowerManagement")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Windows Update Automatic Restart"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Windows Update Automatic Restart"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Remove()
-                        $This.Stack[2].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Windows Update Automatic Restart"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(1)
-                        $This.Stack[2].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class AppAutoDownload
-        {
-            [String]        $Name = "AppAutoDownload"
-            [String] $DisplayName = "Consumer App Auto Download"
-            [UInt32]       $Value = 1
-            [String] $Description = "Provisioned Windows Store applications are downloaded"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AppAutoDownload()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate","AutoDownload")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent","DisableWindowsConsumerFeatures")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] App Auto Download"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] App Auto Download"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] App Auto Download"
-                        $This.Stack[0].Set(2)
-                        $This.Stack[1].Set(1)
-                        If ($This.GetWinVersion() -le 1803)
-                        {
-                            $Key  = Get-ChildItem -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount" -Recurse |`
-                            ? Name -like "*windows.data.placeholdertilecollection\Current" | % PSPath
-                            $Data = Get-ItemProperty -Path $Key | % Data
-                            Set-ItemProperty -Path $Key -Name Data -Type Binary -Value $Data[0..15] -Verbose
-                            Stop-Process -Name ShellExperienceHost -Force
-                        }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
-
-        Class UpdateAvailablePopup
-        {
-            [String]        $Name = "UpdateAvailablePopup"
-            [String] $DisplayName = "Update Available Pop-up"
-            [UInt32]       $Value = 1
-            [String] $Description = "If an update is available, a (pop-up/notification) will appear"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            UpdateAvailablePopup()
-            {
-                $This.Stack = @()
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Update Available Popup"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Update Available Popup"
-                        $This.MUSNotify()  | % { 
-                            ICACLS $_ /remove:d '"Everyone"'
-                            ICACLS $_ /grant ('Everyone' + ':(OI)(CI)F')
-                            ICACLS $_ /setowner 'NT SERVICE\TrustedInstaller'
-                            ICACLS $_ /remove:g '"Everyone"'
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Update Available Popup"
-                        $This.MUSNotify() | % {
-                            
-                            Takeown /f $_
-                            ICACLS $_ /deny '"Everyone":(F)'
-                        }
-                    }
-                }
-            }
-            [String[]] MUSNotify()
-            {
-                Return @("","ux" | % { "$Env:windir\System32\musnotification$_.exe" })
-            }
-        }
-
-        Class WindowsUpdateList
-        {
-            [String[]] $Names = ("UpdateMSProducts CheckForWindowsUpdate WinUpdateType WinUpdateDownload UpdateMSRT UpdateDriver",
-                                "RestartOnUpdate AppAutoDownload UpdateAvailablePopup" -join '' ).Split(" ")
-            [Object]  $Output
-            WindowsUpdateList()
-            {
-                $This.Output = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        UpdateMSProducts      { [UpdateMSProducts]::New()      }
-                        CheckForWindowsUpdate { [CheckForWindowsUpdate]::New() }
-                        WinUpdateType         { [WinUpdateType]::New()         }
-                        WinUpdateDownload     { [WinUpdateDownload]::New()     }
-                        UpdateMSRT            { [UpdateMSRT]::New()            }
-                        UpdateDriver          { [UpdateDriver]::New()          }
-                        RestartOnUpdate       { [RestartOnUpdate]::New()       }
-                        AppAutoDownload       { [AppAutoDownload]::New()       }
-                        UpdateAvailablePopup  { [UpdateAvailablePopup]::New()  }
-                    }
-                }
-            }
-        }
-        [WindowsUpdateList]::New().Output
     }
-    Function ServiceList
+    
+    Class WinUpdateType : ControlTemplate
     {
-        Class UAC
+        WinUpdateType()
         {
-            [String]        $Name = "UAC"
-            [String] $DisplayName = "User Access Control"
-            [UInt32]       $Value = 2
-            [String] $Description = "Sets restrictions/permissions for programs"
-            [String[]]   $Options = "Skip", "Lower", "Normal*", "Higher"
-            [Object]       $Stack
-            UAC()
+            $This.Name        = "WinUpdateType"
+            $This.DisplayName = "Windows Update Type"
+            $This.Value       = 3
+            $This.Description = "Allows Windows Update to work automatically"
+            $This.Options     = "Skip", "Notify", "Auto DL", "Auto DL+Install*", "Manual"
+    
+            $This.Registry("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU","AUOptions")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
             {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","ConsentPromptBehaviorAdmin")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","PromptOnSecureDesktop")
-                )
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Windows Update Check Type"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Notify for Windows Update downloads, notify to install"
+                    $This.Output[0].Set(2)
+                }
+                2
+                {
+                    Write-Host "Enabling [~] Automatically download Windows Updates, notify to install"
+                    $This.Output[0].Set(3)
+                }
+                3
+                {
+                    Write-Host "Enabling [~] Automatically download Windows Updates, schedule to install"
+                    $This.Output[0].Set(4)
+                }
+                4
+                {
+                    Write-Host "Enabling [~] Allow local administrator to choose automatic updates"
+                    $This.Output[0].Set(5)
+                }
             }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        }
+    }
+    
+    Class WinUpdateDownload : ControlTemplate
+    {
+        WinUpdateDownload()
+        {
+            $This.Name        = "WinUpdateDownload"
+            $This.DisplayName = "Windows Update Download"
+            $This.Value       = 1
+            $This.Description = "Selects a source from which to pull Windows Updates"
+            $This.Options     = "Skip", "P2P*", "Local Only", "Disable"
+    
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config","DODownloadMode"),
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization","SystemSettingsDownloadMode"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization","SystemSettingsDownloadMode"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization","DODownloadMode") | % {
+    
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] "
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Unrestricting Windows Update P2P to Internet"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                }
+                2
+                {
+                    Write-Host "Enabling [~] Restricting Windows Update P2P only to local network"
+                    $This.Output[1].Set(3)
+                    Switch($This.GetWinVersion())
+                    {
+                        1507
+                        {
+                            $This.Output[0]
+                        }
+                        {$_ -gt 1507 -and $_ -le 1607}
+                        {
+                            $This.Output[0].Set(1)
+                        }
+                        Default
+                        {
+                            $This.Output[0].Remove()
+                        }
+                    }
+                }
+                3
+                {
+                    Write-Host "Disabling [~] Windows Update P2P"
+                    $This.Output[1].Set(3)
+                    Switch ($This.GetWinVersion())
+                    {
+                        1507
+                        {
+                            $This.Output[0].Set(0)
+                        }
+                        Default
+                        {
+                            $This.Output[3].Set(100)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    Class UpdateMSRT : ControlTemplate
+    {
+        UpdateMSRT()
+        {
+            $This.Name        = "UpdateMSRT"
+            $This.DisplayName = "Update MSRT"
+            $This.Value       = 1
+            $This.Description = "Allows updates for the Malware Software Removal Tool"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry("HKLM:\SOFTWARE\Policies\Microsoft\MRT","DontOfferThroughWUAU")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Malicious Software Removal Tool Update"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Malicious Software Removal Tool Update"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Malicious Software Removal Tool Update"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+    
+    Class UpdateDriver : ControlTemplate
+    {
+        UpdateDriver()
+        {
+            $This.Name        = "UpdateDriver"
+            $This.DisplayName = "Update Driver"
+            $This.Value       = 1
+            $This.Description = "Allows drivers to be downloaded from Windows Update"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching","SearchOrderConfig"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate","ExcludeWUDriversInQualityUpdate"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata","PreventDeviceMetadataFromNetwork") | % {
+    
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Driver update through Windows Update"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Driver update through Windows Update"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    $This.Output[2].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Driver update through Windows Update"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(1)
+                    $This.Output[2].Set(1)
+                }
+            }
+        }
+    }
+    
+    Class RestartOnUpdate : ControlTemplate
+    {
+        RestartOnUpdate()
+        {
+            $This.Name        = "RestartOnUpdate"
+            $This.DisplayName = "Restart on Update"
+            $This.Value       = 1
+            $This.Description = "Reboots the machine when an update is installed and requires it"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            ("HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings","UxOption"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU","NoAutoRebootWithLoggOnUsers"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU","AUPowerManagement") | % {
+    
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Windows Update Automatic Restart"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Windows Update Automatic Restart"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Remove()
+                    $This.Output[2].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Windows Update Automatic Restart"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(1)
+                    $This.Output[2].Set(0)
+                }
+            }
+        }
+    }
+    
+    Class AppAutoDownload : ControlTemplate
+    {
+        AppAutoDownload()
+        {
+            $This.Name        = "AppAutoDownload"
+            $This.DisplayName = "Consumer App Auto Download"
+            $This.Value       = 1
+            $This.Description = "Provisioned Windows Store applications are downloaded"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate","AutoDownload"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent","DisableWindowsConsumerFeatures") | % {
+    
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] App Auto Download"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] App Auto Download"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] App Auto Download"
+                    $This.Output[0].Set(2)
+                    $This.Output[1].Set(1)
+                    If ($This.GetWinVersion() -le 1803)
+                    {
+                        $Key  = Get-ChildItem -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount" -Recurse |`
+                        ? Name -like "*windows.data.placeholdertilecollection\Current" | % PSPath
+                        $Data = Get-ItemProperty -Path $Key | % Data
+                        Set-ItemProperty -Path $Key -Name Data -Type Binary -Value $Data[0..15] -Verbose
+                        Stop-Process -Name ShellExperienceHost -Force
+                    }
+                }
+            }
+        }
+    }
+    
+    Class UpdateAvailablePopup : ControlTemplate
+    {
+        UpdateAvailablePopup()
+        {
+            $This.Name        = "UpdateAvailablePopup"
+            $This.DisplayName = "Update Available Pop-up"
+            $This.Value       = 1
+            $This.Description = "If an update is available, a (pop-up/notification) will appear"
+            $This.Options     = "Skip", "Enable*", "Disable"
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Update Available Popup"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Update Available Popup"
+                    $This.MUSNotify()  | % { 
+                        ICACLS $_ /remove:d '"Everyone"'
+                        ICACLS $_ /grant ('Everyone' + ':(OI)(CI)F')
+                        ICACLS $_ /setowner 'NT SERVICE\TrustedInstaller'
+                        ICACLS $_ /remove:g '"Everyone"'
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Update Available Popup"
+                    $This.MUSNotify() | % {
+                        
+                        Takeown /f $_
+                        ICACLS $_ /deny '"Everyone":(F)'
+                    }
+                }
+            }
+        }
+        [String[]] MUSNotify()
+        {
+            Return @("","ux" | % { "$Env:windir\System32\musnotification$_.exe" })
+        }
+    }
+    
+    Enum WindowsUpdateType
+    {
+        UpdateMSProducts
+        CheckForWindowsUpdate
+        WinUpdateType
+        WinUpdateDownload
+        UpdateMSRT
+        UpdateDriverRestartOnUpdate
+        AppAutoDownload
+        UpdateAvailablePopup
+    }
+    
+    Class WindowsUpdateList
+    {
+        [Object]  $Output
+        WindowsUpdateList()
+        {
+            $This.Output = ForEach ($Name in [System.Enum]::GetNames([WindowsUpdateType]))
+            {
+                Switch ($Name)
+                {
+                    UpdateMSProducts      { [UpdateMSProducts]::New()      }
+                    CheckForWindowsUpdate { [CheckForWindowsUpdate]::New() }
+                    WinUpdateType         { [WinUpdateType]::New()         }
+                    WinUpdateDownload     { [WinUpdateDownload]::New()     }
+                    UpdateMSRT            { [UpdateMSRT]::New()            }
+                    UpdateDriver          { [UpdateDriver]::New()          }
+                    RestartOnUpdate       { [RestartOnUpdate]::New()       }
+                    AppAutoDownload       { [AppAutoDownload]::New()       }
+                    UpdateAvailablePopup  { [UpdateAvailablePopup]::New()  }
+                }
+            }
+        }
+    }
+    
+    Class UAC : ControlTemplate
+    {
+        UAC()
+        {
+            $This.Name        = "UAC"
+            $This.DisplayName = "User Access Control"
+            $This.Value       = 2
+            $This.Description = "Sets restrictions/permissions for programs"
+            $This.Options     = "Skip", "Lower", "Normal*", "Higher"
+            
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","ConsentPromptBehaviorAdmin"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","PromptOnSecureDesktop") | % { 
+            
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] UAC Level"
+                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] UAC Level (Low)"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set
+                }
+                2
+                {
+                    Write-Host "Setting [~] UAC Level (Default)"
+                    $This.Output[0].Set(5)
+                    $This.Output[1].Set(1)
+                }
+                3
+                {
+                    Write-Host "Setting [~] UAC Level (High)"
+                    $This.Output[0].Set(2)
+                    $This.Output[1].Set(1)
+                }
+            }
+        }
+    }
+    
+    Class SharingMappedDrives : ControlTemplate
+    {
+        SharingMappedDrives()
+        {
+            $This.Name        = "SharingMappedDrives"
+            $This.DisplayName = "Share Mapped Drives"
+            $This.Value       = 2
+            $This.Description = "Shares any mapped drives to all users on the machine"
+            $This.Options     = "Skip", "Enable", "Disable*"
+            
+            $This.Registry("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","EnableLinkedConnections")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Sharing mapped drives between users"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Sharing mapped drives between users"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Sharing mapped drives between users"
+                    $This.Output[0].Remove()
+                }
+            }
+        }
+    }
+    
+    Class AdminShares : ControlTemplate
+    {
+        AdminShares()
+        {
+            $This.Name        = "AdminShares"
+            $This.DisplayName = "Administrative File Shares"
+            $This.Value       = 1
+            $This.Description = "Reveals default system administration file shares"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            $This.Registry("HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters","AutoShareWks")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Hidden administrative shares"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Hidden administrative shares"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Hidden administrative shares"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+    
+    Class Firewall : ControlTemplate
+    {
+        Firewall()
+        {
+            $This.Name        = "Firewall"
+            $This.DisplayName = "Firewall"
+            $This.Value       = 1
+            $This.Description = "Enables the default firewall profile"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            $This.Registry('HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\StandardProfile','EnableFirewall')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Firewall Profile"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Firewall Profile"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Firewall Profile"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+    
+    Class WinDefender : ControlTemplate
+    {
+        WinDefender()
+        {
+            $This.Name        = "WinDefender"
+            $This.DisplayName = "Windows Defender"
+            $This.Value       = 1
+            $This.Description = "Toggles Windows Defender, system default anti-virus/malware utility"
+            $This.Options     = "Skip", "Enable*", "Disable"
+    
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender","DisableAntiSpyware"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run","WindowsDefender"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run","SecurityHealth"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SpynetReporting"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SubmitSamplesConsent") | % {
+    
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Windows Defender"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Windows Defender"
+                    $This.Output[0].Remove()
+                    Switch ($This.GetWinVersion())
+                    {
+                        {$_ -lt 1703}
+                        {
+                            $This.Output[1].Set("ExpandString","`"%ProgramFiles%\Windows Defender\MSASCuiL.exe`"")
+                        }
+                        Default
+                        {
+                            $This.Output[2].Set("ExpandString","`"%ProgramFiles%\Windows Defender\MSASCuiL.exe`"")     
+                        }
+                    }
+                    $This.Output[3].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Windows Defender"
+                    Switch ($This.GetWinVersion())
+                    {
+                        {$_ -lt 1703}
+                        {
+                            $This.Output[1].Remove()
+                        }
+                        Default
+                        {
+                            $This.Output[2].Remove()    
+                        }
+                    }
+                    $This.Output[0].Set(1)
+                    $This.Output[4].Set(0)
+                    $This.Output[5].Set(2)
+                }
+            }
+        }
+    }
+    
+    Class HomeGroups : ControlTemplate
+    {
+        HomeGroups()
+        {
+            $This.Name        = "HomeGroups"
+            $This.DisplayName = "Home Groups"
+            $This.Value       = 1
+            $This.Description = "Toggles the use of home groups, essentially a home-based workgroup"
+            $This.Options     = "Skip", "Enable*", "Disable"
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Home groups services"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Home groups services"
+                    Set-Service   -Name HomeGroupListener -StartupType Manual
+                    Set-Service   -Name HomeGroupProvider -StartupType Manual
+                    Start-Service -Name HomeGroupProvider
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Home groups services"
+                    Stop-Service  -Name HomeGroupListener
+                    Set-Service   -Name HomeGroupListener -StartupType Disabled
+                    Stop-Service  -Name HomeGroupProvider
+                    Set-Service   -Name HomeGroupProvider -StartupType Disabled
+                }
+            }
+        }
+    }
+    
+    Class RemoteAssistance : ControlTemplate
+    {
+        RemoteAssistance()
+        {
+            $This.Name        = "RemoteAssistance"
+            $This.DisplayName = "Remote Assistance"
+            $This.Value       = 1
+            $This.Description = "Toggles the ability to use Remote Assistance"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry("HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance","fAllowToGetHelp")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Remote Assistance"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Remote Assistance"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Remote Assistance"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+    
+    Class RemoteDesktop : ControlTemplate
+    {
+        RemoteDesktop()
+        {
+            $This.Name        = "RemoteDesktop"
+            $This.DisplayName = "Remote Desktop"
+            $This.Value       = 2
+            $This.Description = "Toggles the ability to use Remote Desktop"
+            $This.Options     = "Skip", "Enable", "Disable*"
+    
+            ("HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server","fDenyTSConnections"),
+            ("HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp","UserAuthentication") | % {
+            
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Remote Desktop"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Remote Desktop"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Remote Desktop"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(1)
+                }
+            }
+        }
+    }
+    
+    Enum ServiceType
+    {
+        UAC
+        SharingMappedDrives
+        AdminShares
+        Firewall
+        WinDefender
+        HomeGroups
+        RemoteAssistance
+        RemoteDesktop
+    }
+    
+    Class ServiceList
+    {
+        [Object]  $Output
+        ServiceList()
+        {
+            $This.Output = ForEach ($Name in [System.Enum]::GetNames([ServiceType]))
+            {
+                Switch ($Name)
+                {
+                    UAC                 { [UAC]::New()                 }
+                    SharingMappedDrives { [SharingMappedDrives]::New() }
+                    AdminShares         { [AdminShares]::New()         } 
+                    Firewall            { [Firewall]::New()            } 
+                    WinDefender         { [WinDefender]::New()         }
+                    Homegroups          { [HomeGroups]::New()          }
+                    RemoteAssistance    { [RemoteAssistance]::New()    }
+                    RemoteDesktop       { [RemoteDesktop]::New()       }
+                }
+            }
+        }
+    }
+
+    Class CastToDevice : ControlTemplate
+    {
+        CastToDevice()
+        {
+            $This.Name        = "CastToDevice"
+            $This.DisplayName = "Cast To Device"
+            $This.Value       = 1
+            $This.Description = "Adds a context menu item for casting to a device"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            $This.Registry("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked","{7AD84985-87B4-4a16-BE58-8B72A5B390F7}")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] 'Cast to device' context menu item"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] 'Cast to device' context menu item"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] 'Cast to device' context menu item"
+                    $This.Output[0].Set("String","Play to Menu")
+                }
+            }
+        }
+    }
+
+    Class PreviousVersions : ControlTemplate
+    {
+        PreviousVersions()
+        {
+            $This.Name        = "PreviousVersions"
+            $This.DisplayName = "Previous Versions"
+            $This.Value       = 1
+            $This.Description = "Adds a context menu item to select a previous version of a file"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            ("HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}"),
+            ("HKCR:\CLSID\{450D8FBA-AD25-11D0-98A8-0800361B1103}\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}"),
+            ("HKCR:\Directory\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}"),
+            ("HKCR:\Drive\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] 'Previous versions' context menu item"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] 'Previous versions' context menu item"
+                    $This.Output[0].Get()
+                    $This.Output[1].Get()
+                    $This.Output[2].Get()
+                    $This.Output[3].Get()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] 'Previous versions' context menu item"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    $This.Output[2].Remove()
+                    $This.Output[3].Remove()
+                }
+            }
+        }
+    }
+
+    Class IncludeInLibrary : ControlTemplate
+    {
+        IncludeInLibrary()
+        {
+            $This.Name        = "IncludeInLibrary"
+            $This.DisplayName = "Include in Library"
+            $This.Value       = 1
+            $This.Description = "Adds a context menu item to include a selection in library items"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            $This.Registry("HKCR:\Folder\ShellEx\ContextMenuHandlers\Library Location","(Default)")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] 'Include in Library' context menu item"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] 'Include in Library' context menu item"
+                    $This.Output[0].Set("String","{3dad6c5d-2167-4cae-9914-f99e41c12cfa}")
+                }
+                2
+                {
+                    Write-Host "Disabling [~] 'Include in Library' context menu item"
+                    $This.Output[0].Set("String","")
+                }
+            }
+        }
+    }
+
+    Class PinToStart : ControlTemplate
+    {
+        PinToStart()
+        {
+            $This.Name        = "PinToStart"
+            $This.DisplayName = "Pin to Start"
+            $This.Value       = 1
+            $This.Description = "Adds a context menu item to pin an item to the start menu"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            ('HKCR:\*\shellex\ContextMenuHandlers\{90AA3A4E-1CBA-4233-B8BB-535773D48449}','(Default)'),
+            ('HKCR:\*\shellex\ContextMenuHandlers\{a2a9545d-a0c2-42b4-9708-a0b2badd77c8}','(Default)'),
+            ('HKCR:\Folder\shellex\ContextMenuHandlers\PintoStartScreen','(Default)'),
+            ('HKCR:\exefile\shellex\ContextMenuHandlers\PintoStartScreen','(Default)'),
+            ('HKCR:\Microsoft.Website\shellex\ContextMenuHandlers\PintoStartScreen','(Default)'),
+            ('HKCR:\mscfile\shellex\ContextMenuHandlers\PintoStartScreen','(Default)') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] 'Pin to Start' context menu item"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] 'Pin to Start' context menu item"
+                    $This.Output[0].Set("String","Taskband Pin")
+                    $This.Output[1].Set("String","Start Menu Pin")
+                    $This.Output[2].Set("String","{470C0EBD-5D73-4d58-9CED-E91E22E23282}")
+                    $This.Output[3].Set("String","{470C0EBD-5D73-4d58-9CED-E91E22E23282}")
+                    $This.Output[4].Set("String","{470C0EBD-5D73-4d58-9CED-E91E22E23282}")
+                    $This.Output[5].Set("String","{470C0EBD-5D73-4d58-9CED-E91E22E23282}")
+                }
+                2
+                {
+                    Write-Host "Disabling [~] 'Pin to Start' context menu item"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    $This.Output[2].Set("String","")
+                    $This.Output[3].Set("String","")
+                    $This.Output[4].Set("String","")
+                    $This.Output[5].Set("String","")
+                }
+            }
+        }
+    }
+
+    Class PinToQuickAccess : ControlTemplate
+    {
+        PinToQuickAccess()
+        {
+            $This.Name        = "PinToQuickAccess"
+            $This.DisplayName = "Pin to Quick Access"
+            $This.Value       = 1
+            $This.Description = "Adds a context menu item to pin an item to the Quick Access bar"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            ('HKCR:\Folder\shell\pintohome','MUIVerb'),
+            ('HKCR:\Folder\shell\pintohome','AppliesTo'),
+            ('HKCR:\Folder\shell\pintohome\command','DelegateExecute'),
+            ('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome','MUIVerb'),
+            ('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome','AppliesTo'),
+            ('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome\command','DelegateExecute') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] 'Pin to Quick Access' context menu item"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] 'Pin to Quick Access' context menu item"
+                    $This.Output[0].Set("String",'@shell32.dll,-51377')
+                    $This.Output[1].Set("String",'System.ParsingName:<>"::{679f85cb-0220-4080-b29b-5540cc05aab6}" AND System.ParsingName:<>"::{645FF040-5081-101B-9F08-00AA002F954E}" AND System.IsFolder:=System.StructuredQueryType.Boolean#True')
+                    $This.Output[2].Set("String","{b455f46e-e4af-4035-b0a4-cf18d2f6f28e}")
+                    $This.Output[3].Set("String",'@shell32.dll,-51377')
+                    $This.Output[4].Set("String",'System.ParsingName:<>"::{679f85cb-0220-4080-b29b-5540cc05aab6}" AND System.ParsingName:<>"::{645FF040-5081-101B-9F08-00AA002F954E}" AND System.IsFolder:=System.StructuredQueryType.Boolean#True')
+                    $This.Output[5].Set("String","{b455f46e-e4af-4035-b0a4-cf18d2f6f28e}")
+                }
+                2
+                {
+                    Write-Host "Disabling [~] 'Pin to Quick Access' context menu item"
+                    $This.Output[0].Name = $Null
+                    $This.Output[0].Remove()
+                    $This.Output[3].Name = $Null
+                    $This.Output[3].Remove()
+                }
+            }
+        }
+    }
+
+    Class ShareWith : ControlTemplate
+    {
+        ShareWith()
+        {
+            $This.Name        = "PinToQuickAccess"
+            $This.DisplayName = "Pin to Quick Access"
+            $This.Value       = 1
+            $This.Description = "Adds a context menu item to share a file with..."
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            ('HKCR:\*\shellex\ContextMenuHandlers\Sharing','(Default)'),
+            ('HKCR:\Directory\shellex\ContextMenuHandlers\Sharing','(Default)'),
+            ('HKCR:\Directory\shellex\CopyHookHandlers\Sharing','(Default)'),
+            ('HKCR:\Drive\shellex\ContextMenuHandlers\Sharing','(Default)'),
+            ('HKCR:\Directory\shellex\PropertySheetHandlers\Sharing','(Default)'),
+            ('HKCR:\Directory\Background\shellex\ContextMenuHandlers\Sharing','(Default)'),
+            ('HKCR:\LibraryFolder\background\shellex\ContextMenuHandlers\Sharing','(Default)'),
+            ('HKCR:\*\shellex\ContextMenuHandlers\ModernSharing','(Default)') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] 'Share with' context menu item"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] 'Share with' context menu item"
+                    0..7 | % { $This.Output[$_].Set("String","{f81e9010-6ea4-11ce-a7ff-00aa003ca9f6}") }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] 'Share with' context menu item"
+                    0..7 | % { $This.Output[$_].Set("String","") }
+                }
+            }
+        }
+    }
+
+    Class SendTo : ControlTemplate
+    {
+        SendTo()
+        {
+            $This.Name        = "SendTo"
+            $This.DisplayName = "Send To"
+            $This.Value       = 1
+            $This.Description = "Adds a context menu item to send an item to..."
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry("HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo","(Default)")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] 'Send to' context menu item"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] 'Send to' context menu item"
+                    $This.Output[0].Set("String","{7BA4C740-9E81-11CF-99D3-00AA004AE837}")
+                }
+                2
+                {
+                    Write-Host "Disabling [~] 'Send to' context menu item"
+                    $This.Output[0].Name = $Null
+                    $This.Output[0].Remove()
+                }
+            }
+        }
+    }
+
+    Enum ContextType
+    {
+        CastToDevice
+        PreviousVersions
+        IncludeInLibrary
+        PinToStart      
+        PinToQuickAccess
+        ShareWith       
+        SendTo
+    }
+
+    Class ContextList
+    {
+        [Object]  $Output
+        ContextList()
+        {
+            $This.Output  = ForEach ($Name in [System.Enum]::GetNames([ContextType]))
+            {
+                Switch ($Name)
+                {
+                    CastToDevice     { [CastToDevice]::New()     }
+                    PreviousVersions { [PreviousVersions]::New() }
+                    IncludeInLibrary { [IncludeInLibrary]::New() }
+                    PinToStart       { [PinToStart]::New()       }
+                    PinToQuickAccess { [PinToQuickAccess]::New() }
+                    ShareWith        { [ShareWith]::New()        }
+                    SendTo           { [SendTo]::New()           }
+                }
+            }
+        }
+    }
+
+    Class BatteryUIBar : ControlTemplate
+    {
+        BatteryUIBar()
+        {
+            $This.Name        = "BatteryUIBar"
+            $This.DisplayName = "Battery UI Bar"
+            $This.Value       = 1
+            $This.Description = "Toggles the battery UI bar element style"
+            $This.Options     = "Skip", "New*", "Classic"
+            
+            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell','UseWin32BatteryFlyout')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Battery UI Bar"
+                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Battery UI Bar (New)"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Setting [~] Battery UI Bar (Old)"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Class ClockUIBar : ControlTemplate
+    {
+        ClockUIBar()
+        {
+            $This.Name        = "ClockUIBar"
+            $This.DisplayName = "Clock UI Bar"
+            $This.Value       = 1
+            $This.Description = "Toggles the clock UI bar element style"
+            $This.Options     = "Skip", "New*", "Classic"
+            
+            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell','UseWin32TrayClockExperience')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Clock UI Bar"
+                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Clock UI Bar (New)"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Setting [~] Clock UI Bar (Old)"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Class VolumeControlBar : ControlTemplate
+    {
+        VolumeControlBar()
+        {
+            $This.Name        = "VolumeControlBar"
+            $This.DisplayName = "Volume Control Bar"
+            $This.Value       = 1
+            $This.Description = "Toggles the volume control bar element style"
+            $This.Options     = "Skip", "New (X-Axis)*", "Classic (Y-Axis)"
+            
+            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\MTCUVC','EnableMtcUvc')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Volume Control Bar"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Volume Control Bar (Horizontal)"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Volume Control Bar (Vertical)"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class TaskBarSearchBox : ControlTemplate
+    {
+        TaskBarSearchBox()
+        {
+            $This.Name        = "TaskBarSearchBox"
+            $This.DisplayName = "Taskbar Search Box"
+            $This.Value       = 1
+            $This.Description = "Toggles the taskbar search box element"
+            $This.Options     = "Skip", "Show*", "Hide"
+            
+            $This.Registry("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search","SearchboxTaskbarMode")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Taskbar 'Search Box' button"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Taskbar 'Search Box' button"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Taskbar 'Search Box' button"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class TaskViewButton : ControlTemplate
+    {
+        TaskViewButton()
+        {
+            $This.Name        = "VolumeControlBar"
+            $This.DisplayName = "Volume Control Bar"
+            $This.Value       = 1
+            $This.Description = "Toggles the volume control bar element style"
+            $This.Options     = "Skip", "New (X-Axis)*", "Classic (Y-Axis)"
+            
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','ShowTaskViewButton')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Task View button"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Task View button"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Task View button"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class TaskbarIconSize : ControlTemplate
+    {
+        TaskbarIconSize()
+        {
+            $This.Name        = "TaskbarIconSize"
+            $This.DisplayName = "Taskbar Icon Size"
+            $This.Value       = 1
+            $This.Description = "Toggles the taskbar icon size"
+            $This.Options     = "Skip", "Normal*", "Small"
+            
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','TaskbarSmallIcons')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Icon size in taskbar"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Icon size in taskbar"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Icon size in taskbar"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Class TaskbarGrouping : ControlTemplate
+    {
+        TaskbarGrouping()
+        {
+            $This.Name        = "TaskbarGrouping"
+            $This.DisplayName = "Taskbar Grouping"
+            $This.Value       = 2
+            $This.Description = "Toggles the grouping of icons in the taskbar"
+            $This.Options     = "Skip", "Never", "Always*","When needed"
+            
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','TaskbarGlomLevel')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Group Taskbar Items"
+                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Group Taskbar Items (Never)"
+                    $This.Output[0].Set(2)
+                }
+                2
+                {
+                    Write-Host "Setting [~] Group Taskbar Items (Always)"
+                    $This.Output[0].Set(0)
+                }
+                3
+                {
+                    Write-Host "Setting [~] Group Taskbar Items (When needed)"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Class TrayIcons : ControlTemplate
+    {
+        TrayIcons()
+        {
+            $This.Name        = "TrayIcons"
+            $This.DisplayName = "Tray Icons"
+            $This.Value       = 1
+            $This.Description = "Toggles whether the tray icons are shown or hidden"
+            $This.Options     = "Skip", "Auto*", "Always show"
+            
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer','EnableAutoTray'),
+            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer','EnableAutoTray') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Tray Icons"
+                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Tray Icons (Hiding)"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(1)
+                }
+                2
+                {
+                    Write-Host "Setting [~] Tray Icons (Showing)"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
+                }
+            }
+        }
+    }
+
+    Class SecondsInClock : ControlTemplate
+    {
+        SecondsInClock()
+        {
+            $This.Name        = "SecondsInClock"
+            $This.DisplayName = "Seconds in clock"
+            $This.Value       = 1
+            $This.Description = "Toggles the clock/time shows the seconds"
+            $This.Options     = "Skip", "Show", "Hide*"
+
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','ShowSecondsInSystemClock')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Seconds in Taskbar clock"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Seconds in Taskbar clock"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Seconds in Taskbar clock"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class LastActiveClick : ControlTemplate
+    {
+        LastActiveClick()
+        {
+            $This.Name        = "LastActiveClick"
+            $This.DisplayName = "Last Active Click"
+            $This.Value       = 2
+            $This.Description = "Makes taskbar buttons open the last active window"
+            $This.Options     = "Skip", "Enable", "Disable*"
+            
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','LastActiveClick')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Last active click"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Last active click"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Last active click"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class TaskbarOnMultiDisplay : ControlTemplate
+    {
+        TaskbarOnMultiDisplay()
+        {
+            $This.Name        = "TaskbarOnMultiDisplay"
+            $This.DisplayName = "Taskbar on multiple displays"
+            $This.Value       = 1
+            $This.Description = "Displays the taskbar on each display if there are multiple screens"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            $This.Registry('HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced','MMTaskbarEnabled')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Taskbar on Multiple Displays"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Taskbar on Multiple Displays"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Taskbar on Multiple Displays"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class TaskbarButtonDisplay : ControlTemplate
+    {
+        TaskbarButtonDisplay()
+        {
+            $This.Name        = "TaskbarButtonDisplay"
+            $This.DisplayName = "Multi-display taskbar"
+            $This.Value       = 2
+            $This.Description = "Defines where the taskbar button should be if there are multiple screens"
+            $This.Options     = "Skip", "All", "Current Window*","Main + Current Window"
+
+            $This.Registry('HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced','MMTaskbarMode')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Taskbar buttons on multiple displays"
+                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Taskbar buttons on multiple displays (All taskbars)"
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Setting [~] Taskbar buttons on multiple displays (Taskbar where window is open)"
+                    $This.Output[0].Set(2)
+                }
+                3
+                {
+                    Write-Host "Setting [~] Taskbar buttons on multiple displays (Main taskbar and where window is open)"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Enum TaskbarType
+    {
+        BatteryUIBar
+        ClockUIBar
+        VolumeControlBar
+        TaskbarSearchBox
+        TaskViewButton
+        TaskbarIconSize
+        TaskbarGrouping
+        TrayIconsSecondsInClock
+        LastActiveClick
+    }
+
+    Class TaskbarList
+    {
+        [Object]   $Output
+        TaskbarList()
+        {
+            $This.Output  = ForEach ($Name in [System.Enum]::GetNames([TaskbarType]))
+            {
+                Switch ($Name)
+                {
+                    BatteryUIBar     { [BatteryUIBar]::New()     }
+                    ClockUIBar       { [ClockUIBar]::New()       }
+                    VolumeControlBar { [VolumeControlBar]::New() }
+                    TaskbarSearchBox { [TaskbarSearchBox]::New() }
+                    TaskViewButton   { [TaskViewButton]::New()   }
+                    TaskbarIconSize  { [TaskbarIconSize]::New()  }
+                    TaskbarGrouping  { [TaskbarGrouping]::New()  }
+                    TrayIcons        { [TrayIcons]::New()        }
+                }
+            }
+        }
+    }
+
+    Class StartMenuWebSearch : ControlTemplate
+    {
+        StartMenuWebSearch()
+        {
+            $This.Name        = "StartMenuWebSearch"
+            $This.DisplayName = "Start Menu Web Search"
+            $This.Value       = 1
+            $This.Description = "Allows the start menu search box to search the internet"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search','BingSearchEnabled'),
+            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search','DisableWebSearch') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Bing Search in Start Menu"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Bing Search in Start Menu"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Bing Search in Start Menu"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(1)
+                }
+            }
+        }
+    }
+
+    Class StartSuggestions : ControlTemplate
+    {
+        StartSuggestions()
+        {
+            $This.Name        = "StartSuggestions"
+            $This.DisplayName = "Start Menu Suggestions"
+            $This.Value       = 1
+            $This.Description = "Toggles the suggested apps in the start menu"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+            ($Path,"ContentDeliveryAllowed"),
+            ($Path,"OemPreInstalledAppsEnabled"),
+            ($Path,"PreInstalledAppsEnabled"),
+            ($Path,"PreInstalledAppsEverEnabled"),
+            ($Path,"SilentInstalledAppsEnabled"),
+            ($Path,"SystemPaneSuggestionsEnabled"),
+            ($Path,"Start_TrackProgs"),
+            ($Path,"SubscribedContent-314559Enabled"),
+            ($Path,"SubscribedContent-310093Enabled"),
+            ($Path,"SubscribedContent-338387Enabled"),
+            ($Path,"SubscribedContent-338388Enabled"),
+            ($Path,"SubscribedContent-338389Enabled"),
+            ($Path,"SubscribedContent-338393Enabled"),
+            ($Path,"SubscribedContent-338394Enabled"),
+            ($Path,"SubscribedContent-338396Enabled"),
+            ($Path,"SubscribedContent-338398Enabled") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Start Menu Suggestions"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Start Menu Suggestions"
+                    0..15 | % { $This.Output[$_].Set(1) }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Start Menu Suggestions"
+                    0..15 | % { $This.Output[$_].Set(0) }
+                    If ($This.GetWinVersion() -ge 1803) 
+                    {
+                        $Key = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\*windows.data.placeholdertilecollection\Current"
+                        Set-ItemProperty -Path $Key.PSPath -Name Data -Type Binary -Value $Key.Data[0..15]
+                        Stop-Process -Name ShellExperienceHost -Force
+                    }
+                }
+            }
+        }
+    }
+
+    Class MostUsedAppStartMenu : ControlTemplate
+    {
+        MostUsedAppStartMenu()
+        {
+            $This.Name        = "MostUsedAppStartMenu"
+            $This.DisplayName = "Most Used Applications"
+            $This.Value       = 1
+            $This.Description = "Toggles the most used applications in the start menu"
+            $This.Options     = "Skip", "Show*", "Hide"
+            
+            $This.Registry('HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced','Start_TrackProgs')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Most used apps in Start Menu"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Most used apps in Start Menu"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Most used apps in Start Menu"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class RecentItemsFrequent : ControlTemplate
+    {
+        RecentItemsFrequent()
+        {
+            $This.Name        = "RecentItemsFrequent"
+            $This.DisplayName = "Recent Items Frequent"
+            $This.Value       = 1
+            $This.Description = "Toggles the most recent frequently used (apps/items) in the start menu"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu',"Start_TrackDocs")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Recent items and frequent places"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Recent items and frequent places"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Recent items and frequent places"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class UnpinItems : ControlTemplate
+    {
+        UnpinItems()
+        {
+            $This.Name        = "UnpinItems"
+            $This.DisplayName = "Unpin Items"
+            $This.Value       = 0
+            $This.Description = "Toggles the unpin (apps/items) from the start menu"
+            $This.Options     = "Skip", "Enable"
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Unpinning Items"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Unpinning Items"
+                    If ($This.GetWinVersion() -le 1709) 
+                    {
+                        Get-ChildItem -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount" -Include "*.group" -Recurse | % {
+                            $data = (Get-ItemProperty -Path "$($_.PsPath)\Current" -Name "Data").Data -Join ","
+                            $data = $data.Substring(0, $data.IndexOf(",0,202,30") + 9) + ",0,202,80,0,0"
+                            Set-ItemProperty -Path "$($_.PsPath)\Current" -Name Data -Type Binary -Value $data.Split(",")
+                        }
+                    }
+                    Else 
+                    {
+                        $key     = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\*start.tilegrid`$windows.data.curatedtilecollection.tilecollection\Current"
+                        $data    = $key.Data[0..25] + ([byte[]](202,50,0,226,44,1,1,0,0))
+                        Set-ItemProperty -Path $key.PSPath -Name Data -Type Binary -Value $data
+                        Stop-Process -Name ShellExperienceHost -Force
+                    }
+                }
+            }
+        }
+    }
+
+    Enum StartMenuType
+    {
+        StartMenuWebSearch
+        StartSuggestions
+        MostUsedAppStartMenu
+        RecentItemsFrequent
+        UnpinItems
+    }
+
+    Class StartMenuList
+    {
+        [Object]  $Output
+        StartMenuList()
+        {
+            $This.Output = ForEach ($Name in [System.Enum]::GetNames([StartMenuType]))
+            {
+                Switch ($Name)
+                {
+                    StartMenuWebSearch   { [StartMenuWebSearch]::New()   }
+                    StartSuggestions     { [StartSuggestions]::New()     }
+                    MostUsedAppStartMenu { [MostUsedAppStartMenu]::New() }
+                    RecentItemsFrequent  { [RecentItemsFrequent]::New()  }
+                    UnpinItems           { [UnpinItems]::New()           }
+                }
+            }
+        }
+    }
+
+    Class AccessKeyPrompt : ControlTemplate
+    {
+        AccessKeyPrompt()
+        {
+            $This.Name        = "AccessKeyPrompt"
+            $This.DisplayName = "Access Key Prompt"
+            $This.Value       = 1
+            $This.Description = "Toggles the accessibility keys (menus/prompts)"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            ('HKCU:\Control Panel\Accessibility\StickyKeys',"Flags"),
+            ('HKCU:\Control Panel\Accessibility\ToggleKeys',"Flags"),
+            ('HKCU:\Control Panel\Accessibility\Keyboard Response',"Flags") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Accessibility keys prompts"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Accessibility keys prompts"
+                    $This.Output[0].Set("String",510)
+                    $This.Output[1].Set("String",62)
+                    $This.Output[2].Set("String",126)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Accessibility keys prompts"
+                    $This.Output[0].Set("String",506)
+                    $This.Output[1].Set("String",58)
+                    $This.Output[2].Set("String",122)
+                }
+            }
+        }
+    }
+
+    Class F1HelpKey : ControlTemplate
+    {
+        F1HelpKey()
+        {
+            $This.Name        = "F1HelpKey"
+            $This.DisplayName = "F1 Help Key"
+            $This.Value       = 1
+            $This.Description = "Toggles the F1 help menu/prompt"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            ("HKCU:\Software\Classes\TypeLib\{8cec5860-07a1-11d9-b15e-000d56bfe6ee}\1.0\0"),
+            ('HKCU:\Software\Classes\TypeLib\{8cec5860-07a1-11d9-b15e-000d56bfe6ee}\1.0\0\win32',"(Default)"),
+            ('HKCU:\Software\Classes\TypeLib\{8cec5860-07a1-11d9-b15e-000d56bfe6ee}\1.0\0\win64',"(Default)") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] F1 Help Key"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] F1 Help Key"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] F1 Help Key"
+                    $This.Output[1].Set("String","")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                    $This.Output[2].Set("String","")  
+                    }
+                }
+            }
+        }
+        [UInt32] GetWinVersion()
+        {
+            Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
+        }
+    }
+
+    Class AutoPlay : ControlTemplate
+    {
+        AutoPlay()
+        {
+            $This.Name        = "AutoPlay"
+            $This.DisplayName = "AutoPlay"
+            $This.Value       = 1
+            $This.Description = "Toggles autoplay for inserted discs or drives"
+            $This.Options     = "Skip", "Enable*", "Disable"
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Autoplay"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Autoplay"
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Autoplay"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Class AutoRun : ControlTemplate
+    {
+        AutoRun()
+        {
+            $This.Name        = "AutoRun"
+            $This.DisplayName = "AutoRun"
+            $This.Value       = 1
+            $This.Description = "Toggles autorun for programs on an inserted discs or drives"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer','NoDriveTypeAutoRun')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Autorun"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Autorun"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Autorun"
+                    $This.Output[0].Set(255)
+                }
+            }
+        }
+    }
+
+    Class PidInTitleBar : ControlTemplate
+    {
+        PidInTitleBar()
+        {
+            $This.Name        = "PidInTitleBar"
+            $This.DisplayName = "Process ID"
+            $This.Value       = 2
+            $This.Description = "Toggles the process ID in a window title bar"
+            $This.Options     = "Skip", "Show", "Hide*"
+            
+            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer','ShowPidInTitle')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Process ID on Title bar"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Process ID on Title bar"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Process ID on Title bar"
+                    $This.Output[0].Remove()
+                }
+            }
+        }
+    }
+
+    Class AeroSnap : ControlTemplate
+    {
+        AeroSnap()
+        {
+            $This.Name        = "AeroSnap"
+            $This.DisplayName = "AeroSnap"
+            $This.Value       = 1
+            $This.Description = "Toggles the ability to snap windows to the sides of the screen"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKCU:\Control Panel\Desktop','WindowArrangementActive')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Aero Snap"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Aero Snap"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Aero Snap"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class AeroShake : ControlTemplate
+    {
+        AeroShake()
+        {
+            $This.Name        = "AeroShake"
+            $This.DisplayName = "AeroShake"
+            $This.Value       = 1
+            $This.Description = "Toggles the ability to minimize all windows by jiggling the title bar of an active window"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKCU:\Software\Policies\Microsoft\Windows\Explorer','NoWindowMinimizingShortcuts')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Aero Shake"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Aero Shake"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Aero Shake"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Class KnownExtensions : ControlTemplate
+    {
+        KnownExtensions()
+        {
+            $This.Name        = "KnownExtensions"
+            $This.DisplayName = "Known File Extensions"
+            $This.Value       = 2
+            $This.Description = "Shows known (mime-types/file extensions)"
+            $This.Options     = "Skip", "Show", "Hide*"
+
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','HideFileExt')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Known File Extensions"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Known File Extensions"
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Known File Extensions"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Class HiddenFiles : ControlTemplate
+    {
+        HiddenFiles()
+        {
+            $This.Name        = "HiddenFiles"
+            $This.DisplayName = "Show Hidden Files"
+            $This.Value       = 2
+            $This.Description = "Shows all hidden files"
+            $This.Options     = "Skip", "Show", "Hide*"
+            
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','Hidden')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Hidden Files"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Hidden Files"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Hidden Files"
+                    $This.Output[0].Set(2)
+                }
+            }
+        }
+    }
+
+    Class SystemFiles : ControlTemplate
+    {
+        SystemFiles()
+        {
+            $This.Name        = "SystemFiles"
+            $This.DisplayName = "Show System Files"
+            $This.Value       = 2
+            $This.Description = "Shows all system files"
+            $This.Options     = "Skip", "Show", "Hide*"
+            
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','ShowSuperHidden')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] System Files"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] System Files"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] System Files"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class ExplorerOpenLoc : ControlTemplate
+    {
+        ExplorerOpenLoc()
+        {
+            $This.Name        = "ExplorerOpenLoc"
+            $This.DisplayName = "Explorer Open Location"
+            $This.Value       = 1
+            $This.Description = "Default path/location opened with a new explorer window"
+            $This.Options     = "Skip", "Quick Access*", "This PC"
+            
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','LaunchTo')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Default Explorer view to Quick Access"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Default Explorer view to Quick Access"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Default Explorer view to Quick Access"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Class RecentFileQuickAccess : ControlTemplate
+    {
+        RecentFileQuickAccess()
+        {
+            $This.Name        = "RecentFileQuickAccess"
+            $This.DisplayName = "Recent File Quick Access"
+            $This.Value       = 1
+            $This.Description = "Shows recent files in the Quick Access menu"
+            $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Recent Files in Quick Access"
+                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Recent Files in Quick Access (Showing)"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set("String","Recent Items Instance Folder")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[2].Set("String","Recent Items Instance Folder")
+                    }
+                }
+                2
+                {
+                    Write-Host "Setting [~] Recent Files in Quick Access (Hiding)"
+                    $This.Output[0].Set(0)
+                }
+                3
+                {
+                    Write-Host "Setting [~] Recent Files in Quick Access (Removing)"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Remove()
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[2].Remove()
+                    }
+                }
+            }
+        }
+    }
+
+    Class FrequentFoldersQuickAccess : ControlTemplate
+    {
+        FrequentFoldersQuickAccess()
+        {
+            $This.Name        = "FrequentFoldersQuickAccess"
+            $This.DisplayName = "Frequent Folders Quick Access"
+            $This.Value       = 1
+            $This.Description = "Show frequently used folders in the Quick Access menu"
+            $This.Options     = "Skip", "Show*", "Hide"
+            
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer','ShowFrequent')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Frequent folders in Quick Access"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Frequent folders in Quick Access"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Frequent folders in Quick Access"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class WinContentWhileDrag : ControlTemplate
+    {
+        WinContentWhileDrag()
+        {
+            $This.Name        = "WinContentWhileDrag"
+            $This.DisplayName = "Window Content while dragging"
+            $This.Value       = 1
+            $This.Description = "Show the content of a window while it is being dragged/moved"
+            $This.Options     = "Skip", "Show*", "Hide"
+
+            $This.Registry('HKCU:\Control Panel\Desktop','DragFullWindows')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Window content while dragging"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Window content while dragging"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Window content while dragging"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class StoreOpenWith : ControlTemplate
+    {
+        StoreOpenWith()
+        {
+            $This.Name        = "StoreOpenWith"
+            $This.DisplayName = "Store Open With..."
+            $This.Value       = 1
+            $This.Description = "Toggles the ability to use the Microsoft Store to open an unknown file/program"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer','NoUseStoreOpenWith')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Search Windows Store for Unknown Extensions"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Search Windows Store for Unknown Extensions"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Search Windows Store for Unknown Extensions"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Class WinXPowerShell : ControlTemplate
+    {
+        WinXPowerShell()
+        {
+            $This.Name        = "WinXPowerShell"
+            $This.DisplayName = "Win X PowerShell"
+            $This.Value       = 1
+            $This.Description = "Toggles whether (Win + X) opens PowerShell or a Command Prompt"
+            $This.Options     = "Skip", "PowerShell*", "Command Prompt"
+
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','DontUsePowerShellOnWinX')
+
+            If ($This.GetWinVersion() -lt 1703)
+            {
+                $This.Value   = 2
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] (Win+X) PowerShell/Command Prompt"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] (Win+X) PowerShell/Command Prompt"
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] (Win+X) PowerShell/Command Prompt"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Class TaskManagerDetails : ControlTemplate
+    {
+        TaskManagerDetails()
+        {
+            $This.Name        = "TaskManagerDetails"
+            $This.DisplayName = "Task Manager Details"
+            $This.Value       = 2
+            $This.Description = "Toggles whether the task manager details are shown"
+            $This.Options     = "Skip", "Show", "Hide*"
+            
+            $This.Registry('HKCU:\Software\Microsoft\Windows\CurrentVersion\TaskManager',"Preferences")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Task Manager Details"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Task Manager Details"
+                    $Path         = $This.Output[0].Path
+                    $Task         = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
+                    $Collect      = @( )
+                    $Timeout      = 0
+                    $TM           = $Null
+                    Do
+                    {
+                        Start-Sleep -Milliseconds 100
+                        $TM       = Get-ItemProperty -Path $Path | % Preferences
+                        $Collect += 100
+                        $TimeOut  = $Collect -join "+" | Invoke-Expression
+                    }
+                    Until ($TM -or $Timeout -ge 30000)
+                    Stop-Process $Task
+                    $TM[28]       = 0
+                    $This.Output[0].Set("Binary",$TM)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Task Manager Details"
+                    $TM           = $This.Output[0].Get().Preferences
+                    $TM[28]       = 1
+                    $This.Output[0].Set("Binary",$TM)
+                }
+            }
+        }
+    }
+
+    Class ReopenAppsOnBoot : ControlTemplate
+    {
+        ReopenAppsOnBoot()
+        {
+            $This.Name        = "ReopenAppsOnBoot"
+            $This.DisplayName = "Reopen apps at boot"
+            $This.Value       = 1
+            $This.Description = "Toggles applications to reopen at boot time"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System','DisableAutomaticRestartSignOn')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            If ($This.GetWinVersion() -eq 1709)
             {
                 Switch ($Mode)
                 {
@@ -2483,3984 +4652,1245 @@ Function Get-ViperBomb
                     {
                         If ($ShowSkipped)
                         {
-                            Write-Host "Skipping [!] UAC Level"
+                            Write-Host "Skipping [!] Reopen applications at boot time"
                         }
                     }
                     1
                     {
-                        Write-Host "Setting [~] UAC Level (Low)"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-
+                        Write-Host "Enabling [~] Reopen applications at boot time"
+                        $This.Output[0].Set(0)
                     }
                     2
                     {
-                        Write-Host "Setting [~] UAC Level (Default)"
-                        $This.Stack[0].Set(5)
-                        $This.Stack[1].Set(1)
+                        Write-Host "Disabling [~] Reopen applications at boot time"
+                        $This.Output[0].Set(1)
+                    }
+                }
+            }
+        }
+    }
+
+    Class Timeline : ControlTemplate
+    {
+        Timeline()
+        {
+            $This.Name        = "Timeline"
+            $This.DisplayName = "Timeline"
+            $This.Value       = 1
+            $This.Description = "Toggles Windows Timeline, for recovery of items at a prior point in time"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKLM:\SOFTWARE\Policies\Microsoft\Windows\System','EnableActivityFeed')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            If ($This.GetWinVersion())
+            {
+                Switch ($Mode)
+                {
+                    0
+                    {
+                        If ($ShowSkipped)
+                        {
+                            Write-Host "Skipping [!] Windows Timeline"
+                        }
+                    }
+                    1
+                    {
+                        Write-Host "Enabling [~] Windows Timeline"
+                        $This.Output[0].Set(1)
+                    }
+                    2
+                    {
+                        Write-Host "Disabling [~] Windows Timeline"
+                        $This.Output[0].Set(0)
+                    }
+                }
+            }
+        }
+    }
+
+    Class LongFilePath : ControlTemplate
+    {
+        LongFilePath()
+        {
+            $This.Name        = "LongFilePath"
+            $This.DisplayName = "Long File Path"
+            $This.Value       = 1
+            $This.Description = "Toggles whether file paths are longer, or not"
+            $This.Options     = "Skip", "Enable", "Disable*"
+            
+            ('HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem','LongPathsEnabled'),
+            ('HKLM:\SYSTEM\ControlSet001\Control\FileSystem','LongPathsEnabled') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Long file path"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Long file path"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Long file path"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                }
+            }
+        }
+    }
+
+    Class AppHibernationFile : ControlTemplate
+    {
+        AppHibernationFile()
+        {
+            $This.Name        = "AppHibernationFile"
+            $This.DisplayName = "App Hibernation File"
+            $This.Value       = 1
+            $This.Description = "Toggles the system swap file use"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry("HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management","SwapfileControl")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] App Hibernation File (swapfile.sys)"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] App Hibernation File (swapfile.sys)"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] App Hibernation File (swapfile.sys)"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Enum ExplorerType
+    {
+        AccessKeyPrompt
+        F1HelpKey
+        AutoPlay
+        AutoRun
+        PidInTitleBar
+        RecentFileQuickAccess
+        FrequentFoldersQuickAccess
+        WinContentWhileDrag
+        StoreOpenWith
+        LongFilePath
+        ExplorerOpenLoc
+        WinXPowerShell
+        AppHibernationFile
+        Timeline
+        AeroSnap
+        AeroShake
+        KnownExtensions
+        HiddenFiles
+        SystemFiles
+        TaskManager
+        ReopenApps
+    }
+
+    Class ExplorerList
+    {
+        [Object]  $Output
+        ExplorerList()
+        {
+            $This.Output = ForEach ($Name in [System.Enum]::GetNames([ExplorerType]))
+            {
+                Switch ($Name)
+                {
+                    AccessKeyPrompt            { [AccessKeyPrompt]::New()            }
+                    F1HelpKey                  { [F1HelpKey]::New()                  }
+                    AutoPlay                   { [AutoPlay]::New()                   }
+                    AutoRun                    { [AutoRun]::New()                    }
+                    PidInTitleBar              { [PidInTitleBar]::New()              }
+                    RecentFileQuickAccess      { [RecentFileQuickAccess]::New()      }
+                    FrequentFoldersQuickAccess { [FrequentFoldersQuickAccess]::New() }
+                    WinContentWhileDrag        { [WinContentWhileDrag]::New()        }
+                    StoreOpenWith              { [StoreOpenWith]::New()              }
+                    LongFilePath               { [LongFilePath]::New()               }
+                    ExplorerOpenLoc            { [ExplorerOpenLoc]::New()            }
+                    WinXPowerShell             { [WinXPowerShell]::New()             }
+                    AppHibernationFile         { [AppHibernationFile]::New()         }
+                    Timeline                   { [Timeline]::New()                   }
+                    AeroSnap                   { [AeroSnap]::New()                   }
+                    AeroShake                  { [AeroShake]::New()                  }
+                    KnownExtensions            { [KnownExtensions]::New()            }
+                    HiddenFiles                { [HiddenFiles]::New()                }
+                    SystemFiles                { [SystemFiles]::New()                }
+                    TaskManagerDetails         { [TaskManagerDetails]::New()         }
+                    ReopenAppsOnBoot           { [ReopenAppsOnBoot]::New()           }
+                }
+            }
+        }
+    }
+
+    Class DesktopIconInThisPC : ControlTemplate
+    {
+        DesktopIconInThisPC()
+        {
+            $This.Name        = "DesktopIconInThisPC"
+            $This.DisplayName = "Desktop [Explorer]"
+            $This.Value       = 1
+            $This.Description = "Toggles the Desktop icon in 'This PC'"
+            $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
+            
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag","ThisPCPolicy") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Desktop folder in This PC"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Desktop folder in This PC (Shown)"
+                    $This.Output[0].Get()
+                    $This.Output[1].Get()
+                    $This.Output[2].Set("String","Show")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[3].Get()
+                        $This.Output[4].Get()
+                        $This.Output[5].Set("String","Show")
+                    }
+                }
+                2
+                {
+                    Write-Host "Setting [~] Desktop folder in This PC (Hidden)"
+                    $This.Output[2].Set("String","Hide")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Set("String","Hide")
+                    }
+                }
+                3
+                {
+                    Write-Host "Setting [~] Desktop folder in This PC (None)"
+                    $This.Output[1].Remove()
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Remove()
+                    }
+                }
+            }
+        }
+    }
+
+    Class DocumentsIconInThisPC : ControlTemplate
+    {
+        DocumentsIconInThisPC()
+        {
+            $This.Name        = "DocumentsIconInThisPC"
+            $This.DisplayName = "Documents [Explorer]"
+            $This.Value       = 1
+            $This.Description = "Toggles the Documents icon in 'This PC'"
+            $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
+
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{d3162b92-9365-467a-956b-92703aca08af}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","BaseFolderID"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{d3162b92-9365-467a-956b-92703aca08af}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","BaseFolderID") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Documents folder in This PC"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Documents folder in This PC (Shown)"
+                    $This.Output[0].Get()
+                    $This.Output[1].Get()
+                    $This.Output[2].Get()
+                    $This.Output[3].Set("String","Show")
+                    $This.Output[4].Set("String","{FDD39AD0-238F-46AF-ADB4-6C85480369C7}")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Get()
+                        $This.Output[6].Get()
+                        $This.Output[7].Get()
+                        $This.Output[8].Set("String","Show")
+                    }
+                }
+                2
+                {
+                    Write-Host "Setting [~] Documents folder in This PC (Hidden)"
+                    $This.Output[3].Set("String","Hide")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[8].Set("String","Hide")
+                    }
+                }
+                3
+                {
+                    Write-Host "Setting [~] Documents folder in This PC (None)"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Remove()
+                        $This.Output[6].Remove()
+                    }
+                }
+            }
+        }
+    }
+
+    Class DownloadsIconInThisPC : ControlTemplate
+    {
+        DownloadsIconInThisPC()
+        {
+            $This.Name        = "DownloadsIconInThisPC"
+            $This.DisplayName = "Downloads [Explorer]"
+            $This.Value       = 1
+            $This.Description = "Toggles the Downloads icon in 'This PC'"
+            $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
+            
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","BaseFolderID"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","BaseFolderID") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Downloads folder in This PC"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Downloads folder in This PC (Shown)"
+                    $This.Output[0].Get()
+                    $This.Output[1].Get()
+                    $This.Output[2].Get()
+                    $This.Output[3].Set("String","Show")
+                    $This.Output[4].Set("String","{374DE290-123F-4565-9164-39C4925E467B}")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Get()
+                        $This.Output[6].Get()
+                        $This.Output[7].Get()
+                        $This.Output[8].Set("String","Show")
+                    }
+                }
+                2
+                {
+                    Write-Host "Setting [~] Downloads folder in This PC (Hidden)"
+                    $This.Output[3].Set("String","Hide")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[8].Set("String","Hide")
+                    }
+                }
+                3
+                {
+                    Write-Host "Setting [~] Documents folder in This PC (None)"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Remove()
+                        $This.Output[6].Remove()
+                    }
+                }
+            }
+        }
+    }
+
+    Class MusicIconInThisPC : ControlTemplate
+    {
+        MusicIconInThisPC()
+        {
+            $This.Name        = "MusicIconInThisPC"
+            $This.DisplayName = "Music [Explorer]"
+            $This.Value       = 1
+            $This.Description = "Toggles the Music icon in 'This PC'"
+            $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
+            
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3dfdf296-dbec-4fb4-81d1-6a3438bcf4de}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","BaseFolderID"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3dfdf296-dbec-4fb4-81d1-6a3438bcf4de}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","BaseFolderID") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Music folder in This PC"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Music folder in This PC (Shown)"
+                    $This.Output[0].Get()
+                    $This.Output[1].Get()
+                    $This.Output[2].Get()
+                    $This.Output[3].Set("String","Show")
+                    $This.Output[4].Set("String","{4BD8D571-6D19-48D3-BE97-422220080E43}")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Get()
+                        $This.Output[6].Get()
+                        $This.Output[7].Get()
+                        $This.Output[8].Set("String","Show")
+                    }
+                }
+                2
+                {
+                    Write-Host "Setting [~] Music folder in This PC (Hidden)"
+                    $This.Output[3].Set("String","Hide")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[8].Set("String","Hide")
+                    }
+                }
+                3
+                {
+                    Write-Host "Setting [~] Music folder in This PC (None)"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Remove()
+                        $This.Output[6].Remove()
+                    }
+                }
+            }
+        }
+    }
+
+    Class PicturesIconInThisPC : ControlTemplate
+    {
+        PicturesIconInThisPC()
+        {
+            $This.Name        = "PicturesIconInThisPC"
+            $This.DisplayName = "Pictures [Explorer]"
+            $This.Value       = 1
+            $This.Description = "Toggles the Pictures icon in 'This PC'"
+            $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
+            
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{24ad3ad4-a569-4530-98e1-ab02f9417aa8}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","BaseFolderID"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{24ad3ad4-a569-4530-98e1-ab02f9417aa8}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","BaseFolderID") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Pictures folder in This PC"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Pictures folder in This PC (Shown)"
+                    $This.Output[0].Get()
+                    $This.Output[1].Get()
+                    $This.Output[2].Get()
+                    $This.Output[3].Set("String","Show")
+                    $This.Output[4].Set("String","{33E28130-4E1E-4676-835A-98395C3BC3BB}")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Get()
+                        $This.Output[6].Get()
+                        $This.Output[7].Get()
+                        $This.Output[8].Set("String","Show")
+                    }
+                }
+                2
+                {
+                    Write-Host "Setting [~] Pictures folder in This PC (Hidden)"
+                    $This.Output[3].Set("String","Hide")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[8].Set("String","Hide")
+                    }
+                }
+                3
+                {
+                    Write-Host "Setting [~] Pictures folder in This PC (None)"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Remove()
+                        $This.Output[6].Remove()
+                    }
+                }
+            }
+        }
+    }
+
+    Class VideosIconInThisPC : ControlTemplate
+    {
+        VideosIconInThisPC()
+        {
+            $This.Name        = "VideosIconInThisPC"
+            $This.DisplayName = "Videos [Explorer]"
+            $This.Value       = 1
+            $This.Description = "Toggles the Videos icon in 'This PC'"
+            $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
+            
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A0953C92-50DC-43bf-BE83-3742FED03C9C}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","BaseFolderID"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A0953C92-50DC-43bf-BE83-3742FED03C9C}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","BaseFolderID") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Videos folder in This PC"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Videos folder in This PC (Shown)"
+                    $This.Output[0].Get()
+                    $This.Output[1].Get()
+                    $This.Output[2].Get()
+                    $This.Output[3].Set("String","Show")
+                    $This.Output[4].Set("String","{18989B1D-99B5-455B-841C-AB7C74E4DDFC}")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Get()
+                        $This.Output[6].Get()
+                        $This.Output[7].Get()
+                        $This.Output[8].Set("String","Show")
+                    }
+                }
+                2
+                {
+                    Write-Host "Setting [~] Videos folder in This PC (Hidden)"
+                    $This.Output[3].Set("String","Hide")
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[8].Set("String","Hide")
+                    }
+                }
+                3
+                {
+                    Write-Host "Setting [~] Videos folder in This PC (None)"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    If ([Environment]::Is64BitOperatingSystem)
+                    {
+                        $This.Output[5].Remove()
+                        $This.Output[6].Remove()
+                    }
+                }
+            }
+        }
+    }
+
+    Class ThreeDObjectsIconInThisPC : ControlTemplate
+    {
+        ThreeDObjectsIconInThisPC()
+        {
+            $This.Name        = "ThreeDObjectsIconInThisPC"
+            $This.DisplayName = "3D Objects [Explorer]"
+            $This.Value       = 1
+            $This.Description = "Toggles the 3D Objects icon in 'This PC'"
+            $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
+            
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag","ThisPCPolicy"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag"),
+            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag","ThisPCPolicy") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            If ($This.GetWinVersion() -ge 1709)
+            {
+                Switch ($Mode)
+                {
+                    0
+                    {
+                        If ($ShowSkipped)
+                        {
+                            Write-Host "Skipping [!] 3D Objects folder in This PC"
+                        }
+                    }
+                    1
+                    {
+                        Write-Host "Enabling [~] 3D Objects folder in This PC (Shown)"
+                        $This.Output[0].Get()
+                        $This.Output[1].Get()
+                        $This.Output[2].Set("String","Show")
+                        If ([Environment]::Is64BitOperatingSystem)
+                        {
+                            $This.Output[3].Get()
+                            $This.Output[4].Get()
+                            $This.Output[5].Set("String","Show")
+                        }
+                    }
+                    2
+                    {
+                        Write-Host "Setting [~] 3D Objects folder in This PC (Hidden)"
+                        $This.Output[2].Set("String","Hide")
+                        If ([Environment]::Is64BitOperatingSystem)
+                        {
+                            $This.Output[5].Set("String","Hide")
+                        }
                     }
                     3
                     {
-                        Write-Host "Setting [~] UAC Level (High)"
-                        $This.Stack[0].Set(2)
-                        $This.Stack[1].Set(1)
+                        Write-Host "Setting [~] 3D Objects folder in This PC (None)"
+                        $This.Output[1].Remove()
+                        If ([Environment]::Is64BitOperatingSystem)
+                        {
+                            $This.Output[5].Remove()
+                        }
                     }
                 }
             }
         }
-
-        Class SharingMappedDrives
-        {
-            [String]        $Name = "SharingMappedDrives"
-            [String] $DisplayName = "Share Mapped Drives"
-            [UInt32]       $Value = 2
-            [String] $Description = "Shares any mapped drives to all users on the machine"
-            [String[]]   $Options = "Skip", "Enable", "Disable*"
-            [Object]       $Stack
-            SharingMappedDrives()
-            {
-                $This.Stack = @([Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","EnableLinkedConnections"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Sharing mapped drives between users"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Sharing mapped drives between users"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Sharing mapped drives between users"
-                        $This.Stack[0].Remove()
-                    }
-                }
-            }
-        }
-
-        Class AdminShares
-        {
-            [String]        $Name = "AdminShares"
-            [String] $DisplayName = "Administrative File Shares"
-            [UInt32]       $Value = 1
-            [String] $Description = "Reveals default system administration file shares"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AdminShares()
-            {
-                $This.Stack = @([Registry]::New("HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters","AutoShareWks"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Hidden administrative shares"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Hidden administrative shares"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Hidden administrative shares"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class Firewall
-        {
-            [String]        $Name = "Firewall"
-            [String] $DisplayName = "Firewall"
-            [UInt32]       $Value = 1
-            [String] $Description = "Enables the default firewall profile"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            Firewall()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\StandardProfile','EnableFirewall'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Firewall Profile"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Firewall Profile"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Firewall Profile"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class WinDefender
-        {
-            [String]        $Name = "WinDefender"
-            [String] $DisplayName = "Windows Defender"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles Windows Defender, system default anti-virus/malware utility"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            WinDefender()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender","DisableAntiSpyware")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run","WindowsDefender")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run","SecurityHealth")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SpynetReporting")
-                [Registry]::New("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SubmitSamplesConsent")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Windows Defender"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Windows Defender"
-                        $This.Stack[0].Remove()
-                        Switch ($This.GetWinVersion())
-                        {
-                            {$_ -lt 1703}
-                            {
-                                $This.Stack[1].Set("ExpandString","`"%ProgramFiles%\Windows Defender\MSASCuiL.exe`"")
-                            }
-                            Default
-                            {
-                                $This.Stack[2].Set("ExpandString","`"%ProgramFiles%\Windows Defender\MSASCuiL.exe`"")     
-                            }
-                        }
-                        $This.Stack[3].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Windows Defender"
-                        Switch ($This.GetWinVersion())
-                        {
-                            {$_ -lt 1703}
-                            {
-                                $This.Stack[1].Remove()
-                            }
-                            Default
-                            {
-                                $This.Stack[2].Remove()    
-                            }
-                        }
-                        $This.Stack[0].Set(1)
-                        $This.Stack[4].Set(0)
-                        $This.Stack[5].Set(2)
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
-
-        Class HomeGroups
-        {
-            [String]        $Name = "HomeGroups"
-            [String] $DisplayName = "Home Groups"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the use of home groups, essentially a home-based workgroup"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            HomeGroups()
-            {
-                $This.Stack = @()
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Home groups services"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Home groups services"
-                        Set-Service   -Name HomeGroupListener -StartupType Manual
-                        Set-Service   -Name HomeGroupProvider -StartupType Manual
-                        Start-Service -Name HomeGroupProvider
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Home groups services"
-                        Stop-Service  -Name HomeGroupListener
-                        Set-Service   -Name HomeGroupListener -StartupType Disabled
-                        Stop-Service  -Name HomeGroupProvider
-                        Set-Service   -Name HomeGroupProvider -StartupType Disabled
-                    }
-                }
-            }
-        }
-
-        Class RemoteAssistance
-        {
-            [String]        $Name = "RemoteAssistance"
-            [String] $DisplayName = "Remote Assistance"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the ability to use Remote Assistance"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            RemoteAssistance()
-            {
-                $This.Stack = @([Registry]::New("HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance","fAllowToGetHelp"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Remote Assistance"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Remote Assistance"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Remote Assistance"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class RemoteDesktop
-        {
-            [String]        $Name = "RemoteDesktop"
-            [String] $DisplayName = "Remote Desktop"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles the ability to use Remote Desktop"
-            [String[]]   $Options = "Skip", "Enable", "Disable*"
-            [Object]       $Stack
-            RemoteDesktop()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server","fDenyTSConnections")
-                [Registry]::New("HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp","UserAuthentication")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Remote Desktop"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Remote Desktop"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Remote Desktop"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class ServiceList
-        {
-            [String[]] $Names = "UAC SharingMappedDrives AdminShares Firewall WinDefender HomeGroups RemoteAssistance RemoteDesktop".Split(" ")
-            [Object]  $Output
-            ServiceList()
-            {
-                $This.Output = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        UAC                 { [UAC]::New()                 }
-                        SharingMappedDrives { [SharingMappedDrives]::New() }
-                        AdminShares         { [AdminShares]::New()         } 
-                        Firewall            { [Firewall]::New()            } 
-                        WinDefender         { [WinDefender]::New()         }
-                        Homegroups          { [HomeGroups]::New()          }
-                        RemoteAssistance    { [RemoteAssistance]::New()    }
-                        RemoteDesktop       { [RemoteDesktop]::New()       }
-                    }
-                }
-            }
-        }
-        [ServiceList]::New().Output
     }
-    Function ContextList
+
+    Enum ThisPCIconType
     {
-        Class CastToDevice
-        {
-            [String]        $Name = "CastToDevice"
-            [String] $DisplayName = "Cast To Device"
-            [UInt32]       $Value = 1
-            [String] $Description = "Adds a context menu item for casting to a device"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            CastToDevice()
-            {
-                $This.Stack = @([Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked","{7AD84985-87B4-4a16-BE58-8B72A5B390F7}"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] 'Cast to device' context menu item"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] 'Cast to device' context menu item"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] 'Cast to device' context menu item"
-                        $This.Stack[0].Set("String","Play to Menu")
-                    }
-                }
-            }
-        }
-
-        Class PreviousVersions
-        {
-            [String]        $Name = "PreviousVersions"
-            [String] $DisplayName = "Previous Versions"
-            [UInt32]       $Value = 1
-            [String] $Description = "Adds a context menu item to select a previous version of a file"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            PreviousVersions()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}")
-                [Registry]::New("HKCR:\CLSID\{450D8FBA-AD25-11D0-98A8-0800361B1103}\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}")
-                [Registry]::New("HKCR:\Directory\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}")
-                [Registry]::New("HKCR:\Drive\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] 'Previous versions' context menu item"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] 'Previous versions' context menu item"
-                        $This.Stack[0].Get()
-                        $This.Stack[1].Get()
-                        $This.Stack[2].Get()
-                        $This.Stack[3].Get()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] 'Previous versions' context menu item"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                        $This.Stack[2].Remove()
-                        $This.Stack[3].Remove()
-                    }
-                }
-            }
-        }
-
-        Class IncludeInLibrary
-        {
-            [String]        $Name = "IncludeInLibrary"
-            [String] $DisplayName = "Include in Library"
-            [UInt32]       $Value = 1
-            [String] $Description = "Adds a context menu item to include a selection in library items"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            IncludeInLibrary()
-            {
-                $This.Stack = @([Registry]::New("HKCR:\Folder\ShellEx\ContextMenuHandlers\Library Location","(Default)"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] 'Include in Library' context menu item"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] 'Include in Library' context menu item"
-                        $This.Stack[0].Set("String","{3dad6c5d-2167-4cae-9914-f99e41c12cfa}")
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] 'Include in Library' context menu item"
-                        $This.Stack[0].Set("String","")
-                    }
-                }
-            }
-        }
-
-        Class PinToStart
-        {
-            [String]        $Name = "PinToStart"
-            [String] $DisplayName = "Pin to Start"
-            [UInt32]       $Value = 1
-            [String] $Description = "Adds a context menu item to pin an item to the start menu"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            PinToStart()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKCR:\*\shellex\ContextMenuHandlers\{90AA3A4E-1CBA-4233-B8BB-535773D48449}','(Default)')
-                [Registry]::New('HKCR:\*\shellex\ContextMenuHandlers\{a2a9545d-a0c2-42b4-9708-a0b2badd77c8}','(Default)')
-                [Registry]::New('HKCR:\Folder\shellex\ContextMenuHandlers\PintoStartScreen','(Default)')
-                [Registry]::New('HKCR:\exefile\shellex\ContextMenuHandlers\PintoStartScreen','(Default)')
-                [Registry]::New('HKCR:\Microsoft.Website\shellex\ContextMenuHandlers\PintoStartScreen','(Default)')
-                [Registry]::New('HKCR:\mscfile\shellex\ContextMenuHandlers\PintoStartScreen','(Default)')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] 'Pin to Start' context menu item"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] 'Pin to Start' context menu item"
-                        $This.Stack[0].Set("String","Taskband Pin")
-                        $This.Stack[1].Set("String","Start Menu Pin")
-                        $This.Stack[2].Set("String","{470C0EBD-5D73-4d58-9CED-E91E22E23282}")
-                        $This.Stack[3].Set("String","{470C0EBD-5D73-4d58-9CED-E91E22E23282}")
-                        $This.Stack[4].Set("String","{470C0EBD-5D73-4d58-9CED-E91E22E23282}")
-                        $This.Stack[5].Set("String","{470C0EBD-5D73-4d58-9CED-E91E22E23282}")
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] 'Pin to Start' context menu item"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                        $This.Stack[2].Set("String","")
-                        $This.Stack[3].Set("String","")
-                        $This.Stack[4].Set("String","")
-                        $This.Stack[5].Set("String","")
-                    }
-                }
-            }
-        }
-
-        Class PinToQuickAccess
-        {
-            [String]        $Name = "PinToQuickAccess"
-            [String] $DisplayName = "Pin to Quick Access"
-            [UInt32]       $Value = 1
-            [String] $Description = "Adds a context menu item to pin an item to the Quick Access bar"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            PinToQuickAccess()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKCR:\Folder\shell\pintohome','MUIVerb')
-                [Registry]::New('HKCR:\Folder\shell\pintohome','AppliesTo')
-                [Registry]::New('HKCR:\Folder\shell\pintohome\command','DelegateExecute')
-                [Registry]::New('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome','MUIVerb')
-                [Registry]::New('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome','AppliesTo')
-                [Registry]::New('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome\command','DelegateExecute')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] 'Pin to Quick Access' context menu item"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] 'Pin to Quick Access' context menu item"
-                        $This.Stack[0].Set("String",'@shell32.dll,-51377')
-                        $This.Stack[1].Set("String",'System.ParsingName:<>"::{679f85cb-0220-4080-b29b-5540cc05aab6}" AND System.ParsingName:<>"::{645FF040-5081-101B-9F08-00AA002F954E}" AND System.IsFolder:=System.StructuredQueryType.Boolean#True')
-                        $This.Stack[2].Set("String","{b455f46e-e4af-4035-b0a4-cf18d2f6f28e}")
-                        $This.Stack[3].Set("String",'@shell32.dll,-51377')
-                        $This.Stack[4].Set("String",'System.ParsingName:<>"::{679f85cb-0220-4080-b29b-5540cc05aab6}" AND System.ParsingName:<>"::{645FF040-5081-101B-9F08-00AA002F954E}" AND System.IsFolder:=System.StructuredQueryType.Boolean#True')
-                        $This.Stack[5].Set("String","{b455f46e-e4af-4035-b0a4-cf18d2f6f28e}")
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] 'Pin to Quick Access' context menu item"
-                        $This.Stack[0].Name = $Null
-                        $This.Stack[0].Remove()
-                        $This.Stack[3].Name = $Null
-                        $This.Stack[3].Remove()
-                    }
-                }
-            }
-        }
-
-        Class ShareWith
-        {
-            [String]        $Name = "PinToQuickAccess"
-            [String] $DisplayName = "Pin to Quick Access"
-            [UInt32]       $Value = 1
-            [String] $Description = "Adds a context menu item to share a file with..."
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            ShareWith()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKCR:\*\shellex\ContextMenuHandlers\Sharing','(Default)')
-                [Registry]::New('HKCR:\Directory\shellex\ContextMenuHandlers\Sharing','(Default)')
-                [Registry]::New('HKCR:\Directory\shellex\CopyHookHandlers\Sharing','(Default)')
-                [Registry]::New('HKCR:\Drive\shellex\ContextMenuHandlers\Sharing','(Default)')
-                [Registry]::New('HKCR:\Directory\shellex\PropertySheetHandlers\Sharing','(Default)')
-                [Registry]::New('HKCR:\Directory\Background\shellex\ContextMenuHandlers\Sharing','(Default)')
-                [Registry]::New('HKCR:\LibraryFolder\background\shellex\ContextMenuHandlers\Sharing','(Default)')
-                [Registry]::New('HKCR:\*\shellex\ContextMenuHandlers\ModernSharing','(Default)')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] 'Share with' context menu item"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] 'Share with' context menu item"
-                        0..7 | % { $This.Stack[$_].Set("String","{f81e9010-6ea4-11ce-a7ff-00aa003ca9f6}") }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] 'Share with' context menu item"
-                        0..7 | % { $This.Stack[$_].Set("String","") }
-                    }
-                }
-            }
-        }
-
-        Class SendTo
-        {
-            [String]        $Name = "SendTo"
-            [String] $DisplayName = "Send To"
-            [UInt32]       $Value = 1
-            [String] $Description = "Adds a context menu item to send an item to..."
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            SendTo()
-            {
-                $This.Stack = @([Registry]::New("HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\SendTo","(Default)"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] 'Send to' context menu item"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] 'Send to' context menu item"
-                        $This.Stack[0].Set("String","{7BA4C740-9E81-11CF-99D3-00AA004AE837}")
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] 'Send to' context menu item"
-                        $This.Stack[0].Name = $Null
-                        $This.Stack[0].Remove()
-                    }
-                }
-            }
-        }
-
-        Class ContextList
-        {
-            [String[]] $Names = "CastToDevice PreviousVersions IncludeInLibrary PinToStart PinToQuickAccess ShareWith SendTo".Split(" ") 
-            [Object]  $Output
-            ContextList()
-            {
-                $This.Output  = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        CastToDevice     { [CastToDevice]::New()     }
-                        PreviousVersions { [PreviousVersions]::New() }
-                        IncludeInLibrary { [IncludeInLibrary]::New() }
-                        PinToStart       { [PinToStart]::New()       }
-                        PinToQuickAccess { [PinToQuickAccess]::New() }
-                        ShareWith        { [ShareWith]::New()        }
-                        SendTo           { [SendTo]::New()           }
-                    }
-                }
-            }
-        }
-        [ContextList]::New().Output
+        DesktopIconInThisPC
+        DocumentsIconInThisPC
+        DownloadsIconInThisPC
+        MusicIconInThisPC
+        PicturesIconInThisPC
+        VideosIconInThisPC
+        ThreeDObjectsIconInThisPC
     }
-    Function TaskBarList
+
+    Class ThisPCIconList
     {
-        Class BatteryUIBar
+        [Object]  $Output
+        ThisPCIconList()
         {
-            [String]        $Name = "BatteryUIBar"
-            [String] $DisplayName = "Battery UI Bar"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the battery UI bar element style"
-            [String[]]   $Options = "Skip", "New*", "Classic"
-            [Object]       $Stack
-            BatteryUIBar()
+            $This.Output  = ForEach ($Name in [System.Enum]::GetNames([ThisPCIconType]))
             {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell','UseWin32BatteryFlyout'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
+                Switch ($Name)
                 {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Battery UI Bar"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Setting [~] Battery UI Bar (New)"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Battery UI Bar (Old)"
-                        $This.Stack[0].Set(1)
-                    }
+                    DesktopIconInThisPC       { [DesktopIconInThisPC]::New()       }
+                    DocumentsIconInThisPC     { [DocumentsIconInThisPC]::New()     }
+                    DownloadsIconInThisPC     { [DownloadsIconInThisPC]::New()     }
+                    MusicIconInThisPC         { [MusicIconInThisPC]::New()         }
+                    PicturesIconInThisPC      { [PicturesIconInThisPC]::New()      }
+                    VideosIconInThisPC        { [VideosIconInThisPC]::New()        }
+                    ThreeDObjectsIconInThisPC { [ThreeDObjectsIconInThisPC]::New() }
                 }
             }
         }
-
-        Class ClockUIBar
-        {
-            [String]        $Name = "ClockUIBar"
-            [String] $DisplayName = "Clock UI Bar"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the clock UI bar element style"
-            [String[]]   $Options = "Skip", "New*", "Classic"
-            [Object]       $Stack
-            ClockUIBar()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell','UseWin32TrayClockExperience'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Clock UI Bar"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Setting [~] Clock UI Bar (New)"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Clock UI Bar (Old)"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class VolumeControlBar
-        {
-            [String]        $Name = "VolumeControlBar"
-            [String] $DisplayName = "Volume Control Bar"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the volume control bar element style"
-            [String[]]   $Options = "Skip", "New (X-Axis)*", "Classic (Y-Axis)"
-            [Object]       $Stack
-            VolumeControlBar()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\MTCUVC','EnableMtcUvc'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Volume Control Bar"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Volume Control Bar (Horizontal)"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Volume Control Bar (Vertical)"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class TaskBarSearchBox
-        {
-            [String]        $Name = "TaskBarSearchBox"
-            [String] $DisplayName = "Taskbar Search Box"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the taskbar search box element"
-            [String[]]   $Options = "Skip", "Show*", "Hide"
-            [Object]       $Stack
-            TaskBarSearchBox()
-            {
-                $This.Stack = @([Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search","SearchboxTaskbarMode"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Taskbar 'Search Box' button"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Taskbar 'Search Box' button"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Taskbar 'Search Box' button"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class TaskViewButton
-        {
-            [String]        $Name = "VolumeControlBar"
-            [String] $DisplayName = "Volume Control Bar"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the volume control bar element style"
-            [String[]]   $Options = "Skip", "New (X-Axis)*", "Classic (Y-Axis)"
-            [Object]       $Stack
-            TaskViewButton()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','ShowTaskViewButton'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Task View button"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Task View button"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Task View button"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class TaskbarIconSize
-        {
-            [String]        $Name = "TaskbarIconSize"
-            [String] $DisplayName = "Taskbar Icon Size"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the taskbar icon size"
-            [String[]]   $Options = "Skip", "Normal*", "Small"
-            [Object]       $Stack
-            TaskbarIconSize()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','TaskbarSmallIcons'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Icon size in taskbar"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Icon size in taskbar"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Icon size in taskbar"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class TaskbarGrouping
-        {
-            [String]        $Name = "TaskbarGrouping"
-            [String] $DisplayName = "Taskbar Grouping"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles the grouping of icons in the taskbar"
-            [String[]]   $Options = "Skip", "Never", "Always*","When needed"
-            [Object]       $Stack
-            TaskbarGrouping()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','TaskbarGlomLevel'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Group Taskbar Items"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Setting [~] Group Taskbar Items (Never)"
-                        $This.Stack[0].Set(2)
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Group Taskbar Items (Always)"
-                        $This.Stack[0].Set(0)
-                    }
-                    3
-                    {
-                        Write-Host "Setting [~] Group Taskbar Items (When needed)"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class TrayIcons
-        {
-            [String]        $Name = "TrayIcons"
-            [String] $DisplayName = "Tray Icons"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles whether the tray icons are shown or hidden"
-            [String[]]   $Options = "Skip", "Auto*", "Always show"
-            [Object]       $Stack
-            TrayIcons()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer','EnableAutoTray')
-                [Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer','EnableAutoTray')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Tray Icons"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Setting [~] Tray Icons (Hiding)"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Tray Icons (Showing)"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class SecondsInClock
-        {
-            [String]        $Name = "SecondsInClock"
-            [String] $DisplayName = "Seconds in clock"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the clock/time shows the seconds"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            SecondsInClock()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','ShowSecondsInSystemClock'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Seconds in Taskbar clock"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Seconds in Taskbar clock"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Seconds in Taskbar clock"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class LastActiveClick
-        {
-            [String]        $Name = "LastActiveClick"
-            [String] $DisplayName = "Last Active Click"
-            [UInt32]       $Value = 2
-            [String] $Description = "Makes taskbar buttons open the last active window"
-            [String[]]   $Options = "Skip", "Enable", "Disable*"
-            [Object]       $Stack
-            LastActiveClick()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','LastActiveClick'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Last active click"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Last active click"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Last active click"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class TaskbarOnMultiDisplay
-        {
-            [String]        $Name = "TaskbarOnMultiDisplay"
-            [String] $DisplayName = "Taskbar on multiple displays"
-            [UInt32]       $Value = 1
-            [String] $Description = "Displays the taskbar on each display if there are multiple screens"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            TaskbarOnMultiDisplay()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced','MMTaskbarEnabled'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Taskbar on Multiple Displays"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Taskbar on Multiple Displays"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Taskbar on Multiple Displays"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class TaskbarButtonDisplay
-        {
-            [String]        $Name = "TaskbarButtonDisplay"
-            [String] $DisplayName = "Multi-display taskbar"
-            [UInt32]       $Value = 2
-            [String] $Description = "Defines where the taskbar button should be if there are multiple screens"
-            [String[]]   $Options = "Skip", "All", "Current Window*","Main + Current Window"
-            [Object]       $Stack
-            TaskbarButtonDisplay()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced','MMTaskbarMode'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Taskbar buttons on multiple displays"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Setting [~] Taskbar buttons on multiple displays (All taskbars)"
-                        $This.Stack[0].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Taskbar buttons on multiple displays (Taskbar where window is open)"
-                        $This.Stack[0].Set(2)
-                    }
-                    3
-                    {
-                        Write-Host "Setting [~] Taskbar buttons on multiple displays (Main taskbar and where window is open)"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-        Class TaskbarList
-        {
-            [String[]] $Names = ("BatteryUIBar ClockUIBar VolumeControlBar TaskbarSearchBox TaskViewButton TaskbarIconSize TaskbarGrouping TrayIcons",
-                                "SecondsInClock LastActiveClick" -join '').Split(" ")
-            [Object]   $Output
-            TaskbarList()
-            {
-                $This.Output  = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        BatteryUIBar     { [BatteryUIBar]::New()     }
-                        ClockUIBar       { [ClockUIBar]::New()       }
-                        VolumeControlBar { [VolumeControlBar]::New() }
-                        TaskbarSearchBox { [TaskbarSearchBox]::New() }
-                        TaskViewButton   { [TaskViewButton]::New()   }
-                        TaskbarIconSize  { [TaskbarIconSize]::New()  }
-                        TaskbarGrouping  { [TaskbarGrouping]::New()  }
-                        TrayIcons        { [TrayIcons]::New()        }
-                    }
-                }
-            }
-        }
-        [TaskbarList]::New().Output
     }
-	Function StartMenuList
+
+    Class ThisPCOnDesktop : ControlTemplate
     {
-        Class StartMenuWebSearch
+        ThisPCOnDesktop()
         {
-            [String]        $Name = "StartMenuWebSearch"
-            [String] $DisplayName = "Start Menu Web Search"
-            [UInt32]       $Value = 1
-            [String] $Description = "Allows the start menu search box to search the internet"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            StartMenuWebSearch()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search','BingSearchEnabled')
-                [Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Search','DisableWebSearch')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Bing Search in Start Menu"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Bing Search in Start Menu"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Bing Search in Start Menu"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(1)
-                    }
-                }
-            }
-        }
+            $This.Name        = "ThisPCOnDesktop"
+            $This.DisplayName = "This PC [Desktop]"
+            $This.Value       = 2
+            $This.Description = "Toggles the 'This PC' icon on the desktop"
+            $This.Options     = "Skip", "Show", "Hide*"
+            
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{20D04FE0-3AEA-1069-A2D8-08002B30309D}'),
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{20D04FE0-3AEA-1069-A2D8-08002B30309D}') | % {
 
-        Class StartSuggestions
-        {
-            [String]        $Name = "StartSuggestions"
-            [String] $DisplayName = "Start Menu Suggestions"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the suggested apps in the start menu"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            StartSuggestions()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","ContentDeliveryAllowed")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","OemPreInstalledAppsEnabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","PreInstalledAppsEnabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","PreInstalledAppsEverEnabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SilentInstalledAppsEnabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SystemPaneSuggestionsEnabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","Start_TrackProgs")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SubscribedContent-314559Enabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SubscribedContent-310093Enabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SubscribedContent-338387Enabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SubscribedContent-338388Enabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SubscribedContent-338389Enabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SubscribedContent-338393Enabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SubscribedContent-338394Enabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SubscribedContent-338396Enabled")
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager","SubscribedContent-338398Enabled")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Start Menu Suggestions"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Start Menu Suggestions"
-                        0..15 | % { $This.Stack[$_].Set(1) }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Start Menu Suggestions"
-                        0..15 | % { $This.Stack[$_].Set(0) }
-                        If ($This.GetWinVersion() -ge 1803) 
-                        {
-                            $Key = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\*windows.data.placeholdertilecollection\Current"
-                            Set-ItemProperty -Path $Key.PSPath -Name Data -Type Binary -Value $Key.Data[0..15]
-                            Stop-Process -Name ShellExperienceHost -Force
-                        }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
+                $This.Registry($_[0],$_[1])
             }
         }
-
-        Class MostUsedAppStartMenu
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
-            [String]        $Name = "MostUsedAppStartMenu"
-            [String] $DisplayName = "Most Used Applications"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the most used applications in the start menu"
-            [String[]]   $Options = "Skip", "Show*", "Hide"
-            [Object]       $Stack
-            MostUsedAppStartMenu()
+            Switch ($Mode)
             {
-                $This.Stack = @([Registry]::New('HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced','Start_TrackProgs'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
+                0
                 {
-                    0
+                    If ($ShowSkipped)
                     {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Most used apps in Start Menu"
-                        }
+                        Write-Host "Skipping [!] This PC Icon on desktop"
                     }
-                    1
-                    {
-                        Write-Host "Enabling [~] Most used apps in Start Menu"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Most used apps in Start Menu"
-                        $This.Stack[0].Set(0)
-                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] This PC Icon on desktop (Shown)"
+                    $This.Output[0].Set(0)
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Setting [~] This PC Icon on desktop (Hidden)"
+                    $This.Output[0].Set(1)
+                    $This.Output[0].Set(1)
                 }
             }
         }
-
-        Class RecentItemsFrequent
-        {
-            [String]        $Name = "RecentItemsFrequent"
-            [String] $DisplayName = "Recent Items Frequent"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the most recent frequently used (apps/items) in the start menu"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            RecentItemsFrequent()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu',"Start_TrackDocs"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Recent items and frequent places"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Recent items and frequent places"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Recent items and frequent places"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class UnpinItems
-        {
-            [String]        $Name = "UnpinItems"
-            [String] $DisplayName = "Unpin Items"
-            [UInt32]       $Value = 0
-            [String] $Description = "Toggles the unpin (apps/items) from the start menu"
-            [String[]]   $Options = "Skip", "Enable"
-            [Object]       $Stack
-            UnpinItems()
-            {
-                $This.Stack = @()
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Unpinning Items"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Unpinning Items"
-                        If ($This.GetWinVersion() -le 1709) 
-                        {
-                            Get-ChildItem -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount" -Include "*.group" -Recurse | % {
-                                $data = (Get-ItemProperty -Path "$($_.PsPath)\Current" -Name "Data").Data -Join ","
-                                $data = $data.Substring(0, $data.IndexOf(",0,202,30") + 9) + ",0,202,80,0,0"
-                                Set-ItemProperty -Path "$($_.PsPath)\Current" -Name Data -Type Binary -Value $data.Split(",")
-                            }
-                        }
-                        Else 
-                        {
-                            $key     = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\*start.tilegrid`$windows.data.curatedtilecollection.tilecollection\Current"
-                            $data    = $key.Data[0..25] + ([byte[]](202,50,0,226,44,1,1,0,0))
-                            Set-ItemProperty -Path $key.PSPath -Name Data -Type Binary -Value $data
-                            Stop-Process -Name ShellExperienceHost -Force
-                        }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
-        Class StartMenuList
-        {
-            [String[]] $Names = ("StartMenuWebSearch StartSuggestions MostUsedAppStartMenu RecentItemsFrequent UnpinItems").Split(" ")
-            [Object]  $Output
-            StartMenuList()
-            {
-                $This.Output = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        StartMenuWebSearch   { [StartMenuWebSearch]::New()   }
-                        StartSuggestions     { [StartSuggestions]::New()     }
-                        MostUsedAppStartMenu { [MostUsedAppStartMenu]::New() }
-                        RecentItemsFrequent  { [RecentItemsFrequent]::New()  }
-                        UnpinItems           { [UnpinItems]::New()           }
-                    }
-                }
-            }
-        }
-        [StartMenuList]::New().Output
     }
-    Function ExplorerList
+
+    Class NetworkOnDesktop : ControlTemplate
     {
-        Class AccessKeyPrompt
+        NetworkOnDesktop()
         {
-            [String]        $Name = "AccessKeyPrompt"
-            [String] $DisplayName = "Access Key Prompt"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the accessibility keys (menus/prompts)"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AccessKeyPrompt()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKCU:\Control Panel\Accessibility\StickyKeys',"Flags")
-                [Registry]::New('HKCU:\Control Panel\Accessibility\ToggleKeys',"Flags")
-                [Registry]::New('HKCU:\Control Panel\Accessibility\Keyboard Response',"Flags")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Accessibility keys prompts"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Accessibility keys prompts"
-                        $This.Stack[0].Set("String",510)
-                        $This.Stack[1].Set("String",62)
-                        $This.Stack[2].Set("String",126)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Accessibility keys prompts"
-                        $This.Stack[0].Set("String",506)
-                        $This.Stack[1].Set("String",58)
-                        $This.Stack[2].Set("String",122)
-                    }
-                }
-            }
-        }
+            $This.Name        = "NetworkOnDesktop"
+            $This.DisplayName = "Network [Desktop]"
+            $This.Value       = 2
+            $This.Description = "Toggles the 'Network' icon on the desktop"
+            $This.Options     = "Skip", "Show", "Hide*"
+            
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}'),
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}') | % {
 
-        Class F1HelpKey
-        {
-            [String]        $Name = "F1HelpKey"
-            [String] $DisplayName = "F1 Help Key"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the F1 help menu/prompt"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            F1HelpKey()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKCU:\Software\Classes\TypeLib\{8cec5860-07a1-11d9-b15e-000d56bfe6ee}\1.0\0")
-                [Registry]::New('HKCU:\Software\Classes\TypeLib\{8cec5860-07a1-11d9-b15e-000d56bfe6ee}\1.0\0\win32',"(Default)")
-                [Registry]::New('HKCU:\Software\Classes\TypeLib\{8cec5860-07a1-11d9-b15e-000d56bfe6ee}\1.0\0\win64',"(Default)")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] F1 Help Key"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] F1 Help Key"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] F1 Help Key"
-                        $This.Stack[1].Set("String","")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                        $This.Stack[2].Set("String","")  
-                        }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
+                $This.Registry($_[0],$_[1])
             }
         }
-
-        Class AutoPlay
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
-            [String]        $Name = "AutoPlay"
-            [String] $DisplayName = "AutoPlay"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles autoplay for inserted discs or drives"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AutoPlay()
+            Switch ($Mode)
             {
-                $This.Stack = @()
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
+                0
                 {
-                    0
+                    If ($ShowSkipped)
                     {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Autoplay"
-                        }
+                        Write-Host "Skipping [!] Network Icon on desktop"
                     }
-                    1
-                    {
-                        Write-Host "Enabling [~] Autoplay"
-                        $This.Stack[0].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Autoplay"
-                        $This.Stack[0].Set(1)
-                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Network Icon on desktop (Shown)"
+                    $This.Output[0].Set(0)
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Setting [~] Network Icon on desktop (Hidden)"
+                    $This.Output[0].Set(1)
+                    $This.Output[0].Set(1)
                 }
             }
         }
-
-        Class AutoRun
-        {
-            [String]        $Name = "AutoRun"
-            [String] $DisplayName = "AutoRun"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles autorun for programs on an inserted discs or drives"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AutoRun()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer','NoDriveTypeAutoRun'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Autorun"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Autorun"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Autorun"
-                        $This.Stack[0].Set(255)
-                    }
-                }
-            }
-        }
-
-        Class PidInTitleBar
-        {
-            [String]        $Name = "PidInTitleBar"
-            [String] $DisplayName = "Process ID"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles the process ID in a window title bar"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            PidInTitleBar()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer','ShowPidInTitle'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Process ID on Title bar"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Process ID on Title bar"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Process ID on Title bar"
-                        $This.Stack[0].Remove()
-                    }
-                }
-            }
-        }
-
-        Class AeroSnap
-        {
-            [String]        $Name = "AeroSnap"
-            [String] $DisplayName = "AeroSnap"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the ability to snap windows to the sides of the screen"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AeroSnap()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\Control Panel\Desktop','WindowArrangementActive'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Aero Snap"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Aero Snap"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Aero Snap"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class AeroShake
-        {
-            [String]        $Name = "AeroShake"
-            [String] $DisplayName = "AeroShake"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the ability to minimize all windows by jiggling the title bar of an active window"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AeroShake()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\Software\Policies\Microsoft\Windows\Explorer','NoWindowMinimizingShortcuts'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Aero Shake"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Aero Shake"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Aero Shake"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class KnownExtensions
-        {
-            [String]        $Name = "KnownExtensions"
-            [String] $DisplayName = "Known File Extensions"
-            [UInt32]       $Value = 2
-            [String] $Description = "Shows known (mime-types/file extensions)"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            KnownExtensions()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','HideFileExt'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Known File Extensions"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Known File Extensions"
-                        $This.Stack[0].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Known File Extensions"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class HiddenFiles
-        {
-            [String]        $Name = "HiddenFiles"
-            [String] $DisplayName = "Show Hidden Files"
-            [UInt32]       $Value = 2
-            [String] $Description = "Shows all hidden files"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            HiddenFiles()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','Hidden'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Hidden Files"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Hidden Files"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Hidden Files"
-                        $This.Stack[0].Set(2)
-                    }
-                }
-            }
-        }
-
-        Class SystemFiles
-        {
-            [String]        $Name = "SystemFiles"
-            [String] $DisplayName = "Show System Files"
-            [UInt32]       $Value = 2
-            [String] $Description = "Shows all system files"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            SystemFiles()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','ShowSuperHidden'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] System Files"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] System Files"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] System Files"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class ExplorerOpenLoc
-        {
-            [String]        $Name = "ExplorerOpenLoc"
-            [String] $DisplayName = "Explorer Open Location"
-            [UInt32]       $Value = 1
-            [String] $Description = "Default path/location opened with a new explorer window"
-            [String[]]   $Options = "Skip", "Quick Access*", "This PC"
-            [Object]       $Stack
-            ExplorerOpenLoc()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','LaunchTo'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Default Explorer view to Quick Access"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Default Explorer view to Quick Access"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Default Explorer view to Quick Access"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class RecentFileQuickAccess
-        {
-            [String]        $Name = "RecentFileQuickAccess"
-            [String] $DisplayName = "Recent File Quick Access"
-            [UInt32]       $Value = 1
-            [String] $Description = "Shows recent files in the Quick Access menu"
-            [String[]]   $Options = "Skip", "Show/Add*", "Hide", "Remove"
-            [Object]       $Stack
-            RecentFileQuickAccess()
-            {
-                $This.Stack = @()
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Recent Files in Quick Access"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Setting [~] Recent Files in Quick Access (Showing)"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set("String","Recent Items Instance Folder")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[2].Set("String","Recent Items Instance Folder")
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Recent Files in Quick Access (Hiding)"
-                        $This.Stack[0].Set(0)
-                    }
-                    3
-                    {
-                        Write-Host "Setting [~] Recent Files in Quick Access (Removing)"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Remove()
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[2].Remove()
-                        }
-                    }
-                }
-            }
-        }
-
-        Class FrequentFoldersQuickAccess
-        {
-            [String]        $Name = "FrequentFoldersQuickAccess"
-            [String] $DisplayName = "Frequent Folders Quick Access"
-            [UInt32]       $Value = 1
-            [String] $Description = "Show frequently used folders in the Quick Access menu"
-            [String[]]   $Options = "Skip", "Show*", "Hide"
-            [Object]       $Stack
-            FrequentFoldersQuickAccess()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer','ShowFrequent'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Frequent folders in Quick Access"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Frequent folders in Quick Access"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Frequent folders in Quick Access"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class WinContentWhileDrag
-        {
-            [String]        $Name = "WinContentWhileDrag"
-            [String] $DisplayName = "Window Content while dragging"
-            [UInt32]       $Value = 1
-            [String] $Description = "Show the content of a window while it is being dragged/moved"
-            [String[]]   $Options = "Skip", "Show*", "Hide"
-            [Object]       $Stack
-            WinContentWhileDrag()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\Control Panel\Desktop','DragFullWindows'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Window content while dragging"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Window content while dragging"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Window content while dragging"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class StoreOpenWith
-        {
-            [String]        $Name = "StoreOpenWith"
-            [String] $DisplayName = "Store Open With..."
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the ability to use the Microsoft Store to open an unknown file/program"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            StoreOpenWith()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer','NoUseStoreOpenWith'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Search Windows Store for Unknown Extensions"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Search Windows Store for Unknown Extensions"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Search Windows Store for Unknown Extensions"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class WinXPowerShell
-        {
-            [String]        $Name = "WinXPowerShell"
-            [String] $DisplayName = "Win X PowerShell"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles whether (Win + X) opens PowerShell or a Command Prompt"
-            [String[]]   $Options = "Skip", "PowerShell*", "Command Prompt"
-            [Object]       $Stack
-            WinXPowerShell()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','DontUsePowerShellOnWinX'))
-                If ($This.GetWinVersion() -lt 1703)
-                {
-                    $This.Value   = 2
-                }
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] (Win+X) PowerShell/Command Prompt"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] (Win+X) PowerShell/Command Prompt"
-                        $This.Stack[0].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] (Win+X) PowerShell/Command Prompt"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
-
-        Class TaskManagerDetails
-        {
-            [String]        $Name = "TaskManagerDetails"
-            [String] $DisplayName = "Task Manager Details"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles whether the task manager details are shown"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            TaskManagerDetails()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\Software\Microsoft\Windows\CurrentVersion\TaskManager',"Preferences"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Task Manager Details"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Task Manager Details"
-                        $Path         = $This.Stack[0].Path
-                        $Task         = Start-Process -WindowStyle Hidden -FilePath taskmgr.exe -PassThru
-                        $Collect      = @( )
-                        $Timeout      = 0
-                        $TM           = $Null
-                        Do
-                        {
-                            Start-Sleep -Milliseconds 100
-                            $TM       = Get-ItemProperty -Path $Path | % Preferences
-                            $Collect += 100
-                            $TimeOut  = $Collect -join "+" | Invoke-Expression
-                        }
-                        Until ($TM -or $Timeout -ge 30000)
-                        Stop-Process $Task
-                        $TM[28]       = 0
-                        $This.Stack[0].Set("Binary",$TM)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Task Manager Details"
-                        $TM           = $This.Stack[0].Get().Preferences
-                        $TM[28]       = 1
-                        $This.Stack[0].Set("Binary",$TM)
-                    }
-                }
-            }
-        }
-
-        Class ReopenAppsOnBoot
-        {
-            [String]        $Name = "ReopenAppsOnBoot"
-            [String] $DisplayName = "Reopen apps at boot"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles applications to reopen at boot time"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            ReopenAppsOnBoot()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System','DisableAutomaticRestartSignOn'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                If ($This.GetWinVersion() -eq 1709)
-                {
-                    Switch ($Mode)
-                    {
-                        0
-                        {
-                            If ($ShowSkipped)
-                            {
-                                Write-Host "Skipping [!] Reopen applications at boot time"
-                            }
-                        }
-                        1
-                        {
-                            Write-Host "Enabling [~] Reopen applications at boot time"
-                            $This.Stack[0].Set(0)
-                        }
-                        2
-                        {
-                            Write-Host "Disabling [~] Reopen applications at boot time"
-                            $This.Stack[0].Set(1)
-                        }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
-
-        Class Timeline
-        {
-            [String]        $Name = "Timeline"
-            [String] $DisplayName = "Timeline"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles Windows Timeline, for recovery of items at a prior point in time"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            Timeline()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Policies\Microsoft\Windows\System','EnableActivityFeed'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                If ($This.GetWinVersion())
-                {
-                    Switch ($Mode)
-                    {
-                        0
-                        {
-                            If ($ShowSkipped)
-                            {
-                                Write-Host "Skipping [!] Windows Timeline"
-                            }
-                        }
-                        1
-                        {
-                            Write-Host "Enabling [~] Windows Timeline"
-                            $This.Stack[0].Set(1)
-                        }
-                        2
-                        {
-                            Write-Host "Disabling [~] Windows Timeline"
-                            $This.Stack[0].Set(0)
-                        }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
-
-        Class LongFilePath
-        {
-            [String]        $Name = "LongFilePath"
-            [String] $DisplayName = "Long File Path"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles whether file paths are longer, or not"
-            [String[]]   $Options = "Skip", "Enable", "Disable*"
-            [Object]       $Stack
-            LongFilePath()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem','LongPathsEnabled')
-                [Registry]::New('HKLM:\SYSTEM\ControlSet001\Control\FileSystem','LongPathsEnabled')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Long file path"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Long file path"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Long file path"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                    }
-                }
-            }
-        }
-
-        Class AppHibernationFile
-        {
-            [String]        $Name = "AppHibernationFile"
-            [String] $DisplayName = "App Hibernation File"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the system swap file use"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AppHibernationFile()
-            {
-                $This.Stack = @([Registry]::New("HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management","SwapfileControl"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] App Hibernation File (swapfile.sys)"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] App Hibernation File (swapfile.sys)"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] App Hibernation File (swapfile.sys)"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-        Class ExplorerList
-        {
-            [String[]] $Names = ("AccessKeyPrompt F1HelpKey AutoPlay AutoRun PidInTitleBar RecentFileQuickAccess FrequentFoldersQuickAccess ",
-                                "WinContentWhileDrag StoreOpenWith LongFilePath ExplorerOpenLoc WinXPowerShell AppHibernationFile Timeline ",
-                                "AeroSnap AeroShake KnownExtensions HiddenFiles SystemFiles TaskManager ReopenApps" -join '').Split(" ")
-            [Object]  $Output
-            ExplorerList()
-            {
-                $This.Output = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        AccessKeyPrompt            { [AccessKeyPrompt]::New()            }
-                        F1HelpKey                  { [F1HelpKey]::New()                  }
-                        AutoPlay                   { [AutoPlay]::New()                   }
-                        AutoRun                    { [AutoRun]::New()                    }
-                        PidInTitleBar              { [PidInTitleBar]::New()              }
-                        RecentFileQuickAccess      { [RecentFileQuickAccess]::New()      }
-                        FrequentFoldersQuickAccess { [FrequentFoldersQuickAccess]::New() }
-                        WinContentWhileDrag        { [WinContentWhileDrag]::New()        }
-                        StoreOpenWith              { [StoreOpenWith]::New()              }
-                        LongFilePath               { [LongFilePath]::New()               }
-                        ExplorerOpenLoc            { [ExplorerOpenLoc]::New()            }
-                        WinXPowerShell             { [WinXPowerShell]::New()             }
-                        AppHibernationFile         { [AppHibernationFile]::New()         }
-                        Timeline                   { [Timeline]::New()                   }
-                        AeroSnap                   { [AeroSnap]::New()                   }
-                        AeroShake                  { [AeroShake]::New()                  }
-                        KnownExtensions            { [KnownExtensions]::New()            }
-                        HiddenFiles                { [HiddenFiles]::New()                }
-                        SystemFiles                { [SystemFiles]::New()                }
-                        TaskManagerDetails         { [TaskManagerDetails]::New()         }
-                        ReopenAppsOnBoot           { [ReopenAppsOnBoot]::New()           }
-                    }
-                }
-            }
-        }
-        [ExplorerList]::New().Output
     }
-    Function ThisPCIconList
+
+    Class RecycleBinOnDesktop : ControlTemplate
     {
-        Class DesktopIconInThisPC
+        RecycleBinOnDesktop()
         {
-            [String]        $Name = "DesktopIconInThisPC"
-            [String] $DisplayName = "Desktop [Explorer]"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the Desktop icon in 'This PC'"
-            [String[]]   $Options = "Skip", "Show/Add*", "Hide", "Remove"
-            [Object]       $Stack
-            DesktopIconInThisPC()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag","ThisPCPolicy")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Desktop folder in This PC"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Desktop folder in This PC (Shown)"
-                        $This.Stack[0].Get()
-                        $This.Stack[1].Get()
-                        $This.Stack[2].Set("String","Show")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[3].Get()
-                            $This.Stack[4].Get()
-                            $This.Stack[5].Set("String","Show")
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Desktop folder in This PC (Hidden)"
-                        $This.Stack[2].Set("String","Hide")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Set("String","Hide")
-                        }
-                    }
-                    3
-                    {
-                        Write-Host "Setting [~] Desktop folder in This PC (None)"
-                        $This.Stack[1].Remove()
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Remove()
-                        }
-                    }
-                }
-            }
-        }
+            $This.Name        = "RecycleBinOnDesktop"
+            $This.DisplayName = "Recycle Bin [Desktop]"
+            $This.Value       = 2
+            $This.Description = "Toggles the 'Recycle Bin' icon on the desktop"
+            $This.Options     = "Skip", "Show", "Hide*"
+            
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{645FF040-5081-101B-9F08-00AA002F954E}'),
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{645FF040-5081-101B-9F08-00AA002F954E}') | % {
 
-        Class DocumentsIconInThisPC
-        {
-            [String]        $Name = "DocumentsIconInThisPC"
-            [String] $DisplayName = "Documents [Explorer]"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the Documents icon in 'This PC'"
-            [String[]]   $Options = "Skip", "Show/Add*", "Hide", "Remove"
-            [Object]       $Stack
-            DocumentsIconInThisPC()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{d3162b92-9365-467a-956b-92703aca08af}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","BaseFolderID")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{d3162b92-9365-467a-956b-92703aca08af}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","BaseFolderID")
-                )
+                $This.Registry($_[0],$_[1])
             }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
             {
-                Switch ($Mode)
+                0
                 {
-                    0
+                    If ($ShowSkipped)
                     {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Documents folder in This PC"
-                        }
+                        Write-Host "Skipping [!] Recycle Bin Icon on desktop"
                     }
-                    1
-                    {
-                        Write-Host "Enabling [~] Documents folder in This PC (Shown)"
-                        $This.Stack[0].Get()
-                        $This.Stack[1].Get()
-                        $This.Stack[2].Get()
-                        $This.Stack[3].Set("String","Show")
-                        $This.Stack[4].Set("String","{FDD39AD0-238F-46AF-ADB4-6C85480369C7}")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Get()
-                            $This.Stack[6].Get()
-                            $This.Stack[7].Get()
-                            $This.Stack[8].Set("String","Show")
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Documents folder in This PC (Hidden)"
-                        $This.Stack[3].Set("String","Hide")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[8].Set("String","Hide")
-                        }
-                    }
-                    3
-                    {
-                        Write-Host "Setting [~] Documents folder in This PC (None)"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Remove()
-                            $This.Stack[6].Remove()
-                        }
-                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Recycle Bin Icon on desktop (Shown)"
+                    $This.Output[0].Set(0)
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Setting [~] Recycle Bin Icon on desktop (Hidden)"
+                    $This.Output[0].Set(1)
+                    $This.Output[0].Set(1)
                 }
             }
         }
-
-        Class DownloadsIconInThisPC
-        {
-            [String]        $Name = "DownloadsIconInThisPC"
-            [String] $DisplayName = "Downloads [Explorer]"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the Downloads icon in 'This PC'"
-            [String[]]   $Options = "Skip", "Show/Add*", "Hide", "Remove"
-            [Object]       $Stack
-            DownloadsIconInThisPC()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","BaseFolderID")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","BaseFolderID")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Downloads folder in This PC"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Downloads folder in This PC (Shown)"
-                        $This.Stack[0].Get()
-                        $This.Stack[1].Get()
-                        $This.Stack[2].Get()
-                        $This.Stack[3].Set("String","Show")
-                        $This.Stack[4].Set("String","{374DE290-123F-4565-9164-39C4925E467B}")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Get()
-                            $This.Stack[6].Get()
-                            $This.Stack[7].Get()
-                            $This.Stack[8].Set("String","Show")
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Downloads folder in This PC (Hidden)"
-                        $This.Stack[3].Set("String","Hide")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[8].Set("String","Hide")
-                        }
-                    }
-                    3
-                    {
-                        Write-Host "Setting [~] Documents folder in This PC (None)"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Remove()
-                            $This.Stack[6].Remove()
-                        }
-                    }
-                }
-            }
-        }
-
-        Class MusicIconInThisPC
-        {
-            [String]        $Name = "MusicIconInThisPC"
-            [String] $DisplayName = "Music [Explorer]"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the Music icon in 'This PC'"
-            [String[]]   $Options = "Skip", "Show/Add*", "Hide", "Remove"
-            [Object]       $Stack
-            MusicIconInThisPC()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3dfdf296-dbec-4fb4-81d1-6a3438bcf4de}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","BaseFolderID")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3dfdf296-dbec-4fb4-81d1-6a3438bcf4de}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","BaseFolderID")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Music folder in This PC"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Music folder in This PC (Shown)"
-                        $This.Stack[0].Get()
-                        $This.Stack[1].Get()
-                        $This.Stack[2].Get()
-                        $This.Stack[3].Set("String","Show")
-                        $This.Stack[4].Set("String","{4BD8D571-6D19-48D3-BE97-422220080E43}")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Get()
-                            $This.Stack[6].Get()
-                            $This.Stack[7].Get()
-                            $This.Stack[8].Set("String","Show")
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Music folder in This PC (Hidden)"
-                        $This.Stack[3].Set("String","Hide")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[8].Set("String","Hide")
-                        }
-                    }
-                    3
-                    {
-                        Write-Host "Setting [~] Music folder in This PC (None)"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Remove()
-                            $This.Stack[6].Remove()
-                        }
-                    }
-                }
-            }
-        }
-
-        Class PicturesIconInThisPC
-        {
-            [String]        $Name = "PicturesIconInThisPC"
-            [String] $DisplayName = "Pictures [Explorer]"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the Pictures icon in 'This PC'"
-            [String[]]   $Options = "Skip", "Show/Add*", "Hide", "Remove"
-            [Object]       $Stack
-            PicturesIconInThisPC()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{24ad3ad4-a569-4530-98e1-ab02f9417aa8}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","BaseFolderID")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{24ad3ad4-a569-4530-98e1-ab02f9417aa8}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","BaseFolderID")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Pictures folder in This PC"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Pictures folder in This PC (Shown)"
-                        $This.Stack[0].Get()
-                        $This.Stack[1].Get()
-                        $This.Stack[2].Get()
-                        $This.Stack[3].Set("String","Show")
-                        $This.Stack[4].Set("String","{33E28130-4E1E-4676-835A-98395C3BC3BB}")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Get()
-                            $This.Stack[6].Get()
-                            $This.Stack[7].Get()
-                            $This.Stack[8].Set("String","Show")
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Pictures folder in This PC (Hidden)"
-                        $This.Stack[3].Set("String","Hide")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[8].Set("String","Hide")
-                        }
-                    }
-                    3
-                    {
-                        Write-Host "Setting [~] Pictures folder in This PC (None)"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Remove()
-                            $This.Stack[6].Remove()
-                        }
-                    }
-                }
-            }
-        }
-
-        Class VideosIconInThisPC
-        {
-            [String]        $Name = "VideosIconInThisPC"
-            [String] $DisplayName = "Videos [Explorer]"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the Videos icon in 'This PC'"
-            [String[]]   $Options = "Skip", "Show/Add*", "Hide", "Remove"
-            [Object]       $Stack
-            VideosIconInThisPC()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A0953C92-50DC-43bf-BE83-3742FED03C9C}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","BaseFolderID")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A0953C92-50DC-43bf-BE83-3742FED03C9C}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","BaseFolderID")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Videos folder in This PC"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Videos folder in This PC (Shown)"
-                        $This.Stack[0].Get()
-                        $This.Stack[1].Get()
-                        $This.Stack[2].Get()
-                        $This.Stack[3].Set("String","Show")
-                        $This.Stack[4].Set("String","{18989B1D-99B5-455B-841C-AB7C74E4DDFC}")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Get()
-                            $This.Stack[6].Get()
-                            $This.Stack[7].Get()
-                            $This.Stack[8].Set("String","Show")
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Videos folder in This PC (Hidden)"
-                        $This.Stack[3].Set("String","Hide")
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[8].Set("String","Hide")
-                        }
-                    }
-                    3
-                    {
-                        Write-Host "Setting [~] Videos folder in This PC (None)"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                        If ([Environment]::Is64BitOperatingSystem)
-                        {
-                            $This.Stack[5].Remove()
-                            $This.Stack[6].Remove()
-                        }
-                    }
-                }
-            }
-        }
-
-        Class ThreeDObjectsIconInThisPC
-        {
-            [String]        $Name = "ThreeDObjectsIconInThisPC"
-            [String] $DisplayName = "3D Objects [Explorer]"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the 3D Objects icon in 'This PC'"
-            [String[]]   $Options = "Skip", "Show/Add*", "Hide", "Remove"
-            [Object]       $Stack
-            ThreeDObjectsIconInThisPC()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag","ThisPCPolicy")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag")
-                [Registry]::New("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag","ThisPCPolicy")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                If ($This.GetWinVersion() -ge 1709)
-                {
-                    Switch ($Mode)
-                    {
-                        0
-                        {
-                            If ($ShowSkipped)
-                            {
-                                Write-Host "Skipping [!] 3D Objects folder in This PC"
-                            }
-                        }
-                        1
-                        {
-                            Write-Host "Enabling [~] 3D Objects folder in This PC (Shown)"
-                            $This.Stack[0].Get()
-                            $This.Stack[1].Get()
-                            $This.Stack[2].Set("String","Show")
-                            If ([Environment]::Is64BitOperatingSystem)
-                            {
-                                $This.Stack[3].Get()
-                                $This.Stack[4].Get()
-                                $This.Stack[5].Set("String","Show")
-                            }
-                        }
-                        2
-                        {
-                            Write-Host "Setting [~] 3D Objects folder in This PC (Hidden)"
-                            $This.Stack[2].Set("String","Hide")
-                            If ([Environment]::Is64BitOperatingSystem)
-                            {
-                                $This.Stack[5].Set("String","Hide")
-                            }
-                        }
-                        3
-                        {
-                            Write-Host "Setting [~] 3D Objects folder in This PC (None)"
-                            $This.Stack[1].Remove()
-                            If ([Environment]::Is64BitOperatingSystem)
-                            {
-                                $This.Stack[5].Remove()
-                            }
-                        }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
-        Class ThisPCList
-        {
-            [String[]] $Names = ("IconInThisPC" | % { "Desktop$_ Documents$_ Downloads$_ Music$_ Pictures$_ Videos$_ ThreeDObjects$_" }).Split(" ")
-            [Object]  $Output
-            ThisPCList()
-            {
-                $This.Output  = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        DesktopIconInThisPC       { [DesktopIconInThisPC]::New()       }
-                        DocumentsIconInThisPC     { [DocumentsIconInThisPC]::New()     }
-                        DownloadsIconInThisPC     { [DownloadsIconInThisPC]::New()     }
-                        MusicIconInThisPC         { [MusicIconInThisPC]::New()         }
-                        PicturesIconInThisPC      { [PicturesIconInThisPC]::New()      }
-                        VideosIconInThisPC        { [VideosIconInThisPC]::New()        }
-                        ThreeDObjectsIconInThisPC { [ThreeDObjectsIconInThisPC]::New() }
-                    }
-                }
-            }
-        }
-        [ThisPCList]::New().Output
     }
-    Function DesktopIconList
+
+    Class UsersFileOnDesktop : ControlTemplate
     {
-        Class ThisPCOnDesktop
+        UsersFileOnDesktop()
         {
-            [String]        $Name = "ThisPCOnDesktop"
-            [String] $DisplayName = "This PC [Desktop]"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles the 'This PC' icon on the desktop"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            ThisPCOnDesktop()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{20D04FE0-3AEA-1069-A2D8-08002B30309D}')
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{20D04FE0-3AEA-1069-A2D8-08002B30309D}')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] This PC Icon on desktop"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Setting [~] This PC Icon on desktop (Shown)"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[0].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] This PC Icon on desktop (Hidden)"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
+            $This.Name        = "UsersFileOnDesktop"
+            $This.DisplayName = "My Documents [Desktop]"
+            $This.Value       = 2
+            $This.Description = "Toggles the 'Users File' icon on the desktop"
+            $This.Options     = "Skip", "Show", "Hide*"
+            
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{59031a47-3f72-44a7-89c5-5595fe6b30ee}'),
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{59031a47-3f72-44a7-89c5-5595fe6b30ee}') | % {
 
-        Class NetworkOnDesktop
-        {
-            [String]        $Name = "NetworkOnDesktop"
-            [String] $DisplayName = "Network [Desktop]"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles the 'Network' icon on the desktop"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            NetworkOnDesktop()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}')
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}')
-                )
+                $This.Registry($_[0],$_[1])
             }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
             {
-                Switch ($Mode)
+                0
                 {
-                    0
+                    If ($ShowSkipped)
                     {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Network Icon on desktop"
-                        }
+                        Write-Host "Skipping [!] Users file Icon on desktop"
                     }
-                    1
-                    {
-                        Write-Host "Setting [~] Network Icon on desktop (Shown)"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[0].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Network Icon on desktop (Hidden)"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[0].Set(1)
-                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Users file Icon on desktop (Shown)"
+                    $This.Output[0].Set(0)
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Setting [~] Users file Icon on desktop (Hidden)"
+                    $This.Output[0].Set(1)
+                    $This.Output[0].Set(1)
                 }
             }
         }
-
-        Class RecycleBinOnDesktop
-        {
-            [String]        $Name = "RecycleBinOnDesktop"
-            [String] $DisplayName = "Recycle Bin [Desktop]"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles the 'Recycle Bin' icon on the desktop"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            RecycleBinOnDesktop()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{645FF040-5081-101B-9F08-00AA002F954E}')
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{645FF040-5081-101B-9F08-00AA002F954E}')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Recycle Bin Icon on desktop"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Setting [~] Recycle Bin Icon on desktop (Shown)"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[0].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Recycle Bin Icon on desktop (Hidden)"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class UsersFileOnDesktop
-        {
-            [String]        $Name = "UsersFileOnDesktop"
-            [String] $DisplayName = "My Documents [Desktop]"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles the 'Users File' icon on the desktop"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            UsersFileOnDesktop()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{59031a47-3f72-44a7-89c5-5595fe6b30ee}')
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{59031a47-3f72-44a7-89c5-5595fe6b30ee}')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Users file Icon on desktop"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Setting [~] Users file Icon on desktop (Shown)"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[0].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Users file Icon on desktop (Hidden)"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-
-        Class ControlPanelOnDesktop
-        {
-            [String]        $Name = "ControlPanelOnDesktop"
-            [String] $DisplayName = "Control Panel [Desktop]"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles the 'Control Panel' icon on the desktop"
-            [String[]]   $Options = "Skip", "Show", "Hide*"
-            [Object]       $Stack
-            ControlPanelOnDesktop()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}')
-                [Registry]::New("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Control Panel Icon on desktop"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Setting [~] Control Panel Icon on desktop (Shown)"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[0].Set(0)
-                    }
-                    2
-                    {
-                        Write-Host "Setting [~] Control Panel Icon on desktop (Hidden)"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-        Class DesktopIconList
-        {
-            [String[]] $Names = ("OnDesktop" | % { "ThisPC$_ Network$_ RecycleBin$_ UsersFile$_ ControlPanel$_" }).Split(" ")
-            [Object]  $Output
-            DesktopIconList()
-            {
-                $This.Output = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        ThisPCOnDesktop       { [ThisPCOnDesktop]::New()   }
-                        NetworkOnDesktop      { [NetworkOnDesktop]::New()      }
-                        RecycleBinOnDesktop   { [RecycleBinOnDesktop]::New()   }
-                        UsersFileOnDesktop    { [UsersFileOnDesktop]::New()    }
-                        ControlPanelOnDesktop { [ControlPanelOnDesktop]::New() }
-                    }
-                }
-            }
-        }
-        [DesktopIconList]::New().Output
     }
-    Function LockScreenList
+
+    Class ControlPanelOnDesktop : ControlTemplate
     {
-        Class LockScreen
+        ControlPanelOnDesktop()
         {
-            [String]        $Name = "LockScreen"
-            [String] $DisplayName = "Lock Screen"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the lock screen"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            LockScreen()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization','NoLockScreen'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Lock Screen"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Lock Screen"
-                        If ($This.GetWinVersion() -ge 1607)
-                        {
-                            Unregister-ScheduledTask -TaskName "Disable LockScreen" -Confirm:$False -Verbose
-                        }
-                        Else
-                        {
-                            $This.Stack[0].Remove()
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Lock Screen"
-                        If ($This.GetWinVersion() -ge 1607)
-                        {
-                            $Service             = New-Object -com Schedule.Service
-                            $Service.Connect()
-                            $Task                = $Service.NewTask(0)
-                            $Task.Settings.DisallowStartIfOnBatteries = $False
-                            $Trigger             = $Task.Triggers.Create(9)
-                            $Trigger             = $Task.Triggers.Create(11)
-                            $trigger.StateChange = 8
-                            $Action              = $Task.Actions.Create(0)
-                            $Action.Path         = 'reg.exe'
-                            $Action.Arguments    = "add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\SessionData /t REG_DWORD /v AllowLockScreen /d 0 /f"
-                            $Service.GetFolder('\').RegisterTaskDefinition('Disable LockScreen',$Task,6,'NT AUTHORITY\SYSTEM',$null,4)
-                        }
-                        Else
-                        {
-                            $This.Stack[0].Set(1)
-                        }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
+            $This.Name        = "ControlPanelOnDesktop"
+            $This.DisplayName = "Control Panel [Desktop]"
+            $This.Value       = 2
+            $This.Description = "Toggles the 'Control Panel' icon on the desktop"
+            $This.Options     = "Skip", "Show", "Hide*"
+            
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}'),
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}') | % {
 
-        Class LockScreenPassword
-        {
-            [String]        $Name = "LockScreenPassword"
-            [String] $DisplayName = "Lock Screen Password"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the lock screen password"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            LockScreenPassword()
-            {
-                $This.Stack = @(
-                [Registry]::New("HKLM:\Software\Policies\Microsoft\Windows\Control Panel\Desktop","ScreenSaverIsSecure")
-                [Registry]::New("HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop","ScreenSaverIsSecure")
-                )
+                $This.Registry($_[0],$_[1])
             }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
             {
-                Switch ($Mode)
+                0
                 {
-                    0
+                    If ($ShowSkipped)
                     {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Lock Screen Password"
-                        }
+                        Write-Host "Skipping [!] Control Panel Icon on desktop"
                     }
-                    1
-                    {
-                        Write-Host "Enabling [~] Lock Screen Password"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Lock Screen Password"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Control Panel Icon on desktop (Shown)"
+                    $This.Output[0].Set(0)
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Setting [~] Control Panel Icon on desktop (Hidden)"
+                    $This.Output[0].Set(1)
+                    $This.Output[0].Set(1)
                 }
             }
         }
-
-        Class PowerMenuLockScreen
-        {
-            [String]        $Name = "PowerMenuLockScreen"
-            [String] $DisplayName = "Power Menu Lock Screen"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the power menu on the lock screen"
-            [String[]]   $Options = "Skip", "Show*", "Hide"
-            [Object]       $Stack
-            PowerMenuLockScreen()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System','shutdownwithoutlogon'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Power Menu on Lock Screen"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Power Menu on Lock Screen"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Power Menu on Lock Screen"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class CameraOnLockScreen
-        {
-            [String]        $Name = "CameraOnLockScreen"
-            [String] $DisplayName = "Camera On Lock Screen"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the camera on the lock screen"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            CameraOnLockScreen()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization','NoLockScreenCamera'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Camera at Lockscreen"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Camera at Lockscreen"
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Camera at Lockscreen"
-                        $This.Stack[0].Set(1)
-                    }
-                }
-            }
-        }
-        Class LockScreenList
-        {
-            [String[]] $Names = 'LockScreen LockScreenPassword PowerMenuLockScreen CameraOnLockScreen'.Split(" ")
-            [Object]  $Output
-            LockScreenList()
-            {
-                $This.Output = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        LockScreen          { [LockScreen]::New()          }
-                        LockScreenPassword  { [LockScreenPassword]::New()  }
-                        PowerMenuLockScreen { [PowerMenuLockScreen]::New() }
-                        CameraOnLockScreen  { [CameraOnLockScreen]::New()  }
-                    }
-                }
-            }
-        }
-        [LockScreenList]::New().Output
     }
-    Function MiscellaneousList
+
+    Enum DesktopIconType
     {
-        Class ScreenSaver
-        {
-            [String]        $Name = "ScreenSaver"
-            [String] $DisplayName = "Screen Saver"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the screen saver"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            ScreenSaver()
-            {
-                $This.Stack = @([Registry]::New("HKCU:\Control Panel\Desktop","ScreenSaveActive"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Screensaver"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Screensaver"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Screensaver"
-                        $This.Stack[0].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class AccountProtectionWarn
-        {
-            [String]        $Name = "AccountProtectionWarn"
-            [String] $DisplayName = "Account Protection Warning"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles system security account protection warning"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            AccountProtectionWarn()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows Security Health\State','AccountProtection_MicrosoftAccount_Disconnected'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                If ($This.GetWinVersion() -ge 1803)
-                {
-                    Switch ($Mode)
-                    {
-                        0
-                        {
-                            If ($ShowSkipped)
-                            {
-                                Write-Host "Skipping [!] Account Protection Warning"
-                            }
-                        }
-                        1
-                        {
-                            Write-Host "Enabling [~] Account Protection Warning"
-                            $This.Stack[0].Remove()
-                        }
-                        2
-                        {
-                            Write-Host "Disabling [~] Account Protection Warning"
-                            $This.Stack[0].Set(1)
-                        }
-                    }
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
-
-        Class ActionCenter
-        {
-            [String]        $Name = "ActionCenter"
-            [String] $DisplayName = "Action Center"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles system action center"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            ActionCenter()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer','DisableNotificationCenter')
-                [Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications','ToastEnabled')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Action Center"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Action Center"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Action Center"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(0)
-                    }
-                }
-            }
-        }
-
-        Class StickyKeyPrompt
-        {
-            [String]        $Name = "StickyKeyPrompt"
-            [String] $DisplayName = "Sticky Key Prompt"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the sticky keys prompt/dialog"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            StickyKeyPrompt()
-            {
-                $This.Stack = @([Registry]::New('HKCU:\Control Panel\Accessibility\StickyKeys','Flags'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Sticky Key Prompt"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Sticky Key Prompt"
-                        $This.Stack[0].Set("String",510)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Sticky Key Prompt"
-                        $This.Stack[0].Set("String",506)
-                    }
-                }
-            }
-        }
-
-        Class NumbLockOnStart
-        {
-            [String]        $Name = "NumbLockOnStart"
-            [String] $DisplayName = "Number lock on start"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles whether the number lock key is engaged upon start"
-            [String[]]   $Options = "Skip", "Enable", "Disable*"
-            [Object]       $Stack
-            NumbLockOnStart()
-            {
-                $This.Stack = @([Registry]::New('HKU:\.DEFAULT\Control Panel\Keyboard','InitialKeyboardIndicators'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Num Lock on startup"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Num Lock on startup"
-                        $This.Stack[0].Set(2147483650)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Num Lock on startup"
-                        $This.Stack[0].Set(2147483648)
-                    }
-                }
-            }
-        }
-
-        Class F8BootMenu
-        {
-            [String]        $Name = "F8BootMenu"
-            [String] $DisplayName = "F8 Boot Menu"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles whether the F8 boot menu can be access upon boot"
-            [String[]]   $Options = "Skip", "Enable", "Disable*"
-            [Object]       $Stack
-            F8BootMenu()
-            {
-                $This.Stack = @()
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] F8 Boot menu options"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] F8 Boot menu options"
-                        bcdedit /set `{current`} bootmenupolicy Legacy
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] F8 Boot menu options"
-                        bcdedit /set `{current`} bootmenupolicy Standard
-                    }
-                }
-            }
-        }
-
-        Class RemoteUACAcctToken
-        {
-            [String]        $Name = "RemoteUACAcctToken"
-            [String] $DisplayName = "Remote UAC Account Token"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles the local account token filter policy to mitigate remote connections"
-            [String[]]   $Options = "Skip", "Enable", "Disable*"
-            [Object]       $Stack
-            RemoteUACAcctToken()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System','LocalAccountTokenFilterPolicy'))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Remote UAC Local Account Token Filter"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Remote UAC Local Account Token Filter"
-                        $This.Stack[0].Set(1)
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Remote UAC Local Account Token Filter"
-                        $This.Stack[0].Remove()
-                    }
-                }
-            }
-        }
-
-        Class HibernatePower
-        {
-            [String]        $Name = "HibernatePower"
-            [String] $DisplayName = "Hibernate Power"
-            [UInt32]       $Value = 0
-            [String] $Description = "Toggles the hibernation power option"
-            [String[]]   $Options = "Skip", "Enable", "Disable"
-            [Object]       $Stack
-            HibernatePower()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKLM:\SYSTEM\CurrentControlSet\Control\Power','HibernateEnabled')
-                [Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings','ShowHibernateOption')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Hibernate Option"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Hibernate Option"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(1)
-                        powercfg /HIBERNATE ON
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Hibernate Option"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                        powercfg /HIBERNATE OFF
-                    }
-                }
-            }
-        }
-
-        Class SleepPower
-        {
-            [String]        $Name = "SleepPower"
-            [String] $DisplayName = "Sleep Power"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the sleep power option"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            SleepPower()
-            {
-                $This.Stack = @([Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings',"ShowSleepOption"))
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Sleep Option"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Sleep Option"
-                        $This.Stack[0].Set(1)
-                        powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION 1
-                        powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION 1
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Sleep Option"
-                        $This.Stack[0].Set(0)
-                        powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION 0
-                        powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION 0
-                    }
-                }
-            }
-        }
-        Class MiscellaneousList
-        {
-            [String[]] $Names = 'ScreenSaver AccountProtectionWarn ActionCenter StickyKeyPrompt NumblockOnStart F8BootMenu RemoteUACAcctToken HibernatePower SleepPower'.Split(" ")
-            [Object]  $Output
-            MiscellaneousList()
-            {
-                $This.Output = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        ScreenSaver           { [ScreenSaver]::New()           }
-                        AccountProtectionWarn { [AccountProtectionWarn]::New() }
-                        ActionCenter          { [ActionCenter]::New()          }
-                        StickyKeyPrompt       { [StickyKeyPrompt]::New()       }
-                        NumblockOnStart       { [NumblockOnStart]::New()       }
-                        F8BootMenu            { [F8BootMenu]::New()            }
-                        RemoteUACAcctToken    { [RemoteUACAcctToken]::New()    }
-                        HibernatePower        { [HibernatePower]::New()        }
-                        SleepPower            { [SleepPower]::New()            }
-                    }
-                }
-            }
-        }
-        [MiscellaneousList]::New().Output
+        ThisPCOnDesktop
+        NetworkOnDesktop
+        RecycleBinOnDesktop
+        UsersFileOnDesktop
+        ControlPanelOnDesktop
     }
-    Function PhotoViewerList
+
+    Class DesktopIconList
     {
-        Class PVFileAssociation
+        [Object]  $Output
+        DesktopIconList()
         {
-            [String]        $Name = "PVFileAssociation"
-            [String] $DisplayName = "Photo Viewer File Association"
-            [UInt32]       $Value = 2
-            [String] $Description = "Associates common image types with Photo Viewer"
-            [String[]]   $Options = "Skip", "Enable", "Disable*"
-            [Object]       $Stack
-            PVFileAssociation()
+            $This.Output = ForEach ($Name in [System.Enum]::GetNames([DesktopIconType]))
             {
-                $This.Stack = @(
-                [Registry]::New("HKCR:\Paint.Picture\shell\open","MUIVerb")
-                [Registry]::New("HKCR:\giffile\shell\open","MUIVerb")
-                [Registry]::New("HKCR:\jpegfile\shell\open","MUIVerb")
-                [Registry]::New("HKCR:\pngfile\shell\open","MUIVerb")
-                [Registry]::New("HKCR:\Paint.Picture\shell\open\command","(Default)")
-                [Registry]::New("HKCR:\giffile\shell\open\command","(Default)")
-                [Registry]::New("HKCR:\jpegfile\shell\open\command","(Default)")
-                [Registry]::New("HKCR:\pngfile\shell\open\command","(Default)")
-                [Registry]::New("HKCR:\giffile\shell\open","CommandId")
-                [Registry]::New("HKCR:\giffile\shell\open\command","DelegateExecute")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
+                Switch ($Name)
                 {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Photo Viewer File Association"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Photo Viewer File Association"
-                        0..3 | % { 
-
-                            $This.Stack[$_  ].Set("ExpandString","@%ProgramFiles%\Windows Photo Viewer\photoviewer.dll,-3043")
-                            $This.Stack[$_+4].Set("ExpandString","%SystemRoot%\System32\rundll32.exe `"%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll`", ImageView_Fullscreen %1")
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Photo Viewer File Association"
-                        $This.Stack[0] | % { $_.Clear(); $_.Remove() }
-                        $This.Stack[1].Remove()
-                        $This.Stack[2] | % { $_.Clear(); $_.Remove() }
-                        $This.Stack[3] | % { $_.Clear(); $_.Remove() }
-                        $This.Stack[5].Set("String","`"$Env:SystemDrive\Program Files\Internet Explorer\iexplore.exe`" %1")
-                        $This.Stack[8].Set("String","IE.File")
-                        $This.Stack[9].Set("String","{17FE9752-0B5A-4665-84CD-569794602F5C}")
-                    }
+                    ThisPCOnDesktop       { [ThisPCOnDesktop]::New()   }
+                    NetworkOnDesktop      { [NetworkOnDesktop]::New()      }
+                    RecycleBinOnDesktop   { [RecycleBinOnDesktop]::New()   }
+                    UsersFileOnDesktop    { [UsersFileOnDesktop]::New()    }
+                    ControlPanelOnDesktop { [ControlPanelOnDesktop]::New() }
                 }
             }
         }
-
-        Class PVOpenWithMenu
-        {
-            [String]        $Name = "PVOpenWithMenu"
-            [String] $DisplayName = "Photo Viewer 'Open with' Menu"
-            [UInt32]       $Value = 2
-            [String] $Description = "Allows image files to be opened with Photo Viewer"
-            [String[]]   $Options = "Skip", "Enable", "Disable*"
-            [Object]       $Stack
-            PVOpenWithMenu()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKCR:\Applications\photoviewer.dll\shell\open')
-                [Registry]::New('HKCR:\Applications\photoviewer.dll\shell\open\command')
-                [Registry]::New('HKCR:\Applications\photoviewer.dll\shell\open\DropTarget')
-                [Registry]::New('HKCR:\Applications\photoviewer.dll\shell\open','MuiVerb')
-                [Registry]::New('HKCR:\Applications\photoviewer.dll\shell\open\command','(Default)')
-                [Registry]::New('HKCR:\Applications\photoviewer.dll\shell\open\DropTarget','Clsid')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] 'Open with Photo Viewer' context menu item"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] 'Open with Photo Viewer' context menu item"
-                        $This.Stack[1].Get()
-                        $This.Stack[2].Get()
-                        $This.Stack[3].Set("String",'@photoviewer.dll,-3043')
-                        $This.Stack[4].Set("ExpandString","%SystemRoot%\System32\rundll32.exe `"%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll`", ImageView_Fullscreen %1")
-                        $This.Stack[5].Set("String",'{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A}')
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] 'Open with Photo Viewer' context menu item"
-                        $This.Stack[0].Remove()
-                    }
-                }
-            }
-        }
-        Class PhotoViewerList
-        {
-            [String[]] $Names = "PVFileAssociation PVOpenWithMenu".Split(" ")
-            [Object]  $Output
-            PhotoViewerList()
-            {
-                $This.Output = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        PVFileAssociation { [PVFileAssociation]::New() }
-                        PVOpenWithMenu    { [PVOpenWithMenu]::New()    }
-                    }
-                }
-            }
-        }
-        [PhotoViewerList]::New().Output
     }
-    Function WindowsAppsList
+
+    Class LockScreen : ControlTemplate
     {
-        Class WindowsOptionalFeature
+        LockScreen()
         {
-            [String] $FeatureName
-            [String] $State
-            WindowsOptionalFeature([Object]$Object)
-            {
-                $This.FeatureName = $Object.FeatureName
-                $This.State       = $Object.State
-            }
+            $This.Name        = "LockScreen"
+            $This.DisplayName = "Lock Screen"
+            $This.Value       = 1
+            $This.Description = "Toggles the lock screen"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization','NoLockScreen')
         }
-
-        Class WindowsOptionalFeatures
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
-            [Object] $Output
-            WindowsOptionalFeatures()
+            Switch ($Mode)
             {
-                $This.Output = Get-WindowsOptionalFeature -Online | % { [WindowsOptionalFeature]$_ }
-            }
-        }
-
-        Class OneDrive
-        {
-            [String]        $Name = "OneDrive"
-            [String] $DisplayName = "OneDrive"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles Microsoft OneDrive, which comes with the operating system"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            OneDrive()
-            {
-                $This.Stack = @(
-                [Registry]::New('HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive','DisableFileSyncNGSC')
-                [Registry]::New('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','ShowSyncProviderNotifications')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
+                0
                 {
-                    0
+                    If ($ShowSkipped)
                     {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] OneDrive"
-                        }
+                        Write-Host "Skipping [!] Lock Screen"
                     }
-                    1
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Lock Screen"
+                    If ($This.GetWinVersion() -ge 1607)
                     {
-                        Write-Host "Enabling [~] OneDrive"
-                        $This.Stack[0].Remove()
-                        $This.Stack[1].Set(1)
+                        Unregister-ScheduledTask -TaskName "Disable LockScreen" -Confirm:$False -Verbose
                     }
-                    2
+                    Else
                     {
-                        Write-Host "Disabling [~] OneDrive"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[1].Set(0)
+                        $This.Output[0].Remove()
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Lock Screen"
+                    If ($This.GetWinVersion() -ge 1607)
+                    {
+                        $Service             = New-Object -com Schedule.Service
+                        $Service.Connect()
+                        $Task                = $Service.NewTask(0)
+                        $Task.Settings.DisallowStartIfOnBatteries = $False
+                        $Trigger             = $Task.Triggers.Create(9)
+                        $Trigger             = $Task.Triggers.Create(11)
+                        $trigger.StateChange = 8
+                        $Action              = $Task.Actions.Create(0)
+                        $Action.Path         = 'reg.exe'
+                        $Action.Arguments    = "add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\SessionData /t REG_DWORD /v AllowLockScreen /d 0 /f"
+                        $Service.GetFolder('\').RegisterTaskDefinition('Disable LockScreen',$Task,6,'NT AUTHORITY\SYSTEM',$null,4)
+                    }
+                    Else
+                    {
+                        $This.Output[0].Set(1)
                     }
                 }
             }
         }
+    }
 
-        Class OneDriveInstall
+    Class LockScreenPassword : ControlTemplate
+    {
+        LockScreenPassword()
         {
-            [String]        $Name = "OneDriveInstall"
-            [String] $DisplayName = "OneDriveInstall"
-            [UInt32]       $Value = 1
-            [String] $Description = "Installs/Uninstalls Microsoft OneDrive, which comes with the operating system"
-            [String[]]   $Options = "Skip", "Installed*", "Uninstall"
-            [Object]       $Stack
-            OneDriveInstall()
-            {
-                $This.Stack = @(
-                @("System32","SysWOW64")[[Environment]::Is64BitOperatingSystem] | % { "$Env:Windir\$_\OneDriveSetup.exe" }
-                "$Env:USERPROFILE\OneDrive"
-                "$Env:LOCALAPPDATA\Microsoft\OneDrive"
-                "$Env:PROGRAMDATA\Microsoft OneDrive"
-                "$Env:WINDIR\OneDriveTemp"
-                "$Env:SYSTEMDRIVE\OneDriveTemp"
-                [Registry]::New("HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}")
-                [Registry]::New("HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}")
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] OneDrive Install"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] OneDrive Install"
-                        If ($This.TestPath()) 
-                        {
-                            Start-Process $This.Stack[0] -NoNewWindow 
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] OneDrive Install"
-                        If ($THis.TestPath())
-                        {
-                            Stop-Process -Name OneDrive -Force
-                            Start-Sleep -Seconds 3
-                            Start-Process $This.Stack[0] "/uninstall" -NoNewWindow -Wait
-                            Start-Sleep -Seconds 3
-                            1..5 | % { Remove-Item $This.Stack[$_] -Force -Recurse }
-                            $This.Stack[6].Remove()
-                            $This.Stack[7].Remove()
-                        }
-                    }
-                }
-            }
-            [Bool] TestPath()
-            {
-                Return Test-Path $This.Stack[0] -PathType Leaf
+            $This.Name        = "LockScreenPassword"
+            $This.DisplayName = "Lock Screen Password"
+            $This.Value       = 1
+            $This.Description = "Toggles the lock screen password"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            ("HKLM:\Software\Policies\Microsoft\Windows\Control Panel\Desktop","ScreenSaverIsSecure"),
+            ("HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop","ScreenSaverIsSecure") | % {
+
+                $This.Registry($_[0],$_[1])
             }
         }
-
-        Class XboxDVR
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
-            [String]        $Name = "XboxDVR"
-            [String] $DisplayName = "Xbox DVR"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles Microsoft Xbox DVR"
-            [String[]]   $Options = "Skip", "Enable*", "Disable"
-            [Object]       $Stack
-            XboxDVR()
+            Switch ($Mode)
             {
-                $This.Stack = @(
-                [Registry]::New('HKCU:\System\GameConfigStore','GameDVR_Enabled')
-                [Registry]::New('HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR','AllowGameDVR')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
+                0
                 {
-                    0
+                    If ($ShowSkipped)
                     {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Xbox DVR"
-                        }
+                        Write-Host "Skipping [!] Lock Screen Password"
                     }
-                    1
-                    {
-                        Write-Host "Enabling [~] Xbox DVR"
-                        $This.Stack[0].Set(1)
-                        $This.Stack[0].Remove()
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Xbox DVR"
-                        $This.Stack[0].Set(0)
-                        $This.Stack[1].Set(0)
-                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Lock Screen Password"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Lock Screen Password"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
                 }
             }
         }
-        
-        Class MediaPlayer
+    }
+
+    Class PowerMenuLockScreen : ControlTemplate
+    {
+        PowerMenuLockScreen()
         {
-            [String]        $Name = "MediaPlayer"
-            [String] $DisplayName = "Windows Media Player"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles Microsoft Windows Media Player, which comes with the operating system"
-            [String[]]   $Options = "Skip", "Installed*", "Uninstall"
-            [Object]       $Stack
-            MediaPlayer([Object]$Features)
+            $This.Name        = "PowerMenuLockScreen"
+            $This.DisplayName = "Power Menu Lock Screen"
+            $This.Value       = 1
+            $This.Description = "Toggles the power menu on the lock screen"
+            $This.Options     = "Skip", "Show*", "Hide"
+
+            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System','shutdownwithoutlogon')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
             {
-                $This.Stack = @($Features | ? FeatureName -match MediaPlayback)
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Power Menu on Lock Screen"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Power Menu on Lock Screen"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Power Menu on Lock Screen"
+                    $This.Output[0].Set(0)
+                }
             }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        }
+    }
+
+    Class CameraOnLockScreen : ControlTemplate
+    {
+        CameraOnLockScreen()
+        {
+            $This.Name        = "CameraOnLockScreen"
+            $This.DisplayName = "Camera On Lock Screen"
+            $This.Value       = 1
+            $This.Description = "Toggles the camera on the lock screen"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization','NoLockScreenCamera')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Camera at Lockscreen"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Camera at Lockscreen"
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Camera at Lockscreen"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
+    }
+
+    Enum LockScreenType
+    {
+        LockScreen
+        LockScreenPassword
+        PowerMenuLockScreen
+        CameraOnLockScreen
+    }
+
+    Class LockScreenList
+    {
+        [Object]  $Output
+        LockScreenList()
+        {
+            $This.Output = ForEach ($Name in [System.Enum]::GetNames([LockScreenType]))
+            {
+                Switch ($Name)
+                {
+                    LockScreen          { [LockScreen]::New()          }
+                    LockScreenPassword  { [LockScreenPassword]::New()  }
+                    PowerMenuLockScreen { [PowerMenuLockScreen]::New() }
+                    CameraOnLockScreen  { [CameraOnLockScreen]::New()  }
+                }
+            }
+        }
+    }
+
+    Class ScreenSaver : ControlTemplate
+    {
+        ScreenSaver()
+        {
+            $This.Name        = "ScreenSaver"
+            $This.DisplayName = "Screen Saver"
+            $This.Value       = 1
+            $This.Description = "Toggles the screen saver"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            $This.Registry("HKCU:\Control Panel\Desktop","ScreenSaveActive")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Screensaver"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Screensaver"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Screensaver"
+                    $This.Output[0].Set(0)
+                }
+            }
+        }
+    }
+
+    Class AccountProtectionWarn : ControlTemplate
+    {
+        AccountProtectionWarn()
+        {
+            $This.Name        = "AccountProtectionWarn"
+            $This.DisplayName = "Account Protection Warning"
+            $This.Value       = 1
+            $This.Description = "Toggles system security account protection warning"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows Security Health\State','AccountProtection_MicrosoftAccount_Disconnected')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            If ($This.GetWinVersion() -ge 1803)
             {
                 Switch ($Mode)
                 {
@@ -6468,204 +5898,883 @@ Function Get-ViperBomb
                     {
                         If ($ShowSkipped)
                         {
-                            Write-Host "Skipping [!] Windows Media Player"
+                            Write-Host "Skipping [!] Account Protection Warning"
                         }
                     }
                     1
                     {
-                        Write-Host "Enabling [~] Windows Media Player"
-                        $This.Stack[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer -NoRestart }
+                        Write-Host "Enabling [~] Account Protection Warning"
+                        $This.Output[0].Remove()
+                    }
+                    2
+                    {
+                        Write-Host "Disabling [~] Account Protection Warning"
+                        $This.Output[0].Set(1)
+                    }
+                }
+            }
+        }
+    }
+
+    Class ActionCenter : ControlTemplate
+    {
+        ActionCenter()
+        {
+            $This.Name        = "ActionCenter"
+            $This.DisplayName = "Action Center"
+            $This.Value       = 1
+            $This.Description = "Toggles system action center"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            ('HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer','DisableNotificationCenter'),
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications','ToastEnabled') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Action Center"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Action Center"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Action Center"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(0)
+                }
+            }
+        }
+    }
+
+    Class StickyKeyPrompt : ControlTemplate
+    {
+        StickyKeyPrompt()
+        {
+            $This.Name        = "StickyKeyPrompt"
+            $This.DisplayName = "Sticky Key Prompt"
+            $This.Value       = 1
+            $This.Description = "Toggles the sticky keys prompt/dialog"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKCU:\Control Panel\Accessibility\StickyKeys','Flags')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Sticky Key Prompt"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Sticky Key Prompt"
+                    $This.Output[0].Set("String",510)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Sticky Key Prompt"
+                    $This.Output[0].Set("String",506)
+                }
+            }
+        }
+    }
+
+    Class NumbLockOnStart : ControlTemplate
+    {
+        NumbLockOnStart()
+        {
+            $This.Name        = "NumbLockOnStart"
+            $This.DisplayName = "Number lock on start"
+            $This.Value       = 2
+            $This.Description = "Toggles whether the number lock key is engaged upon start"
+            $This.Options     = "Skip", "Enable", "Disable*"
+            
+            $This.Registry('HKU:\.DEFAULT\Control Panel\Keyboard','InitialKeyboardIndicators')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Num Lock on startup"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Num Lock on startup"
+                    $This.Output[0].Set(2147483650)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Num Lock on startup"
+                    $This.Output[0].Set(2147483648)
+                }
+            }
+        }
+    }
+
+    Class F8BootMenu : ControlTemplate
+    {
+        F8BootMenu()
+        {
+            $This.Name        = "F8BootMenu"
+            $This.DisplayName = "F8 Boot Menu"
+            $This.Value       = 2
+            $This.Description = "Toggles whether the F8 boot menu can be access upon boot"
+            $This.Options     = "Skip", "Enable", "Disable*"
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] F8 Boot menu options"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] F8 Boot menu options"
+                    bcdedit /set `{current`} bootmenupolicy Legacy
+                }
+                2
+                {
+                    Write-Host "Disabling [~] F8 Boot menu options"
+                    bcdedit /set `{current`} bootmenupolicy Standard
+                }
+            }
+        }
+    }
+
+    Class RemoteUACAcctToken : ControlTemplate
+    {
+        RemoteUACAcctToken()
+        {
+            $This.Name        = "RemoteUACAcctToken"
+            $This.DisplayName = "Remote UAC Account Token"
+            $This.Value       = 2
+            $This.Description = "Toggles the local account token filter policy to mitigate remote connections"
+            $This.Options     = "Skip", "Enable", "Disable*"
+            
+            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System','LocalAccountTokenFilterPolicy')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Remote UAC Local Account Token Filter"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Remote UAC Local Account Token Filter"
+                    $This.Output[0].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Remote UAC Local Account Token Filter"
+                    $This.Output[0].Remove()
+                }
+            }
+        }
+    }
+
+    Class HibernatePower : ControlTemplate
+    {
+        HibernatePower()
+        {
+            $This.Name        = "HibernatePower"
+            $This.DisplayName = "Hibernate Power"
+            $This.Value       = 0
+            $This.Description = "Toggles the hibernation power option"
+            $This.Options     = "Skip", "Enable", "Disable"
+            
+            ('HKLM:\SYSTEM\CurrentControlSet\Control\Power','HibernateEnabled'),
+            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings','ShowHibernateOption') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Hibernate Option"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Hibernate Option"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(1)
+                    powercfg /HIBERNATE ON
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Hibernate Option"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
+                    powercfg /HIBERNATE OFF
+                }
+            }
+        }
+    }
+
+    Class SleepPower : ControlTemplate
+    {
+        SleepPower()
+        {
+            $This.Name        = "SleepPower"
+            $This.DisplayName = "Sleep Power"
+            $This.Value       = 1
+            $This.Description = "Toggles the sleep power option"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FlyoutMenuSettings',"ShowSleepOption")
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Sleep Option"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Sleep Option"
+                    $This.Output[0].Set(1)
+                    powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION 1
+                    powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION 1
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Sleep Option"
+                    $This.Output[0].Set(0)
+                    powercfg /SETACVALUEINDEX SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION 0
+                    powercfg /SETDCVALUEINDEX SCHEME_CURRENT SUB_BUTTONS SBUTTONACTION 0
+                }
+            }
+        }
+    }
+
+    Enum MiscellaneousType
+    {
+        ScreenSaver
+        AccountProtectionWarn
+        ActionCenter
+        StickyKeyPrompt
+        NumblockOnStart
+        F8BootMenu
+        RemoteUACAcctToken
+        HibernatePower
+        SleepPower
+    }
+
+    Class MiscellaneousList
+    {
+        [Object]  $Output
+        MiscellaneousList()
+        {
+            $This.Output = ForEach ($Name in [System.Enum]::GetNames([MiscellaneousType]))
+            {
+                Switch ($Name)
+                {
+                    ScreenSaver           { [ScreenSaver]::New()           }
+                    AccountProtectionWarn { [AccountProtectionWarn]::New() }
+                    ActionCenter          { [ActionCenter]::New()          }
+                    StickyKeyPrompt       { [StickyKeyPrompt]::New()       }
+                    NumblockOnStart       { [NumblockOnStart]::New()       }
+                    F8BootMenu            { [F8BootMenu]::New()            }
+                    RemoteUACAcctToken    { [RemoteUACAcctToken]::New()    }
+                    HibernatePower        { [HibernatePower]::New()        }
+                    SleepPower            { [SleepPower]::New()            }
+                }
+            }
+        }
+    }
+ 
+    Class PVFileAssociation : ControlTemplate
+    {
+        PVFileAssociation()
+        {
+            $This.Name        = "PVFileAssociation"
+            $This.DisplayName = "Photo Viewer File Association"
+            $This.Value       = 2
+            $This.Description = "Associates common image types with Photo Viewer"
+            $This.Options     = "Skip", "Enable", "Disable*"
+
+            ("HKCR:\Paint.Picture\shell\open","MUIVerb"),
+            ("HKCR:\giffile\shell\open","MUIVerb"),
+            ("HKCR:\jpegfile\shell\open","MUIVerb"),
+            ("HKCR:\pngfile\shell\open","MUIVerb"),
+            ("HKCR:\Paint.Picture\shell\open\command","(Default)"),
+            ("HKCR:\giffile\shell\open\command","(Default)"),
+            ("HKCR:\jpegfile\shell\open\command","(Default)"),
+            ("HKCR:\pngfile\shell\open\command","(Default)"),
+            ("HKCR:\giffile\shell\open","CommandId"),
+            ("HKCR:\giffile\shell\open\command","DelegateExecute") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Photo Viewer File Association"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Photo Viewer File Association"
+                    0..3 | % { 
+
+                        $This.Output[$_  ].Set("ExpandString","@%ProgramFiles%\Windows Photo Viewer\photoviewer.dll,-3043")
+                        $This.Output[$_+4].Set("ExpandString","%SystemRoot%\System32\rundll32.exe `"%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll`", ImageView_Fullscreen %1")
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Photo Viewer File Association"
+                    $This.Output[0] | % { $_.Clear(); $_.Remove() }
+                    $This.Output[1].Remove()
+                    $This.Output[2] | % { $_.Clear(); $_.Remove() }
+                    $This.Output[3] | % { $_.Clear(); $_.Remove() }
+                    $This.Output[5].Set("String","`"$Env:SystemDrive\Program Files\Internet Explorer\iexplore.exe`" %1")
+                    $This.Output[8].Set("String","IE.File")
+                    $This.Output[9].Set("String","{17FE9752-0B5A-4665-84CD-569794602F5C}")
+                }
+            }
+        }
+    }
+
+    Class PVOpenWithMenu : ControlTemplate
+    {
+        PVOpenWithMenu()
+        {
+            $This.Name        = "PVOpenWithMenu"
+            $This.DisplayName = "Photo Viewer 'Open with' Menu"
+            $This.Value       = 2
+            $This.Description = "Allows image files to be opened with Photo Viewer"
+            $This.Options     = "Skip", "Enable", "Disable*"
+
+            ('HKCR:\Applications\photoviewer.dll\shell\open'),
+            ('HKCR:\Applications\photoviewer.dll\shell\open\command'),
+            ('HKCR:\Applications\photoviewer.dll\shell\open\DropTarget'),
+            ('HKCR:\Applications\photoviewer.dll\shell\open','MuiVerb'),
+            ('HKCR:\Applications\photoviewer.dll\shell\open\command','(Default)'),
+            ('HKCR:\Applications\photoviewer.dll\shell\open\DropTarget','Clsid') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] 'Open with Photo Viewer' context menu item"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] 'Open with Photo Viewer' context menu item"
+                    $This.Output[1].Get()
+                    $This.Output[2].Get()
+                    $This.Output[3].Set("String",'@photoviewer.dll,-3043')
+                    $This.Output[4].Set("ExpandString","%SystemRoot%\System32\rundll32.exe `"%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll`", ImageView_Fullscreen %1")
+                    $This.Output[5].Set("String",'{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A}')
+                }
+                2
+                {
+                    Write-Host "Disabling [~] 'Open with Photo Viewer' context menu item"
+                    $This.Output[0].Remove()
+                }
+            }
+        }
+    }
+
+    Enum PhotoViewerType
+    {
+        PVFileAssociation
+        PVOpenWithMenu
+    }
+
+    Class PhotoViewerList
+    {
+        [Object]  $Output
+        PhotoViewerList()
+        {
+            $This.Output = ForEach ($Name in [System.Enum]::GetNames([PhotoViewerType]))
+            {
+                Switch ($Name)
+                {
+                    PVFileAssociation { [PVFileAssociation]::New() }
+                    PVOpenWithMenu    { [PVOpenWithMenu]::New()    }
+                }
+            }
+        }
+    }
+
+    Class WindowsOptionalFeature
+    {
+        [UInt32] $Index
+        [String] $FeatureName
+        [String] $State
+        Hidden [String] $Path
+        Hidden [UInt32] $Online
+        Hidden [String] $WinPath
+        Hidden [String] $SysDrivePath
+        Hidden [UInt32] $RestartNeeded
+        Hidden [String] $LogPath
+        Hidden [String] $ScratchDirectory
+        Hidden [String] $LogLevel
+        WindowsOptionalFeature([UInt32]$Index,[Object]$Object)
+        {
+            $This.Index            = $Index
+            $This.FeatureName      = $Object.FeatureName
+            $This.State            = $Object.State
+            $This.Path             = $Object.Path
+            $This.Online           = $Object.Online
+            $This.WinPath          = $Object.WinPath
+            $This.SysDrivePath     = $Object.SysDrivePath
+            $This.RestartNeeded    = $Object.RestartNeeded
+            $This.LogPath          = $Object.LogPath
+            $This.ScratchDirectory = $Object.ScratchDirectory
+            $This.LogLevel         = $Object.LogLevel
+        }
+    }
+
+    Class WindowsOptionalFeatures
+    {
+        [Object] $Output
+        WindowsOptionalFeatures()
+        {
+            $This.Output = @( ) 
+            ForEach ($Item in Get-WindowsOptionalFeature -Online | Sort-Object FeatureName)
+            { 
+                $This.Output += [WindowsOptionalFeature]::New($This.Output.Count,$Item)
+            }
+        }
+    }
+
+    Class OneDrive : ControlTemplate
+    {
+        OneDrive()
+        {
+            $This.Name        = "OneDrive"
+            $This.DisplayName = "OneDrive"
+            $This.Value       = 1
+            $This.Description = "Toggles Microsoft OneDrive, which comes with the operating system"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive','DisableFileSyncNGSC'),
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','ShowSyncProviderNotifications') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] OneDrive"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] OneDrive"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Set(1)
+                }
+                2
+                {
+                    Write-Host "Disabling [~] OneDrive"
+                    $This.Output[0].Set(1)
+                    $This.Output[1].Set(0)
+                }
+            }
+        }
+    }
+
+    Class OneDriveInstall : ControlTemplate
+    {
+        OneDriveInstall()
+        {
+            $This.Name        = "OneDriveInstall"
+            $This.DisplayName = "OneDriveInstall"
+            $This.Value       = 1
+            $This.Description = "Installs/Uninstalls Microsoft OneDrive, which comes with the operating system"
+            $This.Options     = "Skip", "Installed*", "Uninstall"
+            
+            ("HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"),
+            ("HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}") | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] OneDrive Install"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] OneDrive Install"
+                    If ($This.TestPath()) 
+                    {
+                        Start-Process $This.GetOneDrivePath() -NoNewWindow 
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] OneDrive Install"
+                    If ($This.TestPath())
+                    {
+                        Stop-Process -Name OneDrive -Force
+                        Start-Sleep -Seconds 3
+                        Start-Process $This.GetOneDrivePath() "/uninstall" -NoNewWindow -Wait
+                        Start-Sleep -Seconds 3
+
+                        ForEach ($Path in "$Env:USERPROFILE\OneDrive",
+                                          "$Env:LOCALAPPDATA\Microsoft\OneDrive",
+                                          "$Env:PROGRAMDATA\Microsoft OneDrive",
+                                          "$Env:WINDIR\OneDriveTemp",
+                                          "$Env:SYSTEMDRIVE\OneDriveTemp")
+                        {    
+                            Remove-Item $Path -Force -Recurse 
+                        }
+
+                        $This.Output[0].Remove()
+                        $This.Output[1].Remove()
+                    }
+                }
+            }
+        }
+        [String] GetOneDrivePath()
+        {
+            Return @("System32","SysWOW64")[[Environment]::Is64BitOperatingSystem] | % { "$Env:Windir\$_\OneDriveSetup.exe" }
+        }
+        [Bool] TestPath()
+        {
+            Return Test-Path $This.GetOneDrivePath() -PathType Leaf
+        }
+    }
+
+    Class XboxDVR : ControlTemplate
+    {
+        XboxDVR()
+        {
+            $This.Name        = "XboxDVR"
+            $This.DisplayName = "Xbox DVR"
+            $This.Value       = 1
+            $This.Description = "Toggles Microsoft Xbox DVR"
+            $This.Options     = "Skip", "Enable*", "Disable"
+
+            ('HKCU:\System\GameConfigStore','GameDVR_Enabled'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR','AllowGameDVR') | % {
+
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Xbox DVR"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Xbox DVR"
+                    $This.Output[0].Set(1)
+                    $This.Output[0].Remove()
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Xbox DVR"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(0)
+                }
+            }
+        }
+    }
+    
+    Class MediaPlayer : ControlTemplate
+    {
+        MediaPlayer([Object]$Features)
+        {
+            $This.Name        = "MediaPlayer"
+            $This.DisplayName = "Windows Media Player"
+            $This.Value       = 1
+            $This.Description = "Toggles Microsoft Windows Media Player, which comes with the operating system"
+            $This.Options     = "Skip", "Installed*", "Uninstall"
+
+            $This.Output      = @($Features | ? FeatureName -match MediaPlayback)
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Windows Media Player"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Windows Media Player"
+                    $This.Output[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer -NoRestart }
+                    If ($? -eq $True)
+                    {
+                        $This.Output[0].State = "Enabled"
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Windows Media Player"
+                    $This.Output[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer -NoRestart }
+                    If ($? -eq $True)
+                    {
+                        $This.Output[0].State = "Disabled"
+                    }
+                }
+            }
+        }
+    }
+
+    Class WorkFolders : ControlTemplate
+    {
+        WorkFolders([Object]$Features)
+        {
+            $This.Name        = "WorkFolders"
+            $This.DisplayName = "Work Folders"
+            $This.Value       = 1
+            $This.Description = "Toggles the WorkFolders-Client, which comes with the operating system"
+            $This.Options     = "Skip", "Installed*", "Uninstall"
+
+            $This.Output      = @($Features | ? FeatureName -match WorkFolders-Client)
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Work Folders Client"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Work Folders Client"
+                    $This.Output[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName WorkFolders-Client -NoRestart }
+                    If ($? -eq $True)
+                    {
+                        $This.Output[0].State = "Enabled"
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Work Folders Client"
+                    $This.Output[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName WorkFolders-Client -NoRestart }
+                    If ($? -eq $True)
+                    {
+                        $This.Output[0].State = "Disabled"
+                    }
+                }
+            }
+        }
+    }
+
+    Class FaxAndScan : ControlTemplate
+    {
+        FaxAndScan([Object]$Features)
+        {
+            $This.Name        = "FaxAndScan"
+            $This.DisplayName = "Fax and Scan"
+            $This.Value       = 1
+            $This.Description = "Toggles the FaxServicesClientPackage, which comes with the operating system"
+            $This.Options     = "Skip", "Installed*", "Uninstall"
+
+            $This.Output      = @($Features | ? FeatureName -match FaxServicesClientPackage)
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Fax And Scan"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Fax And Scan"
+                    $This.Output[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName FaxServicesClientPackage -NoRestart }
+                    If ($? -eq $True)
+                    {
+                        $This.Output[0].State = "Enabled"
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Fax And Scan"
+                    $This.Output[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName FaxServicesClientPackage -NoRestart }
+                    If ($? -eq $True)
+                    {
+                        $This.Output[0].State = "Disabled"
+                    }
+                }
+            }
+        }
+    }
+
+    Class LinuxSubsystem : ControlTemplate
+    {
+        LinuxSubsystem([Object]$Features)
+        {
+            $This.Name        = "LinuxSubsystem"
+            $This.DisplayName = "Linux Subsystem (WSL)"
+            $This.Value       = 2
+            $This.Description = "Toggles the Microsoft-Windows-Subsystem-Linux, which can be installed on Windows 1607 or later"
+            $This.Options     = "Skip", "Installed", "Uninstall*"
+            $This.Output      = @($Features | ? FeatureName -match Microsoft-Windows-Subsystem-Linux)
+
+            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock','AllowDevelopmentWithoutDevLicense')
+            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock','AllowAllTrustedApps')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            If ($This.GetWinVersion() -gt 1607)
+            {
+                Switch ($Mode)
+                {
+                    0
+                    {
+                        If ($ShowSkipped)
+                        {
+                            Write-Host "Skipping [!] Linux Subsystem"
+                        }
+                    }
+                    1
+                    {
+                        Write-Host "Enabling [~] Linux Subsystem"
+                        $This.Output[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart }
                         If ($? -eq $True)
                         {
-                            $This.Stack[0].State = "Enabled"
+                            $This.Output[0].State = "Enabled"
                         }
                     }
                     2
                     {
-                        Write-Host "Disabling [~] Windows Media Player"
-                        $This.Stack[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer -NoRestart }
+                        Write-Host "Disabling [~] Linux Subsystem"
+                        $This.Output[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart }
                         If ($? -eq $True)
                         {
-                            $This.Stack[0].State = "Disabled"
+                            $This.Output[0].State = "Disabled"
                         }
                     }
                 }
             }
+            Else
+            {
+                Write-Host "Error [!] This version of Windows does not support (WSL/Windows Subsystem for Linux)"
+            }
         }
+    }
 
-        Class WorkFolders
-        {
-            [String]        $Name = "WorkFolders"
-            [String] $DisplayName = "Work Folders"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the WorkFolders-Client, which comes with the operating system"
-            [String[]]   $Options = "Skip", "Installed*", "Uninstall"
-            [Object]       $Stack
-            WorkFolders([Object]$Features)
-            {
-                $This.Stack = @($Features | ? FeatureName -match WorkFolders-Client)
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
-                {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Work Folders Client"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Work Folders Client"
-                        $This.Stack[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName WorkFolders-Client -NoRestart }
-                        If ($? -eq $True)
-                        {
-                            $This.Stack[0].State = "Enabled"
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Work Folders Client"
-                        $This.Stack[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName WorkFolders-Client -NoRestart }
-                        If ($? -eq $True)
-                        {
-                            $This.Stack[0].State = "Disabled"
-                        }
-                    }
-                }
-            }
-        }
+    Enum WindowsAppsType
+    {
+        OneDrive
+        OneDriveInstall
+        XboxDVR
+        MediaPlayer
+        WorkFolders
+        FaxAndScan
+        LinuxSubsystem
+    }
 
-        Class FaxAndScan
+    Class WindowsAppsList
+    {
+        [Object] $Features = [WindowsOptionalFeatures]::New().Output
+        [Object]   $Output
+        WindowsAppsList()
         {
-            [String]        $Name = "FaxAndScan"
-            [String] $DisplayName = "Fax and Scan"
-            [UInt32]       $Value = 1
-            [String] $Description = "Toggles the FaxServicesClientPackage, which comes with the operating system"
-            [String[]]   $Options = "Skip", "Installed*", "Uninstall"
-            [Object]       $Stack
-            FaxAndScan([Object]$Features)
+            $This.Output   = ForEach ($Name in [System.Enum]::GetNames([WindowsAppsType]))
             {
-                $This.Stack = @($Features | ? FeatureName -match FaxServicesClientPackage)
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                Switch ($Mode)
+                Switch ($Name)
                 {
-                    0
-                    {
-                        If ($ShowSkipped)
-                        {
-                            Write-Host "Skipping [!] Fax And Scan"
-                        }
-                    }
-                    1
-                    {
-                        Write-Host "Enabling [~] Fax And Scan"
-                        $This.Stack[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName FaxServicesClientPackage -NoRestart }
-                        If ($? -eq $True)
-                        {
-                            $This.Stack[0].State = "Enabled"
-                        }
-                    }
-                    2
-                    {
-                        Write-Host "Disabling [~] Fax And Scan"
-                        $This.Stack[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName FaxServicesClientPackage -NoRestart }
-                        If ($? -eq $True)
-                        {
-                            $This.Stack[0].State = "Disabled"
-                        }
-                    }
+                    OneDrive        { [OneDrive]::New()                      }
+                    OneDriveInstall { [OneDriveInstall]::New()               }
+                    XboxDVR         { [XboxDVR]::New()                       }
+                    MediaPlayer     { [MediaPlayer]::New($This.Features)     }
+                    WorkFolders     { [WorkFolders]::New($This.Features)     }
+                    FaxAndScan      { [FaxAndScan]::New($This.Features)      }
+                    LinuxSubsystem  { [LinuxSubsystem]::New($This.Features)  }
                 }
             }
         }
-
-        Class LinuxSubsystem
-        {
-            [String]        $Name = "LinuxSubsystem"
-            [String] $DisplayName = "Linux Subsystem (WSL)"
-            [UInt32]       $Value = 2
-            [String] $Description = "Toggles the Microsoft-Windows-Subsystem-Linux, which can be installed on Windows 1607 or later"
-            [String[]]   $Options = "Skip", "Installed", "Uninstall*"
-            [Object]       $Stack
-            LinuxSubsystem([Object]$Features)
-            {
-                $This.Stack = @(
-                $Features | ? FeatureName -match Microsoft-Windows-Subsystem-Linux
-                [Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock','AllowDevelopmentWithoutDevLicense')
-                [Registry]::New('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock','AllowAllTrustedApps')
-                )
-            }
-            SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-            {
-                If ($This.GetWinVersion() -gt 1607)
-                {
-                    Switch ($Mode)
-                    {
-                        0
-                        {
-                            If ($ShowSkipped)
-                            {
-                                Write-Host "Skipping [!] Linux Subsystem"
-                            }
-                        }
-                        1
-                        {
-                            Write-Host "Enabling [~] Linux Subsystem"
-                            $This.Stack[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart }
-                            If ($? -eq $True)
-                            {
-                                $This.Stack[0].State = "Enabled"
-                            }
-                        }
-                        2
-                        {
-                            Write-Host "Disabling [~] Linux Subsystem"
-                            $This.Stack[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart }
-                            If ($? -eq $True)
-                            {
-                                $This.Stack[0].State = "Disabled"
-                            }
-                        }
-                    }
-                }
-                Else
-                {
-                    Write-Host "Error [!] This version of Windows does not support (WSL/Windows Subsystem for Linux)"
-                }
-            }
-            [UInt32] GetWinVersion()
-            {
-                Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-            }
-        }
-
-        Class WindowsAppsList
-        {
-            [Object] $Features = [WindowsOptionalFeatures]::New().Output
-            [String[]]  $Names = 'OneDrive OneDriveInstall XboxDVR MediaPlayer WorkFolders FaxAndScan LinuxSubsystem'.Split(" ")
-            [Object]   $Output
-            WindowsAppsList()
-            {
-                $This.Output   = ForEach ($Name in $This.Names)
-                {
-                    Switch ($Name)
-                    {
-                        OneDrive        { [OneDrive]::New()                      }
-                        OneDriveInstall { [OneDriveInstall]::New()               }
-                        XboxDVR         { [XboxDVR]::New()                       }
-                        MediaPlayer     { [MediaPlayer]::New($This.Features)     }
-                        WorkFolders     { [WorkFolders]::New($This.Features)     }
-                        FaxAndScan      { [FaxAndScan]::New($This.Features)      }
-                        LinuxSubsystem  { [LinuxSubsystem]::New($This.Features)  }
-                    }
-                }
-            }
-        }
-        [WindowsAppsList]::New().Output
     }
 
     Class DisableVariousTasks
@@ -6674,7 +6783,7 @@ Function Get-ViperBomb
         [Object] $Stack
         DisableVariousTasks()
         {
-            $This.Stack = @()
+            $This.Output = @()
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped,[Object[]]$TaskList)
         {
@@ -6700,14 +6809,14 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class ScreenSaverWaitTime
     {
         [UInt32] $Mode
         [Object] $Stack
         ScreenSaverWaitTime()
         {
-            $This.Stack = @([Registry]::New('HKLM:\Software\Policies\Microsoft\Windows','ScreensaveTimeout'))
+            $This.Output = @([Registry]::New('HKLM:\Software\Policies\Microsoft\Windows','ScreensaveTimeout'))
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -6731,104 +6840,101 @@ Function Get-ViperBomb
             }
         }
     }
-    Function AppXList
+
+    Class AppXTemplate
     {
-        Class AppXTemplate
+        [String] $AppXName
+        [String] $CName
+        [String] $Varname
+        AppXTemplate([String]$Line)
         {
-            [String] $AppXName
-            [String] $CName
-            [String] $Varname
-            AppXTemplate([String]$Line)
-            {
-                $Split = $Line.Split("/")
-                $This.AppXName = $Split[0]
-                $This.CName    = $Split[1]
-                $This.Varname  = $Split[2]
-            }
+            $Split = $Line.Split("/")
+            $This.AppXName = $Split[0]
+            $This.CName    = $Split[1]
+            $This.Varname  = $Split[2]
         }
-
-        Class AppXProfile
-        {
-            [String[]] $Profile = (('{0}.3DBuilder/3DBuilder/APP_3DBuilder;{0}.{0}3DViewer/3DViewer/APP_3DViewer;{0}' +
-            '.BingWeather/Bing Weather/APP_BingWeather;{0}.CommsPhone/Phone/APP_CommsPhone;{0}.windowscommunicationsapps' +
-            '/Calendar & Mail/APP_Communications;{0}.GetHelp/{0}s Self-Help/APP_GetHelp;{0}.Getstarted/Get Started Lin' +
-            'k/APP_Getstarted;{0}.Messaging/Messaging/APP_Messaging;{0}.{0}OfficeHub/Get Office Link/APP_{0}OffHub;{0}.M' + 
-            'ovieMoments/Movie Moments/APP_MovieMoments;4DF9E0F8.Netflix/Netflix/APP_Netflix;{0}.Office.OneNote/Office O' + 
-            'neNote/APP_OfficeOneNote;{0}.Office.Sway/Office Sway/APP_OfficeSway;{0}.OneConnect/One Connect/APP_OneConne' + 
-            'ct;{0}.People/People/APP_People;{0}.Windows.Photos/Photos/APP_Photos;{0}.SkypeApp/Skype/APP_SkypeApp1;{0}.{' + 
-            '0}SolitaireCollection/{0} Solitaire/APP_SolitaireCollect;{0}.{0}StickyNotes/Sticky Notes/APP_StickyNotes;{0' + 
-            '}.WindowsSoundRecorder/Voice Recorder/APP_VoiceRecorder;{0}.WindowsAlarms/Alarms and Clock/APP_WindowsAlarm' + 
-            's;{0}.WindowsCalculator/Calculator/APP_WindowsCalculator;{0}.WindowsCamera/Camera/APP_WindowsCamera;{0}.Win' + 
-            'dowsFeedback/Windows Feedback/APP_WindowsFeedbak1;{0}.WindowsFeedbackHub/Windows Feedback Hub/APP_WindowsFe' + 
-            'edbak2;{0}.WindowsMaps/Maps/APP_WindowsMaps;{0}.WindowsPhone/Phone Companion/APP_WindowsPhone;{0}.WindowsSt' + 
-            'ore/{0} Store/APP_WindowsStore;{0}.Wallet/Stores Credit and Debit Card Information/APP_WindowsWallet;{0}.Xb' + 
-            'ox.TCUI/Xbox Title-callable UI/App_XboxTCUI;{0}.XboxApp/Xbox App for Windows PC/App_XboxApp;{0}.XboxGameOve' + 
-            'rlay/Xbox In-Game Overlay/App_XboxGameOverlay;{0}.XboxGamingOverlay/Xbox Gaming Overlay UI/App_XboxGamingOv' + 
-            'erlay;{0}.XboxIdentityProvider/Xbox Identity Provider/App_XboxIdentityProvider;{0}.XboxSpeechtoTextOverlay/' + 
-            'Xbox Speech-to-Text UI/App_XboxSpeechToText;{0}.ZuneMusic/Groove Music/APP_ZuneMusic;{0}.ZuneVideo/Groove V' + 
-            'ideo/APP_ZuneVideo;') -f "Microsoft" -Split ";" )
-            [Object] $Output
-            AppXProfile()
-            {
-                $This.Output = $This.Profile | % { [AppXTemplate]$_ }
-            }
-        }
-
-        Class AppXObject
-        {
-            Hidden [Object] $Object
-            [UInt32]         $Index
-            [String]       $Profile
-            [String]         $CName
-            [String]       $VarName
-            [String]   $DisplayName
-            [String]       $Version
-            [String]  $Architecture
-            [String]    $ResourceID
-            [String]   $PackageName
-            [Int32]          $Slot
-            AppXObject([UInt32]$Index,[Object]$AppXProfile,[Object]$Object)
-            {
-                $This.Index        = $Index
-                $This.Object       = $Object
-                $This.DisplayName  = $Object.DisplayName
-                $This.Version      = $Object.Version
-                $This.Architecture = $Object.Architecture
-                $This.ResourceID   = $Object.ResourceID
-                $This.PackageName  = $Object.PackageName
-
-                If ($Object.DisplayName -in $AppXProfile.AppXName)
-                {
-                    $Item              = $AppXProfile | ? AppXName -match $This.DisplayName
-                    $This.Profile      = "+"
-                    $This.CName        = $Item.CName
-                    $This.VarName      = $Item.VarName
-                    $This.Slot         = 0
-                }
-                Else
-                {
-                        $This.Profile      = "-"
-                        $This.CName        = "-"
-                        $This.VarName      = "-"
-                        $This.Slot         = -1
-                }
-            }
-        }
-
-        Class AppXStack
-        {
-            [Object] $Profile = [AppXProfile]::New().Output
-            [Object] $Output
-            AppXStack()
-            {
-                $This.Output   = @( )
-                Get-AppxProvisionedPackage -Online | % { $This.Output += [AppXObject]::New($This.Output.Count,$This.Profile,$_) }
-            }
-        }
-        [AppXStack]::New().Output
     }
 
-    Class Control
+    Class AppXProfile
+    {
+        [String[]] $Profile = (('{0}.3DBuilder/3DBuilder/APP_3DBuilder;{0}.{0}3DViewer/3DViewer/APP_3DViewer;{0}' +
+        '.BingWeather/Bing Weather/APP_BingWeather;{0}.CommsPhone/Phone/APP_CommsPhone;{0}.windowscommunicationsapps' +
+        '/Calendar & Mail/APP_Communications;{0}.GetHelp/{0}s Self-Help/APP_GetHelp;{0}.Getstarted/Get Started Lin' +
+        'k/APP_Getstarted;{0}.Messaging/Messaging/APP_Messaging;{0}.{0}OfficeHub/Get Office Link/APP_{0}OffHub;{0}.M' + 
+        'ovieMoments/Movie Moments/APP_MovieMoments;4DF9E0F8.Netflix/Netflix/APP_Netflix;{0}.Office.OneNote/Office O' + 
+        'neNote/APP_OfficeOneNote;{0}.Office.Sway/Office Sway/APP_OfficeSway;{0}.OneConnect/One Connect/APP_OneConne' + 
+        'ct;{0}.People/People/APP_People;{0}.Windows.Photos/Photos/APP_Photos;{0}.SkypeApp/Skype/APP_SkypeApp1;{0}.{' + 
+        '0}SolitaireCollection/{0} Solitaire/APP_SolitaireCollect;{0}.{0}StickyNotes/Sticky Notes/APP_StickyNotes;{0' + 
+        '}.WindowsSoundRecorder/Voice Recorder/APP_VoiceRecorder;{0}.WindowsAlarms/Alarms and Clock/APP_WindowsAlarm' + 
+        's;{0}.WindowsCalculator/Calculator/APP_WindowsCalculator;{0}.WindowsCamera/Camera/APP_WindowsCamera;{0}.Win' + 
+        'dowsFeedback/Windows Feedback/APP_WindowsFeedbak1;{0}.WindowsFeedbackHub/Windows Feedback Hub/APP_WindowsFe' + 
+        'edbak2;{0}.WindowsMaps/Maps/APP_WindowsMaps;{0}.WindowsPhone/Phone Companion/APP_WindowsPhone;{0}.WindowsSt' + 
+        'ore/{0} Store/APP_WindowsStore;{0}.Wallet/Stores Credit and Debit Card Information/APP_WindowsWallet;{0}.Xb' + 
+        'ox.TCUI/Xbox Title-callable UI/App_XboxTCUI;{0}.XboxApp/Xbox App for Windows PC/App_XboxApp;{0}.XboxGameOve' + 
+        'rlay/Xbox In-Game Overlay/App_XboxGameOverlay;{0}.XboxGamingOverlay/Xbox Gaming Overlay UI/App_XboxGamingOv' + 
+        'erlay;{0}.XboxIdentityProvider/Xbox Identity Provider/App_XboxIdentityProvider;{0}.XboxSpeechtoTextOverlay/' + 
+        'Xbox Speech-to-Text UI/App_XboxSpeechToText;{0}.ZuneMusic/Groove Music/APP_ZuneMusic;{0}.ZuneVideo/Groove V' + 
+        'ideo/APP_ZuneVideo;') -f "Microsoft" -Split ";" )
+        [Object] $Output
+        AppXProfile()
+        {
+            $This.Output = $This.Profile | % { [AppXTemplate]$_ }
+        }
+    }
+
+    Class AppXObject
+    {
+        Hidden [Object] $Object
+        [UInt32]         $Index
+        [String]       $Profile
+        [String]         $CName
+        [String]       $VarName
+        [String]   $DisplayName
+        [String]       $Version
+        [String]  $Architecture
+        [String]    $ResourceID
+        [String]   $PackageName
+        [Int32]          $Slot
+        AppXObject([UInt32]$Index,[Object]$AppXProfile,[Object]$Object)
+        {
+            $This.Index        = $Index
+            $This.Object       = $Object
+            $This.DisplayName  = $Object.DisplayName
+            $This.Version      = $Object.Version
+            $This.Architecture = $Object.Architecture
+            $This.ResourceID   = $Object.ResourceID
+            $This.PackageName  = $Object.PackageName
+
+            If ($Object.DisplayName -in $AppXProfile.AppXName)
+            {
+                $Item              = $AppXProfile | ? AppXName -match $This.DisplayName
+                $This.Profile      = "+"
+                $This.CName        = $Item.CName
+                $This.VarName      = $Item.VarName
+                $This.Slot         = 0
+            }
+            Else
+            {
+                    $This.Profile      = "-"
+                    $This.CName        = "-"
+                    $This.VarName      = "-"
+                    $This.Slot         = -1
+            }
+        }
+    }
+
+    Class AppXList
+    {
+        [Object] $Profile = [AppXProfile]::New().Output
+        [Object] $Output
+        AppXList()
+        {
+            $This.Output   = @( )
+            Get-AppxProvisionedPackage -Online | % { $This.Output += [AppXObject]::New($This.Output.Count,$This.Profile,$_) }
+        }
+    }
+
+    Class SystemControl
     {
         [Object]                    $Privacy
         [Object]              $WindowsUpdate
@@ -6844,26 +6950,26 @@ Function Get-ViperBomb
         [Object]                $PhotoViewer
         [Object]                $WindowsApps
         [Object]                       $AppX
-        Control()
+        SystemControl()
         {
             $This.Reset()
         }
         Reset()
         {
-            $This.Privacy                    = PrivacyList
-            $This.WindowsUpdate              = WindowsUpdateList
-            $This.Service                    = ServiceList
-            $This.Context                    = ContextList
-            $This.Taskbar                    = TaskBarList
-            $This.StartMenu                  = StartMenuList
-            $This.Explorer                   = ExplorerList
-            $This.ThisPC                     = ThisPCIconList
-            $This.Desktop                    = DesktopIconList
-            $This.LockScreen                 = LockScreenList
-            $This.Miscellaneous              = MiscellaneousList
-            $This.PhotoViewer                = PhotoViewerList
-            $This.WindowsApps                = WindowsAppsList
-            $This.AppX                       = AppXList
+            $This.Privacy                    = [PrivacyList]::New().Output
+            $This.WindowsUpdate              = [WindowsUpdateList]::New().Output
+            $This.Service                    = [ServiceList]::New().Output
+            $This.Context                    = [ContextList]::New().Output
+            $This.Taskbar                    = [TaskBarList]::New().Output
+            $This.StartMenu                  = [StartMenuList]::New().Output
+            $This.Explorer                   = [ExplorerList]::New().Output
+            $This.ThisPC                     = [ThisPCIconList]::New().Output
+            $This.Desktop                    = [DesktopIconList]::New().Output
+            $This.LockScreen                 = [LockScreenList]::New().Output
+            $This.Miscellaneous              = [MiscellaneousList]::New().Output
+            $This.PhotoViewer                = [PhotoViewerList]::New().Output
+            $This.WindowsApps                = [WindowsAppsList]::New().Output
+            $This.AppX                       = [AppXList]::New().Output
         }
         [Void] Toggle([Object]$Item)
         {
@@ -6890,18 +6996,23 @@ Function Get-ViperBomb
         {
             $This.Module      = Get-FEModule -Mode 1
                                 Import-Module AppX
-            $This.Xaml        = [XamlWindow][ViperBombXaml]::Content
+            Write-Host "Gathering [~] System Details"
             $This.System      = Get-SystemDetails
             $This.System.ComputerSystem | % { $_.Memory = "{0} GB" -f [Regex]::Matches($_.Memory,"\d+\.\d{2}").Value }
             $This.Caption     = $This.Module.OS.Caption
             $This.Platform    = $This.Module.OS.Platform
             $This.PSVersion   = $This.Module.OS.PSVersion
             $This.Type        = $This.Module.OS.Type
-            $This.Control     = [Control]::New()
+
+            Write-Host "Gathering [~] System Controls"
+            $This.Control     = [SystemControl]::New()
+
+            Write-Host "Gathering [~] Xaml Interface"
+            $This.Xaml        = [XamlWindow][ViperBombXaml]::Content
         }
         GetServices()
         {
-            $This.Service    = [ServiceControl]::New()
+            $This.Service     = [ServiceControl]::New()
         }
         StageXamlEvent()
         {
@@ -7173,3 +7284,231 @@ Function Get-ViperBomb
     $Ctrl.StageXamlEvent()
     $Ctrl.Xaml.Invoke()
 }
+
+<#
+    Class ViperBombConfig
+    {
+        [String]               $Name = "FightingEntropy/ViperBomb"
+        [String]            $Version = "2021.10.0"
+        [String]            $Release = "Development"
+        [String]           $Provider = "Secure Digits Plus LLC"
+        [String]                $URL = "https://github.com/mcc85sx/FightingEntropy"
+        [String]            $MadBomb = "https://github.com/madbomb122/BlackViperScript"
+        [String]         $BlackViper = "http://www.blackviper.com"
+        [String]               $Site = "https://www.securedigitsplus.com"
+        Hidden [String[]] $Copyright = ("Copyright (c) 2019 Zero Rights Reserved;Services Configuration by Charles 'Black Viper' Sparks;;The MIT Licens" + 
+                                        "e (MIT) + an added Condition;;Copyright (c) 2017-2019 Madbomb122;;[Black Viper Service Script];Permission is her" + 
+                                        "eby granted, free of charge, to any person obtaining a ;copy of this software and associated documentation files" + 
+                                        " (the Software),;to deal in the Software without restriction, including w/o limitation;the rights to: use/copy/m" + 
+                                        "odify/merge/publish/distribute/sublicense,;and/or sell copies of the Software, and to permit persons to whom the" + 
+                                        ";Software is furnished to do so, subject to the following conditions:;;The above copyright notice(s), this permi" + 
+                                        "ssion notice and ANY original;donation link shall be included in all copies or substantial portions of;the Softw" + 
+                                        "are.;;The software is provided 'As Is', without warranty of any kind, express;or implied, including but not limi" + 
+                                        "ted to warranties of merchantibility,;or fitness for a particular purpose and noninfringement. In no event;shall" + 
+                                        " the authors or copyright holders be liable for any claim, damages;or other liability, whether in an action of c" + 
+                                        "ontract, tort or otherwise,;arising from, out of or in connection with the software or the use or;other dealings" + 
+                                        " in the software.;;In other words, these terms of service must be accepted in order to use,;and in no circumstan" + 
+                                        "ce may the author(s) be subjected to any liability;or damage resultant to its use.").Split(";")
+        Hidden [String[]]     $About = ("This utility provides an interface to load and customize;service configuration profiles, such as:;;    Default" + 
+                                        ": Black Viper (Sparks v1.0);    Custom: If in proper format;    Backup: Created via this utility").Split(";")
+        Hidden [String[]]      $Help = (("[Basic];;_-atos___Accepts ToS;_-auto___Automates Process | Aborts upon user input/errors;;[Profile];;_-defaul" + 
+                                        "t__Standard;_-safe___Sparks/Safe;_-tweaked__Sparks/Tweaked;_-lcsc File.csv  Loads Custom Service Configuration, " + 
+                                        "File.csv = Name of your backup/custom file;;[Template];;_-all___ Every windows services will change;_-min___ Jus" + 
+                                        "t the services different from the default to safe/tweaked list;_-sxb___ Skips changes to all XBox Services;;[Upd" + 
+                                        "ate];;_-usc___ Checks for Update to Script file before running;_-use___ Checks for Update to Service file before" + 
+                                        " running;_-sic___ Skips Internet Check, if you can't ping GitHub.com for some reason;;[Logging];;_-log___ Makes " + 
+                                        "a log file named using default name Script.log;_-log File.log_Makes a log file named File.log;_-baf___ Log File " + 
+                                        "of Services Configuration Before and After the script;;[Backup];;_-bscc___Backup Current Service Configuration C" + 
+                                        "sv File;_-bscr___Backup Current Service Configuration, Reg File;_-bscb___Backup Current Service Configuration, C" + 
+                                        "sv and Reg File;;[Display];;_-sas___ Show Already Set Services;_-snis___Show Not Installed Services;_-sss___ Sho" + 
+                                        "wSkipped Services;;[Miscellaneous];;_-dry___ Runs the Script and Shows what services will be changed;_-css___ Ch" + 
+                                        "ange State of Service;_-sds___ Stop Disabled Service;;[Experimental];;_-secp___Skips Edition Check by Setting Ed" + 
+                                        "ition as Pro;_-sech___Skips Edition Check by Setting Edition as Home;_-sbc___ Skips Build Check;;[Development];;" + 
+                                        "_-devl___Makes a log file with various Diagnostic information, Nothing is Changed;_-diag___Shows diagnostic info" + 
+                                        "rmation, Stops -auto;_-diagf__   Forced diagnostic information, Script does nothing else;;[Help];;_-help___Shows" +
+                                        " list of switches, then exits script.. alt -h;_-copy___Shows Copyright/License Information, then exits script" + 
+                                        ";").Replace("_","    ")).Split(";")
+        Hidden [String[]]      $Type = "10H:D+ 10H:D- 10P:D+ 10P:D- DT:S+ DT:S- DT:T+ DT:T- LT:S+ LT:S-".Split(" ")
+        Hidden [String[]]     $Title = (("{0} Home | {1};{0} Pro | {1};{2} | Safe;{2} | Tweaked;Laptop | Safe" -f "Windows 10","Default","Desktop" -Split ";") | % { "$_ Max" , "$_ Min" })
+        Hidden [Hashtable]  $Display = @{ 
+                                Xbox = ("XblAuthManager XblGameSave XboxNetApiSvc XboxGipSvc xbgm" -Split " ")
+                              NetTCP = ("Msmq Pipe Tcp" -Split " " | % { "Net$_`Activator" })
+                                Skip = (@(("AppXSVC BrokerInfrastructure ClipSVC CoreMessagingRegistrar DcomLaunch EntAppSvc gpsvc LSM MpsSvc msiserver NgcCt" + 
+                                           "nrSvc NgcSvc RpcEptMapper RpcSs Schedule SecurityHealthService sppsvc StateRepository SystemEventsBroker tiledata" + 
+                                           "modelsvc WdNisSvc WinDefend") -Split " ";("BcastDVRUserService DevicePickerUserSvc DevicesFlowUserSvc PimIndexMai" +
+                                           "ntenanceSvc PrintWorkflowUserSvc UnistoreSvc UserDataSvc WpnUserService") -Split " " | % { 
+                                               "{0}_{1}" -f $_,(( Get-Service *_* | ? ServiceType -eq 224 )[0].Name -Split '_')[-1] }) | Sort-Object )
+        }
+        [String]         $PassedArgs = $Null
+        [Int32]      $TermsOfService = 0
+        [Int32]        $Bypass_Build = 0
+        [Int32]      $Bypass_Edition = 0
+        [Int32]       $Bypass_Laptop = 0
+        [Int32]      $Display_Active = 1
+        [Int32]    $Display_Inactive = 1
+        [Int32]     $Display_Skipped = 1
+        [Int32]       $Misc_Simulate = 0
+        [Int32]           $Misc_Xbox = 1
+        [Int32]         $Misc_Change = 0
+        [Int32]   $Misc_StopDisabled = 0
+        [Int32]          $Dev_Errors = 0
+        [Int32]             $Dev_Log = 0
+        [Int32]         $Dev_Console = 0
+        [Int32]          $Dev_Report = 0
+        [String]  $Log_Service_Label = "Service.log"
+        [String]   $Log_Script_Label = "Script.log"
+        [String]          $Reg_Label = "Backup.reg"
+        [String]          $Csv_Label = "Backup.csv"
+        [String]      $Service_Label = "Black Viper (Sparks v1.0)"
+        [String]       $Script_Label = "DevOPS (MC/SDP v1.0)"
+        [Object]            $Service
+        ViperBombConfig()
+        {
+
+        }
+    }
+
+    Class Main
+    {
+        [Object]               $Info
+        [Object]             $Config
+        [Object]            $Service
+        Main()
+        {
+            $This.Info    = Get-FERole
+            $This.Config  = [ViperBombConfig]::New()
+            $This.Service = Get-FEService
+        }
+        [Void] SetProfile([UInt32]$Slot)
+        {
+            ForEach ( $Service in $This.Service )
+            {
+                $Service.SetProfile($Slot)
+            }
+        }
+        [Object[]] GetServices()
+        {
+            Return @( $This.Service )
+        }
+        [Object[]] FilterServices([Object]$Field,[Object]$String)
+        {
+            Return @( $This.Service | ? $Field -match $String )
+        }
+    }
+
+    $Xaml                                = [XamlWindow][ViperBombGUI]::Tab
+    $Main                                = [Main]::New()
+    $Xaml.IO.Service_Result.ItemsSource  = $Main.Service
+
+    $Xaml.IO.Profile_0.Add_Click({ $Main.SetProfile(0) })
+    $Xaml.IO.Profile_1.Add_Click({ $Main.SetProfile(1) })
+    $Xaml.IO.Profile_2.Add_Click({ $Main.SetProfile(2) })
+    $Xaml.IO.Profile_3.Add_Click({ $Main.SetProfile(3) })
+    $Xaml.IO.Profile_4.Add_Click({ $Main.SetProfile(4) })
+    $Xaml.IO.Profile_5.Add_Click({ $Main.SetProfile(5) })    
+    $Xaml.IO.Profile_6.Add_Click({ $Main.SetProfile(6) })
+    $Xaml.IO.Profile_7.Add_Click({ $Main.SetProfile(7) })    
+    $Xaml.IO.Profile_8.Add_Click({ $Main.SetProfile(8) })
+    $Xaml.IO.Profile_9.Add_Click({ $Main.SetProfile(9) })
+
+    $Xaml.IO.Title                         = "{0} v{1}" -f $Xaml.IO.Title, $Main.Config.Version
+
+    $Xaml.IO.URL.Add_Click({        Start $Main.Config.URL        })
+    $Xaml.IO.MadBomb.Add_Click({    Start $Main.Config.MadBomb    })
+    $Xaml.IO.BlackViper.Add_Click({ Start $Main.Config.BlackViper })
+    $Xaml.IO.Site.Add_Click({       Start $Main.Config.Site       })
+    $Xaml.IO.About.Add_Click({      [System.Windows.MessageBox]::Show(($Main.Config.About     -join "`n"),    "About")})
+    $Xaml.IO.Copyright.Add_Click({  [System.Windows.MessageBox]::Show(($Main.Config.Copyright -join "`n"),"Copyright")})
+    $Xaml.IO.Help.Add_Click({       [System.Windows.MessageBox]::Show(($Main.Config.Help      -join "`n"),     "Help")})
+
+    $Xaml.IO.Caption.Content                   = $Main.Info.Caption
+    $Xaml.IO.ReleaseID.Content                 = $Main.Info.ReleaseID
+    $Xaml.IO.Version.Content                   = $Main.Info.Version
+    $Xaml.IO.Caption.Content                   = $Main.Info.Caption
+
+    ForEach ( $Item in ("Display_Active Display_Inactive Display_Skipped Misc_Simulate Misc_Xbox Misc_Change Misc_StopDisabled " +
+    "Dev_Errors Dev_Log Dev_Console Dev_Report Bypass_Build").Split(" ") )
+    { 
+        $Xaml.IO.$Item.IsChecked               = $Main.Config.$Item
+    } 
+
+    $Xaml.IO.Bypass_Edition.SelectedItem       = $Main.Config.ByEdition
+    $Xaml.IO.Bypass_Laptop.IsChecked           = $Main.Config.ByLaptop 
+    $Xaml.IO.Log_Service_Switch.IsChecked      = 0
+    $Xaml.IO.Log_Service_Browse.IsEnabled      = 0
+
+    If ($Xaml.IO.Log_Service_Switch.IsChecked -eq 0) 
+    { 
+        $Xaml.IO.Log_Service_Browse.IsEnabled  = 0 
+    }
+    If ($Xaml.IO.Log_Service_Switch.IsChecked -eq 1) 
+    { 
+        $Xaml.IO.Log_Service_Browse.IsEnabled  = 1 
+    }
+        
+    $Xaml.IO.Log_Script_Switch.IsChecked       = 0
+    $Xaml.IO.Log_Script_Browse.IsEnabled       = 0
+        
+    If ($Xaml.IO.Log_Script_Switch.IsChecked -eq 1) 
+    { 
+        $Xaml.IO.Log_Script_Browse.IsEnabled   = 1 
+    }
+    If ($Xaml.IO.Log_Script_Switch.IsChecked -eq 0) 
+    { 
+        $Xaml.IO.Log_Script_Browse.IsEnabled   = 0 
+    }
+            
+    $Xaml.IO.Reg_Switch.IsChecked              = 0
+    $Xaml.IO.Reg_Browse.IsEnabled              = 0
+        
+    If ($Xaml.IO.Reg_Switch.IsChecked    -eq 0) 
+    { 
+        $Xaml.IO.Reg_Browse.IsEnabled          = 0 
+    }
+    If ($Xaml.IO.Reg_Switch.IsChecked    -eq 1) 
+    { 
+        $Xaml.IO.Reg_Browse.IsEnabled          = 1 
+    }
+        
+    $Xaml.IO.Csv_Switch.IsChecked              = 0
+    $Xaml.IO.Csv_Browse.IsEnabled              = 0
+        
+    If ($Xaml.IO.Csv_Switch.IsChecked    -eq 1) 
+    { 
+        $Xaml.IO.Csv_Browse.IsEnabled          = 1 
+    }
+    If ($Xaml.IO.Csv_Switch.IsChecked    -eq 0) 
+    { 
+        $Xaml.IO.Csv_Browse.IsEnabled          = 0 
+    }
+        
+    $Xaml.IO.Log_Service_File.Text             = $Main.Config.Log_Service_Label
+    $Xaml.IO.Log_Script_File.Text              = $Main.Config.Log_Script_Label
+    $Xaml.IO.Reg_File.Text                     = $Main.Config.Reg_Label
+    $Xaml.IO.Csv_File.Text                     = $Main.Config.Csv_Label 
+        
+    $Xaml.IO.Log_Service_Browse.IsEnabled      = 0
+    $Xaml.IO.Log_Script_Browse.IsEnabled       = 0
+    $Xaml.IO.Reg_Browse.IsEnabled              = 0
+    $Xaml.IO.Csv_Browse.IsEnabled              = 0
+
+    $Xaml.IO.Search.Add_TextChanged(
+    {
+        $Xaml.IO.Service_Result.ItemsSource    = $Main.FilterServices($Main.IO.Service_Property.SelectedItem,$Main.IO.Service_Filter.Text)    
+    })
+
+    $Xaml.IO.Start.Add_Click(
+    {        
+        [Console]::WriteLine("Dialog Successful")
+        $Xaml.IO.DialogResult                      = $True
+    })
+    
+    $Xaml.IO.Cancel.Add_Click(
+    {
+        [Console]::WriteLine("User Cancelled")
+        $Xaml.IO.DialogResult                      = $False
+    })
+
+    $Xaml.Invoke()
+}
+#>
