@@ -17,7 +17,7 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-10-10                                                                               //   
-   \\        Modified   : 2022-11-24                                                                               \\   
+   \\        Modified   : 2022-11-25                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
    //        TODO       : AKA "System Control Extension Utility"                                                   //   
@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-24-2022 14:22:03    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-25-2022 15:47:57    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -960,8 +960,8 @@ Function Get-ViperBomb
         '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="*"/>',
         '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Windows Store]"/>',
-        '                            <DataGrid Name="ControlWindowsStore" Grid.Row="1" HeadersVisibility="None">',
+        '                            <Label Grid.Row="0" Content="[Windows Apps]"/>',
+        '                            <DataGrid Name="ControlWindowsApps" Grid.Row="1" HeadersVisibility="None">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
         '                                    <DataGridTemplateColumn Header="Value" Width="150">',
@@ -983,21 +983,26 @@ Function Get-ViperBomb
         '                                <RowDefinition Height="*"/>',
         '                            </Grid.RowDefinitions>',
         '                            <Label Grid.Row="0" Content="[AppX Catalog]"/>',
-        '                            <DataGrid Name="ControlAppX" Grid.Row="1" HeadersVisibility="None">',
+        '                            <DataGrid Name="ControlAppX" Grid.Row="1">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="#"            Binding="{Binding Index}"        Width="40"/>',
-        '                                    <DataGridTextColumn Header="Cfg"          Binding="{Binding Profile}"      Width="40"/>',
-        '                                    <DataGridTextColumn Header="DisplayName"  Binding="{Binding DisplayName}"  Width="250"/>',
-        '                                    <DataGridTextColumn Header="CName"        Binding="{Binding CName}"        Width="200"/>',
-        '                                    <DataGridTextColumn Header="VarName"      Binding="{Binding VarName}"      Width="200"/>',
-        '                                    <DataGridTextColumn Header="Version"      Binding="{Binding Version}"      Width="150"/>',
-        '                                    <DataGridTextColumn Header="Arch"         Binding="{Binding Architecture}" Width="40"/>',
-        '                                    <DataGridTextColumn Header="ResID"        Binding="{Binding ResourceID}"   Width="40"/>',
-        '                                    <DataGridTextColumn Header="PackageName"  Binding="{Binding PackageName}"  Width="400"/>',
-        '                                    <DataGridTemplateColumn Header="Slot" Width="80">',
+        '                                    <DataGridTextColumn Header="#"        Binding="{Binding Index}"        Width="25"/>',
+        '                                    <DataGridTemplateColumn Header="Profile" Width="45">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Path=Selected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                <ComboBox SelectedIndex="{Binding Profile}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                    <ComboBoxItem Content="False"/>',
+        '                                                    <ComboBoxItem Content="True"/>',
+        '                                                </ComboBox>',
+        '                                            </DataTemplate>',
+        '                                        </DataGridTemplateColumn.CellTemplate>',
+        '                                    </DataGridTemplateColumn>',
+        '                                    <DataGridTextColumn Header="DisplayName"  Binding="{Binding DisplayName}" Width="2*"/>',
+        '                                    <DataGridTextColumn Header="PublisherID"  Binding="{Binding PublisherID}" Width="*"/>',
+        '                                    <DataGridTextColumn Header="Version"      Binding="{Binding Version}"     Width="100"/>',
+        '                                    <DataGridTemplateColumn Header="Slot" Width="60">',
+        '                                        <DataGridTemplateColumn.CellTemplate>',
+        '                                            <DataTemplate>',
+        '                                                <ComboBox SelectedIndex="{Binding Slot}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
         '                                                    <ComboBoxItem Content="Skip"/>',
         '                                                    <ComboBoxItem Content="Unhide"/>',
         '                                                    <ComboBoxItem Content="Hide"/>',
@@ -6884,40 +6889,66 @@ Function Get-ViperBomb
 
     Class AppXObject
     {
-        Hidden [Object] $Object
-        [UInt32]         $Index
-        [String]       $Profile
-        [String]         $CName
-        [String]       $VarName
-        [String]   $DisplayName
-        [String]       $Version
-        [String]  $Architecture
-        [String]    $ResourceID
-        [String]   $PackageName
-        [Int32]          $Slot
+        [UInt32]            $Index
+        [UInt32]          $Profile
+        Hidden [String]     $CName
+        Hidden [String]   $VarName
+        [Version]         $Version
+        [String]      $PackageName
+        [String]      $DisplayName
+        [String]      $PublisherID
+        [UInt32]     $MajorVersion
+        [UInt32]     $MinorVersion
+        [UInt32]            $Build
+        [UInt32]         $Revision
+        [UInt32]     $Architecture
+        [String]       $ResourceID
+        [String]  $InstallLocation
+        [Object]          $Regions
+        [String]             $Path
+        [UInt32]           $Online
+        [String]          $WinPath
+        [string]     $SysDrivePath
+        [UInt32]    $RestartNeeded
+        [String]          $LogPath
+        [String] $ScratchDirectory
+        [String]         $LogLevel
+        [Int32]              $Slot
         AppXObject([UInt32]$Index,[Object]$AppXProfile,[Object]$Object)
         {
-            $This.Index        = $Index
-            $This.Object       = $Object
-            $This.DisplayName  = $Object.DisplayName
-            $This.Version      = $Object.Version
-            $This.Architecture = $Object.Architecture
-            $This.ResourceID   = $Object.ResourceID
-            $This.PackageName  = $Object.PackageName
+            $This.Index            = $Index
+            $This.Version          = $Object.Version
+            $This.PackageName      = $Object.PackageName
+            $This.DisplayName      = $Object.DisplayName
+            $This.PublisherId      = $Object.PublisherId
+            $This.MajorVersion     = $Object.MajorVersion
+            $This.MinorVersion     = $Object.MinorVersion
+            $This.Build            = $Object.Build
+            $This.Revision         = $Object.Revision
+            $This.Architecture     = $Object.Architecture
+            $This.ResourceId       = $Object.ResourceId
+            $This.InstallLocation  = $Object.InstallLocation
+            $This.Regions          = $Object.Regions
+            $This.Path             = $Object.Path
+            $This.Online           = $Object.Online
+            $This.WinPath          = $Object.WinPath
+            $This.SysDrivePath     = $Object.SysDrivePath
+            $This.RestartNeeded    = $Object.RestartNeeded
+            $This.LogPath          = $Object.LogPath
+            $This.ScratchDirectory = $Object.ScratchDirectory
+            $This.LogLevel         = $Object.LogLevel
 
             If ($Object.DisplayName -in $AppXProfile.AppXName)
             {
                 $Item              = $AppXProfile | ? AppXName -match $This.DisplayName
-                $This.Profile      = "+"
+                $This.Profile      = 1
                 $This.CName        = $Item.CName
                 $This.VarName      = $Item.VarName
                 $This.Slot         = 0
             }
             Else
             {
-                    $This.Profile      = "-"
-                    $This.CName        = "-"
-                    $This.VarName      = "-"
+                    $This.Profile      = 0
                     $This.Slot         = -1
             }
         }
@@ -6933,6 +6964,7 @@ Function Get-ViperBomb
             Get-AppxProvisionedPackage -Online | % { $This.Output += [AppXObject]::New($This.Output.Count,$This.Profile,$_) }
         }
     }
+
 
     Class SystemControl
     {
@@ -6981,8 +7013,270 @@ Function Get-ViperBomb
         }
     }
 
+    Enum XboxType
+    {
+        XblAuthManager
+        XblGameSave
+        XboxNetApiSvc
+        XboxGipSvc
+        xbgm
+    }
+
+    Enum NetTCPType
+    {
+        NetMsmqActivator
+        NetPipeActivator
+        NetTcpActivator
+    }
+
+    Enum PidType
+    {
+        BcastDVRUserService
+        DevicePickerUserSvc
+        DevicesFlowUserSvc
+        PimIndexMaintenanceSvc
+        PrintWorkflowUserSvc
+        UnistoreSvc
+        UserDataSvc
+        WpnUserService
+    }
+
+    Enum SkipType
+    {
+        AppXSVC
+        BrokerInfrastructure
+        ClipSVC
+        CoreMessagingRegistrar
+        DcomLaunch
+        EntAppSvc
+        gpsvc
+        LSM
+        MpsSvc
+        msiserver
+        NgcCtnrSvc
+        NgcSvc
+        RpcEptMapper
+        RpcSs
+        Schedule
+        SecurityHealthService
+        sppsvc
+        StateRepository
+        SystemEventsBroker
+        tiledatamodelsvc
+        WdNisSvc
+        WinDefend
+    }
+
+    Class SkipItem
+    {
+        [String] $Type
+        [String] $Name
+        SkipItem([String]$Type,[String]$Name)
+        {
+            $This.Type     = $Type
+            $This.Name     = $Name
+        }
+    }
+
+    Class SkipList
+    {
+        [Object] $Output
+        SkipList()
+        {
+            $This.Output = @( )
+            $ProcessID   = (Get-Service | ? ServiceType -eq 224)[-1].Name.Split("_")[1]
+
+            ForEach ($Item in [System.Enum]::GetNames([XboxType]))
+            {
+                $This.SkipItem("Xbox",$Item) 
+            }
+
+            ForEach ($Item in [System.Enum]::GetNames([NetTCPType]))
+            { 
+                $This.SkipItem("NetTCP",$Item) 
+            }
+
+            ForEach ($Item in [System.Enum]::GetNames([PidType]))
+            {
+                $This.SkipItem( "Skip","$Item`_$ProcessID")
+            }
+
+            ForEach ($Item in [System.Enum]::GetNames([SkipType]))
+            { 
+                $This.SkipItem( "Skip",$Item)
+            }
+        }
+        SkipItem([String]$Type,[String]$Name)
+        {
+            $This.Output += [SkipItem]::New($Type,$Name)
+        }
+    }
+
+    Class ViperBombConfig
+    {
+        [UInt32]        $BypassBuild = 0
+        [UInt32]      $BypassEdition = 0
+        [UInt32]       $BypassLaptop = 0
+        [UInt32]      $DisplayActive = 1
+        [UInt32]    $DisplayInactive = 1
+        [UInt32]     $DisplaySkipped = 1
+        [UInt32]       $MiscSimulate = 0
+        [UInt32]           $MiscXbox = 1
+        [UInt32]         $MiscChange = 0
+        [UInt32]   $MiscStopDisabled = 0
+        [UInt32]          $DevErrors = 0
+        [UInt32]             $DevLog = 0
+        [UInt32]         $DevConsole = 0
+        [UInt32]          $DevReport = 0
+        [String]    $LogServiceLabel = "Service.log"
+        [String]     $LogScriptLabel = "Script.log"
+        [String]           $RegLabel = "Backup.reg"
+        [String]           $CsvLabel = "Backup.csv"
+        [Object]             $Filter = [SkipList]::New().Output
+    }
+
+    # // _______________________________________________________
+    # // | Used to track console logging, similar to Stopwatch |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ViperBombTime
+    {
+        [String]   $Name
+        [DateTime] $Time
+        [UInt32]    $Set
+        ViperBombTime([String]$Name)
+        {
+            $This.Name = $Name
+            $This.Time = [DateTime]::MinValue
+            $This.Set  = 0
+        }
+        Toggle()
+        {
+            $This.Time = [DateTime]::Now
+            $This.Set  = 1
+        }
+        [String] ToString()
+        {
+            Return $This.Time.ToString()
+        }
+    }
+
+    # // ________________________________________
+    # // | Single object that displays a status |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ViperBombStatus
+    {
+        [UInt32]   $Index
+        [String] $Elapsed
+        [Int32]    $State
+        [String]  $Status
+        ViperBombStatus([UInt32]$Index,[String]$Time,[Int32]$State,[String]$Status)
+        {
+            $This.Index   = $Index
+            $This.Elapsed = $Time
+            $This.State   = $State
+            $This.Status  = $Status
+        }
+        [String] ToString()
+        {
+            Return "[{0}] (State: {1}/Status: {2})" -f $This.Elapsed, $This.State, $This.Status
+        }
+    }
+
+    # // _________________________________________________________________________
+    # // | A collection of status objects, uses itself to create/update messages |
+    # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+
+    Class ViperBombStatusBank
+    {
+        [Object]    $Start
+        [Object]      $End
+        [String]     $Span
+        [Object]   $Status
+        [Object]   $Output
+        ViperBombStatusBank()
+        {
+            $This.Reset()
+        }
+        [String] Elapsed()
+        {
+            Return @(Switch ($This.End.Set)
+            {
+                0 { [Timespan]([DateTime]::Now-$This.Start.Time) }
+                1 { [Timespan]($This.End.Time-$This.Start.Time) }
+            })         
+        }
+        [Void] SetStatus()
+        {
+            $This.Status = [ViperBombStatus]::New($This.Output.Count,$This.Elapsed(),$This.Status.State,$This.Status.Status)
+        }
+        [Void] SetStatus([Int32]$State,[String]$Status)
+        {
+            $This.Status = [ViperBombStatus]::New($This.Output.Count,$This.Elapsed(),$State,$Status)
+        }
+        Initialize()
+        {
+            If ($This.Start.Set -eq 1)
+            {
+                $This.Update(-1,"Start [!] Error: Already initialized, try a different operation or reset.")
+            }
+            $This.Start.Toggle()
+            $This.Update(0,"Running [~] ($($This.Start))")
+        }
+        Finalize()
+        {
+            If ($This.End.Set -eq 1)
+            {
+                $This.Update(-1,"End [!] Error: Already initialized, try a different operation or reset.")
+            }
+            $This.End.Toggle()
+            $This.Span = $This.Elapsed()
+            $This.Update(100,"Complete [+] ($($This.End)), Total: ($($This.Span))")
+        }
+        Reset()
+        {
+            $This.Start  = [ViperBombTime]::New("Start")
+            $This.End    = [ViperBombTime]::New("End")
+            $This.Span   = $Null
+            $This.Status = $Null
+            $This.Output = [System.Collections.ObjectModel.ObservableCollection[Object]]::New()
+        }
+        Write()
+        {
+            $This.Output.Add($This.Status)
+        }
+        [Object] Update([Int32]$State,[String]$Status)
+        {
+            $This.SetStatus($State,$Status)
+            $This.Write()
+            Return $This.Last()
+        }
+        [Object] Current()
+        {
+            $This.Update($This.Status.State,$This.Status.Status)
+            Return $This.Last()
+        }
+        [Object] Last()
+        {
+            Return $This.Output[$This.Output.Count-1]
+        }
+        [String] ToString()
+        {
+            If (!$This.Span)
+            {
+                Return $This.Elapsed()
+            }
+            Else
+            {
+                Return $This.Span
+            }
+        }
+    }
+
     Class ViperBombController
     {
+        [Object] $Console
         [Object] $Module
         [Object] $System
         [Object] $Xaml
@@ -6994,25 +7288,62 @@ Function Get-ViperBomb
         [Object] $Control
         ViperBombController()
         {
+            $This.Console     = $This.StatusBank()
+            $This.Update(0,"Loading [~] $($This.Label())")
+
+            Import-Module FightingEntropy
             $This.Module      = Get-FEModule -Mode 1
-                                Import-Module AppX
-            Write-Host "Gathering [~] System Details"
-            $This.System      = Get-SystemDetails
+
+            $This.Update(0,"Loading [~] AppX")
+            Import-Module AppX
+            
+            $This.System      = $This.GetSystemDetails()
+
             $This.System.ComputerSystem | % { $_.Memory = "{0} GB" -f [Regex]::Matches($_.Memory,"\d+\.\d{2}").Value }
             $This.Caption     = $This.Module.OS.Caption
             $This.Platform    = $This.Module.OS.Platform
             $This.PSVersion   = $This.Module.OS.PSVersion
             $This.Type        = $This.Module.OS.Type
 
-            Write-Host "Gathering [~] System Controls"
-            $This.Control     = [SystemControl]::New()
+            $This.Control     = $This.GetSystemControl()
 
-            Write-Host "Gathering [~] Xaml Interface"
-            $This.Xaml        = [XamlWindow][ViperBombXaml]::Content
+            $This.Xaml        = $This.GetViperBombXaml()
+
         }
-        GetServices()
+        [Object] GetViperBombXaml()
         {
-            $This.Service     = [ServiceControl]::New()
+            $This.Update(0,"Gathering [~] Xaml Interface")
+            Return [XamlWindow][ViperBombXaml]::Content
+        }
+        [Object] GetSystemControl()
+        {
+            $This.Update(0,"Gathering [~] System Control")
+            Return [SystemControl]::New()
+        }
+        [Object] GetServices()
+        {
+            $This.Update(0,"Gathering [~] System Services")
+            Return [ServiceControl]::New()
+        }
+        [Object] GetSystemDetails()
+        {
+            $This.Update(0,"Gathering [~] System Details")
+            Return Get-SystemDetails
+        }
+        [String] Label()
+        {
+            Return "[FightingEntropy($([Char]960))][System Control Extension Utility]"
+        }
+        [Object] StatusBank()
+        {
+            $Item = [ViperBombStatusBank]::New()
+            $Item.Initialize()
+            Return $Item
+        }
+        Update([UInt32]$Mode,[String]$State)
+        {
+            $This.Console.Update($Mode,$State)
+            Write-Host $This.Console.Last()
         }
         StageXamlEvent()
         {
@@ -7135,7 +7466,7 @@ Function Get-ViperBomb
             ######################## Second Tab #############################
             $Ctrl.Xaml.IO.ServiceGet.Add_Click(
             {
-                $Ctrl.GetServices()
+                $Ctrl.Service = $Ctrl.GetServices()
                 $Ctrl.Xaml.IO.Service.Items.Clear()
                 ForEach ($Item in $Ctrl.Service.Output)
                 {
@@ -7264,11 +7595,11 @@ Function Get-ViperBomb
                 $Ctrl.Xaml.IO.ControlPhotoViewer.Items.Add($Item)
             }
 
-            #[WindowsStore]
-            $Ctrl.Xaml.IO.ControlWindowsStore.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.WindowsStore)
+            #[WindowsApps]
+            $Ctrl.Xaml.IO.ControlWindowsApps.Items.Clear()
+            ForEach ($Item in $Ctrl.Control.WindowsApps)
             {
-                $Ctrl.Xaml.IO.ControlWindowsStore.Items.Add($Item)
+                $Ctrl.Xaml.IO.ControlWindowsApps.Items.Add($Item)
             }
 
             #[AppX]
@@ -7284,231 +7615,3 @@ Function Get-ViperBomb
     $Ctrl.StageXamlEvent()
     $Ctrl.Xaml.Invoke()
 }
-
-<#
-    Class ViperBombConfig
-    {
-        [String]               $Name = "FightingEntropy/ViperBomb"
-        [String]            $Version = "2021.10.0"
-        [String]            $Release = "Development"
-        [String]           $Provider = "Secure Digits Plus LLC"
-        [String]                $URL = "https://github.com/mcc85sx/FightingEntropy"
-        [String]            $MadBomb = "https://github.com/madbomb122/BlackViperScript"
-        [String]         $BlackViper = "http://www.blackviper.com"
-        [String]               $Site = "https://www.securedigitsplus.com"
-        Hidden [String[]] $Copyright = ("Copyright (c) 2019 Zero Rights Reserved;Services Configuration by Charles 'Black Viper' Sparks;;The MIT Licens" + 
-                                        "e (MIT) + an added Condition;;Copyright (c) 2017-2019 Madbomb122;;[Black Viper Service Script];Permission is her" + 
-                                        "eby granted, free of charge, to any person obtaining a ;copy of this software and associated documentation files" + 
-                                        " (the Software),;to deal in the Software without restriction, including w/o limitation;the rights to: use/copy/m" + 
-                                        "odify/merge/publish/distribute/sublicense,;and/or sell copies of the Software, and to permit persons to whom the" + 
-                                        ";Software is furnished to do so, subject to the following conditions:;;The above copyright notice(s), this permi" + 
-                                        "ssion notice and ANY original;donation link shall be included in all copies or substantial portions of;the Softw" + 
-                                        "are.;;The software is provided 'As Is', without warranty of any kind, express;or implied, including but not limi" + 
-                                        "ted to warranties of merchantibility,;or fitness for a particular purpose and noninfringement. In no event;shall" + 
-                                        " the authors or copyright holders be liable for any claim, damages;or other liability, whether in an action of c" + 
-                                        "ontract, tort or otherwise,;arising from, out of or in connection with the software or the use or;other dealings" + 
-                                        " in the software.;;In other words, these terms of service must be accepted in order to use,;and in no circumstan" + 
-                                        "ce may the author(s) be subjected to any liability;or damage resultant to its use.").Split(";")
-        Hidden [String[]]     $About = ("This utility provides an interface to load and customize;service configuration profiles, such as:;;    Default" + 
-                                        ": Black Viper (Sparks v1.0);    Custom: If in proper format;    Backup: Created via this utility").Split(";")
-        Hidden [String[]]      $Help = (("[Basic];;_-atos___Accepts ToS;_-auto___Automates Process | Aborts upon user input/errors;;[Profile];;_-defaul" + 
-                                        "t__Standard;_-safe___Sparks/Safe;_-tweaked__Sparks/Tweaked;_-lcsc File.csv  Loads Custom Service Configuration, " + 
-                                        "File.csv = Name of your backup/custom file;;[Template];;_-all___ Every windows services will change;_-min___ Jus" + 
-                                        "t the services different from the default to safe/tweaked list;_-sxb___ Skips changes to all XBox Services;;[Upd" + 
-                                        "ate];;_-usc___ Checks for Update to Script file before running;_-use___ Checks for Update to Service file before" + 
-                                        " running;_-sic___ Skips Internet Check, if you can't ping GitHub.com for some reason;;[Logging];;_-log___ Makes " + 
-                                        "a log file named using default name Script.log;_-log File.log_Makes a log file named File.log;_-baf___ Log File " + 
-                                        "of Services Configuration Before and After the script;;[Backup];;_-bscc___Backup Current Service Configuration C" + 
-                                        "sv File;_-bscr___Backup Current Service Configuration, Reg File;_-bscb___Backup Current Service Configuration, C" + 
-                                        "sv and Reg File;;[Display];;_-sas___ Show Already Set Services;_-snis___Show Not Installed Services;_-sss___ Sho" + 
-                                        "wSkipped Services;;[Miscellaneous];;_-dry___ Runs the Script and Shows what services will be changed;_-css___ Ch" + 
-                                        "ange State of Service;_-sds___ Stop Disabled Service;;[Experimental];;_-secp___Skips Edition Check by Setting Ed" + 
-                                        "ition as Pro;_-sech___Skips Edition Check by Setting Edition as Home;_-sbc___ Skips Build Check;;[Development];;" + 
-                                        "_-devl___Makes a log file with various Diagnostic information, Nothing is Changed;_-diag___Shows diagnostic info" + 
-                                        "rmation, Stops -auto;_-diagf__   Forced diagnostic information, Script does nothing else;;[Help];;_-help___Shows" +
-                                        " list of switches, then exits script.. alt -h;_-copy___Shows Copyright/License Information, then exits script" + 
-                                        ";").Replace("_","    ")).Split(";")
-        Hidden [String[]]      $Type = "10H:D+ 10H:D- 10P:D+ 10P:D- DT:S+ DT:S- DT:T+ DT:T- LT:S+ LT:S-".Split(" ")
-        Hidden [String[]]     $Title = (("{0} Home | {1};{0} Pro | {1};{2} | Safe;{2} | Tweaked;Laptop | Safe" -f "Windows 10","Default","Desktop" -Split ";") | % { "$_ Max" , "$_ Min" })
-        Hidden [Hashtable]  $Display = @{ 
-                                Xbox = ("XblAuthManager XblGameSave XboxNetApiSvc XboxGipSvc xbgm" -Split " ")
-                              NetTCP = ("Msmq Pipe Tcp" -Split " " | % { "Net$_`Activator" })
-                                Skip = (@(("AppXSVC BrokerInfrastructure ClipSVC CoreMessagingRegistrar DcomLaunch EntAppSvc gpsvc LSM MpsSvc msiserver NgcCt" + 
-                                           "nrSvc NgcSvc RpcEptMapper RpcSs Schedule SecurityHealthService sppsvc StateRepository SystemEventsBroker tiledata" + 
-                                           "modelsvc WdNisSvc WinDefend") -Split " ";("BcastDVRUserService DevicePickerUserSvc DevicesFlowUserSvc PimIndexMai" +
-                                           "ntenanceSvc PrintWorkflowUserSvc UnistoreSvc UserDataSvc WpnUserService") -Split " " | % { 
-                                               "{0}_{1}" -f $_,(( Get-Service *_* | ? ServiceType -eq 224 )[0].Name -Split '_')[-1] }) | Sort-Object )
-        }
-        [String]         $PassedArgs = $Null
-        [Int32]      $TermsOfService = 0
-        [Int32]        $Bypass_Build = 0
-        [Int32]      $Bypass_Edition = 0
-        [Int32]       $Bypass_Laptop = 0
-        [Int32]      $Display_Active = 1
-        [Int32]    $Display_Inactive = 1
-        [Int32]     $Display_Skipped = 1
-        [Int32]       $Misc_Simulate = 0
-        [Int32]           $Misc_Xbox = 1
-        [Int32]         $Misc_Change = 0
-        [Int32]   $Misc_StopDisabled = 0
-        [Int32]          $Dev_Errors = 0
-        [Int32]             $Dev_Log = 0
-        [Int32]         $Dev_Console = 0
-        [Int32]          $Dev_Report = 0
-        [String]  $Log_Service_Label = "Service.log"
-        [String]   $Log_Script_Label = "Script.log"
-        [String]          $Reg_Label = "Backup.reg"
-        [String]          $Csv_Label = "Backup.csv"
-        [String]      $Service_Label = "Black Viper (Sparks v1.0)"
-        [String]       $Script_Label = "DevOPS (MC/SDP v1.0)"
-        [Object]            $Service
-        ViperBombConfig()
-        {
-
-        }
-    }
-
-    Class Main
-    {
-        [Object]               $Info
-        [Object]             $Config
-        [Object]            $Service
-        Main()
-        {
-            $This.Info    = Get-FERole
-            $This.Config  = [ViperBombConfig]::New()
-            $This.Service = Get-FEService
-        }
-        [Void] SetProfile([UInt32]$Slot)
-        {
-            ForEach ( $Service in $This.Service )
-            {
-                $Service.SetProfile($Slot)
-            }
-        }
-        [Object[]] GetServices()
-        {
-            Return @( $This.Service )
-        }
-        [Object[]] FilterServices([Object]$Field,[Object]$String)
-        {
-            Return @( $This.Service | ? $Field -match $String )
-        }
-    }
-
-    $Xaml                                = [XamlWindow][ViperBombGUI]::Tab
-    $Main                                = [Main]::New()
-    $Xaml.IO.Service_Result.ItemsSource  = $Main.Service
-
-    $Xaml.IO.Profile_0.Add_Click({ $Main.SetProfile(0) })
-    $Xaml.IO.Profile_1.Add_Click({ $Main.SetProfile(1) })
-    $Xaml.IO.Profile_2.Add_Click({ $Main.SetProfile(2) })
-    $Xaml.IO.Profile_3.Add_Click({ $Main.SetProfile(3) })
-    $Xaml.IO.Profile_4.Add_Click({ $Main.SetProfile(4) })
-    $Xaml.IO.Profile_5.Add_Click({ $Main.SetProfile(5) })    
-    $Xaml.IO.Profile_6.Add_Click({ $Main.SetProfile(6) })
-    $Xaml.IO.Profile_7.Add_Click({ $Main.SetProfile(7) })    
-    $Xaml.IO.Profile_8.Add_Click({ $Main.SetProfile(8) })
-    $Xaml.IO.Profile_9.Add_Click({ $Main.SetProfile(9) })
-
-    $Xaml.IO.Title                         = "{0} v{1}" -f $Xaml.IO.Title, $Main.Config.Version
-
-    $Xaml.IO.URL.Add_Click({        Start $Main.Config.URL        })
-    $Xaml.IO.MadBomb.Add_Click({    Start $Main.Config.MadBomb    })
-    $Xaml.IO.BlackViper.Add_Click({ Start $Main.Config.BlackViper })
-    $Xaml.IO.Site.Add_Click({       Start $Main.Config.Site       })
-    $Xaml.IO.About.Add_Click({      [System.Windows.MessageBox]::Show(($Main.Config.About     -join "`n"),    "About")})
-    $Xaml.IO.Copyright.Add_Click({  [System.Windows.MessageBox]::Show(($Main.Config.Copyright -join "`n"),"Copyright")})
-    $Xaml.IO.Help.Add_Click({       [System.Windows.MessageBox]::Show(($Main.Config.Help      -join "`n"),     "Help")})
-
-    $Xaml.IO.Caption.Content                   = $Main.Info.Caption
-    $Xaml.IO.ReleaseID.Content                 = $Main.Info.ReleaseID
-    $Xaml.IO.Version.Content                   = $Main.Info.Version
-    $Xaml.IO.Caption.Content                   = $Main.Info.Caption
-
-    ForEach ( $Item in ("Display_Active Display_Inactive Display_Skipped Misc_Simulate Misc_Xbox Misc_Change Misc_StopDisabled " +
-    "Dev_Errors Dev_Log Dev_Console Dev_Report Bypass_Build").Split(" ") )
-    { 
-        $Xaml.IO.$Item.IsChecked               = $Main.Config.$Item
-    } 
-
-    $Xaml.IO.Bypass_Edition.SelectedItem       = $Main.Config.ByEdition
-    $Xaml.IO.Bypass_Laptop.IsChecked           = $Main.Config.ByLaptop 
-    $Xaml.IO.Log_Service_Switch.IsChecked      = 0
-    $Xaml.IO.Log_Service_Browse.IsEnabled      = 0
-
-    If ($Xaml.IO.Log_Service_Switch.IsChecked -eq 0) 
-    { 
-        $Xaml.IO.Log_Service_Browse.IsEnabled  = 0 
-    }
-    If ($Xaml.IO.Log_Service_Switch.IsChecked -eq 1) 
-    { 
-        $Xaml.IO.Log_Service_Browse.IsEnabled  = 1 
-    }
-        
-    $Xaml.IO.Log_Script_Switch.IsChecked       = 0
-    $Xaml.IO.Log_Script_Browse.IsEnabled       = 0
-        
-    If ($Xaml.IO.Log_Script_Switch.IsChecked -eq 1) 
-    { 
-        $Xaml.IO.Log_Script_Browse.IsEnabled   = 1 
-    }
-    If ($Xaml.IO.Log_Script_Switch.IsChecked -eq 0) 
-    { 
-        $Xaml.IO.Log_Script_Browse.IsEnabled   = 0 
-    }
-            
-    $Xaml.IO.Reg_Switch.IsChecked              = 0
-    $Xaml.IO.Reg_Browse.IsEnabled              = 0
-        
-    If ($Xaml.IO.Reg_Switch.IsChecked    -eq 0) 
-    { 
-        $Xaml.IO.Reg_Browse.IsEnabled          = 0 
-    }
-    If ($Xaml.IO.Reg_Switch.IsChecked    -eq 1) 
-    { 
-        $Xaml.IO.Reg_Browse.IsEnabled          = 1 
-    }
-        
-    $Xaml.IO.Csv_Switch.IsChecked              = 0
-    $Xaml.IO.Csv_Browse.IsEnabled              = 0
-        
-    If ($Xaml.IO.Csv_Switch.IsChecked    -eq 1) 
-    { 
-        $Xaml.IO.Csv_Browse.IsEnabled          = 1 
-    }
-    If ($Xaml.IO.Csv_Switch.IsChecked    -eq 0) 
-    { 
-        $Xaml.IO.Csv_Browse.IsEnabled          = 0 
-    }
-        
-    $Xaml.IO.Log_Service_File.Text             = $Main.Config.Log_Service_Label
-    $Xaml.IO.Log_Script_File.Text              = $Main.Config.Log_Script_Label
-    $Xaml.IO.Reg_File.Text                     = $Main.Config.Reg_Label
-    $Xaml.IO.Csv_File.Text                     = $Main.Config.Csv_Label 
-        
-    $Xaml.IO.Log_Service_Browse.IsEnabled      = 0
-    $Xaml.IO.Log_Script_Browse.IsEnabled       = 0
-    $Xaml.IO.Reg_Browse.IsEnabled              = 0
-    $Xaml.IO.Csv_Browse.IsEnabled              = 0
-
-    $Xaml.IO.Search.Add_TextChanged(
-    {
-        $Xaml.IO.Service_Result.ItemsSource    = $Main.FilterServices($Main.IO.Service_Property.SelectedItem,$Main.IO.Service_Filter.Text)    
-    })
-
-    $Xaml.IO.Start.Add_Click(
-    {        
-        [Console]::WriteLine("Dialog Successful")
-        $Xaml.IO.DialogResult                      = $True
-    })
-    
-    $Xaml.IO.Cancel.Add_Click(
-    {
-        [Console]::WriteLine("User Cancelled")
-        $Xaml.IO.DialogResult                      = $False
-    })
-
-    $Xaml.Invoke()
-}
-#>
