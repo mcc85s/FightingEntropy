@@ -650,7 +650,7 @@ Function Get-ViperBomb
         '                </TabControl>',
         '            </TabItem>',
         '            <TabItem Header="Control">',
-        '                <TabControl TabStripPlacement="Left">',
+        '                <TabControl>',
         '                    <TabItem Header="Preferences">',
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
@@ -690,14 +690,49 @@ Function Get-ViperBomb
         '                            </ComboBox>',
         '                        </Grid>',
         '                    </TabItem>',
-        '                    <TabItem Header="Privacy">',
+        '                    <TabItem Header="Settings">',
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="100"/>',
+        '                                <RowDefinition Height="40"/>',
         '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Privacy]"/>',
-        '                            <DataGrid Name="ControlPrivacy" Grid.Row="1" HeadersVisibility="None">',
+        '                            <Label Content="[System Control Settings]:"/>',
+        '                            <Grid Grid.Row="1">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="75"/>',
+        '                                    <ColumnDefinition Width="130"/>',
+        '                                    <ColumnDefinition Width="10"/>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label Grid.Column="0" Content="[Select]:"/>',
+        '                                <ComboBox Grid.Column="1" Name="ControlSlot" SelectedIndex="13">',
+        '                                    <ComboBoxItem Content="Privacy"/>',
+        '                                    <ComboBoxItem Content="WindowsUpdate"/>',
+        '                                    <ComboBoxItem Content="Service"/>',
+        '                                    <ComboBoxItem Content="Context"/>',
+        '                                    <ComboBoxItem Content="Taskbar"/>',
+        '                                    <ComboBoxItem Content="StartMenu"/>',
+        '                                    <ComboBoxItem Content="Explorer"/>',
+        '                                    <ComboBoxItem Content="ThisPC"/>',
+        '                                    <ComboBoxItem Content="Desktop"/>',
+        '                                    <ComboBoxItem Content="LockScreen"/>',
+        '                                    <ComboBoxItem Content="Miscellaneous"/>',
+        '                                    <ComboBoxItem Content="PhotoViewer"/>',
+        '                                    <ComboBoxItem Content="WindowsApps"/>',
+        '                                    <ComboBoxItem Content="All"/>',
+        '                                </ComboBox>',
+        '                                <Border Grid.Column="2" Margin="4" Background="Black"/>',
+        '                                <ComboBox Grid.Column="3" Name="ControlProperty" SelectedIndex="0">',
+        '                                    <ComboBoxItem Content="Name"/>',
+        '                                    <ComboBoxItem Content="Description"/>',
+        '                                </ComboBox>',
+        '                                <TextBox Grid.Column="4" Name="ControlFilter"/>',
+        '                            </Grid>',
+        '                            <DataGrid Grid.Row="2" Name="ControlOutput">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
         '                                    <DataGridTemplateColumn Header="Value" Width="150">',
@@ -707,283 +742,101 @@ Function Get-ViperBomb
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}" IsReadOnly="True"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
+        '                            <DataGrid Grid.Row="3" Name="ControlOutputExtension" HeadersVisibility="None">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
+        '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Grid Grid.Row="4">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Button Grid.Column="0" Name="ControlOutputApply" Content="Apply" IsEnabled="False"/>',
+        '                                <Button Grid.Column="1" Name="ControlOutputDontApply" Content="Do not apply..." IsEnabled="False"/>',
+        '                            </Grid>',
         '                        </Grid>',
         '                    </TabItem>',
-        '                    <TabItem Header="Windows Update">',
+        '                    <TabItem Header="Features">',
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="100"/>',
+        '                                <RowDefinition Height="40"/>',
         '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Windows Update]"/>',
-        '                            <DataGrid Name="ControlWindowsUpdate" Grid.Row="1" HeadersVisibility="None">',
+        '                            <Label Content="[Windows Features]:"/>',
+        '                            <Grid Grid.Row="1">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <ComboBox Grid.Column="0" Name="ControlFeatureProperty" SelectedIndex="0">',
+        '                                    <ComboBoxItem Content="Name"/>',
+        '                                    <ComboBoxItem Content="State"/>',
+        '                                </ComboBox>',
+        '                                <TextBox Grid.Column="1" Name="ControlFeatureFilter"/>',
+        '                            </Grid>',
+        '                            <DataGrid Name="ControlFeature" Grid.Row="2">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding FeatureName}" IsReadOnly="True"/>',
         '                                    <DataGridTemplateColumn Header="Value" Width="150">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
+        '                                                <ComboBox SelectedIndex="{Binding State, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
+        '                                                    <ComboBoxItem Content="Disabled"/>',
+        '                                                    <ComboBoxItem Content="DisabledWithPayloadRemoved"/>',
+        '                                                    <ComboBoxItem Content="Enabled"/>',
+        '                                                </ComboBox>',
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
         '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Service">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Service]"/>',
-        '                            <DataGrid Grid.Row="1" Name="ControlService">',
+        '                            <DataGrid Grid.Row="3" Name="ControlFeatureExtension" HeadersVisibility="None">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
+        '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Context Menu">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Context Menu]"/>',
-        '                            <DataGrid Name="ControlContext"  Grid.Row="1" HeadersVisibility="None">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Taskbar">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Taskbar]"/>',
-        '                            <DataGrid Name="ControlTaskbar" Grid.Row="1" HeadersVisibility="None">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Explorer">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Explorer]"/>',
-        '                            <DataGrid Name="ControlExplorer" Grid.Row="1" HeadersVisibility="None">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Start Menu">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Start Menu]"/>',
-        '                            <DataGrid Name="ControlStartMenu" Grid.Row="1" HeadersVisibility="None">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="This PC">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[This PC]"/>',
-        '                            <DataGrid Name="ControlThisPC" Grid.Row="1" HeadersVisibility="None">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Desktop">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Desktop]"/>',
-        '                            <DataGrid Name="ControlDesktop" Grid.Row="1" HeadersVisibility="None">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Lock Screen">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Lock Screen]"/>',
-        '                            <DataGrid Name="ControlLockScreen" Grid.Row="1" HeadersVisibility="None">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Miscellaneous">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Miscellaneous]"/>',
-        '                            <DataGrid Name="ControlMiscellaneous" Grid.Row="1" HeadersVisibility="None">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Photo Viewer">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Photo Viewer]"/>',
-        '                            <DataGrid Name="ControlPhotoViewer" Grid.Row="1" HeadersVisibility="None">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
-        '                        </Grid>',
-        '                    </TabItem>',
-        '                    <TabItem Header="Windows Store">',
-        '                        <Grid>',
-        '                            <Grid.RowDefinitions>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="*"/>',
-        '                            </Grid.RowDefinitions>',
-        '                            <Label Grid.Row="0" Content="[Windows Apps]"/>',
-        '                            <DataGrid Name="ControlWindowsApps" Grid.Row="1" HeadersVisibility="None">',
-        '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
-        '                                        <DataGridTemplateColumn.CellTemplate>',
-        '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
-        '                                            </DataTemplate>',
-        '                                        </DataGridTemplateColumn.CellTemplate>',
-        '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
-        '                                </DataGrid.Columns>',
-        '                            </DataGrid>',
+        '                            <Grid Grid.Row="4">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Button Grid.Column="0" Name="ControlFeatureApply" Content="Apply" IsEnabled="False"/>',
+        '                                <Button Grid.Column="1" Name="ControlFeatureDontApply" Content="Do not apply..." IsEnabled="False"/>',
+        '                            </Grid>',
         '                        </Grid>',
         '                    </TabItem>',
         '                    <TabItem Header="AppX">',
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="*"/>',
+        '                                <RowDefinition Height="100"/>',
+        '                                <RowDefinition Height="40"/>',
         '                            </Grid.RowDefinitions>',
         '                            <Label Grid.Row="0" Content="[AppX Catalog]"/>',
-        '                            <DataGrid Name="ControlAppX" Grid.Row="1">',
+        '                            <Grid Grid.Row="1">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <ComboBox Grid.Column="0" Name="ControlAppXProperty" SelectedIndex="0">',
+        '                                    <ComboBoxItem Content="Name"/>',
+        '                                    <ComboBoxItem Content="State"/>',
+        '                                </ComboBox>',
+        '                                <TextBox Grid.Column="1" Name="ControlAppXFilter"/>',
+        '                            </Grid>',
+        '                            <DataGrid Name="ControlAppX" Grid.Row="2">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="#"        Binding="{Binding Index}"        Width="25"/>',
         '                                    <DataGridTemplateColumn Header="Profile" Width="45">',
@@ -1013,6 +866,20 @@ Function Get-ViperBomb
         '                                    </DataGridTemplateColumn>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
+        '                            <DataGrid Grid.Row="3" Name="ControlAppXExtension" HeadersVisibility="None">',
+        '                                <DataGrid.Columns>',
+        '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
+        '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                </DataGrid.Columns>',
+        '                            </DataGrid>',
+        '                            <Grid Grid.Row="4">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Button Grid.Column="0" Name="ControlAppXApply" Content="Apply" IsEnabled="False"/>',
+        '                                <Button Grid.Column="1" Name="ControlAppXDontApply" Content="Do not apply..." IsEnabled="False"/>',
+        '                            </Grid>',
         '                        </Grid>',
         '                    </TabItem>',
         '                </TabControl>',
@@ -1380,6 +1247,7 @@ Function Get-ViperBomb
     
     Class ControlTemplate
     {
+        [String]      $Source
         [String]        $Name
         [String] $DisplayName
         [UInt32]       $Value
@@ -1995,9 +1863,10 @@ Function Get-ViperBomb
         [Object]  $Output
         PrivacyList()
         {
-            $This.Output = ForEach ($Name in [System.Enum]::GetNames([PrivacyType]))
+            $This.Output      = @( )
+            ForEach ($Name in [System.Enum]::GetNames([PrivacyType]))
             {
-                Switch ($Name)
+                $Item         = Switch ($Name)
                 {
                     Telemetry        { [Telemetry]::New()        }
                     WiFiSense        { [WiFiSense]::New()        }
@@ -2012,6 +1881,8 @@ Function Get-ViperBomb
                     DiagTrack        { [DiagTrack]::New()        }
                     WAPPush          { [WAPPush]::New()          }
                 }
+                $Item.Source  = "Privacy"
+                $This.Output += $Item
             }
         }
     }
@@ -2455,9 +2326,11 @@ Function Get-ViperBomb
         [Object]  $Output
         WindowsUpdateList()
         {
-            $This.Output = ForEach ($Name in [System.Enum]::GetNames([WindowsUpdateType]))
+            $This.Output     = @( ) 
+            ForEach ($Name in [System.Enum]::GetNames([WindowsUpdateType]))
             {
-                Switch ($Name)
+                $Name
+                $Item        = Switch ($Name)
                 {
                     UpdateMSProducts      { [UpdateMSProducts]::New()      }
                     CheckForWindowsUpdate { [CheckForWindowsUpdate]::New() }
@@ -2469,7 +2342,10 @@ Function Get-ViperBomb
                     AppAutoDownload       { [AppAutoDownload]::New()       }
                     UpdateAvailablePopup  { [UpdateAvailablePopup]::New()  }
                 }
+                $This.Output += $Item
             }
+
+            $This.Output | % { $_.Source = "WindowsUpdate" }
         }
     }
     
@@ -2840,9 +2716,10 @@ Function Get-ViperBomb
         [Object]  $Output
         ServiceList()
         {
-            $This.Output = ForEach ($Name in [System.Enum]::GetNames([ServiceType]))
+            $This.Output     = @( )
+            ForEach ($Name in [System.Enum]::GetNames([ServiceType]))
             {
-                Switch ($Name)
+                $Item        = Switch ($Name)
                 {
                     UAC                 { [UAC]::New()                 }
                     SharingMappedDrives { [SharingMappedDrives]::New() }
@@ -2853,6 +2730,8 @@ Function Get-ViperBomb
                     RemoteAssistance    { [RemoteAssistance]::New()    }
                     RemoteDesktop       { [RemoteDesktop]::New()       }
                 }
+                $Item.Source  = "Service"
+                $This.Output += $Item
             }
         }
     }
@@ -3189,9 +3068,10 @@ Function Get-ViperBomb
         [Object]  $Output
         ContextList()
         {
-            $This.Output  = ForEach ($Name in [System.Enum]::GetNames([ContextType]))
+            $This.Output      = @( )
+            ForEach ($Name in [System.Enum]::GetNames([ContextType]))
             {
-                Switch ($Name)
+                $Item         = Switch ($Name)
                 {
                     CastToDevice     { [CastToDevice]::New()     }
                     PreviousVersions { [PreviousVersions]::New() }
@@ -3201,6 +3081,8 @@ Function Get-ViperBomb
                     ShareWith        { [ShareWith]::New()        }
                     SendTo           { [SendTo]::New()           }
                 }
+                $Item.Source  = "Context"
+                $This.Output += $Item
             }
         }
     }
@@ -3683,9 +3565,10 @@ Function Get-ViperBomb
         [Object]   $Output
         TaskbarList()
         {
-            $This.Output  = ForEach ($Name in [System.Enum]::GetNames([TaskbarType]))
+            $This.Output       = @( ) 
+            ForEach ($Name in [System.Enum]::GetNames([TaskbarType]))
             {
-                Switch ($Name)
+                $Item          = Switch ($Name)
                 {
                     BatteryUIBar     { [BatteryUIBar]::New()     }
                     ClockUIBar       { [ClockUIBar]::New()       }
@@ -3696,7 +3579,9 @@ Function Get-ViperBomb
                     TaskbarGrouping  { [TaskbarGrouping]::New()  }
                     TrayIcons        { [TrayIcons]::New()        }
                 }
+                $This.Output += $Item
             }
+            $This.Output | % { $_.Source = "Taskbar" }
         }
     }
 
@@ -3937,9 +3822,10 @@ Function Get-ViperBomb
         [Object]  $Output
         StartMenuList()
         {
-            $This.Output = ForEach ($Name in [System.Enum]::GetNames([StartMenuType]))
+            $This.Output      = @( )
+            ForEach ($Name in [System.Enum]::GetNames([StartMenuType]))
             {
-                Switch ($Name)
+                $Item         = Switch ($Name)
                 {
                     StartMenuWebSearch   { [StartMenuWebSearch]::New()   }
                     StartSuggestions     { [StartSuggestions]::New()     }
@@ -3947,6 +3833,8 @@ Function Get-ViperBomb
                     RecentItemsFrequent  { [RecentItemsFrequent]::New()  }
                     UnpinItems           { [UnpinItems]::New()           }
                 }
+                $Item.Source  = "StartMenu"
+                $This.Output += $Item
             }
         }
     }
@@ -4825,9 +4713,10 @@ Function Get-ViperBomb
         [Object]  $Output
         ExplorerList()
         {
-            $This.Output = ForEach ($Name in [System.Enum]::GetNames([ExplorerType]))
+            $This.Output = @( )
+            ForEach ($Name in [System.Enum]::GetNames([ExplorerType]))
             {
-                Switch ($Name)
+                $Item = Switch ($Name)
                 {
                     AccessKeyPrompt            { [AccessKeyPrompt]::New()            }
                     F1HelpKey                  { [F1HelpKey]::New()                  }
@@ -4851,7 +4740,10 @@ Function Get-ViperBomb
                     TaskManagerDetails         { [TaskManagerDetails]::New()         }
                     ReopenAppsOnBoot           { [ReopenAppsOnBoot]::New()           }
                 }
+                $This.Output += $Item
             }
+
+            $This.Output | % { $_.Source = "Explorer" }
         }
     }
 
@@ -5381,9 +5273,10 @@ Function Get-ViperBomb
         [Object]  $Output
         ThisPCIconList()
         {
-            $This.Output  = ForEach ($Name in [System.Enum]::GetNames([ThisPCIconType]))
+            $This.Output  = @( ) 
+            ForEach ($Name in [System.Enum]::GetNames([ThisPCIconType]))
             {
-                Switch ($Name)
+                $Item = Switch ($Name)
                 {
                     DesktopIconInThisPC       { [DesktopIconInThisPC]::New()       }
                     DocumentsIconInThisPC     { [DocumentsIconInThisPC]::New()     }
@@ -5393,6 +5286,8 @@ Function Get-ViperBomb
                     VideosIconInThisPC        { [VideosIconInThisPC]::New()        }
                     ThreeDObjectsIconInThisPC { [ThreeDObjectsIconInThisPC]::New() }
                 }
+                $Item.Source  = "ThisPC"
+                $This.Output += $Item
             }
         }
     }
@@ -5626,9 +5521,10 @@ Function Get-ViperBomb
         [Object]  $Output
         DesktopIconList()
         {
-            $This.Output = ForEach ($Name in [System.Enum]::GetNames([DesktopIconType]))
+            $This.Output = @( )
+            ForEach ($Name in [System.Enum]::GetNames([DesktopIconType]))
             {
-                Switch ($Name)
+                $Item = Switch ($Name)
                 {
                     ThisPCOnDesktop       { [ThisPCOnDesktop]::New()   }
                     NetworkOnDesktop      { [NetworkOnDesktop]::New()      }
@@ -5636,6 +5532,8 @@ Function Get-ViperBomb
                     UsersFileOnDesktop    { [UsersFileOnDesktop]::New()    }
                     ControlPanelOnDesktop { [ControlPanelOnDesktop]::New() }
                 }
+                $Item.Source  = "Desktop"
+                $This.Output += $Item
             }
         }
     }
@@ -5831,15 +5729,18 @@ Function Get-ViperBomb
         [Object]  $Output
         LockScreenList()
         {
-            $This.Output = ForEach ($Name in [System.Enum]::GetNames([LockScreenType]))
+            $This.Output = @( ) 
+            ForEach ($Name in [System.Enum]::GetNames([LockScreenType]))
             {
-                Switch ($Name)
+                $Item = Switch ($Name)
                 {
                     LockScreen          { [LockScreen]::New()          }
                     LockScreenPassword  { [LockScreenPassword]::New()  }
                     PowerMenuLockScreen { [PowerMenuLockScreen]::New() }
                     CameraOnLockScreen  { [CameraOnLockScreen]::New()  }
                 }
+                $Item.Source  = "LockScreen"
+                $This.Output += $Item
             }
         }
     }
@@ -6214,9 +6115,10 @@ Function Get-ViperBomb
         [Object]  $Output
         MiscellaneousList()
         {
-            $This.Output = ForEach ($Name in [System.Enum]::GetNames([MiscellaneousType]))
+            $This.Output = @( )
+            ForEach ($Name in [System.Enum]::GetNames([MiscellaneousType]))
             {
-                Switch ($Name)
+                $Item = Switch ($Name)
                 {
                     ScreenSaver           { [ScreenSaver]::New()           }
                     AccountProtectionWarn { [AccountProtectionWarn]::New() }
@@ -6228,6 +6130,8 @@ Function Get-ViperBomb
                     HibernatePower        { [HibernatePower]::New()        }
                     SleepPower            { [SleepPower]::New()            }
                 }
+                $Item.Source  = "Miscellaneous"
+                $This.Output += $Item
             }
         }
     }
@@ -6351,55 +6255,16 @@ Function Get-ViperBomb
         [Object]  $Output
         PhotoViewerList()
         {
-            $This.Output = ForEach ($Name in [System.Enum]::GetNames([PhotoViewerType]))
+            $This.Output = @( )
+            ForEach ($Name in [System.Enum]::GetNames([PhotoViewerType]))
             {
-                Switch ($Name)
+                $Item = Switch ($Name)
                 {
                     PVFileAssociation { [PVFileAssociation]::New() }
                     PVOpenWithMenu    { [PVOpenWithMenu]::New()    }
                 }
-            }
-        }
-    }
-
-    Class WindowsOptionalFeature
-    {
-        [UInt32] $Index
-        [String] $FeatureName
-        [String] $State
-        Hidden [String] $Path
-        Hidden [UInt32] $Online
-        Hidden [String] $WinPath
-        Hidden [String] $SysDrivePath
-        Hidden [UInt32] $RestartNeeded
-        Hidden [String] $LogPath
-        Hidden [String] $ScratchDirectory
-        Hidden [String] $LogLevel
-        WindowsOptionalFeature([UInt32]$Index,[Object]$Object)
-        {
-            $This.Index            = $Index
-            $This.FeatureName      = $Object.FeatureName
-            $This.State            = $Object.State
-            $This.Path             = $Object.Path
-            $This.Online           = $Object.Online
-            $This.WinPath          = $Object.WinPath
-            $This.SysDrivePath     = $Object.SysDrivePath
-            $This.RestartNeeded    = $Object.RestartNeeded
-            $This.LogPath          = $Object.LogPath
-            $This.ScratchDirectory = $Object.ScratchDirectory
-            $This.LogLevel         = $Object.LogLevel
-        }
-    }
-
-    Class WindowsOptionalFeatures
-    {
-        [Object] $Output
-        WindowsOptionalFeatures()
-        {
-            $This.Output = @( ) 
-            ForEach ($Item in Get-WindowsOptionalFeature -Online | Sort-Object FeatureName)
-            { 
-                $This.Output += [WindowsOptionalFeature]::New($This.Output.Count,$Item)
+                $Item.Source  = "PhotoViewer"
+                $This.Output += $Item
             }
         }
     }
@@ -6766,9 +6631,10 @@ Function Get-ViperBomb
         [Object]   $Output
         WindowsAppsList()
         {
-            $This.Output   = ForEach ($Name in [System.Enum]::GetNames([WindowsAppsType]))
+            $This.Output      = @( )
+            ForEach ($Name in [System.Enum]::GetNames([WindowsAppsType]))
             {
-                Switch ($Name)
+                $Item         = Switch ($Name)
                 {
                     OneDrive        { [OneDrive]::New()                      }
                     OneDriveInstall { [OneDriveInstall]::New()               }
@@ -6778,70 +6644,100 @@ Function Get-ViperBomb
                     FaxAndScan      { [FaxAndScan]::New($This.Features)      }
                     LinuxSubsystem  { [LinuxSubsystem]::New($This.Features)  }
                 }
+                $Item.Source  = "WindowsApps"
+                $This.Output += $Item
             }
         }
     }
 
-    Class DisableVariousTasks
+    Enum WindowsOptionalStateType
     {
-        [UInt32] $Mode
-        [Object] $Stack
-        DisableVariousTasks()
+        Disabled
+        DisabledWithPayloadRemoved
+        Enabled
+    }
+
+    Class WindowsOptionalStateSlot
+    {
+        [UInt32] $Index
+        [String] $Type
+        [String] $Description
+        WindowsOptionalStateSlot([String]$Type)
         {
-            $This.Output = @()
+            $This.Type = [WindowsOptionalStateType]::$Type
+            $This.Index = [UInt32][WindowsOptionalStateType]::$Type
         }
-        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped,[Object[]]$TaskList)
+        [String] ToString()
         {
-            Switch ($Mode)
-            {
-                0
-                {
-                    If ($ShowSkipped)
-                    {
-                        Write-Host "Skipping [!] Various Scheduled Tasks"
-                    }
-                }
-                1
-                {
-                    Write-Host "Enabling [~] Various Scheduled Tasks"
-                    $TaskList | % { Get-ScheduledTask -TaskName $_ | Enable-ScheduledTask }
-                }
-                2
-                {
-                    Write-Host "Disabling [~] Various Scheduled Tasks"
-                    $TaskList | % { Get-ScheduledTask -TaskName $_ | Disable-ScheduledTask }
-                }
-            }
+            Return $This.Type
         }
     }
-    
-    Class ScreenSaverWaitTime
+
+    Class WindowsOptionalStateList
     {
-        [UInt32] $Mode
-        [Object] $Stack
-        ScreenSaverWaitTime()
+        [Object] $Output
+        WindowsOptionalStateList()
         {
-            $This.Output = @([Registry]::New('HKLM:\Software\Policies\Microsoft\Windows','ScreensaveTimeout'))
+            $This.Output = @( ) 
+            [System.Enum]::GetNames([WindowsOptionalStateType]) | % { $This.Add($_) }
         }
-        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        Add([String]$Name)
         {
-            Switch ($Mode)
+            $Item             = [WindowsOptionalStateSlot]::New($Name)
+            $Item.Description = Switch ($Name)
             {
-                0
-                {
-                    If ($ShowSkipped)
-                    {
-                        Write-Host "Skipping [!] ScreenSaver Wait Time"
-                    }
-                }
-                1
-                {
-                    Write-Host "Enabling [~] ScreenSaver Wait Time"
-                }
-                2
-                {
-                    Write-Host "Disabling [~] ScreenSaver Wait Time"
-                }
+                Disabled                   { "Feature is disabled"                     }
+                DisabledWithPayloadRemoved { "Feature is disabled, payload is removed" }
+                Enabled                    { "Feature is enabled"                      }
+            }
+            $This.Output += $Item
+        }
+        [Object] Get([String]$Type)
+        {
+            Return $This.Output | ? Type -eq $Type
+        }
+    }
+
+    Class WindowsOptionalFeature
+    {
+        [UInt32] $Index
+        [String] $FeatureName
+        [Object] $State
+        Hidden [String] $Path
+        Hidden [UInt32] $Online
+        Hidden [String] $WinPath
+        Hidden [String] $SysDrivePath
+        Hidden [UInt32] $RestartNeeded
+        Hidden [String] $LogPath
+        Hidden [String] $ScratchDirectory
+        Hidden [String] $LogLevel
+        WindowsOptionalFeature([UInt32]$Index,[Object]$List,[Object]$Object)
+        {
+            $This.Index            = $Index
+            $This.FeatureName      = $Object.FeatureName
+            $This.State            = $List.Get($Object.State)
+            $This.Path             = $Object.Path
+            $This.Online           = $Object.Online
+            $This.WinPath          = $Object.WinPath
+            $This.SysDrivePath     = $Object.SysDrivePath
+            $This.RestartNeeded    = $Object.RestartNeeded
+            $This.LogPath          = $Object.LogPath
+            $This.ScratchDirectory = $Object.ScratchDirectory
+            $This.LogLevel         = $Object.LogLevel
+        }
+    }
+
+    Class WindowsOptionalFeatures
+    {
+        [Object] $State
+        [Object] $Output
+        WindowsOptionalFeatures()
+        {
+            $This.State  = [WindowsOptionalStateList]::New()
+            $This.Output = @( ) 
+            Get-WindowsOptionalFeature -Online | Sort-Object FeatureName | % {
+
+                $This.Output += [WindowsOptionalFeature]::New($This.Output.Count,$This.State,$_)
             }
         }
     }
@@ -6965,22 +6861,74 @@ Function Get-ViperBomb
         }
     }
 
+    Class DisableVariousTasks
+    {
+        [UInt32] $Mode
+        [Object] $Stack
+        DisableVariousTasks()
+        {
+            $This.Output = @()
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped,[Object[]]$TaskList)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Various Scheduled Tasks"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Various Scheduled Tasks"
+                    $TaskList | % { Get-ScheduledTask -TaskName $_ | Enable-ScheduledTask }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Various Scheduled Tasks"
+                    $TaskList | % { Get-ScheduledTask -TaskName $_ | Disable-ScheduledTask }
+                }
+            }
+        }
+    }
+    
+    Class ScreenSaverWaitTime
+    {
+        [UInt32] $Mode
+        [Object] $Stack
+        ScreenSaverWaitTime()
+        {
+            $This.Output = @([Registry]::New('HKLM:\Software\Policies\Microsoft\Windows','ScreensaveTimeout'))
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] ScreenSaver Wait Time"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] ScreenSaver Wait Time"
+                }
+                2
+                {
+                    Write-Host "Disabling [~] ScreenSaver Wait Time"
+                }
+            }
+        }
+    }
 
     Class SystemControl
     {
-        [Object]                    $Privacy
-        [Object]              $WindowsUpdate
-    	[Object]                    $Service
-        [Object]                    $Context
-        [Object]                    $Taskbar
-        [Object]                  $StartMenu
-        [Object]                   $Explorer
-        [Object]                     $ThisPC
-        [Object]                    $Desktop
-        [Object]                 $LockScreen
-        [Object]              $Miscellaneous
-        [Object]                $PhotoViewer
-        [Object]                $WindowsApps
+        [Object]                     $Output
+        [Object]                    $Feature
         [Object]                       $AppX
         SystemControl()
         {
@@ -6988,20 +6936,22 @@ Function Get-ViperBomb
         }
         Reset()
         {
-            $This.Privacy                    = [PrivacyList]::New().Output
-            $This.WindowsUpdate              = [WindowsUpdateList]::New().Output
-            $This.Service                    = [ServiceList]::New().Output
-            $This.Context                    = [ContextList]::New().Output
-            $This.Taskbar                    = [TaskBarList]::New().Output
-            $This.StartMenu                  = [StartMenuList]::New().Output
-            $This.Explorer                   = [ExplorerList]::New().Output
-            $This.ThisPC                     = [ThisPCIconList]::New().Output
-            $This.Desktop                    = [DesktopIconList]::New().Output
-            $This.LockScreen                 = [LockScreenList]::New().Output
-            $This.Miscellaneous              = [MiscellaneousList]::New().Output
-            $This.PhotoViewer                = [PhotoViewerList]::New().Output
-            $This.WindowsApps                = [WindowsAppsList]::New().Output
-            $This.AppX                       = [AppXList]::New().Output
+            $This.Output     = @( )
+            $This.Output    += [PrivacyList]::New().Output
+            $This.Output    += [WindowsUpdateList]::New().Output
+            $This.Output    += [ServiceList]::New().Output
+            $This.Output    += [ContextList]::New().Output
+            $This.Output    += [TaskBarList]::New().Output
+            $This.Output    += [StartMenuList]::New().Output
+            $This.Output    += [ExplorerList]::New().Output
+            $This.Output    += [ThisPCIconList]::New().Output
+            $This.Output    += [DesktopIconList]::New().Output
+            $This.Output    += [LockScreenList]::New().Output
+            $This.Output    += [MiscellaneousList]::New().Output
+            $This.Output    += [PhotoViewerList]::New().Output
+            $This.Output    += [WindowsAppsList]::New().Output
+            $This.Feature    = [WindowsOptionalFeatures]::New().Output
+            $This.AppX       = [AppXList]::New().Output
         }
         [Void] Toggle([Object]$Item)
         {
@@ -7493,113 +7443,83 @@ Function Get-ViperBomb
                 Start-Sleep -Milliseconds 50
                 $Property  = $Ctrl.Xaml.IO.ServiceProperty.SelectedItem.Content
                 $Text      = $Ctrl.Xaml.IO.ServiceFilter.Text
-                $Ctrl.Xaml.IO.Service.Items.Clear()
-                If ($Text -ne "")
+                $List      = Switch -Regex ($Text)
                 {
-                    ForEach ($Item in $Ctrl.Service.Output | ? $Property -match $Text)
+                    ""
                     {
-                        $Ctrl.Xaml.IO.Service.Items.Add($Item)
+                        $Ctrl.Service.Output | ? $Property -match $Text
+                    }
+                    Default
+                    {
+                        $Ctrl.Service.Output
                     }
                 }
-                Else
+
+                $Ctrl.Xaml.IO.Service.Items.Clear()
+                ForEach ($Item in $List)
                 {
-                    ForEach ($Item in $Ctrl.Service.Output)
-                    {
-                        $Ctrl.Xaml.IO.Service.Items.Add($Item)
-                    }
+                    $Ctrl.Xaml.IO.Service.Items.Add($Item)
                 }
             })
 
             ################# Third Tab #########################
-            # [Privacy]
-            $Ctrl.Xaml.IO.ControlPrivacy.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.Privacy)
+            $Ctrl.Xaml.IO.ControlOutput.Items.Clear()
+            ForEach ($Item in $Ctrl.Control.Output)
             {
-                $Ctrl.Xaml.IO.ControlPrivacy.Items.Add($Item)
+                $Ctrl.Xaml.IO.ControlOutput.Items.Add($Item)
             }
 
-            #[Windows Update]
-            $Ctrl.Xaml.IO.ControlWindowsUpdate.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.WindowsUpdate)
+            $Ctrl.Xaml.IO.ControlSlot.Add_SelectionChanged(
             {
-                $Ctrl.Xaml.IO.ControlWindowsUpdate.Items.Add($Item)
-            }
+                $Slot = $Ctrl.Xaml.IO.ControlSlot.SelectedItem.Content
+                $List = Switch ($Slot)
+                {
+                    Default
+                    {
+                        $Ctrl.Control.Output | ? Source -eq $Slot
+                    }
+                    All
+                    {
+                        $Ctrl.Control.Output
+                    }
+                }
 
-            #[Service]
-            $Ctrl.Xaml.IO.ControlService.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.Service)
-            {
-                $Ctrl.Xaml.IO.ControlService.Items.Add($Item)
-            }
+                $Ctrl.Xaml.IO.ControlOutput.Items.Clear()
+                ForEach ($Item in $List)
+                {
+                    $Ctrl.Xaml.IO.ControlOutput.Items.Add($Item)
+                }
+            })
 
-            #[Context]
-            $Ctrl.Xaml.IO.ControlContext.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.Context)
+            $Ctrl.Xaml.IO.ControlFilter.Add_TextChanged(
             {
-                $Ctrl.Xaml.IO.ControlContext.Items.Add($Item)
-            }
+                Start-Sleep -Milliseconds 50
+                $Property = $Ctrl.Xaml.IO.ControlProperty.SelectedItem.Content
+                $Text     = $Ctrl.Xaml.IO.ControlFilter.Text
+                $List     = Switch -Regex ($Text)
+                {
+                    ""
+                    {
+                        $Ctrl.Control.Output | ? $Property -match $Text
+                    }
+                    Default
+                    {
+                        $Ctrl.Control.Output
+                    }
+                }
 
-            #[Taskbar]
-            $Ctrl.Xaml.IO.ControlTaskbar.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.Taskbar)
-            {
-                $Ctrl.Xaml.IO.ControlTaskbar.Items.Add($Item)
-            }
+                $Ctrl.Xaml.IO.ControlOutput.Items.Clear()
+                ForEach ($Item in $List)
+                {
+                    $Ctrl.Xaml.IO.ControlOutput.Items.Add($Item)
+                }
+            })
 
-            #[Explorer]
-            $Ctrl.Xaml.IO.ControlExplorer.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.Explorer)
+            #[WindowsFeatures]
+            $Ctrl.Xaml.IO.ControlFeature.Items.Clear()
+            ForEach ($Item in $Ctrl.Control.Feature)
             {
-                $Ctrl.Xaml.IO.ControlExplorer.Items.Add($Item)
-            }
-
-            #[StartMenu]
-            $Ctrl.Xaml.IO.ControlStartMenu.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.StartMenu)
-            {
-                $Ctrl.Xaml.IO.ControlStartMenu.Items.Add($Item)
-            }
-
-            #[ThisPC]
-            $Ctrl.Xaml.IO.ControlThisPC.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.ThisPC)
-            {
-                $Ctrl.Xaml.IO.ControlThisPC.Items.Add($Item)
-            }
-
-            #[Desktop]
-            $Ctrl.Xaml.IO.ControlDesktop.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.Desktop)
-            {
-                $Ctrl.Xaml.IO.ControlDesktop.Items.Add($Item)
-            }
-
-            #[LockScreen]
-            $Ctrl.Xaml.IO.ControlLockScreen.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.LockScreen)
-            {
-                $Ctrl.Xaml.IO.ControlLockScreen.Items.Add($Item)
-            }
-
-            #[Miscellaneous]
-            $Ctrl.Xaml.IO.ControlMiscellaneous.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.Miscellaneous)
-            {
-                $Ctrl.Xaml.IO.ControlMiscellaneous.Items.Add($Item)
-            }
-
-            #[PhotoViewer]
-            $Ctrl.Xaml.IO.ControlPhotoViewer.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.PhotoViewer)
-            {
-                $Ctrl.Xaml.IO.ControlPhotoViewer.Items.Add($Item)
-            }
-
-            #[WindowsApps]
-            $Ctrl.Xaml.IO.ControlWindowsApps.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.WindowsApps)
-            {
-                $Ctrl.Xaml.IO.ControlWindowsApps.Items.Add($Item)
+                $Ctrl.Xaml.IO.ControlFeature.Items.Add($Item)
             }
 
             #[AppX]
@@ -7609,6 +7529,7 @@ Function Get-ViperBomb
                 $Ctrl.Xaml.IO.ControlAppX.Items.Add($Item)
             }
         }
+
     }
 
     $Ctrl = [ViperBombController]::New()
