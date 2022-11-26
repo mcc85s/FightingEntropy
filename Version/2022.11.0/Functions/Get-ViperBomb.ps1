@@ -26,12 +26,13 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-25-2022 15:47:57    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-25-2022 19:10:09    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 Function Get-ViperBomb
 {
+
     Class ViperBombXaml
     {
         Static [String] $Content = @(
@@ -702,14 +703,15 @@ Function Get-ViperBomb
         '                            <Label Content="[System Control Settings]:"/>',
         '                            <Grid Grid.Row="1">',
         '                                <Grid.ColumnDefinitions>',
-        '                                    <ColumnDefinition Width="75"/>',
+        '                                    <ColumnDefinition Width="60"/>',
         '                                    <ColumnDefinition Width="130"/>',
         '                                    <ColumnDefinition Width="10"/>',
         '                                    <ColumnDefinition Width="100"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <Label Grid.Column="0" Content="[Select]:"/>',
-        '                                <ComboBox Grid.Column="1" Name="ControlSlot" SelectedIndex="13">',
+        '                                <Label Grid.Column="0" Content="[Slot]:"/>',
+        '                                <ComboBox Grid.Column="1" Name="ControlSlot" SelectedIndex="0">',
+        '                                    <ComboBoxItem Content="All"/>',
         '                                    <ComboBoxItem Content="Privacy"/>',
         '                                    <ComboBoxItem Content="WindowsUpdate"/>',
         '                                    <ComboBoxItem Content="Service"/>',
@@ -723,7 +725,6 @@ Function Get-ViperBomb
         '                                    <ComboBoxItem Content="Miscellaneous"/>',
         '                                    <ComboBoxItem Content="PhotoViewer"/>',
         '                                    <ComboBoxItem Content="WindowsApps"/>',
-        '                                    <ComboBoxItem Content="All"/>',
         '                                </ComboBox>',
         '                                <Border Grid.Column="2" Margin="4" Background="Black"/>',
         '                                <ComboBox Grid.Column="3" Name="ControlProperty" SelectedIndex="0">',
@@ -773,11 +774,11 @@ Function Get-ViperBomb
         '                            <Label Content="[Windows Features]:"/>',
         '                            <Grid Grid.Row="1">',
         '                                <Grid.ColumnDefinitions>',
-        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="120"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
         '                                <ComboBox Grid.Column="0" Name="ControlFeatureProperty" SelectedIndex="0">',
-        '                                    <ComboBoxItem Content="Name"/>',
+        '                                    <ComboBoxItem Content="FeatureName"/>',
         '                                    <ComboBoxItem Content="State"/>',
         '                                </ComboBox>',
         '                                <TextBox Grid.Column="1" Name="ControlFeatureFilter"/>',
@@ -796,7 +797,7 @@ Function Get-ViperBomb
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="400" Binding="{Binding Description}" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}" IsReadOnly="True"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                            <DataGrid Grid.Row="3" Name="ControlFeatureExtension" HeadersVisibility="None">',
@@ -827,12 +828,14 @@ Function Get-ViperBomb
         '                            <Label Grid.Row="0" Content="[AppX Catalog]"/>',
         '                            <Grid Grid.Row="1">',
         '                                <Grid.ColumnDefinitions>',
-        '                                    <ColumnDefinition Width="100"/>',
+        '                                    <ColumnDefinition Width="120"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
         '                                <ComboBox Grid.Column="0" Name="ControlAppXProperty" SelectedIndex="0">',
-        '                                    <ComboBoxItem Content="Name"/>',
-        '                                    <ComboBoxItem Content="State"/>',
+        '                                    <ComboBoxItem Content="PackageName"/>',
+        '                                    <ComboBoxItem Content="DisplayName"/>',
+        '                                    <ComboBoxItem Content="PublisherID"/>',
+        '                                    <ComboBoxItem Content="InstallLocation"/>',
         '                                </ComboBox>',
         '                                <TextBox Grid.Column="1" Name="ControlAppXFilter"/>',
         '                            </Grid>',
@@ -7463,11 +7466,27 @@ Function Get-ViperBomb
             })
 
             ################# Third Tab #########################
+            # [Control Subtab]
             $Ctrl.Xaml.IO.ControlOutput.Items.Clear()
             ForEach ($Item in $Ctrl.Control.Output)
             {
                 $Ctrl.Xaml.IO.ControlOutput.Items.Add($Item)
             }
+
+            $Ctrl.Xaml.IO.ControlOutput.Add_SelectionChanged(
+            {
+                $Index = $Ctrl.Xaml.IO.ControlOutput.SelectedIndex
+                $Ctrl.Xaml.IO.ControlOutputExtension.Items.Clear()
+                If ($Index -ne -1)
+                {
+                    $Slot = $Ctrl.Xaml.IO.ControlOutput.SelectedItem
+                    ForEach ($Property in "Name","DisplayName","Value","Description")
+                    {
+                        $Item = [PSNoteProperty]::New($Property,$Slot.$Property)
+                        $Ctrl.Xaml.IO.ControlOutputExtension.Items.Add($Item)
+                    } 
+                }
+            })
 
             $Ctrl.Xaml.IO.ControlSlot.Add_SelectionChanged(
             {
@@ -7515,12 +7534,52 @@ Function Get-ViperBomb
                 }
             })
 
-            #[WindowsFeatures]
+            #[WindowsFeatures Subtab]
             $Ctrl.Xaml.IO.ControlFeature.Items.Clear()
             ForEach ($Item in $Ctrl.Control.Feature)
             {
                 $Ctrl.Xaml.IO.ControlFeature.Items.Add($Item)
             }
+
+            $Ctrl.Xaml.IO.ControlFeature.Add_SelectionChanged(
+            {
+                $Index = $Ctrl.Xaml.IO.ControlFeature.SelectedIndex
+                $Ctrl.Xaml.IO.ControlFeatureExtension.Items.Clear()
+                If ($Index -ne -1)
+                {
+                    $Slot = $Ctrl.Xaml.IO.ControlFeature.SelectedItem
+
+                    ForEach ($Property in "Index","FeatureName","State","Path","Online","WinPath","SysDrivePath","RestartNeeded","LogPath","ScratchDirectory","LogLevel")
+                    {
+                        $Item = [PSNoteProperty]::New($Property,$Slot.$Property)
+                        $Ctrl.Xaml.IO.ControlFeatureExtension.Items.Add($Item)
+                    } 
+                }
+            })
+
+            $Ctrl.Xaml.IO.ControlFeatureFilter.Add_TextChanged(
+            {
+                Start-Sleep -Milliseconds 50
+                $Property = $Ctrl.Xaml.IO.ControlFeatureProperty.SelectedItem.Content
+                $Text     = $Ctrl.Xaml.IO.ControlFeatureFilter.Text
+                $List     = Switch -Regex ($Text)
+                {
+                    ""
+                    {
+                        $Ctrl.Control.Feature | ? $Property -match $Text
+                    }
+                    Default
+                    {
+                        $Ctrl.Control.Feature
+                    }
+                }
+
+                $Ctrl.Xaml.IO.ControlFeature.Items.Clear()
+                ForEach ($Item in $List)
+                {
+                    $Ctrl.Xaml.IO.ControlFeature.Items.Add($Item)
+                }
+            })
 
             #[AppX]
             $Ctrl.Xaml.IO.ControlAppX.Items.Clear()
@@ -7528,6 +7587,47 @@ Function Get-ViperBomb
             {
                 $Ctrl.Xaml.IO.ControlAppX.Items.Add($Item)
             }
+
+            $Ctrl.Xaml.IO.ControlAppX.Add_SelectionChanged(
+            {
+                $Index = $Ctrl.Xaml.IO.ControlAppX.SelectedIndex
+                $Ctrl.Xaml.IO.ControlAppXExtension.Items.Clear()
+                If ($Index -ne -1)
+                {
+                    $Slot = $Ctrl.Xaml.IO.ControlAppX.SelectedItem
+
+                    ForEach ($Property in "PackageName","DisplayName","PublisherID","Version","Architecture","ResourceID","InstallLocation",
+                    "RestartNeeded","LogPath","LogLevel")
+                    {
+                        $Item = [PSNoteProperty]::New($Property,$Slot.$Property)
+                        $Ctrl.Xaml.IO.ControlAppXExtension.Items.Add($Item)
+                    } 
+                }
+            })
+    
+            $Ctrl.Xaml.IO.ControlAppXFilter.Add_TextChanged(
+            {
+                Start-Sleep -Milliseconds 50
+                $Property = $Ctrl.Xaml.IO.ControlAppXProperty.SelectedItem.Content
+                $Text     = $Ctrl.Xaml.IO.ControlAppXFilter.Text
+                $List     = Switch -Regex ($Text)
+                {
+                    ""
+                    {
+                        $Ctrl.Control.AppX | ? $Property -match $Text
+                    }
+                    Default
+                    {
+                        $Ctrl.Control.AppX
+                    }
+                }
+
+                $Ctrl.Xaml.IO.ControlAppX.Items.Clear()
+                ForEach ($Item in $List)
+                {
+                    $Ctrl.Xaml.IO.ControlAppX.Items.Add($Item)
+                }
+            })
         }
 
     }
