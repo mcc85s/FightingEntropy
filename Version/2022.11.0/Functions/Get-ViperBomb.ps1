@@ -26,13 +26,12 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-25-2022 19:10:09    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-25-2022 19:16:56    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 Function Get-ViperBomb
 {
-
     Class ViperBombXaml
     {
         Static [String] $Content = @(
@@ -746,7 +745,7 @@ Function Get-ViperBomb
         '                                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}" IsReadOnly="True"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                            <DataGrid Grid.Row="3" Name="ControlOutputExtension" HeadersVisibility="None">',
+        '                            <DataGrid Grid.Row="3" Name="ControlOutputExtension" HeadersVisibility="None" RowHeaderWidth="0">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
         '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
@@ -786,10 +785,10 @@ Function Get-ViperBomb
         '                            <DataGrid Name="ControlFeature" Grid.Row="2">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding FeatureName}" IsReadOnly="True"/>',
-        '                                    <DataGridTemplateColumn Header="Value" Width="150">',
+        '                                    <DataGridTemplateColumn Header="State" Width="150">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding State, Mode=TwoWay, NotifyOnTargetUpdated=True}" Style="{StaticResource DGCombo}">',
+        '                                                <ComboBox SelectedIndex="{Binding State.Index}" Style="{StaticResource DGCombo}">',
         '                                                    <ComboBoxItem Content="Disabled"/>',
         '                                                    <ComboBoxItem Content="DisabledWithPayloadRemoved"/>',
         '                                                    <ComboBoxItem Content="Enabled"/>',
@@ -797,10 +796,10 @@ Function Get-ViperBomb
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding State.Description}" IsReadOnly="True"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                            <DataGrid Grid.Row="3" Name="ControlFeatureExtension" HeadersVisibility="None">',
+        '                            <DataGrid Grid.Row="3" Name="ControlFeatureExtension" HeadersVisibility="None" RowHeaderWidth="0">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
         '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
@@ -869,7 +868,7 @@ Function Get-ViperBomb
         '                                    </DataGridTemplateColumn>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                            <DataGrid Grid.Row="3" Name="ControlAppXExtension" HeadersVisibility="None">',
+        '                            <DataGrid Grid.Row="3" Name="ControlAppXExtension" HeadersVisibility="None" RowHeaderWidth="0">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
         '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
