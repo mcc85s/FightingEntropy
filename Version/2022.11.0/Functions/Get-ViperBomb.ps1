@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-26-2022 20:04:37    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-26-2022 21:03:14    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -276,11 +276,11 @@ Function Get-ViperBomb
         '                                <Label Grid.Row="1" Content="[Hot Fix List]:"/>',
         '                                <DataGrid Grid.Row="2" Name="HotFix">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Source"      Binding="{Binding PSComputerName}" Width="*"/>',
-        '                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}"    Width="*"/>',
-        '                                        <DataGridTextColumn Header="HotFixID"    Binding="{Binding HotFixID}"       Width="80"/>',
-        '                                        <DataGridTextColumn Header="InstalledBy" Binding="{Binding InstalledBy}"    Width="*"/>',
-        '                                        <DataGridTextColumn Header="InstalledOn" Binding="{Binding InstalledOn}"    Width="*"/>',
+        '                                        <DataGridTextColumn Header="Source"      Binding="{Binding Source}"      Width="*"/>',
+        '                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
+        '                                        <DataGridTextColumn Header="HotFixID"    Binding="{Binding HotFixID}"    Width="80"/>',
+        '                                        <DataGridTextColumn Header="InstalledBy" Binding="{Binding InstalledBy}" Width="*"/>',
+        '                                        <DataGridTextColumn Header="InstalledOn" Binding="{Binding InstalledOn}" Width="*"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                            </Grid>',
@@ -433,7 +433,7 @@ Function Get-ViperBomb
         '                                </Grid.ColumnDefinitions>',
         '                                <Label Content="[Slot]:"/>',
         '                                <ComboBox Grid.Column="1" Name="ServiceSlot"/>',
-        '                                <DataGrid Grid.Column="2" Name="ServiceDisplay" HeadersVisibility="None" Margin="9">',
+        '                                <DataGrid Grid.Column="2" Name="ServiceDisplay" HeadersVisibility="None" Margin="10">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Type"        Binding="{Binding Type}"        Width="120"/>',
         '                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
@@ -503,10 +503,10 @@ Function Get-ViperBomb
         '                                    </Style>',
         '                                </DataGrid.RowStyle>',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Index"       Width="50"  Binding="{Binding Index}"/>',
-        '                                    <DataGridTextColumn Header="Name"        Width="150" Binding="{Binding Name}"/>',
-        '                                    <DataGridTextColumn Header="Status"      Width="75"  Binding="{Binding Status}"/>',
-        '                                    <DataGridTemplateColumn Header="StartType" Width="100">',
+        '                                    <DataGridTextColumn Header="#"           Width="25"  Binding="{Binding Index}"/>',
+        '                                    <DataGridTextColumn Header="Name"        Width="175" Binding="{Binding Name}"/>',
+        '                                    <DataGridTextColumn Header="Status"      Width="50"  Binding="{Binding Status}"/>',
+        '                                    <DataGridTemplateColumn Header="StartType" Width="90">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
         '                                                <ComboBox SelectedIndex="{Binding StartMode.Index}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
@@ -514,7 +514,7 @@ Function Get-ViperBomb
         '                                                    <ComboBoxItem Content="Disabled"/>',
         '                                                    <ComboBoxItem Content="Manual"/>',
         '                                                    <ComboBoxItem Content="Auto"/>',
-        '                                                    <ComboBoxItem Content="Auto (Delayed)"/>',
+        '                                                    <ComboBoxItem Content="Auto Delayed"/>',
         '                                                </ComboBox>',
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
@@ -522,11 +522,15 @@ Function Get-ViperBomb
         '                                    <DataGridTemplateColumn Header="[+]"     Width="25">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <CheckBox IsChecked="{Binding Scope}" Margin="0"/>',
+        '                                                <CheckBox IsChecked="{Binding Scope}" Margin="0" HorizontalAlignment="Center">',
+        '                                                    <CheckBox.LayoutTransform>',
+        '                                                        <ScaleTransform ScaleX="0.75" ScaleY="0.75" />',
+        '                                                    </CheckBox.LayoutTransform>',
+        '                                                </CheckBox>',
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTemplateColumn Header="Target" Width="100">',
+        '                                    <DataGridTemplateColumn Header="Target" Width="90">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
         '                                                <ComboBox SelectedIndex="{Binding Target.Index}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
@@ -534,12 +538,12 @@ Function Get-ViperBomb
         '                                                    <ComboBoxItem Content="Disabled"/>',
         '                                                    <ComboBoxItem Content="Manual"/>',
         '                                                    <ComboBoxItem Content="Auto"/>',
-        '                                                    <ComboBoxItem Content="Auto (Delayed)"/>',
+        '                                                    <ComboBoxItem Content="Auto Delayed"/>',
         '                                                </ComboBox>',
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="DisplayName" Width="250" Binding="{Binding DisplayName}"/>',
+        '                                    <DataGridTextColumn Header="DisplayName" Width="*" Binding="{Binding DisplayName}"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                            <DataGrid Grid.Row="3" Name="ServiceExtension" HeadersVisibility="None">',
@@ -1038,7 +1042,7 @@ Function Get-ViperBomb
             $This.Description = $HotFix.Description
             $This.HotFixID    = $HotFix.HotFixID
             $This.InstalledBy = $HotFix.InstalledBy
-            $This.InstalledOn = $HotFix.InstalledOn
+            $This.InstalledOn = ([DateTime]$HotFix.InstalledOn).ToString("MM/dd/yyyy")
         }
     }
 
