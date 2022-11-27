@@ -17,7 +17,7 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-10-10                                                                               //   
-   \\        Modified   : 2022-11-25                                                                               \\   
+   \\        Modified   : 2022-11-26                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
    //        TODO       : AKA "System Control Extension Utility"                                                   //   
@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-25-2022 19:16:56    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 11-26-2022 20:04:37    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -234,6 +234,7 @@ Function Get-ViperBomb
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="55"/>',
+        '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="130"/>',
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" Name="BiosInformation">',
@@ -245,7 +246,8 @@ Function Get-ViperBomb
         '                                        <DataGridTextColumn Header="Released"        Width="125" Binding="{Binding ReleaseDate}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
-        '                                <DataGrid Grid.Row="1" Name="BiosInformationExtension" HeadersVisibility="None">',
+        '                                <Label Grid.Row="1" Content="[Extension]:"/>',
+        '                                <DataGrid Grid.Row="2" Name="BiosInformationExtension" HeadersVisibility="None">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Name"  Width="150" Binding="{Binding Name}"/>',
         '                                        <DataGridTextColumn Header="Value" Width="*"   Binding="{Binding Value}"/>',
@@ -257,6 +259,8 @@ Function Get-ViperBomb
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="55"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="*"/>',
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" Name="OperatingSystem">',
         '                                    <DataGrid.Columns>',
@@ -269,12 +273,23 @@ Function Get-ViperBomb
         '                                        <DataGridTextColumn Header="Type"            Width= "35" Binding="{Binding Type}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
+        '                                <Label Grid.Row="1" Content="[Hot Fix List]:"/>',
+        '                                <DataGrid Grid.Row="2" Name="HotFix">',
+        '                                    <DataGrid.Columns>',
+        '                                        <DataGridTextColumn Header="Source"      Binding="{Binding PSComputerName}" Width="*"/>',
+        '                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}"    Width="*"/>',
+        '                                        <DataGridTextColumn Header="HotFixID"    Binding="{Binding HotFixID}"       Width="80"/>',
+        '                                        <DataGridTextColumn Header="InstalledBy" Binding="{Binding InstalledBy}"    Width="*"/>',
+        '                                        <DataGridTextColumn Header="InstalledOn" Binding="{Binding InstalledOn}"    Width="*"/>',
+        '                                    </DataGrid.Columns>',
+        '                                </DataGrid>',
         '                            </Grid>',
         '                        </TabItem>',
         '                        <TabItem Header="Computer System">',
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="55"/>',
+        '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="90"/>',
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" Name="ComputerSystem">',
@@ -286,7 +301,8 @@ Function Get-ViperBomb
         '                                        <DataGridTextColumn Header="Arch."           Width=" 50" Binding="{Binding Architecture}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
-        '                                <DataGrid Grid.Row="1" Name="ComputerSystemExtension" HeadersVisibility="None">',
+        '                                <Label Grid.Row="1" Content="[Extension]:"/>',
+        '                                <DataGrid Grid.Row="2" Name="ComputerSystemExtension" HeadersVisibility="None">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Name"            Width="150" Binding="{Binding Name}"/>',
         '                                        <DataGridTextColumn Header="Value"           Width=  "*" Binding="{Binding Value}"/>',
@@ -299,6 +315,7 @@ Function Get-ViperBomb
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="80"/>',
+        '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="150"/>',
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" Name="Processor">',
@@ -308,7 +325,8 @@ Function Get-ViperBomb
         '                                        <DataGridTextColumn Header="Caption"      Width="*" Binding="{Binding Caption}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
-        '                                <DataGrid Grid.Row="1" Name="ProcessorExtension" HeadersVisibility="None">',
+        '                                <Label Grid.Row="1" Content="[Extension]:"/>',
+        '                                <DataGrid Grid.Row="2" Name="ProcessorExtension" HeadersVisibility="None">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Name"  Width="120" Binding="{Binding Name}"/>',
         '                                        <DataGridTextColumn Header="Value" Width= "*"  Binding="{Binding Value}"/>',
@@ -320,8 +338,11 @@ Function Get-ViperBomb
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="80"/>',
+        '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="90"/>',
-        '                                    <RowDefinition Height="120"/>',
+        '                                    <RowDefinition Height="40"/>',
+        '                                    <RowDefinition Height="90"/>',
+        '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="80"/>',
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" RowHeaderWidth="0" Name="Disk">',
@@ -335,13 +356,15 @@ Function Get-ViperBomb
         '                                        <DataGridTextColumn Header="OperationalStatus" Width="140" Binding="{Binding OperationalStatus}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
-        '                                <DataGrid Grid.Row="1" Name="DiskExtension" HeadersVisibility="None">',
+        '                                <Label Grid.Row="1" Content="[Extension]:"/>',
+        '                                <DataGrid Grid.Row="2" Name="DiskExtension" HeadersVisibility="None">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Name"              Width="150" Binding="{Binding Name}"/>',
         '                                        <DataGridTextColumn Header="Value"             Width="*"   Binding="{Binding Value}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
-        '                                <DataGrid Grid.Row="2" Name="DiskPartition">',
+        '                                <Label Grid.Row="3" Content="[Partition]:"/>',
+        '                                <DataGrid Grid.Row="4" Name="DiskPartition">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Name"      Width="*" Binding="{Binding Name}"/>',
         '                                        <DataGridTextColumn Header="Type"      Width="200" Binding="{Binding Type}"/>',
@@ -352,7 +375,8 @@ Function Get-ViperBomb
         '                                        <DataGridTextColumn Header="Partition" Width= "50" Binding="{Binding Partition}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
-        '                                <DataGrid Grid.Row="3" Name="DiskVolume">',
+        '                                <Label Grid.Row="5" Content="[Volume]:"/>',
+        '                                <DataGrid Grid.Row="6" Name="DiskVolume">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="DriveID"     Width= "50" Binding="{Binding DriveID}"/>',
         '                                        <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}"/>',
@@ -369,6 +393,7 @@ Function Get-ViperBomb
         '                            <Grid>',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="80"/>',
+        '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="135"/>',
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" Name="Network">',
@@ -377,7 +402,8 @@ Function Get-ViperBomb
         '                                        <DataGridTextColumn Header="Name"    Width="*" Binding="{Binding Name}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
-        '                                <DataGrid Grid.Row="1" Name="NetworkExtension" RowHeaderWidth="0" HeadersVisibility="None">',
+        '                                <Label Grid.Row="1" Content="[Extension]:"/>',
+        '                                <DataGrid Grid.Row="2" Name="NetworkExtension" RowHeaderWidth="0" HeadersVisibility="None">',
         '                                    <DataGrid.Columns>',
         '                                        <DataGridTextColumn Header="Name"  Width="150" Binding="{Binding Name}"/>',
         '                                        <DataGridTextColumn Header="Value" Width="*"  Binding="{Binding Value}"/>',
@@ -394,20 +420,36 @@ Function Get-ViperBomb
         '                        <Grid>',
         '                            <Grid.RowDefinitions>',
         '                                <RowDefinition Height="40"/>',
+        '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="*"/>',
         '                                <RowDefinition Height="100"/>',
         '                                <RowDefinition Height="40"/>',
         '                            </Grid.RowDefinitions>',
         '                            <Grid Grid.Row="0">',
         '                                <Grid.ColumnDefinitions>',
-        '                                    <ColumnDefinition Width="120"/>',
+        '                                    <ColumnDefinition Width="60"/>',
+        '                                    <ColumnDefinition Width="50"/>',
+        '                                    <ColumnDefinition Width="*"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <Label Content="[Slot]:"/>',
+        '                                <ComboBox Grid.Column="1" Name="ServiceSlot"/>',
+        '                                <DataGrid Grid.Column="2" Name="ServiceDisplay" HeadersVisibility="None" Margin="9">',
+        '                                    <DataGrid.Columns>',
+        '                                        <DataGridTextColumn Header="Type"        Binding="{Binding Type}"        Width="120"/>',
+        '                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
+        '                                    </DataGrid.Columns>',
+        '                                </DataGrid>',
+        '                            </Grid>',
+        '                            <Grid Grid.Row="1">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="110"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="120"/>',
         '                                    <ColumnDefinition Width="120"/>',
         '                                    <ColumnDefinition Width="120"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <ComboBox Grid.Column="0" Margin="5" Name="ServiceProperty" VerticalAlignment="Center">',
-        '                                    <ComboBoxItem Content="Name" IsSelected="True"/>',
+        '                                <ComboBox Grid.Column="0" Margin="5" Name="ServiceProperty" VerticalAlignment="Center" SelectedIndex="1">',
+        '                                    <ComboBoxItem Content="Name"/>',
         '                                    <ComboBoxItem Content="DisplayName"/>',
         '                                </ComboBox>',
         '                                <TextBox Grid.Column="1" Margin="5" Name="ServiceFilter"/>',
@@ -415,7 +457,7 @@ Function Get-ViperBomb
         '                                <Label Grid.Column="3" Background="#FFFF66" Foreground="Black" HorizontalContentAlignment="Center" Content="Unspecified"/>',
         '                                <Label Grid.Column="4" Background="#FF6666" Foreground="Black" HorizontalContentAlignment="Center" Content="Non Compliant"/>',
         '                            </Grid>',
-        '                            <DataGrid Grid.Row="1" Grid.Column="0" Name="Service" RowHeaderWidth="0"',
+        '                            <DataGrid Grid.Row="2" Grid.Column="0" Name="Service" RowHeaderWidth="0"',
         '                                      ScrollViewer.CanContentScroll="True" ',
         '                                      ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
@@ -463,11 +505,11 @@ Function Get-ViperBomb
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Index"       Width="50"  Binding="{Binding Index}"/>',
         '                                    <DataGridTextColumn Header="Name"        Width="150" Binding="{Binding Name}"/>',
-        '                                    <DataGridTextColumn Header="Scoped"      Width="75"  Binding="{Binding Scope}"/>',
-        '                                    <DataGridTemplateColumn Header="Profile" Width="100">',
+        '                                    <DataGridTextColumn Header="Status"      Width="75"  Binding="{Binding Status}"/>',
+        '                                    <DataGridTemplateColumn Header="StartType" Width="100">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Slot}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                <ComboBox SelectedIndex="{Binding StartMode.Index}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
         '                                                    <ComboBoxItem Content="Skip"/>',
         '                                                    <ComboBoxItem Content="Disabled"/>',
         '                                                    <ComboBoxItem Content="Manual"/>',
@@ -477,20 +519,36 @@ Function Get-ViperBomb
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Status"      Width="75"  Binding="{Binding Status}"/>',
-        '                                    <DataGridTextColumn Header="StartType"   Width="75"  Binding="{Binding StartMode}"/>',
+        '                                    <DataGridTemplateColumn Header="[+]"     Width="25">',
+        '                                        <DataGridTemplateColumn.CellTemplate>',
+        '                                            <DataTemplate>',
+        '                                                <CheckBox IsChecked="{Binding Scope}" Margin="0"/>',
+        '                                            </DataTemplate>',
+        '                                        </DataGridTemplateColumn.CellTemplate>',
+        '                                    </DataGridTemplateColumn>',
+        '                                    <DataGridTemplateColumn Header="Target" Width="100">',
+        '                                        <DataGridTemplateColumn.CellTemplate>',
+        '                                            <DataTemplate>',
+        '                                                <ComboBox SelectedIndex="{Binding Target.Index}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                    <ComboBoxItem Content="Skip"/>',
+        '                                                    <ComboBoxItem Content="Disabled"/>',
+        '                                                    <ComboBoxItem Content="Manual"/>',
+        '                                                    <ComboBoxItem Content="Auto"/>',
+        '                                                    <ComboBoxItem Content="Auto (Delayed)"/>',
+        '                                                </ComboBox>',
+        '                                            </DataTemplate>',
+        '                                        </DataGridTemplateColumn.CellTemplate>',
+        '                                    </DataGridTemplateColumn>',
         '                                    <DataGridTextColumn Header="DisplayName" Width="250" Binding="{Binding DisplayName}"/>',
-        '                                    <DataGridTextColumn Header="PathName"    Width="150" Binding="{Binding PathName}"/>',
-        '                                    <DataGridTextColumn Header="Description" Width="150" Binding="{Binding Description}"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                            <DataGrid Grid.Row="2" Name="ServiceExtension" HeadersVisibility="None">',
+        '                            <DataGrid Grid.Row="3" Name="ServiceExtension" HeadersVisibility="None">',
         '                                <DataGrid.Columns>',
         '                                    <DataGridTextColumn Header="Name"  Width="150" Binding="{Binding Name}"/>',
         '                                    <DataGridTextColumn Header="Value" Width="*"   Binding="{Binding Value}"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                            <Grid Grid.Row="3">',
+        '                            <Grid Grid.Row="4">',
         '                                <Grid.ColumnDefinitions>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="*"/>',
@@ -784,7 +842,7 @@ Function Get-ViperBomb
         '                            </Grid>',
         '                            <DataGrid Name="ControlFeature" Grid.Row="2">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding FeatureName}" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Name" Width="250" Binding="{Binding FeatureName}" IsReadOnly="True"/>',
         '                                    <DataGridTemplateColumn Header="State" Width="150">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
@@ -967,11 +1025,43 @@ Function Get-ViperBomb
         }
     }
 
+    Class HotFixItem
+    {
+        [String] $Source
+        [String] $Description
+        [String] $HotFixID
+        [String] $InstalledBy
+        [String] $InstalledOn
+        HotFixItem([Object]$HotFix)
+        {
+            $This.Source      = $HotFix.PSComputerName
+            $This.Description = $HotFix.Description
+            $This.HotFixID    = $HotFix.HotFixID
+            $This.InstalledBy = $HotFix.InstalledBy
+            $This.InstalledOn = $HotFix.InstalledOn
+        }
+    }
+
+    Class HotFixList
+    {
+        [Object] $Output
+        HotFixList()
+        {
+            $This.Output = @( )
+            ForEach ($HotFix in Get-HotFix)
+            {
+                $This.Output += [HotFixItem]::New($HotFix)
+            }
+        }
+    }
+
     Enum ServiceStartModeType
     {
-        Auto
-        Manual
+        Skip
         Disabled
+        Manual
+        Auto
+        AutoDelayed
     }
 
     Class ServiceStartModeSlot
@@ -1003,9 +1093,11 @@ Function Get-ViperBomb
             $Item             = [ServiceStartModeSlot]::New($Name)
             $Item.Description = Switch ($Name)
             {
-                Auto     { "The service automatically starts"    }
-                Manual   { "The service requires a manual start" }
-                Disabled { "The service is totally disabled"     }
+                Skip        { "The service is skipped"                           }
+                Disabled    { "The service is totally disabled"                  }
+                Manual      { "The service requires a manual start"              }
+                Auto        { "The service automatically starts"                 }
+                AutoDelayed { "The service automatically starts, but is delayed" } 
             }
             $This.Output += $Item
         }
@@ -1077,22 +1169,39 @@ Function Get-ViperBomb
         }
     }
 
-    Class ServiceObject
+    Class ServiceProfile
+    {
+        [String]      $Name
+        [UInt32[]] $Profile
+        ServiceProfile([String]$Name,[String]$Value)
+        {
+            $This.Name    = $Name
+            $This.Profile = $Value -Split ","
+        }
+        ServiceProfile([Switch]$Flag,[String]$Name,[UInt32]$Value)
+        {
+            $This.Name    = $Name
+            $This.Profile = @($Value)*10
+        }
+    }
+
+    Class ServiceTemplate
     {
         [UInt32]              $Index
         Hidden [Object]         $Wmi
         [String]               $Name 
         [UInt32]              $Scope
-        [UInt32]               $Slot
-        [UInt32]   $DelayedAutoStart 
+        [UInt32[]]          $Profile 
         [Object]          $StartMode
+        [Object]             $Target
         [Object]              $State
+        [UInt32]   $DelayedAutoStart
         [String]             $Status
         [String]        $DisplayName
         [String]           $PathName 
         [String]        $Description
         Hidden [UInt32]       $Match
-        ServiceObject([Int32]$Index,[Object]$Wmi)
+        ServiceTemplate([Int32]$Index,[Object]$Wmi)
         {
             $This.Index              = $Index
             $This.Wmi                = $Wmi
@@ -1107,71 +1216,121 @@ Function Get-ViperBomb
 
     Class ServiceControl
     {
-        Hidden [Object]         $Sub
-        Hidden [String]       $QMark
-        Hidden [Hashtable]   $Config = @{
-            Names   = (("AJRouter;ALG;AppHostSvc;AppIDSvc;Appinfo;AppMgmt;AppReadiness;AppVClient;aspnet_state;AssignedAccessManagerSvc;" + 
-                        "AudioEndpointBuilder;AudioSrv;AxInstSV;BcastDVRUserService_{0};BDESVC;BFE;BITS;BluetoothUserService_{0};Browser;B" +
-                        "TAGService;BthAvctpSvc;BthHFSrv;bthserv;c2wts;camsvc;CaptureService_{0};CDPSvc;CDPUserSvc_{0};CertPropSvc;COMSysA" + 
-                        "pp;CryptSvc;CscService;defragsvc;DeviceAssociationService;DeviceInstall;DevicePickerUserSvc_{0};DevQueryBroker;Dh" +
-                        "cp;diagnosticshub.standardcollector.service;diagsvc;DiagTrack;DmEnrollmentSvc;dmwappushsvc;Dnscache;DoSvc;dot3svc" +
-                        ";DPS;DsmSVC;DsRoleSvc;DsSvc;DusmSvc;EapHost;EFS;embeddedmode;EventLog;EventSystem;Fax;fdPHost;FDResPub;fhsvc;Font" +
-                        "Cache;FontCache3.0.0.0;FrameServer;ftpsvc;GraphicsPerfSvc;hidserv;hns;HomeGroupListener;HomeGroupProvider;HvHost;" +
-                        "icssvc;IKEEXT;InstallService;iphlpsvc;IpxlatCfgSvc;irmon;KeyIso;KtmRm;LanmanServer;LanmanWorkstation;lfsvc;Licens" + 
-                        "eManager;lltdsvc;lmhosts;LPDSVC;LxssManager;MapsBroker;MessagingService_{0};MSDTC;MSiSCSI;MsKeyboardFilter;MSMQ;M" +
-                        "SMQTriggers;NaturalAuthentication;NcaSVC;NcbService;NcdAutoSetup;Netlogon;Netman;NetMsmqActivator;NetPipeActivato" +
-                        "r;netprofm;NetSetupSvc;NetTcpActivator;NetTcpPortSharing;NlaSvc;nsi;OneSyncSvc_{0};p2pimsvc;p2psvc;PcaSvc;PeerDis" +
-                        "tSvc;PerfHost;PhoneSvc;pla;PlugPlay;PNRPAutoReg;PNRPsvc;PolicyAgent;Power;PrintNotify;PrintWorkflowUserSvc_{0};Pr" +
-                        "ofSvc;PushToInstall;QWAVE;RasAuto;RasMan;RemoteAccess;RemoteRegistry;RetailDemo;RmSvc;RpcLocator;SamSs;SCardSvr;S" +
-                        "cDeviceEnum;SCPolicySvc;SDRSVC;seclogon;SEMgrSvc;SENS;Sense;SensorDataService;SensorService;SensrSvc;SessionEnv;S" + 
-                        "grmBroker;SharedAccess;SharedRealitySvc;ShellHWDetection;shpamsvc;smphost;SmsRouter;SNMPTRAP;spectrum;Spooler;SSD" + 
-                        "PSRV;ssh-agent;SstpSvc;StiSvc;StorSvc;svsvc;swprv;SysMain;TabletInputService;TapiSrv;TermService;Themes;TieringEn" +
-                        "gineService;TimeBroker;TokenBroker;TrkWks;TrustedInstaller;tzautoupdate;UevAgentService;UI0Detect;UmRdpService;up" + 
-                        "nphost;UserManager;UsoSvc;VaultSvc;vds;vmcompute;vmicguestinterface;vmicheartbeat;vmickvpexchange;vmicrdv;vmicshu" +
-                        "tdown;vmictimesync;vmicvmsession;vmicvss;vmms;VSS;W32Time;W3LOGSVC;W3SVC;WaaSMedicSvc;WalletService;WarpJITSvc;WA" +
-                        "S;wbengine;WbioSrvc;Wcmsvc;wcncsvc;WdiServiceHost;WdiSystemHost;WebClient;Wecsvc;WEPHOSTSVC;wercplsupport;WerSvc;" + 
-                        "WFDSConSvc;WiaRpc;WinHttpAutoProxySvc;Winmgmt;WinRM;wisvc;WlanSvc;wlidsvc;wlpasvc;wmiApSrv;WMPNetworkSvc;WMSVC;wo" + 
-                        "rkfolderssvc;WpcMonSvc;WPDBusEnum;WpnService;WpnUserService_{0};wscsvc;WSearch;wuauserv;wudfsvc;WwanSvc;xbgm;XblA" + 
-                        "uthManager;XblGameSave;XboxGipSvc;XboxNetApiSvc"))
-            Masks   = (("0;1;2;3;3;4;3;5;3;6;2;2;3;3;3;2;7;3;3;0;0;0;0;3;3;4;7;2;0;3;2;8;3;3;3;3;3;2;3;3;2;3;1;2;7;3;2;3;3;3;2;3;3;3;2;2" + 
-                        ";1;3;3;3;2;3;1;2;3;3;6;3;3;1;1;3;3;9;0;1;3;3;2;2;1;3;3;3;2;3;1;0;3;3;1;11;2;2;0;3;3;0;0;3;2;2;3;3;2;1;2;2;7;3;3;" + 
-                        "2;8;3;1;3;3;3;3;3;2;3;3;2;3;3;3;3;12;12;1;3;1;2;12;1;1;3;3;1;2;6;13;13;13;0;7;1;3;2;12;3;1;1;3;2;3;3;3;3;3;3;3;2" + 
-                        ";13;3;0;2;3;3;3;2;3;12;5;3;0;3;2;3;3;3;6;1;1;1;1;1;1;1;1;14;3;3;3;2;3;3;3;3;3;3;2;0;3;3;0;3;3;3;3;13;3;3;2;1;1;1" + 
-                        "5;3;3;3;1;3;1;1;3;2;2;7;7;3;3;1;3;1;1;3;1").Split(";"))
-            Values   = (("2,2,2,2,2,2,1,1,2,2;2,2,2,2,1,1,1,1,1,1;3,0,3,0,3,0,3,0,3,0;2,0,2,0,2,0,2,0,2,0;0,0,2,2,2,2,1,1,2,2;0,0,1,0,1,0" + 
-                        ",1,0,1,0;0,0,2,0,2,0,2,0,2,0;4,0,4,0,4,0,4,0,4,0;0,0,2,2,1,1,1,1,1,1;3,3,3,3,3,3,1,1,3,3;4,4,4,4,1,1,1,1,1,1;0,0" + 
-                        ",0,0,0,0,0,0,0,0;1,0,1,0,1,0,1,0,1,0;2,2,2,2,1,1,1,1,2,2;0,0,3,0,3,0,3,0,3,0;3,3,3,3,2,2,2,2,3,3").Split(";"))
-        }
-        Hidden [Hashtable]  $Template
-        [Object]              $Output
+        [UInt32]      $Slot
+        [Object]       $Sub
+        [Object]    $Config
+        [Object]    $Output
         ServiceControl()
         {
-            $This.Sub                  = [ServiceSubcontroller]::New()
-            $This.QMark                = (Get-Service | ? ServiceType -eq 224)[0].Name.Split('_')[-1]
-            $This.Config.Names         = $This.Config.Names -f $This.QMark -Split ";"
-            $This.Template             = @{ }
-
-            ForEach ($I in 0..($This.Config.Names.Count-1))
-            {
-                $This.Template.Add($This.Config.Names[$I],$This.Config.Values[$This.Config.Masks[$I]])
-            }
-
+            $This.Sub                  = $This.GetServiceSubcontroller()
+            $This.Config               = $This.GetServiceConfig()
             $This.Output               = @( )
 
             ForEach ($Object in Get-WMIObject -Class Win32_Service | Sort-Object Name)
             {
-                $Item                  = [ServiceObject]::New($This.Output.Count,$Object)
-                If ($This.Template[$Item.Name])
-                {
-                    $Item.Scope        = 1
-                }
-                Else
-                {
-                    $Item.Scope        = 0
-                }
+                $Item                  = $This.GetServiceTemplate($This.Output.Count,$Object)
+                $Item.Scope            = $Item.Name -in $This.Config.Name
                 $This.Load($Item)
+                $Item.Profile          = Switch ($Item.Scope)
+                {
+                    0
+                    {
+                        @($Item.StartMode.Index) * 10
+                    }
+                    1
+                    {
+                        $This.Config | ? Name -eq $Item.Name | % Profile
+                    }
+                }
+                $Item.Target           = $Item.StartMode
+
                 $This.Output          += $Item
             }
+        }
+        [String[]] ConfigNames()
+        {
+            $Out = "AJRouter;ALG;AppHostSvc;AppIDSvc;Appinfo;AppMgmt;AppReadiness;AppVClient;aspnet"+
+            "_state;AssignedAccessManagerSvc;AudioEndpointBuilder;AudioSrv;AxInstSV;BcastDVRUserSer"+
+            "vice_{0};BDESVC;BFE;BITS;BluetoothUserService_{0};Browser;BTAGService;BthAvctpSvc;BthH"+
+            "FSrv;bthserv;c2wts;camsvc;CaptureService_{0};CDPSvc;CDPUserSvc_{0};CertPropSvc;COMSysA"+
+            "pp;CryptSvc;CscService;defragsvc;DeviceAssociationService;DeviceInstall;DevicePickerUs"+
+            "erSvc_{0};DevQueryBroker;Dhcp;diagnosticshub.standardcollector.service;diagsvc;DiagTra"+
+            "ck;DmEnrollmentSvc;dmwappushsvc;Dnscache;DoSvc;dot3svc;DPS;DsmSVC;DsRoleSvc;DsSvc;Dusm"+
+            "Svc;EapHost;EFS;embeddedmode;EventLog;EventSystem;Fax;fdPHost;FDResPub;fhsvc;FontCache"+
+            ";FontCache3.0.0.0;FrameServer;ftpsvc;GraphicsPerfSvc;hidserv;hns;HomeGroupListener;Hom"+
+            "eGroupProvider;HvHost;icssvc;IKEEXT;InstallService;iphlpsvc;IpxlatCfgSvc;irmon;KeyIso;"+
+            "KtmRm;LanmanServer;LanmanWorkstation;lfsvc;LicenseManager;lltdsvc;lmhosts;LPDSVC;LxssM"+
+            "anager;MapsBroker;MessagingService_{0};MSDTC;MSiSCSI;MsKeyboardFilter;MSMQ;MSMQTrigger"+
+            "s;NaturalAuthentication;NcaSVC;NcbService;NcdAutoSetup;Netlogon;Netman;NetMsmqActivato"+
+            "r;NetPipeActivator;netprofm;NetSetupSvc;NetTcpActivator;NetTcpPortSharing;NlaSvc;nsi;O"+
+            "neSyncSvc_{0};p2pimsvc;p2psvc;PcaSvc;PeerDistSvc;PerfHost;PhoneSvc;pla;PlugPlay;PNRPAu"+
+            "toReg;PNRPsvc;PolicyAgent;Power;PrintNotify;PrintWorkflowUserSvc_{0};ProfSvc;PushToIns"+
+            "tall;QWAVE;RasAuto;RasMan;RemoteAccess;RemoteRegistry;RetailDemo;RmSvc;RpcLocator;SamS"+
+            "s;SCardSvr;ScDeviceEnum;SCPolicySvc;SDRSVC;seclogon;SEMgrSvc;SENS;Sense;SensorDataServ"+
+            "ice;SensorService;SensrSvc;SessionEnv;SgrmBroker;SharedAccess;SharedRealitySvc;ShellHW"+
+            "Detection;shpamsvc;smphost;SmsRouter;SNMPTRAP;spectrum;Spooler;SSDPSRV;ssh-agent;SstpS"+
+            "vc;StiSvc;StorSvc;svsvc;swprv;SysMain;TabletInputService;TapiSrv;TermService;Themes;Ti"+
+            "eringEngineService;TimeBroker;TokenBroker;TrkWks;TrustedInstaller;tzautoupdate;UevAgen"+
+            "tService;UI0Detect;UmRdpService;upnphost;UserManager;UsoSvc;VaultSvc;vds;vmcompute;vmi"+
+            "cguestinterface;vmicheartbeat;vmickvpexchange;vmicrdv;vmicshutdown;vmictimesync;vmicvm"+
+            "session;vmicvss;vmms;VSS;W32Time;W3LOGSVC;W3SVC;WaaSMedicSvc;WalletService;WarpJITSvc;"+
+            "WAS;wbengine;WbioSrvc;Wcmsvc;wcncsvc;WdiServiceHost;WdiSystemHost;WebClient;Wecsvc;WEP"+
+            "HOSTSVC;wercplsupport;WerSvc;WFDSConSvc;WiaRpc;WinHttpAutoProxySvc;Winmgmt;WinRM;wisvc"+
+            ";WlanSvc;wlidsvc;wlpasvc;wmiApSrv;WMPNetworkSvc;WMSVC;workfolderssvc;WpcMonSvc;WPDBusE"+
+            "num;WpnService;WpnUserService_{0};wscsvc;WSearch;wuauserv;wudfsvc;WwanSvc;xbgm;XblAuth"+
+            "Manager;XblGameSave;XboxGipSvc;XboxNetApiSvc"
+
+            Return $Out -f (Get-Service | ? ServiceType -eq 224)[0].Name.Split('_')[-1] -Split ";"
+        }
+        [UInt32[]] ConfigMasks()
+        {
+            Return "0;1;2;3;3;4;3;5;3;6;2;2;3;3;3;2;7;3;3;0;0;0;0;3;3;4;7;2;0;3;2;8;3;3;3;3;3;2;3;3"+
+            ";2;3;1;2;7;3;2;3;3;3;2;3;3;3;2;2;1;3;3;3;2;3;1;2;3;3;6;3;3;1;1;3;3;9;0;1;3;3;2;2;1;3;3"+
+            ";3;2;3;1;0;3;3;1;11;2;2;0;3;3;0;0;3;2;2;3;3;2;1;2;2;7;3;3;2;8;3;1;3;3;3;3;3;2;3;3;2;3;"+
+            "3;3;3;12;12;1;3;1;2;12;1;1;3;3;1;2;6;13;13;13;0;7;1;3;2;12;3;1;1;3;2;3;3;3;3;3;3;3;2;1"+
+            "3;3;0;2;3;3;3;2;3;12;5;3;0;3;2;3;3;3;6;1;1;1;1;1;1;1;1;14;3;3;3;2;3;3;3;3;3;3;2;0;3;3;"+
+            "0;3;3;3;3;13;3;3;2;1;1;15;3;3;3;1;3;1;1;3;2;2;7;7;3;3;1;3;1;1;3;1" -Split ";"
+        }
+        [String[]] ConfigValues()
+        {
+            Return "2,2,2,2,2,2,1,1,2,2;2,2,2,2,1,1,1,1,1,1;3,0,3,0,3,0,3,0,3,0;2,0,2,0,2,0,2,0,2,0"+
+            ";0,0,2,2,2,2,1,1,2,2;0,0,1,0,1,0,1,0,1,0;0,0,2,0,2,0,2,0,2,0;4,0,4,0,4,0,4,0,4,0;0,0,2"+
+            ",2,1,1,1,1,1,1;3,3,3,3,3,3,1,1,3,3;4,4,4,4,1,1,1,1,1,1;0,0,0,0,0,0,0,0,0,0;1,0,1,0,1,0"+
+            ",1,0,1,0;2,2,2,2,1,1,1,1,2,2;0,0,3,0,3,0,3,0,3,0;3,3,3,3,2,2,2,2,3,3" -Split ";"
+        }
+        SetSlot([UInt32]$Slot)
+        {
+            ForEach ($X in 0..($This.Output.Count-1))
+            {
+                $Item           = $This.Output[$X]
+                $Item.Target    = $This.Sub.StartMode.Output[$Item.Profile[$Slot]]
+            }
+        }
+        [Object] GetServiceTemplate([UInt32]$Index,[Object]$Object)
+        {
+            Return [ServiceTemplate]::New($Index,$Object)
+        }
+        [Object] GetServiceSubcontroller()
+        {
+            Return [ServiceSubcontroller]::New()
+        }
+        [Object] GetServiceProfile([String]$Name,[String]$Values)
+        {
+            Return [ServiceProfile]::New($Name,$Values)
+        }
+        [Object] GetServiceConfig()
+        {
+            $Hash                      = @{ }
+            $Names                     = $This.ConfigNames()
+            $Masks                     = $This.ConfigMasks()
+            $Values                    = $This.ConfigValues()
+
+            ForEach ($X in 0..($Names.Count-1))
+            {
+                $Hash.Add($Hash.Count,$This.GetServiceProfile($Names[$X],$Values[$Masks[$X]]))
+            }
+
+            Return @($Hash[0..($Hash.Count-1)])
         }
         Load([Object]$Service)
         {
@@ -7064,6 +7223,93 @@ Function Get-ViperBomb
         }
     }
 
+    Enum ProfileType
+    {
+        HomeMax
+        HomeMin
+        ProMax
+        ProMin
+        DesktopSafeMax
+        DesktopSafeMin
+        DesktopTweakedMax
+        DesktopTweakedMin
+        LaptopSafeMax
+        LaptopSafeMin
+    }
+
+    Class ProfileSlot
+    {
+        [UInt32] $Index
+        [String] $Type
+        [String] $Description
+        ProfileSlot([String]$Type)
+        {
+            $This.Type  = [ProfileType]::$Type
+            $This.Index = [UInt32][ProfileType]::$Type
+        }
+        [String] ToString()
+        {
+            Return $This.Type
+        }
+    }
+
+    Class ProfileList
+    {
+        [Object] $Output
+        ProfileList()
+        {
+            $This.Output = @( )
+            ForEach ($Name in [System.Enum]::GetNames([ProfileType]))
+            {
+                $Item = [ProfileSlot]::New($Name)
+                $Item.Description = Switch ($Name)
+                {
+                    HomeMax            
+                    {
+                        "Windows (10|11) Home, Default/Maximum"
+                    }
+                    HomeMin
+                    {
+                        "Windows (10|11) Home, Default/Minimum"
+                    }
+                    ProMax
+                    {
+                        "Windows (10|11) Pro, Default/Maximum"
+                    }
+                    ProMin
+                    {
+                        "Windows (10|11) Pro, Default/Minimum"
+                    }
+                    DesktopSafeMax
+                    {
+                        "Desktop (General), Safe Maximum"
+                    }
+                    DesktopSafeMin
+                    {
+                        "Desktop (General), Safe Minimum"
+                    }
+                    DesktopTweakedMax
+                    {
+                        "Desktop (General), Tweaked Maximum"
+                    }
+                    DesktopTweakedMin
+                    {
+                        "Desktop (General), Tweaked Minimum"
+                    }
+                    LaptopSafeMax
+                    {
+                        "Laptop (General), Safe Maximum"
+                    }
+                    LaptopSafeMin
+                    {
+                        "Laptop (General), Safe Minimum"
+                    }
+                }
+                $This.Output += $Item
+            }
+        }
+    }
+
     Class ViperBombConfig
     {
         [UInt32]        $BypassBuild = 0
@@ -7085,6 +7331,7 @@ Function Get-ViperBomb
         [String]           $RegLabel = "Backup.reg"
         [String]           $CsvLabel = "Backup.csv"
         [Object]             $Filter = [SkipList]::New().Output
+        [Object]            $Profile = [ProfileList]::New().Output
     }
 
     # // _______________________________________________________
@@ -7236,6 +7483,8 @@ Function Get-ViperBomb
         [String] $Platform
         [String] $PSVersion
         [String] $Type
+        [Object] $HotFix
+        [Object] $Config
         [Object] $Service
         [Object] $Control
         ViperBombController()
@@ -7257,10 +7506,11 @@ Function Get-ViperBomb
             $This.PSVersion   = $This.Module.OS.PSVersion
             $This.Type        = $This.Module.OS.Type
 
+            $This.HotFix      = $This.GetHotFix()
+
+            $This.Config      = $This.GetConfig()
             $This.Control     = $This.GetSystemControl()
-
             $This.Xaml        = $This.GetViperBombXaml()
-
         }
         [Object] GetViperBombXaml()
         {
@@ -7274,13 +7524,23 @@ Function Get-ViperBomb
         }
         [Object] GetServices()
         {
-            $This.Update(0,"Gathering [~] System Services")
+            $This.Update(0,"Gathering [~] System/Services")
             Return [ServiceControl]::New()
+        }
+        [Object] GetConfig()
+        {
+            $This.Update(0,"Gathering [~] Default/Config")
+            Return [ViperBombConfig]::New()
         }
         [Object] GetSystemDetails()
         {
-            $This.Update(0,"Gathering [~] System Details")
+            $This.Update(0,"Gathering [~] System/Details")
             Return Get-SystemDetails
+        }
+        [Object] GetHotFix()
+        {
+            $This.Update(0,"Gathering [~] OS/Hotfix Details")
+            Return [HotFixList]::New()
         }
         [String] Label()
         {
@@ -7322,6 +7582,12 @@ Function Get-ViperBomb
             # [Operating System]
             $Ctrl.Xaml.IO.OperatingSystem.Items.Clear()
             [Void]$Ctrl.Xaml.IO.OperatingSystem.Items.Add($Ctrl.System.OperatingSystem)
+
+            $Ctrl.Xaml.IO.HotFix.Items.Clear()
+            ForEach ($Item in $Ctrl.HotFix.Output)
+            {
+                [Void]$Ctrl.Xaml.IO.HotFix.Items.Add($Item)
+            }
 
             # [Computer System]
             $Ctrl.Xaml.IO.ComputerSystem.Items.Clear()
@@ -7416,6 +7682,24 @@ Function Get-ViperBomb
             })
 
             ######################## Second Tab #############################
+            $Ctrl.Xaml.IO.ServiceSlot.Items.Clear()
+            ForEach ($X in 0..9)
+            {
+                $Ctrl.Xaml.IO.ServiceSlot.Items.Add($X)
+            }
+
+            $Ctrl.Xaml.IO.ServiceSlot.Add_SelectionChanged(
+            {
+                $Ctrl.Xaml.IO.ServiceDisplay.Items.Clear()
+                $Ctrl.Xaml.IO.ServiceDisplay.Items.Add($Ctrl.Config.Profile[$Ctrl.Xaml.IO.ServiceSlot.SelectedIndex])
+            })
+
+            $Name = Switch -Regex ($Ctrl.System.OperatingSystem.Caption)
+            {
+                Home { "HomeMax" } "(Pro|Server)" { "ProMax" }
+            }
+            $Ctrl.Xaml.IO.ServiceSlot.SelectedIndex = $Ctrl.Config.Profile | ? Type -eq $Name | % Index
+
             $Ctrl.Xaml.IO.ServiceGet.Add_Click(
             {
                 $Ctrl.Service = $Ctrl.GetServices()
