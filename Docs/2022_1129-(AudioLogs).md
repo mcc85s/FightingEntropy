@@ -1,3 +1,9 @@
+Audio logs that I've recorded over the last couple of months.
+I've been doing this over the last several years, and honing in on my ability to profess some of my thoughts and rhetoric.
+I use some offensive language.
+Get over it.
+-MC
+
 | Date/Length      | File                       | Name                                                                                                        |
 |:-----------------|:---------------------------|:------------------------------------------------------------------------------------------------------------|
 | 11/29/22 4:06:58 | 2022_11_29_09_47_54[1].mp3 | [Newsworthiness and Espionage](https://drive.google.com/file/d/1qD6QCVJsvf1RCCq9ZNJnxKITlSRod2iH)           |
