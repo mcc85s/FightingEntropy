@@ -1,7 +1,7 @@
-Audio logs that I've recorded over the last couple of months.
-I've been doing this over the last several years, and honing in on my ability to profess some of my thoughts and rhetoric.
-I use some offensive language.
-Get over it.
+Audio logs that I've recorded over the last couple of months.</br>
+I've been doing this over the last several years, and honing in on my ability to profess some of my thoughts and rhetoric.</br>
+I use some offensive language.</br>
+Get over it.</br>
 -MC
 
 | Date/Length      | File                       | Name                                                                                                        |
