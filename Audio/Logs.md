@@ -1,8 +1,40 @@
-Audio logs that I've recorded over the last couple of months.</br>
-I've been doing this over the last several years, and honing in on my ability to profess some of my thoughts and rhetoric.</br>
-I use some offensive language.</br>
-Get over it.</br>
--MC
+<h2>Greetings,<h2>
+
+  <p>
+    My name is Michael C. Cook Sr.<br>
+    I'm an <u>application developer</u>, <u>design artist</u>, <u>system/network/security engineer</u>, and a <u>solutions architect</u>.
+  </p>
+
+  <p>
+    Over the last several years, I've been writing programs/documents, recording audio logs, designing graphics, and continuing to develop [FightingEntropy(π)].
+  </p>
+
+   <p>
+     SOME of my development process has included having to take a look at a long list of subjects, and showcase examples of how I have the experience/knowledge
+     that is equivalent to someone with a **MASTERS' DEGREE** in <u>information technology</u>, among various other fields of study/expertise.
+  </p>
+
+  <p>
+    I've decided to create a "rolodex" of some of my thoughts and rhetoric because there are quite a lot of morons on planet Earth, and... SOME of these audio logs
+    effectively support the BOOK I've written...
+  </p>
+
+  <p>
+     [Top Deck Awareness - Not News: Used to be news...? Now it's Not News. Not News. Part of the Not News Network](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1008_TDA_Not_News.pdf)
+  </p>
+
+  <p>
+    It's currently like a 650~ page book. I don't expect that everybody is going to make the time to read it.<br> 
+    Further to that point, I don't expect everybody to actually review all of the EVIDENCE (audio logs/videos/pictures) of the various lawsuits that I COULD file,
+    IF... the (observations/indications/discoveries) I've made in my audio logs below, AND the book... weren't rather apparent that the (law enforcement/judicial)
+    systems are effectively the same exact thing as "acting".
+  </p>
+  
+  <p>
+    The observation I have made about SOCIETY in general, is that... you will NOT succeed if you do not APPEAR to be a likeable person, OR, not good looking.<br>
+    MAYBE I am wrong about that... but, I really have made no observations that indicate that INTELLIGENCE alone, will allow any single person to succeed in our
+    society. That is why I write as often as I do, AND record these various videos, and audio logs.
+  </p>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
