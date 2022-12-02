@@ -1,17 +1,17 @@
 <h2>Greetings,</h2>
 
   <p>
-    My name is Michael C. Cook Sr.<br>
-    I'm an <u>application developer</u>, <u>design artist</u>, <u>system/network/security engineer</u>, and a <u>solutions architect</u>.
+    My name is **Michael C. Cook Sr.**<br>
+    I'm an __application developer__, __design artist__, __system/network/security engineer__, and a __solutions architect__.
   </p>
 
   <p>
-    Over the last several years, I've been writing programs/documents, recording audio logs, designing graphics, and continuing to develop [FightingEntropy(π)].
+    Over the last several years, I've been writing programs/documents, recording audio logs, designing graphics, and continuing to develop **[FightingEntropy(π)]**.
   </p>
 
    <p>
      SOME of my development process has included having to take a look at a long list of subjects, and showcase examples of how I have the experience/knowledge
-     that is equivalent to someone with a **MASTERS' DEGREE** in <u>information technology</u>, among various other fields of study/expertise.
+     that is equivalent to someone with a **MASTERS' DEGREE** in __information technology__, among various other fields of study/expertise.
   </p>
 
   <p>
