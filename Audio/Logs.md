@@ -10,14 +10,14 @@ SOME of my development process has included having to take a look at a long list
 
 I've decided to create a "rolodex" of some of my thoughts and rhetoric because there are quite a lot of morons on planet Earth, and... SOME of these audio logs effectively support the BOOK I've written...
 
-[Top Deck Awareness - Not News: Used to be news...? Now it's Not News. Not News. Part of the Not News Network](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1008_TDA_Not_News.pdf)
+[[Top Deck Awareness - Not News: Used to be news...? Now it's Not News. Not News. Part of the Not News Network]](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1008_TDA_Not_News.pdf)
 
 It's currently like a 650~ page book. I don't expect that everybody is going to make the time to read it. 
 Further to that point, I don't expect everybody to actually review all of the EVIDENCE (audio logs/videos/pictures) of the various lawsuits that I COULD file,
 IF... the (observations/indications/discoveries) I've made in my audio logs below, AND the book... weren't rather apparent that the (law enforcement/judicial)
 systems are effectively "rigged". 
 
-The (1) reason alone that I believe this is the case, is due to the situation regarding JULIEN ASSANGE, as well as EDWARD SNOWDEN.
+The (1) reason alone that I believe this is the case, is due to the situation regarding ``JULIEN ASSANGE``, as well as ``EDWARD SNOWDEN``.
 
 The observation I have made about SOCIETY in general, is that... you will NOT succeed if you do not APPEAR to be a likeable person, OR, are not good looking.
 I mean, even if you are relatively OK looking...? You have to come from a family or bloodline of royalty, in order to succeed, AND, for people in society to take you seriously. Even if THAT is NOT the case...?
@@ -25,12 +25,16 @@ I mean, even if you are relatively OK looking...? You have to come from a family
 You have to literally put on a FAKE front stage appearance, and come across as somebody that NEVER, EVER SWEARS IN REAL LIFE...
 Whereby causing every interaction that people have with one another, to be incredibly FAKE, NOT REAL, INSINCERE, DISINGENUOUS, and et cetera.
 
-As my mother FABIENNE SILVIE KIVLEN COOK always said...?
-"You'll catch more flies with honey."
-That is a FALLACIOUS CIRCLE OF LOGIC that suggests: "Lie to people indiscriminately, in order to get ahead in life."
+As my mother **FABIENNE SILVIE KIVLEN COOK** always said...?
+``You'll catch more flies with honey.``
+
+That is a FALLACIOUS CIRCLE OF LOGIC that suggests: 
+``Lie to people indiscriminately, in order to get ahead in life.``
 
 MAYBE I am wrong about that... but, I really have made no observations that indicate that INTELLIGENCE alone, will allow any single person to succeed in our
-society. That is why I write as often as I do, AND record these various videos, and audio logs.
+society. Nor will having a single shred of DIGNITY or INTEGRITY.
+
+That is why I write as often as I do, AND record these various videos, and audio logs.
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
