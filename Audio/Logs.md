@@ -1,4 +1,4 @@
-<h2>Greetings,<h2>
+<h2>Greetings,</h2>
 
   <p>
     My name is Michael C. Cook Sr.<br>
