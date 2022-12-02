@@ -15,7 +15,9 @@ I've decided to create a "rolodex" of some of my thoughts and rhetoric because t
 It's currently like a 650~ page book. I don't expect that everybody is going to make the time to read it. 
 Further to that point, I don't expect everybody to actually review all of the EVIDENCE (audio logs/videos/pictures) of the various lawsuits that I COULD file,
 IF... the (observations/indications/discoveries) I've made in my audio logs below, AND the book... weren't rather apparent that the (law enforcement/judicial)
-systems are effectively "rigged". The (1) reason alone that I believe this is the case, is due to the situation regarding JULIEN ASSANGE, as well as EDWARD SNOWDEN.
+systems are effectively "rigged". 
+
+The (1) reason alone that I believe this is the case, is due to the situation regarding JULIEN ASSANGE, as well as EDWARD SNOWDEN.
 
 The observation I have made about SOCIETY in general, is that... you will NOT succeed if you do not APPEAR to be a likeable person, OR, are not good looking.
 I mean, even if you are relatively OK looking...? You have to come from a family or bloodline of royalty, in order to succeed, AND, for people in society to take you seriously. Even if THAT is NOT the case...?
