@@ -6,6 +6,7 @@ Get over it.</br>
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **12/01/22** | 0h 53m 07s | **2022_12_01_17_54_09[1].mp3** | [Jumping to conclusions](https://drive.google.com/file/d/10tD5OyOGgbGoj8UZW9D4wOO_d4iwZ_-q) |
 | **11/29/22** | 4h 06m 58s | **2022_11_29_09_47_54[1].mp3** | [Newsworthiness and Espionage](https://drive.google.com/file/d/1qD6QCVJsvf1RCCq9ZNJnxKITlSRod2iH)           |
 | **11/27/22** | 1h 50m 01s | **2022_11_27_13_39_58[1].mp3** | [Astute Observations](https://drive.google.com/file/d/1ZVej4gKyFTIP1S9Vs02mr4kcKArIQ_H1)                    |
 | **11/27/22** | 0h 31m 47s | **2022_11_27_10_12_15[1].mp3** | [Meet the Press/Mass Shootings/Red Flag](https://drive.google.com/file/d/1keZXeFhBWyRk9xIZsoH_e_iW23_4xG9I) |
