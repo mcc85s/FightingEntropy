@@ -17,16 +17,16 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-10-10                                                                               //   
-   \\        Modified   : 2022-11-26                                                                               \\   
+   \\        Modified   : 2022-12-05                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
    //        TODO       : AKA "System Control Extension Utility"                                                   //   
-   \\                                                                                                              \\   
-   //                                                                                                           ___//   
+   \\                     1) Continue to refine the console logger                                                 \\   
+   //                     2) Each item will have the ability to log to the console via method                   ___//   
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-26-2022 21:03:14    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 12-05-2022 14:10:15    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -35,7 +35,18 @@ Function Get-ViperBomb
     Class ViperBombXaml
     {
         Static [String] $Content = @(
-        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="Window" Title="[FightingEntropy]://System Control Extension Utility" Height="640" Width="800" Topmost="True" BorderBrush="Black" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\icon.ico" ResizeMode="NoResize" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
+        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" ',
+        '        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" ',
+        '        Name="Window" ',
+        '        Title="[FightingEntropy]://System Control Extension Utility" ',
+        '        Height="640" ',
+        '        Width="800" ',
+        '        Topmost="True" ',
+        '        BorderBrush="Black" ',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\icon.ico" ',
+        '        ResizeMode="NoResize" ',
+        '        HorizontalAlignment="Center" ',
+        '        WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -79,8 +90,16 @@ Function Get-ViperBomb
         '            <Setter Property="Template">',
         '                <Setter.Value>',
         '                    <ControlTemplate TargetType="TabItem">',
-        '                        <Border Name="Border" BorderThickness="2" BorderBrush="Black" CornerRadius="2" Margin="2">',
-        '                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Right" ContentSource="Header" Margin="5"/>',
+        '                        <Border Name="Border" ',
+        '                                BorderThickness="2" ',
+        '                                BorderBrush="Black" ',
+        '                                CornerRadius="2" ',
+        '                                Margin="2">',
+        '                            <ContentPresenter x:Name="ContentSite" ',
+        '                                              VerticalAlignment="Center" ',
+        '                                              HorizontalAlignment="Right" ',
+        '                                              ContentSource="Header" ',
+        '                                              Margin="5"/>',
         '                        </Border>',
         '                        <ControlTemplate.Triggers>',
         '                            <Trigger Property="IsSelected" Value="True">',
@@ -212,7 +231,8 @@ Function Get-ViperBomb
         '    </Window.Resources>',
         '    <Grid>',
         '        <Grid.Background>',
-        '            <ImageBrush Stretch="UniformToFill" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\background.jpg"/>',
+        '            <ImageBrush Stretch="UniformToFill" ',
+        '                        ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\background.jpg"/>',
         '        </Grid.Background>',
         '        <TabControl Margin="5">',
         '            <TabItem Header="System">',
@@ -223,10 +243,18 @@ Function Get-ViperBomb
         '                    </Grid.RowDefinitions>',
         '                    <DataGrid Grid.Row="0" Name="OS">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Caption"   Width="300"   Binding="{Binding Caption}"/>',
-        '                            <DataGridTextColumn Header="Platform"  Width="150"   Binding="{Binding Platform}"/>',
-        '                            <DataGridTextColumn Header="PSVersion" Width="150"   Binding="{Binding PSVersion}"/>',
-        '                            <DataGridTextColumn Header="Type"      Width="*"     Binding="{Binding Type}"/>',
+        '                            <DataGridTextColumn Header="Caption"',
+        '                                                Width="300"',
+        '                                                Binding="{Binding Caption}"/>',
+        '                            <DataGridTextColumn Header="Platform"',
+        '                                                Width="150"',
+        '                                                Binding="{Binding Platform}"/>',
+        '                            <DataGridTextColumn Header="PSVersion" ',
+        '                                                Width="150"',
+        '                                                Binding="{Binding PSVersion}"/>',
+        '                            <DataGridTextColumn Header="Type"',
+        '                                                Width="*"',
+        '                                                Binding="{Binding Type}"/>',
         '                        </DataGrid.Columns>',
         '                    </DataGrid>',
         '                    <TabControl Grid.Row="1">',
@@ -239,18 +267,32 @@ Function Get-ViperBomb
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" Name="BiosInformation">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name"            Width="*" Binding="{Binding Name}"/>',
-        '                                        <DataGridTextColumn Header="Manufacturer"    Width="150" Binding="{Binding Manufacturer}"/>',
-        '                                        <DataGridTextColumn Header="Serial"          Width="100" Binding="{Binding SerialNumber}"/>',
-        '                                        <DataGridTextColumn Header="Version"         Width="125" Binding="{Binding Version}"/>',
-        '                                        <DataGridTextColumn Header="Released"        Width="125" Binding="{Binding ReleaseDate}"/>',
+        '                                        <DataGridTextColumn Header="Name"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Name}"/>',
+        '                                        <DataGridTextColumn Header="Manufacturer"',
+        '                                                            Width="150"',
+        '                                                            Binding="{Binding Manufacturer}"/>',
+        '                                        <DataGridTextColumn Header="Serial"',
+        '                                                            Width="100"',
+        '                                                            Binding="{Binding SerialNumber}"/>',
+        '                                        <DataGridTextColumn Header="Version"',
+        '                                                            Width="125"',
+        '                                                            Binding="{Binding Version}"/>',
+        '                                        <DataGridTextColumn Header="Released"',
+        '                                                            Width="125"',
+        '                                                            Binding="{Binding ReleaseDate}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                                <Label Grid.Row="1" Content="[Extension]:"/>',
         '                                <DataGrid Grid.Row="2" Name="BiosInformationExtension" HeadersVisibility="None">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name"  Width="150" Binding="{Binding Name}"/>',
-        '                                        <DataGridTextColumn Header="Value" Width="*"   Binding="{Binding Value}"/>',
+        '                                        <DataGridTextColumn Header="Name"',
+        '                                                            Width="150"',
+        '                                                            Binding="{Binding Name}"/>',
+        '                                        <DataGridTextColumn Header="Value"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Value}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                            </Grid>',
@@ -264,23 +306,47 @@ Function Get-ViperBomb
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" Name="OperatingSystem">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Edition"         Width=  "*" Binding="{Binding Caption}"/>',
-        '                                        <DataGridTextColumn Header="Version"         Width= "75" Binding="{Binding Version}"/>',
-        '                                        <DataGridTextColumn Header="Build"           Width= "50" Binding="{Binding Build}"/>',
-        '                                        <DataGridTextColumn Header="Serial"          Width="180" Binding="{Binding Serial}"/>',
-        '                                        <DataGridTextColumn Header="Lang."           Width= "35" Binding="{Binding Language}"/>',
-        '                                        <DataGridTextColumn Header="Prod."           Width= "35" Binding="{Binding Product}"/>',
-        '                                        <DataGridTextColumn Header="Type"            Width= "35" Binding="{Binding Type}"/>',
+        '                                        <DataGridTextColumn Header="Edition"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Caption}"/>',
+        '                                        <DataGridTextColumn Header="Version"',
+        '                                                            Width="75"',
+        '                                                            Binding="{Binding Version}"/>',
+        '                                        <DataGridTextColumn Header="Build"',
+        '                                                            Width="50"',
+        '                                                            Binding="{Binding Build}"/>',
+        '                                        <DataGridTextColumn Header="Serial"',
+        '                                                            Width="180"',
+        '                                                            Binding="{Binding Serial}"/>',
+        '                                        <DataGridTextColumn Header="Lang."',
+        '                                                            Width="35"',
+        '                                                            Binding="{Binding Language}"/>',
+        '                                        <DataGridTextColumn Header="Prod."',
+        '                                                            Width="35"',
+        '                                                            Binding="{Binding Product}"/>',
+        '                                        <DataGridTextColumn Header="Type"',
+        '                                                            Width="35"',
+        '                                                            Binding="{Binding Type}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                                <Label Grid.Row="1" Content="[Hot Fix List]:"/>',
         '                                <DataGrid Grid.Row="2" Name="HotFix">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Source"      Binding="{Binding Source}"      Width="*"/>',
-        '                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
-        '                                        <DataGridTextColumn Header="HotFixID"    Binding="{Binding HotFixID}"    Width="80"/>',
-        '                                        <DataGridTextColumn Header="InstalledBy" Binding="{Binding InstalledBy}" Width="*"/>',
-        '                                        <DataGridTextColumn Header="InstalledOn" Binding="{Binding InstalledOn}" Width="*"/>',
+        '                                        <DataGridTextColumn Header="Source"',
+        '                                                            Binding="{Binding Source}"',
+        '                                                            Width="*"/>',
+        '                                        <DataGridTextColumn Header="Description"',
+        '                                                            Binding="{Binding Description}"',
+        '                                                            Width="*"/>',
+        '                                        <DataGridTextColumn Header="HotFixID"',
+        '                                                            Binding="{Binding HotFixID}"',
+        '                                                            Width="80"/>',
+        '                                        <DataGridTextColumn Header="InstalledBy"',
+        '                                                            Binding="{Binding InstalledBy}"',
+        '                                                            Width="*"/>',
+        '                                        <DataGridTextColumn Header="InstalledOn"',
+        '                                                            Binding="{Binding InstalledOn}"',
+        '                                                            Width="*"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                            </Grid>',
@@ -294,22 +360,35 @@ Function Get-ViperBomb
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" Name="ComputerSystem">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Manufacturer"    Width=  "*" Binding="{Binding Manufacturer}"/>',
-        '                                        <DataGridTextColumn Header="Model"           Width="150" Binding="{Binding Model}"/>',
-        '                                        <DataGridTextColumn Header="Serial"          Width="150" Binding="{Binding Serial}"/>',
-        '                                        <DataGridTextColumn Header="Memory"          Width= "50" Binding="{Binding Memory}"/>',
-        '                                        <DataGridTextColumn Header="Arch."           Width=" 50" Binding="{Binding Architecture}"/>',
+        '                                        <DataGridTextColumn Header="Manufacturer"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Manufacturer}"/>',
+        '                                        <DataGridTextColumn Header="Model"',
+        '                                                            Width="150"',
+        '                                                            Binding="{Binding Model}"/>',
+        '                                        <DataGridTextColumn Header="Serial"',
+        '                                                            Width="150"',
+        '                                                            Binding="{Binding Serial}"/>',
+        '                                        <DataGridTextColumn Header="Memory"',
+        '                                                            Width="50"',
+        '                                                            Binding="{Binding Memory}"/>',
+        '                                        <DataGridTextColumn Header="Arch."',
+        '                                                            Width="50"',
+        '                                                            Binding="{Binding Architecture}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                                <Label Grid.Row="1" Content="[Extension]:"/>',
         '                                <DataGrid Grid.Row="2" Name="ComputerSystemExtension" HeadersVisibility="None">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name"            Width="150" Binding="{Binding Name}"/>',
-        '                                        <DataGridTextColumn Header="Value"           Width=  "*" Binding="{Binding Value}"/>',
+        '                                        <DataGridTextColumn Header="Name"',
+        '                                                            Width="150"',
+        '                                                            Binding="{Binding Name}"/>',
+        '                                        <DataGridTextColumn Header="Value"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Value}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                            </Grid>',
-        '',
         '                        </TabItem>',
         '                        <TabItem Header="Processor">',
         '                            <Grid>',
@@ -320,16 +399,26 @@ Function Get-ViperBomb
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" Name="Processor">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name"         Width="*" Binding="{Binding Name}"/>',
-        '                                        <DataGridTextColumn Header="Manufacturer" Width= "75" Binding="{Binding Manufacturer}"/>',
-        '                                        <DataGridTextColumn Header="Caption"      Width="*" Binding="{Binding Caption}"/>',
+        '                                        <DataGridTextColumn Header="Name"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Name}"/>',
+        '                                        <DataGridTextColumn Header="Manufacturer"',
+        '                                                            Width="75"',
+        '                                                            Binding="{Binding Manufacturer}"/>',
+        '                                        <DataGridTextColumn Header="Caption"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Caption}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                                <Label Grid.Row="1" Content="[Extension]:"/>',
         '                                <DataGrid Grid.Row="2" Name="ProcessorExtension" HeadersVisibility="None">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name"  Width="120" Binding="{Binding Name}"/>',
-        '                                        <DataGridTextColumn Header="Value" Width= "*"  Binding="{Binding Value}"/>',
+        '                                        <DataGridTextColumn Header="Name"',
+        '                                                            Width="120"',
+        '                                                            Binding="{Binding Name}"/>',
+        '                                        <DataGridTextColumn Header="Value"',
+        '                                                            Width= "*"',
+        '                                                            Binding="{Binding Value}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                            </Grid>',
@@ -347,44 +436,90 @@ Function Get-ViperBomb
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" RowHeaderWidth="0" Name="Disk">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Index"             Width= "40" Binding="{Binding Index}"/>',
-        '                                        <DataGridTextColumn Header="Disk"              Width="125" Binding="{Binding Disk}"/>',
-        '                                        <DataGridTextColumn Header="Model"             Width="160" Binding="{Binding Model}"/>',
-        '                                        <DataGridTextColumn Header="Serial"            Width="110" Binding="{Binding Serial}"/>',
-        '                                        <DataGridTextColumn Header="PartitionStyle"    Width= "75" Binding="{Binding PartitionStyle}"/>',
-        '                                        <DataGridTextColumn Header="ProvisioningType"  Width="100" Binding="{Binding ProvisioningType}"/>',
-        '                                        <DataGridTextColumn Header="OperationalStatus" Width="140" Binding="{Binding OperationalStatus}"/>',
+        '                                        <DataGridTextColumn Header="Index"',
+        '                                                            Width= "40"',
+        '                                                            Binding="{Binding Index}"/>',
+        '                                        <DataGridTextColumn Header="Disk"',
+        '                                                            Width="125"',
+        '                                                            Binding="{Binding Disk}"/>',
+        '                                        <DataGridTextColumn Header="Model"',
+        '                                                            Width="160"',
+        '                                                            Binding="{Binding Model}"/>',
+        '                                        <DataGridTextColumn Header="Serial"',
+        '                                                            Width="110"',
+        '                                                            Binding="{Binding Serial}"/>',
+        '                                        <DataGridTextColumn Header="PartitionStyle"',
+        '                                                            Width="75"',
+        '                                                            Binding="{Binding PartitionStyle}"/>',
+        '                                        <DataGridTextColumn Header="ProvisioningType"',
+        '                                                            Width="100"',
+        '                                                            Binding="{Binding ProvisioningType}"/>',
+        '                                        <DataGridTextColumn Header="OperationalStatus"',
+        '                                                            Width="140"',
+        '                                                            Binding="{Binding OperationalStatus}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                                <Label Grid.Row="1" Content="[Extension]:"/>',
         '                                <DataGrid Grid.Row="2" Name="DiskExtension" HeadersVisibility="None">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name"              Width="150" Binding="{Binding Name}"/>',
-        '                                        <DataGridTextColumn Header="Value"             Width="*"   Binding="{Binding Value}"/>',
+        '                                        <DataGridTextColumn Header="Name"',
+        '                                                            Width="150"',
+        '                                                            Binding="{Binding Name}"/>',
+        '                                        <DataGridTextColumn Header="Value"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Value}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                                <Label Grid.Row="3" Content="[Partition]:"/>',
         '                                <DataGrid Grid.Row="4" Name="DiskPartition">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name"      Width="*" Binding="{Binding Name}"/>',
-        '                                        <DataGridTextColumn Header="Type"      Width="200" Binding="{Binding Type}"/>',
-        '                                        <DataGridTextColumn Header="Size"      Width= "85" Binding="{Binding Size}"/>',
-        '                                        <DataGridTextColumn Header="Boot"      Width= "50" Binding="{Binding Boot}"/>',
-        '                                        <DataGridTextColumn Header="Primary"   Width= "50" Binding="{Binding Primary}"/>',
-        '                                        <DataGridTextColumn Header="Disk"      Width= "50" Binding="{Binding Disk}"/>',
-        '                                        <DataGridTextColumn Header="Partition" Width= "50" Binding="{Binding Partition}"/>',
+        '                                        <DataGridTextColumn Header="Name"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Name}"/>',
+        '                                        <DataGridTextColumn Header="Type"',
+        '                                                            Width="200"',
+        '                                                            Binding="{Binding Type}"/>',
+        '                                        <DataGridTextColumn Header="Size"',
+        '                                                            Width="85"',
+        '                                                            Binding="{Binding Size}"/>',
+        '                                        <DataGridTextColumn Header="Boot"',
+        '                                                            Width="50"',
+        '                                                            Binding="{Binding Boot}"/>',
+        '                                        <DataGridTextColumn Header="Primary"',
+        '                                                            Width="50"',
+        '                                                            Binding="{Binding Primary}"/>',
+        '                                        <DataGridTextColumn Header="Disk"',
+        '                                                            Width="50"',
+        '                                                            Binding="{Binding Disk}"/>',
+        '                                        <DataGridTextColumn Header="Partition"',
+        '                                                            Width="50"',
+        '                                                            Binding="{Binding Partition}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                                <Label Grid.Row="5" Content="[Volume]:"/>',
         '                                <DataGrid Grid.Row="6" Name="DiskVolume">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="DriveID"     Width= "50" Binding="{Binding DriveID}"/>',
-        '                                        <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}"/>',
-        '                                        <DataGridTextColumn Header="Filesystem"  Width= "70" Binding="{Binding Filesystem}"/>',
-        '                                        <DataGridTextColumn Header="Partition"   Width="200" Binding="{Binding Partition}"/>',
-        '                                        <DataGridTextColumn Header="Freespace"   Width= "75" Binding="{Binding Freespace}"/>',
-        '                                        <DataGridTextColumn Header="Used"        Width= "75" Binding="{Binding Used}"/>',
-        '                                        <DataGridTextColumn Header="Size"        Width= "75" Binding="{Binding Size}"/>',
+        '                                        <DataGridTextColumn Header="DriveID"',
+        '                                                            Width="50"',
+        '                                                            Binding="{Binding DriveID}"/>',
+        '                                        <DataGridTextColumn Header="Description"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Description}"/>',
+        '                                        <DataGridTextColumn Header="Filesystem"',
+        '                                                            Width="70"',
+        '                                                            Binding="{Binding Filesystem}"/>',
+        '                                        <DataGridTextColumn Header="Partition"',
+        '                                                            Width="200"',
+        '                                                            Binding="{Binding Partition}"/>',
+        '                                        <DataGridTextColumn Header="Freespace"',
+        '                                                            Width= "75"',
+        '                                                            Binding="{Binding Freespace}"/>',
+        '                                        <DataGridTextColumn Header="Used"',
+        '                                                            Width= "75"',
+        '                                                            Binding="{Binding Used}"/>',
+        '                                        <DataGridTextColumn Header="Size"',
+        '                                                            Width= "75"',
+        '                                                            Binding="{Binding Size}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                            </Grid>',
@@ -398,15 +533,26 @@ Function Get-ViperBomb
         '                                </Grid.RowDefinitions>',
         '                                <DataGrid Grid.Row="0" Name="Network">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="IfIndex" Width="50" Binding="{Binding Index}"/>',
-        '                                        <DataGridTextColumn Header="Name"    Width="*" Binding="{Binding Name}"/>',
+        '                                        <DataGridTextColumn Header="IfIndex"',
+        '                                                            Width="50"',
+        '                                                            Binding="{Binding Index}"/>',
+        '                                        <DataGridTextColumn Header="Name"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Name}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                                <Label Grid.Row="1" Content="[Extension]:"/>',
-        '                                <DataGrid Grid.Row="2" Name="NetworkExtension" RowHeaderWidth="0" HeadersVisibility="None">',
+        '                                <DataGrid Grid.Row="2" ',
+        '                                          Name="NetworkExtension"',
+        '                                          RowHeaderWidth="0"',
+        '                                          HeadersVisibility="None">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Name"  Width="150" Binding="{Binding Name}"/>',
-        '                                        <DataGridTextColumn Header="Value" Width="*"  Binding="{Binding Value}"/>',
+        '                                        <DataGridTextColumn Header="Name"',
+        '                                                            Width="150"',
+        '                                                            Binding="{Binding Name}"/>',
+        '                                        <DataGridTextColumn Header="Value"',
+        '                                                            Width="*"',
+        '                                                            Binding="{Binding Value}"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                            </Grid>',
@@ -433,10 +579,17 @@ Function Get-ViperBomb
         '                                </Grid.ColumnDefinitions>',
         '                                <Label Content="[Slot]:"/>',
         '                                <ComboBox Grid.Column="1" Name="ServiceSlot"/>',
-        '                                <DataGrid Grid.Column="2" Name="ServiceDisplay" HeadersVisibility="None" Margin="10">',
+        '                                <DataGrid Grid.Column="2" ',
+        '                                          Name="ServiceDisplay" ',
+        '                                          HeadersVisibility="None"',
+        '                                          Margin="10">',
         '                                    <DataGrid.Columns>',
-        '                                        <DataGridTextColumn Header="Type"        Binding="{Binding Type}"        Width="120"/>',
-        '                                        <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>',
+        '                                        <DataGridTextColumn Header="Type"',
+        '                                                            Binding="{Binding Type}"',
+        '                                                            Width="120"/>',
+        '                                        <DataGridTextColumn Header="Description"',
+        '                                                            Binding="{Binding Description}"',
+        '                                                            Width="*"/>',
         '                                    </DataGrid.Columns>',
         '                                </DataGrid>',
         '                            </Grid>',
@@ -448,17 +601,36 @@ Function Get-ViperBomb
         '                                    <ColumnDefinition Width="120"/>',
         '                                    <ColumnDefinition Width="120"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <ComboBox Grid.Column="0" Margin="5" Name="ServiceProperty" VerticalAlignment="Center" SelectedIndex="1">',
+        '                                <ComboBox Grid.Column="0"',
+        '                                          Margin="5"',
+        '                                          Name="ServiceProperty"',
+        '                                          VerticalAlignment="Center"',
+        '                                          SelectedIndex="1">',
         '                                    <ComboBoxItem Content="Name"/>',
         '                                    <ComboBoxItem Content="DisplayName"/>',
         '                                </ComboBox>',
         '                                <TextBox Grid.Column="1" Margin="5" Name="ServiceFilter"/>',
-        '                                <Label Grid.Column="2" Background="#66FF66" Foreground="Black" HorizontalContentAlignment="Center" Content="Compliant"/>',
-        '                                <Label Grid.Column="3" Background="#FFFF66" Foreground="Black" HorizontalContentAlignment="Center" Content="Unspecified"/>',
-        '                                <Label Grid.Column="4" Background="#FF6666" Foreground="Black" HorizontalContentAlignment="Center" Content="Non Compliant"/>',
+        '                                <Label Grid.Column="2" ',
+        '                                       Background="#66FF66"',
+        '                                       Foreground="Black"',
+        '                                       HorizontalContentAlignment="Center"',
+        '                                       Content="Compliant"/>',
+        '                                <Label Grid.Column="3"',
+        '                                       Background="#FFFF66"',
+        '                                       Foreground="Black"',
+        '                                       HorizontalContentAlignment="Center"',
+        '                                       Content="Unspecified"/>',
+        '                                <Label Grid.Column="4"',
+        '                                       Background="#FF6666"',
+        '                                       Foreground="Black"',
+        '                                       HorizontalContentAlignment="Center"',
+        '                                       Content="Non Compliant"/>',
         '                            </Grid>',
-        '                            <DataGrid Grid.Row="2" Grid.Column="0" Name="Service" RowHeaderWidth="0"',
-        '                                      ScrollViewer.CanContentScroll="True" ',
+        '                            <DataGrid Grid.Row="2" ',
+        '                                      Grid.Column="0" ',
+        '                                      Name="Service" ',
+        '                                      RowHeaderWidth="0"',
+        '                                      ScrollViewer.CanContentScroll="True"',
         '                                      ScrollViewer.IsDeferredScrollingEnabled="True"',
         '                                      ScrollViewer.HorizontalScrollBarVisibility="Visible">',
         '                                <DataGrid.RowStyle>',
@@ -473,29 +645,41 @@ Function Get-ViperBomb
         '                                            <Trigger Property="IsMouseOver" Value="True">',
         '                                                <Setter Property="ToolTip">',
         '                                                    <Setter.Value>',
-        '                                                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Width="400" Background="#000000" Foreground="#00FF00"/>',
+        '                                                        <TextBlock Text="{Binding Description}" ',
+        '                                                                   TextWrapping="Wrap" ',
+        '                                                                   Width="400" ',
+        '                                                                   Background="#000000" ',
+        '                                                                   Foreground="#00FF00"/>',
         '                                                    </Setter.Value>',
         '                                                </Setter>',
-        '                                                <Setter Property="ToolTipService.ShowDuration" Value="360000000"/>',
+        '                                                <Setter Property="ToolTipService.ShowDuration" ',
+        '                                                        Value="360000000"/>',
         '                                            </Trigger>',
         '                                            <MultiDataTrigger>',
         '                                                <MultiDataTrigger.Conditions>',
-        '                                                    <Condition Binding="{Binding Scope}" Value="True"/>',
-        '                                                    <Condition Binding="{Binding Match}" Value="False"/>',
+        '                                                    <Condition Binding="{Binding Scope}" Value="1"/>',
+        '                                                    <Condition Binding="{Binding Match}" Value="0"/>',
         '                                                </MultiDataTrigger.Conditions>',
         '                                                <Setter Property="Background" Value="#F08080"/>',
         '                                            </MultiDataTrigger>',
         '                                            <MultiDataTrigger>',
         '                                                <MultiDataTrigger.Conditions>',
-        '                                                    <Condition Binding="{Binding Scope}" Value="False"/>',
-        '                                                    <Condition Binding="{Binding Match}" Value="False"/>',
+        '                                                    <Condition Binding="{Binding Scope}" Value="0"/>',
+        '                                                    <Condition Binding="{Binding Match}" Value="0"/>',
         '                                                </MultiDataTrigger.Conditions>',
         '                                                <Setter Property="Background" Value="#FFFFFF64"/>',
         '                                            </MultiDataTrigger>',
         '                                            <MultiDataTrigger>',
         '                                                <MultiDataTrigger.Conditions>',
-        '                                                    <Condition Binding="{Binding Scope}" Value="True"/>',
-        '                                                    <Condition Binding="{Binding Match}" Value="True"/>',
+        '                                                    <Condition Binding="{Binding Scope}" Value="0"/>',
+        '                                                    <Condition Binding="{Binding Match}" Value="1"/>',
+        '                                                </MultiDataTrigger.Conditions>',
+        '                                                <Setter Property="Background" Value="#FFFFFF64"/>',
+        '                                            </MultiDataTrigger>',
+        '                                            <MultiDataTrigger>',
+        '                                                <MultiDataTrigger.Conditions>',
+        '                                                    <Condition Binding="{Binding Scope}" Value="1"/>',
+        '                                                    <Condition Binding="{Binding Match}" Value="1"/>',
         '                                                </MultiDataTrigger.Conditions>',
         '                                                <Setter Property="Background" Value="LightGreen"/>',
         '                                            </MultiDataTrigger>',
@@ -503,13 +687,24 @@ Function Get-ViperBomb
         '                                    </Style>',
         '                                </DataGrid.RowStyle>',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="#"           Width="25"  Binding="{Binding Index}"/>',
-        '                                    <DataGridTextColumn Header="Name"        Width="175" Binding="{Binding Name}"/>',
-        '                                    <DataGridTextColumn Header="Status"      Width="50"  Binding="{Binding Status}"/>',
+        '                                    <DataGridTextColumn Header="#"',
+        '                                                        Width="25"',
+        '                                                        Binding="{Binding Index}"/>',
+        '                                    <DataGridTextColumn Header="Name"',
+        '                                                        Width="175"',
+        '                                                        Binding="{Binding Name}"/>',
+        '                                    <DataGridTextColumn Header="Status"',
+        '                                                        Width="50"',
+        '                                                        Binding="{Binding Status}"/>',
         '                                    <DataGridTemplateColumn Header="StartType" Width="90">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding StartMode.Index}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                <ComboBox SelectedIndex="{Binding StartMode.Index}"',
+        '                                                          Margin="0"',
+        '                                                          Padding="2"',
+        '                                                          Height="18"',
+        '                                                          FontSize="10"',
+        '                                                          VerticalContentAlignment="Center">',
         '                                                    <ComboBoxItem Content="Skip"/>',
         '                                                    <ComboBoxItem Content="Disabled"/>',
         '                                                    <ComboBoxItem Content="Manual"/>',
@@ -522,7 +717,9 @@ Function Get-ViperBomb
         '                                    <DataGridTemplateColumn Header="[+]"     Width="25">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <CheckBox IsChecked="{Binding Scope}" Margin="0" HorizontalAlignment="Center">',
+        '                                                <CheckBox IsChecked="{Binding Scope}"',
+        '                                                          Margin="0"',
+        '                                                          HorizontalAlignment="Center">',
         '                                                    <CheckBox.LayoutTransform>',
         '                                                        <ScaleTransform ScaleX="0.75" ScaleY="0.75" />',
         '                                                    </CheckBox.LayoutTransform>',
@@ -533,7 +730,12 @@ Function Get-ViperBomb
         '                                    <DataGridTemplateColumn Header="Target" Width="90">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Target.Index}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                <ComboBox SelectedIndex="{Binding Target.Index}"',
+        '                                                          Margin="0"',
+        '                                                          Padding="2"',
+        '                                                          Height="18"',
+        '                                                          FontSize="10"',
+        '                                                          VerticalContentAlignment="Center">',
         '                                                    <ComboBoxItem Content="Skip"/>',
         '                                                    <ComboBoxItem Content="Disabled"/>',
         '                                                    <ComboBoxItem Content="Manual"/>',
@@ -543,13 +745,19 @@ Function Get-ViperBomb
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="DisplayName" Width="*" Binding="{Binding DisplayName}"/>',
+        '                                    <DataGridTextColumn Header="DisplayName"',
+        '                                                        Width="*"',
+        '                                                        Binding="{Binding DisplayName}"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                            <DataGrid Grid.Row="3" Name="ServiceExtension" HeadersVisibility="None">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name"  Width="150" Binding="{Binding Name}"/>',
-        '                                    <DataGridTextColumn Header="Value" Width="*"   Binding="{Binding Value}"/>',
+        '                                    <DataGridTextColumn Header="Name"',
+        '                                                        Width="150"',
+        '                                                        Binding="{Binding Name}"/>',
+        '                                    <DataGridTextColumn Header="Value"',
+        '                                                        Width="*"',
+        '                                                        Binding="{Binding Value}"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                            <Grid Grid.Row="4">',
@@ -557,8 +765,13 @@ Function Get-ViperBomb
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <Button Grid.Column="0" Name="ServiceGet" Content="Get"/>',
-        '                                <Button Grid.Column="1" Name="ServiceSet" Content="Apply" IsEnabled="False"/>',
+        '                                <Button Grid.Column="0" ',
+        '                                        Name="ServiceGet" ',
+        '                                        Content="Get"/>',
+        '                                <Button Grid.Column="1" ',
+        '                                        Name="ServiceSet" ',
+        '                                        Content="Apply" ',
+        '                                        IsEnabled="False"/>',
         '                            </Grid>',
         '                        </Grid>',
         '                    </TabItem>',
@@ -583,19 +796,21 @@ Function Get-ViperBomb
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
-        '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
         '                                <Label Grid.Row="0" Content="[Bypass]"/>',
-        '                                <CheckBox Grid.Row="1" Name="ServiceBypassBuild"   Content="Skip Build/Version Check"/>',
-        '                                <ComboBox Grid.Row="2" Name="ServiceBypassEdition" VerticalAlignment="Center">',
+        '                                <CheckBox Grid.Row="1" ',
+        '                                          Name="ServiceBypassBuild"',
+        '                                          Content="Skip Build/Version Check"/>',
+        '                                <ComboBox Grid.Row="2"',
+        '                                          Name="ServiceBypassEdition"',
+        '                                          VerticalAlignment="Center">',
         '                                    <ComboBoxItem Content="Override Edition Check" IsSelected="True"/>',
         '                                    <ComboBoxItem Content="Windows 10 Home"/>',
         '                                    <ComboBoxItem Content="Windows 10 Pro"/>',
         '                                </ComboBox>',
-        '                                <CheckBox Grid.Row="3" Name="ServiceBypassLaptop" Content="Enable Laptop Tweaks"/>',
+        '                                <CheckBox Grid.Row="3" ',
+        '                                          Name="ServiceBypassLaptop" ',
+        '                                          Content="Enable Laptop Tweaks"/>',
         '                                <Label Grid.Row="4" Content="[Display Services]"/>',
         '                                <Grid Grid.Row="5">',
         '                                    <Grid.ColumnDefinitions>',
@@ -603,17 +818,33 @@ Function Get-ViperBomb
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <CheckBox Grid.Column="0" Name="ServiceDisplayActive" Content="Active"/>',
-        '                                    <CheckBox Grid.Column="1" Name="ServiceDisplayInactive" Content="Inactive"/>',
-        '                                    <CheckBox Grid.Column="2" Name="ServiceDisplaySkipped" Content="Skipped"/>',
+        '                                    <CheckBox Grid.Column="0"',
+        '                                              Name="ServiceDisplayActive"',
+        '                                              Content="Active"/>',
+        '                                    <CheckBox Grid.Column="1"',
+        '                                              Name="ServiceDisplayInactive"',
+        '                                              Content="Inactive"/>',
+        '                                    <CheckBox Grid.Column="2"',
+        '                                              Name="ServiceDisplaySkipped"',
+        '                                              Content="Skipped"/>',
         '                                </Grid>',
-        '                                <Label    Grid.Row= "6" Content="[Miscellaneous]" Margin="5"/>',
-        '                                <CheckBox Grid.Row= "7" Name="ServiceMiscSimulate"      Content="Simulate Changes [Dry Run]"/>',
-        '                                <CheckBox Grid.Row= "8" Name="ServiceMiscXbox"          Content="Skip All Xbox Services"/>',
-        '                                <CheckBox Grid.Row= "9" Name="ServiceMiscChange"        Content="Allow Change of Service State"/>',
-        '                                <CheckBox Grid.Row="10" Name="ServiceMiscStopDisabled"  Content="Stop Disabled Services"/>',
+        '                                <Label    Grid.Row="6"',
+        '                                          Content="[Miscellaneous]"',
+        '                                          Margin="5"/>',
+        '                                <CheckBox Grid.Row="7"',
+        '                                          Name="ServiceMiscSimulate"',
+        '                                          Content="Simulate Changes [Dry Run]"/>',
+        '                                <CheckBox Grid.Row="8"',
+        '                                          Name="ServiceMiscXbox"',
+        '                                          Content="Skip All Xbox Services"/>',
+        '                                <CheckBox Grid.Row="9"',
+        '                                          Name="ServiceMiscChange"',
+        '                                          Content="Allow Change of Service State"/>',
+        '                                <CheckBox Grid.Row="10"',
+        '                                          Name="ServiceMiscStopDisabled"',
+        '                                          Content="Stop Disabled Services"/>',
         '                            </Grid>',
-        '                            <Border   Grid.Column="1" Background="Black" BorderThickness="0" Margin="4"/>',
+        '                            <Border Grid.Column="1" Background="Black" BorderThickness="0" Margin="4"/>',
         '                            <Grid Grid.Column="2">',
         '                                <Grid.RowDefinitions>',
         '                                    <RowDefinition Height="40"/>',
@@ -628,53 +859,92 @@ Function Get-ViperBomb
         '                                    <RowDefinition Height="40"/>',
         '                                    <RowDefinition Height="40"/>',
         '                                </Grid.RowDefinitions>',
-        '                                <Label Grid.Row="0" Content="[Logging]: Create logs for changes made by this utility"/>',
+        '                                <Label Grid.Row="0"',
+        '                                       Content="[Logging]: Log all changes made by this utility"/>',
         '                                <Grid Grid.Row="1">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="80"/>',
         '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="80"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <CheckBox Grid.Column="0" Name="ServiceLogServiceSwitch" Content="Services" HorizontalContentAlignment="Right"/>',
-        '                                    <TextBox  Grid.Column="1" Name="ServiceLogServiceFile" IsEnabled="False"/>',
-        '                                    <Button   Grid.Column="2" Name="ServiceLogServiceBrowse" Content="Browse"/>',
+        '                                    <CheckBox Grid.Column="0"',
+        '                                              Name="ServiceLogServiceSwitch"',
+        '                                              Content="Services"',
+        '                                              HorizontalContentAlignment="Right"/>',
+        '                                    <TextBox  Grid.Column="1"',
+        '                                              Name="ServiceLogServiceFile"',
+        '                                              IsEnabled="False"/>',
+        '                                    <Button   Grid.Column="2"',
+        '                                              Name="ServiceLogServiceBrowse"',
+        '                                              Content="Browse"/>',
         '                                </Grid>',
         '                                <Grid Grid.Row="2">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="80"/>',
-        '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <CheckBox Grid.Column="0" Name="ServiceLogScriptSwitch" Content="Script" HorizontalContentAlignment="Right"/>',
-        '                                    <TextBox  Grid.Column="1" Name="ServiceLogScriptFile" IsEnabled="False"/>',
-        '                                    <Button   Grid.Column="2" Name="ServiceLogScriptBrowse" Content="Browse"/>',
+        '                                    <CheckBox Grid.Column="0"',
+        '                                              Name="ServiceLogScriptSwitch"',
+        '                                              Content="Script"',
+        '                                              HorizontalContentAlignment="Right"/>',
+        '                                    <Button   Grid.Column="1"',
+        '                                              Name="ServiceLogScriptBrowse"',
+        '                                              Content="Browse"/>',
+        '                                    <TextBox  Grid.Column="2"',
+        '                                              Name="ServiceLogScriptFile"',
+        '                                              IsEnabled="False"/>',
         '                                </Grid>',
-        '                                <Label Grid.Row="3" Content="[Backup]: Save your current service configuration"/>',
+        '                                <Label Grid.Row="3" ',
+        '                                       Content="[Backup]: Save your current service configuration"/>',
         '                                <Grid Grid.Row="4">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="80"/>',
-        '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <CheckBox  Grid.Column="0" Name="ServiceRegSwitch" Content="*.reg" HorizontalContentAlignment="Right"/>',
-        '                                    <TextBox   Grid.Column="1" Name="ServiceRegFile" IsEnabled="False"/>',
-        '                                    <Button    Grid.Column="2" Name="ServiceRegBrowse" Content="Browse"/>',
+        '                                    <CheckBox Grid.Column="0"',
+        '                                              Name="ServiceRegSwitch"',
+        '                                              Content="*.reg"',
+        '                                              HorizontalContentAlignment="Right"/>',
+        '                                    <Button   Grid.Column="1"',
+        '                                              Name="ServiceRegBrowse"',
+        '                                              Content="Browse"/>',
+        '                                    <TextBox  Grid.Column="2"',
+        '                                              Name="ServiceRegFile"',
+        '                                              IsEnabled="False"/>',
         '                                </Grid>',
         '                                <Grid Grid.Row="5">',
         '                                    <Grid.ColumnDefinitions>',
         '                                        <ColumnDefinition Width="80"/>',
-        '                                        <ColumnDefinition Width="*"/>',
         '                                        <ColumnDefinition Width="80"/>',
+        '                                        <ColumnDefinition Width="*"/>',
         '                                    </Grid.ColumnDefinitions>',
-        '                                    <CheckBox  Grid.Column="0" Name="ServiceCsvSwitch" Content="*.csv" HorizontalContentAlignment="Right"/>',
-        '                                    <TextBox   Grid.Column="1" Name="ServiceCsvFile" IsEnabled="False"/>',
-        '                                    <Button    Grid.Column="2" Name="ServiceCsvBrowse" Content="Browse"/>',
+        '                                    <CheckBox Grid.Column="0"',
+        '                                              Name="ServiceCsvSwitch"',
+        '                                              Content="*.csv"',
+        '                                              HorizontalContentAlignment="Right"/>',
+        '                                    <Button   Grid.Column="1"',
+        '                                              Name="ServiceCsvBrowse"',
+        '                                              Content="Browse"/>',
+        '                                    <TextBox  Grid.Column="2"',
+        '                                              Name="ServiceCsvFile"',
+        '                                              IsEnabled="False"/>',
         '                                </Grid>',
-        '                                <Label Grid.Row="6" Content="[Development]"/>',
-        '                                <CheckBox Grid.Row= "7" Name="ServiceDevErrors" Content="Diagnostic Output [On Error]"/>',
-        '                                <CheckBox Grid.Row= "8" Name="ServiceDevLog" Content="Enable Development Logging"/>',
-        '                                <CheckBox Grid.Row= "9" Name="ServiceDevConsole" Content="Enable Console"/>',
-        '                                <CheckBox Grid.Row="10" Name="ServiceDevReport" Content="Enable Diagnostic"/>',
+        '                                <Label Grid.Row="6"',
+        '                                       Content="[Development]"/>',
+        '                                <CheckBox Grid.Row="7"',
+        '                                          Name="ServiceDevErrors"',
+        '                                          Content="Diagnostic Output [On Error]"/>',
+        '                                <CheckBox Grid.Row="8"',
+        '                                          Name="ServiceDevLog"',
+        '                                          Content="Enable Development Logging"/>',
+        '                                <CheckBox Grid.Row="9"',
+        '                                          Name="ServiceDevConsole"',
+        '                                          Content="Enable Console"/>',
+        '                                <CheckBox Grid.Row="10"',
+        '                                          Name="ServiceDevReport"',
+        '                                          Content="Enable Diagnostic"/>',
         '                            </Grid>',
         '                        </Grid>',
         '                    </TabItem>',
@@ -696,7 +966,16 @@ Function Get-ViperBomb
         '                                <Label Grid.Column="0" Content="[BlackViper]:"/>',
         '                                <TextBox Grid.Column="1" Text="https://www.blackviper.com"/>',
         '                            </Grid>',
-        '                            <TextBox Grid.Row="2" Height="45" Padding="5" VerticalContentAlignment="Top" Text="BlackViper is the original author of the Black Viper Service Configuration featured on his website. The original utility dealt with (*.bat) files to provide a service configuration template for Windows services, dating back to the days of Windows (2000/XP)."/>',
+        '                            <TextBox Grid.Row="2" ',
+        '                                     Height="45" ',
+        '                                     Padding="5" ',
+        '                                     VerticalContentAlignment="Top" >',
+        '                                BlackViper is the original author of the Black Viper ',
+        '                                     Service Configuration featured on his website. The ',
+        '                                     original utility dealt with (*.bat) files to provide ',
+        '                                     a service configuration template for Windows services, ',
+        '                                     dating back to the days of Windows (2000/XP).',
+        '                            </TextBox>',
         '                            <Grid Grid.Row="3">',
         '                                <Grid.ColumnDefinitions>',
         '                                    <ColumnDefinition Width="120"/>',
@@ -705,9 +984,17 @@ Function Get-ViperBomb
         '                                <Label Grid.Column="0" Content="[MadBomb122]:"/>',
         '                                <TextBox Grid.Column="1" Text="https://www.github.com/MadBomb122"/>',
         '                            </Grid>',
-        '                            <TextBox Grid.Row="4" Height="45" Padding="5"  VerticalContentAlignment="Top" Text="MadBomb122 is the author of the Windows PowerShell (GUI/graphical user interface) tool that adopted Black Viper&quot;s service configuration (*.bat) files in a prior version of this utility, which is featured on his [GitHub] repository above."/>',
+        '                            <TextBox Grid.Row="4"',
+        '                                     Height="45"',
+        '                                     Padding="5"',
+        '                                     VerticalContentAlignment="Top">',
+        '                                MadBomb122 is the author of the Windows PowerShell ',
+        '                                     (GUI/graphical user interface) tool that adopted Black ',
+        '                                     Viper&apos;s service configuration (*.bat) files in a prior ',
+        '                                     version of this utility, which is featured on his [GitHub] ',
+        '                                     repository above.',
+        '                            </TextBox>',
         '                        </Grid>',
-        '',
         '                    </TabItem>',
         '                </TabControl>',
         '            </TabItem>',
@@ -724,30 +1011,67 @@ Function Get-ViperBomb
         '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="40"/>',
         '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="40"/>',
-        '                                <RowDefinition Height="40"/>',
         '                            </Grid.RowDefinitions>',
         '                            <Label Grid.Row="0" Content="[Global]:"/>',
-        '                            <CheckBox Grid.Row="1" Name="ControlGlobalRestorePoint" Content="Create Restore Point"/>',
-        '                            <CheckBox Grid.Row="2" Name="ControlGlobalShowSkipped" Content="Show Skipped Items"/>',
-        '                            <CheckBox Grid.Row="3" Name="ControlGlobalRestart" Content="Restart When Done (Restart is Recommended)"/>',
-        '                            <CheckBox Grid.Row="4" Name="ControlGlobalVersionCheck" Content="Check for Update (If found, will run with current settings)"/>',
-        '                            <CheckBox Grid.Row="5" Name="ControlGlobalInternetCheck" Content="Skip Internet Check"/>',
-        '                            <Label Grid.Row="6" Content="[Backup]:" Margin="5"/>',
-        '                            <Grid Grid.Row="7">',
+        '                            <Grid Grid.Row="1">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="150"/>',
+        '                                    <ColumnDefinition Width="10"/>',
+        '                                    <ColumnDefinition Width="150"/>',
+        '                                    <ColumnDefinition Width="250"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <CheckBox Grid.Column="0"',
+        '                                      Name="ControlGlobalRestorePoint"',
+        '                                      Content="Create Restore Point"/>',
+        '                                <Border Grid.Column="1" Margin="4" Background="Black"/>',
+        '                                <CheckBox Grid.Column="2"',
+        '                                      Name="ControlGlobalRestart"',
+        '                                      Content="Restart When Done"/>',
+        '                                <Label Grid.Column="3" Content="Restart recommended"/>',
+        '                            </Grid>',
+        '                            <Grid Grid.Row="2">',
+        '                                <Grid.ColumnDefinitions>',
+        '                                    <ColumnDefinition Width="150"/>',
+        '                                    <ColumnDefinition Width="10"/>',
+        '                                    <ColumnDefinition Width="150"/>',
+        '                                    <ColumnDefinition Width="250"/>',
+        '                                </Grid.ColumnDefinitions>',
+        '                                <CheckBox Grid.Column="0"',
+        '                                          Name="ControlGlobalShowSkipped"',
+        '                                          Content="Show Skipped Items"/>',
+        '                                <Border Grid.Column="1" Margin="4" Background="Black"/>',
+        '                                <CheckBox Grid.Column="2"',
+        '                                          Name="ControlGlobalVersionCheck"',
+        '                                          Content="Check for Update"/>',
+        '                                <Label Grid.Column="3" ',
+        '                                       Content="If found, will run with current settings"/>',
+        '                            </Grid>',
+        '                            <CheckBox Grid.Row="3"',
+        '                                      Name="ControlGlobalInternetCheck"',
+        '                                      Content="Skip Internet Check"/>',
+        '                            <Label Grid.Row="4" Content="[Backup]:" Margin="5"/>',
+        '                            <Grid Grid.Row="5">',
         '                                <Grid.ColumnDefinitions>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <Button Grid.Column="0" Name="ControlBackupSave" Content="Save Settings"/>',
-        '                                <Button Grid.Column="1" Name="ControlBackupLoad" Content="Load Settings"/>',
-        '                                <Button Grid.Column="2" Name="ControlBackupWinDefault" Content="Windows Default"/>',
-        '                                <Button Grid.Column="3" Name="ControlBackupResetDefault" Content="Reset All Items"/>',
+        '                                <Button Grid.Column="0"',
+        '                                        Name="ControlBackupSave"',
+        '                                        Content="Save Settings"/>',
+        '                                <Button Grid.Column="1"',
+        '                                        Name="ControlBackupLoad"',
+        '                                        Content="Load Settings"/>',
+        '                                <Button Grid.Column="2"',
+        '                                        Name="ControlBackupWinDefault"',
+        '                                        Content="Windows Default"/>',
+        '                                <Button Grid.Column="3"',
+        '                                        Name="ControlBackupResetDefault"',
+        '                                        Content="Reset All Items"/>',
         '                            </Grid>',
-        '                            <Label Grid.Row="8" Content="[Script]"/>',
-        '                            <ComboBox Grid.Row="9" Margin="5" Height="24" IsEnabled="False">',
+        '                            <Label Grid.Row="6" Content="[Script]"/>',
+        '                            <ComboBox Grid.Row="7" Margin="5" Height="24" IsEnabled="False">',
         '                                <ComboBoxItem Content="Rewrite Module Version" IsSelected="True"/>',
         '                            </ComboBox>',
         '                        </Grid>',
@@ -796,21 +1120,36 @@ Function Get-ViperBomb
         '                            </Grid>',
         '                            <DataGrid Grid.Row="2" Name="ControlOutput">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="200" Binding="{Binding DisplayName}" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Name"',
+        '                                                        Width="200"',
+        '                                                        Binding="{Binding DisplayName}"',
+        '                                                        IsReadOnly="True"/>',
         '                                    <DataGridTemplateColumn Header="Value" Width="150">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Value, Mode=TwoWay, NotifyOnTargetUpdated=True}" ItemsSource="{Binding Options}" Style="{StaticResource DGCombo}"/>',
+        '                                                <ComboBox SelectedIndex="{Binding Value}" ',
+        '                                                          ItemsSource="{Binding Options}" ',
+        '                                                          Style="{StaticResource DGCombo}"/>',
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Description"',
+        '                                                        Width="*"',
+        '                                                        Binding="{Binding Description}"',
+        '                                                        IsReadOnly="True"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                            <DataGrid Grid.Row="3" Name="ControlOutputExtension" HeadersVisibility="None" RowHeaderWidth="0">',
+        '                            <DataGrid Grid.Row="3" ',
+        '                                      Name="ControlOutputExtension"',
+        '                                      HeadersVisibility="None"',
+        '                                      RowHeaderWidth="0">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
-        '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                    <DataGridTextColumn Header="Name"',
+        '                                                        Binding="{Binding Name}"',
+        '                                                        Width="150"/>',
+        '                                    <DataGridTextColumn Header="Value"',
+        '                                                        Binding="{Binding Value}"',
+        '                                                        Width="*"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                            <Grid Grid.Row="4">',
@@ -818,8 +1157,14 @@ Function Get-ViperBomb
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <Button Grid.Column="0" Name="ControlOutputApply" Content="Apply" IsEnabled="False"/>',
-        '                                <Button Grid.Column="1" Name="ControlOutputDontApply" Content="Do not apply..." IsEnabled="False"/>',
+        '                                <Button Grid.Column="0"',
+        '                                        Name="ControlOutputApply"',
+        '                                        Content="Apply"',
+        '                                        IsEnabled="False"/>',
+        '                                <Button Grid.Column="1"',
+        '                                        Name="ControlOutputDontApply"',
+        '                                        Content="Do not apply..."',
+        '                                        IsEnabled="False"/>',
         '                            </Grid>',
         '                        </Grid>',
         '                    </TabItem>',
@@ -838,19 +1183,26 @@ Function Get-ViperBomb
         '                                    <ColumnDefinition Width="120"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <ComboBox Grid.Column="0" Name="ControlFeatureProperty" SelectedIndex="0">',
+        '                                <ComboBox Grid.Column="0"',
+        '                                          Name="ControlFeatureProperty"',
+        '                                          SelectedIndex="0">',
         '                                    <ComboBoxItem Content="FeatureName"/>',
         '                                    <ComboBoxItem Content="State"/>',
         '                                </ComboBox>',
-        '                                <TextBox Grid.Column="1" Name="ControlFeatureFilter"/>',
+        '                                <TextBox Grid.Column="1"',
+        '                                         Name="ControlFeatureFilter"/>',
         '                            </Grid>',
         '                            <DataGrid Name="ControlFeature" Grid.Row="2">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name" Width="250" Binding="{Binding FeatureName}" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Name"',
+        '                                                        Width="250"',
+        '                                                        Binding="{Binding FeatureName}"',
+        '                                                        IsReadOnly="True"/>',
         '                                    <DataGridTemplateColumn Header="State" Width="150">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding State.Index}" Style="{StaticResource DGCombo}">',
+        '                                                <ComboBox SelectedIndex="{Binding State.Index}"',
+        '                                                          Style="{StaticResource DGCombo}">',
         '                                                    <ComboBoxItem Content="Disabled"/>',
         '                                                    <ComboBoxItem Content="DisabledWithPayloadRemoved"/>',
         '                                                    <ComboBoxItem Content="Enabled"/>',
@@ -858,13 +1210,23 @@ Function Get-ViperBomb
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding State.Description}" IsReadOnly="True"/>',
+        '                                    <DataGridTextColumn Header="Description"',
+        '                                                        Width="*"',
+        '                                                        Binding="{Binding State.Description}"',
+        '                                                        IsReadOnly="True"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                            <DataGrid Grid.Row="3" Name="ControlFeatureExtension" HeadersVisibility="None" RowHeaderWidth="0">',
+        '                            <DataGrid Grid.Row="3"',
+        '                                      Name="ControlFeatureExtension"',
+        '                                      HeadersVisibility="None"',
+        '                                      RowHeaderWidth="0">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
-        '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                    <DataGridTextColumn Header="Name"',
+        '                                                        Binding="{Binding Name}"',
+        '                                                        Width="150"/>',
+        '                                    <DataGridTextColumn Header="Value"',
+        '                                                        Binding="{Binding Value}"',
+        '                                                        Width="*"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                            <Grid Grid.Row="4">',
@@ -872,8 +1234,14 @@ Function Get-ViperBomb
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <Button Grid.Column="0" Name="ControlFeatureApply" Content="Apply" IsEnabled="False"/>',
-        '                                <Button Grid.Column="1" Name="ControlFeatureDontApply" Content="Do not apply..." IsEnabled="False"/>',
+        '                                <Button Grid.Column="0"',
+        '                                        Name="ControlFeatureApply"',
+        '                                        Content="Apply"',
+        '                                        IsEnabled="False"/>',
+        '                                <Button Grid.Column="1"',
+        '                                        Name="ControlFeatureDontApply"',
+        '                                        Content="Do not apply..."',
+        '                                        IsEnabled="False"/>',
         '                            </Grid>',
         '                        </Grid>',
         '                    </TabItem>',
@@ -892,7 +1260,9 @@ Function Get-ViperBomb
         '                                    <ColumnDefinition Width="120"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <ComboBox Grid.Column="0" Name="ControlAppXProperty" SelectedIndex="0">',
+        '                                <ComboBox Grid.Column="0"',
+        '                                          Name="ControlAppXProperty"',
+        '                                          SelectedIndex="0">',
         '                                    <ComboBoxItem Content="PackageName"/>',
         '                                    <ComboBoxItem Content="DisplayName"/>',
         '                                    <ComboBoxItem Content="PublisherID"/>',
@@ -902,24 +1272,42 @@ Function Get-ViperBomb
         '                            </Grid>',
         '                            <DataGrid Name="ControlAppX" Grid.Row="2">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="#"        Binding="{Binding Index}"        Width="25"/>',
+        '                                    <DataGridTextColumn Header="#"',
+        '                                                        Binding="{Binding Index}"',
+        '                                                        Width="25"/>',
         '                                    <DataGridTemplateColumn Header="Profile" Width="45">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Profile}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                <ComboBox SelectedIndex="{Binding Profile}"',
+        '                                                          Margin="0"',
+        '                                                          Padding="2"',
+        '                                                          Height="18"',
+        '                                                          FontSize="10"',
+        '                                                          VerticalContentAlignment="Center">',
         '                                                    <ComboBoxItem Content="False"/>',
         '                                                    <ComboBoxItem Content="True"/>',
         '                                                </ComboBox>',
         '                                            </DataTemplate>',
         '                                        </DataGridTemplateColumn.CellTemplate>',
         '                                    </DataGridTemplateColumn>',
-        '                                    <DataGridTextColumn Header="DisplayName"  Binding="{Binding DisplayName}" Width="2*"/>',
-        '                                    <DataGridTextColumn Header="PublisherID"  Binding="{Binding PublisherID}" Width="*"/>',
-        '                                    <DataGridTextColumn Header="Version"      Binding="{Binding Version}"     Width="100"/>',
+        '                                    <DataGridTextColumn Header="DisplayName"',
+        '                                                        Binding="{Binding DisplayName}"',
+        '                                                        Width="2*"/>',
+        '                                    <DataGridTextColumn Header="PublisherID"',
+        '                                                        Binding="{Binding PublisherID}"',
+        '                                                        Width="*"/>',
+        '                                    <DataGridTextColumn Header="Version"',
+        '                                                        Binding="{Binding Version}"',
+        '                                                        Width="100"/>',
         '                                    <DataGridTemplateColumn Header="Slot" Width="60">',
         '                                        <DataGridTemplateColumn.CellTemplate>',
         '                                            <DataTemplate>',
-        '                                                <ComboBox SelectedIndex="{Binding Slot}" Margin="0" Padding="2" Height="18" FontSize="10" VerticalContentAlignment="Center">',
+        '                                                <ComboBox SelectedIndex="{Binding Slot}"',
+        '                                                          Margin="0"',
+        '                                                          Padding="2"',
+        '                                                          Height="18"',
+        '                                                          FontSize="10"',
+        '                                                          VerticalContentAlignment="Center">',
         '                                                    <ComboBoxItem Content="Skip"/>',
         '                                                    <ComboBoxItem Content="Unhide"/>',
         '                                                    <ComboBoxItem Content="Hide"/>',
@@ -930,10 +1318,17 @@ Function Get-ViperBomb
         '                                    </DataGridTemplateColumn>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
-        '                            <DataGrid Grid.Row="3" Name="ControlAppXExtension" HeadersVisibility="None" RowHeaderWidth="0">',
+        '                            <DataGrid Grid.Row="3"',
+        '                                      Name="ControlAppXExtension"',
+        '                                      HeadersVisibility="None"',
+        '                                      RowHeaderWidth="0">',
         '                                <DataGrid.Columns>',
-        '                                    <DataGridTextColumn Header="Name"  Binding="{Binding Name}" Width="150"/>',
-        '                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="*"/>',
+        '                                    <DataGridTextColumn Header="Name"',
+        '                                                        Binding="{Binding Name}"',
+        '                                                        Width="150"/>',
+        '                                    <DataGridTextColumn Header="Value"',
+        '                                                        Binding="{Binding Value}"',
+        '                                                        Width="*"/>',
         '                                </DataGrid.Columns>',
         '                            </DataGrid>',
         '                            <Grid Grid.Row="4">',
@@ -941,8 +1336,14 @@ Function Get-ViperBomb
         '                                    <ColumnDefinition Width="*"/>',
         '                                    <ColumnDefinition Width="*"/>',
         '                                </Grid.ColumnDefinitions>',
-        '                                <Button Grid.Column="0" Name="ControlAppXApply" Content="Apply" IsEnabled="False"/>',
-        '                                <Button Grid.Column="1" Name="ControlAppXDontApply" Content="Do not apply..." IsEnabled="False"/>',
+        '                                <Button Grid.Column="0"',
+        '                                        Name="ControlAppXApply"',
+        '                                        Content="Apply"',
+        '                                        IsEnabled="False"/>',
+        '                                <Button Grid.Column="1"',
+        '                                        Name="ControlAppXDontApply"',
+        '                                        Content="Do not apply..."',
+        '                                        IsEnabled="False"/>',
         '                            </Grid>',
         '                        </Grid>',
         '                    </TabItem>',
@@ -1194,17 +1595,17 @@ Function Get-ViperBomb
         [UInt32]              $Index
         Hidden [Object]         $Wmi
         [String]               $Name 
-        [UInt32]              $Scope
         [UInt32[]]          $Profile 
         [Object]          $StartMode
         [Object]             $Target
+        [UInt32]              $Scope
+        [UInt32]              $Match
         [Object]              $State
         [UInt32]   $DelayedAutoStart
         [String]             $Status
         [String]        $DisplayName
         [String]           $PathName 
         [String]        $Description
-        Hidden [UInt32]       $Match
         ServiceTemplate([Int32]$Index,[Object]$Wmi)
         {
             $This.Index              = $Index
@@ -1220,12 +1621,14 @@ Function Get-ViperBomb
 
     Class ServiceControl
     {
-        [UInt32]      $Slot
-        [Object]       $Sub
-        [Object]    $Config
-        [Object]    $Output
-        ServiceControl()
+        Hidden [Object] $Console
+        [UInt32]           $Slot
+        [Object]            $Sub
+        [Object]         $Config
+        [Object]         $Output
+        ServiceControl([Object]$Console)
         {
+            $This.Console              = $Console
             $This.Sub                  = $This.GetServiceSubcontroller()
             $This.Config               = $This.GetServiceConfig()
             $This.Output               = @( )
@@ -1247,9 +1650,14 @@ Function Get-ViperBomb
                     }
                 }
                 $Item.Target           = $Item.StartMode
+                $This.Update($Item.StartMode.Index,$Item.Name)
 
                 $This.Output          += $Item
             }
+        }
+        Update([Int32]$State,[String]$Status)
+        {
+            $This.Console.Update($State,"[Service]: $Status")
         }
         [String[]] ConfigNames()
         {
@@ -1308,6 +1716,7 @@ Function Get-ViperBomb
             {
                 $Item           = $This.Output[$X]
                 $Item.Target    = $This.Sub.StartMode.Output[$Item.Profile[$Slot]]
+                $Item.Match     = [UInt32]($Item.StartMode.Index -eq $Item.Target.Index)
             }
         }
         [Object] GetServiceTemplate([UInt32]$Index,[Object]$Object)
@@ -1412,20 +1821,28 @@ Function Get-ViperBomb
     
     Class ControlTemplate
     {
-        [String]      $Source
-        [String]        $Name
-        [String] $DisplayName
-        [UInt32]       $Value
-        [String] $Description
-        [String[]]   $Options
-        [Object]      $Output
-        ControlTemplate()
+        Hidden [Object] $Console
+        Hidden [Guid]      $Guid
+        [String]         $Source
+        [String]           $Name
+        [String]    $DisplayName
+        [UInt32]          $Value
+        [String]    $Description
+        [String[]]      $Options
+        [Object]         $Output
+        ControlTemplate([Object]$Console)
         {
+            $This.Console = $Console
+            $This.Guid    = [Guid]::NewGuid()
             $This.Output  = @( )
         }
         Registry([String]$Path,[String]$Name)
         {
             $This.Output += [Registry]::New($Path,$Name)
+        }
+        Update([UInt32]$State,[String]$Status)
+        {
+            $This.Console.Update($State,"[Control/$($This.Guid)]: $Status")
         }
         [UInt32] GetWinVersion()
         {
@@ -1435,7 +1852,7 @@ Function Get-ViperBomb
     
     Class Telemetry : ControlTemplate
     {
-        Telemetry() : base()
+        Telemetry([Object]$Console) : base($Console)
         {
             $This.Name        = "Telemetry"
             $This.DisplayName = "Telemetry"
@@ -1443,17 +1860,28 @@ Function Get-ViperBomb
             $This.Description = "Various location and tracking features"
             $This.Options     = "Skip", "Enable*", "Disable"
     
-            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection','AllowTelemetry'),
-            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection','AllowTelemetry'),
-            ('HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection','AllowTelemetry'),
-            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\PreviewBuilds','AllowBuildPreview'),
-            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Software Protection Platform','NoGenTicket'),
-            ('HKLM:\SOFTWARE\Policies\Microsoft\SQMClient\Windows','CEIPEnable'),
-            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat','AITEnable'),
-            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat','DisableInventory'),
-            ('HKLM:\SOFTWARE\Policies\Microsoft\AppV\CEIP','CEIPEnable'),
-            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\TabletPC','PreventHandwritingDataSharing'),
-            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\TextInput','AllowLinguisticDataCollection') | % {
+            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection',
+            'AllowTelemetry'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection',
+            'AllowTelemetry'),
+            ('HKLM:\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Policies\DataCollection',
+            'AllowTelemetry'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\PreviewBuilds',
+            'AllowBuildPreview'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\CurrentVersion\Software Protection Platform',
+            'NoGenTicket'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\SQMClient\Windows',
+            'CEIPEnable'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat',
+            'AITEnable'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\AppCompat',
+            'DisableInventory'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\AppV\CEIP',
+            'CEIPEnable'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\TabletPC',
+            'PreventHandwritingDataSharing'),
+            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\TextInput',
+            'AllowLinguisticDataCollection') | % {
     
                 $This.Registry($_[0],$_[1])
             }
@@ -1504,15 +1932,21 @@ Function Get-ViperBomb
         }
         [String[]] TelemetryTask()
         {
-            Return @(('{0}\{2}\Microsoft Compatibility Appraiser;{0}\{2}\ProgramDataUpdater;{0}\Autochk\Proxy;{0}\{3}\Consolidator;{0}\{3}\UsbCeip;{0}\DiskDiagnostic',
-            '\Microsoft-Windows-DiskDiagnosticDataCollector;{1}\Office ClickToRun Service Monitor;{1}\{4}FallBack2016;{1}\{4}LogOn2016' -join '') -f "Microsoft\Windows",
-            "Microsoft\Office","Application Experience","Customer Experience Improvement Program","OfficeTelemetryAgent").Split(";")
+            Return "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser",
+                   "Microsoft\Windows\Application Experience\ProgramDataUpdater",
+                   "Microsoft\Windows\Autochk\Proxy",
+                   "Microsoft\Windows\Customer Experience Improvement Program\Consolidator",
+                   "Microsoft\Windows\Customer Experience Improvement Program\UsbCeip",
+                   "Microsoft\Windows\DiskDiagnostic\Microsoft-Windows-DiskDiagnosticDataCollector",
+                   "Microsoft\Office\Office ClickToRun Service Monitor",
+                   "Microsoft\Office\OfficeTelemetryAgentFallBack2016",
+                   "Microsoft\Office\OfficeTelemetryAgentLogOn2016"
         }
     }
     
     Class WiFiSense : ControlTemplate
     {
-        WiFiSense()
+        WiFiSense([Object]$Console) : base($Console)
         {
             $This.Name        = "WifiSense"
             $This.DisplayName = "Wi-Fi Sense"
@@ -1561,7 +1995,7 @@ Function Get-ViperBomb
     
     Class SmartScreen : ControlTemplate
     {
-        SmartScreen()
+        SmartScreen([Object]$Console) : base($Console)
         {
             $This.Name        = "SmartScreen"
             $This.DisplayName = "SmartScreen"
@@ -1569,15 +2003,23 @@ Function Get-ViperBomb
             $This.Description = "Cloud-based anti-phishing and anti-malware component"
             $This.Options     = "Skip","Enable*","Disable"
     
-            $Path             = Switch ($This.GetWinVersion() -ge 1703)
+            $Path             = Switch ([UInt32]($This.GetWinVersion() -ge 1703))
             { 
-                $False { $Null } $True { Get-AppxPackage | ? Name -eq Microsoft.MicrosoftEdge | % PackageFamilyName }
+                0 { $Null } 1 { Get-AppxPackage | ? Name -eq Microsoft.MicrosoftEdge | % PackageFamilyName }
             }
     
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer","SmartScreenEnabled"),
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost","EnableWebContentEvaluation"),
-            ("HKCU:\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppContainer\Storage\$Path\MicrosoftEdge\PhishingFilter","EnabledV9"),
-            ("HKCU:\SOFTWARE\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppContainer\Storage\$Path\MicrosoftEdge\PhishingFilter","PreventOverride") | % {
+            $Phishing = "HKCU:","SOFTWARE","Classes","Local Settings","Software",
+                        "Microsoft","Windows","CurrentVersion","AppContainer",
+                        "Storage",$Path,"MicrosoftEdge","PhishingFilter" -join "\"
+
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer",
+            "SmartScreenEnabled"),
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppHost",
+            "EnableWebContentEvaluation"),
+            ($Phishing,
+            "EnabledV9"),
+            ($Phishing,
+            "PreventOverride") | % {
             
                 $This.Registry($_[0],$_[1])
             }
@@ -1611,7 +2053,7 @@ Function Get-ViperBomb
     
     Class LocationTracking : ControlTemplate
     {
-        LocationTracking()
+        LocationTracking([Object]$Console) : base($Console)
         {
             $This.Name        = "LocationTracking"
             $This.DisplayName = "Location Tracking"
@@ -1654,52 +2096,60 @@ Function Get-ViperBomb
     
     Class Feedback : ControlTemplate
     {
-        Feedback()
-        {
-            $This.Name        = "Feedback"
-            $This.DisplayName = "Feedback"
-            $This.Value       = 1
-            $This.Description = "System Initiated User Feedback"
-            $This.Options     = "Skip", "Enable*", "Disable"
+        Feedback([Object]$Console) : base($Console)
+        {
+            $This.Name        = "Feedback"
+            $This.DisplayName = "Feedback"
+            $This.Value       = 1
+            $This.Description = "System Initiated User Feedback"
+            $This.Options     = "Skip", "Enable*", "Disable"
     
-            ('HKCU:\SOFTWARE\Microsoft\Siuf\Rules','NumberOfSIUFInPeriod'),
-            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection','DoNotShowFeedbackNotifications') | % {
-        
-                $This.Registry($_[0],$_[1])
-            }
-        }
-        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-        {
-            Switch ($Mode)
-            {
-                0
-                {
-                    If ($ShowSkipped)
-                    {
-                        Write-Host "Skipping [!] Feedback"
-                    }
-                }
-                1
-                {
-                    Write-Host "Enabling [~] Feedback"
-                    $This.Output[0].Remove()
-                    $This.Output[1].Remove()
-                    "Microsoft\Windows\Feedback\Siuf\DmClient" | % { $_,"$_`OnScenarioDownload" } | % { Enable-ScheduledTask -TaskName $_ | Out-Null }
-                }
-                2
-                {
-                    Write-Host "Disabling [~] Feedback"
-                    $This.Output[0].Set(0)
-                    $This.Output[1].Set(1)
-                    "Microsoft\Windows\Feedback\Siuf\DmClient" | % { $_,"$_`OnScenarioDownload" } | % { Disable-ScheduledTask -TaskName $_ | Out-Null }
-                }
-            }
-        }
+            ('HKCU:\SOFTWARE\Microsoft\Siuf\Rules','NumberOfSIUFInPeriod'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection','DoNotShowFeedbackNotifications') | % {
+        
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Feedback"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Feedback"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    ForEach ($Item in "Microsoft\Windows\Feedback\Siuf\DmClient",
+                                      "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload")
+                    {
+                        Enable-ScheduledTask -TaskName $Item | Out-Null 
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Feedback"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(1)
+                    ForEach ($Item in "Microsoft\Windows\Feedback\Siuf\DmClient",
+                                      "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload")
+                    {
+                        Disable-ScheduledTask -TaskName $Item | Out-Null 
+                    }
+                }
+            }
+        }
     }
     
     Class AdvertisingID : ControlTemplate
     {
-        AdvertisingID()
+        AdvertisingID([Object]$Console) : base($Console)
         {
             $This.Name        = "AdvertisingID"
             $This.DisplayName = "Advertising ID"
@@ -1707,8 +2157,10 @@ Function Get-ViperBomb
             $This.Description = "Allows Microsoft to display targeted ads"
             $This.Options     = "Skip", "Enable*", "Disable"
             
-            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo','Enabled'),
-            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy','TailoredExperiencesWithDiagnosticDataEnabled') | % {
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo',
+            'Enabled'),
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Privacy',
+            'TailoredExperiencesWithDiagnosticDataEnabled') | % {
     
                 $This.Registry($_[0],$_[1])
             }
@@ -1742,7 +2194,7 @@ Function Get-ViperBomb
     
     Class Cortana : ControlTemplate
     {
-        Cortana()
+        Cortana([Object]$Console) : base($Console)
         {
             $This.Name        = "Cortana"
             $This.DisplayName = "Cortana"
@@ -1810,7 +2262,7 @@ Function Get-ViperBomb
     
     Class CortanaSearch : ControlTemplate
     {
-        CortanaSearch()
+        CortanaSearch([Object]$Console) : base($Console)
         {
             $This.Name        = "CortanaSearch"
             $This.DisplayName = "Cortana Search"
@@ -1847,7 +2299,7 @@ Function Get-ViperBomb
     
     Class ErrorReporting : ControlTemplate
     {
-        ErrorReporting()
+        ErrorReporting([Object]$Console) : base($Console)
         {
             $This.Name        = "ErrorReporting"
             $This.DisplayName = "Error Reporting"
@@ -1884,18 +2336,29 @@ Function Get-ViperBomb
     
     Class AutoLoggerFile : ControlTemplate
     {
-        AutoLoggerFile()
+        AutoLoggerFile([Object]$Console) : base($Console)
         {
             $This.Name        = "AutoLoggerFile"
             $This.DisplayName = "Automatic Logger File"
             $This.Value       = 1
-            $This.Description = "This feature lets you trace the actions of a trace provider while Windows is booting"
+            $This.Description = "Lets you track trace provider actions while Windows is booting"
             $This.Options     = "Skip", "Enable*", "Disable"
     
-            ("HKLM:\SYSTEM\ControlSet001\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener","Start"),
-            ("HKLM:\SYSTEM\ControlSet001\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener\{DD17FA14-CDA6-7191-9B61-37A28F7A10DA}","Start") | % {
+            ($This.WmiRegistry(),
+            "Start"),
+            ("$($This.WmiRegistry())\{DD17FA14-CDA6-7191-9B61-37A28F7A10DA}",
+            "Start") | % {
+    
                 $This.Registry($_[0],$_[1])
             }
+        }
+        [String] WmiRegistry()
+        {
+            Return "HKLM:\SYSTEM\ControlSet001\Control\WMI\AutoLogger\AutoLogger-Diagtrack-Listener"
+        }
+        [String] AutoLogger()
+        {
+            Return "$Env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -1911,15 +2374,15 @@ Function Get-ViperBomb
                 1
                 {
                     Write-Host "Unrestricting [~] AutoLogger"
-                    icacls $Env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger /grant:r SYSTEM:`(OI`)`(CI`)F
+                    icacls $This.AutoLogger() /grant:r SYSTEM:`(OI`)`(CI`)F
                     $This.Output[0].Set(1)
                     $This.Output[1].Set(1)
                 }
                 2
                 {
                     Write-Host "Removing [~] AutoLogger, and restricting directory"
-                    icacls $Env:PROGRAMDATA\Microsoft\Diagnosis\ETLLogs\AutoLogger /deny SYSTEM:`(OI`)`(CI`)F
-                    Remove-Item $Env:ProgramData\Microsoft\Diagnosis\ETLLogs\AutoLogger\AutoLogger-Diagtrack-Listener.etl -EA 0 -Verbose
+                    icacls $This.AutoLogger() /deny SYSTEM:`(OI`)`(CI`)F
+                    Remove-Item "$($This.AutoLogger())\AutoLogger-Diagtrack-Listener.etl" -EA 0 -Verbose
                     $This.Output[0].Set(0)
                     $This.Output[1].Set(0)
                 }
@@ -1929,7 +2392,7 @@ Function Get-ViperBomb
     
     Class DiagTrack : ControlTemplate
     {
-        DiagTrack()
+        DiagTrack([Object]$Console) : base($Console)
         {
             $This.Name        = "DiagTracking"
             $This.DisplayName = "Diagnostics Tracking"
@@ -1968,13 +2431,14 @@ Function Get-ViperBomb
     
     Class WAPPush : ControlTemplate
     {
-        WAPPush()
+        WAPPush([Object]$Console) : base($Console)
         {
             $This.Name        = "WAPPush"
             $This.DisplayName = "WAP Push"
             $This.Value       = 1
             $This.Description = "Device Management Wireless Application Protocol"
             $This.Options     = "Skip", "Enable*", "Disable"
+
             $This.Registry("HKLM:\SYSTEM\CurrentControlSet\Services\dmwappushservice","DelayedAutoStart")
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
@@ -2025,26 +2489,28 @@ Function Get-ViperBomb
     
     Class PrivacyList
     {
+        Hidden [Object] $Console
         [Object]  $Output
-        PrivacyList()
+        PrivacyList([Object]$Console)
         {
+            $This.Console     = $Console
             $This.Output      = @( )
             ForEach ($Name in [System.Enum]::GetNames([PrivacyType]))
             {
                 $Item         = Switch ($Name)
                 {
-                    Telemetry        { [Telemetry]::New()        }
-                    WiFiSense        { [WiFiSense]::New()        }
-                    SmartScreen      { [SmartScreen]::New()      }
-                    LocationTracking { [LocationTracking]::New() } 
-                    Feedback         { [Feedback]::New()         }
-                    AdvertisingID    { [AdvertisingID]::New()    } 
-                    Cortana          { [Cortana]::New()          }
-                    CortanaSearch    { [CortanaSearch]::New()    } 
-                    ErrorReporting   { [ErrorReporting]::New()   }
-                    AutologgerFile   { [AutologgerFile]::New()   } 
-                    DiagTrack        { [DiagTrack]::New()        }
-                    WAPPush          { [WAPPush]::New()          }
+                    Telemetry        { [Telemetry]::New($This.Console)        }
+                    WiFiSense        { [WiFiSense]::New($This.Console)        }
+                    SmartScreen      { [SmartScreen]::New($This.Console)      }
+                    LocationTracking { [LocationTracking]::New($This.Console) } 
+                    Feedback         { [Feedback]::New($This.Console)         }
+                    AdvertisingID    { [AdvertisingID]::New($This.Console)    } 
+                    Cortana          { [Cortana]::New($This.Console)          }
+                    CortanaSearch    { [CortanaSearch]::New($This.Console)    } 
+                    ErrorReporting   { [ErrorReporting]::New($This.Console)   }
+                    AutologgerFile   { [AutologgerFile]::New($This.Console)   } 
+                    DiagTrack        { [DiagTrack]::New($This.Console)        }
+                    WAPPush          { [WAPPush]::New($This.Console)          }
                 }
                 $Item.Source  = "Privacy"
                 $This.Output += $Item
@@ -2054,7 +2520,7 @@ Function Get-ViperBomb
     
     Class UpdateMSProducts : ControlTemplate
     {
-        UpdateMSProducts()
+        UpdateMSProducts([Object]$Console) : base($Console)
         {
             $This.Name        = "UpdateMSProducts"
             $This.DisplayName = "Update MS Products"
@@ -2076,20 +2542,24 @@ Function Get-ViperBomb
                 1
                 {
                     Write-Host "Enabling [~] Update Microsoft Products"
-                    (New-Object -ComObject Microsoft.Update.ServiceManager).AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
+                    $This.ComMusm().AddService2("7971f918-a847-4430-9279-4a52d1efe18d", 7, "")
                 }
                 2
                 {
                     Write-Host "Disabling [~] Update Microsoft Products"
-                    (New-Object -ComObject Microsoft.Update.ServiceManager).RemoveService("7971f918-a847-4430-9279-4a52d1efe18d")
+                    $This.ComMusm().RemoveService("7971f918-a847-4430-9279-4a52d1efe18d")
                 }
             }
+        }
+        [Object] ComMusm()
+        {
+            Return New-Object -ComObject Microsoft.Update.ServiceManager
         }
     }
     
     Class CheckForWindowsUpdate : ControlTemplate
     {
-            CheckForWindowsUpdate()
+            CheckForWindowsUpdate([Object]$Console) : base($Console)
             {
                 $This.Name        = "CheckForWindowsUpdate"
                 $This.DisplayName = "Check for Windows Updates"
@@ -2126,7 +2596,7 @@ Function Get-ViperBomb
     
     Class WinUpdateType : ControlTemplate
     {
-        WinUpdateType()
+        WinUpdateType([Object]$Console) : base($Console)
         {
             $This.Name        = "WinUpdateType"
             $This.DisplayName = "Windows Update Type"
@@ -2173,7 +2643,7 @@ Function Get-ViperBomb
     
     Class WinUpdateDownload : ControlTemplate
     {
-        WinUpdateDownload()
+        WinUpdateDownload([Object]$Console) : base($Console)
         {
             $This.Name        = "WinUpdateDownload"
             $This.DisplayName = "Windows Update Download"
@@ -2181,10 +2651,14 @@ Function Get-ViperBomb
             $This.Description = "Selects a source from which to pull Windows Updates"
             $This.Options     = "Skip", "P2P*", "Local Only", "Disable"
     
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config","DODownloadMode"),
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization","SystemSettingsDownloadMode"),
-            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization","SystemSettingsDownloadMode"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization","DODownloadMode") | % {
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config",
+            "DODownloadMode"),
+            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization",
+            "SystemSettingsDownloadMode"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization",
+            "SystemSettingsDownloadMode"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization",
+            "DODownloadMode") | % {
     
                 $This.Registry($_[0],$_[1])
             }
@@ -2248,7 +2722,7 @@ Function Get-ViperBomb
     
     Class UpdateMSRT : ControlTemplate
     {
-        UpdateMSRT()
+        UpdateMSRT([Object]$Console) : base($Console)
         {
             $This.Name        = "UpdateMSRT"
             $This.DisplayName = "Update MSRT"
@@ -2285,7 +2759,7 @@ Function Get-ViperBomb
     
     Class UpdateDriver : ControlTemplate
     {
-        UpdateDriver()
+        UpdateDriver([Object]$Console) : base($Console)
         {
             $This.Name        = "UpdateDriver"
             $This.DisplayName = "Update Driver"
@@ -2293,9 +2767,12 @@ Function Get-ViperBomb
             $This.Description = "Allows drivers to be downloaded from Windows Update"
             $This.Options     = "Skip", "Enable*", "Disable"
             
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching","SearchOrderConfig"),
-            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate","ExcludeWUDriversInQualityUpdate"),
-            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata","PreventDeviceMetadataFromNetwork") | % {
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DriverSearching",
+            "SearchOrderConfig"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate",
+            "ExcludeWUDriversInQualityUpdate"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata",
+            "PreventDeviceMetadataFromNetwork") | % {
     
                 $This.Registry($_[0],$_[1])
             }
@@ -2331,7 +2808,7 @@ Function Get-ViperBomb
     
     Class RestartOnUpdate : ControlTemplate
     {
-        RestartOnUpdate()
+        RestartOnUpdate([Object]$Console) : base($Console)
         {
             $This.Name        = "RestartOnUpdate"
             $This.DisplayName = "Restart on Update"
@@ -2339,9 +2816,12 @@ Function Get-ViperBomb
             $This.Description = "Reboots the machine when an update is installed and requires it"
             $This.Options     = "Skip", "Enable*", "Disable"
             
-            ("HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings","UxOption"),
-            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU","NoAutoRebootWithLoggOnUsers"),
-            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU","AUPowerManagement") | % {
+            ("HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings",
+            "UxOption"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU",
+            "NoAutoRebootWithLoggOnUsers"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU",
+            "AUPowerManagement") | % {
     
                 $This.Registry($_[0],$_[1])
             }
@@ -2377,7 +2857,7 @@ Function Get-ViperBomb
     
     Class AppAutoDownload : ControlTemplate
     {
-        AppAutoDownload()
+        AppAutoDownload([Object]$Console) : base($Console)
         {
             $This.Name        = "AppAutoDownload"
             $This.DisplayName = "Consumer App Auto Download"
@@ -2385,11 +2865,21 @@ Function Get-ViperBomb
             $This.Description = "Provisioned Windows Store applications are downloaded"
             $This.Options     = "Skip", "Enable*", "Disable"
     
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate","AutoDownload"),
-            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent","DisableWindowsConsumerFeatures") | % {
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsStore\WindowsUpdate",
+            "AutoDownload"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent",
+            "DisableWindowsConsumerFeatures") | % {
     
                 $This.Registry($_[0],$_[1])
             }
+        }
+        [String] CloudCache()
+        {
+            Return "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount"
+        }
+        [String] PlaceHolder() 
+        {
+            Return "*windows.data.placeholdertilecollection\Current"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -2415,9 +2905,8 @@ Function Get-ViperBomb
                     $This.Output[1].Set(1)
                     If ($This.GetWinVersion() -le 1803)
                     {
-                        $Key  = Get-ChildItem -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount" -Recurse |`
-                        ? Name -like "*windows.data.placeholdertilecollection\Current" | % PSPath
-                        $Data = Get-ItemProperty -Path $Key | % Data
+                        $Key  = Get-ChildItem $This.CloudCache() -Recurse | ? Name -like $This.Placeholder()
+                        $Data = (Get-ItemProperty -Path $Key.PSPath).Data
                         Set-ItemProperty -Path $Key -Name Data -Type Binary -Value $Data[0..15] -Verbose
                         Stop-Process -Name ShellExperienceHost -Force
                     }
@@ -2428,7 +2917,7 @@ Function Get-ViperBomb
     
     Class UpdateAvailablePopup : ControlTemplate
     {
-        UpdateAvailablePopup()
+        UpdateAvailablePopup([Object]$Console) : base($Console)
         {
             $This.Name        = "UpdateAvailablePopup"
             $This.DisplayName = "Update Available Pop-up"
@@ -2488,24 +2977,26 @@ Function Get-ViperBomb
     
     Class WindowsUpdateList
     {
-        [Object]  $Output
-        WindowsUpdateList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        WindowsUpdateList([Object]$Console)
         {
+            $This.Console    = $Console
             $This.Output     = @( ) 
             ForEach ($Name in [System.Enum]::GetNames([WindowsUpdateType]))
             {
                 $Name
                 $Item        = Switch ($Name)
                 {
-                    UpdateMSProducts      { [UpdateMSProducts]::New()      }
-                    CheckForWindowsUpdate { [CheckForWindowsUpdate]::New() }
-                    WinUpdateType         { [WinUpdateType]::New()         }
-                    WinUpdateDownload     { [WinUpdateDownload]::New()     }
-                    UpdateMSRT            { [UpdateMSRT]::New()            }
-                    UpdateDriver          { [UpdateDriver]::New()          }
-                    RestartOnUpdate       { [RestartOnUpdate]::New()       }
-                    AppAutoDownload       { [AppAutoDownload]::New()       }
-                    UpdateAvailablePopup  { [UpdateAvailablePopup]::New()  }
+                    UpdateMSProducts      { [UpdateMSProducts]::New($This.Console)      }
+                    CheckForWindowsUpdate { [CheckForWindowsUpdate]::New($This.Console) }
+                    WinUpdateType         { [WinUpdateType]::New($This.Console)         }
+                    WinUpdateDownload     { [WinUpdateDownload]::New($This.Console)     }
+                    UpdateMSRT            { [UpdateMSRT]::New($This.Console)            }
+                    UpdateDriver          { [UpdateDriver]::New($This.Console)          }
+                    RestartOnUpdate       { [RestartOnUpdate]::New($This.Console)       }
+                    AppAutoDownload       { [AppAutoDownload]::New($This.Console)       }
+                    UpdateAvailablePopup  { [UpdateAvailablePopup]::New($This.Console)  }
                 }
                 $This.Output += $Item
             }
@@ -2516,7 +3007,7 @@ Function Get-ViperBomb
     
     Class UAC : ControlTemplate
     {
-        UAC()
+        UAC([Object]$Console) : base($Console)
         {
             $This.Name        = "UAC"
             $This.DisplayName = "User Access Control"
@@ -2524,11 +3015,15 @@ Function Get-ViperBomb
             $This.Description = "Sets restrictions/permissions for programs"
             $This.Options     = "Skip", "Lower", "Normal*", "Higher"
             
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","ConsentPromptBehaviorAdmin"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","PromptOnSecureDesktop") | % { 
+            ($This.RegPath(),"ConsentPromptBehaviorAdmin"),
+            ($This.RegPath(),"PromptOnSecureDesktop") | % { 
             
                 $This.Registry($_[0],$_[1])
             }
+        }
+        [String] RegPath()
+        {
+            Return "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -2565,7 +3060,7 @@ Function Get-ViperBomb
     
     Class SharingMappedDrives : ControlTemplate
     {
-        SharingMappedDrives()
+        SharingMappedDrives([Object]$Console) : base($Console)
         {
             $This.Name        = "SharingMappedDrives"
             $This.DisplayName = "Share Mapped Drives"
@@ -2573,7 +3068,11 @@ Function Get-ViperBomb
             $This.Description = "Shares any mapped drives to all users on the machine"
             $This.Options     = "Skip", "Enable", "Disable*"
             
-            $This.Registry("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System","EnableLinkedConnections")
+            $This.Registry($This.RegPath(),"EnableLinkedConnections")
+        }
+        [String] RegPath()
+        {
+            Return "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -2602,7 +3101,7 @@ Function Get-ViperBomb
     
     Class AdminShares : ControlTemplate
     {
-        AdminShares()
+        AdminShares([Object]$Console) : base($Console)
         {
             $This.Name        = "AdminShares"
             $This.DisplayName = "Administrative File Shares"
@@ -2639,7 +3138,7 @@ Function Get-ViperBomb
     
     Class Firewall : ControlTemplate
     {
-        Firewall()
+        Firewall([Object]$Console) : base($Console)
         {
             $This.Name        = "Firewall"
             $This.DisplayName = "Firewall"
@@ -2676,7 +3175,7 @@ Function Get-ViperBomb
     
     Class WinDefender : ControlTemplate
     {
-        WinDefender()
+        WinDefender([Object]$Console) : base($Console)
         {
             $This.Name        = "WinDefender"
             $This.DisplayName = "Windows Defender"
@@ -2684,12 +3183,18 @@ Function Get-ViperBomb
             $This.Description = "Toggles Windows Defender, system default anti-virus/malware utility"
             $This.Options     = "Skip", "Enable*", "Disable"
     
-            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender","DisableAntiSpyware"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run","WindowsDefender"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run","SecurityHealth"),
-            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet"),
-            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SpynetReporting"),
-            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet","SubmitSamplesConsent") | % {
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender",
+            "DisableAntiSpyware"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
+            "WindowsDefender"),
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run",
+            "SecurityHealth"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet",
+            $Null),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet",
+            "SpynetReporting"),
+            ("HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender\Spynet",
+            "SubmitSamplesConsent") | % {
     
                 $This.Registry($_[0],$_[1])
             }
@@ -2746,7 +3251,7 @@ Function Get-ViperBomb
     
     Class HomeGroups : ControlTemplate
     {
-        HomeGroups()
+        HomeGroups([Object]$Console) : base($Console)
         {
             $This.Name        = "HomeGroups"
             $This.DisplayName = "Home Groups"
@@ -2786,7 +3291,7 @@ Function Get-ViperBomb
     
     Class RemoteAssistance : ControlTemplate
     {
-        RemoteAssistance()
+        RemoteAssistance([Object]$Console) : base($Console)
         {
             $This.Name        = "RemoteAssistance"
             $This.DisplayName = "Remote Assistance"
@@ -2823,7 +3328,7 @@ Function Get-ViperBomb
     
     Class RemoteDesktop : ControlTemplate
     {
-        RemoteDesktop()
+        RemoteDesktop([Object]$Console) : base($Console)
         {
             $This.Name        = "RemoteDesktop"
             $This.DisplayName = "Remote Desktop"
@@ -2831,8 +3336,10 @@ Function Get-ViperBomb
             $This.Description = "Toggles the ability to use Remote Desktop"
             $This.Options     = "Skip", "Enable", "Disable*"
     
-            ("HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server","fDenyTSConnections"),
-            ("HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp","UserAuthentication") | % {
+            ("HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server",
+            "fDenyTSConnections"),
+            ("HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp",
+            "UserAuthentication") | % {
             
                 $This.Registry($_[0],$_[1])
             }
@@ -2878,22 +3385,24 @@ Function Get-ViperBomb
     
     Class ServiceList
     {
-        [Object]  $Output
-        ServiceList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        ServiceList([Object]$Console)
         {
+            $This.Console    = $Console
             $This.Output     = @( )
             ForEach ($Name in [System.Enum]::GetNames([ServiceType]))
             {
                 $Item        = Switch ($Name)
                 {
-                    UAC                 { [UAC]::New()                 }
-                    SharingMappedDrives { [SharingMappedDrives]::New() }
-                    AdminShares         { [AdminShares]::New()         } 
-                    Firewall            { [Firewall]::New()            } 
-                    WinDefender         { [WinDefender]::New()         }
-                    Homegroups          { [HomeGroups]::New()          }
-                    RemoteAssistance    { [RemoteAssistance]::New()    }
-                    RemoteDesktop       { [RemoteDesktop]::New()       }
+                    UAC                 { [UAC]::New($This.Console)                 }
+                    SharingMappedDrives { [SharingMappedDrives]::New($This.Console) }
+                    AdminShares         { [AdminShares]::New($This.Console)         } 
+                    Firewall            { [Firewall]::New($This.Console)            } 
+                    WinDefender         { [WinDefender]::New($This.Console)         }
+                    Homegroups          { [HomeGroups]::New($This.Console)          }
+                    RemoteAssistance    { [RemoteAssistance]::New($This.Console)    }
+                    RemoteDesktop       { [RemoteDesktop]::New($This.Console)       }
                 }
                 $Item.Source  = "Service"
                 $This.Output += $Item
@@ -2903,7 +3412,7 @@ Function Get-ViperBomb
 
     Class CastToDevice : ControlTemplate
     {
-        CastToDevice()
+        CastToDevice([Object]$Console) : base($Console)
         {
             $This.Name        = "CastToDevice"
             $This.DisplayName = "Cast To Device"
@@ -2911,7 +3420,11 @@ Function Get-ViperBomb
             $This.Description = "Adds a context menu item for casting to a device"
             $This.Options     = "Skip", "Enable*", "Disable"
 
-            $This.Registry("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked","{7AD84985-87B4-4a16-BE58-8B72A5B390F7}")
+            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Shell Extensions\Blocked",
+            "{7AD84985-87B4-4a16-BE58-8B72A5B390F7}") | % { 
+                
+                $This.Registry($_[0],$_[1])
+            }
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -2940,7 +3453,7 @@ Function Get-ViperBomb
 
     Class PreviousVersions : ControlTemplate
     {
-        PreviousVersions()
+        PreviousVersions([Object]$Console) : base($Console)
         {
             $This.Name        = "PreviousVersions"
             $This.DisplayName = "Previous Versions"
@@ -2948,13 +3461,21 @@ Function Get-ViperBomb
             $This.Description = "Adds a context menu item to select a previous version of a file"
             $This.Options     = "Skip", "Enable*", "Disable"
 
-            ("HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}"),
-            ("HKCR:\CLSID\{450D8FBA-AD25-11D0-98A8-0800361B1103}\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}"),
-            ("HKCR:\Directory\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}"),
-            ("HKCR:\Drive\shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}") | % {
+            ("HKCR:\AllFilesystemObjects\$($This.ShellEx())",
+            $Null),
+            ("HKCR:\CLSID\{450D8FBA-AD25-11D0-98A8-0800361B1103}\$($This.ShellEx())",
+            $Null),
+            ("HKCR:\Directory\$($This.ShellEx())",
+            $Null),
+            ("HKCR:\Drive\$($This.ShellEx())",
+            $Null) | % {
 
                 $This.Registry($_[0],$_[1])
             }
+        }
+        [String] ShellEx()
+        {
+            Return "shellex\ContextMenuHandlers\{596AB062-B4D2-4215-9F74-E9109B0A8153}"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -2989,7 +3510,7 @@ Function Get-ViperBomb
 
     Class IncludeInLibrary : ControlTemplate
     {
-        IncludeInLibrary()
+        IncludeInLibrary([Object]$Console) : base($Console)
         {
             $This.Name        = "IncludeInLibrary"
             $This.DisplayName = "Include in Library"
@@ -3026,7 +3547,7 @@ Function Get-ViperBomb
 
     Class PinToStart : ControlTemplate
     {
-        PinToStart()
+        PinToStart([Object]$Console) : base($Console)
         {
             $This.Name        = "PinToStart"
             $This.DisplayName = "Pin to Start"
@@ -3034,12 +3555,18 @@ Function Get-ViperBomb
             $This.Description = "Adds a context menu item to pin an item to the start menu"
             $This.Options     = "Skip", "Enable*", "Disable"
 
-            ('HKCR:\*\shellex\ContextMenuHandlers\{90AA3A4E-1CBA-4233-B8BB-535773D48449}','(Default)'),
-            ('HKCR:\*\shellex\ContextMenuHandlers\{a2a9545d-a0c2-42b4-9708-a0b2badd77c8}','(Default)'),
-            ('HKCR:\Folder\shellex\ContextMenuHandlers\PintoStartScreen','(Default)'),
-            ('HKCR:\exefile\shellex\ContextMenuHandlers\PintoStartScreen','(Default)'),
-            ('HKCR:\Microsoft.Website\shellex\ContextMenuHandlers\PintoStartScreen','(Default)'),
-            ('HKCR:\mscfile\shellex\ContextMenuHandlers\PintoStartScreen','(Default)') | % {
+            ('HKCR:\*\shellex\ContextMenuHandlers\{90AA3A4E-1CBA-4233-B8BB-535773D48449}',
+            '(Default)'),
+            ('HKCR:\*\shellex\ContextMenuHandlers\{a2a9545d-a0c2-42b4-9708-a0b2badd77c8}',
+            '(Default)'),
+            ('HKCR:\Folder\shellex\ContextMenuHandlers\PintoStartScreen',
+            '(Default)'),
+            ('HKCR:\exefile\shellex\ContextMenuHandlers\PintoStartScreen',
+            '(Default)'),
+            ('HKCR:\Microsoft.Website\shellex\ContextMenuHandlers\PintoStartScreen',
+            '(Default)'),
+            ('HKCR:\mscfile\shellex\ContextMenuHandlers\PintoStartScreen',
+            '(Default)') | % {
 
                 $This.Registry($_[0],$_[1])
             }
@@ -3081,7 +3608,7 @@ Function Get-ViperBomb
 
     Class PinToQuickAccess : ControlTemplate
     {
-        PinToQuickAccess()
+        PinToQuickAccess([Object]$Console) : base($Console)
         {
             $This.Name        = "PinToQuickAccess"
             $This.DisplayName = "Pin to Quick Access"
@@ -3089,15 +3616,27 @@ Function Get-ViperBomb
             $This.Description = "Adds a context menu item to pin an item to the Quick Access bar"
             $This.Options     = "Skip", "Enable*", "Disable"
 
-            ('HKCR:\Folder\shell\pintohome','MUIVerb'),
-            ('HKCR:\Folder\shell\pintohome','AppliesTo'),
-            ('HKCR:\Folder\shell\pintohome\command','DelegateExecute'),
-            ('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome','MUIVerb'),
-            ('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome','AppliesTo'),
-            ('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome\command','DelegateExecute') | % {
+            ('HKCR:\Folder\shell\pintohome',
+            'MUIVerb'),
+            ('HKCR:\Folder\shell\pintohome',
+            'AppliesTo'),
+            ('HKCR:\Folder\shell\pintohome\command',
+            'DelegateExecute'),
+            ('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome',
+            'MUIVerb'),
+            ('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome',
+            'AppliesTo'),
+            ('HKLM:\SOFTWARE\Classes\Folder\shell\pintohome\command',
+            'DelegateExecute') | % {
 
                 $This.Registry($_[0],$_[1])
             }
+        }
+        [String] ParseName()
+        {
+            Return 'System.ParsingName:<>"::{679f85cb-0220-4080-b29b-5540cc05aab6}"', 
+                   'System.ParsingName:<>"::{645FF040-5081-101B-9F08-00AA002F954E}"', 
+                   'System.IsFolder:=System.StructuredQueryType.Boolean#True' -join " AND "
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -3114,10 +3653,10 @@ Function Get-ViperBomb
                 {
                     Write-Host "Enabling [~] 'Pin to Quick Access' context menu item"
                     $This.Output[0].Set("String",'@shell32.dll,-51377')
-                    $This.Output[1].Set("String",'System.ParsingName:<>"::{679f85cb-0220-4080-b29b-5540cc05aab6}" AND System.ParsingName:<>"::{645FF040-5081-101B-9F08-00AA002F954E}" AND System.IsFolder:=System.StructuredQueryType.Boolean#True')
+                    $This.Output[1].Set("String",$This.ParseName())
                     $This.Output[2].Set("String","{b455f46e-e4af-4035-b0a4-cf18d2f6f28e}")
                     $This.Output[3].Set("String",'@shell32.dll,-51377')
-                    $This.Output[4].Set("String",'System.ParsingName:<>"::{679f85cb-0220-4080-b29b-5540cc05aab6}" AND System.ParsingName:<>"::{645FF040-5081-101B-9F08-00AA002F954E}" AND System.IsFolder:=System.StructuredQueryType.Boolean#True')
+                    $This.Output[4].Set("String",$This.ParseName())
                     $This.Output[5].Set("String","{b455f46e-e4af-4035-b0a4-cf18d2f6f28e}")
                 }
                 2
@@ -3134,7 +3673,7 @@ Function Get-ViperBomb
 
     Class ShareWith : ControlTemplate
     {
-        ShareWith()
+        ShareWith([Object]$Console) : base($Console)
         {
             $This.Name        = "PinToQuickAccess"
             $This.DisplayName = "Pin to Quick Access"
@@ -3142,14 +3681,22 @@ Function Get-ViperBomb
             $This.Description = "Adds a context menu item to share a file with..."
             $This.Options     = "Skip", "Enable*", "Disable"
 
-            ('HKCR:\*\shellex\ContextMenuHandlers\Sharing','(Default)'),
-            ('HKCR:\Directory\shellex\ContextMenuHandlers\Sharing','(Default)'),
-            ('HKCR:\Directory\shellex\CopyHookHandlers\Sharing','(Default)'),
-            ('HKCR:\Drive\shellex\ContextMenuHandlers\Sharing','(Default)'),
-            ('HKCR:\Directory\shellex\PropertySheetHandlers\Sharing','(Default)'),
-            ('HKCR:\Directory\Background\shellex\ContextMenuHandlers\Sharing','(Default)'),
-            ('HKCR:\LibraryFolder\background\shellex\ContextMenuHandlers\Sharing','(Default)'),
-            ('HKCR:\*\shellex\ContextMenuHandlers\ModernSharing','(Default)') | % {
+            ('HKCR:\*\shellex\ContextMenuHandlers\Sharing',
+            '(Default)'),
+            ('HKCR:\Directory\shellex\ContextMenuHandlers\Sharing',
+            '(Default)'),
+            ('HKCR:\Directory\shellex\CopyHookHandlers\Sharing',
+            '(Default)'),
+            ('HKCR:\Drive\shellex\ContextMenuHandlers\Sharing',
+            '(Default)'),
+            ('HKCR:\Directory\shellex\PropertySheetHandlers\Sharing',
+            '(Default)'),
+            ('HKCR:\Directory\Background\shellex\ContextMenuHandlers\Sharing',
+            '(Default)'),
+            ('HKCR:\LibraryFolder\background\shellex\ContextMenuHandlers\Sharing',
+            '(Default)'),
+            ('HKCR:\*\shellex\ContextMenuHandlers\ModernSharing',
+            '(Default)') | % {
 
                 $This.Registry($_[0],$_[1])
             }
@@ -3181,7 +3728,7 @@ Function Get-ViperBomb
 
     Class SendTo : ControlTemplate
     {
-        SendTo()
+        SendTo([Object]$Console) : base($Console)
         {
             $This.Name        = "SendTo"
             $This.DisplayName = "Send To"
@@ -3230,21 +3777,23 @@ Function Get-ViperBomb
 
     Class ContextList
     {
-        [Object]  $Output
-        ContextList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        ContextList([Object]$Console)
         {
+            $This.Console     = $Console
             $This.Output      = @( )
             ForEach ($Name in [System.Enum]::GetNames([ContextType]))
             {
                 $Item         = Switch ($Name)
                 {
-                    CastToDevice     { [CastToDevice]::New()     }
-                    PreviousVersions { [PreviousVersions]::New() }
-                    IncludeInLibrary { [IncludeInLibrary]::New() }
-                    PinToStart       { [PinToStart]::New()       }
-                    PinToQuickAccess { [PinToQuickAccess]::New() }
-                    ShareWith        { [ShareWith]::New()        }
-                    SendTo           { [SendTo]::New()           }
+                    CastToDevice     { [CastToDevice]::New($This.Console)     }
+                    PreviousVersions { [PreviousVersions]::New($This.Console) }
+                    IncludeInLibrary { [IncludeInLibrary]::New($This.Console) }
+                    PinToStart       { [PinToStart]::New($This.Console)       }
+                    PinToQuickAccess { [PinToQuickAccess]::New($This.Console) }
+                    ShareWith        { [ShareWith]::New($This.Console)        }
+                    SendTo           { [SendTo]::New($This.Console)           }
                 }
                 $Item.Source  = "Context"
                 $This.Output += $Item
@@ -3254,7 +3803,7 @@ Function Get-ViperBomb
 
     Class BatteryUIBar : ControlTemplate
     {
-        BatteryUIBar()
+        BatteryUIBar([Object]$Console) : base($Console)
         {
             $This.Name        = "BatteryUIBar"
             $This.DisplayName = "Battery UI Bar"
@@ -3291,7 +3840,7 @@ Function Get-ViperBomb
 
     Class ClockUIBar : ControlTemplate
     {
-        ClockUIBar()
+        ClockUIBar([Object]$Console) : base($Console)
         {
             $This.Name        = "ClockUIBar"
             $This.DisplayName = "Clock UI Bar"
@@ -3299,7 +3848,11 @@ Function Get-ViperBomb
             $This.Description = "Toggles the clock UI bar element style"
             $This.Options     = "Skip", "New*", "Classic"
             
-            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell','UseWin32TrayClockExperience')
+            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ImmersiveShell',
+            'UseWin32TrayClockExperience') | % { 
+
+                $This.Registry($_[0],$_[1])
+            }
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -3328,7 +3881,7 @@ Function Get-ViperBomb
 
     Class VolumeControlBar : ControlTemplate
     {
-        VolumeControlBar()
+        VolumeControlBar([Object]$Console) : base($Console)
         {
             $This.Name        = "VolumeControlBar"
             $This.DisplayName = "Volume Control Bar"
@@ -3365,7 +3918,7 @@ Function Get-ViperBomb
 
     Class TaskBarSearchBox : ControlTemplate
     {
-        TaskBarSearchBox()
+        TaskBarSearchBox([Object]$Console) : base($Console)
         {
             $This.Name        = "TaskBarSearchBox"
             $This.DisplayName = "Taskbar Search Box"
@@ -3402,7 +3955,7 @@ Function Get-ViperBomb
 
     Class TaskViewButton : ControlTemplate
     {
-        TaskViewButton()
+        TaskViewButton([Object]$Console) : base($Console)
         {
             $This.Name        = "VolumeControlBar"
             $This.DisplayName = "Volume Control Bar"
@@ -3410,7 +3963,11 @@ Function Get-ViperBomb
             $This.Description = "Toggles the volume control bar element style"
             $This.Options     = "Skip", "New (X-Axis)*", "Classic (Y-Axis)"
             
-            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','ShowTaskViewButton')
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced',
+            'ShowTaskViewButton') | % { 
+
+                $This.Registry($_[0],$_[1])
+            }
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -3439,7 +3996,7 @@ Function Get-ViperBomb
 
     Class TaskbarIconSize : ControlTemplate
     {
-        TaskbarIconSize()
+        TaskbarIconSize([Object]$Console) : base($Console)
         {
             $This.Name        = "TaskbarIconSize"
             $This.DisplayName = "Taskbar Icon Size"
@@ -3476,7 +4033,7 @@ Function Get-ViperBomb
 
     Class TaskbarGrouping : ControlTemplate
     {
-        TaskbarGrouping()
+        TaskbarGrouping([Object]$Console) : base($Console)
         {
             $This.Name        = "TaskbarGrouping"
             $This.DisplayName = "Taskbar Grouping"
@@ -3518,7 +4075,7 @@ Function Get-ViperBomb
 
     Class TrayIcons : ControlTemplate
     {
-        TrayIcons()
+        TrayIcons([Object]$Console) : base($Console)
         {
             $This.Name        = "TrayIcons"
             $This.DisplayName = "Tray Icons"
@@ -3561,7 +4118,7 @@ Function Get-ViperBomb
 
     Class SecondsInClock : ControlTemplate
     {
-        SecondsInClock()
+        SecondsInClock([Object]$Console) : base($Console)
         {
             $This.Name        = "SecondsInClock"
             $This.DisplayName = "Seconds in clock"
@@ -3598,7 +4155,7 @@ Function Get-ViperBomb
 
     Class LastActiveClick : ControlTemplate
     {
-        LastActiveClick()
+        LastActiveClick([Object]$Console) : base($Console)
         {
             $This.Name        = "LastActiveClick"
             $This.DisplayName = "Last Active Click"
@@ -3635,7 +4192,7 @@ Function Get-ViperBomb
 
     Class TaskbarOnMultiDisplay : ControlTemplate
     {
-        TaskbarOnMultiDisplay()
+        TaskbarOnMultiDisplay([Object]$Console) : base($Console)
         {
             $This.Name        = "TaskbarOnMultiDisplay"
             $This.DisplayName = "Taskbar on multiple displays"
@@ -3672,44 +4229,44 @@ Function Get-ViperBomb
 
     Class TaskbarButtonDisplay : ControlTemplate
     {
-        TaskbarButtonDisplay()
-        {
-            $This.Name        = "TaskbarButtonDisplay"
-            $This.DisplayName = "Multi-display taskbar"
-            $This.Value       = 2
-            $This.Description = "Defines where the taskbar button should be if there are multiple screens"
-            $This.Options     = "Skip", "All", "Current Window*","Main + Current Window"
-
-            $This.Registry('HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced','MMTaskbarMode')
-        }
-        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-        {
-            Switch ($Mode)
-            {
-                0
-                {
-                    If ($ShowSkipped)
-                    {
-                        Write-Host "Skipping [!] Taskbar buttons on multiple displays"
-                    }
-                }
-                1
-                {
-                    Write-Host "Setting [~] Taskbar buttons on multiple displays (All taskbars)"
-                    $This.Output[0].Set(0)
-                }
-                2
-                {
-                    Write-Host "Setting [~] Taskbar buttons on multiple displays (Taskbar where window is open)"
-                    $This.Output[0].Set(2)
-                }
-                3
-                {
-                    Write-Host "Setting [~] Taskbar buttons on multiple displays (Main taskbar and where window is open)"
-                    $This.Output[0].Set(1)
-                }
-            }
-        }
+        TaskbarButtonDisplay([Object]$Console) : base($Console)
+        {
+            $This.Name        = "TaskbarButtonDisplay"
+            $This.DisplayName = "Multi-display taskbar"
+            $This.Value       = 2
+            $This.Description = "Defines where the taskbar button should be if there are multiple screens"
+            $This.Options     = "Skip", "All", "Current Window*","Main + Current Window"
+    
+            $This.Registry('HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced','MMTaskbarMode')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Taskbar buttons on multiple displays"
+                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Taskbar buttons, multi-display (All taskbars)"
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Setting [~] Taskbar buttons, multi-display (Taskbar where window is open)"
+                    $This.Output[0].Set(2)
+                }
+                3
+                {
+                    Write-Host "Setting [~] Taskbar buttons, multi-display (Main taskbar + where window is open)"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
     }
 
     Enum TaskbarType
@@ -3727,22 +4284,24 @@ Function Get-ViperBomb
 
     Class TaskbarList
     {
-        [Object]   $Output
-        TaskbarList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        TaskbarList([Object]$Console)
         {
+            $This.Console      = $Console
             $This.Output       = @( ) 
             ForEach ($Name in [System.Enum]::GetNames([TaskbarType]))
             {
                 $Item          = Switch ($Name)
                 {
-                    BatteryUIBar     { [BatteryUIBar]::New()     }
-                    ClockUIBar       { [ClockUIBar]::New()       }
-                    VolumeControlBar { [VolumeControlBar]::New() }
-                    TaskbarSearchBox { [TaskbarSearchBox]::New() }
-                    TaskViewButton   { [TaskViewButton]::New()   }
-                    TaskbarIconSize  { [TaskbarIconSize]::New()  }
-                    TaskbarGrouping  { [TaskbarGrouping]::New()  }
-                    TrayIcons        { [TrayIcons]::New()        }
+                    BatteryUIBar     { [BatteryUIBar]::New($This.Console)     }
+                    ClockUIBar       { [ClockUIBar]::New($This.Console)       }
+                    VolumeControlBar { [VolumeControlBar]::New($This.Console) }
+                    TaskbarSearchBox { [TaskbarSearchBox]::New($This.Console) }
+                    TaskViewButton   { [TaskViewButton]::New($This.Console)   }
+                    TaskbarIconSize  { [TaskbarIconSize]::New($This.Console)  }
+                    TaskbarGrouping  { [TaskbarGrouping]::New($This.Console)  }
+                    TrayIcons        { [TrayIcons]::New($This.Console)        }
                 }
                 $This.Output += $Item
             }
@@ -3752,7 +4311,7 @@ Function Get-ViperBomb
 
     Class StartMenuWebSearch : ControlTemplate
     {
-        StartMenuWebSearch()
+        StartMenuWebSearch([Object]$Console) : base($Console)
         {
             $This.Name        = "StartMenuWebSearch"
             $This.DisplayName = "Start Menu Web Search"
@@ -3795,34 +4354,42 @@ Function Get-ViperBomb
 
     Class StartSuggestions : ControlTemplate
     {
-        StartSuggestions()
+        StartSuggestions([Object]$Console) : base($Console)
         {
             $This.Name        = "StartSuggestions"
             $This.DisplayName = "Start Menu Suggestions"
             $This.Value       = 1
             $This.Description = "Toggles the suggested apps in the start menu"
             $This.Options     = "Skip", "Enable*", "Disable"
-
-            $Path = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
-            ($Path,"ContentDeliveryAllowed"),
-            ($Path,"OemPreInstalledAppsEnabled"),
-            ($Path,"PreInstalledAppsEnabled"),
-            ($Path,"PreInstalledAppsEverEnabled"),
-            ($Path,"SilentInstalledAppsEnabled"),
-            ($Path,"SystemPaneSuggestionsEnabled"),
-            ($Path,"Start_TrackProgs"),
-            ($Path,"SubscribedContent-314559Enabled"),
-            ($Path,"SubscribedContent-310093Enabled"),
-            ($Path,"SubscribedContent-338387Enabled"),
-            ($Path,"SubscribedContent-338388Enabled"),
-            ($Path,"SubscribedContent-338389Enabled"),
-            ($Path,"SubscribedContent-338393Enabled"),
-            ($Path,"SubscribedContent-338394Enabled"),
-            ($Path,"SubscribedContent-338396Enabled"),
-            ($Path,"SubscribedContent-338398Enabled") | % {
-
+    
+            ($This.RegPath(),"ContentDeliveryAllowed"),
+            ($This.RegPath(),"OemPreInstalledAppsEnabled"),
+            ($This.RegPath(),"PreInstalledAppsEnabled"),
+            ($This.RegPath(),"PreInstalledAppsEverEnabled"),
+            ($This.RegPath(),"SilentInstalledAppsEnabled"),
+            ($This.RegPath(),"SystemPaneSuggestionsEnabled"),
+            ($This.RegPath(),"Start_TrackProgs"),
+            ($This.RegPath(),"SubscribedContent-314559Enabled"),
+            ($This.RegPath(),"SubscribedContent-310093Enabled"),
+            ($This.RegPath(),"SubscribedContent-338387Enabled"),
+            ($This.RegPath(),"SubscribedContent-338388Enabled"),
+            ($This.RegPath(),"SubscribedContent-338389Enabled"),
+            ($This.RegPath(),"SubscribedContent-338393Enabled"),
+            ($This.RegPath(),"SubscribedContent-338394Enabled"),
+            ($This.RegPath(),"SubscribedContent-338396Enabled"),
+            ($This.RegPath(),"SubscribedContent-338398Enabled") | % {
+    
                 $This.Registry($_[0],$_[1])
             }
+        }
+        [String] RegPath()
+        {
+            Return "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+        }
+        [String] CloudCache()
+        {
+            Return "HKCU:","SOFTWARE","Microsoft","Windows","CurrentVersion","CloudStore","Store",
+            "Cache","DefaultAccount","*windows.data.placeholdertilecollection","Current" -join '\'
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -3846,7 +4413,7 @@ Function Get-ViperBomb
                     0..15 | % { $This.Output[$_].Set(0) }
                     If ($This.GetWinVersion() -ge 1803) 
                     {
-                        $Key = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\*windows.data.placeholdertilecollection\Current"
+                        $Key = Get-ItemProperty -Path $This.CloudCache()
                         Set-ItemProperty -Path $Key.PSPath -Name Data -Type Binary -Value $Key.Data[0..15]
                         Stop-Process -Name ShellExperienceHost -Force
                     }
@@ -3857,7 +4424,7 @@ Function Get-ViperBomb
 
     Class MostUsedAppStartMenu : ControlTemplate
     {
-        MostUsedAppStartMenu()
+        MostUsedAppStartMenu([Object]$Console) : base($Console)
         {
             $This.Name        = "MostUsedAppStartMenu"
             $This.DisplayName = "Most Used Applications"
@@ -3894,7 +4461,7 @@ Function Get-ViperBomb
 
     Class RecentItemsFrequent : ControlTemplate
     {
-        RecentItemsFrequent()
+        RecentItemsFrequent([Object]$Console) : base($Console)
         {
             $This.Name        = "RecentItemsFrequent"
             $This.DisplayName = "Recent Items Frequent"
@@ -3902,7 +4469,11 @@ Function Get-ViperBomb
             $This.Description = "Toggles the most recent frequently used (apps/items) in the start menu"
             $This.Options     = "Skip", "Enable*", "Disable"
 
-            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu',"Start_TrackDocs")
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu',
+            "Start_TrackDocs") | % { 
+
+                $This.Registry($_[0],$_[1])
+            }
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -3931,13 +4502,21 @@ Function Get-ViperBomb
 
     Class UnpinItems : ControlTemplate
     {
-        UnpinItems()
+        UnpinItems([Object]$Console) : base($Console)
         {
             $This.Name        = "UnpinItems"
             $This.DisplayName = "Unpin Items"
             $This.Value       = 0
             $This.Description = "Toggles the unpin (apps/items) from the start menu"
             $This.Options     = "Skip", "Enable"
+        }
+        [String] RegPath()
+        {
+            Return "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount"
+        }
+        [String] Collection()
+        {
+            Return "*start.tilegrid`$windows.data.curatedtilecollection.tilecollection\Current"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -3955,17 +4534,19 @@ Function Get-ViperBomb
                     Write-Host "Enabling [~] Unpinning Items"
                     If ($This.GetWinVersion() -le 1709) 
                     {
-                        Get-ChildItem -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount" -Include "*.group" -Recurse | % {
-                            $data = (Get-ItemProperty -Path "$($_.PsPath)\Current" -Name "Data").Data -Join ","
-                            $data = $data.Substring(0, $data.IndexOf(",0,202,30") + 9) + ",0,202,80,0,0"
-                            Set-ItemProperty -Path "$($_.PsPath)\Current" -Name Data -Type Binary -Value $data.Split(",")
+                        ForEach ($Item in Get-ChildItem $This.RegPath() -Include *.group -Recurse)
+                        {
+                            $Path = "{0}\Current" -f $Item.PsPath
+                            $Data = (Get-ItemProperty $Path -Name Data).Data -join ","
+                            $Data = $Data.Substring(0, $Data.IndexOf(",0,202,30") + 9) + ",0,202,80,0,0"
+                            Set-ItemProperty $Path -Name Data -Type Binary -Value $Data.Split(",")
                         }
                     }
                     Else 
                     {
-                        $key     = Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\CloudStore\Store\Cache\DefaultAccount\*start.tilegrid`$windows.data.curatedtilecollection.tilecollection\Current"
-                        $data    = $key.Data[0..25] + ([byte[]](202,50,0,226,44,1,1,0,0))
-                        Set-ItemProperty -Path $key.PSPath -Name Data -Type Binary -Value $data
+                        $Key     = Get-ItemProperty -Path "$($This.RegPath())\$($This.Collection())"
+                        $Data    = $Key.Data[0..25] + ([Byte[]](202,50,0,226,44,1,1,0,0))
+                        Set-ItemProperty -Path $Key.PSPath -Name Data -Type Binary -Value $Data
                         Stop-Process -Name ShellExperienceHost -Force
                     }
                 }
@@ -3984,19 +4565,21 @@ Function Get-ViperBomb
 
     Class StartMenuList
     {
-        [Object]  $Output
-        StartMenuList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        StartMenuList([Object]$Console)
         {
+            $This.Console     = $Console
             $This.Output      = @( )
             ForEach ($Name in [System.Enum]::GetNames([StartMenuType]))
             {
                 $Item         = Switch ($Name)
                 {
-                    StartMenuWebSearch   { [StartMenuWebSearch]::New()   }
-                    StartSuggestions     { [StartSuggestions]::New()     }
-                    MostUsedAppStartMenu { [MostUsedAppStartMenu]::New() }
-                    RecentItemsFrequent  { [RecentItemsFrequent]::New()  }
-                    UnpinItems           { [UnpinItems]::New()           }
+                    StartMenuWebSearch   { [StartMenuWebSearch]::New($This.Console)   }
+                    StartSuggestions     { [StartSuggestions]::New($This.Console)     }
+                    MostUsedAppStartMenu { [MostUsedAppStartMenu]::New($This.Console) }
+                    RecentItemsFrequent  { [RecentItemsFrequent]::New($This.Console)  }
+                    UnpinItems           { [UnpinItems]::New($This.Console)           }
                 }
                 $Item.Source  = "StartMenu"
                 $This.Output += $Item
@@ -4006,7 +4589,7 @@ Function Get-ViperBomb
 
     Class AccessKeyPrompt : ControlTemplate
     {
-        AccessKeyPrompt()
+        AccessKeyPrompt([Object]$Console) : base($Console)
         {
             $This.Name        = "AccessKeyPrompt"
             $This.DisplayName = "Access Key Prompt"
@@ -4014,9 +4597,12 @@ Function Get-ViperBomb
             $This.Description = "Toggles the accessibility keys (menus/prompts)"
             $This.Options     = "Skip", "Enable*", "Disable"
             
-            ('HKCU:\Control Panel\Accessibility\StickyKeys',"Flags"),
-            ('HKCU:\Control Panel\Accessibility\ToggleKeys',"Flags"),
-            ('HKCU:\Control Panel\Accessibility\Keyboard Response',"Flags") | % {
+            ('HKCU:\Control Panel\Accessibility\StickyKeys',
+            "Flags"),
+            ('HKCU:\Control Panel\Accessibility\ToggleKeys',
+            "Flags"),
+            ('HKCU:\Control Panel\Accessibility\Keyboard Response',
+            "Flags") | % {
 
                 $This.Registry($_[0],$_[1])
             }
@@ -4052,7 +4638,7 @@ Function Get-ViperBomb
 
     Class F1HelpKey : ControlTemplate
     {
-        F1HelpKey()
+        F1HelpKey([Object]$Console) : base($Console)
         {
             $This.Name        = "F1HelpKey"
             $This.DisplayName = "F1 Help Key"
@@ -4060,12 +4646,19 @@ Function Get-ViperBomb
             $This.Description = "Toggles the F1 help menu/prompt"
             $This.Options     = "Skip", "Enable*", "Disable"
             
-            ("HKCU:\Software\Classes\TypeLib\{8cec5860-07a1-11d9-b15e-000d56bfe6ee}\1.0\0"),
-            ('HKCU:\Software\Classes\TypeLib\{8cec5860-07a1-11d9-b15e-000d56bfe6ee}\1.0\0\win32',"(Default)"),
-            ('HKCU:\Software\Classes\TypeLib\{8cec5860-07a1-11d9-b15e-000d56bfe6ee}\1.0\0\win64',"(Default)") | % {
+            ($This.RegPath(),
+            $Null),
+            ("$($This.RegPath()))\win32",
+            "(Default)"),
+            ("$($This.RegPath())\win64",
+            "(Default)") | % {
 
                 $This.Registry($_[0],$_[1])
             }
+        }
+        [String] RegPath()
+        {
+            Return "HKCU:\Software\Classes\TypeLib\{8cec5860-07a1-11d9-b15e-000d56bfe6ee}\1.0\0"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -4094,15 +4687,11 @@ Function Get-ViperBomb
                 }
             }
         }
-        [UInt32] GetWinVersion()
-        {
-            Return Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | % ReleaseID
-        }
     }
 
     Class AutoPlay : ControlTemplate
     {
-        AutoPlay()
+        AutoPlay([Object]$Console) : base($Console)
         {
             $This.Name        = "AutoPlay"
             $This.DisplayName = "AutoPlay"
@@ -4137,7 +4726,7 @@ Function Get-ViperBomb
 
     Class AutoRun : ControlTemplate
     {
-        AutoRun()
+        AutoRun([Object]$Console) : base($Console)
         {
             $This.Name        = "AutoRun"
             $This.DisplayName = "AutoRun"
@@ -4174,7 +4763,7 @@ Function Get-ViperBomb
 
     Class PidInTitleBar : ControlTemplate
     {
-        PidInTitleBar()
+        PidInTitleBar([Object]$Console) : base($Console)
         {
             $This.Name        = "PidInTitleBar"
             $This.DisplayName = "Process ID"
@@ -4211,7 +4800,7 @@ Function Get-ViperBomb
 
     Class AeroSnap : ControlTemplate
     {
-        AeroSnap()
+        AeroSnap([Object]$Console) : base($Console)
         {
             $This.Name        = "AeroSnap"
             $This.DisplayName = "AeroSnap"
@@ -4248,12 +4837,12 @@ Function Get-ViperBomb
 
     Class AeroShake : ControlTemplate
     {
-        AeroShake()
+        AeroShake([Object]$Console) : base($Console)
         {
             $This.Name        = "AeroShake"
             $This.DisplayName = "AeroShake"
             $This.Value       = 1
-            $This.Description = "Toggles the ability to minimize all windows by jiggling the title bar of an active window"
+            $This.Description = "Toggles ability to minimize ALL windows by jiggling the active window title bar"
             $This.Options     = "Skip", "Enable*", "Disable"
             
             $This.Registry('HKCU:\Software\Policies\Microsoft\Windows\Explorer','NoWindowMinimizingShortcuts')
@@ -4285,7 +4874,7 @@ Function Get-ViperBomb
 
     Class KnownExtensions : ControlTemplate
     {
-        KnownExtensions()
+        KnownExtensions([Object]$Console) : base($Console)
         {
             $This.Name        = "KnownExtensions"
             $This.DisplayName = "Known File Extensions"
@@ -4322,7 +4911,7 @@ Function Get-ViperBomb
 
     Class HiddenFiles : ControlTemplate
     {
-        HiddenFiles()
+        HiddenFiles([Object]$Console) : base($Console)
         {
             $This.Name        = "HiddenFiles"
             $This.DisplayName = "Show Hidden Files"
@@ -4359,7 +4948,7 @@ Function Get-ViperBomb
 
     Class SystemFiles : ControlTemplate
     {
-        SystemFiles()
+        SystemFiles([Object]$Console) : base($Console)
         {
             $This.Name        = "SystemFiles"
             $This.DisplayName = "Show System Files"
@@ -4396,7 +4985,7 @@ Function Get-ViperBomb
 
     Class ExplorerOpenLoc : ControlTemplate
     {
-        ExplorerOpenLoc()
+        ExplorerOpenLoc([Object]$Console) : base($Console)
         {
             $This.Name        = "ExplorerOpenLoc"
             $This.DisplayName = "Explorer Open Location"
@@ -4433,7 +5022,7 @@ Function Get-ViperBomb
 
     Class RecentFileQuickAccess : ControlTemplate
     {
-        RecentFileQuickAccess()
+        RecentFileQuickAccess([Object]$Console) : base($Console)
         {
             $This.Name        = "RecentFileQuickAccess"
             $This.DisplayName = "Recent File Quick Access"
@@ -4483,7 +5072,7 @@ Function Get-ViperBomb
 
     Class FrequentFoldersQuickAccess : ControlTemplate
     {
-        FrequentFoldersQuickAccess()
+        FrequentFoldersQuickAccess([Object]$Console) : base($Console)
         {
             $This.Name        = "FrequentFoldersQuickAccess"
             $This.DisplayName = "Frequent Folders Quick Access"
@@ -4520,7 +5109,7 @@ Function Get-ViperBomb
 
     Class WinContentWhileDrag : ControlTemplate
     {
-        WinContentWhileDrag()
+        WinContentWhileDrag([Object]$Console) : base($Console)
         {
             $This.Name        = "WinContentWhileDrag"
             $This.DisplayName = "Window Content while dragging"
@@ -4557,7 +5146,7 @@ Function Get-ViperBomb
 
     Class StoreOpenWith : ControlTemplate
     {
-        StoreOpenWith()
+        StoreOpenWith([Object]$Console) : base($Console)
         {
             $This.Name        = "StoreOpenWith"
             $This.DisplayName = "Store Open With..."
@@ -4594,7 +5183,7 @@ Function Get-ViperBomb
 
     Class WinXPowerShell : ControlTemplate
     {
-        WinXPowerShell()
+        WinXPowerShell([Object]$Console) : base($Console)
         {
             $This.Name        = "WinXPowerShell"
             $This.DisplayName = "Win X PowerShell"
@@ -4602,7 +5191,11 @@ Function Get-ViperBomb
             $This.Description = "Toggles whether (Win + X) opens PowerShell or a Command Prompt"
             $This.Options     = "Skip", "PowerShell*", "Command Prompt"
 
-            $This.Registry('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','DontUsePowerShellOnWinX')
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced',
+            'DontUsePowerShellOnWinX') | % { 
+
+                $This.Registry($_[0],$_[1])
+            }
 
             If ($This.GetWinVersion() -lt 1703)
             {
@@ -4636,7 +5229,7 @@ Function Get-ViperBomb
 
     Class TaskManagerDetails : ControlTemplate
     {
-        TaskManagerDetails()
+        TaskManagerDetails([Object]$Console) : base($Console)
         {
             $This.Name        = "TaskManagerDetails"
             $This.DisplayName = "Task Manager Details"
@@ -4690,7 +5283,7 @@ Function Get-ViperBomb
 
     Class ReopenAppsOnBoot : ControlTemplate
     {
-        ReopenAppsOnBoot()
+        ReopenAppsOnBoot([Object]$Console) : base($Console)
         {
             $This.Name        = "ReopenAppsOnBoot"
             $This.DisplayName = "Reopen apps at boot"
@@ -4698,7 +5291,11 @@ Function Get-ViperBomb
             $This.Description = "Toggles applications to reopen at boot time"
             $This.Options     = "Skip", "Enable*", "Disable"
             
-            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System','DisableAutomaticRestartSignOn')
+            ('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System',
+            'DisableAutomaticRestartSignOn') | % { 
+
+                $This.Registry($_[0],$_[1])
+            }
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -4730,7 +5327,7 @@ Function Get-ViperBomb
 
     Class Timeline : ControlTemplate
     {
-        Timeline()
+        Timeline([Object]$Console) : base($Console)
         {
             $This.Name        = "Timeline"
             $This.DisplayName = "Timeline"
@@ -4770,7 +5367,7 @@ Function Get-ViperBomb
 
     Class LongFilePath : ControlTemplate
     {
-        LongFilePath()
+        LongFilePath([Object]$Console) : base($Console)
         {
             $This.Name        = "LongFilePath"
             $This.DisplayName = "Long File Path"
@@ -4778,8 +5375,10 @@ Function Get-ViperBomb
             $This.Description = "Toggles whether file paths are longer, or not"
             $This.Options     = "Skip", "Enable", "Disable*"
             
-            ('HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem','LongPathsEnabled'),
-            ('HKLM:\SYSTEM\ControlSet001\Control\FileSystem','LongPathsEnabled') | % {
+            ('HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem',
+            'LongPathsEnabled'),
+            ('HKLM:\SYSTEM\ControlSet001\Control\FileSystem',
+            'LongPathsEnabled') | % {
 
                 $This.Registry($_[0],$_[1])
             }
@@ -4813,7 +5412,7 @@ Function Get-ViperBomb
 
     Class AppHibernationFile : ControlTemplate
     {
-        AppHibernationFile()
+        AppHibernationFile([Object]$Console) : base($Console)
         {
             $This.Name        = "AppHibernationFile"
             $This.DisplayName = "App Hibernation File"
@@ -4821,7 +5420,11 @@ Function Get-ViperBomb
             $This.Description = "Toggles the system swap file use"
             $This.Options     = "Skip", "Enable*", "Disable"
             
-            $This.Registry("HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management","SwapfileControl")
+            ("HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management",
+            "SwapfileControl") | % { 
+
+                $This.Registry($_[0],$_[1])
+            }
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -4875,35 +5478,37 @@ Function Get-ViperBomb
 
     Class ExplorerList
     {
-        [Object]  $Output
-        ExplorerList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        ExplorerList([Object] $Console)
         {
-            $This.Output = @( )
+            $This.Console = $Console
+            $This.Output  = @( )
             ForEach ($Name in [System.Enum]::GetNames([ExplorerType]))
             {
                 $Item = Switch ($Name)
                 {
-                    AccessKeyPrompt            { [AccessKeyPrompt]::New()            }
-                    F1HelpKey                  { [F1HelpKey]::New()                  }
-                    AutoPlay                   { [AutoPlay]::New()                   }
-                    AutoRun                    { [AutoRun]::New()                    }
-                    PidInTitleBar              { [PidInTitleBar]::New()              }
-                    RecentFileQuickAccess      { [RecentFileQuickAccess]::New()      }
-                    FrequentFoldersQuickAccess { [FrequentFoldersQuickAccess]::New() }
-                    WinContentWhileDrag        { [WinContentWhileDrag]::New()        }
-                    StoreOpenWith              { [StoreOpenWith]::New()              }
-                    LongFilePath               { [LongFilePath]::New()               }
-                    ExplorerOpenLoc            { [ExplorerOpenLoc]::New()            }
-                    WinXPowerShell             { [WinXPowerShell]::New()             }
-                    AppHibernationFile         { [AppHibernationFile]::New()         }
-                    Timeline                   { [Timeline]::New()                   }
-                    AeroSnap                   { [AeroSnap]::New()                   }
-                    AeroShake                  { [AeroShake]::New()                  }
-                    KnownExtensions            { [KnownExtensions]::New()            }
-                    HiddenFiles                { [HiddenFiles]::New()                }
-                    SystemFiles                { [SystemFiles]::New()                }
-                    TaskManagerDetails         { [TaskManagerDetails]::New()         }
-                    ReopenAppsOnBoot           { [ReopenAppsOnBoot]::New()           }
+                    AccessKeyPrompt            { [AccessKeyPrompt]::New($This.Console)            }
+                    F1HelpKey                  { [F1HelpKey]::New($This.Console)                  }
+                    AutoPlay                   { [AutoPlay]::New($This.Console)                   }
+                    AutoRun                    { [AutoRun]::New($This.Console)                    }
+                    PidInTitleBar              { [PidInTitleBar]::New($This.Console)              }
+                    RecentFileQuickAccess      { [RecentFileQuickAccess]::New($This.Console)      }
+                    FrequentFoldersQuickAccess { [FrequentFoldersQuickAccess]::New($This.Console) }
+                    WinContentWhileDrag        { [WinContentWhileDrag]::New($This.Console)        }
+                    StoreOpenWith              { [StoreOpenWith]::New($This.Console)              }
+                    LongFilePath               { [LongFilePath]::New($This.Console)               }
+                    ExplorerOpenLoc            { [ExplorerOpenLoc]::New($This.Console)            }
+                    WinXPowerShell             { [WinXPowerShell]::New($This.Console)             }
+                    AppHibernationFile         { [AppHibernationFile]::New($This.Console)         }
+                    Timeline                   { [Timeline]::New($This.Console)                   }
+                    AeroSnap                   { [AeroSnap]::New($This.Console)                   }
+                    AeroShake                  { [AeroShake]::New($This.Console)                  }
+                    KnownExtensions            { [KnownExtensions]::New($This.Console)            }
+                    HiddenFiles                { [HiddenFiles]::New($This.Console)                }
+                    SystemFiles                { [SystemFiles]::New($This.Console)                }
+                    TaskManagerDetails         { [TaskManagerDetails]::New($This.Console)         }
+                    ReopenAppsOnBoot           { [ReopenAppsOnBoot]::New($This.Console)           }
                 }
                 $This.Output += $Item
             }
@@ -4914,7 +5519,7 @@ Function Get-ViperBomb
 
     Class DesktopIconInThisPC : ControlTemplate
     {
-        DesktopIconInThisPC()
+        DesktopIconInThisPC([Object]$Console) : base($Console)
         {
             $This.Name        = "DesktopIconInThisPC"
             $This.DisplayName = "Desktop [Explorer]"
@@ -4922,15 +5527,20 @@ Function Get-ViperBomb
             $This.Description = "Toggles the Desktop icon in 'This PC'"
             $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
             
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}\PropertyBag","ThisPCPolicy") | % {
-
-                $This.Registry($_[0],$_[1])
+            ForEach ($X in 0,1)
+            {
+                ($This.Path($X),$Null),
+                ("$($This.Path($X))\PropertyBag",$Null),
+                ("$($This.Path($X))\PropertyBag","ThisPCPolicy") | % {
+        
+                    $This.Registry($_[0],$_[1])
+                }
             }
+        }
+        [String] Path([UInt32]$Slot)
+        {
+            Return "HKLM:","SOFTWARE",@($Null,"WOW6432Node")[$Slot],"Microsoft","Windows","CurrentVersion",
+            "Explorer","FolderDescriptions","{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}" -join "\"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -4977,30 +5587,40 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class DocumentsIconInThisPC : ControlTemplate
     {
-        DocumentsIconInThisPC()
+        DocumentsIconInThisPC([Object]$Console) : base($Console)
         {
             $This.Name        = "DocumentsIconInThisPC"
             $This.DisplayName = "Documents [Explorer]"
             $This.Value       = 1
             $This.Description = "Toggles the Documents icon in 'This PC'"
             $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
-
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{d3162b92-9365-467a-956b-92703aca08af}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","BaseFolderID"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{d3162b92-9365-467a-956b-92703aca08af}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{f42ee2d3-909f-4907-8871-4c22fc0bf756}\PropertyBag","BaseFolderID") | % {
-
-                $This.Registry($_[0],$_[1])
+    
+            ForEach ($X in 0,1)
+            {
+                ($This.Path($X,0,0),$Null),
+                ($This.Path($X,0,1),$Null),
+                ("$($This.Path($X,1,2))\PropertyBag",$Null),
+                ("$($This.Path($X,1,2))\PropertyBag","ThisPCPolicy"),
+                ("$($This.Path($X,1,2))\PropertyBag","BaseFolderID") | % { 
+    
+                    $This.Registry($_[0],$_[1])
+                }
             }
+        }
+        [String] Path([UInt32]$Slot,[UInt32]$Base,[UInt32]$Guid)
+        {
+            Return "HKLM:","SOFTWARE",@($Null,"WOW6432Node")[$Slot],"Microsoft","Windows",
+            "CurrentVersion","Explorer",@("MyComputer\NameSpace","FolderDescriptions")[$Base],
+            $This.xGuid($Guid) -join "\"
+        }
+        [String] xGuid([UInt32]$Slot)
+        {
+            Return @("{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}",
+                     "{d3162b92-9365-467a-956b-92703aca08af}",
+                     "{f42ee2d3-909f-4907-8871-4c22fc0bf756}")[$Slot]
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5052,10 +5672,10 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class DownloadsIconInThisPC : ControlTemplate
     {
-        DownloadsIconInThisPC()
+        DownloadsIconInThisPC([Object]$Console) : base($Console)
         {
             $This.Name        = "DownloadsIconInThisPC"
             $This.DisplayName = "Downloads [Explorer]"
@@ -5063,19 +5683,29 @@ Function Get-ViperBomb
             $This.Description = "Toggles the Downloads icon in 'This PC'"
             $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
             
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","BaseFolderID"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{374DE290-123F-4565-9164-39C4925E467B}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{088e3905-0323-4b02-9826-5d99428e115f}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{7d83ee9b-2244-4e70-b1f5-5393042af1e4}\PropertyBag","BaseFolderID") | % {
-
-                $This.Registry($_[0],$_[1])
+            ForEach ($X in 0,1)
+            {
+                ($This.Path($X,0,0),$Null),
+                ($This.Path($X,0,1),$Null),
+                ("$($This.Path($X,1,2))\PropertyBag",$Null),
+                ("$($This.Path($X,1,2))\PropertyBag","ThisPCPolicy"),
+                ("$($This.Path($X,1,2))\PropertyBag","BaseFolderID") | % { 
+    
+                    $This.Registry($_[0],$_[1])
+                }
             }
+        }
+        [String] Path([UInt32]$Slot,[UInt32]$Base,[UInt32]$Guid)
+        {
+            Return "HKLM:","SOFTWARE",@($Null,"WOW6432Node")[$Slot],"Microsoft","Windows",
+            "CurrentVersion","Explorer",@("MyComputer\NameSpace","FolderDescriptions")[$Base],
+            $This.xGuid($Guid) -join "\"
+        }
+        [String] xGuid([UInt32]$Slot)
+        {
+            Return @("{374DE290-123F-4565-9164-39C4925E467B}",
+                     "{088e3905-0323-4b02-9826-5d99428e115f}",
+                     "{7d83ee9b-2244-4e70-b1f5-5393042af1e4}")[$Slot]
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5127,30 +5757,40 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class MusicIconInThisPC : ControlTemplate
     {
-        MusicIconInThisPC()
+        MusicIconInThisPC([Object]$Console) : base($Console)
         {
             $This.Name        = "MusicIconInThisPC"
             $This.DisplayName = "Music [Explorer]"
             $This.Value       = 1
             $This.Description = "Toggles the Music icon in 'This PC'"
             $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
-            
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3dfdf296-dbec-4fb4-81d1-6a3438bcf4de}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","BaseFolderID"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{1CF1260C-4DD0-4ebb-811F-33C572699FDE}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3dfdf296-dbec-4fb4-81d1-6a3438bcf4de}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{a0c69a99-21c8-4671-8703-7934162fcf1d}\PropertyBag","BaseFolderID") | % {
-
-                $This.Registry($_[0],$_[1])
+    
+            ForEach ($X in 0,1)
+            {
+                ($This.Path($X,0,0),$Null),
+                ($This.Path($X,0,1),$Null),
+                ("$($This.Path($X,1,2))\PropertyBag",$Null),
+                ("$($This.Path($X,1,2))\PropertyBag","ThisPCPolicy"),
+                ("$($This.Path($X,1,2))\PropertyBag","BaseFolderID") | % { 
+    
+                    $This.Registry($_[0],$_[1])
+                }
             }
+        }
+        [String] Path([UInt32]$Slot,[UInt32]$Base,[UInt32]$Guid)
+        {
+            Return "HKLM:","SOFTWARE",@($Null,"WOW6432Node")[$Slot],"Microsoft","Windows",
+            "CurrentVersion","Explorer",@("MyComputer\NameSpace","FolderDescriptions")[$Base],
+            $This.xGuid($Guid) -join "\"
+        }
+        [String] xGuid([UInt32]$Slot)
+        {
+            Return @("{1CF1260C-4DD0-4ebb-811F-33C572699FDE}",
+                     "{3dfdf296-dbec-4fb4-81d1-6a3438bcf4de}",
+                     "{a0c69a99-21c8-4671-8703-7934162fcf1d}")[$Slot]
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5202,30 +5842,40 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class PicturesIconInThisPC : ControlTemplate
     {
-        PicturesIconInThisPC()
+        PicturesIconInThisPC([Object]$Console) : base($Console)
         {
             $This.Name        = "PicturesIconInThisPC"
             $This.DisplayName = "Pictures [Explorer]"
             $This.Value       = 1
             $This.Description = "Toggles the Pictures icon in 'This PC'"
             $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
-            
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{24ad3ad4-a569-4530-98e1-ab02f9417aa8}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","BaseFolderID"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{24ad3ad4-a569-4530-98e1-ab02f9417aa8}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0ddd015d-b06c-45d5-8c4c-f59713854639}\PropertyBag","BaseFolderID") | % {
-
-                $This.Registry($_[0],$_[1])
+    
+            ForEach ($X in 0,1)
+            {
+                ($This.Path($X,0,0),$Null),
+                ($This.Path($X,0,1),$Null),
+                ("$($This.Path($X,1,2))\PropertyBag",$Null),
+                ("$($This.Path($X,1,2))\PropertyBag","ThisPCPolicy"),
+                ("$($This.Path($X,1,2))\PropertyBag","BaseFolderID") | % { 
+    
+                    $This.Registry($_[0],$_[1])
+                }
             }
+        }
+        [String] Path([UInt32]$Slot,[UInt32]$Base,[UInt32]$Guid)
+        {
+            Return "HKLM:","SOFTWARE",@($Null,"WOW6432Node")[$Slot],"Microsoft","Windows",
+            "CurrentVersion","Explorer",@("MyComputer\NameSpace","FolderDescriptions")[$Base],
+            $This.xGuid($Guid) -join "\"
+        }
+        [String] xGuid([UInt32]$Slot)
+        {
+            Return @("{24ad3ad4-a569-4530-98e1-ab02f9417aa8}",
+                     "{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}",
+                     "{0ddd015d-b06c-45d5-8c4c-f59713854639}")[$Slot]
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5277,30 +5927,40 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class VideosIconInThisPC : ControlTemplate
     {
-        VideosIconInThisPC()
+        VideosIconInThisPC([Object]$Console) : base($Console)
         {
             $This.Name        = "VideosIconInThisPC"
             $This.DisplayName = "Videos [Explorer]"
             $This.Value       = 1
             $This.Description = "Toggles the Videos icon in 'This PC'"
             $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
-            
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A0953C92-50DC-43bf-BE83-3742FED03C9C}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","BaseFolderID"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{A0953C92-50DC-43bf-BE83-3742FED03C9C}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\MyComputer\NameSpace\{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{35286a68-3c57-41a1-bbb1-0eae73d76c95}\PropertyBag","BaseFolderID") | % {
-
-                $This.Registry($_[0],$_[1])
+    
+            ForEach ($X in 0,1)
+            {
+                ($This.Path($X,0,0),$Null),
+                ($This.Path($X,0,1),$Null),
+                ("$($This.Path($X,1,2))\PropertyBag",$Null),
+                ("$($This.Path($X,1,2))\PropertyBag","ThisPCPolicy"),
+                ("$($This.Path($X,1,2))\PropertyBag","BaseFolderID") | % { 
+    
+                    $This.Registry($_[0],$_[1])
+                }
             }
+        }
+        [String] Path([UInt32]$Slot,[UInt32]$Base,[UInt32]$Guid)
+        {
+            Return "HKLM:","SOFTWARE",@($Null,"WOW6432Node")[$Slot],"Microsoft","Windows",
+            "CurrentVersion","Explorer",@("MyComputer\NameSpace","FolderDescriptions")[$Base],
+            $This.xGuid($Guid) -join "\"
+        }
+        [String] xGuid([UInt32]$Slot)
+        {
+            Return @("{A0953C92-50DC-43bf-BE83-3742FED03C9C}",
+                     "{f86fa3ab-70d2-4fc7-9c99-fcbf05467f3a}",
+                     "{35286a68-3c57-41a1-bbb1-0eae73d76c95}")[$Slot]
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5352,10 +6012,10 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class ThreeDObjectsIconInThisPC : ControlTemplate
     {
-        ThreeDObjectsIconInThisPC()
+        ThreeDObjectsIconInThisPC([Object]$Console) : base($Console)
         {
             $This.Name        = "ThreeDObjectsIconInThisPC"
             $This.DisplayName = "3D Objects [Explorer]"
@@ -5363,15 +6023,25 @@ Function Get-ViperBomb
             $This.Description = "Toggles the 3D Objects icon in 'This PC'"
             $This.Options     = "Skip", "Show/Add*", "Hide", "Remove"
             
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag"),
-            ("HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag","ThisPCPolicy"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag"),
-            ("HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\PropertyBag","ThisPCPolicy") | % {
-
-                $This.Registry($_[0],$_[1])
+            ForEach ($X in 0,1)
+            {
+                ("$($This.Path($X))\$($This.xGuid(0))",$Null),
+                ("$($This.Path($X))\$($This.xGuid(1))\PropertyBag",$Null),
+                ("$($This.Path($X))\$($This.xGuid(1))\PropertyBag","ThisPCPolicy") | % {
+        
+                    $This.Registry($_[0],$_[1])
+                }
             }
+        }
+        [String] Path([UInt32]$Slot)
+        {
+            Return "HKLM:","SOFTWARE",@($Null,"WOW6432Node")[$Slot],"Microsoft","Windows","CurrentVersion",
+            "Explorer","FolderDescriptions" -join "\"
+        }
+        [String] xGuid([UInt32]$Slot)
+        {
+            Return @("{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}",
+                     "{31C0DD25-9439-4F12-BF41-7FF4EDA38722}")[$Slot]
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5435,21 +6105,23 @@ Function Get-ViperBomb
 
     Class ThisPCIconList
     {
-        [Object]  $Output
-        ThisPCIconList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        ThisPCIconList([Object] $Console)
         {
+            $This.Console = $Console
             $This.Output  = @( ) 
             ForEach ($Name in [System.Enum]::GetNames([ThisPCIconType]))
             {
                 $Item = Switch ($Name)
                 {
-                    DesktopIconInThisPC       { [DesktopIconInThisPC]::New()       }
-                    DocumentsIconInThisPC     { [DocumentsIconInThisPC]::New()     }
-                    DownloadsIconInThisPC     { [DownloadsIconInThisPC]::New()     }
-                    MusicIconInThisPC         { [MusicIconInThisPC]::New()         }
-                    PicturesIconInThisPC      { [PicturesIconInThisPC]::New()      }
-                    VideosIconInThisPC        { [VideosIconInThisPC]::New()        }
-                    ThreeDObjectsIconInThisPC { [ThreeDObjectsIconInThisPC]::New() }
+                    DesktopIconInThisPC       { [DesktopIconInThisPC]::New($This.Console)       }
+                    DocumentsIconInThisPC     { [DocumentsIconInThisPC]::New($This.Console)     }
+                    DownloadsIconInThisPC     { [DownloadsIconInThisPC]::New($This.Console)     }
+                    MusicIconInThisPC         { [MusicIconInThisPC]::New($This.Console)         }
+                    PicturesIconInThisPC      { [PicturesIconInThisPC]::New($This.Console)      }
+                    VideosIconInThisPC        { [VideosIconInThisPC]::New($This.Console)        }
+                    ThreeDObjectsIconInThisPC { [ThreeDObjectsIconInThisPC]::New($This.Console) }
                 }
                 $Item.Source  = "ThisPC"
                 $This.Output += $Item
@@ -5459,7 +6131,7 @@ Function Get-ViperBomb
 
     Class ThisPCOnDesktop : ControlTemplate
     {
-        ThisPCOnDesktop()
+        ThisPCOnDesktop([Object]$Console) : base($Console)
         {
             $This.Name        = "ThisPCOnDesktop"
             $This.DisplayName = "This PC [Desktop]"
@@ -5467,11 +6139,14 @@ Function Get-ViperBomb
             $This.Description = "Toggles the 'This PC' icon on the desktop"
             $This.Options     = "Skip", "Show", "Hide*"
             
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{20D04FE0-3AEA-1069-A2D8-08002B30309D}'),
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{20D04FE0-3AEA-1069-A2D8-08002B30309D}') | % {
-
-                $This.Registry($_[0],$_[1])
+            ForEach ($Item in "ClassicStartMenu","NewStartPanel")
+            {
+                $This.Registry("$($This.RegPath())\$Item",'{20D04FE0-3AEA-1069-A2D8-08002B30309D}')
             }
+        }
+        [String] RegPath()
+        {
+            Return "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5499,10 +6174,10 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class NetworkOnDesktop : ControlTemplate
     {
-        NetworkOnDesktop()
+        NetworkOnDesktop([Object]$Console) : base($Console)
         {
             $This.Name        = "NetworkOnDesktop"
             $This.DisplayName = "Network [Desktop]"
@@ -5510,11 +6185,14 @@ Function Get-ViperBomb
             $This.Description = "Toggles the 'Network' icon on the desktop"
             $This.Options     = "Skip", "Show", "Hide*"
             
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}'),
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}') | % {
-
-                $This.Registry($_[0],$_[1])
+            ForEach ($Item in "ClassicStartMenu","NewStartPanel")
+            {
+                $This.Registry("$($This.RegPath())\$Item",'{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}')
             }
+        }
+        [String] RegPath()
+        {
+            Return "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5542,10 +6220,10 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class RecycleBinOnDesktop : ControlTemplate
     {
-        RecycleBinOnDesktop()
+        RecycleBinOnDesktop([Object]$Console) : base($Console)
         {
             $This.Name        = "RecycleBinOnDesktop"
             $This.DisplayName = "Recycle Bin [Desktop]"
@@ -5553,11 +6231,14 @@ Function Get-ViperBomb
             $This.Description = "Toggles the 'Recycle Bin' icon on the desktop"
             $This.Options     = "Skip", "Show", "Hide*"
             
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{645FF040-5081-101B-9F08-00AA002F954E}'),
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{645FF040-5081-101B-9F08-00AA002F954E}') | % {
-
-                $This.Registry($_[0],$_[1])
+            ForEach ($Item in "ClassicStartMenu","NewStartPanel")
+            {
+                $This.Registry("$($This.RegPath())\$Item",'{645FF040-5081-101B-9F08-00AA002F954E}')
             }
+        }
+        [String] RegPath()
+        {
+            Return "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5585,10 +6266,10 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class UsersFileOnDesktop : ControlTemplate
     {
-        UsersFileOnDesktop()
+        UsersFileOnDesktop([Object]$Console) : base($Console)
         {
             $This.Name        = "UsersFileOnDesktop"
             $This.DisplayName = "My Documents [Desktop]"
@@ -5596,11 +6277,14 @@ Function Get-ViperBomb
             $This.Description = "Toggles the 'Users File' icon on the desktop"
             $This.Options     = "Skip", "Show", "Hide*"
             
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{59031a47-3f72-44a7-89c5-5595fe6b30ee}'),
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{59031a47-3f72-44a7-89c5-5595fe6b30ee}') | % {
-
-                $This.Registry($_[0],$_[1])
+            ForEach ($Item in "ClassicStartMenu","NewStartPanel")
+            {
+                $This.Registry("$($This.RegPath())\$Item",'{59031a47-3f72-44a7-89c5-5595fe6b30ee}')
             }
+        }
+        [String] RegPath()
+        {
+            Return "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5628,10 +6312,10 @@ Function Get-ViperBomb
             }
         }
     }
-
+    
     Class ControlPanelOnDesktop : ControlTemplate
     {
-        ControlPanelOnDesktop()
+        ControlPanelOnDesktop([Object]$Console) : base($Console)
         {
             $This.Name        = "ControlPanelOnDesktop"
             $This.DisplayName = "Control Panel [Desktop]"
@@ -5639,11 +6323,14 @@ Function Get-ViperBomb
             $This.Description = "Toggles the 'Control Panel' icon on the desktop"
             $This.Options     = "Skip", "Show", "Hide*"
             
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\ClassicStartMenu",'{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}'),
-            ("HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel",'{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}') | % {
-
-                $This.Registry($_[0],$_[1])
+            ForEach ($Item in "ClassicStartMenu","NewStartPanel")
+            {
+                $This.Registry("$($This.RegPath())\$Item",'{5399E694-6CE5-4D6C-8FCE-1D8870FDCBA0}')
             }
+        }
+        [String] RegPath()
+        {
+            Return "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -5683,19 +6370,21 @@ Function Get-ViperBomb
 
     Class DesktopIconList
     {
-        [Object]  $Output
-        DesktopIconList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        DesktopIconList([Object]$Console)
         {
-            $This.Output = @( )
+            $This.Console = $Console
+            $This.Output  = @( )
             ForEach ($Name in [System.Enum]::GetNames([DesktopIconType]))
             {
                 $Item = Switch ($Name)
                 {
-                    ThisPCOnDesktop       { [ThisPCOnDesktop]::New()   }
-                    NetworkOnDesktop      { [NetworkOnDesktop]::New()      }
-                    RecycleBinOnDesktop   { [RecycleBinOnDesktop]::New()   }
-                    UsersFileOnDesktop    { [UsersFileOnDesktop]::New()    }
-                    ControlPanelOnDesktop { [ControlPanelOnDesktop]::New() }
+                    ThisPCOnDesktop       { [ThisPCOnDesktop]::New($This.Console)   }
+                    NetworkOnDesktop      { [NetworkOnDesktop]::New($This.Console)      }
+                    RecycleBinOnDesktop   { [RecycleBinOnDesktop]::New($This.Console)   }
+                    UsersFileOnDesktop    { [UsersFileOnDesktop]::New($This.Console)    }
+                    ControlPanelOnDesktop { [ControlPanelOnDesktop]::New($This.Console) }
                 }
                 $Item.Source  = "Desktop"
                 $This.Output += $Item
@@ -5705,68 +6394,75 @@ Function Get-ViperBomb
 
     Class LockScreen : ControlTemplate
     {
-        LockScreen()
-        {
-            $This.Name        = "LockScreen"
-            $This.DisplayName = "Lock Screen"
-            $This.Value       = 1
-            $This.Description = "Toggles the lock screen"
-            $This.Options     = "Skip", "Enable*", "Disable"
-            
-            $This.Registry('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization','NoLockScreen')
-        }
-        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-        {
-            Switch ($Mode)
-            {
-                0
-                {
-                    If ($ShowSkipped)
-                    {
-                        Write-Host "Skipping [!] Lock Screen"
-                    }
-                }
-                1
-                {
-                    Write-Host "Enabling [~] Lock Screen"
-                    If ($This.GetWinVersion() -ge 1607)
-                    {
-                        Unregister-ScheduledTask -TaskName "Disable LockScreen" -Confirm:$False -Verbose
-                    }
-                    Else
-                    {
-                        $This.Output[0].Remove()
-                    }
-                }
-                2
-                {
-                    Write-Host "Disabling [~] Lock Screen"
-                    If ($This.GetWinVersion() -ge 1607)
-                    {
-                        $Service             = New-Object -com Schedule.Service
-                        $Service.Connect()
-                        $Task                = $Service.NewTask(0)
-                        $Task.Settings.DisallowStartIfOnBatteries = $False
-                        $Trigger             = $Task.Triggers.Create(9)
-                        $Trigger             = $Task.Triggers.Create(11)
-                        $trigger.StateChange = 8
-                        $Action              = $Task.Actions.Create(0)
-                        $Action.Path         = 'reg.exe'
-                        $Action.Arguments    = "add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\SessionData /t REG_DWORD /v AllowLockScreen /d 0 /f"
-                        $Service.GetFolder('\').RegisterTaskDefinition('Disable LockScreen',$Task,6,'NT AUTHORITY\SYSTEM',$null,4)
-                    }
-                    Else
-                    {
-                        $This.Output[0].Set(1)
-                    }
-                }
-            }
-        }
+        LockScreen([Object]$Console) : base($Console)
+        {
+            $This.Name        = "LockScreen"
+            $This.DisplayName = "Lock Screen"
+            $This.Value       = 1
+            $This.Description = "Toggles the lock screen"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization','NoLockScreen')
+        }
+        [String] Argument()
+        {
+            $Item = "HKLM","SOFTWARE","Microsoft","Windows","CurrentVersion","Authentication",
+                    "LogonUI","SessionData" -join "\"
+            Return "add $Item /t REG_DWORD /v AllowLockScreen /d 0 /f"
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Lock Screen"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Lock Screen"
+                    If ($This.GetWinVersion() -ge 1607)
+                    {
+                        Unregister-ScheduledTask -TaskName "Disable LockScreen" -Confirm:$False -Verbose
+                    }
+                    Else
+                    {
+                        $This.Output[0].Remove()
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Lock Screen"
+                    If ($This.GetWinVersion() -ge 1607)
+                    {
+                        $Service             = New-Object -ComObject Schedule.Service
+                        $Service.Connect()
+                        $Task                = $Service.NewTask(0)
+                        $Task.Settings.DisallowStartIfOnBatteries = $False
+                        $Trigger             = $Task.Triggers.Create(9)
+                        $Trigger             = $Task.Triggers.Create(11)
+                        $Trigger.StateChange = 8
+                        $Action              = $Task.Actions.Create(0)
+                        $Action.Path         = 'Reg.exe'
+                        $Action.Arguments    = $This.Argument()
+                        $Service.GetFolder('\').RegisterTaskDefinition('Disable LockScreen',$Task,6,
+                                                                       'NT AUTHORITY\SYSTEM',$Null,4)
+                    }
+                    Else
+                    {
+                        $This.Output[0].Set(1)
+                    }
+                }
+            }
+        }
     }
 
     Class LockScreenPassword : ControlTemplate
     {
-        LockScreenPassword()
+        LockScreenPassword([Object]$Console) : base($Console)
         {
             $This.Name        = "LockScreenPassword"
             $This.DisplayName = "Lock Screen Password"
@@ -5774,8 +6470,10 @@ Function Get-ViperBomb
             $This.Description = "Toggles the lock screen password"
             $This.Options     = "Skip", "Enable*", "Disable"
 
-            ("HKLM:\Software\Policies\Microsoft\Windows\Control Panel\Desktop","ScreenSaverIsSecure"),
-            ("HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop","ScreenSaverIsSecure") | % {
+            ("HKLM:\Software\Policies\Microsoft\Windows\Control Panel\Desktop",
+            "ScreenSaverIsSecure"),
+            ("HKCU:\Software\Policies\Microsoft\Windows\Control Panel\Desktop",
+            "ScreenSaverIsSecure") | % {
 
                 $This.Registry($_[0],$_[1])
             }
@@ -5809,7 +6507,7 @@ Function Get-ViperBomb
 
     Class PowerMenuLockScreen : ControlTemplate
     {
-        PowerMenuLockScreen()
+        PowerMenuLockScreen([Object]$Console) : base($Console)
         {
             $This.Name        = "PowerMenuLockScreen"
             $This.DisplayName = "Power Menu Lock Screen"
@@ -5846,7 +6544,7 @@ Function Get-ViperBomb
 
     Class CameraOnLockScreen : ControlTemplate
     {
-        CameraOnLockScreen()
+        CameraOnLockScreen([Object]$Console) : base($Console)
         {
             $This.Name        = "CameraOnLockScreen"
             $This.DisplayName = "Camera On Lock Screen"
@@ -5891,18 +6589,20 @@ Function Get-ViperBomb
 
     Class LockScreenList
     {
-        [Object]  $Output
-        LockScreenList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        LockScreenList([Object] $Console)
         {
+            $This.Console = $Console
             $This.Output = @( ) 
             ForEach ($Name in [System.Enum]::GetNames([LockScreenType]))
             {
                 $Item = Switch ($Name)
                 {
-                    LockScreen          { [LockScreen]::New()          }
-                    LockScreenPassword  { [LockScreenPassword]::New()  }
-                    PowerMenuLockScreen { [PowerMenuLockScreen]::New() }
-                    CameraOnLockScreen  { [CameraOnLockScreen]::New()  }
+                    LockScreen          { [LockScreen]::New($This.Console)          }
+                    LockScreenPassword  { [LockScreenPassword]::New($This.Console)  }
+                    PowerMenuLockScreen { [PowerMenuLockScreen]::New($This.Console) }
+                    CameraOnLockScreen  { [CameraOnLockScreen]::New($This.Console)  }
                 }
                 $Item.Source  = "LockScreen"
                 $This.Output += $Item
@@ -5912,7 +6612,7 @@ Function Get-ViperBomb
 
     Class ScreenSaver : ControlTemplate
     {
-        ScreenSaver()
+        ScreenSaver([Object]$Console) : base($Console)
         {
             $This.Name        = "ScreenSaver"
             $This.DisplayName = "Screen Saver"
@@ -5949,7 +6649,7 @@ Function Get-ViperBomb
 
     Class AccountProtectionWarn : ControlTemplate
     {
-        AccountProtectionWarn()
+        AccountProtectionWarn([Object]$Console) : base($Console)
         {
             $This.Name        = "AccountProtectionWarn"
             $This.DisplayName = "Account Protection Warning"
@@ -5989,7 +6689,7 @@ Function Get-ViperBomb
 
     Class ActionCenter : ControlTemplate
     {
-        ActionCenter()
+        ActionCenter([Object]$Console) : base($Console)
         {
             $This.Name        = "ActionCenter"
             $This.DisplayName = "Action Center"
@@ -5997,8 +6697,10 @@ Function Get-ViperBomb
             $This.Description = "Toggles system action center"
             $This.Options     = "Skip", "Enable*", "Disable"
             
-            ('HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer','DisableNotificationCenter'),
-            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications','ToastEnabled') | % {
+            ('HKCU:\SOFTWARE\Policies\Microsoft\Windows\Explorer',
+            'DisableNotificationCenter'),
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\PushNotifications',
+            'ToastEnabled') | % {
 
                 $This.Registry($_[0],$_[1])
             }
@@ -6032,7 +6734,7 @@ Function Get-ViperBomb
 
     Class StickyKeyPrompt : ControlTemplate
     {
-        StickyKeyPrompt()
+        StickyKeyPrompt([Object]$Console) : base($Console)
         {
             $This.Name        = "StickyKeyPrompt"
             $This.DisplayName = "Sticky Key Prompt"
@@ -6069,7 +6771,7 @@ Function Get-ViperBomb
 
     Class NumbLockOnStart : ControlTemplate
     {
-        NumbLockOnStart()
+        NumbLockOnStart([Object]$Console) : base($Console)
         {
             $This.Name        = "NumbLockOnStart"
             $This.DisplayName = "Number lock on start"
@@ -6106,7 +6808,7 @@ Function Get-ViperBomb
 
     Class F8BootMenu : ControlTemplate
     {
-        F8BootMenu()
+        F8BootMenu([Object]$Console) : base($Console)
         {
             $This.Name        = "F8BootMenu"
             $This.DisplayName = "F8 Boot Menu"
@@ -6141,7 +6843,7 @@ Function Get-ViperBomb
 
     Class RemoteUACAcctToken : ControlTemplate
     {
-        RemoteUACAcctToken()
+        RemoteUACAcctToken([Object]$Console) : base($Console)
         {
             $This.Name        = "RemoteUACAcctToken"
             $This.DisplayName = "Remote UAC Account Token"
@@ -6178,7 +6880,7 @@ Function Get-ViperBomb
 
     Class HibernatePower : ControlTemplate
     {
-        HibernatePower()
+        HibernatePower([Object]$Console) : base($Console)
         {
             $This.Name        = "HibernatePower"
             $This.DisplayName = "Hibernate Power"
@@ -6223,7 +6925,7 @@ Function Get-ViperBomb
 
     Class SleepPower : ControlTemplate
     {
-        SleepPower()
+        SleepPower([Object]$Console) : base($Console)
         {
             $This.Name        = "SleepPower"
             $This.DisplayName = "Sleep Power"
@@ -6277,23 +6979,25 @@ Function Get-ViperBomb
 
     Class MiscellaneousList
     {
-        [Object]  $Output
-        MiscellaneousList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        MiscellaneousList([Object] $Console)
         {
-            $This.Output = @( )
+            $This.Console = $Console
+            $This.Output  = @( )
             ForEach ($Name in [System.Enum]::GetNames([MiscellaneousType]))
             {
                 $Item = Switch ($Name)
                 {
-                    ScreenSaver           { [ScreenSaver]::New()           }
-                    AccountProtectionWarn { [AccountProtectionWarn]::New() }
-                    ActionCenter          { [ActionCenter]::New()          }
-                    StickyKeyPrompt       { [StickyKeyPrompt]::New()       }
-                    NumblockOnStart       { [NumblockOnStart]::New()       }
-                    F8BootMenu            { [F8BootMenu]::New()            }
-                    RemoteUACAcctToken    { [RemoteUACAcctToken]::New()    }
-                    HibernatePower        { [HibernatePower]::New()        }
-                    SleepPower            { [SleepPower]::New()            }
+                    ScreenSaver           { [ScreenSaver]::New($This.Console)           }
+                    AccountProtectionWarn { [AccountProtectionWarn]::New($This.Console) }
+                    ActionCenter          { [ActionCenter]::New($This.Console)          }
+                    StickyKeyPrompt       { [StickyKeyPrompt]::New($This.Console)       }
+                    NumblockOnStart       { [NumblockOnStart]::New($This.Console)       }
+                    F8BootMenu            { [F8BootMenu]::New($This.Console)            }
+                    RemoteUACAcctToken    { [RemoteUACAcctToken]::New($This.Console)    }
+                    HibernatePower        { [HibernatePower]::New($This.Console)        }
+                    SleepPower            { [SleepPower]::New($This.Console)            }
                 }
                 $Item.Source  = "Miscellaneous"
                 $This.Output += $Item
@@ -6303,14 +7007,14 @@ Function Get-ViperBomb
  
     Class PVFileAssociation : ControlTemplate
     {
-        PVFileAssociation()
+        PVFileAssociation([Object]$Console) : base($Console)
         {
             $This.Name        = "PVFileAssociation"
             $This.DisplayName = "Photo Viewer File Association"
             $This.Value       = 2
             $This.Description = "Associates common image types with Photo Viewer"
             $This.Options     = "Skip", "Enable", "Disable*"
-
+    
             ("HKCR:\Paint.Picture\shell\open","MUIVerb"),
             ("HKCR:\giffile\shell\open","MUIVerb"),
             ("HKCR:\jpegfile\shell\open","MUIVerb"),
@@ -6321,9 +7025,20 @@ Function Get-ViperBomb
             ("HKCR:\pngfile\shell\open\command","(Default)"),
             ("HKCR:\giffile\shell\open","CommandId"),
             ("HKCR:\giffile\shell\open\command","DelegateExecute") | % {
-
+    
                 $This.Registry($_[0],$_[1])
             }
+        }
+        [String] RunDll32()
+        {
+            Return "{0} `"{1}`", {2}" -f "%SystemRoot%\System32\rundll32.exe",
+                                         "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll",
+                                         "ImageView_Fullscreen %1"
+        }
+        [String] IExplore()
+        {
+            $Item = "$Env:SystemDrive\Program Files\Internet Explorer\iexplore.exe"
+            Return "`"$Item`" %1"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -6340,9 +7055,11 @@ Function Get-ViperBomb
                 {
                     Write-Host "Enabling [~] Photo Viewer File Association"
                     0..3 | % { 
-
-                        $This.Output[$_  ].Set("ExpandString","@%ProgramFiles%\Windows Photo Viewer\photoviewer.dll,-3043")
-                        $This.Output[$_+4].Set("ExpandString","%SystemRoot%\System32\rundll32.exe `"%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll`", ImageView_Fullscreen %1")
+    
+                        $This.Output[$_  ].Set("ExpandString",
+                                               "@%ProgramFiles%\Windows Photo Viewer\photoviewer.dll,-3043")
+                        $This.Output[$_+4].Set("ExpandString",
+                                               $This.RunDll32())
                     }
                 }
                 2
@@ -6352,9 +7069,12 @@ Function Get-ViperBomb
                     $This.Output[1].Remove()
                     $This.Output[2] | % { $_.Clear(); $_.Remove() }
                     $This.Output[3] | % { $_.Clear(); $_.Remove() }
-                    $This.Output[5].Set("String","`"$Env:SystemDrive\Program Files\Internet Explorer\iexplore.exe`" %1")
-                    $This.Output[8].Set("String","IE.File")
-                    $This.Output[9].Set("String","{17FE9752-0B5A-4665-84CD-569794602F5C}")
+                    $This.Output[5].Set("String",
+                                        $This.IExplore())
+                    $This.Output[8].Set("String",
+                                        "IE.File")
+                    $This.Output[9].Set("String",
+                                        "{17FE9752-0B5A-4665-84CD-569794602F5C}")
                 }
             }
         }
@@ -6362,7 +7082,7 @@ Function Get-ViperBomb
 
     Class PVOpenWithMenu : ControlTemplate
     {
-        PVOpenWithMenu()
+        PVOpenWithMenu([Object]$Console) : base($Console)
         {
             $This.Name        = "PVOpenWithMenu"
             $This.DisplayName = "Photo Viewer 'Open with' Menu"
@@ -6370,15 +7090,21 @@ Function Get-ViperBomb
             $This.Description = "Allows image files to be opened with Photo Viewer"
             $This.Options     = "Skip", "Enable", "Disable*"
 
-            ('HKCR:\Applications\photoviewer.dll\shell\open'),
-            ('HKCR:\Applications\photoviewer.dll\shell\open\command'),
-            ('HKCR:\Applications\photoviewer.dll\shell\open\DropTarget'),
+            ('HKCR:\Applications\photoviewer.dll\shell\open',$Null),
+            ('HKCR:\Applications\photoviewer.dll\shell\open\command',$Null),
+            ('HKCR:\Applications\photoviewer.dll\shell\open\DropTarget',$Null),
             ('HKCR:\Applications\photoviewer.dll\shell\open','MuiVerb'),
             ('HKCR:\Applications\photoviewer.dll\shell\open\command','(Default)'),
             ('HKCR:\Applications\photoviewer.dll\shell\open\DropTarget','Clsid') | % {
 
                 $This.Registry($_[0],$_[1])
             }
+        }
+        [String] RunDll32()
+        {
+            Return "{0} `"{1}`", {2}" -f "%SystemRoot%\System32\rundll32.exe",
+                                         "%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll",
+                                         "ImageView_Fullscreen %1"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -6396,9 +7122,12 @@ Function Get-ViperBomb
                     Write-Host "Enabling [~] 'Open with Photo Viewer' context menu item"
                     $This.Output[1].Get()
                     $This.Output[2].Get()
-                    $This.Output[3].Set("String",'@photoviewer.dll,-3043')
-                    $This.Output[4].Set("ExpandString","%SystemRoot%\System32\rundll32.exe `"%ProgramFiles%\Windows Photo Viewer\PhotoViewer.dll`", ImageView_Fullscreen %1")
-                    $This.Output[5].Set("String",'{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A}')
+                    $This.Output[3].Set("String",
+                                        "@photoviewer.dll,-3043")
+                    $This.Output[4].Set("ExpandString",
+                                        $This.RunDll32())
+                    $This.Output[5].Set("String",
+                                        "{FFE2A43C-56B9-4bf5-9A79-CC6D4285608A}")
                 }
                 2
                 {
@@ -6417,16 +7146,18 @@ Function Get-ViperBomb
 
     Class PhotoViewerList
     {
-        [Object]  $Output
-        PhotoViewerList()
+        Hidden [Object] $Console
+        [Object]         $Output
+        PhotoViewerList([Object]$Console)
         {
-            $This.Output = @( )
+            $This.Console = $Console
+            $This.Output  = @( )
             ForEach ($Name in [System.Enum]::GetNames([PhotoViewerType]))
             {
                 $Item = Switch ($Name)
                 {
-                    PVFileAssociation { [PVFileAssociation]::New() }
-                    PVOpenWithMenu    { [PVOpenWithMenu]::New()    }
+                    PVFileAssociation { [PVFileAssociation]::New($This.Console) }
+                    PVOpenWithMenu    { [PVOpenWithMenu]::New($This.Console)    }
                 }
                 $Item.Source  = "PhotoViewer"
                 $This.Output += $Item
@@ -6436,7 +7167,7 @@ Function Get-ViperBomb
 
     Class OneDrive : ControlTemplate
     {
-        OneDrive()
+        OneDrive([Object]$Console) : base($Console)
         {
             $This.Name        = "OneDrive"
             $This.DisplayName = "OneDrive"
@@ -6444,8 +7175,10 @@ Function Get-ViperBomb
             $This.Description = "Toggles Microsoft OneDrive, which comes with the operating system"
             $This.Options     = "Skip", "Enable*", "Disable"
             
-            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive','DisableFileSyncNGSC'),
-            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced','ShowSyncProviderNotifications') | % {
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive',
+            'DisableFileSyncNGSC'),
+            ('HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced',
+            'ShowSyncProviderNotifications') | % {
 
                 $This.Registry($_[0],$_[1])
             }
@@ -6479,7 +7212,7 @@ Function Get-ViperBomb
 
     Class OneDriveInstall : ControlTemplate
     {
-        OneDriveInstall()
+        OneDriveInstall([Object]$Console) : base($Console)
         {
             $This.Name        = "OneDriveInstall"
             $This.DisplayName = "OneDriveInstall"
@@ -6487,9 +7220,9 @@ Function Get-ViperBomb
             $This.Description = "Installs/Uninstalls Microsoft OneDrive, which comes with the operating system"
             $This.Options     = "Skip", "Installed*", "Uninstall"
             
-            ("HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"),
-            ("HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}") | % {
-
+            ("HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}",$Null),
+            ("HKCR:\Wow6432Node\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}",$Null) | % {
+    
                 $This.Registry($_[0],$_[1])
             }
         }
@@ -6521,7 +7254,7 @@ Function Get-ViperBomb
                         Start-Sleep -Seconds 3
                         Start-Process $This.GetOneDrivePath() "/uninstall" -NoNewWindow -Wait
                         Start-Sleep -Seconds 3
-
+    
                         ForEach ($Path in "$Env:USERPROFILE\OneDrive",
                                           "$Env:LOCALAPPDATA\Microsoft\OneDrive",
                                           "$Env:PROGRAMDATA\Microsoft OneDrive",
@@ -6530,7 +7263,7 @@ Function Get-ViperBomb
                         {    
                             Remove-Item $Path -Force -Recurse 
                         }
-
+    
                         $This.Output[0].Remove()
                         $This.Output[1].Remove()
                     }
@@ -6539,7 +7272,8 @@ Function Get-ViperBomb
         }
         [String] GetOneDrivePath()
         {
-            Return @("System32","SysWOW64")[[Environment]::Is64BitOperatingSystem] | % { "$Env:Windir\$_\OneDriveSetup.exe" }
+            $Item = @("System32","SysWOW64")[[Environment]::Is64BitOperatingSystem] 
+            Return "$Env:Windir\$Item\OneDriveSetup.exe"
         }
         [Bool] TestPath()
         {
@@ -6549,7 +7283,7 @@ Function Get-ViperBomb
 
     Class XboxDVR : ControlTemplate
     {
-        XboxDVR()
+        XboxDVR([Object]$Console) : base($Console)
         {
             $This.Name        = "XboxDVR"
             $This.DisplayName = "Xbox DVR"
@@ -6592,7 +7326,7 @@ Function Get-ViperBomb
     
     Class MediaPlayer : ControlTemplate
     {
-        MediaPlayer([Object]$Features)
+        MediaPlayer([Object]$Console,[Object]$Features) : base($Console)
         {
             $This.Name        = "MediaPlayer"
             $This.DisplayName = "Windows Media Player"
@@ -6616,8 +7350,12 @@ Function Get-ViperBomb
                 1
                 {
                     Write-Host "Enabling [~] Windows Media Player"
-                    $This.Output[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer -NoRestart }
-                    If ($? -eq $True)
+                    $This.Output[0] | ? State -ne Enabled | % { 
+                        
+                        Enable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer -NoRestart 
+                    }
+                    
+                    If (!!$?)
                     {
                         $This.Output[0].State = "Enabled"
                     }
@@ -6625,8 +7363,12 @@ Function Get-ViperBomb
                 2
                 {
                     Write-Host "Disabling [~] Windows Media Player"
-                    $This.Output[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer -NoRestart }
-                    If ($? -eq $True)
+                    $This.Output[0] | ? State -eq Enabled | % { 
+                        
+                        Disable-WindowsOptionalFeature -Online -FeatureName WindowsMediaPlayer -NoRestart 
+                    }
+
+                    If (!!$?)
                     {
                         $This.Output[0].State = "Disabled"
                     }
@@ -6637,7 +7379,7 @@ Function Get-ViperBomb
 
     Class WorkFolders : ControlTemplate
     {
-        WorkFolders([Object]$Features)
+        WorkFolders([Object]$Console,[Object]$Features) : base($Console)
         {
             $This.Name        = "WorkFolders"
             $This.DisplayName = "Work Folders"
@@ -6661,8 +7403,12 @@ Function Get-ViperBomb
                 1
                 {
                     Write-Host "Enabling [~] Work Folders Client"
-                    $This.Output[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName WorkFolders-Client -NoRestart }
-                    If ($? -eq $True)
+                    $This.Output[0] | ? State -ne Enabled | % { 
+                        
+                        Enable-WindowsOptionalFeature -Online -FeatureName WorkFolders-Client -NoRestart 
+                    }
+
+                    If (!!$?)
                     {
                         $This.Output[0].State = "Enabled"
                     }
@@ -6670,8 +7416,12 @@ Function Get-ViperBomb
                 2
                 {
                     Write-Host "Disabling [~] Work Folders Client"
-                    $This.Output[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName WorkFolders-Client -NoRestart }
-                    If ($? -eq $True)
+                    $This.Output[0] | ? State -eq Enabled | % { 
+                        
+                        Disable-WindowsOptionalFeature -Online -FeatureName WorkFolders-Client -NoRestart 
+                    }
+
+                    If (!!$?)
                     {
                         $This.Output[0].State = "Disabled"
                     }
@@ -6682,7 +7432,7 @@ Function Get-ViperBomb
 
     Class FaxAndScan : ControlTemplate
     {
-        FaxAndScan([Object]$Features)
+        FaxAndScan([Object]$Console,[Object]$Features) : base($Console)
         {
             $This.Name        = "FaxAndScan"
             $This.DisplayName = "Fax and Scan"
@@ -6706,8 +7456,12 @@ Function Get-ViperBomb
                 1
                 {
                     Write-Host "Enabling [~] Fax And Scan"
-                    $This.Output[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName FaxServicesClientPackage -NoRestart }
-                    If ($? -eq $True)
+                    $This.Output[0] | ? State -ne Enabled | % {
+                        
+                        Enable-WindowsOptionalFeature -Online -FeatureName FaxServicesClientPackage -NoRestart 
+                    }
+
+                    If (!!$?)
                     {
                         $This.Output[0].State = "Enabled"
                     }
@@ -6715,8 +7469,12 @@ Function Get-ViperBomb
                 2
                 {
                     Write-Host "Disabling [~] Fax And Scan"
-                    $This.Output[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName FaxServicesClientPackage -NoRestart }
-                    If ($? -eq $True)
+                    $This.Output[0] | ? State -eq Enabled | % { 
+                        
+                        Disable-WindowsOptionalFeature -Online -FeatureName FaxServicesClientPackage -NoRestart 
+                    }
+
+                    If (!!$?)
                     {
                         $This.Output[0].State = "Disabled"
                     }
@@ -6727,17 +7485,24 @@ Function Get-ViperBomb
 
     Class LinuxSubsystem : ControlTemplate
     {
-        LinuxSubsystem([Object]$Features)
+        LinuxSubsystem([Object]$Console,[Object]$Features) : base($Console)
         {
             $This.Name        = "LinuxSubsystem"
             $This.DisplayName = "Linux Subsystem (WSL)"
             $This.Value       = 2
-            $This.Description = "Toggles the Microsoft-Windows-Subsystem-Linux, which can be installed on Windows 1607 or later"
+            $This.Description = "For Windows 1607+, this toggles the $($This.Feature())"
             $This.Options     = "Skip", "Installed", "Uninstall*"
-            $This.Output      = @($Features | ? FeatureName -match Microsoft-Windows-Subsystem-Linux)
-
-            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock','AllowDevelopmentWithoutDevLicense')
-            $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock','AllowAllTrustedApps')
+    
+            $This.Output      = @($Features | ? FeatureName -match $This.Feature())
+    
+            'AllowDevelopmentWithoutDevLicense','AllowAllTrustedApps' | % {
+    
+                $This.Registry('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock',$_)
+            }
+        }
+        [String] Feature()
+        {
+            Return "Microsoft-Windows-Subsystem-Linux"
         }
         SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
         {
@@ -6755,8 +7520,12 @@ Function Get-ViperBomb
                     1
                     {
                         Write-Host "Enabling [~] Linux Subsystem"
-                        $This.Output[0] | ? State -ne Enabled | % { Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart }
-                        If ($? -eq $True)
+                        $This.Output[0] | ? State -ne Enabled | % { 
+                            
+                            Enable-WindowsOptionalFeature -Online -FeatureName $This.Feature() -NoRestart 
+                        }
+    
+                        If (!!$?)
                         {
                             $This.Output[0].State = "Enabled"
                         }
@@ -6764,8 +7533,12 @@ Function Get-ViperBomb
                     2
                     {
                         Write-Host "Disabling [~] Linux Subsystem"
-                        $This.Output[0] | ? State -eq Enabled | % { Disable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart }
-                        If ($? -eq $True)
+                        $This.Output[0] | ? State -eq Enabled | % { 
+                            
+                            Disable-WindowsOptionalFeature -Online -FeatureName $This.Feature() -NoRestart 
+                        }
+    
+                        If (!!$?)
                         {
                             $This.Output[0].State = "Disabled"
                         }
@@ -6792,22 +7565,24 @@ Function Get-ViperBomb
 
     Class WindowsAppsList
     {
-        [Object] $Features = [WindowsOptionalFeatures]::New().Output
-        [Object]   $Output
-        WindowsAppsList()
+        Hidden [Object] $Console
+        [Object]       $Features = [WindowsOptionalFeatures]::New($Null).Output
+        [Object]         $Output
+        WindowsAppsList([Object]$Console)
         {
+            $This.Console     = $Console
             $This.Output      = @( )
             ForEach ($Name in [System.Enum]::GetNames([WindowsAppsType]))
             {
                 $Item         = Switch ($Name)
                 {
-                    OneDrive        { [OneDrive]::New()                      }
-                    OneDriveInstall { [OneDriveInstall]::New()               }
-                    XboxDVR         { [XboxDVR]::New()                       }
-                    MediaPlayer     { [MediaPlayer]::New($This.Features)     }
-                    WorkFolders     { [WorkFolders]::New($This.Features)     }
-                    FaxAndScan      { [FaxAndScan]::New($This.Features)      }
-                    LinuxSubsystem  { [LinuxSubsystem]::New($This.Features)  }
+                    OneDrive        { [OneDrive]::New($This.Console)                       }
+                    OneDriveInstall { [OneDriveInstall]::New($This.Console)                }
+                    XboxDVR         { [XboxDVR]::New($This.Console)                        }
+                    MediaPlayer     { [MediaPlayer]::New($This.Console,$This.Features)     }
+                    WorkFolders     { [WorkFolders]::New($This.Console,$This.Features)     }
+                    FaxAndScan      { [FaxAndScan]::New($This.Console,$This.Features)      }
+                    LinuxSubsystem  { [LinuxSubsystem]::New($This.Console,$This.Features)  }
                 }
                 $Item.Source  = "WindowsApps"
                 $This.Output += $Item
@@ -6894,15 +7669,26 @@ Function Get-ViperBomb
 
     Class WindowsOptionalFeatures
     {
+        Hidden [Object] $Console
         [Object] $State
         [Object] $Output
-        WindowsOptionalFeatures()
+        WindowsOptionalFeatures([Object]$Console)
         {
-            $This.State  = [WindowsOptionalStateList]::New()
-            $This.Output = @( ) 
+            $This.Console = $Console
+            $This.State   = [WindowsOptionalStateList]::New()
+            $This.Output  = @( ) 
             Get-WindowsOptionalFeature -Online | Sort-Object FeatureName | % {
 
-                $This.Output += [WindowsOptionalFeature]::New($This.Output.Count,$This.State,$_)
+                $Item     = [WindowsOptionalFeature]::New($This.Output.Count,$This.State,$_)
+                $This.Update($Item.State.Index,$Item.FeatureName)
+                $This.Output += $Item
+            }
+        }
+        Update([UInt32]$State,[String]$Status)
+        {
+            If (!!$This.Console)
+            {
+                $This.Console.Update($State,"[Feature]: $Status")
             }
         }
     }
@@ -6923,28 +7709,38 @@ Function Get-ViperBomb
 
     Class AppXProfile
     {
-        [String[]] $Profile = (('{0}.3DBuilder/3DBuilder/APP_3DBuilder;{0}.{0}3DViewer/3DViewer/APP_3DViewer;{0}' +
-        '.BingWeather/Bing Weather/APP_BingWeather;{0}.CommsPhone/Phone/APP_CommsPhone;{0}.windowscommunicationsapps' +
-        '/Calendar & Mail/APP_Communications;{0}.GetHelp/{0}s Self-Help/APP_GetHelp;{0}.Getstarted/Get Started Lin' +
-        'k/APP_Getstarted;{0}.Messaging/Messaging/APP_Messaging;{0}.{0}OfficeHub/Get Office Link/APP_{0}OffHub;{0}.M' + 
-        'ovieMoments/Movie Moments/APP_MovieMoments;4DF9E0F8.Netflix/Netflix/APP_Netflix;{0}.Office.OneNote/Office O' + 
-        'neNote/APP_OfficeOneNote;{0}.Office.Sway/Office Sway/APP_OfficeSway;{0}.OneConnect/One Connect/APP_OneConne' + 
-        'ct;{0}.People/People/APP_People;{0}.Windows.Photos/Photos/APP_Photos;{0}.SkypeApp/Skype/APP_SkypeApp1;{0}.{' + 
-        '0}SolitaireCollection/{0} Solitaire/APP_SolitaireCollect;{0}.{0}StickyNotes/Sticky Notes/APP_StickyNotes;{0' + 
-        '}.WindowsSoundRecorder/Voice Recorder/APP_VoiceRecorder;{0}.WindowsAlarms/Alarms and Clock/APP_WindowsAlarm' + 
-        's;{0}.WindowsCalculator/Calculator/APP_WindowsCalculator;{0}.WindowsCamera/Camera/APP_WindowsCamera;{0}.Win' + 
-        'dowsFeedback/Windows Feedback/APP_WindowsFeedbak1;{0}.WindowsFeedbackHub/Windows Feedback Hub/APP_WindowsFe' + 
-        'edbak2;{0}.WindowsMaps/Maps/APP_WindowsMaps;{0}.WindowsPhone/Phone Companion/APP_WindowsPhone;{0}.WindowsSt' + 
-        'ore/{0} Store/APP_WindowsStore;{0}.Wallet/Stores Credit and Debit Card Information/APP_WindowsWallet;{0}.Xb' + 
-        'ox.TCUI/Xbox Title-callable UI/App_XboxTCUI;{0}.XboxApp/Xbox App for Windows PC/App_XboxApp;{0}.XboxGameOve' + 
-        'rlay/Xbox In-Game Overlay/App_XboxGameOverlay;{0}.XboxGamingOverlay/Xbox Gaming Overlay UI/App_XboxGamingOv' + 
-        'erlay;{0}.XboxIdentityProvider/Xbox Identity Provider/App_XboxIdentityProvider;{0}.XboxSpeechtoTextOverlay/' + 
-        'Xbox Speech-to-Text UI/App_XboxSpeechToText;{0}.ZuneMusic/Groove Music/APP_ZuneMusic;{0}.ZuneVideo/Groove V' + 
-        'ideo/APP_ZuneVideo;') -f "Microsoft" -Split ";" )
         [Object] $Output
         AppXProfile()
         {
-            $This.Output = $This.Profile | % { [AppXTemplate]$_ }
+            $This.Output = @( ) 
+            
+            ForEach ($Item in $This.Defaults())
+            {
+                $This.Output += [AppXTemplate]::New($Item)
+            }
+        }
+        [String[]] Defaults()
+        {
+            $Item = "{0}.3DBuilder/3DBuilder/APP_3DBuilder;{0}.{0}3DViewer/3DViewer/APP_3DViewer;{0}.BingWeather" +
+            "/Bing Weather/APP_BingWeather;{0}.CommsPhone/Phone/APP_CommsPhone;{0}.{1}communicationsapps/Calenda" +
+            "r & Mail/APP_Communications;{0}.GetHelp/{0}s Self-Help/APP_GetHelp;{0}.Getstarted/Get Started Link/" +
+            "APP_Getstarted;{0}.Messaging/Messaging/APP_Messaging;{0}.{0}OfficeHub/Get Office Link/APP_{0}OffHub" +
+            ";{0}.MovieMoments/Movie Moments/APP_MovieMoments;4DF9E0F8.Netflix/Netflix/APP_Netflix;{0}.Office.On" +
+            "eNote/Office OneNote/APP_OfficeOneNote;{0}.Office.Sway/Office Sway/APP_OfficeSway;{0}.OneConnect/On" +
+            "e Connect/APP_OneConnect;{0}.People/People/APP_People;{0}.{1}.Photos/Photos/APP_Photos;{0}.SkypeApp" +
+            "/Skype/APP_SkypeApp1;{0}.{0}SolitaireCollection/{0} Solitaire/APP_SolitaireCollect;{0}.{0}StickyNot" +
+            "es/Sticky Notes/APP_StickyNotes;{0}.{1}SoundRecorder/Voice Recorder/APP_VoiceRecorder;{0}.{1}Alarms" +
+            "/Alarms and Clock/APP_{1}Alarms;{0}.{1}Calculator/Calculator/APP_{1}Calculator;{0}.{1}Camera/Camera" +
+            "/APP_{1}Camera;{0}.{1}Feedback/{1} Feedback/APP_{1}Feedbak1;{0}.{1}FeedbackHub/{1} Feedback Hub/APP" +
+            "_{1}Feedbak2;{0}.{1}Maps/Maps/APP_{1}Maps;{0}.{1}Phone/Phone Companion/APP_{1}Phone;{0}.{1}Store/{0" +
+            "} Store/APP_{1}Store;{0}.Wallet/Stores Credit and Debit Card Information/APP_{1}Wallet;{0}.Xbox.TCU" +
+            "I/Xbox Title-callable UI/App_XboxTCUI;{0}.XboxApp/Xbox App for {1} PC/App_XboxApp;{0}.XboxGameOverl" +
+            "ay/Xbox In-Game Overlay/App_XboxGameOverlay;{0}.XboxGamingOverlay/Xbox Gaming Overlay UI/App_XboxGa" +
+            "mingOverlay;{0}.XboxIdentityProvider/Xbox Identity Provider/App_XboxIdentityProvider;{0}.XboxSpeech" +
+            "toTextOverlay/Xbox Speech-to-Text UI/App_XboxSpeechToText;{0}.ZuneMusic/Groove Music/APP_ZuneMusic;" +
+            "{0}.ZuneVideo/Groove Video/APP_ZuneVideo;" 
+
+            Return $Item -f "Microsoft","Windows" -Split ";"
         }
     }
 
@@ -7017,19 +7813,30 @@ Function Get-ViperBomb
 
     Class AppXList
     {
-        [Object] $Profile = [AppXProfile]::New().Output
-        [Object] $Output
-        AppXList()
+        Hidden [Object] $Console
+        [Object]        $Profile = [AppXProfile]::New().Output
+        [Object]         $Output
+        AppXList([Object]$Console)
         {
-            $This.Output   = @( )
-            Get-AppxProvisionedPackage -Online | % { $This.Output += [AppXObject]::New($This.Output.Count,$This.Profile,$_) }
+            $This.Console     = $Console
+            $This.Output      = @( )
+            ForEach ($AppX in Get-AppxProvisionedPackage -Online)
+            {    
+                $Item         = [AppXObject]::New($This.Output.Count,$This.Profile,$AppX)
+                $This.Update($Item.Slot,$Item.DisplayName)
+                $This.Output += $Item
+            }
+        }
+        Update([Int32]$State,[String]$Status)
+        {
+            $This.Console.Update($State,"[AppX]: $Status")
         }
     }
 
     Class DisableVariousTasks
     {
         [UInt32] $Mode
-        [Object] $Stack
+        [Object] $Output
         DisableVariousTasks()
         {
             $This.Output = @()
@@ -7062,7 +7869,7 @@ Function Get-ViperBomb
     Class ScreenSaverWaitTime
     {
         [UInt32] $Mode
-        [Object] $Stack
+        [Object] $Output
         ScreenSaverWaitTime()
         {
             $This.Output = @([Registry]::New('HKLM:\Software\Policies\Microsoft\Windows','ScreensaveTimeout'))
@@ -7092,31 +7899,33 @@ Function Get-ViperBomb
 
     Class SystemControl
     {
+        Hidden [Object]             $Console
         [Object]                     $Output
         [Object]                    $Feature
         [Object]                       $AppX
-        SystemControl()
+        SystemControl([Object]$Console)
         {
+            $This.Console    = $Console
             $This.Reset()
         }
         Reset()
         {
             $This.Output     = @( )
-            $This.Output    += [PrivacyList]::New().Output
-            $This.Output    += [WindowsUpdateList]::New().Output
-            $This.Output    += [ServiceList]::New().Output
-            $This.Output    += [ContextList]::New().Output
-            $This.Output    += [TaskBarList]::New().Output
-            $This.Output    += [StartMenuList]::New().Output
-            $This.Output    += [ExplorerList]::New().Output
-            $This.Output    += [ThisPCIconList]::New().Output
-            $This.Output    += [DesktopIconList]::New().Output
-            $This.Output    += [LockScreenList]::New().Output
-            $This.Output    += [MiscellaneousList]::New().Output
-            $This.Output    += [PhotoViewerList]::New().Output
-            $This.Output    += [WindowsAppsList]::New().Output
-            $This.Feature    = [WindowsOptionalFeatures]::New().Output
-            $This.AppX       = [AppXList]::New().Output
+            $This.Output    += [PrivacyList]::New($This.Console).Output
+            $This.Output    += [WindowsUpdateList]::New($This.Console).Output
+            $This.Output    += [ServiceList]::New($This.Console).Output
+            $This.Output    += [ContextList]::New($This.Console).Output
+            $This.Output    += [TaskBarList]::New($This.Console).Output
+            $This.Output    += [StartMenuList]::New($This.Console).Output
+            $This.Output    += [ExplorerList]::New($This.Console).Output
+            $This.Output    += [ThisPCIconList]::New($This.Console).Output
+            $This.Output    += [DesktopIconList]::New($This.Console).Output
+            $This.Output    += [LockScreenList]::New($This.Console).Output
+            $This.Output    += [MiscellaneousList]::New($This.Console).Output
+            $This.Output    += [PhotoViewerList]::New($This.Console).Output
+            $This.Output    += [WindowsAppsList]::New($This.Console).Output
+            $This.Feature    = [WindowsOptionalFeatures]::New($This.Console).Output
+            $This.AppX       = [AppXList]::New($This.Console).Output
         }
         [Void] Toggle([Object]$Item)
         {
@@ -7412,11 +8221,17 @@ Function Get-ViperBomb
         }
         [Void] SetStatus()
         {
-            $This.Status = [ViperBombStatus]::New($This.Output.Count,$This.Elapsed(),$This.Status.State,$This.Status.Status)
+            $This.Status = [ViperBombStatus]::New($This.Output.Count,
+                                                  $This.Elapsed(),
+                                                  $This.Status.State,
+                                                  $This.Status.Status)
         }
         [Void] SetStatus([Int32]$State,[String]$Status)
         {
-            $This.Status = [ViperBombStatus]::New($This.Output.Count,$This.Elapsed(),$State,$Status)
+            $This.Status = [ViperBombStatus]::New($This.Output.Count,
+                                                  $This.Elapsed(),
+                                                  $State,
+                                                  $Status)
         }
         Initialize()
         {
@@ -7504,7 +8319,11 @@ Function Get-ViperBomb
             
             $This.System      = $This.GetSystemDetails()
 
-            $This.System.ComputerSystem | % { $_.Memory = "{0} GB" -f [Regex]::Matches($_.Memory,"\d+\.\d{2}").Value }
+            $This.System.ComputerSystem | % { 
+                
+                $_.Memory = "{0} GB" -f [Regex]::Matches($_.Memory,"\d+\.\d{2}").Value 
+            }
+
             $This.Caption     = $This.Module.OS.Caption
             $This.Platform    = $This.Module.OS.Platform
             $This.PSVersion   = $This.Module.OS.PSVersion
@@ -7516,6 +8335,14 @@ Function Get-ViperBomb
             $This.Control     = $This.GetSystemControl()
             $This.Xaml        = $This.GetViperBombXaml()
         }
+        [Void] Reset([Object]$xSender,[Object]$Content)
+        {
+            $xSender.Items.Clear()
+            ForEach ($Object in $Content)
+            {
+                [Void]$xSender.Items.Add($Object)
+            }
+        }
         [Object] GetViperBombXaml()
         {
             $This.Update(0,"Gathering [~] Xaml Interface")
@@ -7524,12 +8351,12 @@ Function Get-ViperBomb
         [Object] GetSystemControl()
         {
             $This.Update(0,"Gathering [~] System Control")
-            Return [SystemControl]::New()
+            Return [SystemControl]::New($This.Console)
         }
         [Object] GetServices()
         {
             $This.Update(0,"Gathering [~] System/Services")
-            Return [ServiceControl]::New()
+            Return [ServiceControl]::New($This.Console)
         }
         [Object] GetConfig()
         {
@@ -7561,6 +8388,16 @@ Function Get-ViperBomb
             $This.Console.Update($Mode,$State)
             Write-Host $This.Console.Last()
         }
+        SetSlot([UInt32]$Slot)
+        {
+            If (!$This.Service)
+            {
+                $This.Service = $This.GetServices()
+            }
+
+            $This.Service.SetSlot($Slot)
+            $This.Reset($This.Xaml.IO.Service,$This.Service.Output)
+        }
         StageXamlEvent()
         {
             # [Provide alternate variable for event handlers]
@@ -7568,49 +8405,41 @@ Function Get-ViperBomb
 
             ######################## First Tab #############################
             # [Module OS items]
-            $Ctrl.Xaml.IO.OS.Items.Clear()
-            [Void]$Ctrl.Xaml.IO.OS.Items.Add($Ctrl.Module.OS)
+            $Ctrl.Reset($Ctrl.Xaml.IO.OS,$Ctrl.Module.OS)
 
             # [Bios Information]
-            $Ctrl.Xaml.IO.BiosInformation.Items.Clear()
-            [Void]$Ctrl.Xaml.IO.BiosInformation.Items.Add($Ctrl.System.BiosInformation)
+            $Ctrl.Reset($Ctrl.Xaml.IO.BiosInformation,$Ctrl.System.BiosInformation)
 
             # [Bios Information Extension]
-            $Ctrl.Xaml.IO.BiosInformationExtension.Items.Clear()
-            ForEach ($Property in "SmBiosPresent","SmBiosVersion","SmBiosMajor","SmBiosMinor","SystemBiosMajor","SystemBiosMinor")
+            $Object = ForEach ($Property in "SmBiosPresent",
+                                            "SmBiosVersion",
+                                            "SmBiosMajor",
+                                            "SmBiosMinor",
+                                            "SystemBiosMajor",
+                                            "SystemBiosMinor")
             {
-                $Item = [PSNoteProperty]::New($Property,$Ctrl.System.BiosInformation.$Property)
-                [Void]$Ctrl.Xaml.IO.BiosInformationExtension.Items.Add($Item)
+                [PSNoteProperty]::New($Property,$Ctrl.System.BiosInformation.$Property)
             }
+            $Ctrl.Reset($Ctrl.Xaml.IO.BiosInformationExtension,$Object)
 
             # [Operating System]
-            $Ctrl.Xaml.IO.OperatingSystem.Items.Clear()
-            [Void]$Ctrl.Xaml.IO.OperatingSystem.Items.Add($Ctrl.System.OperatingSystem)
+            $Ctrl.Reset($Ctrl.Xaml.IO.OperatingSystem,$Ctrl.System.OperatingSystem)
 
-            $Ctrl.Xaml.IO.HotFix.Items.Clear()
-            ForEach ($Item in $Ctrl.HotFix.Output)
-            {
-                [Void]$Ctrl.Xaml.IO.HotFix.Items.Add($Item)
-            }
+            # [Hot Fix]
+            $Ctrl.Reset($Ctrl.Xaml.IO.HotFix,$Ctrl.HotFix.Output)
 
             # [Computer System]
-            $Ctrl.Xaml.IO.ComputerSystem.Items.Clear()
-            [Void]$Ctrl.Xaml.IO.ComputerSystem.Items.Add($Ctrl.System.ComputerSystem)
+            $Ctrl.Reset($Ctrl.Xaml.IO.ComputerSystem,$Ctrl.System.ComputerSystem)
 
             # [Computer System Extension]
-            $Ctrl.Xaml.IO.ComputerSystemExtension.Items.Clear()
-            ForEach ($Property in "UUID","Chassis","BiosUefi","AssetTag")
+            $Object = ForEach ($Property in "UUID","Chassis","BiosUefi","AssetTag")
             {
-                $Item = [PSNoteProperty]::New($Property,$Ctrl.System.ComputerSystem.$Property)
-                [Void]$Ctrl.Xaml.IO.ComputerSystemExtension.Items.Add($Item)
+                [PSNoteProperty]::New($Property,$Ctrl.System.ComputerSystem.$Property)
             }
+            $Ctrl.Reset($Ctrl.Xaml.IO.ComputerSystemExtension,$Object)
 
             # [Processor]
-            $Ctrl.Xaml.IO.Processor.Items.Clear()
-            ForEach ($Item in $Ctrl.System.Processor.Output)
-            {
-                [Void]$Ctrl.Xaml.IO.Processor.Items.Add($Item)
-            }
+            $Ctrl.Reset($Ctrl.Xaml.IO.Processor,$Ctrl.System.Processor.Output)
 
             # [Processor Event Trigger(s)]
             $Ctrl.Xaml.IO.Processor.Add_SelectionChanged(
@@ -7618,21 +8447,23 @@ Function Get-ViperBomb
                 $Index = $Ctrl.Xaml.IO.Processor.SelectedIndex
                 If ($Index -ne -1)
                 {
-                    $Ctrl.Xaml.IO.ProcessorExtension.Items.Clear()
-                    ForEach ($Property in "ProcessorId","DeviceId","Speed","Cores","Used","Logical","Threads")
+                    $Object = ForEach ($Property in "ProcessorId",
+                                                    "DeviceId",
+                                                    "Speed",
+                                                    "Cores",
+                                                    "Used",
+                                                    "Logical",
+                                                    "Threads")
                     {
-                        $Item = [PSNoteProperty]::New($Property,$Ctrl.System.Processor.Output[$Index].$Property)
-                        [Void]$Ctrl.Xaml.IO.ProcessorExtension.Items.Add($Item)
+                        [PSNoteProperty]::New($Property,
+                                              $Ctrl.System.Processor.Output[$Index].$Property)
                     }
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ProcessorExtension,$Object)
                 }
             })
 
             # [Disk]
-            $Ctrl.Xaml.IO.Disk.Items.Clear()
-            ForEach ($Item in $Ctrl.System.Disk.Output)
-            {
-                [Void]$Ctrl.Xaml.IO.Disk.Items.Add($Item)
-            }
+            $Ctrl.Reset($Ctrl.Xaml.IO.Disk,$Ctrl.System.Disk.Output)
 
             # [Disk Event Trigger(s)]
             $Ctrl.Xaml.IO.Disk.Add_SelectionChanged(
@@ -7641,34 +8472,30 @@ Function Get-ViperBomb
                 If ($Index -ne -1)
                 {
                     # [Disk Extension]
-                    $Ctrl.Xaml.IO.DiskExtension.Items.Clear()
-                    ForEach ($Property in "HealthStatus","BusType","UniqueId","Location")
+                    $Object = ForEach ($Property in "HealthStatus",
+                                                    "BusType",
+                                                    "UniqueId",
+                                                    "Location")
                     {
-                        $Item = [PSNoteProperty]::New($Property,$Ctrl.System.Disk.Output[$Index].$Property)
-                        [Void]$Ctrl.Xaml.IO.DiskExtension.Items.Add($Item)
+                        [PSNoteProperty]::New($Property,
+                                              $Ctrl.System.Disk.Output[$Index].$Property)
                     }
+
+                    $Ctrl.Reset($Ctrl.Xaml.IO.DiskExtension,
+                                $Object)
+
                     # [Disk Partition(s)]
-                    $Ctrl.Xaml.IO.DiskPartition.Items.Clear()
-                    ForEach ($Item in $Ctrl.System.Disk.Output[$Index].Partition.Output)
-                    {
-                        [Void]$Ctrl.Xaml.IO.DiskPartition.Items.Add($Item)
-                    }
-                    
+                    $Ctrl.Reset($Ctrl.Xaml.IO.DiskPartition,
+                                $Ctrl.System.Disk.Output[$Index].Partition.Output)
+
                     # [Disk Volume(s)]
-                    $Ctrl.Xaml.IO.DiskVolume.Items.Clear()
-                    ForEach ($Item in $Ctrl.System.Disk.Output[$Index].Volume.Output)
-                    {
-                        [Void]$Ctrl.Xaml.IO.DiskVolume.Items.Add($Item)
-                    }
+                    $Ctrl.Reset($Ctrl.Xaml.IO.DiskVolume,
+                                $Ctrl.System.Disk.Output[$Index].Volume.Output)
                 }
             })
 
             # [Network]
-            $Ctrl.Xaml.IO.Network.Items.Clear()
-            ForEach ($Item in $Ctrl.System.Network.Output)
-            {
-                [Void]$Ctrl.Xaml.IO.Network.Items.Add($Item)
-            }
+            $Ctrl.Reset($Ctrl.Xaml.IO.Network,$Ctrl.System.Network.Output)
 
             # [Network Event Trigger(s)]
             $Ctrl.Xaml.IO.Network.Add_SelectionChanged(
@@ -7676,42 +8503,40 @@ Function Get-ViperBomb
                 $Index = $Ctrl.Xaml.IO.Network.SelectedIndex
                 If ($Index -ne -1)
                 {
-                    $Ctrl.Xaml.IO.NetworkExtension.Items.Clear()
-                    ForEach ($Property in "IPAddress","SubnetMask","Gateway","DnsServer","DhcpServer","MacAddress")
+                    $Object = ForEach ($Property in "IPAddress",
+                                                    "SubnetMask",
+                                                    "Gateway",
+                                                    "DnsServer",
+                                                    "DhcpServer",
+                                                    "MacAddress")
                     {
-                        $Item = [PSNoteProperty]::New($Property,$Ctrl.System.Network.Output[$Index].$Property)
-                        [Void]$Ctrl.Xaml.IO.NetworkExtension.Items.Add($Item)
+                        [PSNoteProperty]::New($Property,$Ctrl.System.Network.Output[$Index].$Property)
                     }
+
+                    $Ctrl.Reset($Ctrl.Xaml.IO.NetworkExtension,$Object)
                 }
             })
 
             ######################## Second Tab #############################
-            $Ctrl.Xaml.IO.ServiceSlot.Items.Clear()
-            ForEach ($X in 0..9)
-            {
-                $Ctrl.Xaml.IO.ServiceSlot.Items.Add($X)
-            }
+            $Ctrl.Reset($Ctrl.Xaml.IO.ServiceSlot,@(0..9))
 
             $Ctrl.Xaml.IO.ServiceSlot.Add_SelectionChanged(
             {
+                $Index = $Ctrl.Xaml.IO.ServiceSlot.SelectedIndex
                 $Ctrl.Xaml.IO.ServiceDisplay.Items.Clear()
-                $Ctrl.Xaml.IO.ServiceDisplay.Items.Add($Ctrl.Config.Profile[$Ctrl.Xaml.IO.ServiceSlot.SelectedIndex])
+                $Ctrl.Xaml.IO.ServiceDisplay.Items.Add($Ctrl.Config.Profile[$Index])
+                $Ctrl.SetSlot($Ctrl.Xaml.IO.ServiceSlot.SelectedIndex)
             })
 
             $Name = Switch -Regex ($Ctrl.System.OperatingSystem.Caption)
             {
-                Home { "HomeMax" } "(Pro|Server)" { "ProMax" }
+                Default { "HomeMax" } "(Pro|Server)" { "ProMax" }
             }
             $Ctrl.Xaml.IO.ServiceSlot.SelectedIndex = $Ctrl.Config.Profile | ? Type -eq $Name | % Index
 
             $Ctrl.Xaml.IO.ServiceGet.Add_Click(
             {
-                $Ctrl.Service = $Ctrl.GetServices()
-                $Ctrl.Xaml.IO.Service.Items.Clear()
-                ForEach ($Item in $Ctrl.Service.Output)
-                {
-                    $Ctrl.Xaml.IO.Service.Items.Add($Item)
-                }
+                $Ctrl.SetSlot($Ctrl.Xaml.IO.ServiceSlot.SelectedIndex)
             })
 
             $Ctrl.Xaml.IO.Service.Add_SelectionChanged(
@@ -7719,12 +8544,14 @@ Function Get-ViperBomb
                 $Slot = $Ctrl.Xaml.IO.Service.SelectedItem
                 If ($Slot.Index -ne -1)
                 {
-                    $Ctrl.Xaml.IO.ServiceExtension.Items.Clear()
-                    ForEach ($Property in "Name","DisplayName","PathName","Description")
+                    $Object = ForEach ($Property in "Name",
+                                                    "DisplayName",
+                                                    "PathName",
+                                                    "Description")
                     {
-                        $Item = [PSNoteProperty]::New($Property,$Slot.$Property)
-                        $Ctrl.Xaml.IO.ServiceExtension.Items.Add($Item)
+                        [PSNoteProperty]::New($Property,$Slot.$Property)
                     }
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ServiceExtension,$Object)
                 }        
             })
 
@@ -7745,20 +8572,41 @@ Function Get-ViperBomb
                     }
                 }
 
-                $Ctrl.Xaml.IO.Service.Items.Clear()
-                ForEach ($Item in $List)
-                {
-                    $Ctrl.Xaml.IO.Service.Items.Add($Item)
-                }
+                $Ctrl.Reset($Ctrl.Xaml.IO.Service,$List)
             })
+
+            <#
+            $Ctrl.Xaml.IO.ServiceBypassBuild.IsChecked       = $Ctrl.Config.BypassBuild
+            $Ctrl.Xaml.IO.ServiceBypassEdition.SelectedIndex = $Ctrl.Config.BypassEdition
+            $Ctrl.Xaml.IO.ServiceBypassLaptop.IsChecked      = $Ctrl.Config.BypassLaptop
+            $Ctrl.Xaml.IO.ServiceDisplayActive               
+            $Ctrl.Xaml.IO.ServiceDisplayInactive
+            $Ctrl.Xaml.IO.ServiceDisplaySkipped
+            $Ctrl.Xaml.IO.ServiceMiscSimulate
+            $Ctrl.Xaml.IO.ServiceMiscXbox
+            $Ctrl.Xaml.IO.ServiceMiscChange
+            $Ctrl.Xaml.IO.ServiceMiscStopDisabled
+            $Ctrl.Xaml.IO.ServiceLogServiceSwitch 
+            $Ctrl.Xaml.IO.ServiceLogServiceFile
+            $Ctrl.Xaml.IO.ServiceLogServiceBrowse
+            $Ctrl.Xaml.IO.ServiceLogScriptSwitch
+            $Ctrl.Xaml.IO.ServiceLogScriptFile
+            $Ctrl.Xaml.IO.ServiceLogScriptBrowse
+            $Ctrl.Xaml.IO.ServiceRegSwitch
+            $Ctrl.Xaml.IO.ServiceRegFile
+            $Ctrl.Xaml.IO.ServiceRegBrowse
+            $Ctrl.Xaml.IO.ServiceCsvSwitch
+            $Ctrl.Xaml.IO.ServiceCsvFile
+            $Ctrl.Xaml.IO.ServiceCsvBrowse
+            $Ctrl.Xaml.IO.ServiceDevErrors
+            $Ctrl.Xaml.IO.ServiceDevLog
+            $Ctrl.Xaml.IO.ServiceDevConsole
+            $Ctrl.Xaml.IO.ServiceDevReport
+            #>
 
             ################# Third Tab #########################
             # [Control Subtab]
-            $Ctrl.Xaml.IO.ControlOutput.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.Output)
-            {
-                $Ctrl.Xaml.IO.ControlOutput.Items.Add($Item)
-            }
+            $Ctrl.Reset($Ctrl.Xaml.IO.ControlOutput,$Ctrl.Control.Output)
 
             $Ctrl.Xaml.IO.ControlOutput.Add_SelectionChanged(
             {
@@ -7766,12 +8614,15 @@ Function Get-ViperBomb
                 $Ctrl.Xaml.IO.ControlOutputExtension.Items.Clear()
                 If ($Index -ne -1)
                 {
-                    $Slot = $Ctrl.Xaml.IO.ControlOutput.SelectedItem
-                    ForEach ($Property in "Name","DisplayName","Value","Description")
+                    $Object = ForEach ($Property in "Name",
+                                                    "DisplayName",
+                                                    "Value",
+                                                    "Description")
                     {
-                        $Item = [PSNoteProperty]::New($Property,$Slot.$Property)
-                        $Ctrl.Xaml.IO.ControlOutputExtension.Items.Add($Item)
+                        [PSNoteProperty]::New($Property,$Ctrl.Xaml.IO.ControlOutput.SelectedItem.$Property)
                     } 
+
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ControlOutputExtension,$Object)
                 }
             })
 
@@ -7790,11 +8641,7 @@ Function Get-ViperBomb
                     }
                 }
 
-                $Ctrl.Xaml.IO.ControlOutput.Items.Clear()
-                ForEach ($Item in $List)
-                {
-                    $Ctrl.Xaml.IO.ControlOutput.Items.Add($Item)
-                }
+                $Ctrl.Reset($Ctrl.Xaml.IO.ControlOutput,$List)
             })
 
             $Ctrl.Xaml.IO.ControlFilter.Add_TextChanged(
@@ -7814,33 +8661,33 @@ Function Get-ViperBomb
                     }
                 }
 
-                $Ctrl.Xaml.IO.ControlOutput.Items.Clear()
-                ForEach ($Item in $List)
-                {
-                    $Ctrl.Xaml.IO.ControlOutput.Items.Add($Item)
-                }
+                $Ctrl.Reset($Ctrl.Xaml.IO.ControlOutput,$List)
             })
 
-            #[WindowsFeatures Subtab]
-            $Ctrl.Xaml.IO.ControlFeature.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.Feature)
-            {
-                $Ctrl.Xaml.IO.ControlFeature.Items.Add($Item)
-            }
+            # [WindowsFeatures Subtab]
+            $Ctrl.Reset($Ctrl.Xaml.IO.ControlFeature,$Ctrl.Control.Feature)
 
             $Ctrl.Xaml.IO.ControlFeature.Add_SelectionChanged(
             {
                 $Index = $Ctrl.Xaml.IO.ControlFeature.SelectedIndex
-                $Ctrl.Xaml.IO.ControlFeatureExtension.Items.Clear()
                 If ($Index -ne -1)
                 {
-                    $Slot = $Ctrl.Xaml.IO.ControlFeature.SelectedItem
-
-                    ForEach ($Property in "Index","FeatureName","State","Path","Online","WinPath","SysDrivePath","RestartNeeded","LogPath","ScratchDirectory","LogLevel")
+                    $Object = ForEach ($Property in "Index",
+                                                    "FeatureName",
+                                                    "State",
+                                                    "Path",
+                                                    "Online",
+                                                    "WinPath",
+                                                    "SysDrivePath",
+                                                    "RestartNeeded",
+                                                    "LogPath",
+                                                    "ScratchDirectory",
+                                                    "LogLevel")
                     {
-                        $Item = [PSNoteProperty]::New($Property,$Slot.$Property)
-                        $Ctrl.Xaml.IO.ControlFeatureExtension.Items.Add($Item)
+                        [PSNoteProperty]::New($Property,$Ctrl.Xaml.IO.ControlFeature.SelectedItem.$Property)
                     } 
+
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ControlFeatureExtension,$Object)
                 }
             })
 
@@ -7861,19 +8708,11 @@ Function Get-ViperBomb
                     }
                 }
 
-                $Ctrl.Xaml.IO.ControlFeature.Items.Clear()
-                ForEach ($Item in $List)
-                {
-                    $Ctrl.Xaml.IO.ControlFeature.Items.Add($Item)
-                }
+                $Ctrl.Reset($Ctrl.Xaml.IO.ControlFeature,$List)
             })
 
-            #[AppX]
-            $Ctrl.Xaml.IO.ControlAppX.Items.Clear()
-            ForEach ($Item in $Ctrl.Control.AppX)
-            {
-                $Ctrl.Xaml.IO.ControlAppX.Items.Add($Item)
-            }
+            # [AppX]
+            $Ctrl.Reset($Ctrl.Xaml.IO.ControlAppX,$Ctrl.Control.AppX)
 
             $Ctrl.Xaml.IO.ControlAppX.Add_SelectionChanged(
             {
@@ -7881,17 +8720,24 @@ Function Get-ViperBomb
                 $Ctrl.Xaml.IO.ControlAppXExtension.Items.Clear()
                 If ($Index -ne -1)
                 {
-                    $Slot = $Ctrl.Xaml.IO.ControlAppX.SelectedItem
-
-                    ForEach ($Property in "PackageName","DisplayName","PublisherID","Version","Architecture","ResourceID","InstallLocation",
-                    "RestartNeeded","LogPath","LogLevel")
+                    $Object = ForEach ($Property in "PackageName",
+                                                    "DisplayName",
+                                                    "PublisherID",
+                                                    "Version",
+                                                    "Architecture",
+                                                    "ResourceID",
+                                                    "InstallLocation",
+                                                    "RestartNeeded",
+                                                    "LogPath",
+                                                    "LogLevel")
                     {
-                        $Item = [PSNoteProperty]::New($Property,$Slot.$Property)
-                        $Ctrl.Xaml.IO.ControlAppXExtension.Items.Add($Item)
+                        [PSNoteProperty]::New($Property,$Ctrl.Xaml.IO.ControlAppX.SelectedItem.$Property)
                     } 
+
+                    $Ctrl.Reset($Ctrl.Xaml.IO.ControlAppXExtension,$Object)
                 }
             })
-    
+
             $Ctrl.Xaml.IO.ControlAppXFilter.Add_TextChanged(
             {
                 Start-Sleep -Milliseconds 50
@@ -7909,17 +8755,16 @@ Function Get-ViperBomb
                     }
                 }
 
-                $Ctrl.Xaml.IO.ControlAppX.Items.Clear()
-                ForEach ($Item in $List)
-                {
-                    $Ctrl.Xaml.IO.ControlAppX.Items.Add($Item)
-                }
+                $Ctrl.Reset($Ctrl.Xaml.IO.ControlAppX,$List)
             })
         }
-
     }
 
     $Ctrl = [ViperBombController]::New()
-    $Ctrl.StageXamlEvent()
-    $Ctrl.Xaml.Invoke()
+
+    # [To launch the GUI, these commands stage the event handlers, and invoke it]
+    # $Ctrl.StageXamlEvent()
+    # $Ctrl.Xaml.Invoke()
+
+    $Ctrl
 }
