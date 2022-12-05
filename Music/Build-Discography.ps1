@@ -194,10 +194,18 @@ Function Build-Discography
             ForEach ($Item in $This.Queue)
             {
                 $File = $List | ? Name -match $Item.Hash
-                If ($File)
+                Switch (!!$File)
                 {
-                    $Item.Fullname = $File.Fullname
-                    $Item.Exists   = 1
+                    $True
+                    {
+                        $Item.Fullname = $File.Fullname
+                        $Item.Exists   = 1
+                    }
+                    $False
+                    {
+                        $Item.Fullname = $Null
+                        $Item.Exists   = 0
+                    }
                 }
             }
         }
@@ -253,6 +261,55 @@ Function Build-Discography
                 }
                 Write-Progress -Activity Downloading -Status ("Rank: ({0:d$D}/$C)" -f $X) -Complete
             }
+        }
+        Rename()
+        {
+            $Last = $Null
+            $C    = 0
+            ForEach ($Item in $This.Queue)
+            {
+                $xAlbum  = $This.Get($Item.Rank)
+                $NewName = Switch ($Item.Type)
+                {
+                    Album
+                    {
+                        "{0}\{1} - ({2}) {3}.mp3" -f $This.Path, 
+                                                     $This.Name, 
+                                                     $xAlbum.Year, 
+                                                     $xAlbum.Name
+                    }
+                    Track
+                    {
+                        If ($Last -ne $xAlbum.Index)
+                        {
+                            $C = 0
+                        }
+                    
+                        "{0}\{1} - ({2}) {3}({4:d2}) {5}.mp3" -f $This.Path, 
+                                                                 $This.Name, 
+                                                                 $xAlbum.Year, 
+                                                                 $xAlbum.Name, 
+                                                                 $C, 
+                                                                 $xAlbum.Track[$C].Name
+                    
+                        $C ++
+                    }
+                }
+                $Last = $xAlbum.Index
+
+                [System.IO.File]::Move($Item.Fullname,$NewName)
+                $Item.FullName = $NewName
+            }
+        }
+        [String] GetOutput()
+        {
+            Return @($This.Album | % {
+
+                "{0}\{1} - ({2}) {3}.mp3" -f $_.Path, 
+                                             $_.Name, 
+                                             $Item.Year, 
+                                             $Item.Name
+            })
         }
     }
 
