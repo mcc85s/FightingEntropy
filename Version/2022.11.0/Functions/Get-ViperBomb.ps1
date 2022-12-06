@@ -17,7 +17,7 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-10-10                                                                               //   
-   \\        Modified   : 2022-12-05                                                                               \\   
+   \\        Modified   : 2022-12-06                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
    //        TODO       : AKA "System Control Extension Utility"                                                   //   
@@ -26,12 +26,16 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 12-05-2022 14:10:15    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 12-06-2022 00:36:02    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 Function Get-ViperBomb
 {
+    [CmdLetBinding()]Param(
+        [ValidateSet(0,1,2)]
+        [Parameter()][UInt32]$Mode=0)
+
     Class ViperBombXaml
     {
         Static [String] $Content = @(
@@ -1659,6 +1663,10 @@ Function Get-ViperBomb
         {
             $This.Console.Update($State,"[Service]: $Status")
         }
+        [String] Pid()
+        {
+            Return (Get-Service | ? ServiceType -eq 224)[0].Name.Split('_')[-1]
+        }
         [String[]] ConfigNames()
         {
             $Out = "AJRouter;ALG;AppHostSvc;AppIDSvc;Appinfo;AppMgmt;AppReadiness;AppVClient;aspnet"+
@@ -1692,7 +1700,7 @@ Function Get-ViperBomb
             "num;WpnService;WpnUserService_{0};wscsvc;WSearch;wuauserv;wudfsvc;WwanSvc;xbgm;XblAuth"+
             "Manager;XblGameSave;XboxGipSvc;XboxNetApiSvc"
 
-            Return $Out -f (Get-Service | ? ServiceType -eq 224)[0].Name.Split('_')[-1] -Split ";"
+            Return $Out -f $This.Pid() -Split ";"
         }
         [UInt32[]] ConfigMasks()
         {
@@ -1725,6 +1733,7 @@ Function Get-ViperBomb
         }
         [Object] GetServiceSubcontroller()
         {
+            $This.Update(0,"Getting [~] Service subcontroller")
             Return [ServiceSubcontroller]::New()
         }
         [Object] GetServiceProfile([String]$Name,[String]$Values)
@@ -1733,6 +1742,7 @@ Function Get-ViperBomb
         }
         [Object] GetServiceConfig()
         {
+            $This.Update(0,"Getting [~] Service configuration")
             $Hash                      = @{ }
             $Names                     = $This.ConfigNames()
             $Masks                     = $This.ConfigMasks()
@@ -8760,11 +8770,25 @@ Function Get-ViperBomb
         }
     }
 
-    $Ctrl = [ViperBombController]::New()
-
-    # [To launch the GUI, these commands stage the event handlers, and invoke it]
-    # $Ctrl.StageXamlEvent()
-    # $Ctrl.Xaml.Invoke()
-
-    $Ctrl
+    Switch ($Mode)
+    {
+        0
+        {
+            [ViperBombController]::New()
+        }
+        1
+        {
+            $Ctrl = [ViperBombController]::New()    
+            $Ctrl.StageXamlEvent()
+            $Ctrl.Xaml.Invoke()
+        }
+        2
+        {
+            $Console = [ViperBombStatusBank]::New()
+            $Console.Initialize()
+            $Ctrl    = [ServiceControl]::New($Console)
+            $Ctrl.Console.Finalize()
+            $Ctrl
+        }
+    }
 }
