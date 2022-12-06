@@ -18,7 +18,7 @@
    \\        Contact    : @mcc85s                                                                                  \\   
    //        Primary    : @mcc85s                                                                                  //   
    \\        Created    : 2022-10-10                                                                               \\   
-   //        Modified   : 2022-11-08                                                                               //   
+   //        Modified   : 2022-12-06                                                                               //   
    \\        Demo       : N/A                                                                                      \\   
    //        Version    : 0.0.0 - () - Finalized functional version 1.                                             //   
    \\        TODO       : IPV6 Type stuff, Ping Sweep (IPV4), NBT scan remote addresses                            \\   
@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11/08/2022 18:33:10    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 12-06-2022 00:09:42    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 
@@ -649,10 +649,10 @@ Function Get-FENetwork
 
     Class NetworkAdapterProperty
     {
-        [String]  $Adapter
-        [UInt32]     $Rank
-        [String]     $Name
-        [Object]    $Value
+        [String] $Adapter
+        [UInt32] $Rank
+        [String] $Name
+        [Object] $Value
         NetworkAdapterProperty([UInt32]$Adapter,[String]$Rank,[String]$Name,[Object]$Value)
         {
             $This.Adapter  = $Adapter
@@ -721,16 +721,16 @@ Function Get-FENetwork
 
     Class NetworkAdapterConfigurationProperty
     {
-        [UInt32] $Adapter
-        [String] $Rank
+        [String] $Adapter
+        [UInt32] $Rank
         [String] $Name
         [Object] $Value
-        NetworkAdapterConfigurationProperty([UInt32]$Adapter,[UInt32]$Rank,[String]$Name,[Object]$Value)
+        NetworkAdapterConfigurationProperty([UInt32]$Adapter,[String]$Rank,[String]$Name,[Object]$Value)
         {
-            $This.Adapter = $Adapter
-            $This.Rank    = $Rank
-            $This.Name    = $Name
-            $This.Value   = $Value
+            $This.Adapter  = $Adapter
+            $This.Rank     = $Rank
+            $This.Name     = $Name
+            $This.Value    = $Value
         }
     }
 
@@ -1504,7 +1504,6 @@ Function Get-FENetwork
         NetworkController([UInt32]$Mode)
         {
             $This.Mode = $Mode
-
             $This.Main()
         }
         Main()
@@ -1584,14 +1583,13 @@ Function Get-FENetwork
 
             $This.Output     = $This.Sub.Template | % { [NetworkControllerExtension]::New($_) }
         }
-
         [Object] Section([Object]$Object,[String[]]$Names)
         {
-            Return New-FEFormat -Section $Object -Property $Names
+            Return New-FEFormat -Section $Object $Names
         }
         [Object] Table([Object]$Object,[String[]]$Names)
         {
-            Return New-FEFormat -Table $Object -Property $Names
+            Return New-FEFormat -Table $Object $Names
         }
         Box([Hashtable]$Hash,[String]$Line)
         {
@@ -1599,9 +1597,13 @@ Function Get-FENetwork
             $Hash.Add($Hash.Count,"| $Line |")
             $Hash.Add($Hash.Count,(@([Char]175) * ($Line.Length + 4) -join ''))
         }
-        [Object] List()
+        Add([Hashtable]$Hash,[Object]$Object)
         {
-            $Prop         = @{
+            $Object | % { $Hash.Add($Hash.Count,$_) }
+        }
+        [Hashtable] Prop()
+        {
+            Return [Hashtable]@{
 
                 Config    = "Index","Name","MacAddress","Vendor"
                 IPv4      = "IPAddress","Class","Prefix","Netmask","Network","Gateway","Range","Broadcast"
@@ -1611,6 +1613,10 @@ Function Get-FENetwork
                 IPv6      = "IPAddress","Prefix","Type"
                 Netstat   = "Protocol","LocalAddress","LocalPort","RemoteAddress","RemotePort","State","Direction"
             }
+        }
+        [Object] List()
+        {
+            $Prop         = $This.Prop()
 
             $Section      = $This.Section($This.Output,$Prop.Config)
             $Out          = @{ }
@@ -1623,7 +1629,7 @@ Function Get-FENetwork
                 # // | Section Header |
                 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-                $Section.Draw($X) | % { $Out.Add($Out.Count,$_) }
+                $This.Add($Out,$Section.Draw($X))
         
                 # // ___________________
                 # // | Section Content |
@@ -1634,42 +1640,42 @@ Function Get-FENetwork
                 If (!!$Item.IPv4)
                 {
                     $This.Box($Out,"====[ IPv4 IP Address ]==============================")
-                    $This.Table($Item.IPv4,$Prop.IPv4).Draw()        | % { $Out.Add($Out.Count,$_) }
+                    $This.Add($Out,$This.Table($Item.IPv4,$Prop.IPv4).Draw())
                 }
                 If (!!$Item.IPv4.Route)
                 {
                     $This.Box($Out,"====[ IPv4 IP Route ]================================")
-                    $This.Table($Item.IPv4.Route,$Prop.Route).Draw() | % { $Out.Add($Out.Count,$_) }
+                    $This.Add($Out,$This.Table($Item.IPv4.Route,$Prop.Route).Draw())
                 }
 
                 If (!!$Item.Arp)
                 {
                     $This.Box($Out,"====[ IPv4 Address Resolution Protocol ]=============")
-                    $This.Table($Item.Arp,$Prop.Arp).Draw()          | % { $Out.Add($Out.Count,$_) }
+                    $This.Add($Out,$This.Table($Item.Arp,$Prop.Arp).Draw())
                 }
 
                 If (!!$Item.Nbt)
                 {
                     $This.Box($Out,"====[ IPv4 NetBEUI Hostmap ]=========================")
-                    $This.Table($Item.Nbt,$Prop.Nbt).Draw()          | % { $Out.Add($Out.Count,$_) }
+                    $This.Add($Out,$This.Table($Item.Nbt,$Prop.Nbt).Draw())
                 }
 
                 If (!!$Item.IPv6)
                 {
                     $This.Box($Out,"====[ IPv6 IP Address ]==============================")
-                    $This.Table($Item.IPv6,$Prop.IPv6).Draw()        | % { $Out.Add($Out.Count,$_) }
+                    $This.Add($Out,$This.Table($Item.IPv6,$Prop.IPv6).Draw())
                 }
                 If (!!$Item.IPv6.Route)
                 {
                     $This.Box($Out,"====[ IPv6 IP Route ]================================")
-                    $This.Table($Item.IPv6.Route,$Prop.Route).Draw() | % { $Out.Add($Out.Count,$_) }
+                    $This.Add($Out,$This.Table($Item.IPv6.Route,$Prop.Route).Draw())
                 }
             }
 
             If ($This.Netstat)
             {
                 $This.Box($Out,"====[ Network Statistics ]===========================")
-                $This.Table($This.Netstat,$Prop.Netstat).Draw() | % { $Out.Add($Out.Count,$_) }
+                $This.Add($Out,$This.Table($This.Netstat,$Prop.Netstat).Draw())
             }
 
             Return $Out[0..($Out.Count-1)]
