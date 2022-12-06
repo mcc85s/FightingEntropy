@@ -17,7 +17,7 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-11-06                                                                               //   
-   \\        Modified   : 2022-11-06                                                                               \\   
+   \\        Modified   : 2022-12-06                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
    //        TODO       : N/A                                                                                      //   
@@ -26,19 +26,25 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11/07/2022 15:48:01    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 12-06-2022 00:10:27    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
 Function New-FEFormat
 {
     [CmdLetBinding()]Param(
-    [Parameter(ParameterSetName=0,Position=0)][Object]$Table,
-    [Parameter(ParameterSetName=1,Position=0)][Object]$Section,
-    [Parameter(ParameterSetName=2,Position=0)][Object]$Block,
+    [Parameter(ParameterSetName=0,Position=0)][Switch]$Table,
+    [Parameter(ParameterSetName=1,Position=0)][Switch]$Section,
+    [Parameter(ParameterSetName=2,Position=0)][Switch]$Block,
     [Parameter(ParameterSetName=0,Position=1)]
     [Parameter(ParameterSetName=1,Position=1)]
-    [Parameter(ParameterSetName=2,Position=1)][String[]]$Property)
+    [Parameter(ParameterSetName=2,Position=1)][Object]$InputObject,
+    [Parameter(ParameterSetName=0,Position=2)]
+    [Parameter(ParameterSetName=1,Position=2)]
+    [Parameter(ParameterSetName=2,Position=2)][String[]]$Property,
+    [Parameter(ParameterSetName=0,Position=3)]
+    [Parameter(ParameterSetName=1,Position=3)]
+    [Parameter(ParameterSetName=2,Position=3)][Switch]$Draw)
 
     # // ______________________________________________________
     # // | Meant to adjust the (width/display) of output data |
@@ -237,15 +243,24 @@ Function New-FEFormat
         }
     }
 
-    Switch ($PsCmdLet.ParameterSetName)
+    $Item = Switch ($PsCmdLet.ParameterSetName)
     {
         0 
         { 
-            [FormatTable]::New($Object,$Property)
+            [FormatTable]::New($InputObject,$Property)
         }
         1
         {
-            [FormatSection]::New($Section,$Property)
+            [FormatSection]::New($InputObject,$Property)
         }
+    }
+
+    If ($Draw)
+    {
+        $Item.Draw()
+    }
+    Else
+    {
+        $Item
     }
 }
