@@ -40,6 +40,7 @@ That is why I write as often as I do, AND record these various videos, and audio
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
 | **12/07/22** | 1h 44m 38s | **2022_12_07_12_52_45.mp3**    | [Resilience](https://drive.google.com/file/d/1nc6bkPkAmw-7Ro_xthkCQDNzyB-5R_bs)
 | **12/06/22** | 3h 33m 41s | **2022_12_06_20_19_25.mp3**.   | [Explaining my rhetoric](https://drive.google.com/file/d/1nRLfFi0tgQsqRbfGFCyC2ZXAb0YNyxp4) |
+| **12/06/22** | 2h 35m 51s | **2022_12_06_08_44_26[1].mp3** | [Reflections](https://drive.google.com/file/d/14kw3QiOIjoXye4nEcRXf7hhQcVDYQLAJ)
 | **12/04/22** | 1h 48m 06s | **2022_12_04_09_02_41[1].mp3** | [Heather Corey-Mongue](https://drive.google.com/file/d/1qgh_LQEE1VZUfktkR8Oo1O5kL7YzzuKr)
 | **12/01/22** | 0h 53m 07s | **2022_12_01_17_54_09[1].mp3** | [Jumping to conclusions](https://drive.google.com/file/d/10tD5OyOGgbGoj8UZW9D4wOO_d4iwZ_-q) |
 | **11/29/22** | 4h 06m 58s | **2022_11_29_09_47_54[1].mp3** | [Newsworthiness and Espionage](https://drive.google.com/file/d/1qD6QCVJsvf1RCCq9ZNJnxKITlSRod2iH)           |
