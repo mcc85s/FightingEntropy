@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2022.11.0]: 11-17-2022 07:51:24                                           ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2022.11.0]: 12-10-2022 11:45:37                                           ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -718,13 +718,13 @@ Function FightingEntropy.Module
             ("Get-FEImageManifest.ps1"         , "3665C48E2A0A947F6DDACF6F036ED88D33318595F67129718A1CB5F17D9A5D80") ,
             ("Get-FEInfo.ps1"                  , "BCBEDC6B56D8657841ABB89AAF25E6E2D1A98670D40E7371EF8C88CDA2259A48") ,
             ("Get-FEModule.ps1"                , "E8263E716BCD9AF311E0CCE92EDB86C2D20242F15E64072883167A33414D751A") ,
-            ("Get-FENetwork.ps1"               , "8251CC0215D4B83D1D1A465C0D89FB3C97E5B07B4A2ECC8BB86A39B3D8C8ADB7") ,
+            ("Get-FENetwork.ps1"               , "A50E0C07BD9FA27D33657600672A0DA2E393F9254014397B9A38AD8DB233A363") ,
             ("Get-FEOS.ps1"                    , "4224DB2FFAB564F85B7FD8998B7311751DFD3C5F22BE4547412CF910BBA605F4") ,
             ("Get-FEProcess.ps1"               , "053AF12E5C31360F1A91778D997A9D7AC9D1C7BF65CAD5F34544482F9BBD872A") ,
             ("Get-FERole.ps1"                  , "A26A3D36FADC3FA27B6E6978561EF4A3B532442EAB9D97FC9A0F6950B250F8C4") ,
             ("Get-FEService.ps1"               , "29C1183826832E84B3EE51F2B040E425822019E362EF663E646A40A8E7BFDAD4") ,
             ("Get-FESitemap.ps1"               , "135A1DCCB8F300EEBA13A76FE5E7609274DA6C4C7D6CA3C8FB1669D2440E04CF") ,
-            ("Get-MadBomb.ps1"                 , "61DF4057A586B8DF396F85C621B30C7F411EACCD7B5A8FE7824B09DAA5361928") ,
+            ("Get-FESystemDetails.ps1"         , "4517FCC040CF5C4B1EC11C0FDE0C1D75764988A3A6217FEBBC934CE008B5C787") ,
             ("Get-MDTModule.ps1"               , "A867850639534E9D24A5EA0EEECBC6F9E078BB4E2FCFAE1D82486BA0BE654C51") ,
             ("Get-PowerShell.ps1"              , "3D778E96A8134D4E43DD0C93101727B98BECCBD1E1829B2495668DB3B60AA7B0") ,
             ("Get-PropertyItem.ps1"            , "DED775999AAACA8DB127C40B1C0E0F7CFCCE6409F64B9332CC21771E81C39198") ,
@@ -732,22 +732,20 @@ Function FightingEntropy.Module
             ("Get-PSDLog.ps1"                  , "6FA5187C71FBEDA668811BE166E0EAFC9135EB90948B563AAC040FC4D3DC5DB1") ,
             ("Get-PSDLogGUI.ps1"               , "B9084471E0906694B8469501B2E280E9F3163EFF63BCD006E162B7B3FD3B49CD") ,
             ("Get-PSDModule.ps1"               , "A3B4984BFF3835A0938E82D9501FAA63A852C82064559638232134E96F672A3B") ,
-            ("Get-SystemDetails.ps1"           , "9D2DD38A076A2373CB22C33CC61E31FF74ADB425193C2D15184C6F0519FF20B7") ,
             ("Get-ThreadController.ps1"        , "7E573D21AB6A96450CBBEF9D87AF23797D4A8CFE822D543BE2B4BF696EADE2D8") ,
-            ("Get-ViperBomb.ps1"               , "1C2B26F6B6C7D05AF0EEF296DA4E2E0C9AA43CBFB4663C1DA74DAC1EC5236BC7") ,
+            ("Get-ViperBomb.ps1"               , "07922BA636845B3BC52B2C9FB0607890C7C0942B09F5A3F566BB0D43DF0269AD") ,
             ("Get-WhoisUtility.ps1"            , "8F397C28276878C615672B653A82C58A5894956AC14DE431C030E80326BCDEE7") ,
             ("Install-BossMode.ps1"            , "93CC648B8DB4F78225F7EF8F36FC081DBB8FD0A1ACF6C9CE7E6861AA33F10B94") ,
             ("Install-IISServer.ps1"           , "A52DA72273CF1F24CB774003BC645AA8A6DA37A0D05E108D60D868159404095C") ,
             ("Install-PSD.ps1"                 , "3487614D00E8175941FB4EEFC9E83BAA37CE8B43A1D86858AB6E6E3D43180A94") ,
             ("Invoke-cimdb.ps1"                , "FAEB8030E3FF7AA205B02DB720DBA19E2FB3B9D10C274FBAFF814A059CA6B114") ,
             ("New-EnvironmentKey.ps1"          , "4783E3A5AFE777F91A59AB73A0D2B7311BD4E9760EA6BDDCB366FAFE52FB5CDD") ,
-            ("New-FEFormat.ps1"                , "C2F51D3D1DAAA7EBA993DC93640AB934B30DF37EDDE040569A5A7E13D2CE0E39") ,
+            ("New-FEFormat.ps1"                , "47CCD7579C4EBBEE9A646264CBB61EEC382046B47C555858F78ED8A672FB39A1") ,
             ("New-FEInfrastructure.ps1"        , "D8AD33C0609552850AA3A36F2DE9C5ED116A0057D16883DA9BD85311EB869E18") ,
-            ("Search-WirelessNetwork.ps1"      , "EF0785ED4498E8E93A58AF3D791CF8FB7FF37DE18608068D09A1227E3CA130F3") ,
+            ("Search-WirelessNetwork.ps1"      , "22304116A8BFD8C584321F2DC986870E061023789526928CF4162109411C5294") ,
             ("Set-ScreenResolution.ps1"        , "550BABB4ECCB26E835A952E1A749EDC857816B202881DC68C22F2727EB3493F7") ,
             ("Show-ToastNotification.ps1"      , "B7D9BC8BF580EABFAFF35A7FF97DFCBB7BF7BEDEF30D1469AEB140F0D4A30DFE") ,
             ("Update-PowerShell.ps1"           , "0D803B07A9FF514B2376CEB4EB5E792F526785EBE89CCA7E5E9FA9CAF2A9154F") ,
-            ("Use-Wlanapi.ps1"                 , "4178F1C9039ED6BADC339911D54E19907E69C35A2DD65F795C549BF1C64A2A75") ,
             ("Write-Theme.ps1"                 , "9B75801191BF001F1C47A63E00E17AA2254ADF3C4FC9CDE381FA749ED300D88D") | % { 
                 
                 $This.Add(1,$_[0],$_[1])
@@ -816,7 +814,7 @@ Function FightingEntropy.Module
                     $File.TestPath()
                 }
                 Write-Host ("Installed [~] {0} {1}% -> {2}" -f $This.Status($X), 
-                                                               $This.Percent($X), 
+                                                               $This.Percent($X),
                                                                $File.Name)
             }
         }
@@ -1764,7 +1762,7 @@ $Module = FightingEntropy.Module -Mode 0
   Output /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯                                                                                                                
     _____________________________________________________________________
-    | Here is the output of the function above                          |
+    | Here is the output of the function above                          | [Visual Studio]
     |===================================================================|
     | PS Prompt:\> $Module                                              |
     |                                                                   |
@@ -1796,7 +1794,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 11-17-2022 07:51:24 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 12-10-2022 11:45:37 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
