@@ -22,11 +22,11 @@
    \\        Demo       : N/A                                                                                      \\   
    //        Version    : 0.0.0 - () - Finalized functional version 1.                                             //   
    \\        TODO       : Slightly updated, not tested, requires module enhancement rewrite                        \\   
-   //                     (IT WOULD BE COOL, to have my SERVER to test all of this...)                          ___//   
+   //                     (I know this is broken right now)                                                     ___//   
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 12-10-2022 12:27:03    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 12-10-2022 14:09:41    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -37,7 +37,7 @@ Function New-FEInfrastructure
 
     Function Config
     {
-        [CmdLetBinding()]Param([Parameter(Mandatory)][Object]$Module)
+        [CmdLetBinding()]Param([Parameter(Mandatory)][Object]$Control)
 
         Class DGList
         {
@@ -50,7 +50,6 @@ Function New-FEInfrastructure
             }
         }
 
-        # [Consider dropping this class entirely]
         Class IPConfig
         {
             [String]   $Alias
@@ -411,20 +410,23 @@ Function New-FEInfrastructure
 
         Class Config
         {
-            [Object] $Module
+            [Object]   $Module
+            [Object]   $System
             [Object] $IPConfig
-            [Object] $IP
-            [Object] $Dhcp
-            [Object] $Dns
-            [Object] $Adds
-            [Object] $HyperV
-            [Object] $Wds
-            [Object] $Mdt
-            [Object] $IIS
-            [Object] $Output
-            Config([Object]$Module)
+            [Object]       $IP
+            [Object]     $Dhcp
+            [Object]      $Dns
+            [Object]     $Adds
+            [Object]   $HyperV
+            [Object]      $Wds
+            [Object]      $Mdt
+            [Object]      $IIS
+            [Object]   $Output
+            Config([Object]$Control)
             {
-                $This.Module            = $Module
+                $This.Module            = $Control.Module
+                $This.System            = $Control.System
+
                 $This.IPConfig          = Get-NetIPConfiguration | % { [IPConfig]$_ }
                 Write-Host "[+] Network Configuration"
 
@@ -471,12 +473,12 @@ Function New-FEInfrastructure
                 }
                 If ($This.Output | ? Name -match WDS | ? Value -eq 1)
                 {
-                    $This.WDS               = [WDSServer]::New($This.Module.Role.System.Network.IPAddress)
+                    $This.WDS               = [WDSServer]::New($This.System.Network.Output.IPAddress)
                     Write-Host "[+] Wds"
                 }
                 If ($This.Output | ? Name -match MDT | ? Value -eq 1)
                 {
-                    $This.MDT               = [MdtServer]::New($This.Module.Role.System.Network.IPAddress,$Registry)
+                    $This.MDT               = [MdtServer]::New($This.System.Network.Output.IPAddress,$Registry)
                     Write-Host "[+] Mdt/WinPE/WinAdk"
                 }
                 If ($This.Output | ? Name -match Web-WebServer | ? Value -eq 1)
@@ -8518,7 +8520,7 @@ Function New-FEInfrastructure
             # // | Pulls configuration information (Network/DHCP/DNS/ADDS/Hyper-V/WDS/MDT/WinADK/WinPE/IIS) |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
             
-            $This.Config            = Config -Module $This.Module
+            $This.Config            = Config -Parent $This
             $This.TX("[+] Config")
 
             # // ___________________________________
@@ -8924,7 +8926,7 @@ Function New-FEInfrastructure
     $Main = [Main]::New()
     
     Write-Theme "Initialized [+] Infrastructure Deployment System" 2
-    $Xaml = [XamlWindow][FEInfrastructureGUI]::Tab
+    $Xaml = [XamlWindow][FEInfrastructureXaml]::Content
 
     # // ____________________
     # // |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
@@ -8936,27 +8938,13 @@ Function New-FEInfrastructure
     # // | [Module.Information] |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-    $Content  = ForEach ($Item in "Base Name Description Author Company Copyright GUID Version Date RegPath Default Main Trunk ModPath ManPath Path Status" -Split " ")
-    {
-        $Name = Switch ($Item)
-        {
-            Default { $Item } 
-            Date    { "Installation Date" } 
-            RegPath { "Registry Path" } 
-            ModPath { "Module File" }
-            ManPath { "Manifest File" } 
-            Path    { "Module Path" } 
-            Status  { "Module Status" }
-        }
-        [DGList]::New($Name,$Main.Module.$Item)
-    }
-    $Main.Reset($Xaml.IO.Module_Info.Items,$Content)
+    $Main.Reset($Xaml.IO.Module_Info.Items,$Main.Module.PSObject.Properties)
 
     # // _______________________
     # // | [Module.Components] |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     
-    $Main.Reset($Xaml.IO.Module_Type.Items,$Main.Module.Tree)
+    $Main.Reset($Xaml.IO.Module_Type.Items,$Main.Module.Manifest.Output.Name)
     $Xaml.IO.Module_Type.SelectedIndex   = 0
     
     $Main.Reset($Xaml.IO.Module_Property.Items,"Name")
@@ -11707,7 +11695,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.DsMachineOUSelect.Add_Click(
     {
-        $OU = [XamlWindow][OUListGUI]::Tab
+        $OU = [XamlWindow][OUListXaml]::Content
         $Main.Reset($OU.IO.OrganizationalUnits.Items,(Get-ADObject -LDAPFilter "(objectClass=organizationalUnit)"))
         
         $OU.IO.Filter.Add_TextChanged(
