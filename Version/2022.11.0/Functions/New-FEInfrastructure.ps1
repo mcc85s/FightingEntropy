@@ -18,15 +18,15 @@
    \\        Contact    : @mcc85s                                                                                  \\   
    //        Primary    : @mcc85s                                                                                  //   
    \\        Created    : 2022-10-10                                                                               \\   
-   //        Modified   : 2022-11-10                                                                               //   
+   //        Modified   : 2022-12-10                                                                               //   
    \\        Demo       : N/A                                                                                      \\   
    //        Version    : 0.0.0 - () - Finalized functional version 1.                                             //   
-   \\        TODO       : Not yet updated                                                                          \\   
-   //                                                                                                           ___//   
+   \\        TODO       : Slightly updated, not tested, requires module enhancement rewrite                        \\   
+   //                     (IT WOULD BE COOL, to have my SERVER to test all of this...)                          ___//   
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11-10-2022 13:58:15    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 12-10-2022 12:27:03    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -35,12 +35,10 @@ Function New-FEInfrastructure
 {
     [CmdLetBinding(DefaultParameterSetName=0)]Param([Parameter(ParameterSetName=1)][Switch]$Test)
 
-    Add-Type -AssemblyName PresentationFramework,System.Windows.Forms
-    Import-Module FightingEntropy
-
     Function Config
     {
         [CmdLetBinding()]Param([Parameter(Mandatory)][Object]$Module)
+
         Class DGList
         {
             [String]$Name
@@ -51,6 +49,8 @@ Function New-FEInfrastructure
                 $This.Value = $Value
             }
         }
+
+        # [Consider dropping this class entirely]
         Class IPConfig
         {
             [String]   $Alias
@@ -75,6 +75,7 @@ Function New-FEInfrastructure
                 $This.DNSServer   = $IP.DNSServer | % ServerAddresses
             }
         }
+
         # [Dhcp Classes]
         Class DhcpServerv4Reservation
         {
@@ -90,6 +91,7 @@ Function New-FEInfrastructure
                 $This.Description = $Res.Description
             }
         }
+
         Class DhcpServerV4OptionValue
         {
             [UInt32] $OptionID
@@ -104,6 +106,7 @@ Function New-FEInfrastructure
                 $This.Value    = $Opt.Value -join ", "
             }
         }
+
         Class DhcpServerv4Scope
         {
             [String] $ScopeID
@@ -126,6 +129,7 @@ Function New-FEInfrastructure
                 $This.Options      = Get-DhcpServerV4OptionValue -ScopeID $Scope.ScopeID | % { [DhcpServerV4OptionValue]$_ }
             }
         }
+
         Class DhcpServer
         {
             [Object]$Scope
@@ -134,6 +138,7 @@ Function New-FEInfrastructure
                 $This.Scope = Get-DhcpServerV4Scope | % { [DhcpServerv4Scope]$_ }
             }
         }
+
         # [Dns Classes]
         Class DnsServerResourceRecord
         {
@@ -158,6 +163,7 @@ Function New-FEInfrastructure
                 Return ( $This.Name )
             }
         }
+
         Class DnsServerHostRecord
         {
             [String] $HostName
@@ -172,6 +178,7 @@ Function New-FEInfrastructure
                 $This.RecordData = [DnsServerResourceRecord]::New($Record.RecordType,$Record.RecordData).Name
             }
         }
+
         Class DnsServerZone
         {
             [String] $Index
@@ -188,6 +195,7 @@ Function New-FEInfrastructure
                 $This.Hosts               = Get-DNSServerResourceRecord -ZoneName $Zone.Zonename | % { [DnsServerHostRecord]::New($_) }
             }
         }
+
         Class DnsServer
         {
             [Object]$Zone
@@ -201,6 +209,7 @@ Function New-FEInfrastructure
                 }
             }
         }
+
         # [Adds Classes]
         Class AddsObject
         {
@@ -222,6 +231,7 @@ Function New-FEInfrastructure
                 Return @( $This.Name )
             }
         }
+
         Class AddsDomain
         {
             [String] $HostName
@@ -258,6 +268,7 @@ Function New-FEInfrastructure
                 $This.Computer   = $Base | ? Class -eq Computer
             }
         }
+
         # [HyperV]
         Class VmHost
         {
@@ -276,6 +287,7 @@ Function New-FEInfrastructure
                 $This.Memory    = "{0:n2} GB" -f [Float]($VMHost.MemoryCapacity/1GB)
             }
         }
+
         # [WDS Classes]
         Class WdsServer
         {
@@ -287,6 +299,7 @@ Function New-FEInfrastructure
                 $This.IPAddress = @($IP)
             }
         }
+
         # [Mdt Classes]
         Class MdtServer
         {
@@ -306,6 +319,7 @@ Function New-FEInfrastructure
                 $This.PeVersion  = Get-ItemProperty $Registry | ? DisplayName -match "Preinstallation Environment Add-ons - Windows 10"   | % DisplayVersion
             }
         }
+
         # [IIS Classes]
         Class IISSiteBinding
         {
@@ -325,6 +339,7 @@ Function New-FEInfrastructure
                 Return @( $This.Binding)
             }
         }
+
         Class IISSite
         {
             [String]        $Name
@@ -354,6 +369,7 @@ Function New-FEInfrastructure
                 $This.BindCount = $This.Bindings.Count
             }
         }
+
         Class IISAppPool
         {
             [String]         $Name
@@ -372,6 +388,7 @@ Function New-FEInfrastructure
                 $This.StartMode    = $AppPool.StartMode
             }
         }
+
         Class IISServer
         {
             [Object]     $AppDefaults
@@ -391,6 +408,7 @@ Function New-FEInfrastructure
                 $This.Sites           = $IIS.Sites | % { [IISSite]$_ }
             }
         }
+
         Class Config
         {
             [Object] $Module
@@ -472,6 +490,7 @@ Function New-FEInfrastructure
                 Return "<Config>"
             }
         }
+        
         [Config]::New($Module)
     }
 
@@ -525,7 +544,10 @@ Function New-FEInfrastructure
             {
                 Return @( [States]::List | % GetEnumerator | ? Name -eq $Name | % Value )
             }
-            States(){}
+            States()
+            {
+
+            }
         }
 
         Class ZipEntry
@@ -705,7 +727,7 @@ Function New-FEInfrastructure
             }
             [Object] GetExternalIP()
             {
-                Return Invoke-RestMethod http://ifconfig.me/ip 
+                Return Invoke-RestMethod http://ifconfig.me/ip
             }
             [Object] GetLocation()
             {
@@ -930,10 +952,10 @@ Function New-FEInfrastructure
 
         Class Network
         {
-            [String]$Network
-            [String]$Prefix
-            [String]$Netmask
-            [Object[]]$Aggregate
+            [String]     $Network
+            [String]      $Prefix
+            [String]     $Netmask
+            [Object[]] $Aggregate
             Network([String]$Network)
             {
                 $X              = $Network.Split("/")
@@ -1116,9 +1138,9 @@ Function New-FEInfrastructure
     {
         Class Topology
         {
-            [String] $Name
-            [String] $Type
-            [UInt32] $Exists
+            [String]              $Name
+            [String]              $Type
+            [UInt32]            $Exists
             [String] $DistinguishedName
             Topology([String]$Name,[String]$Type,[String]$Root)
             {
@@ -1225,7 +1247,7 @@ Function New-FEInfrastructure
         Class SmTemplate
         {
             Hidden [String[]] $Names = ("Gateway Server Computers Users Service" -Split " ")
-            [Object] $Output
+            [Object]         $Output
             SmTemplate()
             {
                 $This.Output = @( )
@@ -1468,28 +1490,28 @@ Function New-FEInfrastructure
     {
         Class Topology
         {
-            [String] $Organization
-            [String] $CommonName
-            [String] $Type
-            [String] $Name
-            [String] $DNSHostname
-            [String] $Location
-            [String] $Region
-            [String] $Country
-            [String] $Postal
-            [String] $Sitelink
-            [String] $Sitename
-            [String] $Network
-            [String] $Prefix
-            [String] $Netmask
-            [String] $Start
-            [String] $End
-            [String] $Range
-            [String] $Broadcast
-            [String] $ReverseDNS
-            [String] $Parent
+            [String]      $Organization
+            [String]        $CommonName
+            [String]              $Type
+            [String]              $Name
+            [String]       $DNSHostname
+            [String]          $Location
+            [String]            $Region
+            [String]           $Country
+            [String]            $Postal
+            [String]          $Sitelink
+            [String]          $Sitename
+            [String]           $Network
+            [String]            $Prefix
+            [String]           $Netmask
+            [String]             $Start
+            [String]               $End
+            [String]             $Range
+            [String]         $Broadcast
+            [String]        $ReverseDNS
+            [String]            $Parent
             [String] $DistinguishedName
-            [UInt32] $Exists
+            [UInt32]            $Exists
             Topology([String]$Type,[String]$Name,[Object]$Site)
             {
                 $This.Organization      = $Site.Organization
@@ -1521,11 +1543,11 @@ Function New-FEInfrastructure
 
         Class AddsOutput
         {
-            [Object] $Gateway
-            [Object] $Server
+            [Object]     $Gateway
+            [Object]      $Server
             [Object] $Workstation
-            [Object] $User
-            [Object] $Service
+            [Object]        $User
+            [Object]     $Service
             AddsOutput()
             {
                 $This.Gateway     = @( )
@@ -1552,31 +1574,31 @@ Function New-FEInfrastructure
 
         Class AddsHost
         {
-            [String] $Organization
-            [String] $CommonName
-            [String] $Site
-            [String] $Location
-            [String] $Region
-            [String] $Country
-            [UInt32] $Postal
-            [String] $Sitelink
-            [String] $Sitename
-            [String] $Network
-            [UInt32] $Prefix
-            [String] $Netmask
-            [String] $Start
-            [String] $End
-            [String] $Range
-            [String] $Broadcast
-            [String] $ReverseDNS
-            [String] $Type
-            [String] $Hostname
-            [String] $DnsName
-            [String] $Parent
+            [String]      $Organization
+            [String]        $CommonName
+            [String]              $Site
+            [String]          $Location
+            [String]            $Region
+            [String]           $Country
+            [UInt32]            $Postal
+            [String]          $Sitelink
+            [String]          $Sitename
+            [String]           $Network
+            [UInt32]            $Prefix
+            [String]           $Netmask
+            [String]             $Start
+            [String]               $End
+            [String]             $Range
+            [String]         $Broadcast
+            [String]        $ReverseDNS
+            [String]              $Type
+            [String]          $Hostname
+            [String]           $DnsName
+            [String]            $Parent
             [String] $DistinguishedName
-            [UInt32] $Exists
-            [Object] $Computer
-            [String] $Guid
+            [UInt32]            $Exists
+            [Object]          $Computer
+            [String]              $Guid
             AddsHost([Object]$Site,[Object]$Node)
             {
                 $This.Organization      = $Site.Organization
@@ -1654,32 +1676,32 @@ Function New-FEInfrastructure
 
         Class AddsAccount
         {
-            [String] $Organization
-            [String] $CommonName
-            [String] $Site
-            [String] $Location
-            [String] $Region
-            [String] $Country
-            [UInt32] $Postal
-            [String] $Sitelink
-            [String] $Sitename
-            [String] $Network
-            [UInt32] $Prefix
-            [String] $Netmask
-            [String] $Start
-            [String] $End
-            [String] $Range
-            [String] $Broadcast
-            [String] $ReverseDNS
-            [String] $Name
-            [String] $Type
-            [String] $Parent
+            [String]      $Organization
+            [String]        $CommonName
+            [String]              $Site
+            [String]          $Location
+            [String]            $Region
+            [String]           $Country
+            [UInt32]            $Postal
+            [String]          $Sitelink
+            [String]          $Sitename
+            [String]           $Network
+            [UInt32]            $Prefix
+            [String]           $Netmask
+            [String]             $Start
+            [String]               $End
+            [String]             $Range
+            [String]         $Broadcast
+            [String]        $ReverseDNS
+            [String]              $Name
+            [String]              $Type
+            [String]            $Parent
             [String] $DistinguishedName
-            [UInt32] $Exists
-            [Object] $Account
-            [String] $SamName
+            [UInt32]            $Exists
+            [Object]           $Account
+            [String]           $SamName
             [String] $UserPrincipalName
-            [String] $Guid
+            [String]              $Guid
             AddsAccount([Object]$Site,[Object]$Node)
             {
                 $This.Organization      = $Site.Organization
@@ -1766,12 +1788,12 @@ Function New-FEInfrastructure
 
         Class AddsNode
         {
-            Hidden [String] $Site
-            [String] $Name
-            [String] $Type
-            [String] $Parent
+            Hidden [String]       $Site
+            [String]              $Name
+            [String]              $Type
+            [String]            $Parent
             [String] $DistinguishedName
-            [UInt32] $Exists
+            [UInt32]            $Exists
             AddsNode([String]$Site,[Object]$Name,[Object]$Type,[String]$Base)
             {
                 $This.Site              = $Site
@@ -1788,13 +1810,13 @@ Function New-FEInfrastructure
 
         Class AddsContainer
         {
-            Hidden [String] $Site
-            [String] $Name
-            [String] $Type
-            [String] $Parent
+            Hidden [String]       $Site
+            [String]              $Name
+            [String]              $Type
+            [String]            $Parent
             [String] $DistinguishedName
-            [UInt32] $Exists
-            [Object] $Children
+            [UInt32]            $Exists
+            [Object]          $Children
             AddsContainer([String]$Site,[Object]$Template)
             {
                 $This.Site              = $Site
@@ -1842,17 +1864,17 @@ Function New-FEInfrastructure
 
         Class AddsSite
         {
-            [String] $Name
-            [Object] $Control
-            [Object] $Template
-            [Object] $Site
-            [Object] $Subnet
-            [Object] $Main
-            [Object] $Gateway
-            [Object] $Server
+            [String]        $Name
+            [Object]     $Control
+            [Object]    $Template
+            [Object]        $Site
+            [Object]      $Subnet
+            [Object]        $Main
+            [Object]     $Gateway
+            [Object]      $Server
             [Object] $Workstation
-            [Object] $User 
-            [Object] $Service
+            [Object]        $User 
+            [Object]     $Service
             AddsSite([Object]$Control)
             {
                 $This.Name        = $Control.Name
@@ -1880,15 +1902,15 @@ Function New-FEInfrastructure
         Class AddsController
         {
             [String] $Organization
-            [String] $CommonName
-            [Object] $Object
-            [Object] $Sitemap
-            [Object] $Gateway
-            [Object] $Server
-            [Object] $Workstation
-            [Object] $User
-            [Object] $Service
-            [Object] $Output
+            [String]   $CommonName
+            [Object]       $Object
+            [Object]      $Sitemap
+            [Object]      $Gateway
+            [Object]       $Server
+            [Object]  $Workstation
+            [Object]         $User
+            [Object]      $Service
+            [Object]       $Output
             AddsController()
             {
                 $This.Object      = Get-ADObject -Filter * | ? ObjectClass -match "(Computer|User)"
@@ -2175,43 +2197,43 @@ Function New-FEInfrastructure
 
         Class VmTopology
         {
-            [String] $Organization
-            [String] $CommonName
-            [String] $Location
-            [String] $Region
-            [String] $Country
-            [String] $Postal
-            [String] $Sitelink
-            [String] $Sitename
-            [String] $Network
-            [String] $Prefix
-            [String] $Netmask
-            [String] $Start
-            [String] $End
-            [String] $Range
-            [String] $Broadcast
-            [String] $ReverseDNS
-            [String] $Type
-            [String] $Hostname
-            [String] $DnsName
-            [String] $AddsParent
+            [String]          $Organization
+            [String]            $CommonName
+            [String]              $Location
+            [String]                $Region
+            [String]               $Country
+            [String]                $Postal
+            [String]              $Sitelink
+            [String]              $Sitename
+            [String]               $Network
+            [String]                $Prefix
+            [String]               $Netmask
+            [String]                 $Start
+            [String]                   $End
+            [String]                 $Range
+            [String]             $Broadcast
+            [String]            $ReverseDNS
+            [String]                  $Type
+            [String]              $Hostname
+            [String]               $DnsName
+            [String]            $AddsParent
             [String] $AddsDistinguishedName
-            [UInt32] $AddsExists
-            [Object] $AddsComputer
-            [String] $AddsGuid
-            Hidden [Object] $Vm
-            [String] $VmName
-            [Double] $VmMemory
-            [String] $VmPath
-            [String] $VmVhd
-            [Double] $VmVhdSize
-            [UInt32] $VmGeneration
-            [UInt32] $VmCore
-            [String] $VmIso
-            [String] $VmScript
-            [Object[]] $VmSwitchName
-            [UInt32] $VmExists
-            [String] $VmGuid
+            [UInt32]            $AddsExists
+            [Object]          $AddsComputer
+            [String]              $AddsGuid
+            Hidden [Object]             $Vm
+            [String]                $VmName
+            [Double]              $VmMemory
+            [String]                $VmPath
+            [String]                 $VmVhd
+            [Double]             $VmVhdSize
+            [UInt32]          $VmGeneration
+            [UInt32]                $VmCore
+            [String]                 $VmIso
+            [String]              $VmScript
+            [Object[]]        $VmSwitchName
+            [UInt32]              $VmExists
+            [String]                $VmGuid
             VmTopology([Object]$Node)
             {
                 $This.Organization          = $Node.Organization
@@ -2305,8 +2327,8 @@ Function New-FEInfrastructure
         Class VmQuery
         {
             [String] $Hostname
-            [String] $Type
-            [String] $DnsName
+            [String]     $Type
+            [String]  $DnsName
             VmQuery([String]$Type,[Object]$Object)
             {
                 $This.Hostname = $Object.Hostname
@@ -2317,10 +2339,10 @@ Function New-FEInfrastructure
 
         Class VmAddsContainer
         {
-            [Object] $Gateway
-            [Object] $Server
+            [Object]     $Gateway
+            [Object]      $Server
             [Object] $Workstation
-            [Object] $Query
+            [Object]       $Query
             VmAddsContainer()
             {
                 $This.Gateway     = @( )
@@ -2360,9 +2382,9 @@ Function New-FEInfrastructure
 
         Class VmCreate
         {
-            [Object] $Switch
-            [Object] $Gateway
-            [Object] $Server
+            [Object]      $Switch
+            [Object]     $Gateway
+            [Object]      $Server
             [Object] $Workstation
             VmCreate()
             {
@@ -2375,8 +2397,8 @@ Function New-FEInfrastructure
 
         Class VmSelect
         {
-            [String] $Type
-            [String] $Name
+            [String]   $Type
+            [String]   $Name
             [Bool]   $Exists
             [Bool]   $Create
             VmSelect([Object]$Object)
@@ -2390,9 +2412,9 @@ Function New-FEInfrastructure
 
         Class VmControl
         {
-            [String] $Name
-            [String] $Status
-            [String] $Username
+            [String]       $Name
+            [String]     $Status
+            [String]   $Username
             [Object] $Credential
             VmControl([String]$Name,[String]$Status,[String]$Username,[Object]$Credential)
             {
@@ -2410,11 +2432,11 @@ Function New-FEInfrastructure
         Class VmSwitchNode
         {
             Hidden [Object] $Switch
-            [String] $Name
-            [String] $ID
-            [String] $Type
-            [String] $Description
-            [UInt32] $Exists
+            [String]          $Name
+            [String]            $ID
+            [String]          $Type
+            [String]   $Description
+            [UInt32]        $Exists
             VmSwitchNode([String]$Name,[String]$Type)
             {
                 $This.Switch      = $Null
@@ -2579,13 +2601,13 @@ Function New-FEInfrastructure
 
         Class VmDhcpReservation
         {
-            [UInt32] $Index
-            [String] $IPAddress
-            [String] $ScopeID
-            [String] $ClientID
-            [String] $Name
+            [UInt32]       $Index
+            [String]   $IPAddress
+            [String]     $ScopeID
+            [String]    $ClientID
+            [String]        $Name
             [String] $Description
-            [UInt32]   $Exists
+            [UInt32]      $Exists
             VmDhcpReservation([UInt32]$Index,[String]$ScopeID,[String]$IPAddress)
             {
                 $This.Index       = $Index
@@ -2608,10 +2630,10 @@ Function New-FEInfrastructure
 
         Class VmValidateNode
         {
-            [String] $Name
-            [String] $Path
+            [String]    $Name
+            [String]    $Path
             [String] $VhdPath
-            [String] $Result
+            [String]  $Result
             VmValidateNode([String]$Path,[String]$Name)
             {
                 $This.Name    = $Name
@@ -2637,15 +2659,15 @@ Function New-FEInfrastructure
 
         Class VmValidateBase
         {
-            [String] $Type
-            [String] $Path
+            [String]        $Type
+            [String]        $Path
             [String] $InstallType
-            [String] $Iso
-            [String] $Script
-            [Object] $Container
-            [Object] $Process
-            [Object] $Output
-            [String] $Result
+            [String]         $Iso
+            [String]      $Script
+            [Object]   $Container
+            [Object]     $Process
+            [Object]      $Output
+            [String]      $Result
             VmValidateBase([String]$Type,[String]$Path,[String]$InstallType,[String]$Iso,[String]$Script,[Object]$Container)
             {
                 $This.Type        = $Type
@@ -2709,8 +2731,8 @@ Function New-FEInfrastructure
 
         Class VmValidationStack
         {
-            [Object] $Gateway
-            [Object] $Server
+            [Object]     $Gateway
+            [Object]      $Server
             [Object] $Workstation
             VmValidationStack()
             {
@@ -3251,11 +3273,11 @@ Function New-FEInfrastructure
     {
         Class ImageLabel
         {
-            [String] $Name
-            [String] $Type
-            [String] $Version
+            [String]          $Name
+            [String]          $Type
+            [String]       $Version
             [String] $SelectedIndex
-            [Object[]] $Content
+            [Object[]]     $Content
             ImageLabel([Object]$Selected,[UInt32[]]$Index)
             {
                 $This.Name          = $Selected.Path
@@ -3274,16 +3296,16 @@ Function New-FEInfrastructure
         Class ImageSlot
         {
             Hidden [Object] $ImageFile
-            Hidden [Object] $Arch
-            [UInt32] $Index
-            [String] $Type
-            [String] $Version
-            [String] $Name
-            [String] $Description
-            [String] $Size
-            [UInt32] $Architecture
-            [String] $DestinationName
-            [String] $Label
+            Hidden [Object]      $Arch
+            [UInt32]            $Index
+            [String]             $Type
+            [String]          $Version
+            [String]             $Name
+            [String]      $Description
+            [String]             $Size
+            [UInt32]     $Architecture
+            [String]  $DestinationName
+            [String]            $Label
             ImageSlot([Object]$ImageFile,[UInt32]$Arch,[String]$Type,[String]$Version,[Object]$Slot)
             {
                 $This.ImageFile    = $ImageFile
@@ -3390,13 +3412,13 @@ Function New-FEInfrastructure
 
         Class ImageController
         {
-            [String] $Source
-            [String] $Target
+            [String]   $Source
+            [String]   $Target
             [Object] $Selected
-            [Object] $Store
-            [Object] $Queue
-            [Object] $Swap
-            [Object] $Output
+            [Object]    $Store
+            [Object]    $Queue
+            [Object]     $Swap
+            [Object]   $Output
             ImageController()
             {
                 $This.Source   = $Null
@@ -3577,7 +3599,7 @@ Function New-FEInfrastructure
     {
         Class StringList
         {
-            [String] $Name
+            [String]  $Name
             [Object] $Value
             StringList([String]$Line)
             {
@@ -3589,15 +3611,15 @@ Function New-FEInfrastructure
 
         Class UpdateExtract
         {
-            Hidden [Object] $File
-            [String] $KB
-            [Object] $Directory
-            [String] $Type
+            Hidden [Object]     $File
+            [String]              $KB
+            [Object]       $Directory
+            [String]            $Type
             [Object[]] $Applicability
-            [Object] $Name 
+            [Object]            $Name 
             Hidden [Object] $ExitCode
-            [String] $Expand
-            [Object] $Output
+            [String]          $Expand
+            [Object]          $Output
             UpdateExtract([String]$File,[String]$Executable,[String]$Parameters)
             {
                 $This.File          = Get-Item $File
@@ -3616,9 +3638,9 @@ Function New-FEInfrastructure
         Class MsuFile
         {
             [String] $Fullname
-            [String] $Name
-            [String] $Type
-            [Object] $Info
+            [String]     $Name
+            [String]     $Type
+            [Object]     $Info
             MsuFile([Object]$File)
             {
                 $This.Fullname   = $File.Fullname
@@ -3628,16 +3650,16 @@ Function New-FEInfrastructure
 
         Class WimFile
         {
-            [UInt32] $Rank
-            [Object] $Label
-            [Object] $Date
-            [UInt32] $ImageIndex            = 1
-            [String] $ImageName
+            [UInt32]             $Rank
+            [Object]            $Label
+            [Object]             $Date
+            [UInt32]       $ImageIndex = 1
+            [String]        $ImageName
             [String] $ImageDescription
-            [String] $Version
-            [String] $Architecture
+            [String]          $Version
+            [String]     $Architecture
             [String] $InstallationType
-            [String] $SourceImagePath
+            [String]  $SourceImagePath
             WimFile([UInt32]$Rank,[String]$Image)
             {
                 If (!(Test-Path $Image))
@@ -3746,17 +3768,17 @@ Function New-FEInfrastructure
 
         Class WimFile
         {
-            [UInt32] $Rank
-            [Object] $Label
-            [String] $Size
-            [Object] $Date
-            [UInt32] $ImageIndex            = 1
-            [String] $ImageName
+            [UInt32]             $Rank
+            [Object]            $Label
+            [String]             $Size
+            [Object]             $Date
+            [UInt32]       $ImageIndex = 1
+            [String]        $ImageName
             [String] $ImageDescription
-            [String] $Version
-            [String] $Architecture
+            [String]          $Version
+            [String]     $Architecture
             [String] $InstallationType
-            [String] $SourceImagePath
+            [String]  $SourceImagePath
             WimFile([UInt32]$Rank,[String]$Image)
             {
                 If (!(Test-Path $Image))
@@ -3790,7 +3812,7 @@ Function New-FEInfrastructure
 
         Class DGList
         {
-            [String] $Name
+            [String]  $Name
             [Object] $Value
             DGList([String]$Name,[Object[]]$Value)
             {
@@ -3801,12 +3823,12 @@ Function New-FEInfrastructure
 
         Class Brand
         {
-            [String] $Wallpaper
-            [String] $Logo
+            [String]    $Wallpaper
+            [String]         $Logo
             [String] $Manufacturer
             [String] $SupportPhone
             [String] $SupportHours
-            [String] $SupportURL
+            [String]   $SupportURL
             Brand()
             {
                 Get-ItemProperty HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\System -EA 0 | % {
@@ -3887,9 +3909,9 @@ Function New-FEInfrastructure
         Class Domain
         {
             [Object] $Credential
-            [String] $NetBIOS
-            [String] $DnsName
-            [String] $MachineOU
+            [String]    $NetBIOS
+            [String]    $DnsName
+            [String]  $MachineOU
             Domain([String]$Username,[SecureString]$Password,[String]$NetBIOS,[String]$DnsName,[String]$OUName)
             {
                 $This.Credential = [PSCredential]::New($Username,$Password)
@@ -3904,9 +3926,9 @@ Function New-FEInfrastructure
             [Object] $Path
             [Object] $Name
             [Object] $Type
-            [Object] $ISO
-            [Object] $WIM
-            [Object] $XML
+            [Object]  $ISO
+            [Object]  $WIM
+            [Object]  $XML
             BootImage([String]$Path,[String]$Name)
             {
                 $This.Path = $Path
@@ -3935,7 +3957,7 @@ Function New-FEInfrastructure
         Class PersistentDriveImages
         {
             [Object] $Current
-            [Object] $Import
+            [Object]  $Import
             PersistentDriveImages()
             {
                 $This.Current = @( )
@@ -4026,9 +4048,9 @@ Function New-FEInfrastructure
         Class PersistentDriveItem
         {
             Hidden [Object] $Node
-            [String] $Name
-            [String] $Guid
-            [String] $Path
+            [String]        $Name
+            [String]        $Guid
+            [String]        $Path
             PersistentDriveItem([Object]$Object)
             {
                 $This.Node = $Object
@@ -4040,8 +4062,8 @@ Function New-FEInfrastructure
 
         Class PersistentDriveContent
         {
-            [String] $Type
-            [String] $Path
+            [String]    $Type
+            [String]    $Path
             [Object] $Content
             PersistentDriveContent([String]$Path)
             {
@@ -4057,20 +4079,20 @@ Function New-FEInfrastructure
 
         Class PersistentDrive
         {
-            [String] $Name
-            [String] $Root
-            [Object] $Share
-            [String] $Description
-            [String] $Type
-            [Object] $Property
-            [Object] $Content
-            [Object] $Config
-            [Object] $Images
-            [Object] $Brand
-            [Object] $Domain
-            [Object] $Connection
+            [String]          $Name
+            [String]          $Root
+            [Object]         $Share
+            [String]   $Description
+            [String]          $Type
+            [Object]      $Property
+            [Object]       $Content
+            [Object]        $Config
+            [Object]        $Images
+            [Object]         $Brand
+            [Object]        $Domain
+            [Object]    $Connection
             [String] $Administrator
-            [String] $Password
+            [String]      $Password
             PersistentDrive([Object]$Drive)
             {
                 $This.Name        = $Drive.Name
@@ -4845,12 +4867,12 @@ Function New-FEInfrastructure
     {
         Class WdsRegItem
         {
-            [String] $Name
+            [String]        $Name
             [String] $DisplayName
-            [String] $Path
-            [String] $Property
-            [String] $Type
-            [Object] $Value
+            [String]        $Path
+            [String]    $Property
+            [String]        $Type
+            [Object]       $Value
             WdsRegItem([String]$DisplayName,[String]$Path,[String]$Property,[String]$Type,[Object]$Value)
             {
                 $This.Name        = $DisplayName -Replace " ",""
@@ -5099,9 +5121,9 @@ Function New-FEInfrastructure
             [Object] $Path
             [Object] $Name
             [Object] $Type
-            [Object] $Iso
-            [Object] $Wim
-            [Object] $Xml
+            [Object]  $Iso
+            [Object]  $Wim
+            [Object]  $Xml
             BootImage([String]$Path,[String]$Name)
             {
                 $This.Path = $Path
@@ -5128,14 +5150,14 @@ Function New-FEInfrastructure
 
         Class WdsImage
         {
-            [String] $Type
-            [String] $Arch
-            [String] $Created
-            [String] $Language
+            [String]        $Type
+            [String]        $Arch
+            [String]     $Created
+            [String]    $Language
             [String] $Description
-            [UInt32] $Enabled
-            [String] $FileName
-            [String] $ID
+            [UInt32]     $Enabled
+            [String]    $FileName
+            [String]          $ID
             WdsImage([Object]$Type,[Object]$Image)
             {
                 $This.Type        = $Type
@@ -5152,9 +5174,9 @@ Function New-FEInfrastructure
         Class WdsController
         {
             [Object] $Control
-            [String] $Path
-            [String] $Server
-            [Object] $Images
+            [String]    $Path
+            [String]  $Server
+            [Object]  $Images
             WdsController()
             {   
                 $This.Control   = [WdsReg]::New().Stack
@@ -5184,12 +5206,31 @@ Function New-FEInfrastructure
 
     Class DGList
     {
-        [String]$Name
-        [Object]$Value
+        [String]  $Name
+        [Object] $Value
         DGList([String]$Name,[Object]$Value)
         {
             $This.Name  = $Name
             $This.Value = @($Value;$Value -join ", ")[$Value.Count -gt 1]
+        }
+    }
+
+    Class XamlProperty
+    {
+        [UInt32] $Index
+        [String] $Name
+        [Object] $Type
+        [Object] $Control
+        XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
+        {
+            $This.Index   = $Index
+            $This.Name    = $Name
+            $This.Type    = $Object.GetType().Name
+            $This.Control = $Object
+        }
+        [String] ToString()
+        {
+            Return $This.Name
         }
     }
 
@@ -5198,20 +5239,11 @@ Function New-FEInfrastructure
         Hidden [Object]        $XAML
         Hidden [Object]         $XML
         [String[]]            $Names
-        [Object[]]            $Types
+        [Object]              $Types
         [Object]               $Node
         [Object]                 $IO
-        [Object]         $Dispatcher
-        [Object]          $Exception
-        [String[]] FindNames()
-        {
-            Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
-
-                ($_ -Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
-
-            } | Select-Object -Unique ) 
-        }
-        XamlWindow([String]$XAML)
+        [String]          $Exception
+        XamlWindow([String]$Xaml)
         {           
             If (!$Xaml)
             {
@@ -5221,22 +5253,30 @@ Function New-FEInfrastructure
             [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
 
             $This.Xaml               = $Xaml
-            $This.XML                = [XML]$Xaml
+            $This.Xml                = [XML]$Xaml
             $This.Names              = $This.FindNames()
             $This.Types              = @( )
-            $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
-            $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
-            $This.Dispatcher         = $This.IO.Dispatcher
-
-            ForEach ($I in 0..($This.Names.Count - 1))
+            $This.Node               = [System.Xml.XmlNodeReader]::New($This.Xml)
+            $This.IO                 = [System.Windows.Markup.XamlReader]::Load($This.Node)
+            
+            ForEach ($X in 0..($This.Names.Count-1))
             {
-                $Name                = $This.Names[$I]
-                $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $This.IO.FindName($Name) -Force
-                If ($This.IO.$Name)
+                $Name                = $This.Names[$X]
+                $Object              = $This.IO.FindName($Name)
+                $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $Object -Force
+                If (!!$Object)
                 {
-                    $This.Types    += [DGList]::New($Name,$This.IO.$Name.GetType().Name)
+                    $This.Types     += $This.XamlProperty($This.Types.Count,$Name,$Object)
                 }
             }
+        }
+        [String[]] FindNames()
+        {
+            Return [Regex]::Matches($This.Xaml,"( Name\=\`"\w+`")").Value -Replace "( Name=|`")",""
+        }
+        [Object] XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
+        {
+            Return [XamlProperty]::New($Index,$Name,$Object)
         }
         Invoke()
         {
@@ -5246,14 +5286,14 @@ Function New-FEInfrastructure
             }
             Catch
             {
-                $This.Exception     = $PSItem
+                $This.Exception = $PSItem
             }
         }
     }
 
-    Class FEInfrastructureGUI
+    Class FEInfrastructureXaml
     {
-        Static [String] $Tab = @(        
+        Static [String] $Content = @(        
             '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Infrastructure Deployment System" Width="800" Height="780" Icon=" C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\icon.ico" ResizeMode="NoResize" FontWeight="SemiBold" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen" Topmost="True">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
@@ -8221,9 +8261,9 @@ Function New-FEInfrastructure
         '</Window>' -join "`n")
     }
 
-    Class OUListGUI
+    Class OUListXaml
     {
-        Static [String] $Tab = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Select an Organizational Unit" Width="650" Height="300" HorizontalAlignment="Center" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+        Static [String] $Content = @('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Select an Organizational Unit" Width="650" Height="300" HorizontalAlignment="Center" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style TargetType="GroupBox">',
         '            <Setter Property="Margin" Value="10"/>',
@@ -8366,11 +8406,11 @@ Function New-FEInfrastructure
 
     Class ModuleFile
     {
-        [String] $Mode
+        [String]          $Mode
         [String] $LastWriteTime
-        [String] $Length
-        [String] $Name
-        [String] $Path
+        [String]        $Length
+        [String]          $Name
+        [String]          $Path
         ModuleFile([Object]$File)
         {
             $This.Mode          = $File.Mode.ToString()
@@ -8388,14 +8428,13 @@ Function New-FEInfrastructure
 
     Class LogObject
     {
-        [String] $Date
-        [String] $Time
-        [String] $Timer
+        [String]    $Date
+        [String]    $Time
+        [String]   $Timer
         [String] $Message
         LogObject([Object]$Timer,[String]$Message)
         {
-            $This.Date    = Get-Date -UFormat "%m/%d/%Y" 
-            $This.Time    = Get-Date -UFormat "%H:%M:%S"
+            $This.Date, $This.Time = [DateTime]::Now.ToString("MM-dd-yyyy HH:mm:ss") -Split " "
             $This.Timer   = $Timer
             $This.Message = $Message
         }
@@ -8425,12 +8464,11 @@ Function New-FEInfrastructure
         [String]      $Organization
         [String]        $CommonName
         [Object]        $Credential
-        Static [String]       $Base = "$Env:ProgramData\Secure Digits Plus LLC\FightingEntropy"
-        Static [String]    $Version = "2022.11.0"
-        Static [String]        $GFX = ("{0}\{1}\Graphics" -f [Main]::Base,[Main]::Version)
-        Static [String]       $Icon = ("{0}\icon.ico"           -f [Main]::GFX)
-        Static [String]       $Logo = ("{0}\OEMLogo.bmp"        -f [Main]::GFX)
-        Static [String] $Background = ("{0}\OEMbg.jpg"          -f [Main]::GFX)
+        [String]              $Base
+        [String]           $Version
+        [String]              $Icon
+        [String]              $Logo
+        [String]        $Background
         [Object]            $System
         [Object]            $Config
         [Object]          $SiteList
@@ -8448,7 +8486,12 @@ Function New-FEInfrastructure
         Hidden [Object]   $Validate
         Main()
         {
-            $This.Module          = Get-FEModule
+            $This.Module          = Get-FEModule -Mode 1
+            $This.Base            = $This.Module.Root.Resource
+            $This.Version         = $This.Module.Version
+            $This.Icon            = $This.Module._Graphic("icon.ico").Fullname
+            $This.Logo            = $This.Module._Graphic("OEMLogo.bmp").Fullname
+            $This.Background      = $This.Module._Graphic("OEMbg.jpg").Fullname
             $This.Connection      = Get-FEADLogin
             If (!$This.Connection)
             {
@@ -8457,23 +8500,18 @@ Function New-FEInfrastructure
             }
             Else
             {
-                $This.Time = [System.Diagnostics.Stopwatch]::StartNew()
-                $This.Log  = [Log]::New()
+                $This.Time        = [System.Diagnostics.Stopwatch]::StartNew()
+                $This.Log         = [Log]::New()
                 $This.TX("[~] Initializing")
             }
+
             $This.Credential      = $This.Connection.Credential
-
-            # // ____________________________
-            # // | Pulls system information |
-            # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-            $This.Module.Role.GetSystem()
 
             # // _________________________________________________
             # // | Assigns system information to system variable |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-            $This.System            = $This.Module.Role.System
+            $This.System            = Get-FESystemDetails -Mode 0
             $This.TX("[+] System")
 
             # // ____________________________________________________________________________________________
@@ -8799,7 +8837,6 @@ Function New-FEInfrastructure
             $Object.Password                       = $Null
             If ($Object.Name -match "(\<New\>)")
             {
-
                 # // ______________
                 # // | Drive Info |
                 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯
@@ -8814,7 +8851,6 @@ Function New-FEInfrastructure
                 $Xaml.IO.DsShareName.IsEnabled     = 1
                 $Xaml.IO.DsType.IsEnabled          = 1
                 $Xaml.IO.DsDescription.IsEnabled   = 1
-                
                 $Xaml.IO.DsType.SelectedIndex      = 0
 
                 # // ____________________
@@ -8887,7 +8923,7 @@ Function New-FEInfrastructure
     Write-Theme "Initializing [~] Infrastructure Deployment System"
     $Main = [Main]::New()
     
-    Write-Theme "Initialized [+] Infrastructure Deployment System" 9,11,15
+    Write-Theme "Initialized [+] Infrastructure Deployment System" 2
     $Xaml = [XamlWindow][FEInfrastructureGUI]::Tab
 
     # // ____________________
@@ -8904,8 +8940,13 @@ Function New-FEInfrastructure
     {
         $Name = Switch ($Item)
         {
-            Default { $Item } Date { "Installation Date" } RegPath { "Registry Path" } ModPath { "Module File" }
-            ManPath { "Manifest File" } Path { "Module Path" } Status { "Module Status" }
+            Default { $Item } 
+            Date    { "Installation Date" } 
+            RegPath { "Registry Path" } 
+            ModPath { "Module File" }
+            ManPath { "Manifest File" } 
+            Path    { "Module Path" } 
+            Status  { "Module Status" }
         }
         [DGList]::New($Name,$Main.Module.$Item)
     }
@@ -9166,7 +9207,7 @@ Function New-FEInfrastructure
             $Main.Reset($Xaml.IO.DcAggregate.Items,$Main.Sitelist.Aggregate)
             $Xaml.IO.DcGetSitename.IsEnabled   = 0
             $Xaml.IO.NwScopeLoad.IsEnabled     = 1
-            Write-Theme "Loaded [+] Site List" 10,2,15
+            Write-Theme "Loaded [+] Site List" 2
         }
     })
 
@@ -9216,7 +9257,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.DcGetTopology.Add_Click(
     {
-        Write-Theme "Getting [~] Site List (Aggregate -> Topology)" 14,6,15
+        Write-Theme "Getting [~] Site List (Aggregate -> Topology)" 6
         $Main.Sitelist.GetSiteList()
         $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
@@ -9227,7 +9268,7 @@ Function New-FEInfrastructure
         $Main.Sitelist.NewSiteList()
         $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
-        Write-Theme "Created [~] Site List (Topology)" 9,11,15
+        Write-Theme "Created [~] Site List (Topology)" 2
     })
 
     $Xaml.IO.DcDeleteTopology.Add_Click(
@@ -9235,7 +9276,7 @@ Function New-FEInfrastructure
         $Main.Sitelist.DeleteSiteList()
         $Main.Reset($Xaml.IO.DcTopology.Items,$Main.Sitelist.Topology)
         $Xaml.IO.SmSiteCount.Text         = $Main.Sitelist.Topology.Count
-        Write-Theme "Removed [!] Site List (Topology)" 12,4,15
+        Write-Theme "Removed [!] Site List (Topology)" 1
     })
 
     # // _________________________________
@@ -9256,7 +9297,7 @@ Function New-FEInfrastructure
             $Main.NetworkList.AddNetwork($Xaml.IO.NwScope.Text)
             $Xaml.IO.NwScope.Text              = ""
             $Main.Reset($Xaml.IO.NwAggregate.Items,$Main.NetworkList.Aggregate)
-            Write-Theme "Loaded [+] Network List" 10,2,15
+            Write-Theme "Loaded [+] Network List" 3
         }
     })
 
@@ -9311,7 +9352,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.NwGetSubnetName.Add_Click(
     {
-        Write-Theme "Getting [~] Network List (Aggregate -> Topology)" 14,6,15
+        Write-Theme "Getting [~] Network List (Aggregate -> Topology)" 6
         $Main.NetworkList.GetNetworkList()       
         $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
         $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
@@ -9322,7 +9363,7 @@ Function New-FEInfrastructure
         $Main.NetworkList.NewNetworkList()
         $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
         $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
-        Write-Theme "Created [+] Network List (Topology)" 9,11,15
+        Write-Theme "Created [+] Network List (Topology)" 2
     })
 
     $Xaml.IO.NwDeleteSubnetName.Add_Click(
@@ -9330,7 +9371,7 @@ Function New-FEInfrastructure
         $Main.NetworkList.DeleteNetworkList()
         $Main.Reset($Xaml.IO.NwTopology.Items,$Main.NetworkList.Topology)
         $Xaml.IO.SmNetworkCount.Text      = $Main.NetworkList.Topology.Count
-        Write-Theme "Removed [!] Network List (Topology)" 12,4,15
+        Write-Theme "Removed [!] Network List (Topology)" 1
     })
 
     # // _____________________
@@ -9348,7 +9389,7 @@ Function New-FEInfrastructure
     
         Else
         {
-            Write-Theme "Getting [~] Domain Sitemap (Aggregate)"
+            Write-Theme "Getting [~] Domain Sitemap (Aggregate)" 6
             $Main.Sitemap                    | % LoadSiteList    $Main.Sitelist.Aggregate
             $Main.Sitemap                    | % LoadNetworkList $Main.NetworkList.Aggregate
             $Main.Sitemap                    | % LoadSitemap
@@ -9372,7 +9413,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.SmGetSitemap.Add_Click(
     {
-        Write-Theme "Getting [~] Sitemap (Aggregate -> Topology)" 14,6,15
+        Write-Theme "Getting [~] Sitemap (Aggregate -> Topology)" 6
         $Main.Sitemap.GetSitemap()
         $Main.Reset($Xaml.IO.SmTopology.Items,$Main.Sitemap.Topology)
     })
@@ -9392,7 +9433,7 @@ Function New-FEInfrastructure
             $Main.Reset($Xaml.IO.AddsSite.Items,$Main.AddsController.Sitemap.Name)
             $Xaml.IO.AddsSite.SelectedIndex = 0
             $Main.Reset($Xaml.IO.SmTopology.Items,$Main.Sitemap.Topology)
-            Write-Theme "Created [+] Sitemap (Topology)" 9,11,15
+            Write-Theme "Created [+] Sitemap (Topology)" 2
         }
     })
 
@@ -9410,7 +9451,7 @@ Function New-FEInfrastructure
             $Main.AddsController.LoadSitemap($Main.Sitemap.Aggregate)
             $Main.Reset($Xaml.IO.AddsSite.Items,$Main.AddsController.Sitemap.Name)
             $Main.Reset($Xaml.IO.SmTopology.Items,$Main.Sitemap.Topology)
-            Write-Theme "Removed [!] Sitemap (Topology)" 12,4,15
+            Write-Theme "Removed [!] Sitemap (Topology)" 1
         }
     })
 
@@ -9675,7 +9716,7 @@ Function New-FEInfrastructure
 
         If ($Main.AddsController.Gateway.Count -gt 1)
         {
-            Write-Theme "Getting [~] Adds Site ([Gateway] Aggregate -> Output)" 14,6,15
+            Write-Theme "Getting [~] Adds Site ([Gateway] Aggregate -> Output)" 6
             $Main.AddsController.GetOutput("Gateway")
             ForEach ($Item in $Main.AddsController.Output.Gateway)
             {
@@ -9711,7 +9752,7 @@ Function New-FEInfrastructure
             }
             $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
             $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
-            Write-Theme "Created [+] Adds Site ([Gateway] Output)" 9,11,15
+            Write-Theme "Created [+] Adds Site ([Gateway] Output)" 2
         }
     })
 
@@ -9719,7 +9760,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Gateway.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([Gateway] No Items in Output List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([Gateway] No Items in Output List)" 1
         }
 
         If ($Main.AddsController.Output.Gateway.Count -gt 1)
@@ -9737,7 +9778,7 @@ Function New-FEInfrastructure
             }
             $Main.Reset($Xaml.IO.AddsGwAggregate.Items,$Main.AddsController.Gateway)
             $Main.Reset($Xaml.IO.AddsGwOutput.Items,$Main.AddsController.Output.Gateway)
-            Write-Theme "Removed [!] Adds Site ([Gateway] Output)" 12,4,15
+            Write-Theme "Removed [!] Adds Site ([Gateway] Output)" 1
         }
     })
 
@@ -9879,12 +9920,12 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Server.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([Server] No Items in Aggregate List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([Server] No Items in Aggregate List)" 1
         }
 
         If ($Main.AddsController.Server.Count -gt 1)
         {
-            Write-Theme "Getting [~] Adds Site ([Server] Aggregate -> Output)" 14,6,15
+            Write-Theme "Getting [~] Adds Site ([Server] Aggregate -> Output)" 6
             $Main.AddsController.GetOutput("Server")
             ForEach ($Item in $Main.AddsController.Output.Server)
             {
@@ -9901,7 +9942,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Server.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([Server] No Items in Output List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([Server] No Items in Output List)" 1
         }
 
         If ($Main.AddsController.Output.Server.Count -gt 1)
@@ -9918,7 +9959,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
-            Write-Theme "Created [+] Adds Site ([Server] Output)" 9,11,15
+            Write-Theme "Created [+] Adds Site ([Server] Output)" 2
         }
     })
 
@@ -9926,7 +9967,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Server.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([Server] No Items in Output List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([Server] No Items in Output List)" 1
         }
 
         If ($Main.AddsController.Output.Server.Count -gt 1)
@@ -9943,7 +9984,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsSrOutput.Items,$Main.AddsController.Output.Server)
-            Write-Theme "Removed [!] Adds Site ([Server] Output)" 12,4,15
+            Write-Theme "Removed [!] Adds Site ([Server] Output)" 1
         }
     })
 
@@ -10085,12 +10126,12 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Workstation.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([Workstation] No Items in Aggregate List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([Workstation] No Items in Aggregate List)" 1
         }
 
         If ($Main.AddsController.Workstation.Count -gt 1)
         {
-            Write-Theme "Getting [~] Adds Site ([Workstation] Aggregate -> Output)" 14,6,15
+            Write-Theme "Getting [~] Adds Site ([Workstation] Aggregate -> Output)" 6
             $Main.AddsController.GetOutput("Workstation")
             ForEach ($Item in $Main.AddsController.Output.Workstation)
             {
@@ -10107,7 +10148,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Workstation.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([Workstation] No Items in Output List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([Workstation] No Items in Output List)" 1
         }
 
         If ($Main.AddsController.Output.Workstation.Count -gt 1)
@@ -10124,7 +10165,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
-            Write-Theme "Created [+] Adds Site ([Workstation] Output)" 9,11,15
+            Write-Theme "Created [+] Adds Site ([Workstation] Output)" 2
         }
     })
 
@@ -10132,7 +10173,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Workstation.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([Workstation] No Items in Output List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([Workstation] No Items in Output List)" 1
         }
 
         If ($Main.AddsController.Output.Workstation.Count -gt 1)
@@ -10149,7 +10190,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsWsOutput.Items,$Main.AddsController.Output.Workstation)
-            Write-Theme "Removed [!] Adds Site ([Workstation] Output)" 12,4,15
+            Write-Theme "Removed [!] Adds Site ([Workstation] Output)" 1
         }
     })
 
@@ -10291,12 +10332,12 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.User.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([User] No Items in Aggregate List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([User] No Items in Aggregate List)" 1
         }
 
         If ($Main.AddsController.User.Count -gt 1)
         {
-            Write-Theme "Getting [~] Adds Site ([User] Aggregate -> Output)" 14,6,15
+            Write-Theme "Getting [~] Adds Site ([User] Aggregate -> Output)" 6
             $Main.AddsController.GetOutput("User")
             ForEach ($Item in $Main.AddsController.Output.User)
             {
@@ -10313,7 +10354,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.User.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([User] No Items in Output List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([User] No Items in Output List)" 1
         }
 
         If ($Main.AddsController.Output.User.Count -gt 1)
@@ -10330,7 +10371,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
-            Write-Theme "Created [+] Adds Site ([User] Output)" 9,11,15
+            Write-Theme "Created [+] Adds Site ([User] Output)" 2
         }
     })
 
@@ -10338,7 +10379,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.User.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([User] No Items in Output List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([User] No Items in Output List)" 1
         }
 
         If ($Main.AddsController.Output.User.Count -gt 1)
@@ -10355,7 +10396,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsUserOutput.Items,$Main.AddsController.Output.User)
-            Write-Theme "Removed [!] Adds Site ([User] Output)" 12,4,15
+            Write-Theme "Removed [!] Adds Site ([User] Output)" 1
         }
     })
 
@@ -10497,12 +10538,12 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Service.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([Service] No Items in Aggregate List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([Service] No Items in Aggregate List)" 1
         }
 
         If ($Main.AddsController.Service.Count -gt 1)
         {
-            Write-Theme "Getting [~] Adds Site ([Service] Aggregate -> Output)" 14,6,15
+            Write-Theme "Getting [~] Adds Site ([Service] Aggregate -> Output)" 6
             $Main.AddsController.GetOutput("Service")
             ForEach ($Item in $Main.AddsController.Output.Service)
             {
@@ -10519,7 +10560,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Service.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([Service] No Items in Output List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([Service] No Items in Output List)" 1
         }
 
         If ($Main.AddsController.Output.Service.Count -gt 1)
@@ -10536,7 +10577,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
-            Write-Theme "Created [+] Adds Site ([Service] Output)" 9,11,15
+            Write-Theme "Created [+] Adds Site ([Service] Output)" 2
         }
     })
 
@@ -10544,7 +10585,7 @@ Function New-FEInfrastructure
     {
         If ($Main.AddsController.Output.Service.Count -lt 1)
         {
-            Write-Theme "Exception [!] Adds Site ([Service] No Items in Output List)" 12,4,15
+            Write-Theme "Exception [!] Adds Site ([Service] No Items in Output List)" 1
         }
 
         If ($Main.AddsController.Output.Service.Count -gt 1)
@@ -10561,7 +10602,7 @@ Function New-FEInfrastructure
                 }
             }
             $Main.Reset($Xaml.IO.AddsSvcOutput.Items,$Main.AddsController.Output.Service)
-            Write-Theme "Removed [!] Adds Site ([Service] Output)" 12,4,15
+            Write-Theme "Removed [!] Adds Site ([Service] Output)" 1
         }
     })
 
@@ -10645,17 +10686,17 @@ Function New-FEInfrastructure
         {
             Yes 
             { 
-                Write-Theme "Removing [~] Existing (Adds -> VmHost) Node(s)" 14,6,15
+                Write-Theme "Removing [~] Existing (Adds -> VmHost) Node(s)" 3
                 ForEach ($Object in $Main.VmController.VmSelect | ? Exists -eq $True)
                 {
                     $Main.VmController.DeleteNode($Object)
                     $Main.Reset($Xaml.IO.VmSelect.Items,$Main.VmController.VmSelect)
                 }
-                Write-Theme "Removed [!] Existing (Adds -> VmHost) Node(s)" 12,4,15
+                Write-Theme "Removed [!] Existing (Adds -> VmHost) Node(s)" 1
             }
             No  
             { 
-                Write-Theme "Exception [!] The user cancelled the (Adds -> VmHost) Node(s) removal operation" 12,4,15
+                Write-Theme "Exception [!] The user cancelled the (Adds -> VmHost) Node(s) removal operation" 1
                 Break 
             }
         }
@@ -10663,7 +10704,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.VmCreateNodes.Add_Click(
     {
-        Write-Theme "Creating [~] Non-Existent (Adds -> VmHost) Node(s)" 14,6,15
+        Write-Theme "Creating [~] Non-Existent (Adds -> VmHost) Node(s)" 6
         $Main.Container = $Main.VmController.NodeContainer()
         ForEach ($Object in $Main.VmController.VmSelect | ? Exists -eq $False | ? Create)
         {
@@ -10687,7 +10728,7 @@ Function New-FEInfrastructure
         $Main.Reset($Xaml.IO.VmGateway.Items,$Main.Container.Gateway)
         $Main.Reset($Xaml.IO.VmServer.Items,$Main.Container.Server)
         $Main.Reset($Xaml.IO.VmWorkstation.Items,$Main.Container.Workstation)
-        Write-Theme "Created [+] Non-Existent (Adds -> VmHost Template) Node(s)" 10,2,15
+        Write-Theme "Created [+] Non-Existent (Adds -> VmHost Template) Node(s)" 2
     })
 
     # // _______________
@@ -10711,7 +10752,7 @@ Function New-FEInfrastructure
     {
         If ($Main.Container.Gateway.Count -gt 0)
         {
-            Write-Theme "Getting [~] (Virtual Switch(es) + DHCP Reservation(s)) Templates" 14,6,15
+            Write-Theme "Getting [~] (Virtual Switch(es) + DHCP Reservation(s)) Templates" 6
             $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
             $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
         }
@@ -10721,14 +10762,14 @@ Function New-FEInfrastructure
     {
         If ($Main.VmController.Reservation.Count -gt 0)
         {
-            Write-Theme "Removing [~] Virtual Switch(es) + DHCP Reservation(s)" 14,6,15
+            Write-Theme "Removing [~] Virtual Switch(es) + DHCP Reservation(s)" 6
             ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists)
             {
                 $Object.Remove()
             }
             $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
             $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
-            Write-Theme "Removed [!] Virtual Switch(es) + DHCP Reservation(s)" 12,4,15
+            Write-Theme "Removed [!] Virtual Switch(es) + DHCP Reservation(s)" 1
         }
     })
 
@@ -10736,7 +10777,7 @@ Function New-FEInfrastructure
     {
         If ($Main.VmController.Reservation.Count -gt 0)
         {
-            Write-Theme "Creating [~] Virtual Switch(es) + DHCP Reservation Template(s)" 14,6,15
+            Write-Theme "Creating [~] Virtual Switch(es) + DHCP Reservation Template(s)" 6
             ForEach ($Object in $Main.VmController.Reservation | ? SwitchExists -eq 0)
             {
                 $Object.New()
@@ -10744,7 +10785,7 @@ Function New-FEInfrastructure
             }
             $Main.VmController.GetReservations($Xaml.IO.VmDhcpScopeID.SelectedItem)
             $Main.Reset($Xaml.IO.VmDhcpReservations.Items,$Main.VmController.Reservation)
-            Write-Theme "Created [+] Virtual Switch(es) + DHCP Reservation Template(s)" 10,2,15
+            Write-Theme "Created [+] Virtual Switch(es) + DHCP Reservation Template(s)" 2
         }
     })
 
@@ -10939,7 +10980,7 @@ Function New-FEInfrastructure
 
             If ($Main.Validate.Gateway.Result -eq "Fail")
             {
-                Write-Theme "Error [!] Failure to validate ALL of the requested [Gateway] items" 12,4,15
+                Write-Theme "Error [!] Failure to validate ALL of the requested [Gateway] items" 1
                 Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Gateway Error")
             }
 
@@ -10958,7 +10999,7 @@ Function New-FEInfrastructure
 
                     $Main.Validate.Gateway.Output += $Item
                 }
-                Write-Theme "Validated [~] Virtual Gateway(s)" 10,2,15
+                Write-Theme "Validated [~] Virtual Gateway(s)" 2
             }
         }
 
@@ -10977,7 +11018,7 @@ Function New-FEInfrastructure
 
             If ($Main.Validate.Server.Result -eq "Fail")
             {
-                Write-Theme "Error [!] Failure to validate ALL of the requested [Server] items" 12,4,15
+                Write-Theme "Error [!] Failure to validate ALL of the requested [Server] items" 1
                 Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Server Error")
             }
 
@@ -10995,7 +11036,7 @@ Function New-FEInfrastructure
 
                     $Main.Validate.Server.Output += $Item
                 }
-                Write-Theme "Validated [~] Virtual Servers(s)" 10,2,15
+                Write-Theme "Validated [~] Virtual Servers(s)" 2
             }
         }
 
@@ -11015,7 +11056,7 @@ Function New-FEInfrastructure
 
             If ($Main.Validate.Workstation.Result -eq "Fail")
             {
-                Write-Theme "Error [!] Failure to validate ALL of the requested [Workstation] items" 12,4,15
+                Write-Theme "Error [!] Failure to validate ALL of the requested [Workstation] items" 1
                 Return [System.Windows.MessageBox]::Show("Failure to get the requested items","Workstation Error")
             }
 
@@ -11034,7 +11075,7 @@ Function New-FEInfrastructure
 
                     $Main.Validate.Workstation.Output += $Item
                 }
-                Write-Theme "Validated [~] Virtual Workstations(s)" 10,2,15
+                Write-Theme "Validated [~] Virtual Workstations(s)" 2
             }
         }
     })
@@ -11044,7 +11085,7 @@ Function New-FEInfrastructure
         $Master = $Main.Validate.Gateway
         ForEach ($Object in $Master.Output)
         {   
-            Write-Theme ("Initializing [~] Virtual Gateway ({0})" -f $Object.DnsName) 14,6,15
+            Write-Theme ("Initializing [~] Virtual Gateway ({0})" -f $Object.DnsName) 6
             $Object.New()
             $Object.Update()
             $Object.Start()
@@ -11068,14 +11109,14 @@ Function New-FEInfrastructure
             $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
             $AddsNode.LoadVmObject($Object)
 
-            Write-Theme ("Initialized [+] Virtual Gateway ({0})" -f $Object.Dnsname) 10,2,15
+            Write-Theme ("Initialized [+] Virtual Gateway ({0})" -f $Object.Dnsname) 2
         }
         $Main.VmController.AddsNode.Gateway = $Master.Container | ? Type -eq Gateway
 
         $Master = $Main.Validate.Server
         ForEach ($Object in $Master.Output)
         {
-            Write-Theme ("Initializing [~] Virtual Server ({0})" -f $Object.DnsName) 14,6,15
+            Write-Theme ("Initializing [~] Virtual Server ({0})" -f $Object.DnsName) 6
             $Object.New()
             $Object.Update()
             $Object.LoadIso($Master.Iso)
@@ -11084,20 +11125,20 @@ Function New-FEInfrastructure
             $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
             $AddsNode.LoadVmObject($Object)
 
-            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.DnsName) 10,2,15
+            Write-Theme ("Initialized [+] Virtual Server ({0})" -f $Object.DnsName) 2
         }
         $Main.VmController.AddsNode.Server = $Master.Container | ? Type -match "(Server|Domain Controller)"
 
         $Master = $Main.Validate.Workstation
         ForEach ($Object in $Master.Output)
         {
-            Write-Theme ("Initializing [~] Virtual Workstation ({0})" -f $Object.DnsName) 14,6,15
+            Write-Theme ("Initializing [~] Virtual Workstation ({0})" -f $Object.DnsName) 6
             $Object.New()
             $Object.Update()
             $AddsNode = $Master.Container | ? Hostname -eq $Object.Name
             $AddsNode.LoadVmObject($Object)
 
-            Write-Theme ("Initialized [+] Virtual Workstation ({0})" -f $Object.DnsName) 10,2,15
+            Write-Theme ("Initialized [+] Virtual Workstation ({0})" -f $Object.DnsName) 2
         }
         $Main.VmController.AddsNode.Workstation = $Master.Container | ? Type -eq Workstation
 
@@ -11131,7 +11172,7 @@ Function New-FEInfrastructure
 
         Else
         {
-            Write-Theme "Getting [~] (*.iso) file(s)" 14,6,15
+            Write-Theme "Getting [~] (*.iso) file(s)" 6
             $Xaml.IO.IsoPath.Text        = $Item.SelectedPath
             $Main.ImageController.LoadSilo($Xaml.IO.IsoPath.Text) 
             $Main.Reset($Xaml.IO.IsoList.Items,$Main.ImageController.Store)
@@ -11157,7 +11198,7 @@ Function New-FEInfrastructure
             $Name = "$($Name.Substring(0,64))..."
         }
 
-        Write-Theme "Mounting [~] $Name" 14,6,15
+        Write-Theme "Mounting [~] $Name" 6
         $Xaml.IO.IsoMount.IsEnabled          = 0
 
         $Main.ImageController.LoadIso($Index)
@@ -11199,7 +11240,7 @@ Function New-FEInfrastructure
         {
             $Name = "$($Name.Substring(0,64))..."
         }
-        Write-Theme "Dismounting [~] $Name" 12,4,15
+        Write-Theme "Dismounting [~] $Name" 6
         $Main.ImageController.UnloadIso()
         $Main.Reset($Xaml.IO.IsoView.Items,$Null)
         $Xaml.IO.IsoList.IsEnabled           = 1
@@ -11323,7 +11364,7 @@ Function New-FEInfrastructure
 
         Else
         {
-            Write-Theme "Getting [~] Windows Update Package(s)" 14,6,15
+            Write-Theme "Getting [~] Windows Update Package(s)" 6
             $Xaml.IO.UpdPath.Text = $Item.SelectedPath
             $Main.UpdateController.SetUpdateBase($Xaml.IO.UpdPath.Text)
             $Main.UpdateController.ProcessFileList()
@@ -11357,7 +11398,7 @@ Function New-FEInfrastructure
 
         Else
         {
-            Write-Theme "Getting [~] (*.wim) file(s)" 14,6,15
+            Write-Theme "Getting [~] (*.wim) file(s)" 6
             $Xaml.IO.UpdWimPath.Text = $Item.SelectedPath
             $Main.UpdateController.GetWimFiles($Xaml.IO.UpdWimPath.Text)
             $Main.Reset($Xaml.IO.UpdWim.Items,$Main.UpdateController.WimList)
@@ -11455,7 +11496,7 @@ Function New-FEInfrastructure
             $Object.SetDefaults($Main.Module)
             $Xaml.IO.DsAggregate.Items.Clear()
             $Main.Reset($Xaml.IO.DsAggregate.Items,$Main.MdtController.Drive)
-            Write-Theme "Successs [+] Added Persistent Drive: ($($Object.Name))" 9,11,15
+            Write-Theme "Success [+] Added Persistent Drive: ($($Object.Name))" 4
         }
     })
 
@@ -11484,7 +11525,7 @@ Function New-FEInfrastructure
                 }
                 No
                 {
-                    Write-Theme "Exception [!] User cancelled drive removal" 12,4,15
+                    Write-Theme "Exception [!] User cancelled drive removal" 1
                     Break
                 }
             }
@@ -11608,7 +11649,7 @@ Function New-FEInfrastructure
         Else
         {
             $Main.MdtController.Selected.Brand = $Main.MdtController.NewBrand($Xaml.IO.DsBrBackground.Text,$Xaml.IO.DsBrLogo.Text,$Xaml.IO.DsBrOrganization.Text,$Xaml.IO.DsBrPhone.Text,$Xaml.IO.DsBrHours.Text,$Xaml.IO.DsBrWebsite.Text)
-            Write-Theme "Set [+] Brand" 9,11,15
+            Write-Theme "Set [+] Brand"
         }
     })
 
@@ -11641,7 +11682,7 @@ Function New-FEInfrastructure
         {
             $Main.MDTController.Selected.Administrator = $Xaml.IO.DsLmUsername.Text
             $Main.MDTController.Selected.Password      = $Xaml.IO.DsLmPassword.Password
-            Write-Theme "Set [+] Local Credential" 9,11,15
+            Write-Theme "Set [+] Local Credential"
         }
     })
 
@@ -11651,7 +11692,7 @@ Function New-FEInfrastructure
 
     $Xaml.IO.DsLogin.Add_Click(
     {
-        Write-Theme "Attempting [~] Service Account Login" 14,6,15
+        Write-Theme "Attempting [~] Service Account Login" 6
         $Main.MdtController.Selected.Connection = Get-FEADLogin
         If ($Main.MdtController.Selected.Connection)
         {
@@ -11660,7 +11701,7 @@ Function New-FEInfrastructure
             $Xaml.IO.DsDcConfirm.Password  = $Main.MdtController.Selected.Connection.Credential.GetNetworkCredential().Password
             $Xaml.IO.DsNetBiosName.Text    = $Main.MdtController.Selected.Connection.NetBios
             $Xaml.IO.DsDnsName.Text        = $Main.MdtController.GetHostname()
-            Write-Theme "Success [+] Service Account Login" 9,11,15
+            Write-Theme "Success [+] Service Account Login" 2
         }
     })
 
@@ -11818,14 +11859,14 @@ Function New-FEInfrastructure
                 $Main.MdtController.Selected.Domain.Credential.Username,
                 $Main.MdtController.Selected.Domain.Credential.GetNetworkCredential().Password
             )
-            Write-Theme "Generated [+] Bootstrap" 14,6,15
+            Write-Theme "Generated [+] Bootstrap" 2
         }
     })
 
     $Xaml.IO.DsApplyBootstrap.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq Bootstrap | % SetContent $Xaml.IO.DsBootstrap.Text.Split("`n")
-        Write-Theme "Applied [+] Bootstrap" 9,11,15
+        Write-Theme "Applied [+] Bootstrap" 2
     })
 
     # // _______________________________
@@ -11867,14 +11908,14 @@ Function New-FEInfrastructure
                 $Main.MdtController.Selected.Domain.Credential.Username,
                 $Main.MdtController.Selected.Domain.Credential.GetNetworkCredential().Password
             )
-            Write-Theme "Generated [+] Custom Settings" 14,6,15
+            Write-Theme "Generated [+] Custom Settings"
         }
     })
 
     $Xaml.IO.DsApplyCustomSettings.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq CustomSettings | % SetContent $Xaml.IO.DsCustomSettings.Text.Split("`n")
-        Write-Theme "Applied [+] Custom Settings" 9,11,15
+        Write-Theme "Applied [+] Custom Settings" 2
     })
 
     # // ___________________________
@@ -11884,13 +11925,13 @@ Function New-FEInfrastructure
     $Xaml.IO.DsGeneratePostconfig.Add_Click(
     {
         $Xaml.IO.DsPostConfig.Text = $Main.MdtController.Postconfig("$($Main.MdtController.GetNetworkPath($Main.MdtController.Selected.Name))\DSKey.csv")
-        Write-Theme "Generated [+] Post Config" 14,6,15
+        Write-Theme "Generated [+] Post Config"
     })
 
     $Xaml.IO.DsApplyPostConfig.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq Postconfig | % SetContent $Xaml.Io.DsPostConfig.Text.Split("`n")
-        Write-Theme "Generated [+] Custom Settings" 9,11,15
+        Write-Theme "Generated [+] Custom Settings"
     })
 
     # // ______________________
@@ -11930,14 +11971,14 @@ Function New-FEInfrastructure
                 $Main.MdtController.Selected.Brand.SupportPhone,
                 $Main.MdtController.Selected.Brand.SupportHours,
                 $Main.MdtController.Selected.Brand.SupportURL)
-                Write-Theme "Generated [+] DSKey" 14,6,15
+                Write-Theme "Generated [+] DSKey"
         }
     })
 
     $Xaml.IO.DsApplyDsKey.Add_Click(
     {
         $Main.MdtController.Selected.Config | ? Name -eq DSKey | % SetContent $Xaml.IO.DsDSKey.Text.Split("`n")
-        Write-Theme "Applied [+] DSKey" 14,6,15
+        Write-Theme "Applied [+] DSKey" 2
     })
 
     # // ________________
