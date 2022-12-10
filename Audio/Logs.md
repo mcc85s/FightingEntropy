@@ -1,7 +1,7 @@
 <h1>Audio/Logs.md</h1>
 <i>It's not a REAL MD...? But, it'll do.</i>
 
-<h1>Last updated: 12/09/22</h1>
+<h1>Last updated: 12/10/22</h1>
 
 Greetings,
 
@@ -43,6 +43,7 @@ That is why I write as often as I do, AND record these various videos, and audio
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **12/10/22** | 0h 27m 33s | **2022_12_10_08_59_54.mp3**    | [Overwhelmed](https://drive.google.com/file/d/1ohKeSY8y4W3bFo9FLUVXG0azrASb1OTE)
 | **12/08/22** | 1h 47m 15s | **2022_12_08_16_06_27.mp3**    | [Spontaneity](https://drive.google.com/file/d/1oIXQZJyFYDhigoFlodeVFUyPrNuXDDrm)
 | **12/07/22** | 1h 44m 38s | **2022_12_07_12_52_45.mp3**    | [Resilience](https://drive.google.com/file/d/1nc6bkPkAmw-7Ro_xthkCQDNzyB-5R_bs)
 | **12/06/22** | 3h 33m 41s | **2022_12_06_20_19_25.mp3**    | [Explaining my rhetoric](https://drive.google.com/file/d/1nRLfFi0tgQsqRbfGFCyC2ZXAb0YNyxp4) |
