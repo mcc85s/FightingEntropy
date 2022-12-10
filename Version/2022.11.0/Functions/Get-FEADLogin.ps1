@@ -17,7 +17,7 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-10-10                                                                               //   
-   \\        Modified   : 2022-10-10                                                                               \\   
+   \\        Modified   : 2022-12-10                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
    //        TODO       : N/A                                                                                      //   
@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 11/07/2022 16:31:25    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 12-10-2022 13:49:31    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -43,52 +43,6 @@ Function Get-FEADLogin
         [Parameter(ParameterSetName=3)][Object]$Target
     )
 
-    Add-Type -AssemblyName PresentationFramework
-
-    Class XamlWindow 
-    {
-        Hidden [Object]        $XAML
-        Hidden [Object]         $XML
-        [String[]]            $Names
-        [Object]               $Node
-        [Object]                 $IO
-        [String[]] FindNames()
-        {
-            Return @( [Regex]"((Name)\s*=\s*('|`")\w+('|`"))" | % Matches $This.Xaml | % Value | % { 
-
-                ($_ -Replace "(\s+)(Name|=|'|`"|\s)","").Split('"')[1] 
-
-            } | Select-Object -Unique ) 
-        }
-        XamlWindow([String]$XAML)
-        {           
-            If ( !$Xaml )
-            {
-                Throw "Invalid XAML Input"
-            }
-
-            [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
-
-            $This.Xaml               = $Xaml
-            $This.XML                = [XML]$Xaml
-            $This.Names              = $This.FindNames()
-            $This.Node               = [System.XML.XmlNodeReader]::New($This.XML)
-            $This.IO                 = [System.Windows.Markup.XAMLReader]::Load($This.Node)
-
-            ForEach ( $I in 0..( $This.Names.Count - 1 ) )
-            {
-                $Name                = $This.Names[$I]
-                $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $This.IO.FindName($Name) -Force 
-            }
-
-            $This.IO.Dispatcher.Thread.ApartmentState = "MTA"
-        }
-        Invoke()
-        {
-            $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
-        }
-    }
-
     Class DGList
     {
         [String]$Name
@@ -100,10 +54,85 @@ Function Get-FEADLogin
         }
     }
 
-    # (Get-Content $Home\Desktop\FEADLogin.xaml) | % { "'$_'," } | Set-Clipboard
-    Class FEADLoginGUI
+    Class XamlProperty
     {
-        Static [String] $Tab = (        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://AD Login" Width="640" Height="390" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
+        [UInt32] $Index
+        [String] $Name
+        [Object] $Type
+        [Object] $Control
+        XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
+        {
+            $This.Index   = $Index
+            $This.Name    = $Name
+            $This.Type    = $Object.GetType().Name
+            $This.Control = $Object
+        }
+        [String] ToString()
+        {
+            Return $This.Name
+        }
+    }
+
+    Class XamlWindow
+    {
+        Hidden [Object]        $XAML
+        Hidden [Object]         $XML
+        [String[]]            $Names
+        [Object]              $Types
+        [Object]               $Node
+        [Object]                 $IO
+        [String]          $Exception
+        XamlWindow([String]$Xaml)
+        {           
+            If (!$Xaml)
+            {
+                Throw "Invalid XAML Input"
+            }
+
+            [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')
+
+            $This.Xaml               = $Xaml
+            $This.Xml                = [XML]$Xaml
+            $This.Names              = $This.FindNames()
+            $This.Types              = @( )
+            $This.Node               = [System.Xml.XmlNodeReader]::New($This.Xml)
+            $This.IO                 = [System.Windows.Markup.XamlReader]::Load($This.Node)
+            
+            ForEach ($X in 0..($This.Names.Count-1))
+            {
+                $Name                = $This.Names[$X]
+                $Object              = $This.IO.FindName($Name)
+                $This.IO             | Add-Member -MemberType NoteProperty -Name $Name -Value $Object -Force
+                If (!!$Object)
+                {
+                    $This.Types     += $This.XamlProperty($This.Types.Count,$Name,$Object)
+                }
+            }
+        }
+        [String[]] FindNames()
+        {
+            Return [Regex]::Matches($This.Xaml,"( Name\=\`"\w+`")").Value -Replace "( Name=|`")",""
+        }
+        [Object] XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
+        {
+            Return [XamlProperty]::New($Index,$Name,$Object)
+        }
+        Invoke()
+        {
+            Try
+            {
+                $This.IO.Dispatcher.InvokeAsync({ $This.IO.ShowDialog() }).Wait()
+            }
+            Catch
+            {
+                $This.Exception = $PSItem
+            }
+        }
+    }
+
+    Class FEADLoginXaml
+    {
+        Static [String] $Content = ('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://AD Login" Width="640" Height="390" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.11.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -337,7 +366,7 @@ Function Get-FEADLogin
         [String]                           $Directory
         [Object]                            $Searcher
         [Object]                              $Result
-        Main()                            # ParamSet0
+        Main()
         {
             $This.DNSDomain         = $Null
             $TestDnsServer     = $Null
@@ -347,7 +376,7 @@ Function Get-FEADLogin
             }
             If (!$Env:UserDNSDomain)
             {
-                $This.DNSDomain   = Get-WMIObject -Class Win32_NetworkAdapterConfiguration -Filter "IPEnabled='True' AND DHCPEnabled='True'" | % DNSDomain
+                $This.DNSDomain   = Get-WMIObject Win32_NetworkAdapterConfiguration | ? IPEnabled | ? DHCPEnabled | % DNSDomain
                 If ($This.DNSDomain.Count -gt 1)
                 {
                     ForEach ($Server in $This.DnsDomain)
@@ -371,7 +400,7 @@ Function Get-FEADLogin
             $This.NetBIOS      = $Null
             $This.Port         = 389
         }
-        Main([IPAddress]$IPAddress)       # ParamSet1
+        Main([IPAddress]$IPAddress)
         {
             $This.IPAddress    = $IPAddress
             $This.DNSName      = [System.Net.Dns]::Resolve($This.IPAddress).HostName
@@ -380,7 +409,7 @@ Function Get-FEADLogin
             $This.NetBIOS      = $Null
             $This.Port         = 389
         }
-        Main([String]$Domain)             # ParamSet2
+        Main([String]$Domain)
         {
             $This.Domain       = $Domain.ToString()
             $This.IPAddress    = [System.Net.Dns]::Resolve($Domain).AddressList      | Select-Object -First 1 | % IPAddressToString
@@ -389,7 +418,7 @@ Function Get-FEADLogin
             $This.NetBIOS      = $Null
             $This.Port         = 389
         }
-        Main([Object]$Target)             # ParamSet3
+        Main([Object]$Target)
         {
             $This.IPAddress    = $Target.IPAddress
             $This.DNSName      = $Target.Hostname
@@ -550,7 +579,7 @@ Function Get-FEADLogin
         }
     }
 
-    $Xaml = [XamlWindow][FEADLoginGUI]::Tab
+    $Xaml = [XamlWindow][FEADLoginXaml]::Content
     $Main = Switch($PSCmdLet.ParameterSetName)
     {
         0 { [Main]::New() }
@@ -625,7 +654,6 @@ Function Get-FEADLogin
 
     If (!$Xaml.IO.DialogResult)
     {
-        Write-Theme "Error [!] Either the user cancelled or the dialog failed" 12,4,15,0
+        Write-Theme "Error [!] Either the user cancelled or the dialog failed" 1
     }
 }
-
