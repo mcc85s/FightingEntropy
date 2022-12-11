@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 12-10-2022 11:37:30    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 12-11-2022 17:29:29    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -80,19 +80,111 @@ Function Get-FESystemDetails
 
     Class Snapshot
     {
-        [String] $Start
-        [String] $ComputerName
-        [String] $DisplayName
-        [String] $Guid
-        [UInt32] $Complete
-        [String] $Elapsed
+        Hidden [Object]           $OS
+        Hidden [Object]           $CS
+        [String]               $Start
+        [String]        $ComputerName
+        [String]                $Name
+        [String]         $DisplayName
+        [String]                 $DNS
+        [String]             $NetBIOS
+        [String]            $Hostname
+        [String]            $Username
+        [Object]           $Principal
+        [Bool]               $IsAdmin
+        [String]             $Caption
+        [Version]            $Version
+        [UInt32]           $ReleaseID
+        [UInt32]               $Build
+        [String]                $Code
+        [String]         $Description
+        [String]                 $SKU
+        [String]             $Chassis
+        [String]                $Guid
+        [UInt32]            $Complete
+        [String]             $Elapsed
         Snapshot()
         {
-            $Current           = [DateTime]::Now
-            $This.Start        = $Current
-            $This.ComputerName = [Environment]::MachineName
-            $This.DisplayName  = "{0}-{1}" -f $Current.ToString("yyyy-MMdd-HHmmss"), $This.ComputerName
-            $This.Guid         = [Guid]::NewGuid().ToString()
+            $Current                  = [DateTime]::Now
+            $This.OS                  = $This.OperatingSystem()
+            $This.CS                  = $This.ComputerSystem()
+            $This.Start               = $Current
+            $This.ComputerName        = [Environment]::MachineName
+            $This.Name                = $This.ComputerName.ToLower()
+            $This.DisplayName         = "{0}-{1}" -f $Current.ToString("yyyy-MMdd-HHmmss"), $This.ComputerName
+            $This.DNS                 = @($Env:UserDNSDomain,"-")[!$env:USERDNSDOMAIN]
+            $This.NetBIOS             = [Environment]::UserDomainName.ToLower()
+            $This.Hostname            = @($This.Name;"{0}.{1}" -f $This.Name, $This.DNS)[$This.CS.PartOfDomain].ToLower()
+            $This.Username            = [Environment]::UserName
+            $This.Principal           = [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
+            $This.IsAdmin             = $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
+            $This.Caption             = $This.OS.Caption
+            $This.GetFields()
+            $This.Guid                = [Guid]::NewGuid().ToString()
+        }
+        [Object] ComputerSystem()
+        {
+            Return Get-CimInstance Win32_ComputerSystem
+        }
+        [Object] OperatingSystem()
+        {
+            Return Get-CimInstance Win32_OperatingSystem
+        }
+        [Object] CurrentVersion()
+        {
+            Return Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+        }
+        [String] GetEdition()
+        {
+            $Out = ("10240,Threshold 1,Release To Manufacturing;10586,Threshold 2,November {1};1439"+
+            "3,{0} 1,Anniversary {1};15063,{0} 2,{2} {1};16299,{0} 3,Fall {2} {1};17134,{0} 4,Apri"+
+            "l 2018 {1};17763,{0} 5,October 2018 {1};18362,19H1,May 2019 {1};18363,19H2,November 2"+
+            "019 {1};19041,20H1,May 2020 {1};19042,20H2,October 2020 {1}") -f 'Redstone','Update',
+            'Creators' 
+            
+            $ID = Switch ($This.ReleaseID) 
+            { 
+                1507 {0} 1511 {1} 1607 {2} 1703 {3} 1709 {4} 1803 {5} 
+                1809 {6} 1903 {7} 1909 {8} 2004 {9} 2009 {10} 
+            }
+
+            Return $Out.Split(";")[$Id]
+        }
+        [String] GetSku()
+        {
+            $Out = ("Undefined,Ultimate {0},Home Basic {0},Home Premium {0},{3} {0},Home Basic N {"+
+            "0},Business {0},Standard {2} {0},Datacenter {2} {0},Small Business {2} {0},{3} {2} {0"+
+            "},Starter {0},Datacenter {2} Core {0},Standard {2} Core {0},{3} {2} Core {0},{3} {2} "+
+            "IA64 {0},Business N {0},Web {2} {0},Cluster {2} {0},Home {2} {0},Storage Express {2} "+
+            "{0},Storage Standard {2} {0},Storage Workgroup {2} {0},Storage {3} {2} {0},{2} For Sm"+
+            "all Business {0},Small Business {2} Premium {0},TBD,{1} {3},{1} Ultimate,Web {2} Core"+
+            ",-,-,-,{2} Foundation,{1} Home {2},-,{1} {2} Standard No Hyper-V Full,{1} {2} Datacen"+
+            "ter No Hyper-V Full,{1} {2} {3} No Hyper-V Full,{1} {2} Datacenter No Hyper-V Core,{1"+
+            "} {2} Standard No Hyper-V Core,{1} {2} {3} No Hyper-V Core,Microsoft Hyper-V {2},Stor"+
+            "age {2} Express Core,Storage {2} Standard Core,{2} Workgroup Core,Storage {2} {3} Cor"+
+            "e,Starter N,Professional,Professional N,{1} Small Business {2} 2011 Essentials,-,-,-,"+
+            "-,-,-,-,-,-,-,-,-,Small Business {2} Premium Core,{1} {2} Hyper Core V,-,-,-,-,-,-,-,"+
+            "-,-,-,-,-,-,-,-,-,-,-,--,-,-,{1} Thin PC,-,{1} Embedded Industry,-,-,-,-,-,-,-,{1} RT"+
+            ",-,-,Single Language N,{1} Home,-,{1} Professional with Media Center,{1} Mobile,-,-,-"+
+            ",-,-,-,-,-,-,-,-,-,-,{1} Embedded Handheld,-,-,-,-,{1} IoT Core") -f "Edition",("Wind"+
+            "ows"),"Server","Enterprise"
+            
+            Return $Out.Split(",")[$This.OS.OperatingSystemSku]
+        }
+        [String] GetChassis()
+        {
+            $Tag  = "N/A Desktop Mobile/Laptop Workstation {0} {0} Appliance {0} Max" -f "Server"
+            Return $Tag.Split(" ")[$This.CS.PCSystemType]
+        }
+        GetFields()
+        {
+            $This.Version             = (Get-Host).Version.ToString()
+            $This.ReleaseID           = $This.CurrentVersion().ReleaseID
+
+            $This.Build, $This.Code, $This.Description = $This.GetEdition() -Split ","
+
+            $This.SKU                = $This.GetSKU()
+            $This.Chassis            = $This.GetChassis()
         }
         Snapshot([Object[]]$Pairs)
         {
