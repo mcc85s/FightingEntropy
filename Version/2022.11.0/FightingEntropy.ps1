@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2022.11.0]: 12-10-2022 11:45:37                                           ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2022.11.0]: 12-12-2022 15:04:55                                           ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -716,14 +716,9 @@ Function FightingEntropy.Module
             ("Get-FEDCPromo.ps1"               , "35ED8C1A1B2CD0694E28AA478DEE4BC04D8E640BBD06EB6630CA4F33B9D12931") ,
             ("Get-FEHost.ps1"                  , "E8668F9FA2E8741F7C8B99F4BB25C2604EC61AAC0FA162C9B8BEFF94D9AB3528") ,
             ("Get-FEImageManifest.ps1"         , "3665C48E2A0A947F6DDACF6F036ED88D33318595F67129718A1CB5F17D9A5D80") ,
-            ("Get-FEInfo.ps1"                  , "BCBEDC6B56D8657841ABB89AAF25E6E2D1A98670D40E7371EF8C88CDA2259A48") ,
-            ("Get-FEModule.ps1"                , "E8263E716BCD9AF311E0CCE92EDB86C2D20242F15E64072883167A33414D751A") ,
+            ("Get-FEModule.ps1"                , "") ,
             ("Get-FENetwork.ps1"               , "A50E0C07BD9FA27D33657600672A0DA2E393F9254014397B9A38AD8DB233A363") ,
-            ("Get-FEOS.ps1"                    , "4224DB2FFAB564F85B7FD8998B7311751DFD3C5F22BE4547412CF910BBA605F4") ,
-            ("Get-FEProcess.ps1"               , "053AF12E5C31360F1A91778D997A9D7AC9D1C7BF65CAD5F34544482F9BBD872A") ,
             ("Get-FERole.ps1"                  , "A26A3D36FADC3FA27B6E6978561EF4A3B532442EAB9D97FC9A0F6950B250F8C4") ,
-            ("Get-FEService.ps1"               , "29C1183826832E84B3EE51F2B040E425822019E362EF663E646A40A8E7BFDAD4") ,
-            ("Get-FESitemap.ps1"               , "135A1DCCB8F300EEBA13A76FE5E7609274DA6C4C7D6CA3C8FB1669D2440E04CF") ,
             ("Get-FESystemDetails.ps1"         , "4517FCC040CF5C4B1EC11C0FDE0C1D75764988A3A6217FEBBC934CE008B5C787") ,
             ("Get-MDTModule.ps1"               , "A867850639534E9D24A5EA0EEECBC6F9E078BB4E2FCFAE1D82486BA0BE654C51") ,
             ("Get-PowerShell.ps1"              , "3D778E96A8134D4E43DD0C93101727B98BECCBD1E1829B2495668DB3B60AA7B0") ,
@@ -1376,7 +1371,7 @@ Function FightingEntropy.Module
     # // | Factory class to control all of the aforementioned classes |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-    Class Main
+    Class Installer
     {
         [String]      $Source = "https://www.github.com/mcc85s/FightingEntropy"
         [String]        $Name = "[FightingEntropy($([Char]960))]"
@@ -1391,7 +1386,7 @@ Function FightingEntropy.Module
         [Object]        $Root
         [Object]    $Manifest
         [Object]    $Registry
-        Main([UInt32]$Mode)
+        Installer([UInt32]$Mode)
         {
             If ($Mode -eq 0)
             {
@@ -1747,9 +1742,13 @@ Function FightingEntropy.Module
 
             Return $Validate
         }
+        [String] ToString()
+        {
+            Return "<FightingEntropy.Module.Installer>"
+        }
     }
 
-    [Main]::New($Mode)
+    [Installer]::New($Mode)
 }
 
 $Module = FightingEntropy.Module -Mode 0 
@@ -1794,7 +1793,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 12-10-2022 11:45:37 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 12-12-2022 15:04:55 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
