@@ -17,7 +17,7 @@
    //        Contact    : @mcc85s                                                                                  //   
    \\        Primary    : @mcc85s                                                                                  \\   
    //        Created    : 2022-10-10                                                                               //   
-   \\        Modified   : 2022-12-10                                                                               \\   
+   \\        Modified   : 2022-12-12                                                                               \\   
    //        Demo       : N/A                                                                                      //   
    \\        Version    : 0.0.0 - () - Finalized functional version 1.                                             \\   
    //        TODO       : Have the hash values restore themselves from registry                                    //   
@@ -26,7 +26,7 @@
    \\___                                                                                                    ___//¯¯\\   
    //¯¯\\__________________________________________________________________________________________________//¯¯¯___//   
    \\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯¯    
-    ¯¯¯\\__[ 12-10-2022 11:45:08    ]______________________________________________________________________//¯¯¯        
+    ¯¯¯\\__[ 12-12-2022 15:02:17    ]______________________________________________________________________//¯¯¯        
         ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯            
 .Example
 #>
@@ -678,7 +678,6 @@ Function Get-FEModule
             ("Get-FEModule.ps1"                , "") ,
             ("Get-FENetwork.ps1"               , "A50E0C07BD9FA27D33657600672A0DA2E393F9254014397B9A38AD8DB233A363") ,
             ("Get-FERole.ps1"                  , "A26A3D36FADC3FA27B6E6978561EF4A3B532442EAB9D97FC9A0F6950B250F8C4") ,
-            ("Get-FESitemap.ps1"               , "135A1DCCB8F300EEBA13A76FE5E7609274DA6C4C7D6CA3C8FB1669D2440E04CF") ,
             ("Get-FESystemDetails.ps1"         , "4517FCC040CF5C4B1EC11C0FDE0C1D75764988A3A6217FEBBC934CE008B5C787") ,
             ("Get-MDTModule.ps1"               , "A867850639534E9D24A5EA0EEECBC6F9E078BB4E2FCFAE1D82486BA0BE654C51") ,
             ("Get-PowerShell.ps1"              , "3D778E96A8134D4E43DD0C93101727B98BECCBD1E1829B2495668DB3B60AA7B0") ,
@@ -1331,7 +1330,7 @@ Function Get-FEModule
     # // | Factory class to control all of the aforementioned classes |
     # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-    Class Main
+    Class Controller
     {
         [String]      $Source = "https://www.github.com/mcc85s/FightingEntropy"
         [String]        $Name = "[FightingEntropy($([Char]960))]"
@@ -1347,7 +1346,7 @@ Function Get-FEModule
         [Object]    $Manifest
         [Object]    $Registry
         [Object]      $System
-        Main([UInt32]$Mode)
+        Controller([UInt32]$Mode)
         {
             If ($Mode -eq 0)
             {
@@ -1703,25 +1702,29 @@ Function Get-FEModule
 
             Return $Validate
         }
+        [String] ToString()
+        {
+            Return "<FightingEntropy.Module.Controller>"
+        }
     }
 
     Switch ($PsCmdLet.ParameterSetName)
     {
         0 
         { 
-            [Main]::New($Mode)
+            [Controller]::New($Mode)
         } 
         1
         {
-            [Main]::New(1).Manifest.Files(0)
+            [Controller]::New(1).Manifest.Files(0)
         }
         2
         {
-            [Main]::New(1).Manifest.Files(1)
+            [Controller]::New(1).Manifest.Files(1)
         }
         3
         {
-            [Main]::New(1).Manifest.Files(2)
+            [Controller]::New(1).Manifest.Files(2)
         }
     }
 }
