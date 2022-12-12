@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2022.11.0]: 12-12-2022 15:04:55                                           ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2022.11.0]: 12-12-2022 15:54:02                                           ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -704,7 +704,6 @@ Function FightingEntropy.Module
             ("Copy-FileStream.ps1"             , "51691C4F53482684E2BF2619E33452E69F7EEBC2B081A0CD64C0BCBA1A14BA13") ,
             ("Get-AssemblyList.ps1"            , "303CE72974C50EDDBD880FCF5B72FED0D2AB5CBFBA7B2D7DE2310703612AF069") ,
             ("Get-ControlExtension.ps1"        , "4923A7C734BD01047502006027A8054C7C0B87BD37E48D60C0BF38ABC376376A") ,
-            ("Get-DiskInfo.ps1"                , "4C0443779422E187BE870520F43BA6156550ACE053AB5C9DBC9844D4E218A230") ,
             ("Get-EnvironmentKey.ps1"          , "3CB3DF68CF3E49DDAF5B1E79C1D82E82B11D9FBCA4AD2253554D97D8AE63D63B") ,
             ("Get-EventLogArchive.ps1"         , "90FD0564822E764CB602536E45410230E09A628AEA303EA7D3A025A34DBF5308") ,
             ("Get-EventLogConfigExtension.ps1" , "A32987DFDECDDD8D1976E7BABB1B00EA4993C6EB4430E0ED14AB61BC101C5458") ,
@@ -714,19 +713,18 @@ Function FightingEntropy.Module
             ("Get-EventLogXaml.ps1"            , "5BA7F7099DD7EF55498A889E7AC83CA5EAC1F335EDA53ACF1D7EA23864BF5180") ,
             ("Get-FEADLogin.ps1"               , "18EE877EAA00F60D8A8C8334CD2162D540C02A1F4870BBE1458F35CD80B95432") ,
             ("Get-FEDCPromo.ps1"               , "35ED8C1A1B2CD0694E28AA478DEE4BC04D8E640BBD06EB6630CA4F33B9D12931") ,
-            ("Get-FEHost.ps1"                  , "E8668F9FA2E8741F7C8B99F4BB25C2604EC61AAC0FA162C9B8BEFF94D9AB3528") ,
             ("Get-FEImageManifest.ps1"         , "3665C48E2A0A947F6DDACF6F036ED88D33318595F67129718A1CB5F17D9A5D80") ,
             ("Get-FEModule.ps1"                , "") ,
-            ("Get-FENetwork.ps1"               , "A50E0C07BD9FA27D33657600672A0DA2E393F9254014397B9A38AD8DB233A363") ,
+            ("Get-FENetwork.ps1"               , "DBB0B115E9B08D1008ABB24526E189FD55228939033786BBA576D7A094B94F87") ,
             ("Get-FERole.ps1"                  , "A26A3D36FADC3FA27B6E6978561EF4A3B532442EAB9D97FC9A0F6950B250F8C4") ,
             ("Get-FESystemDetails.ps1"         , "4517FCC040CF5C4B1EC11C0FDE0C1D75764988A3A6217FEBBC934CE008B5C787") ,
             ("Get-MDTModule.ps1"               , "A867850639534E9D24A5EA0EEECBC6F9E078BB4E2FCFAE1D82486BA0BE654C51") ,
-            ("Get-PowerShell.ps1"              , "3D778E96A8134D4E43DD0C93101727B98BECCBD1E1829B2495668DB3B60AA7B0") ,
-            ("Get-PropertyItem.ps1"            , "DED775999AAACA8DB127C40B1C0E0F7CFCCE6409F64B9332CC21771E81C39198") ,
-            ("Get-PropertyObject.ps1"          , "1B0BD523F33DE4B50C83B0561579AD57F348DB2384BD8E70F06CC268D92E7323") ,
             ("Get-PSDLog.ps1"                  , "6FA5187C71FBEDA668811BE166E0EAFC9135EB90948B563AAC040FC4D3DC5DB1") ,
             ("Get-PSDLogGUI.ps1"               , "B9084471E0906694B8469501B2E280E9F3163EFF63BCD006E162B7B3FD3B49CD") ,
             ("Get-PSDModule.ps1"               , "A3B4984BFF3835A0938E82D9501FAA63A852C82064559638232134E96F672A3B") ,
+            ("Get-PowerShell.ps1"              , "3D778E96A8134D4E43DD0C93101727B98BECCBD1E1829B2495668DB3B60AA7B0") ,
+            ("Get-PropertyItem.ps1"            , "DED775999AAACA8DB127C40B1C0E0F7CFCCE6409F64B9332CC21771E81C39198") ,
+            ("Get-PropertyObject.ps1"          , "1B0BD523F33DE4B50C83B0561579AD57F348DB2384BD8E70F06CC268D92E7323") ,
             ("Get-ThreadController.ps1"        , "7E573D21AB6A96450CBBEF9D87AF23797D4A8CFE822D543BE2B4BF696EADE2D8") ,
             ("Get-ViperBomb.ps1"               , "07922BA636845B3BC52B2C9FB0607890C7C0942B09F5A3F566BB0D43DF0269AD") ,
             ("Get-WhoisUtility.ps1"            , "8F397C28276878C615672B653A82C58A5894956AC14DE431C030E80326BCDEE7") ,
@@ -1793,7 +1791,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 12-12-2022 15:04:55 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 12-12-2022 15:54:02 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
