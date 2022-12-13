@@ -110,7 +110,7 @@ And, if you don't think THAT ever happens...?
 |:---------------|:---------------|
 | **04/06/2021** | [Paul Pelagalli overlooking ALL of this evidence below](https://drive.google.com/file/d/1J0CzI1nW5xwmWbwUVwOEMbhLUiZYEr4p) |
 
-<h3>Q: Don't you think you were being really RUDE to a JUDGE and a LAWYER...?</h3>
+<h3>Q : Don't you think you were being really RUDE to a JUDGE and a LAWYER...?</h3>
 A: I was INTENTIONALLY being rude, because these people were being EXTREMELY CARELESS doing this thing they refer to as their "job".
 
 The court repeatedly sent me emails that suggested my virtual appearances were scheduled at 2PM, instead of 9AM.<br>
@@ -123,18 +123,22 @@ But, I have higher standards than that.
 
 Effectively what I am suggesting, is that sometimes the police (among others) are pretty fucking (CARELESS/LAZY).
 
-When people are (CARELESS/LAZY), they don't NEED to be ACCURATE with ANYTHING that they DO.
+When people are (CARELESS/LAZY), they don't NEED to be ACCURATE with ANYTHING that they <i>DO</i>.<br>
 
-In fact, they can consistently be wrong on EVERY CASE THEY HANDLE...?<br>
-And they'll be REWARDED for that behavior.
+In fact, they can consistently be wrong on EVERY CASE THEY HANDLE...<br>
+...and, they'll be REWARDED for their CONSISTENTLY CARELESS behavior(s).
 
-And if you don't think THAT ever happens...?
+If you don't think THAT ever happens...?
 
-| Date           | Name
-|:---------------|:-----------------------------------------------------------|
-| **Whenever**   | [Audit the Audit](https://www.youtube.com/@AuditTheAudit)  |
-| **03/07/2022** | [Wrongful Convictions](https://youtu.be/kpYYdCzTpps)       |
-| **04/18/2022** | [Police Interrogations](https://youtu.be/obCNQ0xksZ4)      |
+| Date           | Name                                                       | Description               |
+|:---------------|:-----------------------------------------------------------|:--------------------------|
+| **Whenever**   | [Audit the Audit](https://www.youtube.com/@AuditTheAudit)  | Something my uncle Rick Smith should check out sometime
+| **03/07/2022** | [Wrongful Convictions](https://youtu.be/kpYYdCzTpps)       | **
+| **04/18/2022** | [Police Interrogations](https://youtu.be/obCNQ0xksZ4)      | **
+
+My uncle Rick Smith was a "chef" at the Harriman State Campus Training Academy... for like, (40) years.<br>
+Not (1) single time in his entire (40) years there, did he EVER detect that he made food for a slew of careless morons.<br>
+Not (1) time, did he ever stop, and ask himself "Have I like, EVER fed ANY careless morons my entire time being here...?"
 
 Take your pick on how many times the system allows the "experts" to be rather (CARELESS/LAZY).<br>
 You'll find out really quickly that the system ENCOURAGES this type of behavior, and that is why it is so rampant.
