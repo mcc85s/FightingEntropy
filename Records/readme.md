@@ -229,7 +229,7 @@ They're typically too busy abusing national security programs such as:
   <li>xKeyScore</li>
   <li>PRISM</li>
   <li>USA-PATRIOT Act of 2001</li>
-<ul>
+</ul>
 ...to GENERATE REVENUE instead of using those programs to PROTECT PEOPLE.
 
 THAT MEANS, in SOME cases, what I am (SAYING/DOING) in SOME of these videos/audio recordings, is IRRELEVANT and UNIMPORTANT.<br>
