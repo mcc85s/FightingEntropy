@@ -1,6 +1,12 @@
 <h1>Evidence List</h1>
 
-In todays world, evidence is pretty easy to collect, review, and do stuff with.
+In todays world, **EVIDENCE** is <u>pretty easy</u> to 
+<ul>
+  <li>collect</li>
+  <li>review</li>
+  <li>do stuff with</li>
+</ul>
+
 Unless of course, you happen to be a:
 
 | # | Role                                                |
@@ -10,18 +16,36 @@ Unless of course, you happen to be a:
 | 3 | **Federal Investigator**                            |
 | 4 | **Harriman State Campus Crimelab Forensic Analyst** |
 
-In **ANY** of those scenarios...?<br>
-__Collecting evidence__ is (apparently) **ILLEGAL** for **YOU** to **DO**...<br>
-...as well as **extremely dangerous**, and doing so **COULD** get you **KILLED**...
-So...?<br>
-**Don't do it.**<br>
-I'm being totally serious right now.
-There is **NO WAY** that I'm using **REVERSE PSYCHOLOGY** right now.<br>
-Yeah, there is a way that I'm using **REVERSE PSYCHOLOGY** right now.<br>
-Cause I'm flat-out, **ADMITTING** that I am using **REVERSE PSYCHOLOGY** right now.
+<p>
+  In **ANY** of those scenarios...?<br>
+  __Collecting evidence__ is (apparently) **ILLEGAL** for **YOU** to **DO**...<br>
+  ...as well as **extremely dangerous**, and doing so **COULD** get you **KILLED**...<br>
+  So...?
+</p>
 
-But- make no mistake...<br>
-It's (apparently) against the law for ANYONE from THOSE AGENCIES, to:
+<p>
+  **Don't do it.**<br>
+  I'm being totally serious right now.<br>
+  There is absolutely NO WAY AT ALL...<br>
+  ...that I'm using reverse psychology right now.<br>
+  Not at all.
+</p>
+
+<p>
+  Oh wait...<br>
+  Yeah, there IS a way that I'm using reverse psychology right now.<br>
+  Cause I'm flat-out, admitting right here and now...<br>
+  I'm making quite an extensive use of **REVERSE PSYCHOLOGY**.<br>
+  Right now.<br>
+  Probably looks like I'm just casually insulting a long list of professionals and experts, huh...?<br>
+  Yeah, well...<br>
+  Appearances can be deceiving.
+</p>
+
+<p>
+  Make no mistake...<br>
+  It's (apparently) against the law for ANYONE from THOSE AGENCIES, to:
+</p>
 
 | # | Action                                                                                                        |
 |:--|:--------------------------------------------------------------------------------------------------------------|
