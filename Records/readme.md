@@ -106,12 +106,17 @@ A: Yeah, really.
 
 And, if you don't think THAT ever happens...?
 
-| Date       | Name           |
-|:-----------|:---------------|
-| 04/06/2021 | [Paul Pelagalli overlooking ALL of this evidence below](https://drive.google.com/file/d/1J0CzI1nW5xwmWbwUVwOEMbhLUiZYEr4p) |
+| Date           | Name           |
+|:---------------|:---------------|
+| **04/06/2021** | [Paul Pelagalli overlooking ALL of this evidence below](https://drive.google.com/file/d/1J0CzI1nW5xwmWbwUVwOEMbhLUiZYEr4p) |
 
 <h3>Q: Don't you think you were being really RUDE to a JUDGE and a LAWYER...?</h3>
 A: I was INTENTIONALLY being rude, because these people were being EXTREMELY CARELESS doing this thing they refer to as their "job".
+
+The court repeatedly sent me emails that suggested my virtual appearances were scheduled at 2PM, instead of 9AM.<br>
+THEN, the "public pretender" that the court appointed to "defend" me, had these "excuses" and never "returned my calls/emails".<br>
+THEN, the judge ordered me to go to a clinic I was ALREADY A PATIENT OF, to see (2) doctors that DID NOT EVEN WORK THERE.<br>
+THEN, I gave the information as to the mother of my childrens whereabouts to the "public pretender", who casually dismissed that information, and then expedited the "PUBLICATION OF SERVICE" in a "town/state" that the "mother" of my "children" hadn't "lived" in over (5) fucking years.
 
 I wish I TOO, could be paid, to be a careless moron who (says/does) things that are really fucking senseless...?<br>
 But, I have higher standards than that.
@@ -125,11 +130,11 @@ And they'll be REWARDED for that behavior.
 
 And if you don't think THAT ever happens...?
 
-| Date       | Name
-|:-----------|:-----------------------------------------------------------|
-| Whenever   | [Audit the Audit](https://www.youtube.com/@AuditTheAudit)  |
-| 03/07/2022 | [Wrongful Convictions](https://youtu.be/kpYYdCzTpps)       |
-| 04/18/2022 | [Police Interrogations](https://youtu.be/obCNQ0xksZ4)      |
+| Date           | Name
+|:---------------|:-----------------------------------------------------------|
+| **Whenever**   | [Audit the Audit](https://www.youtube.com/@AuditTheAudit)  |
+| **03/07/2022** | [Wrongful Convictions](https://youtu.be/kpYYdCzTpps)       |
+| **04/18/2022** | [Police Interrogations](https://youtu.be/obCNQ0xksZ4)      |
 
 Take your pick on how many times the system allows the "experts" to be rather (CARELESS/LAZY).<br>
 You'll find out really quickly that the system ENCOURAGES this type of behavior, and that is why it is so rampant.
