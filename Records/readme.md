@@ -148,16 +148,17 @@ If you don't think THAT ever happens...?
 
 My uncle Rick Smith was a "chef" at the Harriman State Campus Training Academy... for like, (40) years.<br>
 Not (1) single time in his entire (40) years there, did he EVER detect that he made food for a slew of careless morons.<br>
-Not (1) time, did he ever stop, and ask himself "Have I like, EVER fed ANY careless morons my entire time being here...?"
+Not (1) time, did he ever stop, and ask himself ``Have I like, EVER fed ANY careless morons my entire time being here...?``
 
 Take your pick on how many times the system allows the "experts" to be rather (CARELESS/LAZY).<br>
 You'll find out really quickly that the system ENCOURAGES this type of behavior, and that is why it is so rampant.
 
 In some cases, maybe they're not THAT (CARELESS/LAZY)...?
 
-But, that may just be an ILLUSION, because...<br>
-Holy fuckin' shitballs rolled in hay, sometimes they truly ARE that (CARELESS/LAZY)~!<br>
-Don't take my word for it.
+But, that MAY just be an ILLUSION, because...<br>
+...holy fuckin' shitballs rolled in hay...<br>
+...sometimes they truly ARE that (CARELESS/LAZY).<br>
+But- don't just take my word for it, do a little digging into the videos in those links above.
 
 Typically the people I consistently poke fun at...?<br>
 They don't really care what I think, and they'll just routinely avoid actions (1-3) above.<br>
@@ -204,7 +205,7 @@ And that's when I started:
 ``recording some of these (videos/audio logs) attempting to manipulate the surveilling (party/parties)``
 
 Part of being a CIVILIAN that suspects that SPIES are COMMITTING ESPIONAGE to them...<br>
-...is knowing that there are (0) people you can go to, and say "I think someone is spying on me..."
+...is knowing that there are (0) people you can go to, and say ``I think someone is spying on me...``
 
 That's the key takeaway, IF someone from a foreign intelligence service IS committing espionage to a civilian...?<br>
 ...there's no place you can go to report that.<br>
