@@ -216,7 +216,7 @@ There are a number of ILLUSIONS of places you could THEORETICALLY "go", to repor
 But, think about the sentence you JUST read.<br>
 There's no place you can go to report a god damn thing about foreign intelligence services spying on a civilian in another country.<br>
 At least, not without a bunch of careless morons concluding long before reviewing ANY EVIDENCE WHATSOEVER...<br>
-...that perhaps the murder of Michael Edward Cook in 1995 might be the reason WHY a civilian is being spied on by a foreign intelligence agency.
+...that perhaps the murder of (my father) ``Michael Edward Cook`` in 1995 might be the reason WHY a civilian is being spied on by a foreign intelligence agency.
 
 You know what I mean...?<br>
 A cold case spanning back to 1995 involving additional observations that official police officers get paid to investigate, but like, don't.<br>
