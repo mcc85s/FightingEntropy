@@ -16,36 +16,28 @@ Unless of course, you happen to be a:
 | 3 | **Federal Investigator**                            |
 | 4 | **Harriman State Campus Crimelab Forensic Analyst** |
 
-<p>
-  In **ANY** of those scenarios...?<br>
-  __Collecting evidence__ is (apparently) **ILLEGAL** for **YOU** to **DO**...<br>
-  ...as well as **extremely dangerous**, and doing so **COULD** get you **KILLED**...<br>
-  So...?
-</p>
+In **ANY** of those scenarios...?<br>
+__Collecting evidence__ is (apparently) **ILLEGAL** for **YOU** to **DO**...<br>
+...as well as **extremely dangerous**, and doing so **COULD** get you **KILLED**...<br>
+So...?
 
-<p>
-  **Don't do it.**<br>
-  I'm being totally serious right now.<br>
-  There is absolutely NO WAY AT ALL...<br>
-  ...that I'm using reverse psychology right now.<br>
-  Not at all.
-</p>
+**Don't try to be a hero or anything like that...**<br>
+I'm being totally serious right now.<br>
+There is absolutely NO WAY AT ALL...<br>
+...that I'm using reverse psychology right now.<br>
+Not at all.
 
-<p>
-  Oh wait...<br>
-  Yeah, there IS a way that I'm using reverse psychology right now.<br>
-  Cause I'm flat-out, admitting right here and now...<br>
-  I'm making quite an extensive use of **REVERSE PSYCHOLOGY**.<br>
-  Right now.<br>
-  Probably looks like I'm just casually insulting a long list of professionals and experts, huh...?<br>
-  Yeah, well...<br>
-  Appearances can be deceiving.
-</p>
+Oh wait...<br>
+Yeah, there IS a way that I'm using reverse psychology right now.<br>
+Cause I'm flat-out, admitting right here and now...<br>
+I'm making quite an extensive use of **REVERSE PSYCHOLOGY**.<br>
+Right now.<br>
+Probably looks like I'm just casually insulting a long list of professionals and experts, huh...?<br>
+Yeah, well...<br>
+Appearances can be deceiving.
 
-<p>
-  Make no mistake...<br>
-  It's (apparently) against the law for ANYONE from THOSE AGENCIES, to:
-</p>
+Make no mistake...<br>
+It's (apparently) against the law for ANYONE from THOSE AGENCIES, to:
 
 | # | Action                                                                                                        |
 |:--|:--------------------------------------------------------------------------------------------------------------|
