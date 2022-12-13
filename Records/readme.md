@@ -1,4 +1,4 @@
-# Foreword about Evidence
+# Foreword about evidence
 In todays world, **EVIDENCE** is <u>pretty easy</u> to 
 <ul>
   <li>collect</li>
@@ -15,8 +15,9 @@ Unless of course, you happen to be a:
 | 3 | **Federal Investigator**                            | Investigator C. Murphy |
 | 4 | **Harriman State Campus Crimelab Forensic Analyst** | J. Izzo                |
 
-In **ANY** of those scenarios...?<br>
-__Collecting evidence__ is (apparently) **ILLEGAL** for **YOU** to **DO**...<br>
+In **ANY** of those scenarios...?
+
+Well, __Collecting evidence__ is (apparently) **ILLEGAL** for **YOU** to **DO**...<br>
 ...as well as **extremely dangerous**, and doing so **COULD** get you **KILLED**...<br>
 So...?
 
@@ -30,11 +31,21 @@ Oh wait...<br>
 Yeah, there IS a way that I'm using reverse psychology right now.<br>
 Cause I'm flat-out, admitting right here and now...<br>
 I'm making quite an extensive use of **REVERSE PSYCHOLOGY**.<br>
-Right now.<br>
-Probably looks like I'm just casually insulting a long list of professionals and experts, huh...?<br>
-Yeah, well...<br>
-Appearances can be deceiving.
+Right now.
 
+Probably looks like I'm just casually insulting a long list of (professionals/experts), huh...?<br>
+Yeah, well... not so fast there, frosted flakes...<br>
+Even Tony the hyper, overzealous-son-of-a-bitch Tiger has to slow the fuck down sometimes,<br>
+and pay more attention to the surrounding details (and/or) context.
+
+Appearances can be deceiving.<br>
+Too many people jump to conclusions LONG BEFORE they're even remotely ready to reach any form of conclusion, whatsoever.<br>
+It's like when the colonists called the Native Americans "Indians".<br>
+Native Americans and Indians are (2) totally different types of people...?<br>
+But- some people continue to call Native Americans "Indians".<br>
+It's pretty stupid, actually.
+
+# Dangers of collecting evidence
 Make no mistake...<br>
 It's (apparently) against the law for ANYONE from THOSE AGENCIES, to:
 
@@ -56,6 +67,7 @@ That's pretty stupid, right...?<br>
 Well, you thought wrong.<br>
 It's not stupid at all.
 
+# Why collecting evidence is DANGEROUS
 You have to be **faster** than Goku (fictional character from **DragonBall Z**), in order to be taken seriously by ANYBODY.
 
 Because, if you're NOT faster than Goku...?<br>
@@ -65,11 +77,11 @@ Then, the ACTUAL POLICE won't mind dragging someone who was not fast enough...<b
 ...who was always hell bent on being the biggest douchebag on the face of the fuckin' planet...<br>
 ...CPS will get involved, and write fraudulent letters of indication...<br>
 ...Saratoga Hospital will get involved, and have doctors commit medical fraud...<br>
-...everybody and their mother, will TRY to get in SOMEHOW, and do something FRAUDULENT/ILLEGAL...<br>
+...everybody and their mother, will TRY to get in SOMEHOW, and do something (FRAUDULENT/ILLEGAL)...<br>
 ...and nobody can actually stop these things from happening.<br>
 Not at all.
 
-<h2>Q: Why can nobody stop these things from happening...?</h2>
+<h3>Q: Why can nobody stop these things from happening...?</h3>
 A: Because, the people that are SUPPOSED to stop these things from happening...?<br>
 SOMETIMES, they are CARELESS, LAZY MORONS who don't perform ANY of the actions (1-3) above.<br>
 
