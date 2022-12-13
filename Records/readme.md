@@ -1,5 +1,6 @@
 <h1>Evidence List</h1>
 
+# Foreword
 In todays world, **EVIDENCE** is <u>pretty easy</u> to 
 <ul>
   <li>collect</li>
@@ -82,6 +83,7 @@ Either way, what the hell can anybody actually do...?<br>
 Nothing.<br>
 Nobody can do anything at all.
 
+# Segue
 Allow for me to be perfectly clear here.<br>
 Some of these following items may not appear to be very telling of really anything, UNLESS...<br>
 ...some people consider the notion that at SOME POINT...?<br>
@@ -104,6 +106,7 @@ Once you start ACTING and stuff...?<br>
 Some fucking morons will mislabel you as DELUSIONAL, because they'll be too lazy to look at the CONTEXT of the OTHER EVIDENCE.<br>
 That's "How America Works 101"
 
+# Evidence List
 | Index | Type  | Date     | Time | Focus | Name/Link
 |:------|:------|:---------|:-----|:------|:-----------------------------------------------------------------------|
 | 0     | Scan  | 07/21/89 | 0000 | 0     | [785-3221 Jesse Pickett](https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD)
@@ -335,7 +338,7 @@ That's "How America Works 101"
 | 226   | Audio | 05/25/20 | 2230 | 0     | [2020_0525 Matchless Stove](https://drive.google.com/file/d/14bAzf7pzM_t67Exxm1NoqgHUnYV86pX7)
 | 227   | Photo | 05/25/20 | 2246 | 0     | [IMG_0634](https://drive.google.com/file/d/1OloZklvgG_mbAz9Qc4eNKTrWSTqWwfT0)
 | 228   | Audio | 05/25/20 | 2300 | 0     | [2020_0525 Computer Answers](https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs)
-| 228A  | Note  | --/--/-- | ---- | -     | The above audio recording, and the below screenshots should indicate that I'm either the FASTEST wireless network hacker in the world... OR, that I had the password to the network already. It could really only be (1) or the other. Too bad the "experts" fucked up in making that determination... I'm putting the word "experts" in "air quotes" because the audio recording above indicates that some people are just plain fuckin' stupid.
+| -     | Note  | --/--/-- | ---- | -     | The above audio recording, and the below screenshots should indicate that I'm the fastest wireless network hacker in the world, OR, that I had the password to the network already. Consider the latter, and apply that realization unilaterally.
 | 229   | Photo | 05/25/20 | 2329 | 0     | [IMG_0636](https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo)
 | 230   | Photo | 05/25/20 | 2329 | 0     | [IMG_0637](https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL)
 | 231   | Photo | 05/25/20 | 2329 | 0     | [IMG_0638](https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY)
