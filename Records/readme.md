@@ -3,33 +3,45 @@
 In todays world, evidence is pretty easy to collect, review, and do stuff with.
 Unless of course, you happen to be a:
 
-| # | Role                                        |
-|:--|:--------------------------------------------|
-| 1 | New York State Trooper/Sergeant             |
-| 2 | Saratoga County Sheriff Deputy/Investigator |
-| 3 | Federal Investigator                        |
+| # | Role                                                |
+|:--|:----------------------------------------------------|
+| 1 | **New York State (Trooper/Sergeant)**               |
+| 2 | **Saratoga County Sheriff (Deputy/Investigator)**   |
+| 3 | **Federal Investigator**                            |
+| 4 | **Harriman State Campus Crimelab Forensic Analyst** |
 
-In any of those scenarios...?<br>
-Collecting evidence is (apparently) ILLEGAL for YOU to DO...<br>
+In **ANY** of those scenarios...?<br>
+__Collecting evidence__ is (apparently) **ILLEGAL** for **YOU** to **DO**...<br>
+...as well as **extremely dangerous**, and doing so **COULD** get you **KILLED**...
 So...?<br>
-Don't do it.<br>
+**Don't do it.**<br>
+I'm being totally serious right now.
+There is **NO WAY** that I'm using **REVERSE PSYCHOLOGY** right now.<br>
+Yeah, there is a way that I'm using **REVERSE PSYCHOLOGY** right now.<br>
+Cause I'm flat-out, **ADMITTING** that I am using **REVERSE PSYCHOLOGY** right now.
+
+But- make no mistake...<br>
 It's (apparently) against the law for ANYONE from THOSE AGENCIES, to:
 
-| # | Action                                                                                |
-|:--|:--------------------------------------------------------------------------------------|
-| 1 | Collect evidence of (cybercrimes/espionage) taking place against a citizen            |
-| 2 | Investigate parties suspected of committing (cybercrimes/espionage) against a citizen |
-| 3 | Review the work portfolio of a citizen who DOES do these (2) things above             |
+| # | Action                                                                                                        |
+|:--|:--------------------------------------------------------------------------------------------------------------|
+| 1 | __Collect evidence__ of (cybercrimes/espionage) taking place against (a citizen/many citizens)                |
+| 2 | __Investigate parties__ **SUSPECTED** of committing (cybercrimes/espionage) against (a citizen/many citizens) |
+| 3 | Review the work portfolio of a citizen who DOES do these (2) things above                                     |
 
-Now, because it is (apparently) ILLEGAL for any of those police officers to perform ANY of these actions...?
+Now, because it is (apparently) **ILLEGAL** for **ANY** of those police officers (1-4) to perform ANY of these actions...?
 
-You have to do what **I** do, and that is, to compile a LIST of EVIDENCE of (cybercrimes/espionage) taking place against a citizen.
+You have to do what **I** do, and that is, to compile a LIST of EVIDENCE of (cybercrimes/espionage) taking place against (a citizen/many citizens).
 
-Since these are all things they (apparently) CANNOT legally collect...<br>
-...you have to perform what's called "due-diligence" FOR them...<br>
-...since they (apparently) CANNOT legally do these things.
+Since these are things that police officers (1-4) (apparently) **CANNOT LEGALLY COLLECT**...?<br>
+You have to perform what's called "due-diligence" FOR them.<br>
+Since they (apparently) **CANNOT LEGALLY** <i>do</i> these things.
 
-But- you have to be faster than Goku (fictional character from DragonBall Z), in order to be taken seriously by ANYBODY. 
+That's pretty stupid, right...?
+Well, you thought wrong.
+It's not stupid at all.
+
+You have to be **faster** than Goku (fictional character from **DragonBall Z**), in order to be taken seriously by ANYBODY.
 
 Because, if you're NOT faster than Goku...?<br>
 Then, the ACTUAL POLICE won't mind dragging someone who was not fast enough...<br>
@@ -40,9 +52,14 @@ Then, the ACTUAL POLICE won't mind dragging someone who was not fast enough...<b
 ...Saratoga Hospital will get involved, and have doctors commit medical fraud...<br>
 ...and nobody can actually stop these things from happening.
 
+Why can nobody stop these things from happening...?
+
+Because, the people that are SUPPOSED to stop these things from happening, are CARELESS, LAZY MORONS who don't perform ANY of the actions (1-3) above.
+Whereby allowing people to be VICTIMIZED REPEATEDLY, and then the VICTIMS are arrested and thrown into jail for ridiculous reasons.
+
 Effectively what I am suggesting, is that sometimes the police (among others) are pretty fucking CARELESS and LAZY.
 
-MAYBE THEY'RE NOT THAT CARELESS OR LAZY, but- they just routinely avoid actions 1-3 above.<br>
+MAYBE THEY'RE NOT THAT CARELESS OR LAZY, but- they just routinely avoid actions (1-3) above.<br>
 Or, doing their job THOROUGHLY or CAREFULLY.
 
 Either way, what the hell can anybody actually do...?<br>
