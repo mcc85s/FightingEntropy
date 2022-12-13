@@ -185,20 +185,33 @@ And that's when I started:
 Part of being a CIVILIAN that suspects that SPIES are COMMITTING ESPIONAGE to them...<br>
 ...is knowing that there are (0) people you can go to, and say "I think someone is spying on me..."
 
-That's the key takeaway.
+That's the key takeaway, IF someone from a foreign intelligence service IS committing espionage to a civilian...?<br>
+...there's no place you can go to report that.
 
-There's no place you can go to report this shit, without a bunch of careless morons concluding long before reviewing ANY EVIDENCE WHATSOEVER...<br>
+Not at all.
+At least, not without a bunch of careless morons concluding long before reviewing ANY EVIDENCE WHATSOEVER...<br>
 ...that perhaps the murder of Michael Edward Cook in 1995 might be the reason WHY a civilian is being spied on by a foreign intelligence agency.
 
-You know what I mean...?
+You know what I mean...?<br>
+A cold case spanning back to 1995 involving additional observations that official police officers get paid to investigate, but like, don't.<br>
+Hm. Too many people make the assumption that the police would've already figured it out by now, if that were the case.<br>
+And that is why I laugh profusely whenever I detect people who make that assumption, because of how COMEDIC that assumption truly is.
 
 Some people are just really fucking stupid, and you aren't allowed to tell them how stupid they are, either.
 
-Because the NATIONAL SECURITY AGENCY should give a shit about that...<br>
-(but they don't... I called them multiple times in 2019)
+Because the **NATIONAL SECURITY AGENCY** should give a shit about that...<br>
+(<i>but they don't, I called them multiple times in 2019</i>)
 
-And the FEDERAL BUREAU OF INVESTIGATION should give a shit about that...<br>
-(but they don't... I called them multiple times in 2019/2020)
+And the **FEDERAL BUREAU OF INVESTIGATION** should give a shit about that...<br>
+(<i>but they don't, I called them multiple times in 2019/2020</i>)
+
+Perhaps there are SOME people SOMEWHERE that care about the numerous CLUES I've detected...?<br>
+But, they really only could be from 1 of the (4) agencies I've listed up above.<br>
+Either that, or they just don't actually exist.
+
+If I AM being spied on, or HAVE been this whole time...<br>
+It wouldn't be for MONEY or INTELLECTUAL PROPERTY...<br>
+...which means that it would be a CRIME OF PASSION. (<i> This is called a "MOTIVE"</i>)
 
 # Strategies to bypass careless morons
 What STRATEGIES can a CIVILIAN use, who believes they're being SPIED ON by FOREIGN INTELLIGENCE SERVICES...<br>
