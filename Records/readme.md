@@ -25,16 +25,28 @@ Now, because it is (apparently) ILLEGAL for any of those police officers to perf
 
 You have to do what **I** do, and that is, to compile a LIST of EVIDENCE of (cybercrimes/espionage) taking place against a citizen.
 
-Since these are all things they (apparently) CANNOT legally collect...
-...you have to perform what's called "due-diligence" FOR them, since they (apparently) CANNOT legally do these things.
+Since these are all things they (apparently) CANNOT legally collect...<br>
+...you have to perform what's called "due-diligence" FOR them...<br>
+...since they (apparently) CANNOT legally do these things.
 
-But- you have to be faster than Goku in order to be taken seriously by ANYBODY... because...?
-If you're NOT faster than Goku, then the ACTUAL POLICE won't mind dragging someone through the mud, and making them look like a bonafide criminal that was always hell bent on being the biggest douchebag on the face of the fucking planet.
+But- you have to be faster than Goku (fictional character from DragonBall Z), in order to be taken seriously by ANYBODY. 
 
-Effectively what I am suggesting, is that sometimes the police are pretty fucking careless and lazy.
-MAYBE THEY'RE NOT THAT CARELESS OR LAZY, but they just routinely avoid collecting evidence or doing their job thoroughly or carefully.
-Either way, what the hell can anybody actually do...?
-Nothing.
+Because, if you're NOT faster than Goku...?<br>
+Then, the ACTUAL POLICE won't mind dragging someone who was not fast enough...<br>
+...through the mud...<br>
+...making them look like a bonafide criminal...<br>
+...who was always hell bent on being the biggest douchebag on the face of the fuckin' planet...<br>
+...CPS will get involved, and write fraudulent letters of indication...<br>
+...Saratoga Hospital will get involved, and have doctors commit medical fraud...<br>
+...and nobody can actually stop these things from happening.
+
+Effectively what I am suggesting, is that sometimes the police (among others) are pretty fucking CARELESS and LAZY.
+
+MAYBE THEY'RE NOT THAT CARELESS OR LAZY, but- they just routinely avoid actions 1-3 above.<br>
+Or, doing their job THOROUGHLY or CAREFULLY.
+
+Either way, what the hell can anybody actually do...?<br>
+Nothing.<br>
 Nobody can do anything at all.
 
 | Index | Type  | Date     | Time | Focus | Name/Link
