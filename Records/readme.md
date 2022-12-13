@@ -335,6 +335,7 @@ That's "How America Works 101"
 | 226   | Audio | 05/25/20 | 2230 | 0     | [2020_0525 Matchless Stove](https://drive.google.com/file/d/14bAzf7pzM_t67Exxm1NoqgHUnYV86pX7)
 | 227   | Photo | 05/25/20 | 2246 | 0     | [IMG_0634](https://drive.google.com/file/d/1OloZklvgG_mbAz9Qc4eNKTrWSTqWwfT0)
 | 228   | Audio | 05/25/20 | 2300 | 0     | [2020_0525 Computer Answers](https://drive.google.com/file/d/1dmTkiCzgyGwG9q5BO9hIn_SSeFWPcrIs)
+| 228A  | Note  | --/--/-- | ---- | -     | The above audio recording, and the below screenshots should indicate that I'm the fastest wireless network hacker in the world, OR, that I had the password to the network already. 
 | 229   | Photo | 05/25/20 | 2329 | 0     | [IMG_0636](https://drive.google.com/file/d/1a-lb9MOUKi1wy9c4cEEyuclH_rQIMhNo)
 | 230   | Photo | 05/25/20 | 2329 | 0     | [IMG_0637](https://drive.google.com/file/d/1ZNmufDVX7Xkyf4pHqQfPk2Ww2tvkwGCL)
 | 231   | Photo | 05/25/20 | 2329 | 0     | [IMG_0638](https://drive.google.com/file/d/1uIxufETfzgpM1uLp9mclF4quMkWak4LY)
