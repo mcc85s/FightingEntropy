@@ -17,11 +17,17 @@ Unless of course, you happen to be a:
 
 In **ANY** of those scenarios...?
 
-Well, __Collecting evidence__ is (apparently) **ILLEGAL** for **YOU** to **DO**...<br>
-...as well as **extremely dangerous**, and doing so **COULD** get you **KILLED**...<br>
-So...?
+Well, __(collecting/reviewing) evidence__ is (apparently) **ILLEGAL (and/or) DANGEROUS** for **YOU** to **DO**...<br>
+...and doing so **COULD** get you **KILLED**...<br>
 
-**Don't try to be a hero or anything like that...**<br>
+So...?<br>
+Don't do it.<br>
+Wouldn't want anybody to suddenly HAPHAZARDLY SNEEZE around you...<br>
+...whereby killing you, cause you tried to be a hero and (collect/review) evidence, right...?<br>
+Nah.<br>
+Not at all.
+
+**Don't try to be a hero or anything like that, and (collect/review) evidence...**<br>
 I'm being totally serious right now.<br>
 There is absolutely NO WAY AT ALL...<br>
 ...that I'm using reverse psychology right now.<br>
@@ -35,19 +41,23 @@ Right now.
 
 Probably looks like I'm just casually insulting a long list of (professionals/experts), huh...?<br>
 Yeah, well... not so fast there, frosted flakes...<br>
-Even Tony the hyper, overzealous-son-of-a-bitch Tiger has to slow the fuck down sometimes,<br>
+Even Tony the hyper, overzealous-son-of-a-bitch Tiger has to slow down sometimes,<br>
 and pay more attention to the surrounding details (and/or) context.
 
-Appearances can be deceiving.<br>
+# Appearances can be deceiving
 Too many people jump to conclusions LONG BEFORE they're even remotely ready to reach any form of conclusion, whatsoever.<br>
-It's like when the colonists called the Native Americans "Indians".<br>
+It's like when the colonists called the Native Americans "Indians".
+
 Native Americans and Indians are (2) totally different types of people...?<br>
 But- some people continue to call Native Americans "Indians".<br>
-It's pretty stupid, actually.
+It's pretty stupid, isn't it...?
 
 # Dangers of collecting evidence
 Make no mistake...<br>
-It's (apparently) against the law for ANYONE from THOSE AGENCIES, to:
+So is (collecting/reviewing) evidence.<br>
+Some actually consider it suicide, to do such a (dangerous/trivial) task.<br>
+
+(Apparently) it's against the law for ANYONE from the above agencies (1-4), to:
 
 | # | Action                                                                                                        |
 |:--|:--------------------------------------------------------------------------------------------------------------|
@@ -81,25 +91,35 @@ Then, the ACTUAL POLICE won't mind dragging someone who was not fast enough...<b
 ...and nobody can actually stop these things from happening.<br>
 Not at all.
 
-<h3>Q: Why can nobody stop these things from happening...?</h3>
-A: Because, the people that are SUPPOSED to stop these things from happening...?<br>
-SOMETIMES, they are CARELESS, LAZY MORONS who don't perform ANY of the actions (1-3) above.<br>
+<h3>Q : Why can nobody stop these things from happening...?</h3>
+A: Because, the people that are SUPPOSED to stop these things from happening...?
 
-<h2>Q: ...really...?</h2>
-A: Yeah, really.<br>
-When these things happen, it allows SOME people to be VICTIMIZED REPEATEDLY...<br>
-...and then the VICTIMS are (arrested/thrown in jail) for ridiculous reasons.<br>
-And if you don't think THAT ever happens...?
+SOMETIMES, they are CARELESS, LAZY MORONS who don't perform ANY of the actions (1-3) above.
+
+<h3>Q : ...really...?</h3>
+A: Yeah, really.
+
+<p>
+  When these things happen, it allows SOME people to be VICTIMIZED REPEATEDLY...<br>
+  ...and then the VICTIMS are (arrested/thrown in jail) for ridiculous reasons.
+</p>
+
+And, if you don't think THAT ever happens...?
 
 | Date       | Name           |
 |:-----------|:---------------|
 | 04/06/2021 | [Paul Pelagalli overlooking ALL of this evidence below](https://drive.google.com/file/d/1J0CzI1nW5xwmWbwUVwOEMbhLUiZYEr4p) |
 
-<h2>Q: Don't you think you were being really RUDE to a JUDGE and a LAWYER...?</h2>
-A: I was INTENTIONALLY being rude, because these people were being EXTREMELY CARELESS with this thing they do, called "their fucking job".
+<h3>Q: Don't you think you were being really RUDE to a JUDGE and a LAWYER...?</h3>
+A: I was INTENTIONALLY being rude, because these people were being EXTREMELY CARELESS doing this thing they refer to as their "job".
 
-Effectively what I am suggesting, is that sometimes the police (among others) are pretty fucking CARELESS and LAZY.<br>
-When people are CARELESS or LAZY, they don't NEED to ever be ACCURATE with ANYTHING that they DO.<br>
+I wish I TOO, could be paid, to be a careless moron who (says/does) things that are really fucking senseless...?<br>
+But, I have higher standards than that.
+
+Effectively what I am suggesting, is that sometimes the police (among others) are pretty fucking (CARELESS/LAZY).
+
+When people are (CARELESS/LAZY), they don't NEED to be ACCURATE with ANYTHING that they DO.
+
 In fact, they can consistently be wrong on EVERY CASE THEY HANDLE...?<br>
 And they'll be REWARDED for that behavior.
 
@@ -111,13 +131,16 @@ And if you don't think THAT ever happens...?
 | 03/07/2022 | [Wrongful Convictions](https://youtu.be/kpYYdCzTpps)       |
 | 04/18/2022 | [Police Interrogations](https://youtu.be/obCNQ0xksZ4)      |
 
-Take your pick on how many times the system allows the "experts" to be rather CARELESS/LAZY.<br>
-You'll find out really quickly that the system ENCOURAGES this type of behavior.
+Take your pick on how many times the system allows the "experts" to be rather (CARELESS/LAZY).<br>
+You'll find out really quickly that the system ENCOURAGES this type of behavior, and that is why it is so rampant.
 
-In some cases, MAYBE THEY'RE NOT THAT CARELESS OR LAZY...?<br>
-But- typically the people I consistently poke fun at...?<br>
-They'll just routinely avoid actions (1-3) above.<br>
-Or, doing their job THOROUGHLY or CAREFULLY.
+In some cases, maybe they're not THAT (CARELESS/LAZY)...?
+
+But, that is just an illusion, because they truly ARE that (CARELESS/LAZY).
+
+Typically the people I consistently poke fun at...?<br>
+They don't really care what I think, and they'll just routinely avoid actions (1-3) above.<br>
+Or, doing their job (THOROUGHLY/CAREFULLY).
 
 In the end, who gives a shit...?<br>
 Nobody does.
@@ -138,22 +161,94 @@ That's why it's totally CALLED FOR, to SCRUTINIZE these sorts of people that res
 </ul>
 
 # Segue
-Allow for me to be perfectly clear here.<br>
-Some of these following items may not appear to be very telling of really anything, UNLESS...<br>
+Allow for me to be perfectly clear here.
+
+Some of these following items may not APPEAR to be very telling of really anything, UNLESS...<br>
 ...some people consider the notion that at SOME POINT...?<br>
-...I started recording some of these (videos/audio logs) attempting to manipulate the surveilling (party/parties).
+...I started a company that focuses on DIGITAL SECURITY, which deals exclusively with:
+<ul>
+  <li>network security</li>
+  <li>network & hardware magistration</li>
+  <li>application development</li>
+  <li>virtualization</li>
+</ul>
+
+Then, AFTER I did this in October 2018...?<br>
+...I started noticing some really questionable shit regarding people remotely accessing the devices and networks I was managing, as well as my smartphone.
+
+That's when I said to myself: 
+``time to start manipulating whoever is doing this, to be recorded, so I can show other people the questionable shit I'm observing``
+
+And that's when I started:
+``recording some of these (videos/audio logs) attempting to manipulate the surveilling (party/parties)``
 
 Part of being a CIVILIAN that suspects that SPIES are COMMITTING ESPIONAGE to them...<br>
-...is knowing that there are (0) people you can go to, and say "I think someone is spying on me..."<br>
-Because the NATIONAL SECURITY AGENCY should give a shit about that (but they don't... I called them multiple times in 2019)<br>
-And the FEDERAL BUREAU OF INVESTIGATION should give a shit about that (but they don't... I called them multiple times in 2019/2020)<br>
-And then, really...?<br>
-What other strategies can a CIVILIAN perform, who believes they're being SPIED ON by FOREIGN INTELLIGENCE SERVICES like for instance SVR...?<br>
-Oh, maybe manipulating some morons while recording stuff in (video/audio) might be a solid strategy.
+...is knowing that there are (0) people you can go to, and say "I think someone is spying on me..."
+
+That's the key takeaway.
+
+There's no place you can go to report this shit, without a bunch of careless morons concluding long before reviewing ANY EVIDENCE WHATSOEVER...<br>
+...that perhaps the murder of Michael Edward Cook in 1995 might be the reason WHY a civilian is being spied on by a foreign intelligence agency.
+
+You know what I mean...?
+
+Some people are just really fucking stupid, and you aren't allowed to tell them how stupid they are, either.
+
+Because the NATIONAL SECURITY AGENCY should give a shit about that...<br>
+(but they don't... I called them multiple times in 2019)
+
+And the FEDERAL BUREAU OF INVESTIGATION should give a shit about that...<br>
+(but they don't... I called them multiple times in 2019/2020)
+
+# Strategies to bypass careless morons
+What STRATEGIES can a CIVILIAN use, who believes they're being SPIED ON by FOREIGN INTELLIGENCE SERVICES...<br>
+...like for instance, (SVR/Foreign Intelligence Service for Mother Russia)...?
+
+<ul>
+  <li>psychological manipulation</li>
+  <li>acting</li>
+  <li>recording audio/video</li>
+  <li>taking pictures</li>
+  <li>writing documents</li>
+  <li>uploading progress reports</li>
+  <li>social engineering</li>
+</ul>
+
+Oh, maybe manipulating some morons working for mother Russia, WHILE __recording stuff__ in (video/audio) might be a solid strategy...<br>
+...since the police are GENERALLY very (careless/lazy/mistake prone) and they don't know how to do that without being insulted.
+
+Is that a consistent case...?<br>
+No, it isn't.<br>
+Sometimes the police <i>do</i> care a LOT about accuracy, and having integrity.
+
+But- a lot of them fucking don't.<br>
+So... consulting with the police or security agencies MAY BE A (TRIVIAL/POINTLESS) TASK.
+
+They're typically too busy abusing national security programs such as:
+<ul>
+  <li>xKeyScore</li>
+  <li>PRISM</li>
+  <li>USA-PATRIOT Act of 2001</li>
+<ul>
+...to GENERATE REVENUE instead of using those programs to PROTECT PEOPLE.
 
 THAT MEANS, in SOME cases, what I am (SAYING/DOING) in SOME of these videos/audio recordings, is IRRELEVANT and UNIMPORTANT.<br>
-What IS important, is that some of these (videos/audio recordings) exhibit some truly suspicious activities...<br>
-...and in order to RECORD suspicious activities that SPIES would be doing stuff IN...?<br>
+The CONTEXT is pretty important, but good luck trying to convince people that the CONTEXT is pretty fucking important.
+
+What is NOT so important, are the things I may be (SAYING/DOING) in some of these (videos/audio recordings).<br>
+What IS... are some truly suspicious activities that are occurring WHILE the recording is being made.
+
+Let's recap.
+
+| Action                                                 | Result                                                                             |
+|:-------------------------------------------------------|:-----------------------------------------------------------------------------------|
+| Bold (statements/rhetoric)                             | Not always important, might actually be a TACTIC or STRATEGY to MANIPULATE a "SPY" |
+| Events in the environment in (videos/audio recordings) | MIGHT be pretty important, MIGHT be happening in RESPONSE to (statements/rhetoric) |
+
+Those are the STRATEGIES that I used in many of these recordings, though to be clear...?<br>
+I was initially taking a shot in the dark, until I realized that these strategies were very fucking useful after all.
+
+In order to RECORD suspicious activities that SPIES would be doing stuff IN...?<br>
 ...then you have to consider the notion that I may have been ACTING.
 
 Once you start ACTING and stuff...?<br>
