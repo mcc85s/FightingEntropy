@@ -49,9 +49,9 @@ Now, because it is (apparently) **ILLEGAL** for **ANY** of those police officers
 
 You have to do what **I** do, and that is, to compile a LIST of EVIDENCE of (cybercrimes/espionage) taking place against (a citizen/many citizens).
 
-Since these are things that police officers (1-4) (apparently) **CANNOT LEGALLY COLLECT**...?<br>
+Since these are things that police officers (1-4) (apparently) **CANNOT LEGALLY** <i>DO</i>...?<br>
 You have to perform what's called "due-diligence" FOR them.<br>
-Since they (apparently) **CANNOT LEGALLY** <i>do</i> these things.
+Since they (apparently) **CANNOT LEGALLY** <i>DO</i> these things.
 
 That's pretty stupid, right...?<br>
 Well, you thought wrong.<br>
