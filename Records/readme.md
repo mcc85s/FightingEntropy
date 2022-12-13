@@ -1,9 +1,9 @@
 # Foreword about evidence
-In todays world, **EVIDENCE** is <u>pretty easy</u> to 
+In todays world, **EVIDENCE** is <u>pretty easy</u> to:
 <ul>
-  <li>collect</li>
-  <li>review</li>
-  <li>do stuff with</li>
+  <li>1) collect</li>
+  <li>2) review</li>
+  <li>3) do stuff with</li>
 </ul>
 
 Unless of course, you happen to be a:
@@ -22,20 +22,29 @@ Well, __(collecting/reviewing) evidence__ is (apparently) **ILLEGAL (and/or) DAN
 
 So...?<br>
 Don't do it.<br>
-Wouldn't want anybody to suddenly HAPHAZARDLY SNEEZE around you...<br>
-...whereby killing you, cause you tried to be a hero and (collect/review) evidence, right...?<br>
+Wouldn't want anybody to suddenly SNEEZE around you...<br>
+...cause you just flat-out, tried to be a hero...<br>
+...one that was right smack dab in the middle of the process...<br>
+...of **(collecting/reviewing)** evidence.
+
+Well, at least, you WERE doin' that...
+...until SUDDENLY, one of the shadiest lookin' trollmeisters that ever lived, noticed that you were doin' that...?<br>
+And that's when you heard that <i>final</i> "ah-choo"...<br>
+Ya got cleaned out while they were reachin' for a Kleenex.
+
 Nah.<br>
+Nobody wants that.<br>
 Not at all.
 
-**Don't try to be a hero or anything like that, and (collect/review) evidence...**<br>
+**So, don't try to be a hero or anything like that, and (collect/review) evidence...**<br>
 I'm being totally serious right now.<br>
 There is absolutely NO WAY AT ALL...<br>
 ...that I'm using reverse psychology right now.<br>
 Not at all.
 
 Oh wait...<br>
-Yeah, there IS a way that I'm using reverse psychology right now.<br>
-Cause I'm flat-out, admitting right here and now...<br>
+Yeah, there IS a way that I'm using reverse psychology right now, cause all that shit is pretty stupid.<br>
+And, cause I'm flat-out, admitting right here and now...<br>
 I'm making quite an extensive use of **REVERSE PSYCHOLOGY**.<br>
 Right now.
 
@@ -54,10 +63,11 @@ It's pretty stupid, isn't it...?
 
 # Dangers of collecting evidence
 Make no mistake...<br>
-So is (collecting/reviewing) evidence.<br>
-Some actually consider it suicide, to do such a (dangerous/trivial) task.<br>
+**(Collecting/reviewing)** evidence is just as stupid.<br>
+Perhaps even MORESO...<br>
+That's why some people actually consider it **suicide**, to do such a **(dangerous/trivial)** task.<br>
 
-(Apparently) it's against the law for ANYONE from the above agencies (1-4), to:
+But also, (apparently) it's against the law for ANYONE from the above agencies (1-4), to:
 
 | # | Action                                                                                                        |
 |:--|:--------------------------------------------------------------------------------------------------------------|
@@ -67,7 +77,7 @@ Some actually consider it suicide, to do such a (dangerous/trivial) task.<br>
 
 Now, because it is (apparently) **ILLEGAL** for **ANY** of those police officers (1-4) to perform ANY of these actions...?
 
-You have to do what **I** do, and that is, to compile a LIST of EVIDENCE of (cybercrimes/espionage) taking place against (a citizen/many citizens).
+You have to do what **I** do, and that is, to compile a LIST of EVIDENCE of **(cybercrimes/espionage)** taking place against (a citizen/many citizens).
 
 Since these are things that police officers (1-4) (apparently) **CANNOT LEGALLY** <i>DO</i>...?<br>
 You have to perform what's called "due-diligence" FOR them.<br>
@@ -78,31 +88,29 @@ Well, you thought wrong.<br>
 It's not stupid at all.
 
 # Why collecting evidence is DANGEROUS
-You have to be **faster** than Goku (fictional character from **DragonBall Z**), in order to be taken seriously by ANYBODY.
+You have to be **faster** than **Goku** (fictional character from **DragonBall Z**), in order to be taken seriously by ANYBODY.
 
-Because, if you're NOT faster than Goku...?<br>
+Because, if you're NOT faster than **Goku**...?<br>
 Then, the ACTUAL POLICE won't mind dragging someone who was not fast enough...<br>
 ...through the mud...<br>
 ...making them look like a bonafide criminal...<br>
 ...who was always hell bent on being the biggest douchebag on the face of the fuckin' planet...<br>
 ...CPS will get involved, and write fraudulent letters of indication...<br>
-...Saratoga Hospital will get involved, and have doctors commit medical fraud...<br>
-...everybody and their mother, will TRY to get in SOMEHOW, and do something (FRAUDULENT/ILLEGAL)...<br>
-...and nobody can actually stop these things from happening.<br>
+...**Saratoga Hospital** will get involved, and have doctors commit medical fraud...<br>
+...everybody and their mother, will TRY to get in SOMEHOW, and do something **(FRAUDULENT/ILLEGAL)**...<br>
+...and **NOBODY** can actually **STOP** these things from happening.<br>
 Not at all.
 
 <h3>Q : Why can nobody stop these things from happening...?</h3>
 A: Because, the people that are SUPPOSED to stop these things from happening...?
 
-SOMETIMES, they are CARELESS, LAZY MORONS who don't perform ANY of the actions (1-3) above.
+SOMETIMES, they are (CARELESS/LAZY) MORONS who don't perform ANY of the actions (1-3) above.
 
 <h3>Q : ...really...?</h3>
 A: Yeah, really.
 
-<p>
-  When these things happen, it allows SOME people to be VICTIMIZED REPEATEDLY...<br>
-  ...and then the VICTIMS are (arrested/thrown in jail) for ridiculous reasons.
-</p>
+When these things happen, it allows SOME people to be VICTIMIZED REPEATEDLY...<br>
+...and then the VICTIMS are (arrested/thrown in jail) for ridiculous reasons.
 
 And, if you don't think THAT ever happens...?
 
@@ -115,10 +123,12 @@ A: I was INTENTIONALLY being rude, because these people were being EXTREMELY CAR
 
 The court repeatedly sent me emails that suggested my virtual appearances were scheduled at 2PM, instead of 9AM.<br>
 THEN, the "public pretender" that the court appointed to "defend" me, had these "excuses" and never "returned my calls/emails".<br>
-THEN, the judge ordered me to go to a clinic I was ALREADY A PATIENT OF, to see (2) doctors that DID NOT EVEN WORK THERE.<br>
+THEN, the judge ordered me to go to a clinic I was ALREADY A PATIENT OF, to see (2) doctors that DID NOT EVEN WORK THERE.
+
 THEN, I gave the information as to the mother of my childrens whereabouts to the "public pretender", who casually dismissed that information, and then expedited the "PUBLICATION OF SERVICE" in a "town/state" that the "mother" of my "children" hadn't "lived" in over (5) fucking years.
 
-I wish I TOO, could be paid, to be a careless moron who (says/does) things that are really fucking senseless...?<br>
+To be perfectly honest...?<br>
+I wish that I TOO, could be paid, to be a CARELESS MORON who (says/does) things that are really fucking senseless...?<br>
 But, I have higher standards than that.
 
 Effectively what I am suggesting, is that sometimes the police (among others) are pretty fucking (CARELESS/LAZY).
@@ -145,7 +155,9 @@ You'll find out really quickly that the system ENCOURAGES this type of behavior,
 
 In some cases, maybe they're not THAT (CARELESS/LAZY)...?
 
-But, that is just an illusion, because they truly ARE that (CARELESS/LAZY).
+But, that may just be an ILLUSION, because...<br>
+Holy fuckin' shitballs rolled in hay, sometimes they truly ARE that (CARELESS/LAZY)~!<br>
+Don't take my word for it.
 
 Typically the people I consistently poke fun at...?<br>
 They don't really care what I think, and they'll just routinely avoid actions (1-3) above.<br>
@@ -195,9 +207,13 @@ Part of being a CIVILIAN that suspects that SPIES are COMMITTING ESPIONAGE to th
 ...is knowing that there are (0) people you can go to, and say "I think someone is spying on me..."
 
 That's the key takeaway, IF someone from a foreign intelligence service IS committing espionage to a civilian...?<br>
-...there's no place you can go to report that.
-
+...there's no place you can go to report that.<br>
 Not at all.
+
+There is a number of ILLUSIONS of places you COULD theoretically "go to report that" as well as oceans full of people that make CARELESS ASSUMPTIONS as to whether or not those ILLUSIONS are REAL or NOT...
+
+But, think about the sentence you JUST read.<br>
+There's no place you can go to report a god damn thing about foreign intelligence services spying on a civilian in another country.<br>
 At least, not without a bunch of careless morons concluding long before reviewing ANY EVIDENCE WHATSOEVER...<br>
 ...that perhaps the murder of Michael Edward Cook in 1995 might be the reason WHY a civilian is being spied on by a foreign intelligence agency.
 
@@ -206,13 +222,16 @@ A cold case spanning back to 1995 involving additional observations that officia
 Hm. Too many people make the assumption that the police would've already figured it out by now, if that were the case.<br>
 And that is why I laugh profusely whenever I detect people who make that assumption, because of how COMEDIC that assumption truly is.
 
-Some people are just really fucking stupid, and you aren't allowed to tell them how stupid they are, either.
+Some people are just really fuckin' stupid, and you're not ALLOWED to tell them how stupid they are, either.
 
 Because the **NATIONAL SECURITY AGENCY** should give a shit about that...<br>
 (<i>but they don't, I called them multiple times in 2019</i>)
 
 And the **FEDERAL BUREAU OF INVESTIGATION** should give a shit about that...<br>
 (<i>but they don't, I called them multiple times in 2019/2020</i>)
+
+Hell, even the **DEPARTMENT OF HOMELAND SECURITY** should give a shit about that...<br>
+(<i>but I'm not gonna bother contacting them</i>)
 
 Perhaps there are SOME people SOMEWHERE that care about the numerous CLUES I've detected...?<br>
 But, they really only could be from 1 of the (4) agencies I've listed up above.<br>
