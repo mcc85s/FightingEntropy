@@ -1,6 +1,4 @@
-<h1>Evidence List</h1>
-
-# Foreword
+# Foreword about Evidence
 In todays world, **EVIDENCE** is <u>pretty easy</u> to 
 <ul>
   <li>collect</li>
@@ -10,12 +8,12 @@ In todays world, **EVIDENCE** is <u>pretty easy</u> to
 
 Unless of course, you happen to be a:
 
-| # | Role                                                |
-|:--|:----------------------------------------------------|
-| 1 | **New York State (Trooper/Sergeant)**               |
-| 2 | **Saratoga County Sheriff (Deputy/Investigator)**   |
-| 3 | **Federal Investigator**                            |
-| 4 | **Harriman State Campus Crimelab Forensic Analyst** |
+| # | Role                                                | For example...         |
+|:--|:----------------------------------------------------|:-----------------------|
+| 1 | **New York State (Trooper/Sergeant)**               | Sgt. Bosco             |
+| 2 | **Saratoga County Sheriff (Deputy/Investigator)**   | Sheriff M. Zurlo       |
+| 3 | **Federal Investigator**                            | Investigator C. Murphy |
+| 4 | **Harriman State Campus Crimelab Forensic Analyst** | J. Izzo                |
 
 In **ANY** of those scenarios...?<br>
 __Collecting evidence__ is (apparently) **ILLEGAL** for **YOU** to **DO**...<br>
@@ -67,21 +65,65 @@ Then, the ACTUAL POLICE won't mind dragging someone who was not fast enough...<b
 ...who was always hell bent on being the biggest douchebag on the face of the fuckin' planet...<br>
 ...CPS will get involved, and write fraudulent letters of indication...<br>
 ...Saratoga Hospital will get involved, and have doctors commit medical fraud...<br>
-...and nobody can actually stop these things from happening.
+...everybody and their mother, will TRY to get in SOMEHOW, and do something FRAUDULENT/ILLEGAL...<br>
+...and nobody can actually stop these things from happening.<br>
+Not at all.
 
-Why can nobody stop these things from happening...?
+<h2>Q: Why can nobody stop these things from happening...?</h2>
+A: Because, the people that are SUPPOSED to stop these things from happening...?<br>
+SOMETIMES, they are CARELESS, LAZY MORONS who don't perform ANY of the actions (1-3) above.<br>
 
-Because, the people that are SUPPOSED to stop these things from happening, are CARELESS, LAZY MORONS who don't perform ANY of the actions (1-3) above.
-Whereby allowing people to be VICTIMIZED REPEATEDLY, and then the VICTIMS are arrested and thrown into jail for ridiculous reasons.
+<h2>Q: ...really...?</h2>
+A: Yeah, really.<br>
+When these things happen, it allows SOME people to be VICTIMIZED REPEATEDLY...<br>
+...and then the VICTIMS are (arrested/thrown in jail) for ridiculous reasons.<br>
+And if you don't think THAT ever happens...?
 
-Effectively what I am suggesting, is that sometimes the police (among others) are pretty fucking CARELESS and LAZY.
+| Date       | Name           |
+|:-----------|:---------------|
+| 04/06/2021 | [Paul Pelagalli overlooking ALL of this evidence below](https://drive.google.com/file/d/1J0CzI1nW5xwmWbwUVwOEMbhLUiZYEr4p) |
 
-MAYBE THEY'RE NOT THAT CARELESS OR LAZY, but- they just routinely avoid actions (1-3) above.<br>
+<h2>Q: Don't you think you were being really RUDE to a JUDGE and a LAWYER...?</h2>
+A: I was INTENTIONALLY being rude, because these people were being EXTREMELY CARELESS with this thing they do, called "their fucking job".
+
+Effectively what I am suggesting, is that sometimes the police (among others) are pretty fucking CARELESS and LAZY.<br>
+When people are CARELESS or LAZY, they don't NEED to ever be ACCURATE with ANYTHING that they DO.<br>
+In fact, they can consistently be wrong on EVERY CASE THEY HANDLE...?<br>
+And they'll be REWARDED for that behavior.
+
+And if you don't think THAT ever happens...?
+
+| Date       | Name
+|:-----------|:-----------------------------------------------------------|
+| Whenever   | [Audit the Audit](https://www.youtube.com/@AuditTheAudit)  |
+| 03/07/2022 | [Wrongful Convictions](https://youtu.be/kpYYdCzTpps)       |
+| 04/18/2022 | [Police Interrogations](https://youtu.be/obCNQ0xksZ4)      |
+
+Take your pick on how many times the system allows the "experts" to be rather CARELESS/LAZY.<br>
+You'll find out really quickly that the system ENCOURAGES this type of behavior.
+
+In some cases, MAYBE THEY'RE NOT THAT CARELESS OR LAZY...?<br>
+But- typically the people I consistently poke fun at...?<br>
+They'll just routinely avoid actions (1-3) above.<br>
 Or, doing their job THOROUGHLY or CAREFULLY.
 
-Either way, what the hell can anybody actually do...?<br>
-Nothing.<br>
-Nobody can do anything at all.
+In the end, who gives a shit...?<br>
+Nobody does.
+
+That's why it's totally CALLED FOR, to SCRUTINIZE these sorts of people that rest on their laurels, and don't really care about things like:
+<ul>
+  <li>accuracy</li>
+  <li>integrity</li>
+  <li>perseverence</li>
+  <li>honesty</li>
+  <li>wisdom</li>
+  <li>fairness</li>
+  <li>equality</li>
+  <li>liberty</li>
+  <li>freedom</li>
+  <li>virtue</li>
+  <li>the constitution</li>
+</ul>
 
 # Segue
 Allow for me to be perfectly clear here.<br>
