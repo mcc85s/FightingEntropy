@@ -1,4 +1,6 @@
-07/21/89 | 0000 | 0     | [785-3221 Jesse Pickett](https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD)
+| Index | Type  | Date     | Time | Focus | Name/Link
+|:------|:------|:---------|:-----|:------|:-----------------------------------------------------------------------|
+| 0     | Scan  | 07/21/89 | 0000 | 0     | [785-3221 Jesse Pickett](https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD)
 | 1     | Video | 08/31/17 | 1800 | 0     | [Spectrum Cable Modem Reset](https://youtu.be/LfZW-s0BMow)
 | 2     | Photo | 08/31/17 | 1900 | 0     | [VACANT 203D 01](https://drive.google.com/file/d/0B8sPah8VzEDwZWVNWGN3QnRncVE)
 | 3     | Photo | 08/31/17 | 1900 | 0     | [VACANT 203D 02](https://drive.google.com/file/d/0B8sPah8VzEDwdkNMYVljeXBIY2M)
