@@ -82,6 +82,28 @@ Either way, what the hell can anybody actually do...?<br>
 Nothing.<br>
 Nobody can do anything at all.
 
+Allow for me to be perfectly clear here.<br>
+Some of these following items may not appear to be very telling of really anything, UNLESS...<br>
+...some people consider the notion that at SOME POINT...?<br>
+...I started recording some of these (videos/audio logs) attempting to manipulate the surveilling (party/parties).
+
+Part of being a CIVILIAN that suspects that SPIES are COMMITTING ESPIONAGE to them...<br>
+...is knowing that there are (0) people you can go to, and say "I think someone is spying on me..."<br>
+Because the NATIONAL SECURITY AGENCY should give a shit about that (but they don't... I called them multiple times in 2019)<br>
+And the FEDERAL BUREAU OF INVESTIGATION should give a shit about that (but they don't... I called them multiple times in 2019/2020)<br>
+And then, really...?<br>
+What other strategies can a CIVILIAN perform, who believes they're being SPIED ON by FOREIGN INTELLIGENCE SERVICES like for instance SVR...?<br>
+Oh, maybe manipulating some morons while recording stuff in (video/audio) might be a solid strategy.
+
+THAT MEANS, in SOME cases, what I am (SAYING/DOING) in SOME of these videos/audio recordings, is IRRELEVANT and UNIMPORTANT.<br>
+What IS important, is that some of these (videos/audio recordings) exhibit some truly suspicious activities...<br>
+...and in order to RECORD suspicious activities that SPIES would be doing stuff IN...?<br>
+...then you have to consider the notion that I may have been ACTING.
+
+Once you start ACTING and stuff...?<br>
+Some fucking morons will mislabel you as DELUSIONAL, because they'll be too lazy to look at the CONTEXT of the OTHER EVIDENCE.<br>
+That's "How America Works 101"
+
 | Index | Type  | Date     | Time | Focus | Name/Link
 |:------|:------|:---------|:-----|:------|:-----------------------------------------------------------------------|
 | 0     | Scan  | 07/21/89 | 0000 | 0     | [785-3221 Jesse Pickett](https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD)
