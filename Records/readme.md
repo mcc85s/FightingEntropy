@@ -53,8 +53,8 @@ Since these are things that police officers (1-4) (apparently) **CANNOT LEGALLY 
 You have to perform what's called "due-diligence" FOR them.<br>
 Since they (apparently) **CANNOT LEGALLY** <i>do</i> these things.
 
-That's pretty stupid, right...?
-Well, you thought wrong.
+That's pretty stupid, right...?<br>
+Well, you thought wrong.<br>
 It's not stupid at all.
 
 You have to be **faster** than Goku (fictional character from **DragonBall Z**), in order to be taken seriously by ANYBODY.
