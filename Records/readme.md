@@ -1,12 +1,41 @@
 <h1>Evidence List</h1>
 
-<p>In todays world, evidence is pretty easy to collect, review, and do stuff with.</p>
+In todays world, evidence is pretty easy to collect, review, and do stuff with.
+Unless of course, you happen to be a:
 
-<p>Unless you're a 1) New York State Trooper, 2) Saratoga County Sheriff Deputy, or 3) a Federal Investigator</p>
+| # | Role                                        |
+|:--|:--------------------------------------------|
+| 1 | New York State Trooper/Sergeant             |
+| 2 | Saratoga County Sheriff Deputy/Investigator |
+| 3 | Federal Investigator                        |
 
-<p>In any of those scenarios...? You have to do what **I** do, and that is, to compile a list of things they fucking missed, before dragging someone through the mud and making them look like a bonafide criminal that was always hell bent on being the biggest douchebag on the face of the fucking planet.</p>
+In any of those scenarios...?<br>
+Collecting evidence is (apparently) ILLEGAL for YOU to DO...<br>
+So...?<br>
+Don't do it.<br>
+It's (apparently) against the law for ANYONE from THOSE AGENCIES, to:
 
-<p>Effectively what I am suggesting, is that sometimes the police are pretty fucking careless and lazy.</p>
+| # | Action                                                                                |
+|:--|:--------------------------------------------------------------------------------------|
+| 1 | Collect evidence of (cybercrimes/espionage) taking place against a citizen            |
+| 2 | Investigate parties suspected of committing (cybercrimes/espionage) against a citizen |
+| 3 | Review the work portfolio of a citizen who DOES do these (2) things above             |
+
+Now, because it is (apparently) ILLEGAL for any of those police officers to perform ANY of these actions...?
+
+You have to do what **I** do, and that is, to compile a LIST of EVIDENCE of (cybercrimes/espionage) taking place against a citizen.
+
+Since these are all things they (apparently) CANNOT legally collect...
+...you have to perform what's called "due-diligence" FOR them, since they (apparently) CANNOT legally do these things.
+
+But- you have to be faster than Goku in order to be taken seriously by ANYBODY... because...?
+If you're NOT faster than Goku, then the ACTUAL POLICE won't mind dragging someone through the mud, and making them look like a bonafide criminal that was always hell bent on being the biggest douchebag on the face of the fucking planet.
+
+Effectively what I am suggesting, is that sometimes the police are pretty fucking careless and lazy.
+MAYBE THEY'RE NOT THAT CARELESS OR LAZY, but they just routinely avoid collecting evidence or doing their job thoroughly or carefully.
+Either way, what the hell can anybody actually do...?
+Nothing.
+Nobody can do anything at all.
 
 | Index | Type  | Date     | Time | Focus | Name/Link
 |:------|:------|:---------|:-----|:------|:-----------------------------------------------------------------------|
