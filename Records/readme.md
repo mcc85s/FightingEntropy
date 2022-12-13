@@ -210,7 +210,8 @@ That's the key takeaway, IF someone from a foreign intelligence service IS commi
 ...there's no place you can go to report that.<br>
 Not at all.
 
-There is a number of ILLUSIONS of places you COULD theoretically "go to report that" as well as oceans full of people that make CARELESS ASSUMPTIONS as to whether or not those ILLUSIONS are REAL or NOT...
+There are a number of ILLUSIONS of places you could THEORETICALLY "go", to report that...<br>
+...as well as OCEANS full of people that make CARELESS ASSUMPTIONS as to whether or not those ILLUSIONS are REAL or NOT...
 
 But, think about the sentence you JUST read.<br>
 There's no place you can go to report a god damn thing about foreign intelligence services spying on a civilian in another country.<br>
