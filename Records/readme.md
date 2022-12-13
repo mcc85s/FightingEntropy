@@ -1,3 +1,13 @@
+<h1>Evidence List</h1>
+
+<p>In todays world, evidence is pretty easy to collect, review, and do stuff with.</p>
+
+<p>Unless you're a 1) New York State Trooper, 2) Saratoga County Sheriff Deputy, or 3) a Federal Investigator</p>
+
+<p>In any of those scenarios...? You have to do what **I** do, and that is, to compile a list of things they fucking missed, before dragging someone through the mud and making them look like a bonafide criminal that was always hell bent on being the biggest douchebag on the face of the fucking planet.</p>
+
+<p>Effectively what I am suggesting, is that sometimes the police are pretty fucking careless and lazy.</p>
+
 | Index | Type  | Date     | Time | Focus | Name/Link
 |:------|:------|:---------|:-----|:------|:-----------------------------------------------------------------------|
 | 0     | Scan  | 07/21/89 | 0000 | 0     | [785-3221 Jesse Pickett](https://drive.google.com/file/d/1y05kPm-CjVIALi6r8CNPMlIRnXvMtPpD)
