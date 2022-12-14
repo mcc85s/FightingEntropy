@@ -2101,55 +2101,55 @@ Function Get-ViperBomb
     
     Class Feedback : ControlTemplate
     {
-        Feedback([Object]$Console) : base($Console)
-        {
-            $This.Name        = "Feedback"
-            $This.DisplayName = "Feedback"
-            $This.Value       = 1
-            $This.Description = "System Initiated User Feedback"
-            $This.Options     = "Skip", "Enable*", "Disable"
+        Feedback([Object]$Console) : base($Console)
+        {
+            $This.Name        = "Feedback"
+            $This.DisplayName = "Feedback"
+            $This.Value       = 1
+            $This.Description = "System Initiated User Feedback"
+            $This.Options     = "Skip", "Enable*", "Disable"
     
-            ('HKCU:\SOFTWARE\Microsoft\Siuf\Rules','NumberOfSIUFInPeriod'),
-            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection','DoNotShowFeedbackNotifications') | % {
-        
-                $This.Registry($_[0],$_[1])
-            }
-        }
-        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-        {
-            Switch ($Mode)
-            {
-                0
-                {
-                    If ($ShowSkipped)
-                    {
-                        Write-Host "Skipping [!] Feedback"
-                    }
-                }
-                1
-                {
-                    Write-Host "Enabling [~] Feedback"
-                    $This.Output[0].Remove()
-                    $This.Output[1].Remove()
-                    ForEach ($Item in "Microsoft\Windows\Feedback\Siuf\DmClient",
-                                      "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload")
-                    {
-                        Enable-ScheduledTask -TaskName $Item | Out-Null 
-                    }
-                }
-                2
-                {
-                    Write-Host "Disabling [~] Feedback"
-                    $This.Output[0].Set(0)
-                    $This.Output[1].Set(1)
-                    ForEach ($Item in "Microsoft\Windows\Feedback\Siuf\DmClient",
-                                      "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload")
-                    {
-                        Disable-ScheduledTask -TaskName $Item | Out-Null 
-                    }
-                }
-            }
-        }
+            ('HKCU:\SOFTWARE\Microsoft\Siuf\Rules','NumberOfSIUFInPeriod'),
+            ('HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection','DoNotShowFeedbackNotifications') | % {
+        
+                $This.Registry($_[0],$_[1])
+            }
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Feedback"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Feedback"
+                    $This.Output[0].Remove()
+                    $This.Output[1].Remove()
+                    ForEach ($Item in "Microsoft\Windows\Feedback\Siuf\DmClient",
+                                      "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload")
+                    {
+                        Enable-ScheduledTask -TaskName $Item | Out-Null 
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Feedback"
+                    $This.Output[0].Set(0)
+                    $This.Output[1].Set(1)
+                    ForEach ($Item in "Microsoft\Windows\Feedback\Siuf\DmClient",
+                                      "Microsoft\Windows\Feedback\Siuf\DmClientOnScenarioDownload")
+                    {
+                        Disable-ScheduledTask -TaskName $Item | Out-Null 
+                    }
+                }
+            }
+        }
     }
     
     Class AdvertisingID : ControlTemplate
@@ -4234,44 +4234,44 @@ Function Get-ViperBomb
 
     Class TaskbarButtonDisplay : ControlTemplate
     {
-        TaskbarButtonDisplay([Object]$Console) : base($Console)
-        {
-            $This.Name        = "TaskbarButtonDisplay"
-            $This.DisplayName = "Multi-display taskbar"
-            $This.Value       = 2
-            $This.Description = "Defines where the taskbar button should be if there are multiple screens"
-            $This.Options     = "Skip", "All", "Current Window*","Main + Current Window"
+        TaskbarButtonDisplay([Object]$Console) : base($Console)
+        {
+            $This.Name        = "TaskbarButtonDisplay"
+            $This.DisplayName = "Multi-display taskbar"
+            $This.Value       = 2
+            $This.Description = "Defines where the taskbar button should be if there are multiple screens"
+            $This.Options     = "Skip", "All", "Current Window*","Main + Current Window"
     
-            $This.Registry('HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced','MMTaskbarMode')
-        }
-        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-        {
-            Switch ($Mode)
-            {
-                0
-                {
-                    If ($ShowSkipped)
-                    {
-                        Write-Host "Skipping [!] Taskbar buttons on multiple displays"
-                    }
-                }
-                1
-                {
-                    Write-Host "Setting [~] Taskbar buttons, multi-display (All taskbars)"
-                    $This.Output[0].Set(0)
-                }
-                2
-                {
-                    Write-Host "Setting [~] Taskbar buttons, multi-display (Taskbar where window is open)"
-                    $This.Output[0].Set(2)
-                }
-                3
-                {
-                    Write-Host "Setting [~] Taskbar buttons, multi-display (Main taskbar + where window is open)"
-                    $This.Output[0].Set(1)
-                }
-            }
-        }
+            $This.Registry('HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced','MMTaskbarMode')
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Taskbar buttons on multiple displays"
+                    }
+                }
+                1
+                {
+                    Write-Host "Setting [~] Taskbar buttons, multi-display (All taskbars)"
+                    $This.Output[0].Set(0)
+                }
+                2
+                {
+                    Write-Host "Setting [~] Taskbar buttons, multi-display (Taskbar where window is open)"
+                    $This.Output[0].Set(2)
+                }
+                3
+                {
+                    Write-Host "Setting [~] Taskbar buttons, multi-display (Main taskbar + where window is open)"
+                    $This.Output[0].Set(1)
+                }
+            }
+        }
     }
 
     Enum TaskbarType
@@ -6399,70 +6399,70 @@ Function Get-ViperBomb
 
     Class LockScreen : ControlTemplate
     {
-        LockScreen([Object]$Console) : base($Console)
-        {
-            $This.Name        = "LockScreen"
-            $This.DisplayName = "Lock Screen"
-            $This.Value       = 1
-            $This.Description = "Toggles the lock screen"
-            $This.Options     = "Skip", "Enable*", "Disable"
-            
-            $This.Registry('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization','NoLockScreen')
-        }
-        [String] Argument()
-        {
-            $Item = "HKLM","SOFTWARE","Microsoft","Windows","CurrentVersion","Authentication",
-                    "LogonUI","SessionData" -join "\"
-            Return "add $Item /t REG_DWORD /v AllowLockScreen /d 0 /f"
-        }
-        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
-        {
-            Switch ($Mode)
-            {
-                0
-                {
-                    If ($ShowSkipped)
-                    {
-                        Write-Host "Skipping [!] Lock Screen"
-                    }
-                }
-                1
-                {
-                    Write-Host "Enabling [~] Lock Screen"
-                    If ($This.GetWinVersion() -ge 1607)
-                    {
-                        Unregister-ScheduledTask -TaskName "Disable LockScreen" -Confirm:$False -Verbose
-                    }
-                    Else
-                    {
-                        $This.Output[0].Remove()
-                    }
-                }
-                2
-                {
-                    Write-Host "Disabling [~] Lock Screen"
-                    If ($This.GetWinVersion() -ge 1607)
-                    {
-                        $Service             = New-Object -ComObject Schedule.Service
-                        $Service.Connect()
-                        $Task                = $Service.NewTask(0)
-                        $Task.Settings.DisallowStartIfOnBatteries = $False
-                        $Trigger             = $Task.Triggers.Create(9)
-                        $Trigger             = $Task.Triggers.Create(11)
-                        $Trigger.StateChange = 8
-                        $Action              = $Task.Actions.Create(0)
-                        $Action.Path         = 'Reg.exe'
-                        $Action.Arguments    = $This.Argument()
-                        $Service.GetFolder('\').RegisterTaskDefinition('Disable LockScreen',$Task,6,
+        LockScreen([Object]$Console) : base($Console)
+        {
+            $This.Name        = "LockScreen"
+            $This.DisplayName = "Lock Screen"
+            $This.Value       = 1
+            $This.Description = "Toggles the lock screen"
+            $This.Options     = "Skip", "Enable*", "Disable"
+            
+            $This.Registry('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization','NoLockScreen')
+        }
+        [String] Argument()
+        {
+            $Item = "HKLM","SOFTWARE","Microsoft","Windows","CurrentVersion","Authentication",
+                    "LogonUI","SessionData" -join "\"
+            Return "add $Item /t REG_DWORD /v AllowLockScreen /d 0 /f"
+        }
+        SetMode([UInt32]$Mode,[UInt32]$ShowSkipped)
+        {
+            Switch ($Mode)
+            {
+                0
+                {
+                    If ($ShowSkipped)
+                    {
+                        Write-Host "Skipping [!] Lock Screen"
+                    }
+                }
+                1
+                {
+                    Write-Host "Enabling [~] Lock Screen"
+                    If ($This.GetWinVersion() -ge 1607)
+                    {
+                        Unregister-ScheduledTask -TaskName "Disable LockScreen" -Confirm:$False -Verbose
+                    }
+                    Else
+                    {
+                        $This.Output[0].Remove()
+                    }
+                }
+                2
+                {
+                    Write-Host "Disabling [~] Lock Screen"
+                    If ($This.GetWinVersion() -ge 1607)
+                    {
+                        $Service             = New-Object -ComObject Schedule.Service
+                        $Service.Connect()
+                        $Task                = $Service.NewTask(0)
+                        $Task.Settings.DisallowStartIfOnBatteries = $False
+                        $Trigger             = $Task.Triggers.Create(9)
+                        $Trigger             = $Task.Triggers.Create(11)
+                        $Trigger.StateChange = 8
+                        $Action              = $Task.Actions.Create(0)
+                        $Action.Path         = 'Reg.exe'
+                        $Action.Arguments    = $This.Argument()
+                        $Service.GetFolder('\').RegisterTaskDefinition('Disable LockScreen',$Task,6,
                                                                        'NT AUTHORITY\SYSTEM',$Null,4)
-                    }
-                    Else
-                    {
-                        $This.Output[0].Set(1)
-                    }
-                }
-            }
-        }
+                    }
+                    Else
+                    {
+                        $This.Output[0].Set(1)
+                    }
+                }
+            }
+        }
     }
 
     Class LockScreenPassword : ControlTemplate
