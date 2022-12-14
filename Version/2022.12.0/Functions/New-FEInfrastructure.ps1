@@ -9500,6 +9500,7 @@ Function New-FEInfrastructure
         }
     }
 
+    <# 
     Class Main
     {
         [Object]            $Module
@@ -10206,7 +10207,7 @@ Function New-FEInfrastructure
     $Main.Reset($Xaml.IO.IIS_AppPools.Items,$Main.Config.IIS.AppPools)
     $Main.Reset($Xaml.IO.IIS_Sites.Items,$Main.Config.IIS.Sites)
    
-    # |||| Cont'd ||||
+    |||| Cont'd ||||
 
     # // |===========================|
     # // | <![Domain/SiteList Tab]!> |
@@ -13045,5 +13046,5 @@ Function New-FEInfrastructure
                 Main = $Main 
             }
         }
-    }
+    }#>
 }
