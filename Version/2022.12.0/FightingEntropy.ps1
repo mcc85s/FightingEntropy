@@ -714,10 +714,10 @@ Function FightingEntropy.Module
             ("Get-FEADLogin.ps1"               , "492CBAB21ACCB448864B382B140ED72514DEEB015C7BBD282C649B0CEE262DE7") ,
             ("Get-FEDCPromo.ps1"               , "0CE646644BD4DF76B40A98D1D01E297012CAE7AAFA5FEF92C36AD9AA4CD43D2A") ,
             ("Get-FEImageManifest.ps1"         , "03AD403FA17EE0702A8D8911F8B4BD7AABE5C6971363AF2FFADE6FF83918D57F") ,
-            ("Get-FEModule.ps1"                , "") ,
+            ("Get-FEModule.ps1"                , "E85AD4802151E4EE7C9E21FE9AE9CE1035D65A7706DFC9B4A280D472B440EE5E") ,
             ("Get-FENetwork.ps1"               , "552CC93F8F21BCC2CC3CB1F0EBD447690E7EC41B1D4A8372C0839997CE48906E") ,
             ("Get-FERole.ps1"                  , "0016BDDB9B0BA9BB59652440FE0B758D88BF42A887F93B275F57016CCE4999C8") ,
-            ("Get-FESystemDetails.ps1"         , "D894DB9099E67714378D1129BCB78C1AFFABC56B56A2569D5EA073C6322E72D7") ,
+            ("Get-FESystemDetails.ps1"         , "CD12BA92A37EA988299588F9EAED8CAB363D2339DA16C6527F39E5E9D3B9C280") ,
             ("Get-MDTModule.ps1"               , "FC61D8D17B22A6AC2AE343A3EA7A07DBF868D918C85D302DF771862306CB824A") ,
             ("Get-PowerShell.ps1"              , "7F5E35535A4A50D02092D8A87266F136EEBD979F9505D8D481A4F5E38E74BF02") ,
             ("Get-PropertyItem.ps1"            , "48E4729380C40B76B13DE0FD6CAC735B05B76D78CE86636F9258D1F3D60AD6B0") ,
@@ -1631,29 +1631,19 @@ Function FightingEntropy.Module
 
             If ($This.Root.Resource.Exists)
             {
-                # // ______________________________
-                # // | Cobble together assemblies |
-                # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-
-                $Bin = "PresentationFramework",
-                       "System.Runtime.WindowsRuntime",
-                       "System.IO.Compression", 
-                       "System.IO.Compression.Filesystem", 
-                       "System.Windows.Forms"
-
                 # // _____________________________________________
                 # // | Write the module file to disk using PSM() |
                 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-                [System.IO.File]::WriteAllLines($This.Root.File,
-                                                $This.PSM($Bin),
+                [System.IO.File]::WriteAllLines($This.Root.File.Fullname,
+                                                $This.PSM(),
                                                 [System.Text.UTF8Encoding]$False)
 
                 # // ____________________________________
                 # // | Splat the Module Manifest params |
                 # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 
-                $Splat = $This.PSDParam($Bin)
+                $Splat = $This.PSDParam()
 
                 # // ________________________________________________
                 # // | Write the PowerShell module manifest to disk |
@@ -1668,7 +1658,7 @@ Function FightingEntropy.Module
             # // | Todo | PS Core | PS Server | <- Just a manner of file selection |
             # // ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
         }
-        [String] PSM([String[]]$Bin)
+        [String] PSM()
         {
             $F  = @( )
 
@@ -1680,7 +1670,7 @@ Function FightingEntropy.Module
             $F += "# {0}" -f $This.Resource
             $F += "# {0}" -f $This.Version.ToString()
             $F += "# <Types>"
-            $Bin | % { $F += "Add-Type -AssemblyName $_" }
+            $This.Binaries() | % { $F += "Add-Type -AssemblyName $_" }
 
             # // _____________
             # // | Functions |
@@ -1703,7 +1693,17 @@ Function FightingEntropy.Module
 
             Return $F -join "`n"
         }
-        [Hashtable] PSDParam([String[]]$Bin)
+        [String[]] Binaries()
+        {
+            $Out = "PresentationFramework", 
+            "System.Runtime.WindowsRuntime",
+            "System.IO.Compression", 
+            "System.IO.Compression.Filesystem", 
+            "System.Windows.Forms"
+
+            Return $Out
+        }
+        [Hashtable] PSDParam()
         {
             Return @{  
 
@@ -1715,7 +1715,7 @@ Function FightingEntropy.Module
                 Author               = $This.Author
                 Description          = $This.Description
                 RootModule           = $This.Root.File
-                RequiredAssemblies   = $Bin
+                RequiredAssemblies   = $This.Binaries()
             }
         }
         [Object] Validation()
@@ -1791,7 +1791,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 12-14-2022 14:26:18 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 12-12-2022 15:54:02 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
