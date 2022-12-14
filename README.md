@@ -37,14 +37,10 @@ If you don't believe me...? That's fine. That's why [this link to a particular w
 
 **[FightingEntropy(π)]** is meant to extend many of the capabilities that come with Windows.
 
-# Current
+# Current (Alpha)
 | Version       | Date                  | Guid                                   |
 |:--------------|:----------------------|:---------------------------------------|
-| **2022.10.0** | `10/10/2022 17:29:00` | `95023676-e2a6-405c-a9d3-dfa548c4d106` |
-| **2022.10.1** | `10/27/2022 20:00:08` | `b139e090-db90-4536-95e8-91ea49ab74a9` |
-| **2022.11.0** | `11/07/2022 16:01:21` | `0b36cfa4-dfad-4863-9171-f8afe65769cf` |
-
-Will be phasing out 2022.10.0 + 2022.10.1 + 2022.11.0 upon the next release
+| **2022.12.0** | `12/14/2022 14:26:18` | `5e6c9634-1c88-49a2-8794-2970095d8793` |
 
 # Instructions
 | Operation  | PowerShell Instructions
