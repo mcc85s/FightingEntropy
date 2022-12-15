@@ -632,6 +632,7 @@ Function Get-FESystemDetails
         Hidden [UInt32]       $Rank
         [UInt32]             $Index
         [String]              $Disk
+        Hidden [Object] $DiskObject
         [String]             $Model
         [String]            $Serial
         [String]    $PartitionStyle
@@ -658,7 +659,7 @@ Function Get-FESystemDetails
             }
     
             $This.Model             = $MSFTDISK.Model
-            $This.Serial            = $MSFTDISK.SerialNumber.TrimStart(" ")
+            $This.Serial            = $MSFTDISK | ? SerialNumber | % { $_.SerialNumber.TrimStart(" ") }
             $This.PartitionStyle    = $MSFTDISK.PartitionStyle
             $This.ProvisioningType  = $MSFTDISK.ProvisioningType
             $This.OperationalStatus = $MSFTDISK.OperationalStatus
