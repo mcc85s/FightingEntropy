@@ -549,3 +549,39 @@ That's "How America Works 101"
 | 243   | Photo | 05/26/20 | 0011 | 1     | [[IMG_0650](https://drive.google.com/file/d/1vu2bhSSCv2HO-HCeCCh5-iqcYpiiqC2l)]
 | 244   | Photo | 05/26/20 | 0011 | 1     | [[IMG_0651](https://drive.google.com/file/d/1imYzaTA--eVDMeSM-dHfYBfC2tiAHsLV)]
 | 245   | Photo | 05/26/20 | 0348 | 0     | [[IMG_0652](https://drive.google.com/file/d/1w0Q6lhLYH9ACwQfUosucUE9x5-uAsNzI)]
+
+This list of evidence is far from complete, however, it should be worthy to note that I want it to be attached to the record:
+<h1>SCSO-2020-028501</h1>
+That is a ticket involving:
+1) Scott Schelling
+2) Jeffrey Kaplan
+3) Joshua Welch
+
+Here is my statement for that particular ticket that I told Scott Schelling, but- this lazy cocksucker failed to write any notes down...
+[Top Deck Awareness - Not News](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1008_TDA_Not_News.pdf)
+Chapter 4 - The Week
+
+To be perfectly clear...?<br>
+That BOOK, covers a wide range of topics related to:
+``            ____    ____    ________________________________________________________________    ____    ____
+        ___//¯¯\\__//¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\__//¯¯\\___
+    ___/    \__/    \__//¯¯¯          Secure Digits Plus LLC (π) | Fighting Entropy         ¯¯¯\\__/    \__/    \___
+   //¯¯\    /¯¯\    /¯¯\\___                 Top Deck Awareness - Not News                  ___//¯¯\    /¯¯\    /¯¯\\
+   \\__//¯¯\\__//¯¯\\__//¯¯\\______________________________________________________________//¯¯\\__//¯¯\\__//¯¯\\__//
+   //¯¯\\__//¯¯\\__//¯¯¯    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\__//¯¯\\__//¯¯\\
+   \\__/    \__//   ________________________________________________________________________________   \\__/    \__//
+   //¯¯\    /¯¯\\   | Used to be news...? Now its Not News. Not News. Part of the Not News Network |   //¯¯\    /¯¯\\
+   \\__//¯¯\\__//   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   \\__//¯¯\\__//
+   //¯¯\\__//¯¯\\       ________________________________________________________________________       //¯¯\\__//¯¯\\
+   \\__/    \__//   ___//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___   \\__/    \__//
+   //¯¯\    /¯¯\\__//¯¯¯    Provisional Author: Michael C. Cook Sr. | "The Buck Stops Here"     ¯¯¯\\__//¯¯\    /¯¯\\
+   \\__/¯¯¯¯    ¯¯¯¯                                                                                ¯¯¯¯    ¯¯¯¯\__//
+   //   Thesis   : Fox News is not news, it is propaganda. They should change the name to Not News                 \\
+   ||   Subject  : (STEM/Science, Technology, Engineering, Mathematics)                                            ||
+   ||               History, Politics, Psychology, Philosophy, Morality, Comedy, Commerce, Industry                ||
+   ||   Conflict : Treason, Corruption, Censorship, Injustice, Identity Theft, Cybercrime, Antitrust, Fraud        ||
+   ||   Affair   : Political/Foreign+Domestic+Local, Social/Personal                                               ||
+   ||   Agency   : NSA/Nat. Sec. Agency, CIA/Central Intel Agency, NIST/Nat. Institute of Standards and Tech.,     ||
+   ||              FBI/Fed. Bureau of Invest., DHS/Dept. of Homeland Sec., CISA/Cybersec. Infra. Sec. Agency,      ||
+   ||              NYSP/New York State Police, SCSO/Saratoga County Sheriffs Office                                ||
+   \\______________________________________________________________________________________________________________//``
