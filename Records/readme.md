@@ -563,25 +563,10 @@ Chapter 4 - The Week
 
 To be perfectly clear...?<br>
 That BOOK, covers a wide range of topics related to:
-``            ____    ____    ________________________________________________________________    ____    ____
-        ___//¯¯\\__//¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\__//¯¯\\__//¯¯\\___
-    ___/    \__/    \__//¯¯¯          Secure Digits Plus LLC (π) | Fighting Entropy         ¯¯¯\\__/    \__/    \___
-   //¯¯\    /¯¯\    /¯¯\\___                 Top Deck Awareness - Not News                  ___//¯¯\    /¯¯\    /¯¯\\
-   \\__//¯¯\\__//¯¯\\__//¯¯\\______________________________________________________________//¯¯\\__//¯¯\\__//¯¯\\__//
-   //¯¯\\__//¯¯\\__//¯¯¯    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯\\__//¯¯\\__//¯¯\\
-   \\__/    \__//   ________________________________________________________________________________   \\__/    \__//
-   //¯¯\    /¯¯\\   | Used to be news...? Now its Not News. Not News. Part of the Not News Network |   //¯¯\    /¯¯\\
-   \\__//¯¯\\__//   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯   \\__//¯¯\\__//
-   //¯¯\\__//¯¯\\       ________________________________________________________________________       //¯¯\\__//¯¯\\
-   \\__/    \__//   ___//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___   \\__/    \__//
-   //¯¯\    /¯¯\\__//¯¯¯    Provisional Author: Michael C. Cook Sr. | "The Buck Stops Here"     ¯¯¯\\__//¯¯\    /¯¯\\
-   \\__/¯¯¯¯    ¯¯¯¯                                                                                ¯¯¯¯    ¯¯¯¯\__//
-   //   Thesis   : Fox News is not news, it is propaganda. They should change the name to Not News                 \\
-   ||   Subject  : (STEM/Science, Technology, Engineering, Mathematics)                                            ||
-   ||               History, Politics, Psychology, Philosophy, Morality, Comedy, Commerce, Industry                ||
-   ||   Conflict : Treason, Corruption, Censorship, Injustice, Identity Theft, Cybercrime, Antitrust, Fraud        ||
-   ||   Affair   : Political/Foreign+Domestic+Local, Social/Personal                                               ||
-   ||   Agency   : NSA/Nat. Sec. Agency, CIA/Central Intel Agency, NIST/Nat. Institute of Standards and Tech.,     ||
-   ||              FBI/Fed. Bureau of Invest., DHS/Dept. of Homeland Sec., CISA/Cybersec. Infra. Sec. Agency,      ||
-   ||              NYSP/New York State Police, SCSO/Saratoga County Sheriffs Office                                ||
-   \\______________________________________________________________________________________________________________//``
+| Topic    | Description          |
+|:---------|:---------------------|
+| Thesis   | Fox News is not news, it is propaganda. They should change the name to Not News
+| Subject  | STEM/Science, Technology, Engineering, Mathematics, History, Politics, Psychology, Philosophy, Morality, Comedy, Commerce, Industry
+| Conflict | Treason, Corruption, Censorship, Injustice, Identity Theft, Cybercrime, Antitrust, Fraud
+| Affair   | Political/Foreign, Domestic, Local, Social, Personal
+| Agency   | National Security Agency, Central Intelligence Agency, National Institute of Standards and Technology, Federal Bureau of Investigation, Department of Homeland Security, Cybersecurity Infrastructure Security Agency, New York State Police, Saratoga County Sheriffs Office 
