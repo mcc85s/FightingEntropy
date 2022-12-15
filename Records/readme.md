@@ -557,7 +557,7 @@ That is a ticket involving:
 2) Jeffrey Kaplan
 3) Joshua Welch
 
-Here is my statement for that particular ticket that I told Scott Schelling, but- this lazy cocksucker failed to write any notes down...
+Here is my statement for that particular ticket that I told Scott Schelling, but- this lazy cocksucker failed to write any notes down...<br>
 [[Top Deck Awareness - Not News](https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2022_1008_TDA_Not_News.pdf)]
 
 Particularly from chapter 4 - The Week.
