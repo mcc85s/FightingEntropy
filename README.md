@@ -72,3 +72,4 @@ These various videos demonstrate some portion of [FightingEntropy(π)]
 |    11 | 05/2019 | Hybrid - Desired State Controller      | https://youtu.be/C8NYaaqJAlI |
 |    12 | 11/2019 | Methodologies                          | https://youtu.be/bZuSgBK36CE |
 |    13 | 08/2019 | Education/Exhibition Program Design    | https://youtu.be/v6RrrzR5v2E |
+
