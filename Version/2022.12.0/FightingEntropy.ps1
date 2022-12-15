@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 12-14-2022 14:26:18                                           ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2022-12-15 11:10:48                                           ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -714,10 +714,10 @@ Function FightingEntropy.Module
             ("Get-FEADLogin.ps1"               , "492CBAB21ACCB448864B382B140ED72514DEEB015C7BBD282C649B0CEE262DE7") ,
             ("Get-FEDCPromo.ps1"               , "0CE646644BD4DF76B40A98D1D01E297012CAE7AAFA5FEF92C36AD9AA4CD43D2A") ,
             ("Get-FEImageManifest.ps1"         , "03AD403FA17EE0702A8D8911F8B4BD7AABE5C6971363AF2FFADE6FF83918D57F") ,
-            ("Get-FEModule.ps1"                , "033F2B110018A2178E90F9104A774A597C69F3B097C50E6ADCB79F7FC635C3F4") ,
+            ("Get-FEModule.ps1"                , "EEC6136D19426728E09571D55B983667AC99139EC02229B539047B4894E7AFF4") ,
             ("Get-FENetwork.ps1"               , "552CC93F8F21BCC2CC3CB1F0EBD447690E7EC41B1D4A8372C0839997CE48906E") ,
             ("Get-FERole.ps1"                  , "0016BDDB9B0BA9BB59652440FE0B758D88BF42A887F93B275F57016CCE4999C8") ,
-            ("Get-FESystemDetails.ps1"         , "CD12BA92A37EA988299588F9EAED8CAB363D2339DA16C6527F39E5E9D3B9C280") ,
+            ("Get-FESystemDetails.ps1"         , "FE2C64E64DD76EC5B1B26E7BF4CF64C861416383974E63FDFE4499B09206C97F") ,
             ("Get-MDTModule.ps1"               , "FC61D8D17B22A6AC2AE343A3EA7A07DBF868D918C85D302DF771862306CB824A") ,
             ("Get-PowerShell.ps1"              , "7F5E35535A4A50D02092D8A87266F136EEBD979F9505D8D481A4F5E38E74BF02") ,
             ("Get-PropertyItem.ps1"            , "48E4729380C40B76B13DE0FD6CAC735B05B76D78CE86636F9258D1F3D60AD6B0") ,
@@ -1541,6 +1541,9 @@ Function FightingEntropy.Module
         {
             $This.Write(2,"Installing [~] $($This.Label())")
 
+            $Setting = [System.Net.ServicePointManager]::SecurityProtocol
+                       [System.Net.ServicePointManager]::SecurityProtocol = 3072
+
             $This.Manifest.Install()
             $This.Registry.Install()
             $This.Root.Module.Create()
@@ -1585,6 +1588,8 @@ Function FightingEntropy.Module
             [System.IO.File]::WriteAllBytes($This.Root.Shortcut, $Bytes)
 
             $This.Root.Shortcut.TestPath()
+
+            [System.Net.ServicePointManager]::SecurityProtocol = $Setting
 
             $This.Write(2,"Installed [+] $($This.Label())")
         }
@@ -1791,7 +1796,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 12-12-2022 15:54:02 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2022-12-15 11:10:48 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
