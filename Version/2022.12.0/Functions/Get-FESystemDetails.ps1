@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-15 11:09:04                                                                  //
+\\  Date       : 2022-12-15 13:27:12                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FESystemDetails.ps1
@@ -40,12 +40,12 @@ Function Get-FESystemDetails
 
     Class SystemProperty
     {
-        [UInt32] $Index
-        [UInt32] $Rank
+        [UInt32]  $Index
+        [UInt32]   $Rank
         [String] $Source
-        [String] $Name
+        [String]   $Name
         [UInt32] $Buffer
-        [Object] $Value
+        [Object]  $Value
         SystemProperty([UInt32]$Index,[UInt32]$Rank,[String]$Source,[String]$Name,[Object]$Value)
         {
             $This.Index  = $Index
@@ -97,6 +97,7 @@ Function Get-FESystemDetails
         [String]                $Guid
         [UInt32]            $Complete
         [String]             $Elapsed
+        Hidden [Object]     $Property
         Snapshot()
         {
             $Current                  = [DateTime]::Now
@@ -115,6 +116,13 @@ Function Get-FESystemDetails
             $This.Caption             = $This.OS.Caption
             $This.GetFields()
             $This.Guid                = [Guid]::NewGuid().ToString()
+
+            $This.Property            = @( )
+
+            ForEach ($Item in $This.PSObject.Properties)
+            {
+                $This.Property       += $This.SystemProperty($Item)
+            }
         }
         [Object] ComputerSystem()
         {
@@ -187,6 +195,10 @@ Function Get-FESystemDetails
                 $This.$($Pair.Name) = $Pair.Value
             }
         }
+        SystemProperty([Object]$Property)
+        {
+            [SystemProperty]::New(0,$This.Property.Count,"Snapshot",$Property.Name,$Property.Value)
+        }
         MarkComplete()
         {
             $This.Complete     = 1 
@@ -204,20 +216,22 @@ Function Get-FESystemDetails
 
     Class BiosInformation
     {
-        [String] $Name
-        [String] $Manufacturer
-        [String] $SerialNumber
-        [String] $Version
-        [String] $ReleaseDate
-        [Bool]   $SmBiosPresent
-        [String] $SmBiosVersion
-        [String] $SmBiosMajor
-        [String] $SmBiosMinor
+        [String]            $Name
+        [String]    $Manufacturer
+        [String]    $SerialNumber
+        [String]         $Version
+        [String]     $ReleaseDate
+        [Bool]     $SmBiosPresent
+        [String]   $SmBiosVersion
+        [String]     $SmBiosMajor
+        [String]     $SmBiosMinor
         [String] $SystemBiosMajor
         [String] $SystemBiosMinor
+        Hidden [Object] $Property
         BiosInformation()
         {
             $Bios                 = Get-CimInstance Win32_Bios
+
             $This.Name            = $Bios.Name
             $This.Manufacturer    = $Bios.Manufacturer
             $This.SerialNumber    = $Bios.SerialNumber
@@ -229,6 +243,13 @@ Function Get-FESystemDetails
             $This.SmBiosMinor     = $Bios.SmBiosMinorVersion
             $This.SystemBiosMajor = $Bios.SystemBiosMajorVersion
             $This.SystemBIosMinor = $Bios.SystemBiosMinorVersion
+
+            $This.Property        = @( )
+
+            ForEach ($Item in $Bios.PSObject.Properties)
+            {
+                $This.Property   += $This.SystemProperty($Item)
+            }
         }
         BiosInformation([Object[]]$Pairs)
         {
@@ -236,6 +257,10 @@ Function Get-FESystemDetails
             {
                 $This.$($Pair.Name) = $Pair.Value
             }
+        }
+        SystemProperty([Object]$Property)
+        {
+            [SystemProperty]::New(0,$This.Property.Count,"Bios Information",$Property.Name,$Property.Value)
         }
         [String] ToString()
         {
@@ -249,23 +274,32 @@ Function Get-FESystemDetails
 
     Class OperatingSystem
     {
-        [String] $Caption
-        [String] $Version
-        [String] $Build
-        [String] $Serial
-        [UInt32] $Language
-        [UInt32] $Product
-        [UInt32] $Type
+        [String]         $Caption
+        [String]         $Version
+        [String]           $Build
+        [String]          $Serial
+        [UInt32]        $Language
+        [UInt32]         $Product
+        [UInt32]            $Type
+        Hidden [Object] $Property
         OperatingSystem()
         {
-            $OS            = Get-CimInstance Win32_OperatingSystem
-            $This.Caption  = $OS.Caption
-            $This.Version  = $OS.Version
-            $This.Build    = $OS.BuildNumber
-            $This.Serial   = $OS.SerialNumber
-            $This.Language = $OS.OSLanguage
-            $This.Product  = $OS.OSProductSuite
-            $This.Type     = $OS.OSType
+            $OS                 = Get-CimInstance Win32_OperatingSystem
+
+            $This.Caption       = $OS.Caption
+            $This.Version       = $OS.Version
+            $This.Build         = $OS.BuildNumber
+            $This.Serial        = $OS.SerialNumber
+            $This.Language      = $OS.OSLanguage
+            $This.Product       = $OS.OSProductSuite
+            $This.Type          = $OS.OSType
+
+            $This.Property      = @( ) 
+            
+            ForEach ($Item in $OS.PSObject.Properties)
+            {
+                $This.Property += $This.SystemProperty($Item)
+            }
         }
         OperatingSystem([Object[]]$Pairs)
         {
@@ -273,6 +307,10 @@ Function Get-FESystemDetails
             {
                 $This.$($Pair.Name) = $Pair.Value
             }
+        }
+        SystemProperty([Object]$Property)
+        {
+            [SystemProperty]::New(0,$This.Property.Count,"Operating System",$Property.Name,$Property.Value)
         }
         [String] ToString()
         {
@@ -286,16 +324,17 @@ Function Get-FESystemDetails
 
     Class ComputerSystem
     {
-        [String] $Manufacturer
-        [String] $Model
-        [String] $Product
-        [String] $Serial
-        [String] $Memory
-        [String] $Architecture
-        [String] $UUID
-        [String] $Chassis
-        [String] $BiosUefi
-        [Object] $AssetTag
+        [String]    $Manufacturer
+        [String]           $Model
+        [String]         $Product
+        [String]          $Serial
+        [String]          $Memory
+        [String]    $Architecture
+        [String]            $UUID
+        [String]         $Chassis
+        [String]        $BiosUefi
+        [Object]        $AssetTag
+        Hidden [Object] $Property
         ComputerSystem()
         {
             $Computer          = @{ 
@@ -333,6 +372,16 @@ Function Get-FESystemDetails
             }
 
             $This.Architecture = @{x86="x86";AMD64="x64"}[[Environment]::GetEnvironmentVariable("Processor_Architecture")]
+
+            $This.Property     = @( )
+
+            ForEach ($Object in $Computer | % { $_.System, $_.Product, $_.Board, $_.Form})
+            {
+                ForEach ($Item in $Object.PSObject.Properties)
+                {
+                    $This.Property += $This.SystemProperty($Item)
+                }
+            }
         }
         ComputerSystem([Object]$Pairs)
         {
@@ -340,6 +389,10 @@ Function Get-FESystemDetails
             {
                 $This.$($Pair.Name) = $Pair.Value
             }
+        }
+        SystemProperty([Object]$Property)
+        {
+            [SystemProperty]::New(0,$This.Property.Count,"Computer System",$Property.Name,$Property.Value)
         }
         [String] ToString()
         {
@@ -353,17 +406,18 @@ Function Get-FESystemDetails
 
     Class Processor
     {
-        Hidden [UInt32] $Rank
-        [String] $Manufacturer
-        [String] $Name
-        [String] $Caption
-        [UInt32] $Cores
-        [UInt32] $Used
-        [UInt32] $Logical
-        [UInt32] $Threads
-        [String] $ProcessorId
-        [String] $DeviceId
-        [UInt32] $Speed
+        Hidden [UInt32]     $Rank
+        [String]    $Manufacturer
+        [String]            $Name
+        [String]         $Caption
+        [UInt32]           $Cores
+        [UInt32]            $Used
+        [UInt32]         $Logical
+        [UInt32]         $Threads
+        [String]     $ProcessorId
+        [String]        $DeviceId
+        [UInt32]           $Speed
+        Hidden [Object] $Property
         Processor([UInt32]$Rank,[Object]$CPU)
         {
             $This.Rank         = $Rank
@@ -377,6 +431,13 @@ Function Get-FESystemDetails
             $This.ProcessorID  = $CPU.ProcessorId
             $This.DeviceID     = $CPU.DeviceID
             $This.Speed        = $CPU.MaxClockSpeed
+
+            $This.Property     = @( )
+
+            ForEach ($Item in $CPU.PSObject.Properties)
+            {
+                $This.Property += $This.SystemProperty($Item)
+            }
         }
         Processor([UInt32]$Rank,[Object[]]$Pairs,[Switch]$Flags)
         {
@@ -386,6 +447,10 @@ Function Get-FESystemDetails
             {
                 $This.$($Pair.Name) = $Pair.Value
             }
+        }
+        SystemProperty([Object]$Property)
+        {
+            [SystemProperty]::New(0,$This.Property.Count,"Processor$($This.Rank)",$Property.Name,$Property.Value)
         }
         [String] ToString()
         {
@@ -481,16 +546,19 @@ Function Get-FESystemDetails
 
     Class Partition
     {
-        [UInt32]      $Rank
-        [String]      $Type
-        [String]      $Name
-        [Object]      $Size
-        [UInt32]      $Boot
-        [UInt32]   $Primary
-        [UInt32]      $Disk
-        [UInt32] $Partition
+        Hidden [String]    $Label
+        [UInt32]            $Rank
+        [String]            $Type
+        [String]            $Name
+        [Object]            $Size
+        [UInt32]            $Boot
+        [UInt32]         $Primary
+        [UInt32]            $Disk
+        [UInt32]       $Partition
+        Hidden [Object] $Property
         Partition([UInt32]$Rank,[Object]$Partition) 
         {
+            $This.Label      = $Partition.Name -Replace "( |#)", "" -Replace ",","."
             $This.Rank       = $Rank
             $This.Type       = $Partition.Type
             $This.Name       = $Partition.Name
@@ -499,6 +567,13 @@ Function Get-FESystemDetails
             $This.Primary    = $Partition.PrimaryPartition
             $This.Disk       = $Partition.DiskIndex
             $This.Partition  = $Partition.Index
+
+            $This.Property      = @( )
+
+            ForEach ($Item in $Partition.PSObject.Properties)
+            {
+                $This.Property += $This.SystemProperty($Item)
+            }
         }
         Partition([UInt32]$Rank,[Object[]]$Pairs,[Switch]$Flags)
         {
@@ -508,6 +583,10 @@ Function Get-FESystemDetails
             {
                 $This.$($Pair.Name) = $Pair.Value
             }
+        }
+        SystemProperty([Object]$Property)
+        {
+            [SystemProperty]::New(0,$This.Property.Count,"Disk$($This.Disk).Partition$($This.Partition)",$Property.Name,$Property.Value)
         }
         [Object] GetSize([UInt64]$Bytes)
         {
@@ -553,18 +632,21 @@ Function Get-FESystemDetails
 
     Class Volume
     {
-        [UInt32] $Rank
-        [String] $DriveID
-        [String] $Description
-        [String] $Filesystem
-        [Object] $Partition
-        [String] $VolumeName
-        [String] $VolumeSerial
-        [Object] $Size
-        [Object] $Freespace
-        [Object] $Used
+        Hidden [String]    $Label
+        [UInt32]            $Rank
+        [String]         $DriveID
+        [String]     $Description
+        [String]      $Filesystem
+        [Object]       $Partition
+        [String]      $VolumeName
+        [String]    $VolumeSerial
+        [Object]            $Size
+        [Object]       $Freespace
+        [Object]            $Used
+        Hidden [Object] $Property
         Volume([UInt32]$Rank,[String]$Partition,[Object]$Drive)
         {
+            $This.Label             = "{0}.Volume$Rank" -f ($Partition -Split ",")[0] -Replace "( |#)",""
             $This.Rank              = $Rank
             $This.DriveID           = $Drive.Name
             $This.Description       = $Drive.Description
@@ -575,6 +657,13 @@ Function Get-FESystemDetails
             $This.Size              = $This.GetSize($Drive.Size)
             $This.Freespace         = $This.GetSize($Drive.Freespace)
             $This.Used              = $This.GetSize(($This.Size.Bytes - $This.Freespace.Bytes))
+            
+            $This.Property          = @( )
+
+            ForEach ($Item in $This.PSObject.Properties)
+            {
+                $This.Property += $This.SystemProperty($Item)
+            }
         }
         Volume([UInt32]$Rank,[Object[]]$Pairs,[Switch]$Flags)
         {
@@ -584,6 +673,10 @@ Function Get-FESystemDetails
             {
                 $This.$($Pair.Name) = $Pair.Value
             }
+        }
+        SystemProperty([Object]$Property)
+        {
+            [SystemProperty]::New(0,$This.Property.Count,$This.Label,$Property.Name,$Property.Value)
         }
         [Object] GetSize([UInt64]$Bytes)
         {
@@ -632,7 +725,6 @@ Function Get-FESystemDetails
         Hidden [UInt32]       $Rank
         [UInt32]             $Index
         [String]              $Disk
-        Hidden [Object] $DiskObject
         [String]             $Model
         [String]            $Serial
         [String]    $PartitionStyle
@@ -896,6 +988,19 @@ Function Get-FESystemDetails
         [Object] SystemProperty([UInt32]$Index,[UInt32]$Rank,[String]$Source,[String]$Name,[Object]$Value)
         {
             Return [SystemProperty]::New($Index,$Rank,$Source,$Name,$Value)
+        }
+        [Object] Get([UInt32]$Index)
+        {
+            Return @(Switch ($Index)
+            {
+                0 { $This.Snapshot         }
+                1 { $This.BiosInformation  }
+                2 { $This.OperatingSystem  }
+                3 { $This.ComputerSystem   }
+                4 { $This.Processor.Output }
+                5 { $This.Disk.Output      }
+                6 { $This.Network.Output   }
+            })
         }
         [Object] Output()
         {
