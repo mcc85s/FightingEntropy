@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-17 21:07:14                                                                  //
+\\  Date       : 2022-12-18 13:56:54                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FENetwork.ps1
@@ -1032,6 +1032,65 @@ Function Get-FENetwork
         }
     }
 
+    # // ==================================
+    # // | Class object for V4 Network(s) |
+    # // ==================================
+
+    Class V4Class
+    {
+        [UInt32] $Index
+        [String] $Label
+        [String] $Name
+        V4Class([UInt32]$Index,[String]$Label,[String]$Name)
+        {
+            $This.Index = $Index
+            $This.Label = $Label
+            $This.Name  = $Name
+        }
+        [String] ToString()
+        {
+            Return $This.Label
+        }        
+    }
+
+    # // ==============================
+    # // | List object for V4 classes |
+    # // ==============================
+
+    Class V4ClassList
+    {
+        [Object] $Output
+        V4ClassList()
+        {
+            $This.Output = @( ) 
+
+            ForEach ($X in 0..255)
+            {
+                $Item = Switch ($X)
+                {
+                    {$_ -eq        0} { "X",       "N/A" }
+                    {$_ -in   1..126} { "A",   "Class A" }
+                    {$_ -eq      127} { "L",     "Local" }
+                    {$_ -in 128..191} { "B",   "Class B" }
+                    {$_ -in 192..223} { "C",   "Class C" }
+                    {$_ -in 224..239} { "M", "Multicast" }
+                    {$_ -in 240..254} { "R",  "Reserved" }
+                    {$_ -eq      255} { "B", "Broadcast" }
+                }
+
+                $This.Add($X,$Item[0],$Item[1])
+            }
+        }
+        Add([UInt32]$Index,[String]$Label,[String]$Name)
+        {
+            $This.Output += [V4Class]::New($Index,$Label,$Name)
+        }
+        [Object] Get([String]$IpAddress)
+        {
+            Return $This.Output[$IPAddress.Split(".")[0]]
+        }
+    }
+
     # // ============================================
     # // | Object returned from a ping (sweep/scan) |
     # // ============================================
@@ -1071,96 +1130,35 @@ Function Get-FENetwork
 
     Class V4Network
     {
-        Hidden Static [String[]]  $Classes = @('N/A';@('A')*126;'Local';@('B')*64;@('C')*32;@('MC')*16;@('R')*15;'BC')
-        Hidden Static [Object]    $Options = [System.Net.NetworkInformation.PingOptions]::New()
-        Hidden Static [String[]]   $Buffer = @(97..119 + 97..105 | % { "0x{0:X}" -f $_ })
         [String]                $IPAddress
         [String]                    $Class
         [UInt32]                   $Prefix
         [String]                  $Netmask
-        Hidden [Object]             $Route
         [String]                  $Network
         [String]                  $Gateway
         [String]                    $Range
         [String]                $Broadcast
-        V4Network([NetworkInterface]$Interface)
+        V4Network([Object]$Interface)
         {
-            $This.IPAddress   = $Interface.Ip.IPAddress
-            If ($This.IPAddress -match "^169.254")
-            {
-                $This.Class   = "APIPA"
-            }
-            Else
-            {
-                $This.Class       = [V4Network]::Classes[$This.IPAddress.Split(".")[0]]
-            }
-            $This.Prefix      = $Interface.Ip.Prefix
+            $This.IPAddress   = $Interface.IPAddress
+            $This.Prefix      = $Interface.Prefix
+            $This.Network     = $Interface.Route | ? DestinationPrefix -match "/$($This.Prefix)" | % DestinationPrefix
 
-            # // ===============
-            # // | Get Netmask |
-            # // ===============
-
-            $Str              = "{0}{1}" -f ("1" * $This.Prefix -join ''),("0" * (32-$This.Prefix) -join '')
-            $This.Netmask     = @(0,8,16,24 | % { [Convert]::ToInt32($Str.Substring($_,8),2) }) -join "."
-
-            $This.Route       = $Interface.Route
-
-            $This.Network     = $This.Route | ? DestinationPrefix -match "/$($This.Prefix)" | % DestinationPrefix
             If (!$This.Network)
             {
                 $This.Network = "-"
             }
 
-            $This.Gateway     = $This.Route | ? DestinationPrefix -match 0.0.0.0/0 | % NextHop
+            $This.Gateway     = $Interface.Route | ? DestinationPrefix -match 0.0.0.0/0 | % NextHop
+
             If (!$This.Gateway)
             {
                 $This.Gateway = "-"
             }
-            
-            $This.GetHostRange()
-            $This.GetBroadcast()
-        }
-        [Void] GetHostRange()
-        {
-            $This.Range      = @( Switch ($This.Network)
-            {
-                "-"
-                {
-                    "N/A"
-                }
-                Default
-                {
-                    $X = [UInt32[]]$This.Network.Split("/")[0].Split(".")
-                    $Y = [UInt32[]]$This.Netmask.Split(".") | % { (256 - $_) - 1 }
-                    @( ForEach ($I in 0..3)
-                    {
-                        Switch($Y[$I])
-                        {
-                            0 { $X[$I] } Default { "{0}..{1}" -f $X[$I],($X[$I]+$Y[$I]) }
-                        }
-                    } ) -join '/'
-                }
-            })
-        }
-        [Void] GetBroadcast()
-        {
-            If ($This.Network -ne "-")
-            {
-                $Split   = $This.Range.Split("/")
-                $T       = @{ }
-                0..3     | % { $T.Add($_,(Invoke-Expression $Split[$_])) }
 
-                $This.Broadcast  = Switch -Regex ($This.Class)
-                {
-                    "(^A$|^Local$)" { $T[0], $T[1][-1], $T[2][-1], $T[3][-1] -join "." }
-                    "(^Apipa$|^MC$|^R$'|^BC$)" { "-" }
-                    ^B$             { $T[0], $T[1]    , $T[2][-1], $T[3][-1] -join "." }
-                    ^C$             { $T[0], $T[1]    , $T[2]    , $T[3][-1] -join "." }
-                }
-            }
-            Else
+            If (!$This.Network)
             {
-                $This.Broadcast = "-"
+                $This.Network = "-"
             }
         }
         [String] ToString()
@@ -1365,6 +1363,7 @@ Function Get-FENetwork
         [UInt32]             $Connected
         [String]             $IpAddress
         [UInt32]                $Prefix
+        [Object]               $Network
         [Object]                 $Route
         [Object]                   $Arp
         [Object]                   $Nbt
@@ -1385,6 +1384,7 @@ Function Get-FENetwork
             $This.Connected      = $Interface.Open
             $This.IPAddress      = $IP.IPAddress
             $This.Prefix         = $IP.Prefix
+            $This.Network        = 
 
             $This.Property       = @( )
 
@@ -1440,6 +1440,7 @@ Function Get-FENetwork
     Class NetworkControllerMaster
     {
         [UInt32] $Mode
+        [Object] $Class
         [Object] $Vendor
         [Object] $Arp
         [Object] $NbtLocal
@@ -1453,6 +1454,7 @@ Function Get-FENetwork
         NetworkControllerMaster([UInt32]$Mode)
         {
             $This.Mode      = $Mode
+            $This.Class     = $This.V4ClassList()
 
             <#
             ===========================================
@@ -1490,6 +1492,84 @@ Function Get-FENetwork
             $This.Ip            = [NetworkIpList]::New()
             $This.Compartment   = [NetworkControllerCompartmentList]::New()
         }
+        [Object] V4Network([Object]$Interface)
+        {
+            $Item             = [V4Network]::New($Interface)
+            
+            # Class
+            $Item.Class       = $This.Class.Get($Item.IPAddress)
+
+            # Netmask
+            $Str              = (0..31 | % { [Int32]($_ -lt $This.Prefix); If ($_ -in 7,15,23) { "." } }) -join ''
+            $Item.Netmask     = $Str -Split "\." | % { [Convert]::ToInt32($_,2 ) }
+
+            If (!!$Item.Network)
+            {
+                $This.V4HostRange($Item)
+                $This.V4Broadcast($Item)
+            }
+
+            Return $Item
+        }
+        [Void] V4HostRange([Object]$Item)
+        {
+            $Item.Range       = @( Switch ($Item.Network)
+            {
+                "-"
+                {
+                    "N/A"
+                }
+                Default
+                {
+                    $X = [UInt32[]]$Item.Network.Split("/")[0].Split(".")
+                    $Y = [UInt32[]]$Item.Netmask.Split(".") | % { (256 - $_) - 1 }
+                    @( ForEach ($I in 0..3)
+                    {
+                        Switch($Y[$I])
+                        {
+                            0 { $X[$I] } Default { "{0}..{1}" -f $X[$I],($X[$I]+$Y[$I]) }
+                        }
+                    } ) -join '/'
+                }
+            })
+        }
+        [Void] V4Broadcast([Object]$Item)
+        {
+            If ($Item.Network -ne "-")
+            {
+                $Split   = $Item.Range.Split("/")
+                $T       = @{ }
+                0..3     | % { $T.Add($_,(Invoke-Expression $Split[$_])) }
+
+                $Item.Broadcast  = Switch -Regex ($Item.Class)
+                {
+                    "(^A$|^Local$)" { $T[0], $T[1][-1], $T[2][-1], $T[3][-1] -join "." }
+                    "(^Apipa$|^MC$|^R$'|^BC$)" { "-" }
+                    ^B$             { $T[0], $T[1]    , $T[2][-1], $T[3][-1] -join "." }
+                    ^C$             { $T[0], $T[1]    , $T[2]    , $T[3][-1] -join "." }
+                }
+            }
+            Else
+            {
+                $Item.Broadcast = "-"
+            }
+        }
+        [Object] V6Network([Object]$Interface)
+        {
+            Return [V6Network]::New($Interface)
+        }
+        [Object] V4ClassList()
+        {
+            Return [V4ClassList]::New()
+        }
+        [Object] V4PingOptions()
+        {
+            Return [System.Net.NetworkInformation.PingOptions]::New()
+        }
+        [Object] V4PingBuffer()
+        {
+            Return 97..119 + 97..105 | % { "0x{0:X}" -f $_ }
+        }
         [Object] NetworkControllerTemplate([UInt32]$Index,[UInt32]$Rank)
         {
             Return [NetworkControllerTemplate]::New($Index,
@@ -1524,7 +1604,6 @@ Function Get-FENetwork
             $This.Interface.Refresh()
             $This.Ip.Refresh()
 
-            Write-Host "Adapters"
             ForEach ($X in 0..($This.Adapter.Output.Count-1))
             {
                 $Index        = $This.Config.Output[$X].Property | ? Name -eq InterfaceIndex | % Value
@@ -1566,7 +1645,6 @@ Function Get-FENetwork
                     $Id.Route.Add($Item)
                 }
         
-                Write-Host $Id.Index
                 $Template.Add($Id)
             }
 
@@ -1591,6 +1669,8 @@ Function Get-FENetwork
                             $Item.Route = $Object.Route.Output | ? Type -eq $Type
                             If ($Type -eq 4)
                             {
+                                $Item.Network = $This.V4Network($Item)
+
                                 If ($Object.Arp.Count -gt 0)
                                 {
                                     $Item.Arp = $Object.Arp.Output
@@ -1599,6 +1679,10 @@ Function Get-FENetwork
                                 {
                                     $Item.Nbt = $Object.Nbt.Output
                                 }
+                            }
+                            If ($Type -eq 6)
+                            {
+                                $Item.Network = $This.V6Network($Item)
                             }
             
                             $This.Compartment.Add($Item)
@@ -1612,17 +1696,23 @@ Function Get-FENetwork
     $Ctrl = [NetworkControllerMaster]::New(7)
     $Ctrl.Refresh()
 
-    <#
 
-    PS C:\Users\Administrator> $Ctrl.Arp.Output
 
-    Index     : 0
-    Type      : Public
-    IPAddress : 172.18.2.14
-    Adapter   : 3
-    Host      : {<FENetwork.ArpHost>, <FENetwork.ArpHost>, <FENetwork.ArpHost>, <FENetwork.ArpHost>...}
 
-    #>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     # // ============================================================================
@@ -1655,7 +1745,7 @@ Function Get-FENetwork
                 }
                 1 
                 { 
-                    $This.IPV4 = $This.V4Network($Interface.IPv4[0]) 
+                    $This.IPV4 = $This.V4Network($Interface.IPv4[0])
                 }
                 Default 
                 {
@@ -1672,14 +1762,6 @@ Function Get-FENetwork
             }
             $This.Arp         = $Interface.Arp
             $This.Nbt         = $Interface.Nbt
-        }
-        [Object] V4Network([Object]$Interface)
-        {
-            Return [V4Network]::New($Interface)
-        }
-        [Object] V6Network([Object]$Interface)
-        {
-            Return [V6Network]::New($Interface)
         }
         [String] Elapsed([Object]$Start)
         {
