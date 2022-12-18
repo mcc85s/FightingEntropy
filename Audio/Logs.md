@@ -43,6 +43,7 @@ That is why I write as often as I do, AND record these various videos, and audio
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **12/18/22** | 0h 54m 13s | **2022_12_18_08_21_02[1].mp3** | [Charisma](https://drive.google.com/file/d/1z-xHZm8ZkhHIpBE9Mdn3uiRJy8Y_V7nh)
 | **12/15/22** | 2h 07m 53s | **2022_12_15_16_50_52.mp3**    | [Solidarity](https://drive.google.com/file/d/1PvPEkVbec1M-OgJcVUaQIYzG0X3vZiNF)
 | **12/10/22** | 0h 27m 33s | **2022_12_10_08_59_54.mp3**    | [Overwhelmed](https://drive.google.com/file/d/1ohKeSY8y4W3bFo9FLUVXG0azrASb1OTE)
 | **12/08/22** | 1h 47m 15s | **2022_12_08_16_06_27.mp3**    | [Spontaneity](https://drive.google.com/file/d/1oIXQZJyFYDhigoFlodeVFUyPrNuXDDrm)
