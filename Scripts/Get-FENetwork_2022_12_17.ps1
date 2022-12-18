@@ -222,14 +222,12 @@ Function Get-FENetwork
         [UInt32]        $Index
         [String]         $Type
         [String]    $IPAddress
-        [UInt32]      $Adapter
         [Object]         $Host
-        ArpAdapter([UInt32]$Index,[String]$Line)
+        ArpAdapter([String]$Line)
         {
-            $This.Index     = $Index
+            $This.Index     = [Regex]::Matches($Line,"(0x\d+)").Value
             $This.IPAddress = [Regex]::Matches($Line,"(\d+\.){3}\d+").Value
             $This.Type      = @("Public","Private")[$This.IPAddress -match 169.254]
-            $This.Adapter   = [Regex]::Matches($Line,"(0x\d+)").Value
             $This.Host      = @( )
         }
         Add([String]$Line)
@@ -254,7 +252,6 @@ Function Get-FENetwork
         ArpList()
         {
             $This.Name = "ArpList"
-            $This.Refresh()
         }
         Refresh()
         {
@@ -267,7 +264,7 @@ Function Get-FENetwork
                 {
                     "^Interface"
                     {
-                        $This.Output += [ArpAdapter]::New($This.Output.Count,$Line)
+                        $This.Output += [ArpAdapter]::New($Line)
                     }
                     "^\s{2}\d"
                     {
@@ -279,7 +276,7 @@ Function Get-FENetwork
         }
         [String] ToString()
         {
-            Return "({0}) <<FENetwork.ArpList>" -f $This.Count
+            Return "({0}) <FENetwork.ArpList>" -f $This.Count
         }
     }
 
@@ -309,19 +306,18 @@ Function Get-FENetwork
 
     Class NbtStatHost
     {
-        [UInt32] $Interface
-        [UInt32] $Rank
+        [UInt32] $Index
         [String] $Name
         [String] $Id
         [String] $Type
         [String] $Service
-        NbtStatHost([UInt32]$Interface,[Uint32]$Rank,[String]$Name,[String]$Id,[String]$Type)
+        NbtStatHost([UInt32]$Index,[String]$Line)
         {
-            $This.Interface = $Interface
-            $This.Rank      = $Rank
-            $This.Name      = $Name
-            $This.Id        = $Id
-            $This.Type      = $Type
+            $Item           = $Line -Split " " | ? Length -gt 0
+            $This.Index     = $Index
+            $This.Name      = $Item[0]
+            $This.Id        = $Item[1]
+            $This.Type      = $Item[2]
         }
         [String] ToString()
         {
@@ -335,94 +331,40 @@ Function Get-FENetwork
 
     Class NbtStatInterface
     {
-        [UInt32]    $Interface
-        [String]         $Name
-        Hidden [String] $Label
+        [UInt32]        $Index
         [String]         $Type
+        [String]         $Name
         [String]    $IPAddress
         [String]         $Node
         [UInt32]        $Count
         [Object]       $Output
-        NbtStatInterface([UInt32]$Interface,[String]$Name,[String]$Type)
+        NbtStatInterface([String]$Type,[String]$Line)
         {
-            $This.Interface = $Interface
-            $This.Name      = $Name.TrimEnd(":")
-            $This.Label     = $Name
+            $Line           = $Line.TrimEnd(" ")
             $This.Type      = $Type
+            $This.Name      = $Line.TrimEnd(":")
             $This.Output    = @( )
         }
-        AddHost([String]$Name,[String]$Id,[String]$Type)
+        AddNode([String]$Line)
         {
-            $This.Output   += [NbtStatHost]::New($This.Interface,$This.Output.Count,$Name,$Id,$Type)
+            $Split          = $Line     -Replace "Scope","`nScope" -Split "`n"
+            $This.IPAddress = [Regex]::Matches($Split[0],"(\d+\.){3}\d+").Value
+            $This.Node      = $Split[1] -Replace "(Scope Id: \[|\])",""
+        }
+        AddHost([String]$Line)
+        {
+            $This.Output   += [NbtStatHost]::New($This.Output.Count,$Line)
             $This.Count     = $This.Output.Count
         }
-        AddSwap([Object]$Content)
-        {
-            ForEach ($X in 0..($Content.Count-1))
-            {
-                $Line    = $Content[$X].Value
-                Switch -Regex ($Line)
-                {
-                    "^Node IpAddress"
-                    {
-                        $X         = [Regex]::Matches($Line,"\[(\d|\w|\.)*\]").Value | % Trim "(\[|\])"
-                        If ($X.Count -eq 2)
-                        {
-                            $This.IPAddress = $X[0]
-                            $This.Node      = $X[1]
-                            If (!$This.Node)
-                            {
-                                $This.Node = "-"
-                            }
-                        }
-                    }
-                    Registered
-                    {
-                        $X         = $Line -Split " " | ? Length -gt 0
-                        If ($X.Count -eq 4)
-                        {
-                            $This.AddHost($X[0],$X[1],$X[2])
-                        }
-                    }
-                    Default
-                    {
-
-                    }
-                }
-
-                $X     = $Null
-            }
-        }
         [String] ToString()
         {
-            Return "({0}) <FENetwork.NbtStatInterface>" -f $This.Count
+            Return "<FENetwork.NbtStatInterface>"
         }
     }
 
-    # // ===============================
-    # // | For concise nbtstat parsing |
-    # // ===============================
-
-    Class NbtStatStack
-    {
-        [Int32] $Interface
-        [UInt32]     $Rank
-        [String]    $Value
-        NbtStatStack([Int32]$Interface,[UInt32]$Rank,[String]$Value)
-        {
-            $This.Interface = $Interface
-            $This.Rank      = $Rank
-            $This.Value     = $Value
-        }
-        [String] ToString()
-        {
-            Return "<FENetwork.NbtStatStack>"
-        }
-    }
-
-    # // =============================================================
-    # // | Collects the local NBT table (can be modified for remote) |
-    # // =============================================================
+    # // ==============================================================
+    # // | Collects the local NBT table (will be modified for remote) |
+    # // ==============================================================
 
     Class NbtStatLocalList
     {
@@ -438,7 +380,6 @@ Function Get-FENetwork
 
             $This.Name        = "NbtStatLocalList"
             $This.Reference   = $This.NbtStatReference()
-            $This.Refresh()
         }
         [Object[]] NbtStatReference()
         {
@@ -460,61 +401,34 @@ Function Get-FENetwork
 
             Return $Out -Split ";" | % { [NbtStatReference]::New($_) }
         }
-        [Object] NbtStatInterface([String]$Item,[String]$Type)
+        [Object] NbtStatInterface([String]$Type,[String]$Line)
         {
-            Return [NbtStatInterface]::New($This.Output.Count,$Item,$Type)
-        }
-        [Object] NbtStatStack([Int32]$Interface,[UInt32]$Rank,[String]$Value)
-        {
-            Return [NbtStatStack]::New($Interface,$Rank,$Value)
+            Return [NbtStatInterface]::New($Type,$Line)
         }
         Refresh()
         {
             $This.Output      = @( )
             $Stack            = nbtstat -N
-            $List             = $Stack -match ".+\:$"
-
-            ForEach ($Item in $List)
+            ForEach ($Line in $Stack)
             {
-                $This.Output += $This.NbtStatInterface($Item,"Local")
-            }
-
-            # // =========================================
-            # // | Use multiple tokens to chart NBT info |
-            # // =========================================
-
-            $Swap             = @( )
-            $Interface        = -1
-            $Rank             = 0
-            ForEach ($X in 0..($Stack.Count-1))
-            {
-                If ($Stack[$X].TrimEnd(" ") -in $This.Output.Label)
+                Switch -Regex ($Line)
                 {
-                    $Interface ++
-                    $Rank      = 0
-                }
-            
-                $Swap          += $This.NbtStatStack($Interface,$Rank,$Stack[$X].TrimEnd(" "))
-                $Rank          ++
-            }
-
-            # // ===================================================================
-            # // | Assign (each section its own table + detected hosts w/ service) |
-            # // ===================================================================
-
-            $Max              = ($Swap.Interface | Select-Object -Unique)[-1]
-            ForEach ($X in 0..$Max)
-            {
-                $Item         = $Swap   | ? Interface -eq $X
-                $Slot         = $This.Output | ? Label -eq $Item[0].Value
-                $Slot.AddSwap($Item)
-                ForEach ($Object in $Slot.Output)
-                {
-                    $Object | % { $_.Service = $This.Reference | ? ID -eq $_.ID | ? Type -eq $_.Type | % Service } 
+                    ".+\:$"
+                    {
+                        $This.Output          += $This.NbtStatInterface("Local",$Line)
+                        $This.Count            = $This.Output.Count
+                    }
+                    "^Node IpAddress"
+                    {
+                        $This.Output[-1].AddNode($Line)
+                    }
+                    Registered
+                    {
+                        $This.Output[-1].AddHost($Line)
+                        $This.Output[-1].Output[-1] | % { $_.Service = $This.Reference | ? ID -eq $_.ID | ? Type -eq $_.Type | % Service }
+                    }
                 }
             }
-
-            $This.Count = $This.Output.Count
         }
         [String] ToString()
         {
@@ -608,7 +522,6 @@ Function Get-FENetwork
         NetStatList()
         {
             $This.Name   = "NetStatList"
-            $This.Refresh()
         }
         Refresh()
         {
@@ -722,7 +635,6 @@ Function Get-FENetwork
         NetworkAdapterList()
         {
             $This.Name        = "NetworkAdapterList"
-            $This.Refresh()
         }
         Refresh()
         {
@@ -815,7 +727,6 @@ Function Get-FENetwork
         NetworkAdapterConfigurationList()
         {
             $This.Name   = "NetworkAdapterConfigurationList"
-            $This.Refresh()
         }
         Refresh()
         {
@@ -823,7 +734,7 @@ Function Get-FENetwork
 
             ForEach ($Config in Get-CimInstance Win32_NetworkAdapterConfiguration)
             {
-                $This.Output += $Config
+                $This.Add($Config)
             }
         }
         Add([Object]$Config)
@@ -910,7 +821,6 @@ Function Get-FENetwork
         NetworkRouteList()
         {
             $This.Name   = "NetworkRouteList"
-            $This.Refresh()
         }
         Refresh()
         {
@@ -1007,7 +917,6 @@ Function Get-FENetwork
         NetworkInterfaceList()
         {
             $This.Name   = "NetworkInterfaceList"
-            $This.Refresh()
         }
         Refresh()
         {
@@ -1069,7 +978,7 @@ Function Get-FENetwork
         {
             $This.Index     = $Ip.InterfaceIndex
             $This.Type      = Switch -Regex ($IP.AddressFamily.ToString()) { 4 { 4 } 6 { 6 } }
-            $This.IpAddress = $Ip.IpAddress.ToString()
+            $This.IpAddress = $Ip.IpAddress.ToString().Split("%")[0]
             $This.Prefix    = $Ip.PrefixLength
             $This.Property  = @( )
 
@@ -1100,7 +1009,6 @@ Function Get-FENetwork
         NetworkIpList()
         {
             $This.Name   = "NetworkIpList"
-            $This.Refresh()
         }
         Refresh()
         {
@@ -1121,303 +1029,6 @@ Function Get-FENetwork
         [String] ToString()
         {
             Return "({0}) <FENetwork.NetworkIpList>" -f $This.Count
-        }
-    }
-
-    Class NetworkSubcontroller
-    {
-        [UInt32] $Mode
-        [Object] $Vendor
-        [Object] $Arp
-        [Object] $NbtLocal
-        [Object] $NetStat
-        [Object] $Adapter
-        [Object] $Config
-        [Object] $Route
-        [Object] $Interface
-        [Object] $Ip
-        NetworkSubcontroller([UInt32]$Mode)
-        {
-            $This.Mode      = $Mode
-
-            <#
-            ===========================================
-            | 00 | [ ] Vendor [ ] Arp/Nbt [ ] Netstat |
-            | 01 | [ ] Vendor [ ] Arp/Nbt [X] Netstat |
-            | 02 | [ ] Vendor [X] Arp/Nbt [ ] Netstat |
-            | 03 | [ ] Vendor [X] Arp/Nbt [X] Netstat |
-            | 04 | [X] Vendor [ ] Arp/Nbt [ ] Netstat |
-            | 05 | [X] Vendor [ ] Arp/Nbt [X] Netstat |
-            | 06 | [X] Vendor [X] Arp/Nbt [ ] Netstat |
-            | 07 | [X] Vendor [X] Arp/Nbt [X] Netstat |
-            ===========================================
-            #>
-
-            If ($This.Mode -in 4..7)
-            {
-                $This.Vendor    = [VendorList]::New()
-            }
-
-            If ($This.Mode -in 2,3,6,7)
-            {
-                $This.Arp       = [ArpList]::New()
-                $This.NbtLocal  = [NbtStatLocalList]::New()
-            }
-
-            If ($This.Mode -in 1,3,5,7)
-            {
-                $This.NetStat   = [NetStatList]::New()
-            }
-
-            $This.Adapter       = [NetworkAdapterList]::New()
-            $This.Config        = [NetworkAdapterConfigurationList]::New()
-            $This.Route         = [NetworkRouteList]::New()
-            $This.Interface     = [NetworkInterfaceList]::New()
-            $This.Ip            = [NetworkIpList]::New()
-        }
-        Refresh()
-        {
-            
-        }
-    }
-
-
-
-    Class NetworkControllerObjectList
-    {
-        Hidden [UInt32] $Rank
-        [String]        $Name
-        [UInt32]       $Count
-        [Object]      $Output
-        NetworkControllerObjectList([String]$Type)
-        {
-            $This.Rank   = $This.SetRank($Type)
-            $This.Name   = $Type
-            $This.Output = @( )
-        }
-        Add([Object]$Object)
-        {
-            $This.Output += $Object
-            $This.Count   = $This.Output.Count
-        }
-        [UInt32] SetRank([String]$Type)
-        {
-            $Item = Switch -Regex ($Type) 
-            { 
-                Interface {0} 
-                IP        {1} 
-                Route     {2} 
-                Arp       {3}
-                Nbt       {4} 
-            }
-
-            Return $Item
-        }
-        [String] ToString()
-        {
-            Return ("({0}) {1}" -f $This.Count, ($This.Output -join ", "))
-        }
-    }
-
-    # // ======================================================================
-    # // | Template object meant to assemble individual controller properties |
-    # // ======================================================================
-
-    Class NetworkControllerTemplate
-    {
-        [UInt32]          $Index
-        [String]           $Name
-        [String]     $MacAddress
-        [String]         $Vendor = "-"
-        [Object]        $Adapter
-        [Object]         $Config
-        [Object]      $Interface
-        [Object]             $IP
-        [Object]          $Route
-        [Object]            $Arp
-        [Object]            $Nbt
-        NetworkControllerTemplate([UInt32]$Index,[Object]$Adapter,[Object]$Config)
-        {
-            $This.Index      = $Index
-            $This.Adapter    = $Adapter
-            $This.Config     = $Config
-            $This.Name       = $This.Get(0,"Name")
-            $This.MacAddress = $This.Get(1,"MacAddress")
-
-            If (!$This.MacAddress)
-            {
-                $This.MacAddress = "-"
-            }
-
-            ForEach ($Item in "Interface","IP","Route","Arp","Nbt")
-            {
-                $This.$Item     = $This.NetworkControllerObjectList($Item)
-            }
-        }
-        [Object] NetworkControllerObjectList([String]$Type)
-        {
-            Return [NetworkControllerObjectList]::New($Type)
-        }
-
-        [Object] Get([UInt32]$Slot,[String]$Property)
-        {
-            If ($Slot -notin 0,1)
-            {
-                Throw "Invalid slot"
-            }
-
-            $Item = Switch ($Slot)
-            {
-                0 { $This.Adapter.Property }
-                1 { $This.Config.Property  }
-            }
-
-            Return $Item | ? Name -eq $Property | % Value
-        }
-        SetVendor([Object]$Vendor)
-        {
-            $This.Vendor = $Vendor.Find($This.MacAddress)
-        }
-        [String] ToString()
-        {
-            Return "<FENetwork.NetworkControllerTemplate>"
-        }
-    }
-
-
-
-    If ($Mode -in 4..7)
-    {
-        $Vendor       = [VendorList]::New()
-    }
-
-    $Adapter          = [NetworkAdapterList]::New().Output
-    $Config           = [NetworkAdapterConfigurationList]::New().Output
-    $Interface        = [NetworkInterfaceList]::New().Output
-    $IP               = [NetworkIpList]::New().Output
-    $Route            = [NetworkRouteList]::New().Output
-
-    $Template         = @( )
-
-    # Coagulate information to parse further
-    ForEach ($X in 0..($Adapter.Count-1))
-    {
-        $Index        = $Config[$X].Property | ? Name -eq InterfaceIndex | % Value
-        $Id           = [NetworkControllerTemplate]::New($Index,$Adapter[$X],$Config[$X])
-
-        If ($Mode -in 4..7)
-        {
-            If ($Id.MacAddress -ne "-")
-            {
-                $Id.SetVendor($Vendor)
-            }
-        }
-
-        ForEach ($Item in $Interface | ? Index -eq $Index)
-        {
-            $Id.Interface.Add($Item)
-        }
-
-        ForEach ($Item in $Ip        | ? Index -eq $Index)
-        {
-            $Id.IP.Add($Item)
-        }
-
-        ForEach ($Item in $Route     | ? Index -eq $Index)
-        {
-            $Id.Route.Add($Item)
-        }
-
-        $Template    += $Id
-    }
-
-    Write-Host "Template"
-    $Template[0]                  | FT
-    Write-Host "Adapter"
-    $Template[0].Adapter          | FT
-    Write-Host "Config"
-    $Template[0].Config           | FT
-    Write-Host "Interface List"
-    $Template[0].Interface.Output | FT
-    Write-Host "IP List"
-    $Template[0].IP.Output        | FT
-    Write-Host "Route List"
-    $Template[0].Route.Output     | FT
-    Write-Host "Arp List"
-    $Template[0].Arp.Output       | FT
-    Write-Host "Nbt List"
-    $Template[0].Nbt.Output       | FT
-
-    $Output           = @( )
-
-    ForEach ($Object in $Template)
-    {
-        ForEach ($Type in 4,6)
-        {
-            
-        }
-    }
-
-
-    # // ===============================================================================
-    # // | Combines all aspects of the above classes to create a factory subcontroller |
-    # // ===============================================================================
-
-    Class NetworkController
-    {
-        [UInt32]      $Mode
-        [Object]   $Adapter
-        [Object]    $Config
-        [Object] $Interface
-        [Object]     $Route
-        [Object]        $IP
-        [Object]  $Template = @( )
-        NetworkController([UInt32]$Mode)
-        {
-            $This.Mode     = $Mode
-            $This.Refresh()
-        }
-        [Object] NewTemplate([UInt32]$Index,[Object]$Adapter,[Object]$Config)
-        {
-            Return [NetworkControllerTemplate]::New($Index,$Adapter,$Config)
-        }
-        Refresh()
-        {
-            $This.Adapter   = [NetworkAdapterList]::New().Output
-            $This.Config    = [NetworkAdapterConfigurationList]::New().Output
-            $This.Route     = [NetworkRouteList]::New().Output
-            $This.Interface = [NetworkInterfaceList]::New().Output
-            $This.IP        = [NetworkIpList]::New().Output
-            $This.Template  = @( )
-            $Object         = @{ }
-
-            $C              = $This.Adapter.Count             
-            $D              = ([String]$C).Length
-
-            Write-Progress -Activity Refreshing -Status ("({0:d$D}/$C)" -f 0) -PercentComplete 0
-            ForEach ($X in 0..($This.Adapter.Count-1))
-            {
-                $Id                         = @{  }
-                $Id.Index                   = $This.Config[$X].Property | ? Name -eq InterfaceIndex | % Value
-                $Id.Template                = $This.NewTemplate($Id.Index,$This.Adapter[$X],$This.Config[$X])
-        
-                ForEach ($Type in 4,6)
-                {
-                    $Id.Interface           = $This.Interface | ? Index -eq $Id.Index | ? Type -eq $Type
-                    If ($Id.Interface)
-                    {
-                        $Id.Interface.IP    = $This.Ip        | ? Index -eq $Id.Index | ? Type -eq $Type
-                        $Id.Interface.Route = $This.Route     | ? Index -eq $Id.Index | ? Type -eq $Type
-                        $Id.Template.AddInterface($Id.Interface)
-                    }
-                }
-                Write-Progress -Activity Refreshing -Status ("({0:d$D}/$C)" -f $X) -PercentComplete (($X/$C)*100)
-        
-                $Object.Add($Object.Count,$Id.Template)
-            }
-            Write-Progress -Activity Refreshing -Status "($C/$C)" -Complete
-        
-            $This.Template = $Object[0..($Object.Count-1)] | Sort-Object Index
         }
     }
 
@@ -1579,6 +1190,441 @@ Function Get-FENetwork
         }
     }
 
+    # // ========================================================================
+    # // | Controls various subcomponents of each individual network controller |
+    # // ========================================================================
+
+    Class NetworkControllerObjectList
+    {
+        Hidden [UInt32] $Rank
+        [String]        $Name
+        [UInt32]       $Count
+        [Object]      $Output
+        NetworkControllerObjectList([String]$Type)
+        {
+            $This.Rank   = $This.SetRank($Type)
+            $This.Name   = $Type
+            $This.Output = @( )
+        }
+        Add([Object]$Object)
+        {
+            $This.Output += $Object
+            $This.Count   = $This.Output.Count
+        }
+        [UInt32] SetRank([String]$Type)
+        {
+            $Item = Switch -Regex ($Type) 
+            { 
+                Interface {0} 
+                IP        {1} 
+                Route     {2} 
+                Arp       {3}
+                Nbt       {4} 
+            }
+
+            Return $Item
+        }
+        [String] ToString()
+        {
+            Return ("({0}) {1}" -f $This.Count, ($This.Output -join ", "))
+        }
+    }
+
+    # // ======================================================================
+    # // | Template object meant to assemble individual controller properties |
+    # // ======================================================================
+
+    Class NetworkControllerTemplate
+    {
+        [UInt32]          $Index
+        [String]           $Name
+        [String]     $MacAddress
+        [String]         $Vendor = "-"
+        [Object]        $Adapter
+        [Object]         $Config
+        [Object]      $Interface
+        [Object]             $IP
+        [Object]          $Route
+        [Object]            $Arp
+        [Object]            $Nbt
+        NetworkControllerTemplate([UInt32]$Index,[Object]$Adapter,[Object]$Config)
+        {
+            $This.Index      = $Index
+            $This.Adapter    = $Adapter
+            $This.Config     = $Config
+            $This.Name       = $This.Get(0,"Name")
+            $This.MacAddress = $This.Get(1,"MacAddress")
+
+            If (!$This.MacAddress)
+            {
+                $This.MacAddress = "-"
+            }
+
+            ForEach ($Item in "Interface","IP","Route","Arp","Nbt")
+            {
+                $This.$Item     = $This.NetworkControllerObjectList($Item)
+            }
+        }
+        [Object] NetworkControllerObjectList([String]$Type)
+        {
+            Return [NetworkControllerObjectList]::New($Type)
+        }
+        [Object] Get([UInt32]$Slot,[String]$Property)
+        {
+            If ($Slot -notin 0,1)
+            {
+                Throw "Invalid slot"
+            }
+
+            $Item = Switch ($Slot)
+            {
+                0 { $This.Adapter.Property }
+                1 { $This.Config.Property  }
+            }
+
+            Return $Item | ? Name -eq $Property | % Value
+        }
+        SetVendor([Object]$Vendor)
+        {
+            $This.Vendor = $Vendor.Find($This.MacAddress)
+        }
+        [String] ToString()
+        {
+            Return "<FENetwork.NetworkControllerTemplate>"
+        }
+    }
+
+    # // =========================================================
+    # // | List object meant to contain individual controller(s) |
+    # // =========================================================
+
+    Class NetworkControllerTemplateList
+    {
+        [String]   $Name
+        [UInt32]  $Count
+        [Object] $Output
+        NetworkControllerTemplateList()
+        {
+            $This.Name = "NetworkControllerTemplateList"
+        }
+        Clear()
+        {
+            $This.Output  = @( )
+            $This.Count   = 0
+        }
+        Add([Object]$Object)
+        {
+            $This.Output += $Object
+            $This.Count   = $This.Output.Count
+        }
+        [String] ToString()
+        {
+            Return "({0}) <FENetwork.NetworkControllerTemplateList>" -f $This.Count
+        }
+    }
+
+    # // ============================================================================
+    # // | For fine-grained control over all various properties in each compartment |
+    # // ============================================================================
+
+    Class NetworkControllerCompartmentProperty
+    {
+        [UInt32] $Index
+        [String] $Source
+        [String] $Name
+        [Object] $Value
+        NetworkControllerCompartmentProperty([UInt32]$Index,[String]$Source,[Object]$Property)
+        {
+            $This.Index  = $Index
+            $This.Source = $Source
+            $This.Name   = $Property.Name
+            $This.Value  = $Property.Value
+        }
+        [String] ToString()
+        {
+            Return "<FENetwork.NetworkControllerCompartmentProperty>"
+        }
+    }
+
+    # // ===========================================================================================
+    # // | Provides control for each individual interface + IP + AddressFamily + Route + Arp + Nbt |
+    # // ===========================================================================================
+
+    Class NetworkControllerCompartment
+    {
+        [UInt32]                 $Index
+        Hidden [UInt32]           $Type
+        Hidden [Object]        $Adapter
+        Hidden [Object]         $Config
+        Hidden [Object]      $Interface
+        Hidden [Object]             $Ip
+        [UInt32]        $InterfaceIndex
+        [String]        $InterfaceAlias
+        [UInt32]         $AddressFamily
+        [UInt32]                  $Dhcp
+        [UInt32]             $Connected
+        [String]             $IpAddress
+        [UInt32]                $Prefix
+        [Object]                 $Route
+        [Object]                   $Arp
+        [Object]                   $Nbt
+        [Object]              $Property
+        [Object]             $Extension
+        NetworkControllerCompartment([UInt32]$Index,[Object]$Adapter,[Object]$Config,[Object]$Interface,[Object]$IP)
+        {
+            $This.Index          = $Index
+            $This.Type           = $Interface.Type
+            $This.Adapter        = $Adapter
+            $This.Config         = $Config
+            $This.Interface      = $Interface
+            $This.IP             = $IP
+            $This.InterfaceIndex = $Interface.Index
+            $This.InterfaceAlias = $Interface.Alias
+            $This.AddressFamily  = $Interface.Type
+            $This.Dhcp           = $Interface.Dhcp
+            $This.Connected      = $Interface.Open
+            $This.IPAddress      = $IP.IPAddress
+            $This.Prefix         = $IP.Prefix
+
+            $This.Property       = @( )
+
+            ForEach ($Item in "Adapter","Config","Interface","IP")
+            {
+                ForEach ($Property in $This.$Item.Property | ? Name -notmatch Cim)
+                {
+                    $This.AddCompartmentProperty($Item,$Property)
+                }
+            }
+        }
+        AddCompartmentProperty([String]$Source,[Object]$Property)
+        {
+            $This.Property += [NetworkControllerCompartmentProperty]::New($This.Property.Count,$Source,$Property)
+        }
+        [String] ToString()
+        {
+            Return "<FENetwork.NetworkControllerCompartment>"
+        }
+    }
+
+    Class NetworkControllerCompartmentList
+    {
+        [String]   $Name
+        [UInt32]  $Count
+        [Object] $Output
+        NetworkControllerCompartmentList()
+        {
+            $This.Name   = "NetworkControllerCompartmentList"
+            $This.Clear()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+            $This.Count  = 0
+        }
+        Add([Object]$Object)
+        {
+            $This.Output += $Object
+            $This.Count   = $This.Output.Count
+        }
+        [String] ToString()
+        {
+            Return "({0}) <FENetwork.NetworkControllerCompartmentList>" -f $This.Count
+        }
+    }
+
+    # // ================================================================
+    # // | Network controller master allows refreshing individual items |
+    # // | from all of the previous classes, and provides extensions    |
+    # // ================================================================
+
+    Class NetworkControllerMaster
+    {
+        [UInt32] $Mode
+        [Object] $Vendor
+        [Object] $Arp
+        [Object] $NbtLocal
+        [Object] $NetStat
+        [Object] $Adapter
+        [Object] $Config
+        [Object] $Route
+        [Object] $Interface
+        [Object] $Ip
+        [Object] $Compartment
+        NetworkControllerMaster([UInt32]$Mode)
+        {
+            $This.Mode      = $Mode
+
+            <#
+            ===========================================
+            | 00 | [ ] Vendor [ ] Arp/Nbt [ ] Netstat |
+            | 01 | [ ] Vendor [ ] Arp/Nbt [X] Netstat |
+            | 02 | [ ] Vendor [X] Arp/Nbt [ ] Netstat |
+            | 03 | [ ] Vendor [X] Arp/Nbt [X] Netstat |
+            | 04 | [X] Vendor [ ] Arp/Nbt [ ] Netstat |
+            | 05 | [X] Vendor [ ] Arp/Nbt [X] Netstat |
+            | 06 | [X] Vendor [X] Arp/Nbt [ ] Netstat |
+            | 07 | [X] Vendor [X] Arp/Nbt [X] Netstat |
+            ===========================================
+            #>
+
+            If ($This.Mode -in 4..7)
+            {
+                $This.Vendor    = [VendorList]::New()
+            }
+
+            If ($This.Mode -in 2,3,6,7)
+            {
+                $This.Arp       = [ArpList]::New()
+                $This.NbtLocal  = [NbtStatLocalList]::New()
+            }
+
+            If ($This.Mode -in 1,3,5,7)
+            {
+                $This.NetStat   = [NetStatList]::New()
+            }
+
+            $This.Adapter       = [NetworkAdapterList]::New()
+            $This.Config        = [NetworkAdapterConfigurationList]::New()
+            $This.Route         = [NetworkRouteList]::New()
+            $This.Interface     = [NetworkInterfaceList]::New()
+            $This.Ip            = [NetworkIpList]::New()
+            $This.Compartment   = [NetworkControllerCompartmentList]::New()
+        }
+        [Object] NetworkControllerTemplate([UInt32]$Index,[UInt32]$Rank)
+        {
+            Return [NetworkControllerTemplate]::New($Index,
+                                                    $This.Adapter.Output[$Rank],
+                                                    $This.Config.Output[$Rank])
+        }
+        Refresh()
+        {
+            $Template = [NetworkControllerTemplateList]::New()
+            $Template.Clear()
+
+            If ($This.Mode -in 2,3,6,7)
+            {
+                $This.Arp.Refresh()
+                $This.NbtLocal.Refresh()
+                ForEach ($Item in $This.NbtLocal.Output)
+                {
+                    $Item.Index = $This.Arp.Output | ? IPAddress -eq $Item.IPAddress | % Index
+                }
+
+                <# Todo: Add [NbtRemote] #>
+            }
+
+            If ($This.Mode -in 1,3,5,7)
+            {
+                $This.NetStat.Refresh()
+            }
+
+            $This.Adapter.Refresh()
+            $This.Config.Refresh()
+            $This.Route.Refresh()
+            $This.Interface.Refresh()
+            $This.Ip.Refresh()
+
+            Write-Host "Adapters"
+            ForEach ($X in 0..($This.Adapter.Output.Count-1))
+            {
+                $Index        = $This.Config.Output[$X].Property | ? Name -eq InterfaceIndex | % Value
+                $Id           = $This.NetworkControllerTemplate($Index,$X)
+        
+                If ($This.Mode -in 4..7)
+                {
+                    If ($Id.MacAddress -ne "-")
+                    {
+                        $Id.SetVendor($This.Vendor)
+                    }
+                }
+
+                If ($This.Mode -in 1,3,5,7)
+                {
+                    ForEach ($Item in $This.Arp.Output | ? Index -eq $Index)
+                    {
+                        $Id.Arp.Add($Item)
+                    }
+
+                    ForEach ($Item in $This.NbtLocal.Output | ? Index -eq $Index)
+                    {
+                        $Id.Nbt.Add($Item)
+                    }
+                }
+
+                ForEach ($Item in $This.Interface.Output | ? Index -eq $Index)
+                {
+                    $Id.Interface.Add($Item)
+                }
+        
+                ForEach ($Item in $This.Ip.Output | ? Index -eq $Index)
+                {
+                    $Id.IP.Add($Item)
+                }
+        
+                ForEach ($Item in $This.Route.Output | ? Index -eq $Index)
+                {
+                    $Id.Route.Add($Item)
+                }
+        
+                Write-Host $Id.Index
+                $Template.Add($Id)
+            }
+
+            $Template.Output = $Template.Output | Sort-Object Index
+
+            $This.Compartment.Clear()
+    
+            ForEach ($X in 0..($Template.Output.Count-1))
+            {
+                $Object = $Template.Output[$X]
+                ForEach ($Type in 4,6)
+                {
+                    ForEach ($Interface in $Object.Interface.Output | ? Type -eq $Type)
+                    {
+                        ForEach ($IP in $Object.IP.Output | ? Type -eq $Type)
+                        {
+                            $Item       = [NetworkControllerCompartment]::New($This.Compartment.Count,
+                                                                              $Object.Adapter,
+                                                                              $Object.Config,
+                                                                              $Interface,
+                                                                              $IP)
+                            $Item.Route = $Object.Route.Output | ? Type -eq $Type
+                            If ($Type -eq 4)
+                            {
+                                If ($Object.Arp.Count -gt 0)
+                                {
+                                    $Item.Arp = $Object.Arp.Output
+                                }
+                                If ($Object.Nbt.Count -gt 0)
+                                {
+                                    $Item.Nbt = $Object.Nbt.Output
+                                }
+                            }
+            
+                            $This.Compartment.Add($Item)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    $Ctrl = [NetworkControllerMaster]::New(7)
+    $Ctrl.Refresh()
+
+    <#
+
+    PS C:\Users\Administrator> $Ctrl.Arp.Output
+
+    Index     : 0
+    Type      : Public
+    IPAddress : 172.18.2.14
+    Adapter   : 3
+    Host      : {<FENetwork.ArpHost>, <FENetwork.ArpHost>, <FENetwork.ArpHost>, <FENetwork.ArpHost>...}
+
+    #>
+
+
     # // ============================================================================
     # // | Used to extend the functionality of the NetworkController output objects |
     # // ============================================================================
@@ -1589,8 +1635,9 @@ Function Get-FENetwork
         [String] $Name
         [String] $MacAddress
         [String] $Vendor
-        [Object] $IPv4
-        [Object] $IPv6
+        [Object] $Adapter
+        [Object] $Config
+        [Object] $Compartment
         [Object] $Arp
         [Object] $Nbt
         NetworkControllerExtension([Object]$Interface)
@@ -1599,7 +1646,7 @@ Function Get-FENetwork
             $This.Name        = $Interface.Name
             $This.MacAddress  = $Interface.MacAddress
             $This.Vendor      = $Interface.Vendor
-            $This.IPv4        = @( )
+
             Switch ($Interface.IPv4.IP.Count)
             {
                 0 
