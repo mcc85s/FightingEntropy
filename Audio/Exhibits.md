@@ -1,14 +1,21 @@
-# Audio Exhibits (Same thing as "evidence")
+# Audio (Exhibits/Evidence)
 
-First and foremost...? This entry below is of a rather large significance as it expertly portrays that many of the deputies that work for the Saratoga County Sheriffs Office are really stupid. For instance, Jeffrey Margan, Paul Pecor, and Daniel Nelson. Jared Gardner was also attached to this incident, although he was NOT in the room at the time I recorded this audio recording.
+First and foremost...? 
+
+This FIRST entry below is of a rather large significance as it expertly portrays that **many** of the deputies that work for the **Saratoga County Sheriffs Office** are really stupid. For instance, **Jeffrey Margan**, **Paul Pecor**, and **Daniel Nelson**. **Jared Gardner** was ALSO attached to this incident, although he was NOT in the room at the time I recorded this audio recording.
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
 | **03/01/22** | 0h 21m 09s | **2022_03_01_16_30_43.mp3** | [SCSO Margan, Pecor, Nelson being morons](https://drive.google.com/file/d/1BNfF9vWjG4vBIO-8oXmIw6aLeNvFRjRL)
 
-Prior to this particular recording, my mother had contacted the Saratoga County Sheriffs Office because she was upset that I was using the light in the kitchen to eat some ramen. This was at or about the time that Russia began to invade Ukraine, and I had recorded MULTIPLE VIDEOS of CYBERATTACKS that had taken place against my equipment just DAYS beforehand. The problem is that these dudes from SCSO are *really stupid*...
+Prior to this particular recording...?
 
-Russia had used various cyberattacks against Ukraine at or about that date, and I told these morons from SCSO about these following videos...
+My mother had contacted the **Saratoga County Sheriffs Office**, because she was _upset_ that I was _using the light in the kitchen to eat some ramen_.<br>
+This was **at or about the time** that **Russia** began to invade **Ukraine**, and I had recorded MULTIPLE VIDEOS of CYBERATTACKS that had taken place against my equipment just DAYS beforehand. The problem is that these dudes from SCSO are *really stupid*... and it can be heard in the audio recording how stupid they are.
+
+They're never going to AGREE that they're really fucking stupid, but- that's really just too fucking bad because here's the evidence they were to lazy to look at or collect, as well as like, a couple of brand new cyberattacks that someone decided to do today **(12/18/22)** as I was intially creating this markdown file.
+
+**Russia** had used _various cyberattacks_ against **Ukraine** at or about that date, and I told these **morons from SCSO** about these following videos:
 
 | Date     | Name/URL
 |:---------|:------------------------------------------------------------------|
@@ -18,16 +25,67 @@ Russia had used various cyberattacks against Ukraine at or about that date, and 
 | 02/26/22 | [Smartphone-Post-BSOD](https://youtu.be/oShPs6_uXIk)              |
 | 02/26/22 | [OBS-Laptop-Post-BSOD](https://youtu.be/LYVUMLpofWg)              |
 
-What these links above are called, are "VIDEOS" which constitutes as "evidence" of someone committing MULTIPLE CYBERATTACKS against my equipment, from back in February 2022. You would have to be really fucking stupid, to not see what these videos indicate. But also, AS I WAS UPDATING THIS PARTICULAR FILE...?
+So, for the guys who work at the Saratoga County Sheriffs Office...?<br>
+Go ahead, and grab this thing called a "dictionary", before you continue reading this document.
 
-Uh-oh... someone thought it'd be a smart idea to commit ANOTHER CYBERATTACK...
+What these _links_ ABOVE are called, "VIDEOS".<br>
+| Word  | Type | Definition                                                       |
+|:------|:-----|:-----------------------------------------------------------------|
+| VIDEO | NOUN | the (recording/reproducing/broadcasting) of moving visual images |
+
+When people use this word in this thing called a SENTENCE...
+
+| Word  | Type | Definition                                                       |
+|:------|:-----|:-----------------------------------------------------------------|
+| SENTENCE | NOUN | a set of words that is complete in itself, typically containing a subject and predicate, conveying a statement, question, exclamation, or command, and consisting of a main clause and sometimes one or more subordinate clauses. |
+
+...it'll look like this:
+
+"Here's a list of the VIDEOS that I recorded of the CYBERATTACKS that occurred back before RUSSIA invaded UKRAINE, you lazy fucks."
+
+See how that word looks really useful and cool...?<br>
+Well, imagine if someone hears about this audio recording, and fires all (3) of you idiots...<br>
+To be fair, I think you guys don't have to worry about anything, and that's because the guy who runs SCSO is really fuckin' stupid.
+
+These VIDEOS constitute as EVIDENCE of someone committing CYBERATTACKS against my EQUIPMENT, and I recorded them way back in... "February 2022".<br>
+You would have to be one of the dumbest fuckin' people on the planet, to not see that these videos indicate the thing that I talk about with the (3) morons in the audio recording in the link above.
+
+BUT WAIT, THERE'S MORE~!<br>
+AS I WAS UPDATING [[THIS PARTICULAR FILE](https://github.com/mcc85s/FightingEntropy/edit/main/Audio/Exhibits.md)]...?
+
+Uh-oh... someone who's a real dumb motherfucker, thought it'd be a smart idea to commit ANOTHER CYBERATTACK that I managed to catch in (2) fucking videos...
 
 | Date         | Name/URL                                                                |
 |:-------------|:------------------------------------------------------------------------|
 | **12/18/22** | [Cyberattack/Archimedes Smartphone Angle](https://youtu.be/fIuB2TbOInc) |
 | **12/18/22** | [Cyberattack/Archimedes Laptop Angle](https://youtu.be/Ct8X356_Xhc)     |
 
-At this time, I will commence with the number of audio recordings that I've been collecting. This collection is far from complete, but it expertly portrays that a number of highly respected people in Saratoga County are really fucking stupid/lazy.
+Basically, the CYBERATTACK OCCURRING IN THESE (2) VIDEOS ARE NEARLY IDENTICAL TO THE ONES IN THE VIDEO LINKS UP ABOVE~!<br>
+HOLY SHIT. **IMAGINE IF THE SARATOGA COUNTY SHERIFFS OFFICE WASN'T FULL OF CARELESS MORONS~!**
+
+I can't.<br>
+I TRY to imagine a world where the SARATOGA COUNTY SHERIFFS OFFICE has (0) careless morons who work in it...?<br>
+But- that is an absolute fucking fantasy.<br>
+This place is a fucking joke.<br>
+They're not ALONE, however.<br>
+Troop G of the New York State Police also has SOME real dumb motherfuckers in their midst, too.<br>
+What can anybody actually do about it...?<br>
+Keep reading, you'll find out how (1) guy outsmarted a legion of lazy fucks that have:
+
+| Index | Laurel         |
+|:------|:---------------|
+| 1     | badges         |
+| 2     | gavels         |
+| 3     | law degree     |
+| 4     | medical degree | 
+| 5     | masters degree |
+| 6     | doctorate/M.D. |
+| 7     | etc.           |
+
+At this time, I will commence with the number of **audio recordings** that I've been _collecting_.<br>
+This "collection" process is something that the official police are supposed to do from time to time, but I have observed that many of them are just really fucking lazy, and they don't ever do that. Not at all. If they manage to SEE any evidence that makes their life or job a lot more DIFFICULT...? They will aggressively ignore it. Sometimes, they will even perform these **cyberattacks** and use [CVE-2019-8936](https://vuxml.freebsd.org/freebsd/c2576e14-36e2-11e9-9eda-206a8a720317.html) and disrupt a business that I used to manage for over (3) years at [1602 Route 9, Clifton Park, NY 12065](https://www.google.com/maps/@42.8520005,-73.757225,21z).
+
+This collection is far from complete, but it expertly portrays that a number of highly respected people in **Saratoga County** are really fucking **(stupid/lazy)**.
 
 | Date         | Length      | File                              | Url/Name                                                                                       |
 |:-------------|:------------|:----------------------------------|:-----------------------------------------------------------------------------------------------|
