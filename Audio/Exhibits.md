@@ -19,13 +19,13 @@ They're never going to AGREE that they're really stupid, but- that's really just
 
 **Russia** had used _various cyberattacks_ against **Ukraine** at or about that date, and I told these **morons from SCSO** about these following videos:
 
-| Date     | Name/URL                                                                       |
-|:---------|:-------------------------------------------------------------------------------|
-| 02/15/22 | [A Matter of National Security](https://youtu.be/e4VnZObiez8)                  |
-| 02/25/22 | [Censorship on Facebook](https://youtu.be/Jmq4yBqGhTs)                         |
-| 02/26/22 | [During Blue Screen of Death (Smartphone angle)](https://youtu.be/40sQXpVh_8Y) |
-| 02/26/22 | [Post Blue Screen of Death (Smartphone angle)](https://youtu.be/oShPs6_uXIk)   |
-| 02/26/22 | [Post Blue Screen of Death (Laptop angle/OBS)](https://youtu.be/LYVUMLpofWg)   |
+| Date         | Name/URL                                                                       |
+|:-------------|:-------------------------------------------------------------------------------|
+| **02/15/22** | [A Matter of National Security](https://youtu.be/e4VnZObiez8)                  |
+| **02/25/22** | [Censorship on Facebook](https://youtu.be/Jmq4yBqGhTs)                         |
+| **02/26/22** | [During Blue Screen of Death (Smartphone angle)](https://youtu.be/40sQXpVh_8Y) |
+| **02/26/22** | [Post Blue Screen of Death (Smartphone angle)](https://youtu.be/oShPs6_uXIk)   |
+| **02/26/22** | [Post Blue Screen of Death (Laptop angle/OBS)](https://youtu.be/LYVUMLpofWg)   |
 
 So, for the guys who work at the Saratoga County Sheriffs Office...?<br>
 Go ahead, and grab this thing called a "dictionary", before you continue reading this document...
@@ -33,31 +33,32 @@ Go ahead, and grab this thing called a "dictionary", before you continue reading
 What these _links_ ABOVE are called, "VIDEOS".<br>
 Videos are actually pretty <i>cool</i>, and I'll even go so far as to explain the **definition** of that word, for any fuckin' moron from **(SCSO/NYSP)** who doesn't know...
 
-| Word  | Type | Definition                                                       |
-|:------|:-----|:-----------------------------------------------------------------|
-| VIDEO | NOUN | the (recording/reproducing/broadcasting) of moving visual images |
+| Word      | Type | Definition                                                       |
+|:----------|:-----|:-----------------------------------------------------------------|
+| **VIDEO** | NOUN | the (recording/reproducing/broadcasting) of moving visual images |
 
 When people use this word in this thing called a SENTENCE...
 
-| Word  | Type | Definition                                                       |
-|:------|:-----|:-----------------------------------------------------------------|
-| SENTENCE | NOUN | a set of words that is complete in itself, typically containing a subject and predicate, conveying a statement, question, exclamation, or command, and consisting of a main clause and sometimes one or more subordinate clauses. |
+| Word         | Type | Definition                                                       |
+|:-------------|:-----|:-----------------------------------------------------------------|
+| **SENTENCE** | NOUN | a set of words that is complete in itself, typically containing a subject and predicate, conveying a statement, question, exclamation, or command, and consisting of a main clause and sometimes one or more subordinate clauses. |
 
 ...it'll look like this:
 
-"Here's a list of the VIDEOS that I recorded of the CYBERATTACKS that occurred back before RUSSIA invaded UKRAINE, you lazy fucks."
+``Here's a list of the VIDEOS that I recorded of the CYBERATTACKS that occurred back before RUSSIA invaded UKRAINE, you lazy fucks.``
 
-See how that word looks really useful and cool...?<br>
+See how that word looks really _useful_ and _cool_...?<br>
+
 Well, imagine if someone hears about this audio recording, and fires all (3) of you idiots...<br>
-To be fair, I think you guys don't have to worry about anything, and that's because the guy who runs SCSO is really fuckin' stupid.
+To be fair, I don't think you guys have to worry about a god damn thing, and that's because the guy who runs SCSO is really fuckin' stupid.
 
 These VIDEOS constitute as EVIDENCE of someone committing CYBERATTACKS against my EQUIPMENT, and I recorded them way back in... "February 2022".<br>
-You would have to be one of the dumbest fuckin' people on the planet, to not see that these videos indicate the thing that I talk about with the (3) morons in the audio recording in the link above.
+You would have to be one of the dumbest fuckin' people on the planet, to not see that these videos ALL indicate something I literally spoke about... with these (3) fucking morons from SCSO... in the audio recording above.
 
 BUT WAIT, THERE'S MORE~!<br>
-AS I WAS UPDATING [[THIS PARTICULAR FILE](https://github.com/mcc85s/FightingEntropy/edit/main/Audio/Exhibits.md)]...?
+AS I WAS UPDATING [[THIS PARTICULAR FILE](https://github.com/mcc85s/FightingEntropy/edit/main/Audio/Exhibits.md)] on 12/18/22...?
 
-Uh-oh... someone who's a real dumb motherfucker, thought it'd be a smart idea to commit ANOTHER CYBERATTACK that I managed to catch in (2) fucking videos...
+Oh my god... someone who's a **real dumb motherfucker**, thought it'd be a **smart idea** to commit **ANOTHER CYBERATTACK** that I managed to catch in **(2) ADDITIONAL FUCKING VIDEOS**...
 
 | Date         | Name/URL                                                                |
 |:-------------|:------------------------------------------------------------------------|
@@ -68,9 +69,10 @@ Basically, the CYBERATTACK OCCURRING IN THESE (2) VIDEOS ARE NEARLY IDENTICAL TO
 HOLY SHIT. **IMAGINE IF THE SARATOGA COUNTY SHERIFFS OFFICE WASN'T FULL OF CARELESS MORONS~!**
 
 I can't.<br>
-I TRY to imagine a world where the SARATOGA COUNTY SHERIFFS OFFICE has (0) careless morons who work in it...?<br>
-But- that is an absolute fucking fantasy.<br>
-This place is a fucking joke.<br>
+Trust me, I've tried to imagine a world where the **SARATOGA COUNTY SHERIFFS OFFICE** has (0) careless morons who work in it...?<br>
+But- that is an absolute fucking fantasy.
+
+This place, is a fucking joke.<br>
 They're not ALONE, however.<br>
 Troop G of the New York State Police also has SOME real dumb motherfuckers in their midst, too.<br>
 What can anybody actually do about it...?<br>
@@ -86,8 +88,13 @@ Keep reading, you'll find out how (1) guy outsmarted a legion of lazy fucks that
 | 6     | doctorate/M.D. |
 | 7     | etc.           |
 
-At this time, I will commence with the number of **audio recordings** that I've been _collecting_.<br>
-This "collection" process is something that the official police are supposed to do from time to time, but I have observed that many of them are just really fucking lazy, and they don't ever do that. Not at all. If they manage to SEE any evidence that makes their life or job a lot more DIFFICULT...? They will aggressively ignore it. Sometimes, they will even perform these **cyberattacks** and use [CVE-2019-8936](https://vuxml.freebsd.org/freebsd/c2576e14-36e2-11e9-9eda-206a8a720317.html) and disrupt a business that I used to manage for over (3) years at [1602 Route 9, Clifton Park, NY 12065](https://www.google.com/maps/@42.8520005,-73.757225,21z).
+At this time, I will commence with the number of **audio recordings** that I've been _collecting_.
+
+This "collection" process is something that the official police are supposed to do from time to time, but I have observed that many of them are just really fucking lazy, and they don't ever do that. Not at all. If they manage to SEE any evidence that makes their life or job a lot more DIFFICULT...? 
+
+They will aggressively ignore it. 
+
+Sometimes, they will even perform these **cyberattacks** and use [CVE-2019-8936](https://vuxml.freebsd.org/freebsd/c2576e14-36e2-11e9-9eda-206a8a720317.html) and disrupt a business that I used to manage for over (3) years at [1602 Route 9, Clifton Park, NY 12065](https://www.google.com/maps/@42.8520005,-73.757225,21z).
 
 This collection is far from complete, but it expertly portrays that a number of highly respected people in **Saratoga County** are really fucking **(stupid/lazy)**.
 
