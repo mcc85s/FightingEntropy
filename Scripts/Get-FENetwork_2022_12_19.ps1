@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-18 21:37:05                                                                  //
+\\  Date       : 2022-12-19 15:52:18                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FENetwork.ps1
@@ -19,7 +19,7 @@
     Modified   : 2022-12-14
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
-    TODO       : IPV6 Type stuff, Ping Sweep (IPV4), NBT scan remote addresses
+    TODO       : NBT scan remote addresses
 
 .Example
     ===========================================
@@ -37,17 +37,119 @@ Function Get-FENetwork
 {
     [CmdLetBinding()]Param([Parameter()][UInt32]$Mode=0)
 
+    # // ====================================================================================================
+    # // | Creates a time object similar to the [System.Diagnostics.Stopwatch] object, but is much simpler. |
+    # // ====================================================================================================
+
+    Class Time
+    {
+        Hidden [Object] $Start
+        Time()
+        {
+            $This.Start = [DateTime]::Now
+        }
+        [String] ToString()
+        {
+            Return [Timespan]([DateTime]::Now-$This.Start)
+        }
+    }
+
+    # // ========================================
+    # // | Enum types for FENetwork mode switch |
+    # // ========================================
+
+    Enum ModeType
+    {
+        None
+        NetstatOnly
+        ArpNbtOnly
+        ArpNbtNetstat
+        VendorOnly
+        VendorNetstat
+        VendorArpNbt
+        All
+    }
+
+    # // ====================================
+    # // | Individual FENetwork mode switch |
+    # // ====================================
+
+    Class ModeItem
+    {
+        [UInt32]       $Index
+        [String]        $Type
+        [String] $Description
+        ModeItem([UInt32]$Index,[String]$Type)
+        {
+            $This.Index = $Index
+            $This.Type  = [ModeType]::$Type
+        }
+        [String] ToString()
+        {
+            Return $This.Index
+        }
+    }
+
+    # // =======================================
+    # // | List of all FENetwork mode switches |
+    # // =======================================
+
+    Class ModeList
+    {
+        [String]     $Name
+        [UInt32]    $Count
+        [Object]   $Output
+        [Object] $Selected
+        ModeList()
+        {
+            $This.Name        = "ModeList"
+            $This.Output      = @( )
+
+            ForEach ($Name in [System.Enum]::GetNames([ModeType]))
+            {
+                $This.Add($Name)
+            }
+
+            $This.Selected    = $This.Select(0)
+        }
+        Add([String]$Type)
+        {
+            $Item             = [ModeItem]::New($This.Output.Count,$Type) 
+            $Item.Description = Switch ($Item.Index)
+            {
+                0 { "[ ] Vendor [ ] Arp/Nbt [ ] Netstat" }
+                1 { "[ ] Vendor [ ] Arp/Nbt [X] Netstat" }
+                2 { "[ ] Vendor [X] Arp/Nbt [ ] Netstat" }
+                3 { "[ ] Vendor [X] Arp/Nbt [X] Netstat" }
+                4 { "[X] Vendor [ ] Arp/Nbt [ ] Netstat" }
+                5 { "[X] Vendor [ ] Arp/Nbt [X] Netstat" }
+                6 { "[X] Vendor [X] Arp/Nbt [ ] Netstat" }
+                7 { "[X] Vendor [X] Arp/Nbt [X] Netstat" }
+            }
+            $This.Output     += $Item
+            $This.Count       = $This.Output.Count
+        }
+        Select([UInt32]$Index)
+        {
+            $This.Selected    = $This.Output[$Index]
+        }
+        [String] ToString()
+        {
+            Return $This.Selected.Index
+        }
+    }
+
     # // ================================================
     # // | Collects DNS Suffix/registration information |
     # // ================================================
 
     Class DNSSuffix
     {
-        [UInt32] $IsDomain
+        [UInt32]     $IsDomain
         [String] $ComputerName
-        [String] $Domain
-        [String] $NVDomain
-        [UInt32] $Sync
+        [String]       $Domain
+        [String]     $NVDomain
+        [UInt32]         $Sync
         DNSSuffix()
         {
             $This.IsDomain     = $This.GetComputerSystem().PartOfDomain
@@ -98,8 +200,8 @@ Function Get-FENetwork
     Class VendorItem
     {
         [String] $Index
-        [String] $Hex
-        [String] $Name
+        [String]   $Hex
+        [String]  $Name
         VendorItem([UInt32]$Index,[String]$Line)
         {
             $This.Index = $Index
@@ -117,8 +219,8 @@ Function Get-FENetwork
 
     Class VendorList
     {
-        [String] $Name
-        [UInt32] $Count
+        [String]   $Name
+        [UInt32]  $Count
         [Object] $Output
         VendorList()
         {
@@ -170,9 +272,9 @@ Function Get-FENetwork
 
     Class ArpHost
     {
-        [String]    $IPAddress
-        [String]     $Physical
-        [String]         $Type
+        [String] $IPAddress
+        [String]  $Physical
+        [String]      $Type
         ArpHost([String]$Line)
         {
             $This.IPAddress  = [Regex]::Matches($Line,"(\d+\.){3}\d+").Value
@@ -219,10 +321,10 @@ Function Get-FENetwork
 
     Class ArpAdapter
     {
-        [UInt32]        $Index
-        [String]         $Type
-        [String]    $IPAddress
-        [Object]         $Host
+        [UInt32]     $Index
+        [String]      $Type
+        [String] $IpAddress
+        [Object]      $Host
         ArpAdapter([String]$Line)
         {
             $This.Index     = [Regex]::Matches($Line,"(0x\d+)").Value
@@ -246,9 +348,9 @@ Function Get-FENetwork
 
     Class ArpList
     {
-        [String]    $Name
-        [UInt32]   $Count
-        [Object]  $Output
+        [String]   $Name
+        [UInt32]  $Count
+        [Object] $Output
         ArpList()
         {
             $This.Name = "ArpList"
@@ -306,10 +408,10 @@ Function Get-FENetwork
 
     Class NbtStatHost
     {
-        [UInt32] $Index
-        [String] $Name
-        [String] $Id
-        [String] $Type
+        [UInt32]   $Index
+        [String]    $Name
+        [String]      $Id
+        [String]    $Type
         [String] $Service
         NbtStatHost([UInt32]$Index,[String]$Line)
         {
@@ -331,13 +433,13 @@ Function Get-FENetwork
 
     Class NbtStatInterface
     {
-        [UInt32]        $Index
-        [String]         $Type
-        [String]         $Name
-        [String]    $IPAddress
-        [String]         $Node
-        [UInt32]        $Count
-        [Object]       $Output
+        [UInt32]     $Index
+        [String]      $Type
+        [String]      $Name
+        [String] $IpAddress
+        [String]      $Node
+        [UInt32]     $Count
+        [Object]    $Output
         NbtStatInterface([String]$Type,[String]$Line)
         {
             $Line           = $Line.TrimEnd(" ")
@@ -348,7 +450,7 @@ Function Get-FENetwork
         AddNode([String]$Line)
         {
             $Split          = $Line     -Replace "Scope","`nScope" -Split "`n"
-            $This.IPAddress = [Regex]::Matches($Split[0],"(\d+\.){3}\d+").Value
+            $This.IpAddress = [Regex]::Matches($Split[0],"(\d+\.){3}\d+").Value
             $This.Node      = $Split[1] -Replace "(Scope Id: \[|\])",""
         }
         AddHost([String]$Line)
@@ -366,20 +468,76 @@ Function Get-FENetwork
     # // | Collects the local NBT table (will be modified for remote) |
     # // ==============================================================
 
-    Class NbtStatLocalList
+    Class NbtStatList
     {
         Hidden [Object] $Reference
         [String]             $Name
         [UInt32]            $Count
         [Object]           $Output
-        NbtStatLocalList()
+        NbtStatList()
         {
             # // =================================================
             # // | Get NBT Reference table, and collect NBT info |
             # // =================================================
 
-            $This.Name        = "NbtStatLocalList"
+            $This.Name        = "NbtStatList"
             $This.Reference   = $This.NbtStatReference()
+            $This.Output      = @( )
+        }
+        Refresh()
+        {
+            $This.Output      = @( )
+            $This.Count       = 0
+
+            $This.Local()
+        }
+        Local()
+        {
+            $Stack            = nbtstat -N
+            ForEach ($Line in $Stack)
+            {
+                Switch -Regex ($Line)
+                {
+                    ".+\:$"
+                    {
+                        $This.Output          += $This.NbtStatInterface("Local",$Line)
+                        $This.Count            = $This.Output.Count
+                    }
+                    "^Node IpAddress"
+                    {
+                        $This.Output[-1].AddNode($Line)
+                    }
+                    Registered
+                    {
+                        $This.Output[-1].AddHost($Line)
+                        $This.Output[-1].Output[-1] | % { $_.Service = $This.Reference | ? ID -eq $_.ID | ? Type -eq $_.Type | % Service }
+                    }
+                }
+            }
+        }
+        Remote([Object]$Node)
+        {
+            $Stack         = nbtstat -A $Node.IpAddress
+            ForEach ($Line in $Stack)
+            {
+                Switch -Regex ($Line)
+                {
+                    ".+\:$"
+                    {
+                        $This.Output          += $This.NbtStatInterface("Remote",$Line)
+                        $This.Count            = $This.Output.Count
+                    }
+                    "^Node IpAddress"
+                    {
+                        $This.Output[-1].AddNode($Line)
+                    }
+                    Registered
+                    {
+                        $This.Output[-1].AddHost($Line)
+                        $This.Output[-1].Output[-1] | % { $_.Service = $This.Reference | ? ID -eq $_.ID | ? Type -eq $_.Type | % Service }
+                    }
+                }
+            }
         }
         [Object[]] NbtStatReference()
         {
@@ -405,31 +563,6 @@ Function Get-FENetwork
         {
             Return [NbtStatInterface]::New($Type,$Line)
         }
-        Refresh()
-        {
-            $This.Output      = @( )
-            $Stack            = nbtstat -N
-            ForEach ($Line in $Stack)
-            {
-                Switch -Regex ($Line)
-                {
-                    ".+\:$"
-                    {
-                        $This.Output          += $This.NbtStatInterface("Local",$Line)
-                        $This.Count            = $This.Output.Count
-                    }
-                    "^Node IpAddress"
-                    {
-                        $This.Output[-1].AddNode($Line)
-                    }
-                    Registered
-                    {
-                        $This.Output[-1].AddHost($Line)
-                        $This.Output[-1].Output[-1] | % { $_.Service = $This.Reference | ? ID -eq $_.ID | ? Type -eq $_.Type | % Service }
-                    }
-                }
-            }
-        }
         [String] ToString()
         {
             Return "({0}) <FENetwork.NbtStatLocalList>" -f $This.Count
@@ -442,23 +575,23 @@ Function Get-FENetwork
 
     Class NetStatAddress
     {
-        Hidden [String]  $Item
-        [String]    $IPAddress
-        [String]         $Port
+        Hidden [String] $Item
+        [String]   $IpAddress
+        [String]        $Port
         NetStatAddress([String]$Item)
         {
             $This.Item      = $Item
 
             If ( $Item -match "(\[.+\])" )
             {
-                $This.IPAddress = [Regex]::Matches($Item,"(\[.+\])").Value
-                $This.Port      = $Item.Replace($This.IPAddress,"")
+                $This.IpAddress = [Regex]::Matches($Item,"(\[.+\])").Value
+                $This.Port      = $Item.Replace($This.IpAddress,"")
                 $This.IPAddress = $Item.TrimStart("[").Split("%")[0]
             }
 
             Else
             {
-                $This.IPAddress = $This.Item.Split(":")[0]
+                $This.IpAddress = $This.Item.Split(":")[0]
                 $This.Port      = $This.Item.Split(":")[1]
             }
         }
@@ -850,11 +983,11 @@ Function Get-FENetwork
 
     Class NetworkInterfaceProperty
     {
-        [UInt32]  $Index
-        [UInt32]   $Rank
-        [UInt32]   $Type
-        [String]   $Name
-        [Object]  $Value
+        [UInt32] $Index
+        [UInt32]  $Rank
+        [UInt32]  $Type
+        [String]  $Name
+        [Object] $Value
         NetworkInterfaceProperty([UInt32]$Index,[UInt32]$Rank,[UInt32]$Type,[String]$Name,[Object]$Value)
         {
             $This.Index  = $Index
@@ -971,7 +1104,7 @@ Function Get-FENetwork
     {
         [UInt32]     $Index
         [UInt32]      $Type
-        [Object] $IPAddress
+        [Object] $IpAddress
         [UInt32]    $Prefix
         [Object]  $Property
         NetworkIp([Object]$Ip)
@@ -1059,9 +1192,12 @@ Function Get-FENetwork
 
     Class V4ClassList
     {
+        [String]   $Name
+        [UInt32]  $Count
         [Object] $Output
         V4ClassList()
         {
+            $This.Name   = "V4ClassList"
             $This.Output = @( ) 
 
             ForEach ($X in 0..255)
@@ -1084,10 +1220,15 @@ Function Get-FENetwork
         Add([UInt32]$Index,[String]$Label,[String]$Name)
         {
             $This.Output += [V4Class]::New($Index,$Label,$Name)
+            $This.Count   = $This.Output.Count
         }
         [Object] Get([String]$IpAddress)
         {
             Return $This.Output[$IPAddress.Split(".")[0]]
+        }
+        [String] ToString()
+        {
+            Return "({0}) <FENetwork.V4ClassList>" -f $This.Count
         }
     }
 
@@ -1097,9 +1238,9 @@ Function Get-FENetwork
 
     Class V4PingResponse
     {
-        [UInt32]          $Index
+        Hidden [UInt32]   $Index
         Hidden [UInt32]  $Status
-        [String]      $IPAddress
+        [String]      $IpAddress
         [String]       $Hostname
         V4PingResponse([UInt32]$Index,[String]$Address,[Object]$Reply)
         {
@@ -1109,7 +1250,7 @@ Function Get-FENetwork
         }
         GetHostname()
         {
-            $This.Hostname       = Try {[System.Net.Dns]::Resolve($This.IPAddress).Hostname} Catch {"<Unknown>"}
+            $This.Hostname       = Try { [System.Net.Dns]::Resolve($This.IPAddress).Hostname } Catch { "<Unknown>" }
         }
         Domain([String]$Domain)
         {
@@ -1130,17 +1271,17 @@ Function Get-FENetwork
 
     Class V4Network
     {
-        [String]                $IPAddress
-        [UInt32]                   $Prefix
-        [String]                    $Class
-        [String]                  $Netmask
-        [String]                  $Network
-        [String]                  $Gateway
-        [String]                    $Range
-        [String]                $Broadcast
+        [String] $IpAddress
+        [UInt32]    $Prefix
+        [String]     $Class
+        [String]   $Netmask
+        [String]   $Network
+        [String]   $Gateway
+        [String]     $Range
+        [String] $Broadcast
         V4Network([Object]$Interface)
         {
-            $This.IPAddress   = $Interface.IPAddress
+            $This.IpAddress   = $Interface.IpAddress
             $This.Prefix      = $Interface.Prefix
             $This.Network     = $Interface.Route | ? DestinationPrefix -match "/$($This.Prefix)" | % DestinationPrefix
 
@@ -1167,13 +1308,13 @@ Function Get-FENetwork
         }
     }
 
-    # // =====================================
-    # // | Provisions an entire IPV6 network |
-    # // =====================================
+    # // ======================================
+    # // | Provisions an entire IPV6 network* |
+    # // ======================================
 
     Class V6Network
     {
-        [String] $IPAddress
+        [String] $IpAddress
         [UInt32]    $Prefix
         [String]      $Type
         V6Network([Object]$Interface)
@@ -1239,17 +1380,17 @@ Function Get-FENetwork
 
     Class NetworkControllerTemplate
     {
-        [UInt32]          $Index
-        [String]           $Name
-        [String]     $MacAddress
-        [String]         $Vendor = "-"
-        [Object]        $Adapter
-        [Object]         $Config
-        [Object]      $Interface
-        [Object]             $IP
-        [Object]          $Route
-        [Object]            $Arp
-        [Object]            $Nbt
+        [UInt32]      $Index
+        [String]       $Name
+        [String] $MacAddress
+        [String]     $Vendor = "-"
+        [Object]    $Adapter
+        [Object]     $Config
+        [Object]  $Interface
+        [Object]         $IP
+        [Object]      $Route
+        [Object]        $Arp
+        [Object]        $Nbt
         NetworkControllerTemplate([UInt32]$Index,[Object]$Adapter,[Object]$Config)
         {
             $This.Index      = $Index
@@ -1332,10 +1473,10 @@ Function Get-FENetwork
 
     Class NetworkControllerCompartmentProperty
     {
-        [UInt32] $Index
+        [UInt32]  $Index
         [String] $Source
-        [String] $Name
-        [Object] $Value
+        [String]   $Name
+        [Object]  $Value
         NetworkControllerCompartmentProperty([UInt32]$Index,[String]$Source,[Object]$Property)
         {
             $This.Index  = $Index
@@ -1355,25 +1496,25 @@ Function Get-FENetwork
 
     Class NetworkControllerCompartment
     {
-        [UInt32]                 $Index
-        Hidden [UInt32]           $Type
-        Hidden [Object]        $Adapter
-        Hidden [Object]         $Config
-        Hidden [Object]      $Interface
-        Hidden [Object]             $Ip
-        [UInt32]        $InterfaceIndex
-        [String]        $InterfaceAlias
-        [UInt32]         $AddressFamily
-        [UInt32]                  $Dhcp
-        [UInt32]             $Connected
-        [String]             $IpAddress
-        [UInt32]                $Prefix
-        [Object]               $Network
-        [Object]                 $Route
-        [Object]                   $Arp
-        [Object]                   $Nbt
-        [Object]              $Property
-        [Object]             $Extension
+        [UInt32]            $Index
+        Hidden [UInt32]      $Type
+        Hidden [Object]   $Adapter
+        Hidden [Object]    $Config
+        Hidden [Object] $Interface
+        Hidden [Object]        $Ip
+        [UInt32]   $InterfaceIndex
+        [String]   $InterfaceAlias
+        [UInt32]    $AddressFamily
+        [UInt32]             $Dhcp
+        [UInt32]        $Connected
+        [String]        $IpAddress
+        [UInt32]           $Prefix
+        [Object]          $Network
+        [Object]            $Route
+        Hidden [Object]       $Arp
+        Hidden [Object]       $Nbt
+        Hidden [Object]      $Ping
+        [Object]         $Property
         NetworkControllerCompartment([UInt32]$Index,[Object]$Adapter,[Object]$Config,[Object]$Interface,[Object]$IP)
         {
             $This.Index          = $Index
@@ -1389,8 +1530,6 @@ Function Get-FENetwork
             $This.Connected      = $Interface.Open
             $This.IPAddress      = $IP.IPAddress
             $This.Prefix         = $IP.Prefix
-            $This.Network        = 
-
             $This.Property       = @( )
 
             ForEach ($Item in "Adapter","Config","Interface","IP")
@@ -1410,6 +1549,10 @@ Function Get-FENetwork
             Return "<FENetwork.NetworkControllerCompartment>"
         }
     }
+
+    # // ============================================================================
+    # // | This is a list object for each individual network controller compartment |
+    # // ============================================================================
 
     Class NetworkControllerCompartmentList
     {
@@ -1444,67 +1587,106 @@ Function Get-FENetwork
 
     Class NetworkControllerMaster
     {
-        [UInt32] $Mode
-        [Object] $Class
-        [Object] $Vendor
-        [Object] $Arp
-        [Object] $NbtLocal
-        [Object] $NetStat
-        [Object] $Adapter
-        [Object] $Config
-        [Object] $Route
-        [Object] $Interface
-        [Object] $Ip
+        [Object]        $Mode
+        [Object]       $Class
+        [Object]      $Vendor
+        [Object]         $Arp
+        [Object]         $Nbt
+        [Object]     $NetStat
+        [Object]     $Adapter
+        [Object]      $Config
+        [Object]       $Route
+        [Object]   $Interface
+        [Object]          $Ip
         [Object] $Compartment
         NetworkControllerMaster([UInt32]$Mode)
         {
-            $This.Mode      = $Mode
+            $This.Mode      = $This.ModeList()
+            $This.Mode.Select($Mode)
+
             $This.Class     = $This.V4ClassList()
 
-            <#
-            ===========================================
-            | 00 | [ ] Vendor [ ] Arp/Nbt [ ] Netstat |
-            | 01 | [ ] Vendor [ ] Arp/Nbt [X] Netstat |
-            | 02 | [ ] Vendor [X] Arp/Nbt [ ] Netstat |
-            | 03 | [ ] Vendor [X] Arp/Nbt [X] Netstat |
-            | 04 | [X] Vendor [ ] Arp/Nbt [ ] Netstat |
-            | 05 | [X] Vendor [ ] Arp/Nbt [X] Netstat |
-            | 06 | [X] Vendor [X] Arp/Nbt [ ] Netstat |
-            | 07 | [X] Vendor [X] Arp/Nbt [X] Netstat |
-            ===========================================
-            #>
-
-            If ($This.Mode -in 4..7)
+            If ($This.Mode.Selected.Index -in 4..7)
             {
-                $This.Vendor    = [VendorList]::New()
+                $This.Vendor    = $This.VendorList()
             }
 
-            If ($This.Mode -in 2,3,6,7)
+            If ($This.Mode.Selected.Index -in 2,3,6,7)
             {
-                $This.Arp       = [ArpList]::New()
-                $This.NbtLocal  = [NbtStatLocalList]::New()
+                $This.Arp       = $This.ArpList()
+                $This.Nbt       = $this.NbtStatList()
             }
 
-            If ($This.Mode -in 1,3,5,7)
+            If ($This.Mode.Selected.Index -in 1,3,5,7)
             {
-                $This.NetStat   = [NetStatList]::New()
+                $This.NetStat   = $This.NetStatList()
             }
 
-            $This.Adapter       = [NetworkAdapterList]::New()
-            $This.Config        = [NetworkAdapterConfigurationList]::New()
-            $This.Route         = [NetworkRouteList]::New()
-            $This.Interface     = [NetworkInterfaceList]::New()
-            $This.Ip            = [NetworkIpList]::New()
-            $This.Compartment   = [NetworkControllerCompartmentList]::New()
+            $This.Adapter       = $This.NetworkAdapterList()
+            $This.Config        = $This.NetworkAdapterConfigurationList()
+            $This.Route         = $This.NetworkRouteList()
+            $This.Interface     = $This.NetworkInterfaceList()
+            $This.Ip            = $This.NetworkIpList()
+            $This.Compartment   = $This.NetworkControllerCompartmentList()
+        }
+        [Object] Time()
+        {
+            Return [Time]::New()
+        }
+        [Object] ModeList()
+        {
+            Return [ModeList]::New()
+        }
+        [Object] V4ClassList()
+        {
+            Return [V4ClassList]::New()
+        }
+        [Object] VendorList()
+        {
+            Return [VendorList]::New()
+        }
+        [Object] ArpList()
+        {
+            Return [ArpList]::New()
+        }
+        [Object] NbtStatList()
+        {
+            Return [NbtStatList]::New()
+        }
+        [Object] NetStatList()
+        {
+            Return [NetStatList]::New()
+        }
+        [Object] NetworkAdapterList()
+        {
+            Return [NetworkAdapterList]::New()
+        }
+        [Object] NetworkAdapterConfigurationList()
+        {
+            Return [NetworkAdapterConfigurationList]::New()
+        }
+        [Object] NetworkRouteList()
+        {
+            Return [NetworkRouteList]::New()
+        }
+        [Object] NetworkInterfaceList()
+        {
+            Return [NetworkInterfaceList]::New()
+        }
+        [Object] NetworkIpList()
+        {
+            Return [NetworkIpList]::New()
+        }
+        [Object] NetworkControllerCompartmentList()
+        {
+            Return [NetworkControllerCompartmentList]::New()
         }
         [Object] V4Network([Object]$Interface)
         {
             $Item             = [V4Network]::New($Interface)
             
-            # Class
             $Item.Class       = $This.Class.Get($Item.IPAddress)
 
-            # Netmask
             $Str              = (0..31 | % { [Int32]($_ -lt $Item.Prefix); If ($_ -in 7,15,23) {"."} }) -join ''
             $Item.Netmask     = ($Str.Split(".") | % { [Convert]::ToInt32($_,2 ) }) -join "."
 
@@ -1563,10 +1745,6 @@ Function Get-FENetwork
         {
             Return [V6Network]::New($Interface)
         }
-        [Object] V4ClassList()
-        {
-            Return [V4ClassList]::New()
-        }
         [Object] V4PingOptions()
         {
             Return [System.Net.NetworkInformation.PingOptions]::New()
@@ -1584,23 +1762,31 @@ Function Get-FENetwork
         {
             Return [V4PingResponse]::New($Index,$Ip,$Ping)
         }
-        [Object] V4PingSweep([Object]$Compartment)
+        V4PingSweep([UInt32]$Index)
         {
-            If ($Compartment.Type -ne 4)
+            $Item = $This.Get($Index)
+
+            If (!$Item)
+            {
+                Throw "Not a valid compartment index"
+            }
+
+            ElseIf ($Item.Type -ne 4)
             {
                 Throw "Not a valid IPv4 compartment"
             }
-    
-            $Start = [DateTime]::Now
-            $X     = @{ }
-            $H     = @{ }
-            $P     = @{ }
-            $R     = @{ }
+
+            $Time   = $This.Time()
+            $X      = @{ }
+            $H      = @{ }
+            $P      = @{ }
+            $R      = @{ }
+            $Output = @( )
     
             # Expand notation
-            ForEach ($Item in $Compartment.Network.Range -Split "\/")
+            ForEach ($Object in $Item.Network.Range -Split "\/")
             {
-                $X.Add($X.Count,($Item | Invoke-Expression))
+                $X.Add($X.Count,($Object | Invoke-Expression))
             }
     
             # Populate total possible hosts from notation
@@ -1617,64 +1803,64 @@ Function Get-FENetwork
                     }
                 }
             }
-    
-            # Throw if no addresses detected
-            If ($H.Count -eq 0)
+
+            Switch ($H.Count)
             {
-                Throw "No addresses detected"
-            }
-    
-            # If (1) address detected
-            If ($H.Count -eq 1)
-            {
-                Write-Host "Scanning [~] (1) Host" 
-                $P.Add(0,$Ctrl.V4Ping($H[0]))
-    
-                # Await response
-                Write-Host "Sent [~] Awaiting Response"
-                $R.Add(0,$Ctrl.V4PingResponse(0,$H[0],$P[0]))
-    
-                # Prepare output
-                $Output = $R[0] | ? Status
-            }
-    
-            # If (1+) address detected
-            ElseIf ($H.Count -gt 1)
-            {
-                Write-Host ("Scanning [~] ({0}) Hosts" -f $H.Count)
-                ForEach ($I in 0..($H.Count-1))
-                { 
-                    $P.Add($P.Count,$Ctrl.V4Ping($H[$I]))
-                }
-    
-                # Await response
-                Write-Host "Sent [~] Awaiting Response"
-                ForEach ($I in 0..($P.Count-1)) 
+                0
                 {
-                    $R.Add($I,$Ctrl.V4PingResponse($I,$H[$I],$P[$I]))
+                    Throw "No addresses detected"
                 }
-    
-                # Prepare output
-                $Output = $R[0..($R.Count-1)] | ? Status
+                1
+                {
+                    # Send ping async
+                    Write-Host "[$Time] Scanning [~] (1) Host" 
+                    $P.Add(0,$This.V4Ping($H[0]))
+        
+                    # Await response
+                    Write-Host "[$Time] Sent [~] Awaiting Response"
+                    $R.Add(0,$This.V4PingResponse(0,$H[0],$P[0]))
+        
+                    # Prepare output
+                    $Output = $R[0] | ? Status
+                }
+                Default
+                {
+                    # Send ping async
+                    Write-Host ("[$Time] Scanning [~] ({0}) Hosts" -f $H.Count)
+                    ForEach ($I in 0..($H.Count-1))
+                    { 
+                        $P.Add($P.Count,$This.V4Ping($H[$I]))
+                    }
+        
+                    # Await response
+                    Write-Host "[$Time] Sent [~] Awaiting Response"
+                    ForEach ($I in 0..($P.Count-1)) 
+                    {
+                        $R.Add($I,$This.V4PingResponse($I,$H[$I],$P[$I]))
+                    }
+        
+                    # Prepare output
+                    $Output = $R[0..($R.Count-1)] | ? Status
+                }
             }
-    
+
             # Show process
-            Write-Host "Scanned [+] ($($Output.Count)) Host(s) reponded [$($Ctrl.Elapsed($Start))]"
+            Write-Host "[$Time] Scanned [+] ($($Output.Count)) Host(s) reponded"
     
             # Regardless of output count
-            Write-Host "Resolving [~] Hostnames [$($Ctrl.Elapsed($Start))]"
+            Write-Host "[$Time] Resolving [~] Hostnames"
             ForEach ($Object in $Output)
             {
                 $Object.GetHostname()
             }
     
-            Write-Host "Resolved [+] Hostnames [$($Ctrl.Elapsed($Start))]"
+            Write-Host "[$Time] Resolved [+] Hostnames"
     
-            Return $Output
+            $Item.Ping = $Output
         }
-        [Object] Elapsed([Object]$Start)
+        [Object] NetworkControllerTemplateList()
         {
-            Return [Timespan]([DateTime]::Now-$Start)
+            Return [NetworkControllerTemplateList]::New()
         }
         [Object] NetworkControllerTemplate([UInt32]$Index,[UInt32]$Rank)
         {
@@ -1682,16 +1868,33 @@ Function Get-FENetwork
                                                     $This.Adapter.Output[$Rank],
                                                     $This.Config.Output[$Rank])
         }
+        [Object] NetworkControllerCompartment([UInt32]$Index,[Object]$Interface,[Object]$IP)
+        {
+            If ($Index -gt $This.Adapter.Count -or $Index -gt $This.Config.Count)
+            {
+                Throw "Invalid ([Adapter]/[Configuration]) index"
+            }
+
+            Return [NetworkControllerCompartment]::New($This.Compartment.Count,
+                                                       $This.Adapter[$Index],
+                                                       $This.Config[$Index],
+                                                       $Interface,
+                                                       $Ip)
+        }
         Refresh()
         {
-            $Template = [NetworkControllerTemplateList]::New()
+            # // =============================
+            # // | Prepare the template list |
+            # // =============================
+
+            $Template = $This.NetworkControllerTemplatelist()
             $Template.Clear()
 
-            If ($This.Mode -in 2,3,6,7)
+            If ($This.Mode.Selected.Index -in 2,3,6,7)
             {
                 $This.Arp.Refresh()
-                $This.NbtLocal.Refresh()
-                ForEach ($Item in $This.NbtLocal.Output)
+                $This.Nbt.Refresh()
+                ForEach ($Item in $This.Nbt.Output)
                 {
                     $Item.Index = $This.Arp.Output | ? IPAddress -eq $Item.IPAddress | % Index
                 }
@@ -1699,10 +1902,14 @@ Function Get-FENetwork
                 <# Todo: Add [NbtRemote] #>
             }
 
-            If ($This.Mode -in 1,3,5,7)
+            If ($This.Mode.Selected.Index -in 1,3,5,7)
             {
                 $This.NetStat.Refresh()
             }
+
+            # // ============================================================================
+            # // | Refresh all individual subcomponents (Adapter/Config/Route/Interface/Ip) |
+            # // ============================================================================
 
             $This.Adapter.Refresh()
             $This.Config.Refresh()
@@ -1710,12 +1917,16 @@ Function Get-FENetwork
             $This.Interface.Refresh()
             $This.Ip.Refresh()
 
+            # // ==================================================================
+            # // | Filter everything into its' corresponding compartment template |
+            # // ==================================================================
+
             ForEach ($X in 0..($This.Adapter.Output.Count-1))
             {
                 $Index        = $This.Config.Output[$X].Property | ? Name -eq InterfaceIndex | % Value
                 $Id           = $This.NetworkControllerTemplate($Index,$X)
         
-                If ($This.Mode -in 4..7)
+                If ($This.Mode.Selected.Index -in 4..7)
                 {
                     If ($Id.MacAddress -ne "-")
                     {
@@ -1723,14 +1934,14 @@ Function Get-FENetwork
                     }
                 }
 
-                If ($This.Mode -in 1,3,5,7)
+                If ($This.Mode.Selected.Index -in 1,3,5,7)
                 {
                     ForEach ($Item in $This.Arp.Output | ? Index -eq $Index)
                     {
                         $Id.Arp.Add($Item)
                     }
 
-                    ForEach ($Item in $This.NbtLocal.Output | ? Index -eq $Index)
+                    ForEach ($Item in $This.Nbt.Output | ? Index -eq $Index)
                     {
                         $Id.Nbt.Add($Item)
                     }
@@ -1754,8 +1965,11 @@ Function Get-FENetwork
                 $Template.Add($Id)
             }
 
-            $Template.Output = $Template.Output | Sort-Object Index
+            # // ====================================================================
+            # // | Sort each template by the index, then process compartment output |
+            # // ====================================================================
 
+            $Template.Output = $Template.Output | Sort-Object Index
             $This.Compartment.Clear()
     
             ForEach ($X in 0..($Template.Output.Count-1))
@@ -1767,11 +1981,7 @@ Function Get-FENetwork
                     {
                         ForEach ($IP in $Object.IP.Output | ? Type -eq $Type)
                         {
-                            $Item       = [NetworkControllerCompartment]::New($This.Compartment.Count,
-                                                                              $Object.Adapter,
-                                                                              $Object.Config,
-                                                                              $Interface,
-                                                                              $IP)
+                            $Item       = $This.NetworkControllerCompartment($X,$Interface,$IP)
                             $Item.Route = $Object.Route.Output | ? Type -eq $Type
                             If ($Type -eq 4)
                             {
@@ -1799,11 +2009,126 @@ Function Get-FENetwork
         }
         [Object] Section([Object]$Object,[String[]]$Names)
         {
-            Return New-FEFormat -Section $Object $Names
+            Return New-FEFormat -Section $Object -Property $Names
         }
         [Object] Table([Object]$Object,[String[]]$Names)
         {
-            Return New-FEFormat -Table $Object $Names
+            Return New-FEFormat -Table $Object -Property $Names
+        }
+        Add([Hashtable]$Hash,[Object]$Object)
+        {
+            ForEach ($Line in $Object)
+            { 
+                $Hash.Add($Hash.Count,$Line)
+            }
+        }
+        [Object] Get([UInt32]$Index)
+        {
+            If ($Index -gt $This.Compartment.Count)
+            {
+                Throw "Invalid compartment index"
+            }
+            
+            Return $This.Compartment.Output[$Index]
+        }
+    }
+
+    $Ctrl = [NetworkControllerMaster]::New($Mode)
+    $Ctrl.Refresh()
+    $Ctrl
+}
+
+<#
+        DrawCompartment([Hashtable]$Out,[Object]$Section,[Object]$Compartment)
+        {
+            $Property       = @{ 
+
+                IPV4Network = "IpAddress","Prefix","Class","Netmask","Network","Gateway","Range","Broadcast"
+                IPV6Network = "IpAddress","Prefix","Type"
+                Route       = "Type","DestinationPrefix","NextHop","RouteMetric","State"
+                Arp         = "IpAddress","Physical","Type"
+            }
+
+            # Header
+            $Ctrl.Add($Out,$Section.Draw($Compartment.Index))
+
+            Switch ($Compartment.Type)
+            {
+                4
+                {
+                    # // ======================
+                    # // | IpAddress type (4) |
+                    # // ======================
+                    
+                    # Network properties
+                    $Ctrl.Add($Out,$Ctrl.Table($Compartment.Network,$Property.IPV4Network).Draw())
+
+                    # Route properties
+                    If ($Compartment.Route.Count -gt 0)
+                    {
+                        $Ctrl.Add($Out,$Ctrl.Table($Compartment.Route,$Property.Route).Draw())
+                    }
+                    
+                    If ($Compartment.Arp.Count -gt 0)
+                    {
+                        $Ctrl.Add($Out,$Ctrl.Table($Compartment.Arp.Host,$Property.Arp).Draw())
+                    }
+
+                    If ($Compartment.Nbt.Count -gt 0)
+                    {
+                        $Ctrl.Add($Out,$Ctrl.Table($Compartment.Nbt))
+                    }
+                    If (!!$Item.Arp)
+                    {
+                        $This.Box($Out,"====[ IPv4 Address Resolution Protocol ]=============")
+                        $This.Add($Out,$This.Table($Item.Arp,$Prop.Arp).Draw())
+                    }
+
+                    If (!!$Item.Nbt)
+                    {
+                        $This.Box($Out,"====[ IPv4 NetBEUI Hostmap ]=========================")
+                        $This.Add($Out,$This.Table($Item.Nbt,$Prop.Nbt).Draw())
+                    }
+                }
+                6
+                {
+                    If (!!$Item.IPv6)
+                    {
+                        $This.Box($Out,"====[ IPv6 IP Address ]==============================")
+                        $This.Add($Out,$This.Table($Item.IPv6,$Prop.IPv6).Draw())
+                    }
+                    If (!!$Item.IPv6.Route)
+                    {
+                        $This.Box($Out,"====[ IPv6 IP Route ]================================")
+                        $This.Add($Out,$This.Table($Item.IPv6.Route,$Prop.Route).Draw())
+                    }
+                }
+            }
+        }
+        List()
+        {
+            $Out            = @{ }
+            $Property       = "Index","InterfaceIndex","InterfaceAlias","AddressFamily","Dhcp","Connected","IpAddress","Prefix"
+            $Section        = $This.Section($This.Compartment.Output,$Property)
+
+            Switch ($This.Compartment.Count)
+            {
+                0
+                {
+                    Throw "No available compartments"
+                }
+                1
+                {
+                    $This.Add($Out,$Section.Draw(0),$This.DrawCompartment($This.Compartment.Output[0]))
+                }
+                Default
+                {
+                    ForEach ($X in 0..($This.Compartment.Output.Count-1))
+                    {
+                        $This.Add($Out,$Section.Draw($X),$This.DrawCompartment($This.Compartment.Output[$X]))
+                    }
+                }
+            }
         }
         Box([Hashtable]$Hash,[String]$Line)
         {
@@ -1811,10 +2136,7 @@ Function Get-FENetwork
             $Hash.Add($Hash.Count,"| $Line |")
             $Hash.Add($Hash.Count,(@([Char]175) * ($Line.Length + 4) -join ''))
         }
-        Add([Hashtable]$Hash,[Object]$Object)
-        {
-            $Object | % { $Hash.Add($Hash.Count,$_) }
-        }
+
         [Hashtable] Prop()
         {
             Return [Hashtable]@{
@@ -1826,6 +2148,7 @@ Function Get-FENetwork
                 Nbt       = "Name","Id","Type","Service"
                 IPv6      = "IPAddress","Prefix","Type"
                 Netstat   = "Protocol","LocalAddress","LocalPort","RemoteAddress","RemotePort","State","Direction"
+                Compartment = "Index","InterfaceIndex","InterfaceAlias","AddressFamily","Dhcp","Connected","IpAddress","Prefix"
             }
         }
         [Object] List()
@@ -1894,9 +2217,4 @@ Function Get-FENetwork
 
             Return $Out[0..($Out.Count-1)]
         }
-    }
-
-    $Ctrl = [NetworkControllerMaster]::New($Mode)
-    $Ctrl.Refresh()
-    $Ctrl
-}
+#>
