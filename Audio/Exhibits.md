@@ -15,7 +15,7 @@ My mother had contacted the **Saratoga County Sheriffs Office**, because she was
 The problem is, these dudes from SCSO are *really stupid*... and it can be heard in the audio recording how stupid they are.
 
 They're never going to AGREE that they're really stupid, but- that's really just **too bad** =`(...<br>
-...because here's the **evidence** they were **too lazy** to: **(look at/collect)**, as well as like, a couple of brand new cyberattacks that someone decided to do today **(12/18/22)** as I was intially creating this markdown file.
+...because here's the **evidence** they were **too lazy** to **(look at/collect)**, as well as like, a couple of brand new cyberattacks that someone decided to do today **(12/18/22)** as I was intially creating this markdown file.
 
 **Russia** had used _various cyberattacks_ against **Ukraine** at or about that date, and I told these **morons from SCSO** about these following videos:
 
