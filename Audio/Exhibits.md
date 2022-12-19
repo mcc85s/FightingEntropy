@@ -65,7 +65,7 @@ Oh my god... someone who's a **real dumb motherfucker**, thought it'd be a **sma
 | **12/18/22** | [Cyberattack/Archimedes Smartphone Angle](https://youtu.be/fIuB2TbOInc) |
 | **12/18/22** | [Cyberattack/Archimedes Laptop Angle](https://youtu.be/Ct8X356_Xhc)     |
 
-Basically, the CYBERATTACK OCCURRING IN THESE (2) VIDEOS ARE NEARLY IDENTICAL TO THE ONES IN THE VIDEO LINKS UP ABOVE~!<br>
+Basically, the CYBERATTACK(S) OCCURRING IN THESE (2) VIDEOS ARE NEARLY IDENTICAL TO THE ONES IN THE VIDEO LINKS UP ABOVE~!<br>
 HOLY SHIT. **IMAGINE IF THE SARATOGA COUNTY SHERIFFS OFFICE WASN'T FULL OF CARELESS MORONS~!**
 
 I can't.<br>
