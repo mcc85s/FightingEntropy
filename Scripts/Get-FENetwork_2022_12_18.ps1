@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-18 13:56:54                                                                  //
+\\  Date       : 2022-12-18 21:37:05                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FENetwork.ps1
@@ -1095,13 +1095,13 @@ Function Get-FENetwork
     # // | Object returned from a ping (sweep/scan) |
     # // ============================================
 
-    Class V4PingObject
+    Class V4PingResponse
     {
         [UInt32]          $Index
         Hidden [UInt32]  $Status
         [String]      $IPAddress
         [String]       $Hostname
-        V4PingObject([UInt32]$Index,[String]$Address,[Object]$Reply)
+        V4PingResponse([UInt32]$Index,[String]$Address,[Object]$Reply)
         {
             $This.Index          = $Index
             $This.Status         = $Reply.Result.Status -match "Success"
@@ -1131,8 +1131,8 @@ Function Get-FENetwork
     Class V4Network
     {
         [String]                $IPAddress
-        [String]                    $Class
         [UInt32]                   $Prefix
+        [String]                    $Class
         [String]                  $Netmask
         [String]                  $Network
         [String]                  $Gateway
@@ -1178,9 +1178,14 @@ Function Get-FENetwork
         [String]      $Type
         V6Network([Object]$Interface)
         {
-            $This.IPAddress = $Interface.Ip.IPAddress
-            $This.Prefix    = $Interface.Ip.Prefix
-            $This.Type      = $Null
+            $This.IpAddress = $Interface.IpAddress
+            $This.Prefix    = $Interface.Prefix
+            $This.Type      = Switch -Regex ($This.IpAddress)
+            {
+                "^fe80\:" { "Link-Local" }
+                "^2001\:" {     "Global" }
+                Default   {  "Specified" }
+            }
         }
         [String] ToString()
         {
@@ -1500,8 +1505,8 @@ Function Get-FENetwork
             $Item.Class       = $This.Class.Get($Item.IPAddress)
 
             # Netmask
-            $Str              = (0..31 | % { [Int32]($_ -lt $This.Prefix); If ($_ -in 7,15,23) { "." } }) -join ''
-            $Item.Netmask     = $Str -Split "\." | % { [Convert]::ToInt32($_,2 ) }
+            $Str              = (0..31 | % { [Int32]($_ -lt $Item.Prefix); If ($_ -in 7,15,23) {"."} }) -join ''
+            $Item.Netmask     = ($Str.Split(".") | % { [Convert]::ToInt32($_,2 ) }) -join "."
 
             If (!!$Item.Network)
             {
@@ -1569,6 +1574,107 @@ Function Get-FENetwork
         [Object] V4PingBuffer()
         {
             Return 97..119 + 97..105 | % { "0x{0:X}" -f $_ }
+        }
+        [Object] V4Ping([String]$Ip)
+        {
+            $Item = [System.Net.NetworkInformation.Ping]::New()
+            Return $Item.SendPingAsync($Ip,100,$This.V4PingBuffer(),$This.V4PingOptions())
+        }
+        [Object] V4PingResponse([UInt32]$Index,[Object]$Ip,[Object]$Ping)
+        {
+            Return [V4PingResponse]::New($Index,$Ip,$Ping)
+        }
+        [Object] V4PingSweep([Object]$Compartment)
+        {
+            If ($Compartment.Type -ne 4)
+            {
+                Throw "Not a valid IPv4 compartment"
+            }
+    
+            $Start = [DateTime]::Now
+            $X     = @{ }
+            $H     = @{ }
+            $P     = @{ }
+            $R     = @{ }
+    
+            # Expand notation
+            ForEach ($Item in $Compartment.Network.Range -Split "\/")
+            {
+                $X.Add($X.Count,($Item | Invoke-Expression))
+            }
+    
+            # Populate total possible hosts from notation
+            ForEach ($0 in $X[0])
+            {
+                ForEach ($1 in $X[1])
+                {
+                    ForEach ($2 in $X[2])
+                    {
+                        ForEach ($3 in $X[3])
+                        {
+                            $H.Add($H.Count,"$0.$1.$2.$3")
+                        }
+                    }
+                }
+            }
+    
+            # Throw if no addresses detected
+            If ($H.Count -eq 0)
+            {
+                Throw "No addresses detected"
+            }
+    
+            # If (1) address detected
+            If ($H.Count -eq 1)
+            {
+                Write-Host "Scanning [~] (1) Host" 
+                $P.Add(0,$Ctrl.V4Ping($H[0]))
+    
+                # Await response
+                Write-Host "Sent [~] Awaiting Response"
+                $R.Add(0,$Ctrl.V4PingResponse(0,$H[0],$P[0]))
+    
+                # Prepare output
+                $Output = $R[0] | ? Status
+            }
+    
+            # If (1+) address detected
+            ElseIf ($H.Count -gt 1)
+            {
+                Write-Host ("Scanning [~] ({0}) Hosts" -f $H.Count)
+                ForEach ($I in 0..($H.Count-1))
+                { 
+                    $P.Add($P.Count,$Ctrl.V4Ping($H[$I]))
+                }
+    
+                # Await response
+                Write-Host "Sent [~] Awaiting Response"
+                ForEach ($I in 0..($P.Count-1)) 
+                {
+                    $R.Add($I,$Ctrl.V4PingResponse($I,$H[$I],$P[$I]))
+                }
+    
+                # Prepare output
+                $Output = $R[0..($R.Count-1)] | ? Status
+            }
+    
+            # Show process
+            Write-Host "Scanned [+] ($($Output.Count)) Host(s) reponded [$($Ctrl.Elapsed($Start))]"
+    
+            # Regardless of output count
+            Write-Host "Resolving [~] Hostnames [$($Ctrl.Elapsed($Start))]"
+            ForEach ($Object in $Output)
+            {
+                $Object.GetHostname()
+            }
+    
+            Write-Host "Resolved [+] Hostnames [$($Ctrl.Elapsed($Start))]"
+    
+            Return $Output
+        }
+        [Object] Elapsed([Object]$Start)
+        {
+            Return [Timespan]([DateTime]::Now-$Start)
         }
         [Object] NetworkControllerTemplate([UInt32]$Index,[UInt32]$Rank)
         {
@@ -1691,238 +1797,6 @@ Function Get-FENetwork
                 }
             }
         }
-    }
-
-    $Ctrl = [NetworkControllerMaster]::New(7)
-    $Ctrl.Refresh()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # // ============================================================================
-    # // | Used to extend the functionality of the NetworkController output objects |
-    # // ============================================================================
-
-    Class NetworkControllerExtension
-    {
-        [UInt32] $Index
-        [String] $Name
-        [String] $MacAddress
-        [String] $Vendor
-        [Object] $Adapter
-        [Object] $Config
-        [Object] $Compartment
-        [Object] $Arp
-        [Object] $Nbt
-        NetworkControllerExtension([Object]$Interface)
-        {
-            $This.Index       = $Interface.Index
-            $This.Name        = $Interface.Name
-            $This.MacAddress  = $Interface.MacAddress
-            $This.Vendor      = $Interface.Vendor
-
-            Switch ($Interface.IPv4.IP.Count)
-            {
-                0 
-                { 
-                    $This.IPV4 = $Null 
-                }
-                1 
-                { 
-                    $This.IPV4 = $This.V4Network($Interface.IPv4[0])
-                }
-                Default 
-                {
-
-                }
-            }
-            If ($Interface.IPv4)
-            {
-                $This.IPv4    = $This.V4Network($Interface.IPv4)
-            }
-            If ($Interface.IPv6)
-            {
-                $This.IPv6    = $This.V6Network($Interface.IPv6)
-            }
-            $This.Arp         = $Interface.Arp
-            $This.Nbt         = $Interface.Nbt
-        }
-        [String] Elapsed([Object]$Start)
-        {
-            Return [TimeSpan]([DateTime]::Now-$Start)
-        }
-        [Object] PingSweep()
-        {
-            Throw "Not implemented yet"
-
-            $Process  = @{ }
-            $Response = @( )
-            $Output   = @( )
-            $Start    = [DateTime]::Now
-            $List     = $Null
-            $List     = $This.Range -Split "`n"
-            
-            Write-Host "Scanning [~] ($($List.Count)) Hosts [$($This.Elapsed($Start))]"
-            ForEach ($X in 0..($List.Count - 1))
-            {
-                $IP              = $List[$X]
-                $Process.Add($X,[System.Net.NetworkInformation.Ping]::new().SendPingAsync($IP,100,[V4Network]::Buffer,[V4Network]::Options))
-            }
-        
-            Write-Host "Sent [~] Awaiting Response"
-            ForEach ($X in 0..($List.Count - 1)) 
-            {
-                $IP              = $List[$X] 
-                $Response       += [V4PingObject]::New($X,$IP,$Process[$X])
-            }
-    
-            $Output              = $Response | ? Status
-            Write-Host "Scanned [+] ($($Output.Count)) Host(s) reponded [$($Time.Elapsed)]"
-    
-            If ($Output.Count -gt 1)
-            {
-                Write-Progress -Activity "Resolving [~] Hostnames... [$($Time.Elapsed)]" -PercentComplete 0
-                ForEach ($X in 0..($Output.Count-1))
-                {
-                    Write-Progress -Activity "Resolving [~] Hostnames... [$($Time.Elapsed)]" -Status "($X/$($Output.Count))" -PercentComplete (($X/$Output.Count)*100)
-                    $Item             = $Output[$X]
-                    $Item.Index       = $X
-                    $Item.GetHostname()
-                }
-                Write-Progress -Activity "Resolving [~] Hostnames... [$($Time.Elapsed)]" -Completed
-            }
-            If ($Output.Count -eq 1)
-            {
-                $Item                 = $Output
-                $Item.Index           = 0
-                $Item.GetHostname()
-            }
-            $Time.Stop()
-            Write-Host "Sweep [+] Complete [$($Time.Elapsed)]"
-            Return $Output
-        }
-    }
-
-    # // ======================================================================
-    # // | Probably redundant, but acts as a (filtration/expansion) mechanism |
-    # // ======================================================================
-
-    Class NetworkController
-    {
-        Hidden [UInt32] $Mode
-        Hidden [Object] $Vendor
-        Hidden [Object] $Sub
-        Hidden [Object] $Arp
-        Hidden [Object] $Nbt
-        Hidden [Object] $Netstat
-        Hidden [Hashtable] $Hash
-        [Object] $Suffix
-        [Object] $Hostname
-        [Object] $Count
-        [Object] $Output = @( )
-        NetworkController()
-        {
-            $This.Mode = 0
-            $This.Main()
-        }
-        NetworkController([UInt32]$Mode)
-        {
-            $This.Mode = $Mode
-            $This.Main()
-        }
-        Main()
-        {
-            If ($This.Mode -ge 4)
-            {
-                $This.GetVendorList()
-            }
-            $This.Sub        = [NetworkSubcontroller]::New()
-            $This.Suffix     = [DnsSuffix]::New()
-            $This.Hostname   = $This.Suffix | % { $_.ComputerName, $_.Domain -join "." }
-            $This.Refresh()
-        }
-        [Void] GetVendorList()
-        {
-            $This.Vendor     = [VendorList]::New()
-        }
-        [Void] GetNetstat()
-        {
-            $This.Netstat    = [Netstat]::New().Output
-        }
-        [Void] GetArpNbt()
-        {
-            $List            = $This.Sub.Template | ? IPV4 | % { $_.IPV4.Alias } | Select-Object -Unique 
-            $This.Arp        = [ArpTable]::New().Output
-            $This.Nbt        = [NbtLocal]::New($List).Output
-    
-            ForEach ($Table in $This.Arp)
-            {
-                $Item        = $This.Sub.Template | ? {$_.IPV4.IP.IPAddress -eq $Table.IPAddress }
-                If ($Item)
-                {
-                    $Item.AddArp($Table.Output)
-                }
-            }
-    
-            ForEach ($Table in $This.Nbt | ? Output)
-            {
-                $Item        = $This.Sub.Template | ? { $_.IPv4.IP.IPAddress -eq $Table.IPAddress }
-                If ($Item)
-                {
-                    $Item.AddNbt($Table.Output)
-                }
-            }
-        }
-        Refresh()
-        {
-            $This.Output     = @( )
-            $This.Sub.Refresh()
-            ForEach ($Template in $This.Sub.Template)
-            {
-                Switch ($This.Mode)
-                {
-                    0
-                    {
-                        $Template.Vendor = "-"
-                    }
-                    1
-                    {
-                        $Template.SetVendor($This.Vendor)
-                    }
-                    2
-                    {
-                        $Template.SetVendor
-                    }
-                }
-            }
-
-            If ($This.Mode -in 1,3,5,7)
-            {
-                $This.GetNetstat()
-            }
-            If ($This.Mode -in 2,3,6,7)
-            {
-                $This.GetArpNbt()
-            }
-
-            $This.Output     = $This.Sub.Template | % { [NetworkControllerExtension]::New($_) }
-        }
         [Object] Section([Object]$Object,[String[]]$Names)
         {
             Return New-FEFormat -Section $Object $Names
@@ -2022,5 +1896,7 @@ Function Get-FENetwork
         }
     }
 
-    [NetworkController]::New($Mode)
+    $Ctrl = [NetworkControllerMaster]::New($Mode)
+    $Ctrl.Refresh()
+    $Ctrl
 }
