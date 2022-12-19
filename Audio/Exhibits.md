@@ -10,25 +10,29 @@ This FIRST entry below is of a rather large significance as it expertly portrays
 
 Prior to this particular recording...?
 
-My mother had contacted the **Saratoga County Sheriffs Office**, because she was _upset_ that I was _using the light in the kitchen to eat some ramen_.<br>
-This was **at or about the time** that **Russia** began to invade **Ukraine**, and I had recorded MULTIPLE VIDEOS of CYBERATTACKS that had taken place against my equipment just DAYS beforehand. The problem is that these dudes from SCSO are *really stupid*... and it can be heard in the audio recording how stupid they are.
+My mother had contacted the **Saratoga County Sheriffs Office**, because she was _upset_ that I was _using the light in the kitchen to eat some ramen_. This was **at or about the time** that **Russia** began to invade **Ukraine**, and I had recorded MULTIPLE VIDEOS of CYBERATTACKS that had taken place against my equipment just DAYS beforehand.
 
-They're never going to AGREE that they're really fucking stupid, but- that's really just too fucking bad because here's the evidence they were to lazy to look at or collect, as well as like, a couple of brand new cyberattacks that someone decided to do today **(12/18/22)** as I was intially creating this markdown file.
+The problem is, these dudes from SCSO are *really stupid*... and it can be heard in the audio recording how stupid they are.
+
+They're never going to AGREE that they're really stupid, but- that's really just **too bad** =`(...<br>
+...because here's the **evidence** they were **too lazy** to: **(look at/collect)**, as well as like, a couple of brand new cyberattacks that someone decided to do today **(12/18/22)** as I was intially creating this markdown file.
 
 **Russia** had used _various cyberattacks_ against **Ukraine** at or about that date, and I told these **morons from SCSO** about these following videos:
 
-| Date     | Name/URL
-|:---------|:------------------------------------------------------------------|
-| 02/15/22 | [A Matter of National Security](https://youtu.be/e4VnZObiez8)     |
-| 02/25/22 | [Censorship on Facebook](https://youtu.be/Jmq4yBqGhTs)            |
-| 02/26/22 | [Smartphone-WhileBSOD](https://youtu.be/40sQXpVh_8Y)              |
-| 02/26/22 | [Smartphone-Post-BSOD](https://youtu.be/oShPs6_uXIk)              |
-| 02/26/22 | [OBS-Laptop-Post-BSOD](https://youtu.be/LYVUMLpofWg)              |
+| Date     | Name/URL                                                                       |
+|:---------|:-------------------------------------------------------------------------------|
+| 02/15/22 | [A Matter of National Security](https://youtu.be/e4VnZObiez8)                  |
+| 02/25/22 | [Censorship on Facebook](https://youtu.be/Jmq4yBqGhTs)                         |
+| 02/26/22 | [During Blue Screen of Death (Smartphone angle)](https://youtu.be/40sQXpVh_8Y) |
+| 02/26/22 | [Post Blue Screen of Death (Smartphone angle)](https://youtu.be/oShPs6_uXIk)   |
+| 02/26/22 | [Post Blue Screen of Death (Laptop angle/OBS)](https://youtu.be/LYVUMLpofWg)   |
 
 So, for the guys who work at the Saratoga County Sheriffs Office...?<br>
-Go ahead, and grab this thing called a "dictionary", before you continue reading this document.
+Go ahead, and grab this thing called a "dictionary", before you continue reading this document...
 
 What these _links_ ABOVE are called, "VIDEOS".<br>
+Videos are actually pretty <i>cool</i>, and I'll even go so far as to explain the **definition** of that word, for any fuckin' moron from **(SCSO/NYSP)** who doesn't know...
+
 | Word  | Type | Definition                                                       |
 |:------|:-----|:-----------------------------------------------------------------|
 | VIDEO | NOUN | the (recording/reproducing/broadcasting) of moving visual images |
