@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-15 13:27:12                                                                  //
+\\  Date       : 2022-12-24 17:06:26                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FESystemDetails.ps1
@@ -17,7 +17,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2022-12-14
+    Modified   : 2022-12-24
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -955,19 +955,430 @@ Function Get-FESystemDetails
         }
     }
 
+    # // =================================================================
+    # // | For enumerating installed Windows (Updates/Packages/HotFixes) |
+    # // =================================================================
+
+    Class HotFixItem
+    {
+        [UInt32]         $Index
+        Hidden [Object] $HotFix
+        [String]        $Source
+        [String]   $Description
+        [String]      $HotFixID
+        [String]   $InstalledBy
+        [String]   $InstalledOn
+        HotFixItem([UInt32]$Index,[Object]$HotFix)
+        {
+            $This.Index       = $Index
+            $This.HotFix      = $HotFix
+            $This.Source      = $HotFix.PSComputerName
+            $This.Description = $HotFix.Description
+            $This.HotFixID    = $HotFix.HotFixID
+            $This.InstalledBy = $HotFix.InstalledBy
+            $This.InstalledOn = ([DateTime]$HotFix.InstalledOn).ToString("MM/dd/yyyy")
+        }
+    }
+
+    # // =================================================================
+    # // | For enumerating installed Windows (Updates/Packages/HotFixes) |
+    # // =================================================================
+
+    Class HotFixList
+    {
+        [Object] $Output
+        HotFixList()
+        {
+            $This.Refresh()
+        }
+        Refresh()
+        {
+            Write-Host "Getting [~] Windows Hot Fixes"
+            $This.Output = @( )
+
+            ForEach ($HotFix in $This.CmdLet())
+            {
+                $This.Add($HotFix)
+            }
+        }
+        [Object[]] CmdLet()
+        {
+            Return Get-HotFix
+        }
+        [Object] HotFixItem([UInt32]$Index,[Object]$HotFix)
+        {
+            Return [HotFixItem]::New($Index,$Hotfix)
+        }
+        Add([Object]$Hotfix)
+        {
+            $This.Output += $This.HotFixItem($This.Output.Count,$HotFix)
+        }
+    }
+
+    # // =========================================
+    # // | For enumerating scheduled task states |
+    # // =========================================
+
+    Enum ScheduledTaskStateType
+    {
+        Disabled
+        Ready
+        Running
+    }
+    
+    # // =====================================================================
+    # // | For providing an index and description for a scheduled task state |
+    # // =====================================================================
+
+    Class ScheduledTaskStateItem
+    {
+        [UInt32] $Index
+        [String] $Type
+        [String] $Description
+        ScheduledTaskStateItem([String]$Type)
+        {
+            $This.Type  = $Type
+            $This.Index = [UInt32][ScheduledTaskStateType]::$Type        
+        }
+        [String] ToString()
+        {
+            Return $This.Type
+        }
+    }
+
+    # // =========================================
+    # // | For enumerating scheduled task states |
+    # // =========================================
+
+    Class ScheduledTaskStateList
+    {
+        [Object] $Output
+        ScheduledTaskStateList()
+        {
+            $This.Output = @( )
+
+            ForEach ($Name in [System.Enum]::GetNames([ScheduledTaskStateType]))
+            {
+                $This.Add($Name)
+            }
+        }
+        Add([String]$Type)
+        {
+            $Item             = [ScheduledTaskStateItem]::New($Type)
+            $Item.Description = Switch ($Type)
+            {
+                Disabled { "The scheduled task is currently disabled."        }
+                Ready    { "The scheduled task is enabled, and ready to run." }
+                Running  { "The scheduled task is currently running."         }
+            }
+
+            $This.Output     += $Item
+        }
+    }
+
+    # // =====================================
+    # // | For enumerating scheduled task(s) |
+    # // =====================================
+
+    Class ScheduledTaskItem
+    {
+        [UInt32]       $Index
+        Hidden [Object] $Task
+        [String]        $Path
+        [String]        $Name
+        [Object]       $State
+        ScheduledTaskItem([UInt32]$Index,[Object]$Task)
+        {
+            $This.Index = $Index
+            $This.Task  = $Task
+            $This.Path  = $Task.TaskPath
+            $This.Name  = $Task.TaskName
+        }
+    }
+
+    # // =====================================
+    # // | For enumerating scheduled task(s) |
+    # // =====================================
+
+    Class ScheduledTaskList
+    {
+        [Object] $State
+        [Object] $Output
+        ScheduledTaskList()
+        {
+            $This.State  = $This.ScheduledTaskStateList()
+
+            $This.Refresh()
+        }
+        Refresh()
+        {
+            Write-Host "Getting [~] Windows Scheduled Tasks"
+            $This.Output = @( )
+
+            ForEach ($Task in $This.CmdLet())
+            {
+                $This.Add($Task)
+                $This.Output[-1].State = $This.State | ? Type -eq $Task.State
+            }
+        }
+        [Object[]] CmdLet()
+        {
+            Return Get-ScheduledTask
+        }
+        [Object] ScheduledTaskStateList()
+        {
+            Return [ScheduledTaskStateList]::New().Output
+        }
+        Add([Object]$Task)
+        {
+            $This.Output += [ScheduledTaskItem]::New($This.Output.Count,$Task)
+        }
+    }
+
+    # // =====================================================
+    # // | For enumerating Windows optional feature(s) state |
+    # // =====================================================
+    
+    Enum WindowsOptionalStateType
+    {
+        Disabled
+        DisabledWithPayloadRemoved
+        Enabled
+    }
+
+    # // =====================================================
+    # // | For enumerating Windows optional feature(s) state |
+    # // =====================================================
+
+    Class WindowsOptionalStateSlot
+    {
+        [UInt32] $Index
+        [String] $Type
+        [String] $Description
+        WindowsOptionalStateSlot([String]$Type)
+        {
+            $This.Type = [WindowsOptionalStateType]::$Type
+            $This.Index = [UInt32][WindowsOptionalStateType]::$Type
+        }
+        [String] ToString()
+        {
+            Return $This.Type
+        }
+    }
+
+    # // =====================================================
+    # // | For enumerating Windows optional feature(s) state |
+    # // =====================================================
+
+    Class WindowsOptionalStateList
+    {
+        [Object] $Output
+        WindowsOptionalStateList()
+        {
+            $This.Output = @( ) 
+            [System.Enum]::GetNames([WindowsOptionalStateType]) | % { $This.Add($_) }
+        }
+        Add([String]$Name)
+        {
+            $Item             = [WindowsOptionalStateSlot]::New($Name)
+            $Item.Description = Switch ($Name)
+            {
+                Disabled                   { "Feature is disabled"                     }
+                DisabledWithPayloadRemoved { "Feature is disabled, payload is removed" }
+                Enabled                    { "Feature is enabled"                      }
+            }
+            $This.Output += $Item
+        }
+        [Object] Get([String]$Type)
+        {
+            Return $This.Output | ? Type -eq $Type
+        }
+    }
+
+    # // ===============================================
+    # // | For enumerating Windows optional feature(s) |
+    # // ===============================================
+
+    Class WindowsOptionalFeatureItem
+    {
+        [UInt32] $Index
+        Hidden [Object] $Feature
+        [String] $FeatureName
+        [Object] $State
+        Hidden [String] $Path
+        Hidden [UInt32] $Online
+        Hidden [String] $WinPath
+        Hidden [String] $SysDrivePath
+        Hidden [UInt32] $RestartNeeded
+        Hidden [String] $LogPath
+        Hidden [String] $ScratchDirectory
+        Hidden [String] $LogLevel
+        WindowsOptionalFeatureItem([UInt32]$Index,[Object]$Feature)
+        {
+            $This.Index            = $Index
+            $This.Feature          = $Feature
+            $This.FeatureName      = $Feature.FeatureName
+            $This.Path             = $Feature.Path
+            $This.Online           = $Feature.Online
+            $This.WinPath          = $Feature.WinPath
+            $This.SysDrivePath     = $Feature.SysDrivePath
+            $This.RestartNeeded    = $Feature.RestartNeeded
+            $This.LogPath          = $Feature.LogPath
+            $This.ScratchDirectory = $Feature.ScratchDirectory
+            $This.LogLevel         = $Feature.LogLevel
+        }
+    }
+
+    # // ===============================================
+    # // | For enumerating Windows optional feature(s) |
+    # // ===============================================
+
+    Class WindowsOptionalFeatureList
+    {
+        [Object] $State
+        [Object] $Output
+        WindowsOptionalFeatureList()
+        {
+            $This.State   = $This.GetWindowsOptionalStateList()
+            $This.Refresh()
+        }
+        Refresh()
+        {
+            Write-Host "Getting [~] Windows Optional Features"
+            $This.Output = @( )
+
+            ForEach ($Feature in $This.CmdLet())
+            {
+                $This.Add($Feature)
+                $This.Output[-1].State = $This.State | ? Type -eq $This.Output[-1].Feature.State
+            }
+        }
+        [Object[]] CmdLet()
+        {
+            Return Get-WindowsOptionalFeature -Online | Sort-Object FeatureName
+        }
+        [Object] WindowsOptionalFeatureItem([UInt32]$Index,[Object]$Feature)
+        {
+            Return [WindowsOptionalFeatureItem]::New($Index,$Feature)
+        }
+        [Object] GetWindowsOptionalStateList()
+        {
+            Return [WindowsOptionalStateList]::New().Output
+        }
+        Add([Object]$Feature)
+        {
+            $This.Output += $This.WindowsOptionalFeatureItem($This.Output.Count,$Feature)
+        }
+    }
+
+    # // =======================================================
+    # // | # For enumerating AppX packages, like MS Edge, etc. |
+    # // =======================================================
+
+    Class AppXItem
+    {
+        [UInt32]                   $Index
+        Hidden [Object]             $AppX
+        [String]             $DisplayName
+        [Version]                $Version
+        [String]             $PublisherID
+        [String]             $PackageName
+        Hidden [UInt32]     $MajorVersion
+        Hidden [UInt32]     $MinorVersion
+        Hidden [UInt32]            $Build
+        Hidden [UInt32]         $Revision
+        Hidden [UInt32]     $Architecture
+        Hidden [String]       $ResourceID
+        Hidden [String]  $InstallLocation
+        Hidden [Object]          $Regions
+        Hidden [String]             $Path
+        Hidden [UInt32]           $Online
+        Hidden [String]          $WinPath
+        Hidden [string]     $SysDrivePath
+        Hidden [UInt32]    $RestartNeeded
+        Hidden [String]          $LogPath
+        Hidden [String] $ScratchDirectory
+        Hidden [String]         $LogLevel
+        AppXItem([UInt32]$Index,[Object]$AppX)
+        {
+            $This.Index            = $Index
+            $This.AppX             = $AppX
+            $This.DisplayName      = $AppX.DisplayName
+            $This.Version          = $AppX.Version
+            $This.PublisherId      = $AppX.PublisherId
+            $This.PackageName      = $AppX.PackageName
+            $This.MajorVersion     = $AppX.MajorVersion
+            $This.MinorVersion     = $AppX.MinorVersion
+            $This.Build            = $AppX.Build
+            $This.Revision         = $AppX.Revision
+            $This.Architecture     = $AppX.Architecture
+            $This.ResourceId       = $AppX.ResourceId
+            $This.InstallLocation  = $AppX.InstallLocation
+            $This.Regions          = $AppX.Regions
+            $This.Path             = $AppX.Path
+            $This.Online           = $AppX.Online
+            $This.WinPath          = $AppX.WinPath
+            $This.SysDrivePath     = $AppX.SysDrivePath
+            $This.RestartNeeded    = $AppX.RestartNeeded
+            $This.LogPath          = $AppX.LogPath
+            $This.ScratchDirectory = $AppX.ScratchDirectory
+            $This.LogLevel         = $AppX.LogLevel
+        }
+    }
+
+    # // =====================================================
+    # // | For enumerating AppX packages, like MS Edge, etc. |
+    # // =====================================================
+
+    Class AppXList
+    {
+        [Object]         $Output
+        AppXList()
+        {
+            $This.Refresh()
+        }
+        Refresh()
+        {
+            Write-Host "Getting [~] AppX packages"
+            $This.Output      = @( )
+
+            ForEach ($AppX in $This.CmdLet())
+            {    
+                $This.Add($AppX)
+            }
+        }
+        
+        [Object[]] CmdLet()
+        {
+            Return Get-AppxProvisionedPackage -Online
+        }
+        [Object] AppXItem([UInt32]$Index,[Object]$AppX)
+        {
+            Return [AppXItem]::New($Index,$AppX)
+        }
+        Add([Object]$AppX)
+        {
+            $This.Output += $This.AppXItem($This.Output.Count,$AppX)
+        }
+    }
+
     # // =====================================================
     # // | System snapshot, the primary focus of the utility |
     # // =====================================================
 
     Class System
     {
-        [Object] $Snapshot
+        [Object]        $Snapshot
         [Object] $BiosInformation
         [Object] $OperatingSystem
-        [Object] $ComputerSystem
-        [Object] $Processor
-        [Object] $Disk
-        [Object] $Network
+        [Object]  $ComputerSystem
+        [Object]       $Processor
+        [Object]            $Disk
+        [Object]         $Network
+        Hidden [Object]   $HotFix
+        Hidden [Object]     $Task
+        Hidden [Object]  $Feature
+        Hidden [Object]     $AppX
         System()
         {
             $This.Snapshot         = [Snapshot]::New()
@@ -984,6 +1395,29 @@ Function Get-FESystemDetails
         System([Switch]$Flag)
         {
 
+        }
+        Extension()
+        {
+            $This.Hotfix  = $This.GetWindowsHotFixList()
+            $This.Task    = $This.GetScheduledTaskList()
+            $This.Feature = $This.GetWindowsOptionalFeatureList()
+            $This.AppX    = $This.GetAppXList()
+        }
+        [Object] GetWindowsHotFixList()
+        {
+            Return [HotFixList]::New()
+        }
+        [Object] GetWindowsOptionalFeatureList()
+        {
+            Return [WindowsOptionalFeatureList]::New()
+        }
+        [Object] GetScheduledTaskList()
+        {
+            Return [ScheduledTaskList]::New()
+        }
+        [Object] GetAppXList()
+        {
+            Return [AppXList]::New()
         }
         [Object] SystemProperty([UInt32]$Index,[UInt32]$Rank,[String]$Source,[String]$Name,[Object]$Value)
         {
