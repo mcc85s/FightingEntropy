@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-30 17:11:02                                                                  //
+\\  Date       : 2022-12-30 18:07:53                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FESystem.ps1
@@ -2934,6 +2934,9 @@ Function Get-FESystem
     Class System
     {
         Hidden [UInt32]     $Lock
+        Hidden [UInt32]     $Mode
+        Hidden [UInt32]    $Level
+        Hidden [Object]  $Console
         [Object]        $Snapshot
         [Object] $BiosInformation
         [Object]  $ComputerSystem
@@ -2947,45 +2950,117 @@ Function Get-FESystem
         [Object]       $Processor
         [Object]            $Disk
         [Object]         $Network
-        System()
+        System([UInt32]$Mode,[UInt32]$Level)
         {
             $This.Lock             = 0
-            $This.Snapshot         = $This.New(0)
-            If (!$This.Snapshot.IsAdmin)
+            $This.Establish($Mode,$Level)
+
+            If ($This.Level -in 0,1,2)
             {
-                Throw "Must run as administrator"
+                $This.Update(0,"Loading [~] (System/Computer)")
+
+                $This.Snapshot         = $This.New(00)
+                $This.BiosInformation  = $This.New(01)
+                $This.ComputerSystem   = $This.New(02)
+                $This.OperatingSystem  = $This.New(03)
+            }
+            
+            If ($This.Level -eq 0)
+            {
+                $This.Update(0,"Loading [~] (Updates/Apps/Events/etc)")
+
+                $This.HotFix           = $This.New(04)
+                $This.Feature          = $This.New(05)
+                $This.Application      = $This.New(06)
+                $This.Event            = $This.New(07)
+                $This.Task             = $This.New(08)
+                $This.AppX             = $This.New(09)
             }
 
-            $This.BiosInformation  = $This.New(01)
-            $This.ComputerSystem   = $This.New(02)
-            $This.OperatingSystem  = $This.New(03)
-            $This.HotFix           = $This.New(04)
-            $This.Feature          = $This.New(05)
-            $This.Application      = $This.New(06)
-            $This.Event            = $This.New(07)
-            $This.Task             = $This.New(08)
-            $This.AppX             = $This.New(09)
-            $This.Processor        = $This.New(10)
-            $This.Disk             = $This.New(11)
-            $This.Network          = $This.New(12)
+            If ($This.Level -in 0,1)
+            {
+                $This.Update(0,"Loading [~] (Processor/Disk/Network)")
+
+                $This.Processor        = $This.New(10)
+                $This.Disk             = $This.New(11)
+                $This.Network          = $This.New(12)
+            }
+
+            $This.Update(100,"Loaded [+] System snapshot")
         }
-        System([Object]$In)
+        System([UInt32]$Mode,[UInt32]$Level,[Object]$In)
         {
             $This.Lock             = 1
+            $This.Establish($Mode,$Level)
 
-            $This.Snapshot         = $This.Load(00,$In.Get(00))
-            $This.BiosInformation  = $This.Load(01,$In.Get(01))
-            $This.ComputerSystem   = $This.Load(02,$In.Get(02))
-            $This.OperatingSystem  = $This.Load(03,$In.Get(03))
-            $This.HotFix           = $This.Load(04,$In.Get(04))
-            $This.Feature          = $This.Load(05,$In.Get(05))
-            $This.Application      = $This.Load(06,$In.Get(06))
-            $This.Event            = $This.Load(07,$In.Get(07))
-            $This.Task             = $This.Load(08,$In.Get(08))
-            $This.AppX             = $This.Load(09,$In.Get(09))
-            $This.Processor        = $This.Load(10,$In.Get(10))
-            $This.Disk             = $This.Load(11,$In.Get(11))
-            $This.Network          = $This.Load(12,$In.Get(12))
+            If ($This.Level -in 0,1,2)
+            {
+                $This.Update(0,"Importing [~] (System/Computer)")
+
+                $This.Snapshot         = $This.Load(00,$In.Get(00))
+                $This.BiosInformation  = $This.Load(01,$In.Get(01))
+                $This.ComputerSystem   = $This.Load(02,$In.Get(02))
+                $This.OperatingSystem  = $This.Load(03,$In.Get(03))
+            }
+
+            If ($This.Level -eq 0)
+            {
+                $This.Update(0,"Importing [~] (Updates/Apps/Events/etc)")
+
+                $This.HotFix           = $This.Load(04,$In.Get(04))
+                $This.Feature          = $This.Load(05,$In.Get(05))
+                $This.Application      = $This.Load(06,$In.Get(06))
+                $This.Event            = $This.Load(07,$In.Get(07))
+                $This.Task             = $This.Load(08,$In.Get(08))
+                $This.AppX             = $This.Load(09,$In.Get(09))
+            }
+
+            If ($This.Level -in 0,1)
+            {
+                $This.Update(0,"Importing [~] (Processor/Disk/Network)")
+
+                $This.Processor        = $This.Load(10,$In.Get(10))
+                $This.Disk             = $This.Load(11,$In.Get(11))
+                $This.Network          = $This.Load(12,$In.Get(12))
+            }
+
+            $This.Update(100,"Imported [+] System snapshot")
+        }
+        Establish([UInt32]$Mode,[UInt32]$Level)
+        {
+            $This.Mode             = $Mode
+            If ($This.Mode -gt 0)
+            {
+                $This.NewConsole()
+            }
+
+            $This.Level            = $Level
+            If ($This.Mode -gt 0)
+            {
+                $This.Update(1,"Level set to [$Level]")
+            }
+        }
+        [String] Id([UInt32]$Rank)
+        {
+            $Item = Switch ($Rank)
+            {
+                00 {         "Snapshot" }
+                01 {  "BiosInformation" }
+                02 {   "ComputerSystem" }
+                03 {  "OperatingSystem" }
+                04 {           "HotFix" }
+                05 {          "Feature" }
+                06 {      "Application" }
+                07 {            "Event" }
+                08 {             "Task" }
+                09 {             "AppX" }
+                10 {        "Processor" }
+                11 {             "Disk" }
+                12 {          "Network" }
+                13 {            "Event" }
+            }
+
+            Return $Item
         }
         [Object] New([UInt32]$Rank)
         {
@@ -3009,6 +3084,12 @@ Function Get-FESystem
                 10 {              [ProcessorList]::New() }
                 11 {                   [DiskList]::New() }
                 12 {                [NetworkList]::New() }
+            }
+
+            Switch (!!$Item)
+            {
+                $True  { $This.Update( 1,"Loaded [+] $($This.Id($Rank))") }
+                $False { $This.Update(-1,"Failed [!] $($This.Id($Rank))") }
             }
 
             Return $Item
@@ -3037,6 +3118,12 @@ Function Get-FESystem
                 12 {                [NetworkList]::New($Object) }
             }
 
+            Switch (!!$Item)
+            {
+                $True  { $This.Update( 1,"Imported [+] $($This.Id($Rank))") }
+                $False { $This.Update(-1,"Failed [!] $($This.Id($Rank))") }
+            }
+
             Return $Item
         }
         [Object] Get([UInt32]$Index)
@@ -3061,6 +3148,40 @@ Function Get-FESystem
 
             Return $Item
         }
+        NewConsole()
+        {
+            If ($This.Mode -eq 0)
+            {
+                Throw "Console not available in this mode"
+            }
+
+            ElseIf (!!$This.Console)
+            {
+                Throw "Console already exists"
+            }
+
+            Else
+            {
+                $This.Console = New-FEConsole
+                $This.Console.Initialize()
+                $This.Status()
+            }
+        }
+        [Void] Status()
+        {
+            If ($This.Mode -eq 2)
+            {
+                [Console]::WriteLine($This.Console.Last())
+            }
+        }
+        [Void] Update([UInt32]$State,[String]$Status)
+        {
+            If ($This.Mode -ne 0)
+            {
+                $This.Console.Update($State,$Status)
+                $This.Status()
+            }
+        }
         [Object] SystemProperty([UInt32]$Index,[UInt32]$Rank,[String]$Source,[String]$Name,[Object]$Value)
         {
             Return [SystemProperty]::New($Index,$Rank,$Source,$Name,$Value)
@@ -3071,6 +3192,8 @@ Function Get-FESystem
         }
         [Object] OutputFile()
         {
+            $This.Update(0,"Generating [~] Output file")
+
             $Out = @( )  
             ForEach ($Name in $This.PSObject.Properties.Name)
             {
@@ -3223,7 +3346,15 @@ Function Get-FESystem
                 $Out += $Section
             }
             
-            Return [OutputFile]::New($Out).Output
+            $Item = [OutputFile]::New($Out).Output
+
+            Switch (!!$Item)
+            {
+                $True  { $This.Update( 1,"Generated [+] Output file") }
+                $False { $This.Update(-1,"Failed [!] Output file") }
+            }
+
+            Return $Item
         }
         WriteOutput()
         {
@@ -3261,16 +3392,16 @@ Function Get-FESystem
                 [System.IO.File]::WriteAllLines($Target,$Value)
                 If (![System.IO.File]::Exists($Target))
                 {
-                    Throw "Exception [!] File was not saved [!]"
+                    $This.Update(-1,"Exception [!] File [$Target] not saved.")
                 }
                 Else
                 {
-                    [Console]::WriteLine("File [$Target] saved.")
+                    $This.Update(100,"File [$Target] saved.")
                 }
             }
             Catch
             {
-                Write-Error "An unknown error occurred."
+                $This.Update(-1,"Exception [!] File [$Target] not saved.")
             }
         }
         [String] ToString()
@@ -3286,7 +3417,7 @@ Function Get-FESystem
 
     If (!$Path -and !$InputObject)
     {
-        [System]::New()
+        [System]::New($Mode,$Level)
     }
 
     Else
@@ -3297,6 +3428,6 @@ Function Get-FESystem
         }
 
         $Section = [InputObject]::New($InputObject)
-        [System]::New($Section)
+        [System]::New($Mode,$Level,$Section)
     }
 }
