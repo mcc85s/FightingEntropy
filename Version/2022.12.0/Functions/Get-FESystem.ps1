@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-30 00:51:54                                                                  //
+\\  Date       : 2022-12-30 17:11:02                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FESystem.ps1
@@ -32,9 +32,21 @@
     Modified   : 2022-12-30
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
-    TODO       : May switch to a more (flexible/sophisticated) section platform
+    TODO       : Switch to more (flexible/sophisticated) section platform
 
 .Example
+
+  [Mode] | Status | Logging |
+ ========|========|=========|
+      0  |   --   |   --    |
+      1  |   --   |   XX    |
+      2  |   XX   |   XX    |
+
+ [Level] | Snap | Bios | Comp | Oper | Hfix | Feat | Apps | Evnt | Task | AppX | Proc | Disk | NetW |
+ ========|======|======|======|======|======|======|======|======|======|======|======|======|======|
+       0 |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |
+       1 |  XX  |  XX  |  XX  |  XX  |  --  |  --  |  --  |  --  |  --  |  --  |  XX  |  XX  |  XX  |
+       2 |  XX  |  XX  |  XX  |  XX  |  --  |  --  |  --  |  --  |  --  |  --  |  --  |  --  |  --  |
 #>
 
 Function Get-FESystem
@@ -42,9 +54,14 @@ Function Get-FESystem
     [CmdLetBinding(DefaultParameterSetName=0)]
     Param(
         [ValidateSet(0,1,2)]
-        [Parameter(Mandatory,ParameterSetName=0)]
-        [Parameter(Mandatory,ParameterSetName=1)]
-        [Parameter(Mandatory,ParameterSetName=2)][UInt32]$Mode,
+        [Parameter(ParameterSetName=0)]
+        [Parameter(ParameterSetName=1)]
+        [Parameter(ParameterSetName=2)][UInt32]$Mode = 0,
+        [ValidateSet(0,1,2)]
+        [Parameter(ParameterSetName=0)]
+        [Parameter(ParameterSetName=1)]
+        [Parameter(ParameterSetName=2)][UInt32]$Level = 0,
+        [Parameter()]
         [ValidateScript({Test-Path $_})]
         [Parameter(Mandatory,ParameterSetName=1)][String]$Path,
         [Parameter(Mandatory,ParameterSetName=2)][Object]$InputObject
@@ -397,7 +414,6 @@ Function Get-FESystem
         }
     }
 
-
     # // ==================================================================
     # // | Orchestrates the necessary operations to format an output file |
     # // ==================================================================
@@ -456,7 +472,7 @@ Function Get-FESystem
 
     Class Snapshot
     {
-        Hidden [UInt32]         $Mode
+        Hidden [UInt32]         $Lock
         Hidden [Object]           $OS
         Hidden [Object]           $CS
         [String]               $Start
@@ -483,23 +499,23 @@ Function Get-FESystem
         Hidden [Object]     $Property
         Snapshot()
         {
-            $This.Mode          = 0
-            $Current            = $This.GetNow()
-            $This.OS            = $This.GetOperatingSystem()
-            $This.CS            = $This.GetComputerSystem()
+            $This.Lock          = 0
+            $Current            = $This.Get("DateTime")
+            $This.OS            = $This.Get("OperatingSystem")
+            $This.CS            = $This.Get("ComputerSystem")
             $This.Start         = $Current
-            $This.ComputerName  = $This.GetMachineName()
+            $This.ComputerName  = $This.Get("MachineName")
             $This.Name          = $This.ComputerName.ToLower()
             $This.DisplayName   = "{0}-{1}" -f $Current.ToString("yyyy-MMdd-HHmmss"), $This.ComputerName
             $This.DNS           = @($Env:UserDNSDomain,"-")[!$env:USERDNSDOMAIN]
-            $This.NetBIOS       = $This.GetUserDomainName().ToLower()
+            $This.NetBIOS       = $This.Get("UserDomainName").ToLower()
             $This.Hostname      = @($This.Name;"{0}.{1}" -f $This.Name, $This.DNS)[$This.CS.PartOfDomain].ToLower()
-            $This.Username      = $This.GetUserName()
-            $This.Principal     = $This.GetPrincipal()
+            $This.Username      = $This.Get("UserName")
+            $This.Principal     = $This.Get("Principal")
             $This.IsAdmin       = $This.Principal.IsInRole("Administrator") -or $This.Principal.IsInRole("Administrators")
             $This.Caption       = $This.OS.Caption
             $This.GetFields()
-            $This.Guid          = $This.NewGuid()
+            $This.Guid          = $This.Get("NewGuid")
 
             $This.Property      = @( )
 
@@ -510,14 +526,14 @@ Function Get-FESystem
         }
         Snapshot([Object]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Load($Section.Property)
         }
         Load([Object[]]$Pairs)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
 
             ForEach ($Pair in $Pairs)
@@ -525,48 +541,74 @@ Function Get-FESystem
                 $This.$($Pair.Name) = $Pair.Value
             }
         }
-        [Object] GetMachineName()
+        [Object] Get([String]$Name)
         {
-            Return [Environment]::MachineName
-        }
-        [Object] GetUserDomainName()
-        {
-            Return [Environment]::UserDomainName
-        }
-        [Object] GetUsername()
-        {
-            Return [Environment]::UserName
-        }
-        [Object] GetNow()
-        {
-            Return [DateTime]::Now
-        }
-        [Object] NewGuid()
-        {
-            Return [Guid]::NewGuid()
-        }
-        [Object] GetPrincipal()
-        {
-            Return [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()
-        }
-        [Object] GetComputerSystem()
-        {
-            Return Get-CimInstance Win32_ComputerSystem
-        }
-        [Object] GetOperatingSystem()
-        {
-            Return Get-CimInstance Win32_OperatingSystem
-        }
-        [Object] GetCurrentVersion()
-        {
-            Return Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
-        }
-        [Object] GetHost()
-        {
-            Return Get-Host
+            If ($This.Lock -eq 1)
+            {
+                Throw "Method unavailable [Template lock]"
+            }
+
+            $Item = Switch ($Name)
+            {
+                MachineName
+                {
+                    [Environment]::MachineName
+                }
+                UserDomainName
+                {
+                    [Environment]::UserDomainName
+                }
+                Username
+                { 
+                    [Environment]::UserName
+                }
+                UserDNSDomain
+                {
+                    [Environment]::GetEnvironmentVariable("UserDNSDomain")
+                }
+                DateTime
+                { 
+                    [DateTime]::Now 
+                }
+                NewGuid
+                { 
+                    [Guid]::NewGuid() 
+                }
+                Principal 
+                { 
+                    [Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent() 
+                }
+                ComputerSystem
+                {
+                    Get-CimInstance Win32_ComputerSystem
+                }
+                OperatingSystem
+                {
+                    Get-CimInstance Win32_OperatingSystem
+                }
+                CurrentVersion
+                {
+                    Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+                }
+                Host
+                {
+                    Get-Host
+                }
+                Edition
+                {
+
+                }
+            }
+
+            Return $Item
         }
         [String] GetEdition()
         {
+            If ($This.Lock -eq 1)
+            {
+                Throw "Method unavailable [Template lock]"
+            }
+
             $Out = ("10240,Threshold 1,Release To Manufacturing;10586,Threshold 2,November {1};1439"+
             "3,{0} 1,Anniversary {1};15063,{0} 2,{2} {1};16299,{0} 3,Fall {2} {1};17134,{0} 4,Apri"+
             "l 2018 {1};17763,{0} 5,October 2018 {1};18362,19H1,May 2019 {1};18363,19H2,November 2"+
@@ -583,6 +625,11 @@ Function Get-FESystem
         }
         [String] GetSku()
         {
+            If ($This.Lock -eq 1)
+            {
+                Throw "Method unavailable [Template lock]"
+            }
+
             $Out = ("Undefined,Ultimate {0},Home Basic {0},Home Premium {0},{3} {0},Home Basic N {"+
             "0},Business {0},Standard {2} {0},Datacenter {2} {0},Small Business {2} {0},{3} {2} {0"+
             "},Starter {0},Datacenter {2} Core {0},Standard {2} Core {0},{3} {2} Core {0},{3} {2} "+
@@ -604,13 +651,23 @@ Function Get-FESystem
         }
         [String] GetChassis()
         {
+            If ($This.Lock -eq 1)
+            {
+                Throw "Method unavailable [Template lock]"
+            }
+
             $Tag  = "N/A Desktop Mobile/Laptop Workstation {0} {0} Appliance {0} Max" -f "Server"
             Return $Tag.Split(" ")[$This.CS.PCSystemType]
         }
         GetFields()
         {
-            $This.Version             = $This.GetHost().Version.ToString()
-            $This.ReleaseID           = $This.GetCurrentVersion().ReleaseID
+            If ($This.Lock -eq 1)
+            {
+                Throw "Method unavailable [Template lock]"
+            }
+
+            $This.Version             = $This.Get("Host").Version.ToString()
+            $This.ReleaseID           = $This.Get("CurrentVersion").ReleaseID
 
             $This.Build, $This.Code, $This.Description = $This.GetEdition() -Split ","
 
@@ -623,6 +680,11 @@ Function Get-FESystem
         }
         MarkComplete()
         {
+            If ($This.Lock -eq 1)
+            {
+                Throw "Method unavailable [Template lock]"
+            }
+
             $This.Complete     = 1 
             $This.Elapsed      = [String][Timespan]([DateTime]::Now-[DateTime]$This.Start)
         }
@@ -642,7 +704,7 @@ Function Get-FESystem
 
     Class BiosInformation
     {
-        Hidden [UInt32]     $Mode
+        Hidden [UInt32]     $Lock
         [String]            $Name
         [String]    $Manufacturer
         [String]    $SerialNumber
@@ -657,8 +719,8 @@ Function Get-FESystem
         Hidden [Object] $Property
         BiosInformation()
         {
-            $This.Mode            = 0
-            $Bios                 = $This.CmdLet()
+            $This.Lock            = 0
+            $Bios                 = Get-CimInstance Win32_Bios
             $This.Name            = $Bios.Name
             $This.Manufacturer    = $Bios.Manufacturer
             $This.SerialNumber    = $Bios.SerialNumber
@@ -680,12 +742,12 @@ Function Get-FESystem
         }
         BiosInformation([Object]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Load($Section.Property)
         }
         Load([Object[]]$Pairs)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
                 Throw "Invalid mode"
             }
@@ -694,10 +756,6 @@ Function Get-FESystem
             {
                 $This.$($Pair.Name) = $Pair.Value
             }
-        }
-        [Object] CmdLet()
-        {
-            Return Get-CimInstance Win32_Bios
         }
         [Object] SystemProperty([Object]$Property)
         {
@@ -719,7 +777,7 @@ Function Get-FESystem
 
     Class ComputerSystem
     {
-        Hidden [UInt32]     $Mode
+        Hidden [UInt32]     $Lock
         [String]    $Manufacturer
         [String]           $Model
         [String]         $Product
@@ -733,14 +791,14 @@ Function Get-FESystem
         Hidden [Object] $Property
         ComputerSystem()
         {
-            $This.Mode         = 0
+            $This.Lock         = 0
 
             $Computer          = @{ 
              
-                System         = $This.GetComputerSystem()
-                Product        = $This.GetComputerSystemProduct()
-                Board          = $This.GetBaseBoard()
-                Form           = $This.GetSystemEnclosure()
+                System         = $This.Get("ComputerSystem")
+                Product        = $This.Get("ComputerSystemProduct")
+                Board          = $This.Get("BaseBoard")
+                Form           = $This.Get("SystemEnclosure")
             }
 
             $This.Manufacturer = $Computer.System.Manufacturer
@@ -749,7 +807,7 @@ Function Get-FESystem
             $This.UUID         = $Computer.Product.UUID 
             $This.Product      = $Computer.Product.Version
             $This.Serial       = $Computer.Board.SerialNumber -Replace "\.",""
-            $This.BiosUefi     = $This.GetSecureBootUEFI()
+            $This.BiosUefi     = $This.Get("SecureBootUEFI")
 
             $This.AssetTag     = $Computer.Form.SMBIOSAssetTag.Trim()
             $This.Chassis      = Switch ([UInt32]$Computer.Form.ChassisTypes[0])
@@ -761,7 +819,7 @@ Function Get-FESystem
                 {$_ -in 30..32+13}      {"Tablet"}
             }
 
-            $This.Architecture = @{x86="x86";AMD64="x64"}[[Environment]::GetEnvironmentVariable("Processor_Architecture")]
+            $This.Architecture = @{x86="x86";AMD64="x64"}[$This.Get("Architecture")]
 
             $This.Property     = @( )
 
@@ -775,14 +833,14 @@ Function Get-FESystem
         }
         ComputerSystem([Object]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Load($Section.Property)
         }
         Load([Object]$Pairs)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable: [Object lock]"
             }
 
             ForEach ($Pair in $Pairs)
@@ -790,33 +848,50 @@ Function Get-FESystem
                 $This.$($Pair.Name) = $Pair.Value
             }
         }
-        [Object] GetComputerSystem()
+        [Object] Get([String]$Name)
         {
-            Return Get-CimInstance Win32_ComputerSystem 
-        }
-        [Object] GetComputerSystemProduct()
-        {
-            Return Get-CimInstance Win32_ComputerSystemProduct
-        }
-        [Object] GetBaseboard()
-        {
-            Return Get-CimInstance Win32_Baseboard
-        }
-        [Object] GetSystemEnclosure()
-        {
-            Return Get-CimInstance Win32_SystemEnclosure
-        }
-        [String] GetSecureBootUEFI()
-        {
-            Try
+            If ($This.Lock -eq 1)
             {
-                Get-SecureBootUEFI -Name SetupMode
-                Return "UEFI"
+                Throw "Method unavailable [Template lock]"
             }
-            Catch
+
+            $Item = Switch ($Name)
             {
-                Return "BIOS"
+                ComputerSystem
+                {
+                    Get-CimInstance Win32_ComputerSystem 
+                }
+                ComputerSystemProduct
+                {
+                    Get-CimInstance Win32_ComputerSystemProduct
+                }
+                Baseboard
+                {
+                    Get-CimInstance Win32_Baseboard
+                }
+                SystemEnclosure
+                {
+                     Get-CimInstance Win32_SystemEnclosure
+                }
+                SecureBootUEFI
+                {
+                    Try
+                    {
+                        Get-SecureBootUEFI -Name SetupMode
+                        "UEFI"
+                    }
+                    Catch
+                    {
+                        "BIOS"
+                    }
+                }
+                Architecture
+                {
+                    [Environment]::GetEnvironmentVariable("Processor_Architecture")
+                }
             }
+
+            Return $Item
         }
         [Object] SystemProperty([Object]$Property)
         {
@@ -838,7 +913,7 @@ Function Get-FESystem
 
     Class OperatingSystem
     {
-        Hidden [UInt32]     $Mode
+        Hidden [UInt32]     $Lock
         Hidden [Object]       $Os
         [String]         $Caption
         [String]         $Version
@@ -850,9 +925,9 @@ Function Get-FESystem
         Hidden [Object] $Property
         OperatingSystem()
         {
-            $This.Mode          = 0
+            $This.Lock          = 0
 
-            $This.OS            = $This.CmdLet()
+            $This.OS            = Get-CimInstance Win32_OperatingSystem
 
             $This.Caption       = $This.OS.Caption
             $This.Version       = $This.OS.Version
@@ -866,7 +941,7 @@ Function Get-FESystem
             
             ForEach ($Item in $This.OS.PSObject.Properties)
             {
-                $This.AddProperty($Item)
+                $This.Property += $This.SystemProperty($This.Property.Count,$Item)
             }
         }
         OperatingSystem([Object]$Section)
@@ -876,9 +951,9 @@ Function Get-FESystem
         }
         Load([Object[]]$Pairs)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Mode -eq 0)
             {
-                Throw "Invalid mode"
+                Throw Throw "Method unavailable [Template lock]"
             }
 
             ForEach ($Pair in $Pairs)
@@ -886,17 +961,9 @@ Function Get-FESystem
                 $This.$($Pair.Name) = $Pair.Value
             }
         }
-        [Object] CmdLet()
-        {
-            Return Get-CimInstance Win32_OperatingSystem
-        }
         [Object] SystemProperty([UInt32]$Index,[Object]$Property)
         {
             Return [SystemProperty]::New(0,$Index,"OperatingSystem",$Property.Name,$Property.Value)
-        }
-        AddProperty([Object]$Property)
-        {
-            $This.Property += $This.SystemProperty($This.Property.Count,$Property)
         }
         [UInt32] GetSlot()
         {
@@ -969,22 +1036,26 @@ Function Get-FESystem
 
     Class HotFixList
     {
-        Hidden [UInt32] $Mode
+        Hidden [UInt32] $Lock
         [String]        $Name
         [UInt32]       $Count
         [Object]      $Output
         HotFixList()
         {
-            $This.Mode = 0
-            $This.Name = "HotFix"
+            $This.Lock = 0
+            $This.Main()
             $This.Refresh()
         }
         HotFixList([Object]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
+            $This.Main()
+            $This.Load($Section.Item)
+        }
+        Main()
+        {
             $This.Name = "HotFix"
             $This.Clear()
-            $This.Load($Section.Item)
         }
         Clear()
         {
@@ -993,33 +1064,31 @@ Function Get-FESystem
         }
         Refresh()
         {
-            If ($This.Mode -ne 0)
+            If ($This.Lock -eq 1)
             {
-                Throw "Invalid mode"
+                Throw Throw "Method unavailable [Object lock]"
             }
 
             $This.Clear()
 
-            ForEach ($HotFix in $This.CmdLet())
+            ForEach ($HotFix in Get-HotFix)
             {
                 $This.Add($HotFix)
             }
         }
         Load([Object[]]$Items)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw Throw "Method unavailable [Template lock]"
             }
+
+            $This.Clear()
 
             ForEach ($Item in $Items)
             {
                 $This.Add($Item.Value,[Switch]$True)
             }
-        }
-        [Object[]] CmdLet()
-        {
-            Return Get-HotFix
         }
         [Object] HotFixItem([UInt32]$Index,[Object]$HotFix)
         {
@@ -1177,28 +1246,28 @@ Function Get-FESystem
 
     Class WindowsOptionalFeatureList
     {
-        Hidden [UInt32]  $Mode
+        Hidden [UInt32]  $Lock
         Hidden [Object] $State
         [String]         $Name
         [UInt32]        $Count
         [Object]       $Output
         WindowsOptionalFeatureList()
         {
-            $This.Mode    = 0
+            $This.Lock   = 0
             $This.Main()
             $This.Refresh()
         }
         WindowsOptionalFeatureList([Object]$Section)
         {
-            $This.Mode    = 1
+            $This.Lock   = 1
             $This.Main()
-            $This.Clear()
             $This.Load($Section.Item)
         }
         Main()
         {
-            $This.Name    = "Optional Features"
-            $This.State   = $This.GetWindowsOptionalStateList()
+            $This.Name   = "Optional Features"
+            $This.State  = $This.GetWindowsOptionalStateList()
+            $This.Clear()
         }
         Clear()
         {
@@ -1207,14 +1276,14 @@ Function Get-FESystem
         }
         Refresh()
         {
-            If ($This.Mode -ne 0)
+            If ($This.Lock -eq 1)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Template lock]"
             }
 
             $This.Clear()
 
-            ForEach ($Feature in $This.CmdLet())
+            ForEach ($Feature in Get-WindowsOptionalFeature -Online | Sort-Object FeatureName)
             {
                 $This.Add($Feature)
                 $This.Output[-1].State = $This.State | ? Type -eq $This.Output[-1].Feature.State
@@ -1222,20 +1291,18 @@ Function Get-FESystem
         }
         Load([Object[]]$Items)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
+
+            $This.Clear()
 
             ForEach ($Item in $Items)
             {
                 $xState  = $This.State | ? Symbol -match ([Regex]::Matches($Item.Value,"\[\W\]").Value)
                 $This.Add($Item.Rank,$xState,$Item.Value.Substring(4))
             }
-        }
-        [Object] CmdLet()
-        {
-            Return Get-WindowsOptionalFeature -Online | Sort-Object FeatureName
         }
         [Object] WindowsOptionalFeatureItem([UInt32]$Index,[Object]$Feature)
         {
@@ -1340,25 +1407,25 @@ Function Get-FESystem
 
     Class ApplicationList
     {
-        Hidden [UInt32] $Mode
+        Hidden [UInt32] $Lock
         [String]        $Name
         [UInt32]       $Count
         [Object]      $Output
         ApplicationList()
         {
-            $This.Mode   = 0
+            $This.Lock = 0
             $This.Main()
             $This.Refresh()
         }
         ApplicationList([Object]$Section)
         {
-            $This.Mode   = 1
+            $This.Lock = 1
             $This.Main()
             $This.Load($Section.Item)
         }
         Main()
         {
-            $This.Name   = "Application"
+            $This.Name = "Application"
             $This.Clear()
         }
         Clear()
@@ -1368,23 +1435,26 @@ Function Get-FESystem
         }
         Refresh()
         {
-            If ($This.Mode -ne 0)
+            If ($This.Lock -eq 1)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Template lock]"
             }
 
             $This.Clear()
-            ForEach ($Application in $This.CmdLet())
+
+            ForEach ($Application in $This.GetApplications())
             {
                 $This.Add($Application)
             }
         }
         Load([Object[]]$Items)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
+
+            $This.Clear()
 
             ForEach ($Item in $Items)
             {
@@ -1396,23 +1466,20 @@ Function Get-FESystem
                 $This.Add($Type,$DisplayName,$DisplayVersion)
             }
         }
-        [String] GetArchitecture()
+        [Object] GetApplications()
         {
-            Return [Environment]::GetEnvironmentVariable("Processor_Architecture")
-        }
-        [String[]] RegistryPath()
-        {
+            If ($This.Lock -eq 1)
+            {
+                Throw "Method unavailable [Template lock]"
+            }
+
             $Item = "" , "\WOW6432Node" | % { "HKLM:\Software$_\Microsoft\Windows\CurrentVersion\Uninstall\*" }
-            $Slot = Switch ($This.GetArchitecture())
+            $Slot = Switch ([Environment]::GetEnvironmentVariable("Processor_Architecture"))
             {
                 AMD64   { 0,1 } Default { 0 }
             }
 
-            Return $Item[$Slot]
-        }
-        [Object] CmdLet()
-        {
-            Return $This.RegistryPath() | % { Get-ItemProperty $_ } | ? DisplayName | Sort-Object DisplayName
+            Return $Item[$Slot] | % { Get-ItemProperty $_ } | ? DisplayName | Sort-Object DisplayName
         }
         [Object] Application([UInt32]$Index,[Object]$Application)
         {
@@ -1481,19 +1548,19 @@ Function Get-FESystem
 
     Class EventLogProviderList
     {
-        Hidden [UInt32] $Mode
+        Hidden [UInt32] $Lock
         [String]        $Name
         [UInt32]       $Count
         [Object]      $Output
         EventLogProviderList()
         {
-            $This.Mode = 0
+            $This.Lock = 0
             $This.Main()
             $This.Refresh()
         }
         EventLogProviderList([Object]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Main()
             $This.Load($Section.Item)
         }
@@ -1509,33 +1576,31 @@ Function Get-FESystem
         }
         Refresh()
         {
-            If ($This.Mode -ne 0)
+            If ($This.Lock -eq 1)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Template lock]"
             }
 
             $This.Clear()
 
-            ForEach ($Item in $This.CmdLet())
+            ForEach ($Item in Get-WinEvent -ListLog * | % LogName | Sort-Object)
             {
                 $This.Add($Item)
             }
         }
         Load([Object[]]$Items)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
+
+            $This.Clear()
 
             ForEach ($Item in $Items)
             {
                 $This.Add($Item.Value)
             }
-        }
-        [Object] CmdLet()
-        {
-            Return Get-WinEvent -ListLog * | % LogName | Sort-Object
         }
         [Object] EventLogProviderItem([UInt32]$Index,[String]$Name)
         {
@@ -1666,20 +1731,20 @@ Function Get-FESystem
 
     Class ScheduledTaskList
     {
-        Hidden [UInt32]  $Mode
+        Hidden [UInt32]  $Lock
         Hidden [Object] $State
         [String]         $Name
         [UInt32]        $Count
         [Object]       $Output
         ScheduledTaskList()
         {
-            $This.Mode   = 0
+            $This.Lock = 0
             $This.Main()
             $This.Refresh()
         }
         ScheduledTaskList([Object]$Section)
         {
-            $This.Mode   = 1
+            $This.Lock = 1
             $This.Main()
             $This.Load($Section.Item)
         }
@@ -1696,14 +1761,14 @@ Function Get-FESystem
         }
         Refresh()
         {
-            If ($This.Mode -ne 0)
+            If ($This.Lock -eq 1)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Template lock]"
             }
 
             $This.Clear()
 
-            ForEach ($Task in $This.CmdLet())
+            ForEach ($Task in Get-ScheduledTask)
             {
                 $This.Add($Task)
                 $This.Output[-1].State = $This.State | ? Type -eq $Task.State
@@ -1711,10 +1776,12 @@ Function Get-FESystem
         }
         Load([Object[]]$Items)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
+
+            $This.Clear()
 
             ForEach ($Item in $Items)
             {
@@ -1725,10 +1792,6 @@ Function Get-FESystem
 
                 $This.Add($Path,$xName,$xState)
             }
-        }
-        [Object] CmdLet()
-        {
-            Return Get-ScheduledTask
         }
         [Object] ScheduledTaskStateList()
         {
@@ -1847,19 +1910,19 @@ Function Get-FESystem
     
     Class AppXList
     {
-        Hidden [UInt32] $Mode
+        Hidden [UInt32] $Lock
         [String]        $Name
         [UInt32]       $Count
         [Object]      $Output
         AppXList()
         {
-            $This.Mode = 0
+            $This.Lock = 0
             $This.Main()
-            #$This.Refresh()
+            $This.Refresh()
         }
         AppXList([Object]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Main()
             $This.Load($Section.Item)
         }
@@ -1875,9 +1938,9 @@ Function Get-FESystem
         }
         Refresh()
         {
-            If ($This.Mode -ne 0)
+            If ($This.Mode -eq 1)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Template lock]"
             }
     
             $This.Clear()
@@ -1889,10 +1952,12 @@ Function Get-FESystem
         }
         Load([Object[]]$Items)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
+
+            $This.Clear()
     
             ForEach ($Item in $Items)
             {
@@ -1939,7 +2004,7 @@ Function Get-FESystem
 
     Class ProcessorItem
     {
-        Hidden [UInt32]     $Mode
+        Hidden [UInt32]     $Lock
         [UInt32]            $Rank
         [String]    $Manufacturer
         [String]            $Name
@@ -1954,9 +2019,14 @@ Function Get-FESystem
         Hidden [Object] $Property
         ProcessorItem([UInt32]$Rank,[Object]$CPU)
         {
-            $This.Mode         = 0
+            $This.Lock         = 0
             $This.Rank         = $Rank
-            $This.Manufacturer = Switch -Regex ($CPU.Manufacturer) { Intel { "Intel" } Amd { "AMD" } Default {$Cpu.Manufacturer} }
+            $This.Manufacturer = Switch -Regex ($CPU.Manufacturer) 
+                                 {
+                                    Intel   {           "Intel" }
+                                    Amd     {             "AMD" }
+                                    Default { $Cpu.Manufacturer }
+                                 }
             $This.Name         = $CPU.Name -Replace "\s+"," "
             $This.Caption      = $CPU.Caption
             $This.Cores        = $CPU.NumberOfCores
@@ -1982,9 +2052,9 @@ Function Get-FESystem
         }
         Load([Object[]]$Pairs)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
 
             ForEach ($Pair in $Pairs)
@@ -2012,19 +2082,19 @@ Function Get-FESystem
 
     Class ProcessorList
     {
-        Hidden [UInt32] $Mode
+        Hidden [UInt32] $Lock
         [Object]        $Name
         [Object]       $Count
         [Object]      $Output
         ProcessorList()
         {
-            $This.Mode = 0
+            $This.Lock = 0
             $This.Main()
             $This.Refresh()
         }
         ProcessorList([Object]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Main()
             $This.Load($Section.Item)
         }
@@ -2040,33 +2110,31 @@ Function Get-FESystem
         }
         Refresh()
         {
-            If ($This.Mode -eq 1)
+            If ($This.Lock -eq 1)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Template lock]"
             }
 
             $This.Clear()
 
-            ForEach ($Processor in $This.CmdLet())
+            ForEach ($Processor in Get-CimInstance Win32_Processor)
             {
                 $This.Add($This.Output.Count,$Processor)
             }
         }
         Load([Object[]]$Items)
         {
-            If ($This.Mode -eq 0)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
+
+            $This.Clear()
             
             ForEach ($Item in $Items)
             {
                 $This.Add($Item.Rank,$Item.Property,[Switch]$True)
             }
-        }
-        [Object] CmdLet()
-        {
-            Return Get-CimInstance Win32_Processor
         }
         [Object] ProcessorItem([UInt32]$Rank,[Object]$Processor)
         {
@@ -2096,9 +2164,13 @@ Function Get-FESystem
         }
     }
 
+    # // =======================================================================
+    # // | Used to convert the byte size of a drive or partition into a string |
+    # // =======================================================================
+
     Class Size
     {
-        [UInt64] $Bytes
+        [UInt64]  $Bytes
         [String] $String
         Size([UInt64]$Bytes)
         {
@@ -2128,7 +2200,7 @@ Function Get-FESystem
 
     Class PartitionItem
     {
-        Hidden [UInt32]     $Mode
+        Hidden [UInt32]     $Lock
         Hidden [String]    $Label
         [UInt32]            $Rank
         [String]            $Type
@@ -2141,6 +2213,7 @@ Function Get-FESystem
         Hidden [Object] $Property
         PartitionItem([UInt32]$Rank,[Object]$Partition)
         {
+            $This.Lock       = 0
             $This.Label      = $Partition.Name -Replace "( |#)", "" -Replace ",","."
             $This.Rank       = $Rank
             $This.Type       = $Partition.Type
@@ -2151,7 +2224,7 @@ Function Get-FESystem
             $This.Disk       = $Partition.DiskIndex
             $This.Partition  = $Partition.Index
 
-            $This.Property      = @( )
+            $This.Property   = @( )
 
             ForEach ($Item in $Partition.PSObject.Properties)
             {
@@ -2160,15 +2233,15 @@ Function Get-FESystem
         }
         PartitionItem([UInt32]$Rank,[Object[]]$Pairs,[Switch]$Flags)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Rank = $Rank
             $This.Load($Pairs)
         }
         Load([Object[]]$Pairs)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
 
             ForEach ($Pair in $Pairs)
@@ -2200,25 +2273,20 @@ Function Get-FESystem
 
     Class PartitionList
     {
-        Hidden [UInt32] $Mode
+        Hidden [UInt32] $Lock
         [String]        $Name
         [UInt32]       $Count
         [Object]      $Output
         PartitionList()
         {
-            $This.Mode = 0
+            $This.Lock = 0
             $This.Main()
         }
         PartitionList([Object[]]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Main()
-
-            ForEach ($Partition in $Section | ? Name -match Partition)
-            {
-                $Rank = $Partition.Name -Replace "Disk\d+\.Partition", ""
-                $This.Add($Rank,$Partition.Property,[Switch]$True)
-            }
+            $This.Load($Section)
         }
         Main()
         {
@@ -2228,7 +2296,22 @@ Function Get-FESystem
         Clear()
         {
             $This.Count   = 0
-            $this.Output  = @( )
+            $This.Output  = @( )
+        }
+        Load([Object[]]$Section)
+        {
+            If ($This.Lock -eq 0)
+            {
+                Throw "Method unavailable [Object lock]"
+            }
+
+            $This.Clear()
+
+            ForEach ($Partition in $Section | ? Name -match Partition)
+            {
+                $Rank = $Partition.Name -Replace "Disk\d+\.Partition", ""
+                $This.Add($Rank,$Partition.Property,[Switch]$True)
+            }
         }
         [Object] PartitionItem([UInt32]$Rank,[Object]$Partition)
         {
@@ -2264,6 +2347,7 @@ Function Get-FESystem
 
     Class VolumeItem
     {
+        Hidden [UInt32]     $Lock
         Hidden [String]    $Label
         [UInt32]            $Rank
         [String]         $DriveID
@@ -2278,6 +2362,7 @@ Function Get-FESystem
         Hidden [Object] $Property
         VolumeItem([UInt32]$Rank,[String]$Partition,[Object]$Drive)
         {
+            $This.Lock              = 0
             $This.Label             = "{0}.Volume$Rank" -f ($Partition -Split ",")[0] -Replace "( |#)",""
             $This.Rank              = $Rank
             $This.DriveID           = $Drive.Name
@@ -2299,8 +2384,17 @@ Function Get-FESystem
         }
         VolumeItem([UInt32]$Rank,[Object[]]$Pairs,[Switch]$Flags)
         {
-            $This.Rank              = $Rank
-    
+            $This.Lock = 1
+            $This.Rank = $Rank
+            $This.Load($Pairs)
+        }
+        Load([Object[]]$Pairs)
+        {
+            If ($This.Lock -eq 0)
+            {
+                Throw "Method unavailable [Object lock]"
+            }
+
             ForEach ($Pair in $Pairs)
             {
                 $This.$($Pair.Name) = $Pair.Value
@@ -2330,25 +2424,20 @@ Function Get-FESystem
 
     Class VolumeList
     {
-        Hidden [UInt32] $Mode
+        Hidden [UInt32] $Lock
         [String]        $Name
         [UInt32]       $Count
         [Object]      $Output
         VolumeList()
         {
-            $This.Mode = 0
+            $This.Lock = 0
             $This.Main()
         }
         VolumeList([Object[]]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Main()
-
-            ForEach ($Volume in $Section | ? Name -match Volume)
-            {
-                $Rank = $Volume.Name -Replace "Disk\d+\.Volume", ""
-                $This.Add($Rank,$Volume.Property,[Switch]$True)
-            }
+            $This.Load($Section)
         }
         Main()
         {
@@ -2360,6 +2449,22 @@ Function Get-FESystem
             $This.Count   = 0
             $This.Output  = @( )
         }
+        Load([Object[]]$Section)
+        {
+            If ($This.Lock -eq 0)
+            {
+                Throw "Method unavailable [Object lock]"
+            }
+
+            $This.Clear()
+
+            ForEach ($Volume in $Section | ? Name -match Volume)
+            {
+                $Rank = $Volume.Name -Replace "Disk\d+\.Volume", ""
+                $This.Add($Rank,$Volume.Property,[Switch]$True)
+            }
+        }
+
         [Object] VolumeItem([UInt32]$Rank,[String]$Partition,[Object]$Drive)
         {
             Return [VolumeItem]::New($Rank,$Partition,$Drive)
@@ -2394,6 +2499,7 @@ Function Get-FESystem
 
     Class DiskItem
     {
+        Hidden [UInt32]       $Lock
         Hidden [UInt32]       $Rank
         [UInt32]             $Index
         [String]              $Disk
@@ -2410,59 +2516,64 @@ Function Get-FESystem
         [Object]            $Volume
         DiskItem([UInt32]$Rank,[Object]$Disk)
         {
-            $This.Rank              = $Rank
-            $This.Index             = $Disk.Index
-            $This.Disk              = $Disk.DeviceId
+            $This.Lock     = 0
+            $This.Rank     = $Rank
+            $This.Index    = $Disk.Index
+            $This.Disk     = $Disk.DeviceId
     
             $This.Init()
-    
-            $MSFTDISK               = $This.CmdLetMsftDisk() 
-            If (!$MSFTDISK)
-            {
-                Throw "Unable to set the drive data"
-            }
-    
-            $This.Model             = $MSFTDISK.Model
-            $This.Serial            = $MSFTDISK | ? SerialNumber | % { $_.SerialNumber.TrimStart(" ") }
-            $This.PartitionStyle    = $MSFTDISK.PartitionStyle
-            $This.ProvisioningType  = $MSFTDISK.ProvisioningType
-            $This.OperationalStatus = $MSFTDISK.OperationalStatus
-            $This.HealthStatus      = $MSFTDISK.HealthStatus
-            $This.BusType           = $MSFTDISK.BusType
-            $This.UniqueId          = $MSFTDISK.UniqueId
-            $This.Location          = $MSFTDISK.Location
-    
-            $This.Action()
+            $This.Refresh()
         }
         DiskItem([UInt32]$Rank,[Object[]]$Section,[Switch]$Flags)
         {
-            $This.Rank = $Rank
+            $This.Lock    = 1
+            $This.Rank    = $Rank
+            $This.Load($Section)
+        }
+        Load([Object[]]$Section)
+        {
+            If ($This.Lock -eq 0)
+            {
+                Throw "Method unavailable [Object lock]"
+            }
 
-            # Disk Properties
+            # [Properties]
             ForEach ($Pair in $Section | ? Name -match ^Disk\d+$ | % Property)
             {
                 $This.$($Pair.Name) = $Pair.Value
             }
             
-            # Disk Partition/Volume
+            # [Partition(s) + Volume(s)]
             $This.Init($Section)
-            
         }
-        [Object] CmdLetMsftDisk()
+        [Object] Get([String]$Name)
         {
-            Return Get-CimInstance MSFT_Disk -Namespace Root/Microsoft/Windows/Storage | ? Number -eq $This.Index
-        }
-        [Object] CmdLetDiskPartition()
-        {
-            Return Get-CimInstance Win32_DiskPartition | ? DiskIndex -eq $This.Index
-        }
-        [Object] CmdLetLogicalDisk()
-        {
-            Return Get-CimInstance Win32_LogicalDisk | ? DriveType -eq 3
-        }
-        [Object] CmdLetLogicalDiskToPartition()
-        {
-            Return Get-CimInstance Win32_LogicalDiskToPartition
+            If ($This.Lock -eq 1)
+            {
+                Throw "Method unavailable [Template lock]"
+            }
+
+            $Item = Switch -Regex ($Name)
+            {
+                MsftDisk
+                {
+                    Get-CimInstance MSFT_Disk -Namespace Root/Microsoft/Windows/Storage | ? Number -eq $This.Index
+                }
+                DiskPartition
+                {
+                    Get-CimInstance Win32_DiskPartition | ? DiskIndex -eq $This.Index
+                }
+                LogicalDisk
+                {
+                    Get-CimInstance Win32_LogicalDisk | ? DriveType -eq 3
+                }
+                LogicalDiskToPartition
+                {
+                    Get-CimInstance Win32_LogicalDiskToPartition
+                }
+            }
+
+            Return $Item
         }
         [Object] GetPartitionList()
         {
@@ -2490,11 +2601,32 @@ Function Get-FESystem
             $This.Partition = $This.GetPartitionList($Section,[Switch]$True)
             $This.Volume    = $This.GetVolumeList($Section,[Switch]$True)
         }
-        Action()
+        Refresh()
         {
-            $DiskPartition  = $This.CmdLetDiskPartition()
-            $LogicalDisk    = $This.CmdLetLogicalDisk()
-            $LogicalPart    = $This.CmdLetLogicalDiskToPartition()
+            If ($This.Lock -eq 1)
+            {
+                Throw "Method unavailable [Template lock]"
+            }
+
+            $MSFTDISK               = $This.Get("MsftDisk")
+            If (!$MSFTDISK)
+            {
+                Throw "Unable to set the drive data"
+            }
+    
+            $This.Model             = $MSFTDISK.Model
+            $This.Serial            = $MSFTDISK | ? SerialNumber | % { $_.SerialNumber.TrimStart(" ") }
+            $This.PartitionStyle    = $MSFTDISK.PartitionStyle
+            $This.ProvisioningType  = $MSFTDISK.ProvisioningType
+            $This.OperationalStatus = $MSFTDISK.OperationalStatus
+            $This.HealthStatus      = $MSFTDISK.HealthStatus
+            $This.BusType           = $MSFTDISK.BusType
+            $This.UniqueId          = $MSFTDISK.UniqueId
+            $This.Location          = $MSFTDISK.Location
+
+            $DiskPartition          = $This.Get("DiskPartition")
+            $LogicalDisk            = $This.Get("LogicalDisk")
+            $LogicalPart            = $This.Get("LogicalDiskToPartition")
     
             Switch ($DiskPartition.Count)
             {
@@ -2531,13 +2663,6 @@ Function Get-FESystem
                 }
             }
         }
-        [Void] WriteCheck()
-        {
-            If ($This.Mode -ne 0)
-            {
-                Throw "Invalid operation"
-            }
-        }
         [UInt32] GetSlot()
         {
             Return 2
@@ -2554,18 +2679,19 @@ Function Get-FESystem
 
     Class DiskList
     {
-        Hidden [UInt32] $Mode
+        Hidden [UInt32] $Lock
         [Object]        $Name
         [Object]       $Count
         [Object]      $Output
         DiskList()
         {
-            $This.Mode = 0
+            $This.Lock = 0
             $This.Main()
+            $This.Refresh()
         }
         DiskList([Object]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Main()
             $This.Load($Section.Item)
         }
@@ -2581,14 +2707,14 @@ Function Get-FESystem
         }
         Refresh()
         {
-            If ($This.Mode -eq 1)
+            If ($This.Lock -eq 1)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Template lock]"
             }
 
             $This.Clear()
             
-            ForEach ($Disk in $This.CmdLet())
+            ForEach ($Disk in Get-CimInstance Win32_DiskDrive | ? MediaType -match Fixed)
             {
                 $This.Add($Disk)
             }
@@ -2597,30 +2723,26 @@ Function Get-FESystem
         {
             If ($This.Mode -ne 1)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
 
-            $Queue   = $Items | ? Name -match ^Disk\d+$ | % Name
-            
-            ForEach ($DiskName in $Queue)
+            # Queues the number of unique disks            
+            ForEach ($DiskName in $Items | ? Name -match ^Disk\d+$ | % Name)
             {
+                # Selects ALL of the items belonging to the current disk name
                 $Current   = $Items | ? Name -match $DiskName
-                $Rank      = [Regex]::Matches($DiskName,"\d+").Value
+                $Rank      = $Diskname -Replace "Disk",""
 
                 $This.Add($Rank,$Current)
             }
         }
-        [Object] CmdLet()
+        [Object] DiskItem([UInt32]$Rank,[Object]$Disk)
         {
-            Return Get-CimInstance Win32_DiskDrive | ? MediaType -match Fixed
+            Return [DiskItem]::New($Rank,$Disk)
         }
-        [Object] DiskItem([UInt32]$Index,[Object]$Disk)
+        [Object] DiskItem([UInt32]$Rank,[Object[]]$Items,[Switch]$Flags)
         {
-            Return [DiskItem]::New($Index,$Disk)
-        }
-        [Object] DiskItem([UInt32]$Index,[Object[]]$Items)
-        {
-            Return [DiskItem]::New($Index,$Items,[Switch]$True)
+            Return [DiskItem]::New($Rank,$Items,$Flags)
         }
         Add([Object]$Disk)
         {
@@ -2629,7 +2751,7 @@ Function Get-FESystem
         }
         Add([UInt32]$Rank,[Object[]]$Items)
         {
-            $This.Output += $This.DiskItem($Rank,$Items)
+            $This.Output += $This.DiskItem($Rank,$Items,[Switch]$True)
             $This.Count   = $This.Output.Count
         }
         [UInt32] GetSlot()
@@ -2648,20 +2770,23 @@ Function Get-FESystem
 
     Class NetworkItem
     {
-        [UInt32]       $Rank
-        [String]       $Name
-        [UInt32]     $Status
-        [String]  $IPAddress
-        [String] $SubnetMask
-        [String]    $Gateway
-        [String]  $DnsServer
-        [String] $DhcpServer
-        [String] $MacAddress
+        Hidden [UInt32] $Lock
+        [UInt32]        $Rank
+        [String]        $Name
+        [UInt32]      $Status
+        [String]   $IPAddress
+        [String]  $SubnetMask
+        [String]     $Gateway
+        [String]   $DnsServer
+        [String]  $DhcpServer
+        [String]  $MacAddress
         NetworkItem([UInt32]$Rank,[Object]$If)
         {
-            $This.Rank            = $Rank
-            $This.Name            = $If.Description
-            $This.Status          = [UInt32]$If.IPEnabled
+            $This.Lock                = 0
+            $This.Rank                = $Rank
+            $This.Name                = $If.Description
+            $This.Status              = [UInt32]$If.IPEnabled
+
             Switch ($This.Status)
             {
                 0
@@ -2684,11 +2809,21 @@ Function Get-FESystem
                     $This.DhcpServer  = $If.DhcpServer            | ? {$_ -match "(\d+\.){3}\d+"}
                 }     
             }
-            $This.MacAddress      = ("-",$If.MacAddress)[!!$If.MacAddress]
+
+            $This.MacAddress          = ("-",$If.MacAddress)[!!$If.MacAddress]
         }
         NetworkItem([UInt32]$Rank,[Object[]]$Pairs,[Switch]$Flags)
         {
-            $This.Rank              = $Rank
+            $This.Lock                = 1
+            $This.Rank                = $Rank
+            $This.Load($Pairs)
+        }
+        Load([Object[]]$Pairs)
+        {
+            If ($This.Lock -eq 0)
+            {
+                Throw "Method unavailable [Object mode]"
+            }
 
             ForEach ($Pair in $Pairs)
             {
@@ -2711,18 +2846,19 @@ Function Get-FESystem
 
     Class NetworkList
     {
-        Hidden [UInt32] $Mode
+        Hidden [UInt32] $Lock
         [Object]        $Name
         [Object]       $Count
         [Object]      $Output
         NetworkList()
         {
-            $This.Mode = 0
+            $This.Lock = 0
             $This.Main()
+            $This.Refresh()
         }
         NetworkList([Object]$Section)
         {
-            $This.Mode = 1
+            $This.Lock = 1
             $This.Main()
             $This.Load($Section.Item)
         }
@@ -2736,29 +2872,25 @@ Function Get-FESystem
             $This.Output      = @( )
             $This.Count       = 0
         }
-        [Object] CmdLet()
-        {
-            Return Get-CimInstance Win32_NetworkAdapterConfiguration
-        }
         Refresh()
         {
-            If ($This.Mode -ne 0)
+            If ($This.Lock -eq 1)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Template lock]"
             }
 
             $This.Clear()
 
-            ForEach ($Network in $This.CmdLet())
+            ForEach ($Network in Get-CimInstance Win32_NetworkAdapterConfiguration)
             {
                 $This.Add($Network)
             }
         }
         Load([Object[]]$Items)
         {
-            If ($This.Mode -ne 1)
+            If ($This.Lock -eq 0)
             {
-                Throw "Invalid mode"
+                Throw "Method unavailable [Object lock]"
             }
 
             ForEach ($Item in $Items)
@@ -2801,7 +2933,7 @@ Function Get-FESystem
 
     Class System
     {
-        Hidden [UInt32]     $Mode
+        Hidden [UInt32]     $Lock
         [Object]        $Snapshot
         [Object] $BiosInformation
         [Object]  $ComputerSystem
@@ -2817,54 +2949,52 @@ Function Get-FESystem
         [Object]         $Network
         System()
         {
-            $This.Mode             = 0
+            $This.Lock             = 0
             $This.Snapshot         = $This.New(0)
             If (!$This.Snapshot.IsAdmin)
             {
                 Throw "Must run as administrator"
             }
 
-            $This.BiosInformation  = $This.New(1)
-            $This.ComputerSystem   = $This.New(2)
-            $This.OperatingSystem  = $This.New(3)
-            $This.HotFix           = $This.New(4)
-            $This.Feature          = $This.New(5)
-            $This.Application      = $This.New(6)
-            $This.Event            = $This.New(7)
-            $This.Task             = $This.New(8)
-            $This.AppX             = $This.New(9)
-
+            $This.BiosInformation  = $This.New(01)
+            $This.ComputerSystem   = $This.New(02)
+            $This.OperatingSystem  = $This.New(03)
+            $This.HotFix           = $This.New(04)
+            $This.Feature          = $This.New(05)
+            $This.Application      = $This.New(06)
+            $This.Event            = $This.New(07)
+            $This.Task             = $This.New(08)
+            $This.AppX             = $This.New(09)
             $This.Processor        = $This.New(10)
-            $This.Processor.Refresh()
-            
             $This.Disk             = $This.New(11)
-            $This.Disk.Refresh()
-            
             $This.Network          = $This.New(12)
-            $This.Network.Refresh()
-
         }
         System([Object]$In)
         {
-            $This.Mode             = 1
+            $This.Lock             = 1
 
-            $This.Snapshot         = $This.Load( 0,$In.Get(0))
-            $This.BiosInformation  = $This.Load( 1,$In.Get(1))
-            $This.ComputerSystem   = $This.Load( 2,$In.Get(2))
-            $This.OperatingSystem  = $This.Load( 3,$In.Get(3))
-            $This.HotFix           = $This.Load( 4,$In.Get(4))
-            $This.Feature          = $This.Load( 5,$In.Get(5))
-            $This.Application      = $This.Load( 6,$In.Get(6))
-            $This.Event            = $This.Load( 7,$In.Get(7))
-            $This.Task             = $This.Load( 8,$In.Get(8))
-            $This.AppX             = $This.Load( 9,$In.Get(9))
+            $This.Snapshot         = $This.Load(00,$In.Get(00))
+            $This.BiosInformation  = $This.Load(01,$In.Get(01))
+            $This.ComputerSystem   = $This.Load(02,$In.Get(02))
+            $This.OperatingSystem  = $This.Load(03,$In.Get(03))
+            $This.HotFix           = $This.Load(04,$In.Get(04))
+            $This.Feature          = $This.Load(05,$In.Get(05))
+            $This.Application      = $This.Load(06,$In.Get(06))
+            $This.Event            = $This.Load(07,$In.Get(07))
+            $This.Task             = $This.Load(08,$In.Get(08))
+            $This.AppX             = $This.Load(09,$In.Get(09))
             $This.Processor        = $This.Load(10,$In.Get(10))
             $This.Disk             = $This.Load(11,$In.Get(11))
             $This.Network          = $This.Load(12,$In.Get(12))
         }
         [Object] New([UInt32]$Rank)
         {
-            Return @(Switch ($Rank)
+            If ($This.Lock -eq 1)
+            {
+                Throw "Method unavailable [Template lock]"
+            }
+
+            $Item = Switch ($Rank)
             {
                 00 {                   [Snapshot]::New() }
                 01 {            [BiosInformation]::New() }
@@ -2879,11 +3009,39 @@ Function Get-FESystem
                 10 {              [ProcessorList]::New() }
                 11 {                   [DiskList]::New() }
                 12 {                [NetworkList]::New() }
-            })
+            }
+
+            Return $Item
+        }
+        [Object] Load([UInt32]$Rank,[Object]$Object)
+        {
+            If ($This.Lock -eq 0)
+            {
+                Throw "Method unavailable [Object lock]"
+            }
+
+            $Item = Switch ($Rank)
+            {
+                00 {                   [Snapshot]::New($Object) }
+                01 {            [BiosInformation]::New($Object) }
+                02 {             [ComputerSystem]::New($Object) }
+                03 {            [OperatingSystem]::New($Object) }
+                04 {                 [HotFixList]::New($Object) }
+                05 { [WindowsOptionalFeatureList]::New($Object) }
+                06 {            [ApplicationList]::New($Object) }
+                07 {       [EventLogProviderList]::New($Object) }
+                08 {          [ScheduledTaskList]::New($Object) }
+                09 {                   [AppXList]::New($Object) }
+                10 {              [ProcessorList]::New($Object) }
+                11 {                   [DiskList]::New($Object) }
+                12 {                [NetworkList]::New($Object) }
+            }
+
+            Return $Item
         }
         [Object] Get([UInt32]$Index)
         {
-            Return @( Switch ($Index)
+            $Item = Switch ($Index)
             {
                 00 { $This.Snapshot           }
                 01 { $This.BiosInformation    }
@@ -2899,26 +3057,9 @@ Function Get-FESystem
                 11 { $This.Disk.Output        }
                 12 { $This.Network.Output     }
                 13 { $This.Event.Output       }
-            })
-        }
-        [Object] Load([UInt32]$Rank,[Object]$Object)
-        {
-            Return @(Switch ($Rank)
-            {
-                00 {                   [Snapshot]::New($Object) }
-                01 {            [BiosInformation]::New($Object) }
-                02 {             [ComputerSystem]::New($Object) }
-                03 {            [OperatingSystem]::New($Object) }
-                04 {                 [HotFixList]::New($Object) }
-                05 { [WindowsOptionalFeatureList]::New($Object) }
-                06 {            [ApplicationList]::New($Object) }
-                07 {       [EventLogProviderList]::New($Object) }
-                08 {          [ScheduledTaskList]::New($Object) }
-                09 {                   [AppXList]::New($Object) }
-                10 {              [ProcessorList]::New($Object) }
-                11 {                   [DiskList]::New($Object) }
-                12 {                [NetworkList]::New($Object) }
-            })
+            }
+
+            Return $Item
         }
         [Object] SystemProperty([UInt32]$Index,[UInt32]$Rank,[String]$Source,[String]$Name,[Object]$Value)
         {
@@ -2930,7 +3071,7 @@ Function Get-FESystem
         }
         [Object] OutputFile()
         {
-            $Out = @( )
+            $Out = @( )  
             ForEach ($Name in $This.PSObject.Properties.Name)
             {
                 $Slot    = Switch -Regex ($Name) { "(^Snap|^Bios|^Comp|^Oper)" { 0 } Default { 1 } "^Disk" { 2 } }
@@ -3086,7 +3227,12 @@ Function Get-FESystem
         }
         WriteOutput()
         {
-            $Target = "{0}\{1}.txt" -f [Environment]::CurrentDirectory, $This.Snapshot.DisplayName
+            If ($This.Mode -ne 0)
+            {
+                Throw "Invalid mode"
+            }
+
+            $Target = "{0}\{1}.txt" -f [Environment]::GetEnvironmentVariable("Temp"), $This.Snapshot.DisplayName
             $This.WriteOutput($Target)
         }
         WriteOutput([String]$Target)
@@ -3115,7 +3261,7 @@ Function Get-FESystem
                 [System.IO.File]::WriteAllLines($Target,$Value)
                 If (![System.IO.File]::Exists($Target))
                 {
-                    Throw "File was not saved"
+                    Throw "Exception [!] File was not saved [!]"
                 }
                 Else
                 {
@@ -3138,22 +3284,19 @@ Function Get-FESystem
         }
     }
 
-    Switch ($Mode)
+    If (!$Path -and !$InputObject)
     {
-        0
-        {
-            [System]::New()
-        }
-        1
+        [System]::New()
+    }
+
+    Else
+    {
+        If ($Path)
         {
             $InputObject = [System.IO.File]::ReadAllLines($Path)
-            $Section     = [InputObject]::New($InputObject)
-            [System]::New($Section)
         }
-        2
-        {
-            $Section     = [InputObject]::New($InputObject)
-            [System]::New($Section)
-        }
+
+        $Section = [InputObject]::New($InputObject)
+        [System]::New($Section)
     }
 }
