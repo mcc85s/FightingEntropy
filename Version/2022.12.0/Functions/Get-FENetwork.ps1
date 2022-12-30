@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-21 13:46:41                                                                  //
+\\  Date       : 2022-12-30 18:36:50                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FENetwork.ps1
@@ -2648,6 +2648,10 @@ Function Get-FENetwork
             }
             
             Return $This.Compartment.Output[$Index]
+        }
+        [String] ToString()
+        {
+            Return "<FENetwork.NetworkControllerMaster>"
         }
     }
     
