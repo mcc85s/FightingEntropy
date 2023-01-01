@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-30 18:07:53                                                                  //
+\\  Date       : 2022-12-30 18:46:11                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FESystem.ps1
@@ -32,7 +32,7 @@
     Modified   : 2022-12-30
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
-    TODO       : Switch to more (flexible/sophisticated) section platform
+    TODO       : Extend the number of possibilities for Param $Level
 
 .Example
 
@@ -47,6 +47,10 @@
        0 |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |  XX  |
        1 |  XX  |  XX  |  XX  |  XX  |  --  |  --  |  --  |  --  |  --  |  --  |  XX  |  XX  |  XX  |
        2 |  XX  |  XX  |  XX  |  XX  |  --  |  --  |  --  |  --  |  --  |  --  |  --  |  --  |  --  |
+       3 |  XX  |  XX  |  XX  |  XX  |  --  |  XX  |  --  |  --  |  --  |  --  |  --  |  --  |  XX  |
+
+    Get-FESystem -Mode 0 -Level 0 | [Quietly pulls all components]
+    Get-FESystem -Mode 2 -Level 2 | [Logs and shows status for the main system snapshot properties]
 #>
 
 Function Get-FESystem
@@ -57,7 +61,7 @@ Function Get-FESystem
         [Parameter(ParameterSetName=0)]
         [Parameter(ParameterSetName=1)]
         [Parameter(ParameterSetName=2)][UInt32]$Mode = 0,
-        [ValidateSet(0,1,2)]
+        [ValidateSet(0,1,2,3)]
         [Parameter(ParameterSetName=0)]
         [Parameter(ParameterSetName=1)]
         [Parameter(ParameterSetName=2)][UInt32]$Level = 0,
@@ -2955,9 +2959,9 @@ Function Get-FESystem
             $This.Lock             = 0
             $This.Establish($Mode,$Level)
 
-            If ($This.Level -in 0,1,2)
+            If ($This.Level -in 0,1,2,3)
             {
-                $This.Update(0,"Loading [~] (System/Computer)")
+                $This.Update(0,"Loading [~] (System/Bios/Computer/OS)")
 
                 $This.Snapshot         = $This.New(00)
                 $This.BiosInformation  = $This.New(01)
@@ -2965,37 +2969,49 @@ Function Get-FESystem
                 $This.OperatingSystem  = $This.New(03)
             }
             
-            If ($This.Level -eq 0)
+            If ($This.Level -in 0,3)
             {
-                $This.Update(0,"Loading [~] (Updates/Apps/Events/etc)")
+                $This.Update(0,"Loading [~] (Updates/Features/Apps/Events/Tasks)")
 
-                $This.HotFix           = $This.New(04)
-                $This.Feature          = $This.New(05)
-                $This.Application      = $This.New(06)
-                $This.Event            = $This.New(07)
-                $This.Task             = $This.New(08)
-                $This.AppX             = $This.New(09)
+                If ($This.Level -eq 0)
+                {
+                    $This.HotFix           = $This.New(04)
+                }
+                
+                $This.Feature              = $This.New(05)
+
+                If ($This.Level -eq 0)
+                {
+                    $This.Application      = $This.New(06)
+                    $This.Event            = $This.New(07)
+                    $This.Task             = $This.New(08)
+                    $This.AppX             = $This.New(09)
+                }
             }
 
-            If ($This.Level -in 0,1)
+            If ($This.Level -in 0,1,3)
             {
                 $This.Update(0,"Loading [~] (Processor/Disk/Network)")
 
-                $This.Processor        = $This.New(10)
-                $This.Disk             = $This.New(11)
-                $This.Network          = $This.New(12)
+                If ($This.Level -in 0,1)
+                {
+                    $This.Processor        = $This.New(10)
+                    $This.Disk             = $This.New(11)
+                }
+
+                $This.Network              = $This.New(12)
             }
 
-            $This.Update(100,"Loaded [+] System snapshot")
+            $This.Update(100,"Loaded [+] System Snapshot")
         }
         System([UInt32]$Mode,[UInt32]$Level,[Object]$In)
         {
             $This.Lock             = 1
             $This.Establish($Mode,$Level)
 
-            If ($This.Level -in 0,1,2)
+            If ($This.Level -in 0,1,2,3)
             {
-                $This.Update(0,"Importing [~] (System/Computer)")
+                $This.Update(0,"Importing [~] (System/Bios/Computer/OS)")
 
                 $This.Snapshot         = $This.Load(00,$In.Get(00))
                 $This.BiosInformation  = $This.Load(01,$In.Get(01))
@@ -3003,25 +3019,37 @@ Function Get-FESystem
                 $This.OperatingSystem  = $This.Load(03,$In.Get(03))
             }
 
-            If ($This.Level -eq 0)
+            If ($This.Level -in 0,3)
             {
-                $This.Update(0,"Importing [~] (Updates/Apps/Events/etc)")
+                $This.Update(0,"Importing [~] (Updates/Features/Apps/Events/Tasks)")
 
-                $This.HotFix           = $This.Load(04,$In.Get(04))
-                $This.Feature          = $This.Load(05,$In.Get(05))
-                $This.Application      = $This.Load(06,$In.Get(06))
-                $This.Event            = $This.Load(07,$In.Get(07))
-                $This.Task             = $This.Load(08,$In.Get(08))
-                $This.AppX             = $This.Load(09,$In.Get(09))
+                If ($This.Level -eq 0)
+                {
+                    $This.HotFix           = $This.Load(04,$In.Get(04))
+                }
+                
+                $This.Feature              = $This.Load(05,$In.Get(05))
+
+                If ($This.Level -eq 0)
+                {
+                    $This.Application      = $This.Load(06,$In.Get(06))
+                    $This.Event            = $This.Load(07,$In.Get(07))
+                    $This.Task             = $This.Load(08,$In.Get(08))
+                    $This.AppX             = $This.Load(09,$In.Get(09))
+                }
             }
 
-            If ($This.Level -in 0,1)
+            If ($This.Level -in 0,1,3)
             {
                 $This.Update(0,"Importing [~] (Processor/Disk/Network)")
 
-                $This.Processor        = $This.Load(10,$In.Get(10))
-                $This.Disk             = $This.Load(11,$In.Get(11))
-                $This.Network          = $This.Load(12,$In.Get(12))
+                If ($This.Level -in 0,1)
+                {
+                    $This.Processor        = $This.Load(10,$In.Get(10))
+                    $This.Disk             = $This.Load(11,$In.Get(11))
+                }
+
+                $This.Network              = $This.Load(12,$In.Get(12))
             }
 
             $This.Update(100,"Imported [+] System snapshot")
