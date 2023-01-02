@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-30 18:36:50                                                                  //
+\\  Date       : 2023-01-01 21:23:31                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FENetwork.ps1
@@ -29,7 +29,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2022-12-21
+    Modified   : 2023-01-01
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : NBT scan remote addresses
