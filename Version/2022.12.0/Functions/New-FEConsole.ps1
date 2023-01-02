@@ -7,7 +7,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-01 21:20:23                                                                  //
+\\  Date       : 2023-01-02 17:51:15                                                                  //
  \\==================================================================================================// 
 
     FileName   : New-FEConsole.ps1
@@ -17,7 +17,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-30
-    Modified   : 2023-01-01
+    Modified   : 2023-01-02
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : -
@@ -158,6 +158,10 @@ Function New-FEConsole
         [Object] Last()
         {
             Return $This.Output[$This.Output.Count-1]
+        }
+        [Object] DumpConsole()
+        {
+            Return $This.Output | % ToString
         }
         [String] ToString()
         {
