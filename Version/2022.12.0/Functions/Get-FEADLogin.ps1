@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2022-12-14 14:19:12                                                                  //
+\\  Date       : 2023-01-01 21:16:10                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEADLogin.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2022-12-14
+    Modified   : 2023-01-01
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : N/A
@@ -36,22 +36,11 @@ Function Get-FEADLogin
         [Parameter(ParameterSetName=3)][Object]$Target
     )
 
-    Class DGList
-    {
-        [String]$Name
-        [Object]$Value
-        DGList([String]$Name,[Object]$Value)
-        {
-            $This.Name  = $Name
-            $This.Value = $Value
-        }
-    }
-
     Class XamlProperty
     {
-        [UInt32] $Index
-        [String] $Name
-        [Object] $Type
+        [UInt32]   $Index
+        [String]    $Name
+        [Object]    $Type
         [Object] $Control
         XamlProperty([UInt32]$Index,[String]$Name,[Object]$Object)
         {
@@ -120,6 +109,44 @@ Function Get-FEADLogin
             {
                 $This.Exception = $PSItem
             }
+        }
+    }
+
+    Enum ServerType
+    {
+        IPAddress
+        DNSName
+        Domain
+        NetBIOS
+    }
+
+    Class ServerTypeItem
+    {
+        [UInt32] $Index
+        [String]  $Name
+        [String] $Value
+        ServerTypeItem([String]$Name,[String]$Value)
+        {
+            $This.Index = [UInt32][ServerType]::$Name
+            $This.Name  = $Name
+            $This.Value = $Value
+        }
+    }
+
+    Class ServerTypeList
+    {
+        [Object] $Output
+        ServerTypeList()
+        {
+            $This.Output = @( )
+        }
+        [Object] ServerTypeItem([String]$Name,[String]$Value)
+        {
+            Return [ServerTypeItem]::New($Name,$Value)
+        }
+        Add([String]$Name,[String]$Value)
+        {
+            $This.Output += $This.ServerTypeItem($Name,$Value)
         }
     }
 
@@ -342,39 +369,41 @@ Function Get-FEADLogin
         '</Window>' -join "`n")
     }
 
-    Class Main
+    Class FEADLoginController
     {
+        [Object]             $Xaml
+        [Object]       $ServerList
         Hidden [String] $DnsDomain
-        [String]                           $IPAddress
-        [String]                             $DNSName
-        [String]                              $Domain
-        [String]                             $NetBIOS
-        [UInt32]                                $Port
-        [Object]                          $Credential
-        [String]                            $Username
-        [Object]                            $Password
-        [Object]                             $Confirm
-        [Object]                                $Test
-        [String]                                  $DC
-        [String]                           $Directory
-        [Object]                            $Searcher
-        [Object]                              $Result
-        Main()
+        [String]        $IPAddress
+        [String]          $DNSName
+        [String]           $Domain
+        [String]          $NetBIOS
+        [UInt32]             $Port
+        [Object]       $Credential
+        [String]         $Username
+        [Object]         $Password
+        [Object]          $Confirm
+        [Object]             $Test
+        [String]               $DC
+        [String]        $Directory
+        [Object]         $Searcher
+        [Object]           $Result
+        FEADLoginController()
         {
-            $This.DNSDomain         = $Null
+            $This.DnsDomain    = $Null
             $TestDnsServer     = $Null
-            If ($Env:UserDNSDomain)
+            If ($This.UserDnsDomain())
             {
-                $This.DNSDomain   = $Env:UserDNSDomain.ToLower()
+                $This.DnsDomain   = $This.UserDnsDomain().ToLower()
             }
-            If (!$Env:UserDNSDomain)
+            If (!$This.UserDnsDomain())
             {
-                $This.DNSDomain   = Get-WMIObject Win32_NetworkAdapterConfiguration | ? IPEnabled | ? DHCPEnabled | % DNSDomain
+                $This.DnsDomain   = $This.Config()| ? IPEnabled | ? DhcpEnabled | % DnsDomain
                 If ($This.DNSDomain.Count -gt 1)
                 {
                     ForEach ($Server in $This.DnsDomain)
                     {
-                        $TestDnsServer = [System.Net.Dns]::Resolve($Server)
+                        $TestDnsServer = $This.Resolve($Server)
                         If ($TestDnsServer)
                         {
                             $This.DnsDomain = $TestDnsServer.Hostname
@@ -388,30 +417,33 @@ Function Get-FEADLogin
                 }
             }
             $This.Domain       = $This.DnsDomain
-            $This.IPAddress    = [System.Net.Dns]::Resolve($This.Domain).AddressList | Select-Object -First 1 | % IPAddressToString
-            $This.DNSName      = [System.Net.Dns]::Resolve($This.IPAddress).Hostname
+            $This.IPAddress    = $This.Resolve($This.Domain).AddressList | Select-Object -First 1 | % IPAddressToString
+            $This.DNSName      = $This.Resolve($This.IPAddress).Hostname
             $This.NetBIOS      = $Null
             $This.Port         = 389
+            $This.StageXaml()
         }
-        Main([IPAddress]$IPAddress)
+        FEADLoginController([IPAddress]$IPAddress)
         {
             $This.IPAddress    = $IPAddress
-            $This.DNSName      = [System.Net.Dns]::Resolve($This.IPAddress).HostName
+            $This.DNSName      = $This.Resolve($This.IPAddress).HostName
             $This.Domain       = $This.PullDomain($This.DNSName)
             $This.DnsDomain    = $This.DnsDomain
             $This.NetBIOS      = $Null
             $This.Port         = 389
+            $This.StageXaml()
         }
-        Main([String]$Domain)
+        FEADLoginController([String]$Domain)
         {
             $This.Domain       = $Domain.ToString()
-            $This.IPAddress    = [System.Net.Dns]::Resolve($Domain).AddressList      | Select-Object -First 1 | % IPAddressToString
-            $This.DNSName      = [System.Net.Dns]::Resolve($This.IPAddress).HostName
+            $This.IPAddress    = $This.Resolve($Domain).AddressList | Select-Object -First 1 | % IPAddressToString
+            $This.DNSName      = $This.Resolve($This.IPAddress).HostName
             $This.DnsDomain    = $This.DnsName
             $This.NetBIOS      = $Null
             $This.Port         = 389
+            $This.StageXaml()
         }
-        Main([Object]$Target)
+        FEADLoginController([Object]$Target)
         {
             $This.IPAddress    = $Target.IPAddress
             $This.DNSName      = $Target.Hostname
@@ -419,6 +451,45 @@ Function Get-FEADLogin
             $This.DnsDomain    = $This.Domain
             $This.NetBIOS      = $Target.NetBIOS
             $This.Port         = 389
+            $This.StageXaml()
+        }
+        [Object] Resolve([String]$Target)
+        {
+            Return [System.Net.Dns]::Resolve($Target)
+        }
+        [Object] Config()
+        {
+            Return Get-WMIObject Win32_NetworkAdapterConfiguration
+        }
+        [String] UserDnsDomain()
+        {
+            Return [Environment]::UserDNSDomain
+        }
+        [Object] Message([String]$Title)
+        {
+            Return [System.Windows.Messagebox]::Show($Title,"Error [!]")
+        }
+        [Object] Credential([String]$Username,[SecureString]$Password)
+        {
+            Return [System.Management.Automation.PSCredential]::New($Username,$Password)
+        }
+        [Object] DirectoryEntry([String]$Directory,[PSCredential]$Credential)
+        {
+            Return [System.DirectoryServices.DirectoryEntry]::New($This.Directory,
+                                                                  $Credential.Username,
+                                                                  $Credential.GetNetworkCredential().Password)
+        }
+        [Object] DirectorySearcher()
+        {
+            Return [System.DirectoryServices.DirectorySearcher]::New()
+        }
+        [Object] GetFEADLoginXaml()
+        {
+            Return [XamlWindow][FEADLoginXaml]::Content
+        }
+        [Object] GetServerTypeList()
+        {
+            Return [ServerTypeList]::New()
         }
         [String] PullDomain([String]$Hostname)
         {
@@ -426,14 +497,14 @@ Function Get-FEADLogin
         }
         [String] GetDomain([String]$Hostname)
         {
-            $Node         = [System.Net.DNS]::Resolve($Hostname)
+            $Node         = $This.Resolve($Hostname)
             $HostID       = $Null
             $DomainID     = $Null
             $Temp         = $Null
             If ($Node)
             {
                 $Temp     = $Node.Hostname.Split(".")[0]
-                $HostID   = [System.Net.DNS]::Resolve($Temp)
+                $HostID   = $This.Resolve($Temp)
                 If ($HostID)
                 {
                     $DomainID = $Hostname.Replace($Temp,"").TrimStart(".")
@@ -444,6 +515,26 @@ Function Get-FEADLogin
                 }
             }
             Return $DomainID
+        }
+        [Object] Search([String]$Field)
+        {
+            Return @( ForEach ( $Item in $This.Result ) { $Item.Properties | ? $Field.ToLower() } )
+        }
+        [String] GetSiteName()
+        {
+            Return @( $This.Search("fsmoroleowner").fsmoroleowner.Split(",")[3].Split("=")[1] )
+        }
+        [String] GetNetBIOSName()
+        {
+            Return @( $This.Search("netbiosname").netbiosname )
+        }
+        Reset([Object]$xSender,[Object]$Object)
+        {
+            $xSender.Items.Clear()
+            ForEach ($item in $Object)
+            {
+                $xSender.Items.Add($Item)
+            }
         }
         ClearADCredential()
         {
@@ -461,65 +552,61 @@ Function Get-FEADLogin
 
             If (!$This.Port)
             {
-                [System.Windows.Messagebox]::Show("Port missing...","Error")
+                $This.Message("Port missing...")
                 $This.ClearADCredential()
             }
-
             ElseIf (!$This.Username)
             {
-                [System.Windows.Messagebox]::Show("Username","Error")
+                $This.Message("Username")
                 $This.ClearADCredential()
             }
-        
             ElseIf (!$This.Password)
             {
-                [System.Windows.MessageBox]::Show("Password","Error")
+                $This.Message("Password")
                 $This.ClearADCredential()
             }
-        
             ElseIf ($This.Password -notmatch $This.Confirm)
             {
-                [System.Windows.Messagebox]::Show("Confirm","Error")
+                $This.Message("Confirm")
                 $This.ClearADCredential()
             }
-            
             Else
             {
-                $This.Credential   = [System.Management.Automation.PSCredential]::New($This.Username,$This.Password)
+                $This.Credential   = $This.Credential($This.Username,$This.Password)
             }
         }
         CheckADServer([Object]$Xaml)
         {
-            $Resolve = [System.Net.Dns]::Resolve($Xaml.IO.Server.Text)
+            $xResolve = $This.Resolve($Xaml.IO.Server.Text)
 
-            If (!$Resolve)
+            If (!$xResolve)
             {
-                [System.Windows.MessageBox]::Show("Invalid server address defined","Error") 
+                $This.Message("Invalid server address defined") 
                 $This.DC       = $Null
             }
-            ElseIf ($Resolve.Hostname -inotmatch $This.DnsDomain)
+            ElseIf ($xResolve.Hostname -inotmatch $This.DnsDomain)
             {
-                [System.Windows.MessageBox]::Show("Unable to resolve the domain name","Error")
+                $This.Message("Unable to resolve the domain name")
                 $This.DC       = $Null
             }
-            ElseIf ($Resolve.Hostname -ieq $This.DnsDomain)
+            ElseIf ($xResolve.Hostname -ieq $This.DnsDomain)
             {
-                $This.Domain   = $Resolve.HostName
-                $This.DNSName  = [System.Net.DNS]::Resolve($Resolve.AddressList[0]).HostName
+                $This.Domain   = $xResolve.HostName
+                $This.DNSName  = $This.Resolve($xResolve.AddressList[0]).HostName
                 $This.DC       = $This.DNSName
             }
             Else
             {
-                $HostID        = $Resolve.Hostname.Replace($This.DnsDomain,"")
-                $This.Domain   = [System.Net.DNS]::Resolve($Resolve.HostName).HostName.Replace($HostID,"")
-                $This.DNSName  = [System.Net.DNS]::Resolve($Resolve.HostName).Hostname
+                $HostID        = $xResolve.Hostname.Replace($This.DnsDomain,"")
+                $This.Domain   = $This.Resolve($xResolve.HostName).HostName.Replace($HostID,"")
+                $This.DNSName  = $This.Resolve($xResolve.HostName).Hostname
                 $This.DC       = $This.DNSName
             }
         }
         TestADCredential()
         {       
             $This.Directory    = "LDAP://$($This.DNSName):$($This.Port)/CN=Partitions,CN=Configuration,DC=$($This.Domain.Split('.') -join ',DC=')"
-            $This.Test         = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
+            $This.Test         = $This.DirectoryEntry($This.Directory,$This.Credential)
             Try 
             {
                 $This.Test.DistinguishedName
@@ -527,7 +614,7 @@ Function Get-FEADLogin
 
             Catch
             {
-                [System.Windows.Messagebox]::Show("Login","Error")
+                $This.Message("Login")
                 $This.ClearADCredential()
                 $This.Directory = $Null
                 $This.DC        = $Null
@@ -538,15 +625,12 @@ Function Get-FEADLogin
             {
                 If ($This.Test.DistinguishedName)
                 {
-                    $This.Searcher            = [System.DirectoryServices.DirectorySearcher]::New()
-                    $This.Searcher            | % { 
-                        
-                        $_.SearchRoot       = [System.DirectoryServices.DirectoryEntry]::New($This.Directory,$This.Credential.Username,$This.Credential.GetNetworkCredential().Password)
-                        $_.PageSize         = 1000
-                        $_.PropertiestoLoad.Clear()
-                    }
-
+                    $This.Searcher  = $Item = $This.DirectorySearcher()
+                    $Item.SearchRoot        = $This.DirectoryEntry($This.Directory,$This.Credential)
+                    $Item.PageSize          = 1000
+                    $Item.PropertiestoLoad.Clear()
                     $This.Result              = $This.Searcher | % FindAll
+
                     If (!$This.NetBIOS)
                     {
                         $This.NetBIOS         = $This.GetNetBIOSName()
@@ -554,17 +638,72 @@ Function Get-FEADLogin
                 }
             }
         }
-        [Object] Search([String]$Field)
+        StageXaml()
         {
-            Return @( ForEach ( $Item in $This.Result ) { $Item.Properties | ? $Field.ToLower() } )
-        }
-        [String] GetSiteName()
-        {
-            Return @( $This.Search("fsmoroleowner").fsmoroleowner.Split(",")[3].Split("=")[1] )
-        }
-        [String] GetNetBIOSName()
-        {
-            Return @( $This.Search("netbiosname").netbiosname )
+            $Ctrl              = $This
+            $This.Xaml         = $This.GetFEADLoginXaml()
+            $This.ServerList   = $This.GetServerTypeList()
+            
+            ForEach ($Name in [System.Enum]::GetNames([ServerType]))
+            {
+                $This.ServerList.Add($Name,$This.$Name)
+            }
+
+            $This.Reset($This.Xaml.IO.ServerList,$This.ServerList.Output)
+
+            $Ctrl.Xaml.IO.ServerList.Add_SelectionChanged(
+            {
+                $Item                            = $Ctrl.Xaml.IO.ServerList.SelectedItem
+                $Ctrl.Xaml.IO.Server.Text        = $Item.Value 
+            })
+        
+            $Ctrl.Xaml.IO.Switch.Add_Checked(
+            {
+                $Ctrl.Xaml.IO.Port.IsEnabled          = 1
+            })
+            
+            $Ctrl.Xaml.IO.Ok.Add_Click(
+            {
+                Switch -Regex ($Ctrl.Xaml.IO.Server.Text)
+                {
+                    "(\d+\.){3}\d+"
+                    {
+                        $Ctrl.IPAddress          = $Ctrl.Xaml.IO.Server.Text
+                        $Ctrl.Xaml.IO.ServerList | ? Name -eq IPAddress | % { $_.Value = $Ctrl.IPAddress }
+                        $Node                    = $Ctrl.Resolve($Ctrl.IPAddress)
+                        $Ctrl.DnsDomain          = $Ctrl.GetDomain($Node.Hostname)
+                    }
+                    "^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2, 6}$"
+                    {
+                        $Node                    = $Ctrl.Resolve($Ctrl.Xaml.IO.Server.Text)
+                        $Ctrl.DnsDomain          = $Ctrl.GetDomain($Node.Hostname)
+                    }
+                }
+
+                $Ctrl.CheckADCredential($Ctrl.Xaml)
+
+                If ($Ctrl.Credential)
+                {
+                    $Ctrl.CheckADServer($Ctrl.Xaml)
+                }
+                If ($Ctrl.DC)
+                {
+                    $Ctrl.TestADCredential()
+                }
+                If (!$Ctrl.Test.DistinguishedName)
+                {
+                    $Ctrl.Message("Invalid login")
+                }
+                If ($Ctrl.Test.DistinguishedName)
+                {
+                    $Ctrl.Xaml.IO.DialogResult = 1
+                }
+            })
+        
+            $Ctrl.Xaml.IO.Cancel.Add_Click(
+            {
+                $Ctrl.Xaml.IO.DialogResult = 0
+            })
         }
         [String] ToString()
         {
@@ -572,81 +711,22 @@ Function Get-FEADLogin
         }
     }
 
-    $Xaml = [XamlWindow][FEADLoginXaml]::Content
-    $Main = Switch($PSCmdLet.ParameterSetName)
+    $Ctrl = Switch ($PSCmdLet.ParameterSetName)
     {
-        0 { [Main]::New() }
-        1 { [Main]::New([IPAddress]$IPAddress) }
-        2 { [Main]::New([String]$Domain) }
-        3 { [Main]::New([Object]$Target) }
+        0 { [FEADLoginController]::New()                      }
+        1 { [FEADLoginController]::New([IPAddress]$IPAddress) }
+        2 { [FEADLoginController]::New([String]$Domain)       }
+        3 { [FEADLoginController]::New([Object]$Target)       }
     }
+            
+    $Ctrl.Xaml.Invoke()
 
-    $Xaml.IO.ServerList.ItemsSource = @( )
-    ForEach ($Item in "IPAddress DNSName Domain NetBIOS" -Split " ")
-    {
-        $Xaml.IO.ServerList.ItemsSource += [DGList]::New($Item,$Main.$Item)
-    }
-
-    $Xaml.IO.ServerList.Add_SelectionChanged(
-    {
-        $Item                            = $Xaml.IO.ServerList.SelectedItem
-        $Xaml.IO.Server.Text             = $Item.Value 
-    })
-
-    $Xaml.IO.Switch.Add_Checked(
-    {
-        $Xaml.IO.Port.IsEnabled          = 1
-    })
-    
-    $Xaml.IO.Ok.Add_Click(
-    {
-        Switch -Regex ($Xaml.IO.Server.Text)
-        {
-            "(\d+\.){3}\d+"
-            {
-                $Main.IPAddress = $Xaml.IO.Server.Text
-                $Xaml.IO.ServerList | ? Name -eq IPAddress | % { $_.Value = $Main.IPAddress }
-                $Node = [System.Net.DNS]::Resolve($Main.IPAddress)
-                $Main.DNSDomain = $Main.GetDomain($Node.Hostname)
-            }
-            "^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\.)+[A-Za-z]{2, 6}$"
-            {
-                $Node = [System.Net.DNS]::Resolve($Xaml.IO.Server.Text)
-                $Main.DNSDomain = $Main.GetDomain($Node.Hostname)
-            }
-        }
-        $Main.CheckADCredential($Xaml)
-        If ($Main.Credential)
-        {
-            $Main.CheckADServer($Xaml)
-        }
-        If ($Main.DC)
-        {
-            $Main.TestADCredential()
-        }
-        If (!$Main.Test.DistinguishedName)
-        {
-            [System.Windows.MessageBox]::Show("Invalid login","Error")
-        }
-        If ($Main.Test.DistinguishedName)
-        {
-            $Xaml.IO.DialogResult = $True
-        }
-    })
-
-    $Xaml.IO.Cancel.Add_Click(
-    {
-        $Xaml.IO.DialogResult = $False
-    })
-
-    $Xaml.Invoke()
-    If ($Xaml.IO.DialogResult)
-    {
-        $Main
-    }
-
-    If (!$Xaml.IO.DialogResult)
+    If (!$Ctrl.Xaml.IO.DialogResult)
     {
         Write-Theme "Error [!] Either the user cancelled or the dialog failed" 1
+    }
+    Else
+    {
+        $Ctrl
     }
 }
