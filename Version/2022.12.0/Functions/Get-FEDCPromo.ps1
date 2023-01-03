@@ -1766,6 +1766,10 @@ Function Get-FEDCPromo
         FEDCPromoController([UInt32]$Mode)
         {
             $This.Mode     = $Mode
+            If ($This.Mode -ge 2)
+            {
+                $This.Test = 1
+            }
             $This.Main()
         }
         Main()
@@ -2041,6 +2045,20 @@ Function Get-FEDCPromo
             }
 
             Return $Item
+        }
+        InstallDomainController([String]$Name,[Hashtable]$Splat)
+        {
+            # Installs/Tests the domain controller promotion 
+            $This.Update(0,"Attempting [~] [$Name]")
+            Switch ($Name)
+            {
+                AddsForest               {                    Install-ADDSForest @Splat -Confirm:$False }
+                AddsDomain               {                    Install-ADDSDomain @Splat -Confirm:$False }
+                AddsDomainController     {          Install-ADDSDomainController @Splat -Confirm:$False }
+                TestAddsForest           {           Test-ADDSForestInstallation @Splat                 }
+                TestAddsDomain           {           Test-ADDSDomainInstallation @Splat                 }
+                TestAddsDomainController { Test-ADDSDomainControllerInstallation @Splat                 }
+            }
         }
         [Object] GetConnection([Object]$Connect)
         {
@@ -2953,7 +2971,7 @@ Function Get-FEDCPromo
                 0
                 {
                     $This.Update(0,"Installing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Feature installation")
-                    $This.Module.Write($This.Status())
+                    $This.Module.Write($This.Console.Last())
 
                     If ($This.Execute.Feature)
                     {
@@ -2975,6 +2993,8 @@ Function Get-FEDCPromo
                     If (($This.Execute.Result | ? RestartNeeded -eq No).Count -gt 0)
                     {
                         $This.Update(0,"Reboot [!] required to proceed")
+                        $This.Module.Write($This.Console.Last())
+                        <# INPUTOBJECT LOGIC HERE
                         If ($InputObject)
                         {
                             $This.ExportFile("InputObject",$InputObject)
@@ -3005,23 +3025,34 @@ Function Get-FEDCPromo
                         {
                             Throw "Write logic here"
                         }
+                        #>
                     }
                     If (($This.Execute.Result | ? RestartNeeded -eq No).Count -eq 0)
                     {
-                        Write-Theme "Installing [~] [FightingEntropy($([char]960))] Domain Controller..."
+                        $This.Update(0,"Installing [~] [FightingEntropy($([char]960))] Domain Controller")
+                        $This.Module.Write($This.Console.Last())
+
                         Switch ($This.Command.Slot)
                         {
-                            0 { Install-ADDSForest @Splat -Confirm:$False }
-                            1 { Install-ADDSDomain @Splat -Confirm:$False }
-                            2 { Install-ADDSDomain @Splat -Confirm:$False }
-                            3 { Install-ADDSDomainController @Splat -Confirm:$False }
+                            {$_ -eq 0}
+                            {
+                                $This.InstallDomainController("AddsForest",$Splat)
+                            }
+                            {$_ -in 1,2}
+                            {
+                                $This.InstallDomainController("AddsDomain",$Splat)
+                            }
+                            {$_ -eq 3}
+                            {
+                                $This.InstallDomainController("AddsDomainController",$Splat)
+                            }
                         }
                     }
                 }
                 1
                 {
                     $This.Update(0,"Testing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Feature installation")
-                    $This.Module.Write($This.Status())
+                    $This.Module.Write($This.Console.Last())
 
                     ForEach ($Item in $This.Execute.Feature)
                     {
@@ -3033,9 +3064,18 @@ Function Get-FEDCPromo
 
                     Switch ($This.Control.Slot)
                     {
-                        {$_ -eq   0} { Test-ADDSForestInstallation @Splat }
-                        {$_ -in 1,2} { Test-ADDSDomainInstallation @Splat }
-                        {$_ -eq   3} { Test-ADDSDomainControllerInstallation @Splat }
+                        {$_ -eq 0}
+                        {
+                            $This.InstallDomainController("TestAddsForest",$Splat)
+                        }
+                        {$_ -in 1,2}
+                        {
+                            $This.InstallDomainController("TestAddsDomain",$Splat)
+                        }
+                        {$_ -eq 3}
+                        {
+                            $This.InstallDomainController("TestAddsDomainController",$Splat)
+                        }
                     }
                 }
             }
@@ -3383,5 +3423,6 @@ Function Get-FEDCPromo
     }
 
     $Ctrl = [FEDCPromoController]::New($Mode)
+
     $Ctrl.Xaml.Invoke()
 }
