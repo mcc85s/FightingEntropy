@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-02 17:55:53                                                                  //
+\\  Date       : 2023-01-04 14:28:05                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2022-12-14
-   Modified   : 2023-01-02
+   Modified   : 2023-01-04
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -664,7 +664,7 @@ Function Get-FEModule
             ("Get-EventLogRecordExtension.ps1" , "46BDD7B43F1221E1691B2B9079AE8F62099099C2298F30AF050E576F8C818DDD") ,
             ("Get-EventLogXaml.ps1"            , "5BA7F7099DD7EF55498A889E7AC83CA5EAC1F335EDA53ACF1D7EA23864BF5180") ,
             ("Get-FEADLogin.ps1"               , "1EEA605D7181E9F1985FC012E7EABB1884B39B9D33D2E2E8AB6A8C21C3770B56") ,
-            ("Get-FEDCPromo.ps1"               , "58EAA9DF9E776C180D33F454A0D7FF0851B83CDA7847428B729B231F6149E557") ,
+            ("Get-FEDCPromo.ps1"               , "7395D6FA386B32805A8E81F8CC5264C8FBD225F9B4C282F44CF1F5597530FBF2") ,
             ("Get-FEImageManifest.ps1"         , "3665C48E2A0A947F6DDACF6F036ED88D33318595F67129718A1CB5F17D9A5D80") ,
             ("Get-FEModule.ps1"                , "") ,
             ("Get-FENetwork.ps1"               , "0048A6208F9DDF0CCCFBCEE0621426DE2B49ACCBDBED71FB1E5D8B027330CEFC") ,
@@ -1330,14 +1330,13 @@ Function Get-FEModule
         [String]      $Author = "Michael C. Cook Sr."
         [String]     $Company = "Secure Digits Plus LLC"
         [String]   $Copyright = "(c) 2022 (mcc85s/mcc85sx/sdp). All rights reserved."
-        [Guid]          $Guid = "0b36cfa4-dfad-4863-9171-f8afe65769cf"
-        [DateTime]      $Date = "11/07/2022 16:01:21"
+        [Guid]          $Guid = "5e6c9634-1c88-49a2-8794-2970095d8793"
+        [DateTime]      $Date = "12/14/2022 14:26:18"
         [Version]    $Version = "2022.12.0"
         [Object]          $OS
         [Object]        $Root
         [Object]    $Manifest
         [Object]    $Registry
-        [Object]      $System
         Controller([UInt32]$Mode)
         {
             If ($Mode -eq 0)
