@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-02 17:25:30                                                                  //
+\\  Date       : 2023-01-04 14:23:21                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -16,11 +16,13 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2023-01-02
+    Modified   : 2023-01-04
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : [~] Test each level and functionality across each mode
                  [~] Nbt scanner (modes 1..3)
+                 [+] Test the new way that this thing works, via -InputPath
+                     Basically, the function exports various properties to a folder
 
 .Example
 #>
@@ -28,8 +30,8 @@ Function Get-FEDCPromo
 {
     [CmdLetBinding()]Param(
     [Parameter()][UInt32]$Mode=0,
-    [Parameter()][Hashtable]$InputObject)
-    
+    [Parameter()][String]$InputPath)
+
     # Check for server operating system
     If (Get-CimInstance Win32_OperatingSystem | ? Caption -notmatch Server)
     {
@@ -133,7 +135,17 @@ Function Get-FEDCPromo
     # (3/4) [Xaml.FEDCFound]
     Class FEDCFoundXaml
     {
-        Static [String] $Content = ('<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Found" Width="550" Height="260" HorizontalAlignment="Center" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\icon.ico" WindowStartupLocation="CenterScreen">',
+        Static [String] $Content = @(
+        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" ',
+        '        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" ',
+        '        Title="[FightingEntropy]://Domain Controller Found"',
+        '        Width="550"',
+        '        Height="260"',
+        '        HorizontalAlignment="Center"',
+        '        Topmost="True"',
+        '        ResizeMode="NoResize"',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\icon.ico"',
+        '        WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style TargetType="GroupBox">',
         '            <Setter Property="Margin" Value="10"/>',
@@ -142,8 +154,13 @@ Function Get-FEDCPromo
         '            <Setter Property="Template">',
         '                <Setter.Value>',
         '                    <ControlTemplate TargetType="GroupBox">',
-        '                        <Border CornerRadius="10" Background="White" BorderBrush="Black" BorderThickness="3">',
-        '                            <ContentPresenter x:Name="ContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Margin="5"/>',
+        '                        <Border CornerRadius="10"',
+        '                                Background="White"',
+        '                                BorderBrush="Black"',
+        '                                BorderThickness="3">',
+        '                            <ContentPresenter x:Name="ContentPresenter"',
+        '                                              ContentTemplate="{TemplateBinding ContentTemplate}"',
+        '                                              Margin="5"/>',
         '                        </Border>',
         '                    </ControlTemplate>',
         '                </Setter.Value>',
@@ -180,8 +197,10 @@ Function Get-FEDCPromo
         '            <Setter Property="IsTextSearchEnabled" Value="True"/>',
         '            <Setter Property="SelectionMode" Value="Extended"/>',
         '            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>',
-        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>',
-        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>',
+        '            <Setter Property="ScrollViewer.VerticalScrollBarVisibility"',
+        '                    Value="Auto"/>',
+        '            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"',
+        '                    Value="Auto"/>',
         '        </Style>',
         '        <Style TargetType="DataGridRow">',
         '            <Setter Property="BorderBrush" Value="Black"/>',
@@ -197,7 +216,8 @@ Function Get-FEDCPromo
         '    </Window.Resources>',
         '    <Grid>',
         '        <Grid.Background>',
-        '            <ImageBrush Stretch="None" ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\background.jpg"/>',
+        '            <ImageBrush Stretch="None"',
+        '                        ImageSource="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\background.jpg"/>',
         '        </Grid.Background>',
         '        <GroupBox>',
         '            <Grid Margin="5">',
@@ -207,9 +227,15 @@ Function Get-FEDCPromo
         '                </Grid.RowDefinitions>',
         '                <DataGrid Grid.Row="0" Grid.Column="0" Name="DomainControllers">',
         '                    <DataGrid.Columns>',
-        '                        <DataGridTextColumn Header="Address"  Width="140" Binding="{Binding IPAddress}"/>',
-        '                        <DataGridTextColumn Header="Hostname" Width="200" Binding="{Binding HostName}"/>',
-        '                        <DataGridTextColumn Header="NetBIOS"  Width="140" Binding="{Binding NetBIOS}"/>',
+        '                        <DataGridTextColumn Header="Address"',
+        '                                            Width="140"',
+        '                                            Binding="{Binding IPAddress}"/>',
+        '                        <DataGridTextColumn Header="Hostname"',
+        '                                            Width="200"',
+        '                                            Binding="{Binding HostName}"/>',
+        '                        <DataGridTextColumn Header="NetBIOS"',
+        '                                            Width="140"',
+        '                                            Binding="{Binding NetBIOS}"/>',
         '                    </DataGrid.Columns>',
         '                </DataGrid>',
         '                <Grid Grid.Row="1">',
@@ -217,8 +243,14 @@ Function Get-FEDCPromo
         '                        <ColumnDefinition Width="*"/>',
         '                        <ColumnDefinition Width="*"/>',
         '                    </Grid.ColumnDefinitions>',
-        '                    <Button Grid.Row="1" Grid.Column="0" Name="Ok"        Content="Ok" />',
-        '                    <Button Grid.Row="1" Grid.Column="1" Content="Cancel" Name="Cancel"/>',
+        '                    <Button Grid.Row="1"',
+        '                            Grid.Column="0"',
+        '                            Name="Ok"',
+        '                            Content="Ok" />',
+        '                    <Button Grid.Row="1"',
+        '                            Grid.Column="1"',
+        '                            Content="Cancel"',
+        '                            Name="Cancel"/>',
         '                </Grid>',
         '            </Grid>',
         '        </GroupBox>',
@@ -230,7 +262,16 @@ Function Get-FEDCPromo
     Class FEDCPromoXaml
     {
         Static [String] $Content = @(
-        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="[FightingEntropy]://Domain Controller Promotion" Width="550" Height="450" Topmost="True" ResizeMode="NoResize" Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\icon.ico" HorizontalAlignment="Center" WindowStartupLocation="CenterScreen">',
+        '<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"',
+        '        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"',
+        '        Title="[FightingEntropy]://Domain Controller Promotion"',
+        '        Width="550"',
+        '        Height="450"',
+        '        Topmost="True"',
+        '        ResizeMode="NoResize"',
+        '        Icon="C:\ProgramData\Secure Digits Plus LLC\FightingEntropy\2022.12.0\Graphics\icon.ico"',
+        '        HorizontalAlignment="Center"',
+        '        WindowStartupLocation="CenterScreen">',
         '    <Window.Resources>',
         '        <Style x:Key="DropShadow">',
         '            <Setter Property="TextBlock.Effect">',
@@ -274,21 +315,38 @@ Function Get-FEDCPromo
         '            <Setter Property="Template">',
         '                <Setter.Value>',
         '                    <ControlTemplate TargetType="TabItem">',
-        '                        <Border Name="Border" BorderThickness="2" BorderBrush="Black" CornerRadius="2" Margin="2">',
-        '                            <ContentPresenter x:Name="ContentSite" VerticalAlignment="Center" HorizontalAlignment="Right" ContentSource="Header" Margin="5"/>',
+        '                        <Border Name="Border"',
+        '                                BorderThickness="2"',
+        '                                BorderBrush="Black"',
+        '                                CornerRadius="2"',
+        '                                Margin="2">',
+        '                            <ContentPresenter x:Name="ContentSite"',
+        '                                              VerticalAlignment="Center"',
+        '                                              HorizontalAlignment="Right"',
+        '                                              ContentSource="Header"',
+        '                                              Margin="5"/>',
         '                        </Border>',
         '                        <ControlTemplate.Triggers>',
         '                            <Trigger Property="IsSelected" Value="True">',
-        '                                <Setter TargetName="Border" Property="Background" Value="#4444FF"/>',
-        '                                <Setter Property="Foreground" Value="#FFFFFF"/>',
+        '                                <Setter TargetName="Border"',
+        '                                        Property="Background" ',
+        '                                        Value="#4444FF"/>',
+        '                                <Setter Property="Foreground"',
+        '                                        Value="#FFFFFF"/>',
         '                            </Trigger>',
         '                            <Trigger Property="IsSelected" Value="False">',
-        '                                <Setter TargetName="Border" Property="Background" Value="#DFFFBA"/>',
-        '                                <Setter Property="Foreground" Value="#000000"/>',
+        '                                <Setter TargetName="Border"',
+        '                                        Property="Background" ',
+        '                                        Value="#DFFFBA"/>',
+        '                                <Setter Property="Foreground" ',
+        '                                        Value="#000000"/>',
         '                            </Trigger>',
         '                            <Trigger Property="IsEnabled" Value="False">',
-        '                                <Setter TargetName="Border" Property="Background" Value="#6F6F6F"/>',
-        '                                <Setter Property="Foreground" Value="#9F9F9F"/>',
+        '                                <Setter TargetName="Border"',
+        '                                        Property="Background"',
+        '                                        Value="#6F6F6F"/>',
+        '                                <Setter Property="Foreground"',
+        '                                        Value="#9F9F9F"/>',
         '                            </Trigger>',
         '                        </ControlTemplate.Triggers>',
         '                    </ControlTemplate>',
@@ -406,13 +464,13 @@ Function Get-FEDCPromo
         '            <Setter Property="BorderBrush" Value="Black"/>',
         '            <Setter Property="BorderThickness" Value="2"/>',
         '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-        '            ',
+        '',
         '            <Style.Resources>',
         '                <Style TargetType="Border">',
         '                    <Setter Property="CornerRadius" Value="5"/>',
         '                </Style>',
         '            </Style.Resources>',
-        '            ',
+        '',
         '        </Style>',
         '        <Style x:Key="Line" TargetType="Border">',
         '            <Setter Property="Background" Value="Black"/>',
@@ -437,16 +495,23 @@ Function Get-FEDCPromo
         '                <ColumnDefinition Width="70"/>',
         '                <ColumnDefinition Width="*"/>',
         '            </Grid.ColumnDefinitions>',
-        '            <Label Grid.Column="0" Content="[Command]:" HorizontalContentAlignment="Center"/>',
+        '            <Label Grid.Column="0"',
+        '                   Content="[Command]:"',
+        '                   HorizontalContentAlignment="Center"/>',
         '            <ComboBox Grid.Column="1" Name="CommandSlot">',
         '                <ComboBoxItem Content="Forest"/>',
         '                <ComboBoxItem Content="Tree"/>',
         '                <ComboBoxItem Content="Child"/>',
         '                <ComboBoxItem Content="Clone"/>',
         '            </ComboBox>',
-        '            <DataGrid Grid.Column="2" Margin="10" Name="Command" HeadersVisibility="None">',
+        '            <DataGrid Grid.Column="2"',
+        '                      Margin="10"',
+        '                      Name="Command"',
+        '                      HeadersVisibility="None">',
         '                <DataGrid.Columns>',
-        '                    <DataGridTextColumn Header="Description" Width="*" Binding="{Binding Description}"/>',
+        '                    <DataGridTextColumn Header="Description" ',
+        '                                        Width="*" ',
+        '                                        Binding="{Binding Description}"/>',
         '                </DataGrid.Columns>',
         '            </DataGrid>',
         '        </Grid>',
@@ -464,19 +529,35 @@ Function Get-FEDCPromo
         '                        <RowDefinition Height="10"/>',
         '                        <RowDefinition Height="40"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <DataGrid Grid.Row="0" Name="OperatingSystemCaption" HeadersVisibility="None">',
+        '                    <DataGrid Grid.Row="0"',
+        '                              Name="OperatingSystemCaption"',
+        '                              HeadersVisibility="None">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Caption" Width="*" Binding="{Binding Caption}"/>',
+        '                            <DataGridTextColumn Header="Caption"',
+        '                                                Width="*"',
+        '                                                Binding="{Binding Caption}"/>',
         '                        </DataGrid.Columns>',
         '                    </DataGrid>',
         '                    <DataGrid Grid.Row="1" Name="OperatingSystemExtension">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Version"  Width="80"  Binding="{Binding Version}"/>',
-        '                            <DataGridTextColumn Header="Build"    Width="50"  Binding="{Binding Build}"/>',
-        '                            <DataGridTextColumn Header="Serial"   Width="*"   Binding="{Binding Serial}"/>',
-        '                            <DataGridTextColumn Header="Language" Width="50"  Binding="{Binding Language}"/>',
-        '                            <DataGridTextColumn Header="Product"  Width="50"  Binding="{Binding Product}"/>',
-        '                            <DataGridTextColumn Header="Type"     Width="50"  Binding="{Binding Type}"/>',
+        '                            <DataGridTextColumn Header="Version"',
+        '                                                Width="80"',
+        '                                                Binding="{Binding Version}"/>',
+        '                            <DataGridTextColumn Header="Build"',
+        '                                                Width="50"',
+        '                                                Binding="{Binding Build}"/>',
+        '                            <DataGridTextColumn Header="Serial"',
+        '                                                Width="*"',
+        '                                                Binding="{Binding Serial}"/>',
+        '                            <DataGridTextColumn Header="Language"',
+        '                                                Width="50"',
+        '                                                Binding="{Binding Language}"/>',
+        '                            <DataGridTextColumn Header="Product"',
+        '                                                Width="50"',
+        '                                                Binding="{Binding Product}"/>',
+        '                            <DataGridTextColumn Header="Type"',
+        '                                                Width="50"',
+        '                                                Binding="{Binding Type}"/>',
         '                        </DataGrid.Columns>',
         '                    </DataGrid>',
         '                    <Grid Grid.Row="3" Name="ForestModeBox">',
@@ -487,18 +568,30 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label Grid.Column="1" Content="Forest Mode" Style="{StaticResource LabelGray}"/>',
-        '                        <ComboBox Grid.Column="2" Name="ForestMode" SelectedIndex="0">',
+        '                        <Label Grid.Column="1"',
+        '                               Content="Forest Mode"',
+        '                               Style="{StaticResource LabelGray}"/>',
+        '                        <ComboBox Grid.Column="2"',
+        '                                  Name="ForestMode"',
+        '                                  SelectedIndex="0">',
         '                            <ComboBox.ItemTemplate>',
         '                                <DataTemplate>',
-        '                                    <TextBlock Text="{Binding Index}" IsEnabled="{Binding Enabled}"/>',
+        '                                    <TextBlock Text="{Binding Index}"',
+        '                                               IsEnabled="{Binding Enabled}"/>',
         '                                </DataTemplate>',
         '                            </ComboBox.ItemTemplate>',
         '                        </ComboBox>',
-        '                        <DataGrid Grid.Column="3" Name="ForestModeExtension" HeadersVisibility="None" Margin="10">',
+        '                        <DataGrid Grid.Column="3"',
+        '                                  Name="ForestModeExtension"',
+        '                                  HeadersVisibility="None"',
+        '                                  Margin="10">',
         '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="100"/>',
-        '                                <DataGridTextColumn Header="DisplayName" Binding="{Binding DisplayName}" Width="*"/>',
+        '                                <DataGridTextColumn Header="Name"',
+        '                                                    Binding="{Binding Name}"',
+        '                                                    Width="100"/>',
+        '                                <DataGridTextColumn Header="DisplayName"',
+        '                                                    Binding="{Binding DisplayName}"',
+        '                                                    Width="*"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                    </Grid>',
@@ -510,18 +603,30 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label Grid.Column="1" Content="Domain Mode" Style="{StaticResource LabelGray}"/>',
-        '                        <ComboBox Grid.Column="2" Name="DomainMode" SelectedIndex="0">',
+        '                        <Label Grid.Column="1"',
+        '                               Content="Domain Mode"',
+        '                               Style="{StaticResource LabelGray}"/>',
+        '                        <ComboBox Grid.Column="2"',
+        '                                  Name="DomainMode"',
+        '                                  SelectedIndex="0">',
         '                            <ComboBox.ItemTemplate>',
         '                                <DataTemplate>',
-        '                                    <TextBlock Text="{Binding Index}" IsEnabled="{Binding Enabled}"/>',
+        '                                    <TextBlock Text="{Binding Index}"',
+        '                                               IsEnabled="{Binding Enabled}"/>',
         '                                </DataTemplate>',
         '                            </ComboBox.ItemTemplate>',
         '                        </ComboBox>',
-        '                        <DataGrid Grid.Column="3" Name="DomainModeExtension" HeadersVisibility="None" Margin="10">',
+        '                        <DataGrid Grid.Column="3"',
+        '                                  Name="DomainModeExtension"',
+        '                                  HeadersVisibility="None"',
+        '                                  Margin="10">',
         '                            <DataGrid.Columns>',
-        '                                <DataGridTextColumn Header="Name"        Binding="{Binding Name}"        Width="100"/>',
-        '                                <DataGridTextColumn Header="DisplayName" Binding="{Binding DisplayName}" Width="*"/>',
+        '                                <DataGridTextColumn Header="Name"',
+        '                                                    Binding="{Binding Name}"',
+        '                                                    Width="100"/>',
+        '                                <DataGridTextColumn Header="DisplayName"',
+        '                                                    Binding="{Binding DisplayName}"',
+        '                                                    Width="*"/>',
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                    </Grid>',
@@ -533,9 +638,13 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label   Grid.Column="1" Content="Parent Domain" Style="{StaticResource LabelGray}"/>',
-        '                        <Image   Grid.Column="2" Name="ParentDomainNameIcon"/>',
-        '                        <TextBox Grid.Column="3" Name="ParentDomainName"/>',
+        '                        <Label   Grid.Column="1"',
+        '                                 Content="Parent Domain"',
+        '                                 Style="{StaticResource LabelGray}"/>',
+        '                        <Image   Grid.Column="2"',
+        '                                 Name="ParentDomainNameIcon"/>',
+        '                        <TextBox Grid.Column="3" ',
+        '                                 Name="ParentDomainName"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="8" Name="ReplicationSourceDCBox">',
         '                        <Grid.ColumnDefinitions>',
@@ -544,7 +653,9 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label    Grid.Column="1" Content="Replication DC" Style="{StaticResource LabelGray}"/>',
+        '                        <Label    Grid.Column="1"',
+        '                                  Content="Replication DC"',
+        '                                  Style="{StaticResource LabelGray}"/>',
         '                        <ComboBox Grid.Column="2" Name="ReplicationSourceDC"/>',
         '                    </Grid>',
         '                </Grid>',
@@ -555,15 +666,30 @@ Function Get-FEDCPromo
         '                        <RowDefinition Height="40"/>',
         '                        <RowDefinition Height="*"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <Label    Grid.Row="0" Content="[Windows Server features to be installed]:"/>',
-        '                    <DataGrid Grid.Row="1" Name="Feature">',
+        '                    <Label    Grid.Row="0"',
+        '                              Content="[Windows Server features to be installed]:"/>',
+        '                    <DataGrid Grid.Row="1"',
+        '                              Name="Feature">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Type" Width="60"  Binding="{Binding Type}" CanUserSort="True" IsReadOnly="True"/>',
-        '                            <DataGridTextColumn Header="Name" Width="*" Binding="{Binding Name}" CanUserSort="True" IsReadOnly="True" FontWeight="Bold"/>',
+        '                            <DataGridTextColumn Header="Type"',
+        '                                                Width="60"',
+        '                                                Binding="{Binding Type}"',
+        '                                                CanUserSort="True"',
+        '                                                IsReadOnly="True"/>',
+        '                            <DataGridTextColumn Header="Name"',
+        '                                                Width="*"',
+        '                                                Binding="{Binding Name}"',
+        '                                                CanUserSort="True"',
+        '                                                IsReadOnly="True"',
+        '                                                FontWeight="Bold"/>',
         '                            <DataGridTemplateColumn Header="Install" Width="40">',
         '                                <DataGridTemplateColumn.CellTemplate>',
         '                                    <DataTemplate>',
-        '                                        <CheckBox IsEnabled="{Binding Enable}" IsChecked="{Binding Install}" Margin="0" Height="18" HorizontalAlignment="Left"/>',
+        '                                        <CheckBox IsEnabled="{Binding Enable}"',
+        '                                                  IsChecked="{Binding Install}"',
+        '                                                  Margin="0"',
+        '                                                  Height="18"',
+        '                                                  HorizontalAlignment="Left"/>',
         '                                    </DataTemplate>',
         '                                </DataGridTemplateColumn.CellTemplate>',
         '                            </DataGridTemplateColumn>',
@@ -582,7 +708,7 @@ Function Get-FEDCPromo
         '                        <RowDefinition Height="40"/>',
         '                        <RowDefinition Height="40"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <Label    Grid.Row="0" Content="[Domain controller roles]"/>',
+        '                    <Label Grid.Row="0" Content="[Domain controller roles]"/>',
         '                    <Grid Grid.Row="1">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
@@ -592,10 +718,16 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <CheckBox Grid.Column="1" Name="InstallDNS" />',
-        '                        <Label    Grid.Column="2" Content="Install DNS" Style="{StaticResource LabelRed}"/>',
-        '                        <CheckBox Grid.Column="3" Name="NoGlobalCatalog"/>',
-        '                        <Label    Grid.Column="4" Content="No Global Catalog" Style="{StaticResource LabelRed}"/>',
+        '                        <CheckBox Grid.Column="1"',
+        '                                  Name="InstallDNS"/>',
+        '                        <Label    Grid.Column="2"',
+        '                                  Content="Install DNS"',
+        '                                  Style="{StaticResource LabelRed}"/>',
+        '                        <CheckBox Grid.Column="3"',
+        '                                  Name="NoGlobalCatalog"/>',
+        '                        <Label    Grid.Column="4"',
+        '                                  Content="No Global Catalog"',
+        '                                  Style="{StaticResource LabelRed}"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="2">',
         '                        <Grid.ColumnDefinitions>',
@@ -606,12 +738,19 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <CheckBox Grid.Column="1" Name="CreateDNSDelegation"/>',
-        '                        <Label    Grid.Column="2" Content="Create DNS Delegation" Style="{StaticResource LabelRed}"/>',
-        '                        <CheckBox Grid.Column="3" Name="CriticalReplicationOnly"/>',
-        '                        <Label    Grid.Column="4" Content="Critical Replication Only" Style="{StaticResource LabelRed}"/>',
+        '                        <CheckBox Grid.Column="1"',
+        '                                  Name="CreateDNSDelegation"/>',
+        '                        <Label    Grid.Column="2"',
+        '                                  Content="Create DNS Delegation"',
+        '                                  Style="{StaticResource LabelRed}"/>',
+        '                        <CheckBox Grid.Column="3"',
+        '                                  Name="CriticalReplicationOnly"/>',
+        '                        <Label    Grid.Column="4"',
+        '                                  Content="Critical Replication Only"',
+        '                                  Style="{StaticResource LabelRed}"/>',
         '                    </Grid>',
-        '                    <Label    Grid.Row="3" Content="[Active Directory partition target paths (Click button to open dialog)]"/>',
+        '                    <Label Grid.Row="3"',
+        '                           Content="[Active Directory partition target paths]"/>',
         '                    <Grid Grid.Row="4">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
@@ -619,8 +758,11 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Button   Grid.Column="1" Name="DatabaseBrowse" Content="Database"/>',
-        '                        <TextBox  Grid.Column="2" Name="DatabasePath"/>',
+        '                        <Button   Grid.Column="1"',
+        '                                  Name="DatabaseBrowse"',
+        '                                  Content="Database"/>',
+        '                        <TextBox  Grid.Column="2"',
+        '                                  Name="DatabasePath"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="5">',
         '                        <Grid.ColumnDefinitions>',
@@ -629,8 +771,11 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Button   Grid.Column="1" Name="SysvolBrowse" Content="SysVol"/>',
-        '                        <TextBox  Grid.Column="2" Name="SysvolPath"/>',
+        '                        <Button   Grid.Column="1"',
+        '                                  Name="SysvolBrowse"',
+        '                                  Content="SysVol"/>',
+        '                        <TextBox  Grid.Column="2"',
+        '                                  Name="SysvolPath"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="6">',
         '                        <Grid.ColumnDefinitions>',
@@ -639,8 +784,11 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Button  Grid.Column="1" Name="LogBrowse" Content="Log"/>',
-        '                        <TextBox Grid.Column="2" Name="LogPath"/>',
+        '                        <Button  Grid.Column="1"',
+        '                                 Name="LogBrowse"',
+        '                                 Content="Log"/>',
+        '                        <TextBox Grid.Column="2"',
+        '                                 Name="LogPath"/>',
         '                    </Grid>',
         '                </Grid>',
         '            </TabItem>',
@@ -655,7 +803,8 @@ Function Get-FEDCPromo
         '                        <RowDefinition Height="40"/>',
         '                        <RowDefinition Height="40"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <Label  Grid.Row="0" Content="[Necessary fields vary by command selection]"/>',
+        '                    <Label Grid.Row="0"',
+        '                           Content="[Necessary fields vary by command selection]"/>',
         '                    <Grid   Grid.Row="2" Name="DomainNameBox">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
@@ -664,9 +813,13 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label    Grid.Column="1" Content="Domain" Style="{StaticResource LabelGray}"/>',
-        '                        <Image    Grid.Column="2" Name="DomainNameIcon"/>',
-        '                        <TextBox  Grid.Column="3" Name="DomainName"/>',
+        '                        <Label   Grid.Column="1"',
+        '                                 Content="Domain"',
+        '                                 Style="{StaticResource LabelGray}"/>',
+        '                        <Image   Grid.Column="2"',
+        '                                 Name="DomainNameIcon"/>',
+        '                        <TextBox Grid.Column="3"',
+        '                                 Name="DomainName"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="3" Name="NewDomainNameBox">',
         '                        <Grid.ColumnDefinitions>',
@@ -676,9 +829,13 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label    Grid.Column="1" Content="New Domain" Style="{StaticResource LabelGray}"/>',
-        '                        <Image    Grid.Column="2" Name="NewDomainNameIcon"/>',
-        '                        <TextBox  Grid.Column="3" Name="NewDomainName"/>',
+        '                        <Label   Grid.Column="1"',
+        '                                 Content="New Domain"',
+        '                                 Style="{StaticResource LabelGray}"/>',
+        '                        <Image   Grid.Column="2"',
+        '                                 Name="NewDomainNameIcon"/>',
+        '                        <TextBox Grid.Column="3"',
+        '                                 Name="NewDomainName"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="4" Name="DomainNetBiosNameBox">',
         '                        <Grid.ColumnDefinitions>',
@@ -688,11 +845,15 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label    Grid.Row="5" Grid.Column="1" Content="NetBIOS" Style="{StaticResource LabelGray}"/>',
-        '                        <Image    Grid.Row="5" Grid.Column="2" Name="DomainNetBIOSNameIcon"/>',
-        '                        <TextBox  Grid.Row="5" Grid.Column="3" Name="DomainNetBIOSName"/>',
+        '                        <Label   Grid.Column="1"',
+        '                                 Content="NetBIOS"',
+        '                                 Style="{StaticResource LabelGray}"/>',
+        '                        <Image   Grid.Column="2"',
+        '                                 Name="DomainNetBIOSNameIcon"/>',
+        '                        <TextBox Grid.Column="3"',
+        '                                 Name="DomainNetBIOSName"/>',
         '                    </Grid>',
-        '                    <Grid Grid.Row="5" Name="NewDomainNetBiosNameSBox">',
+        '                    <Grid Grid.Row="5" Name="NewDomainNetBiosNameBox">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
         '                            <ColumnDefinition Width="100"/>',
@@ -700,9 +861,13 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label    Grid.Row="6" Grid.Column="1" Content="New NetBIOS" Style="{StaticResource LabelGray}"/>',
-        '                        <Image    Grid.Row="6" Grid.Column="2" Name="NewDomainNetBIOSNameIcon"/>',
-        '                        <TextBox  Grid.Row="6" Grid.Column="3" Name="NewDomainNetBIOSName"/>',
+        '                        <Label   Grid.Column="1"',
+        '                                 Content="New NetBIOS"',
+        '                                 Style="{StaticResource LabelGray}"/>',
+        '                        <Image   Grid.Column="2"',
+        '                                 Name="NewDomainNetBIOSNameIcon"/>',
+        '                        <TextBox Grid.Column="3"',
+        '                                 Name="NewDomainNetBIOSName"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="6" Name="SiteNameBox">',
         '                        <Grid.ColumnDefinitions>',
@@ -712,9 +877,13 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label    Grid.Row="8" Grid.Column="1" Content="Site Name" Style="{StaticResource LabelGray}"/>',
-        '                        <Image    Grid.Row="8" Grid.Column="2" Name="SiteNameIcon"/>',
-        '                        <ComboBox Grid.Row="8" Grid.Column="3" Name="SiteName"/>',
+        '                        <Label    Grid.Column="1"',
+        '                                  Content="Site Name"',
+        '                                  Style="{StaticResource LabelGray}"/>',
+        '                        <Image    Grid.Column="2"',
+        '                                  Name="SiteNameIcon"/>',
+        '                        <ComboBox Grid.Column="3"',
+        '                                  Name="SiteName"/>',
         '                    </Grid>',
         '                </Grid>',
         '            </TabItem>',
@@ -731,8 +900,9 @@ Function Get-FEDCPromo
         '                        <RowDefinition Height="40"/>',
         '                        <RowDefinition Height="10"/>',
         '                    </Grid.RowDefinitions>',
-        '                    <Label  Grid.Row="0" Content="[Active Directory promotion credential]"/>',
-        '                    <Grid   Grid.Row="2" Name="CredentialBox">',
+        '                    <Label Grid.Row="0"',
+        '                           Content="[Active Directory promotion credential]"/>',
+        '                    <Grid  Grid.Row="2" Name="CredentialBox">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
         '                            <ColumnDefinition Width="100"/>',
@@ -740,11 +910,16 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Button  Grid.Column="1" Content="Credential" Name="CredentialButton"/>',
-        '                        <Image   Grid.Column="2" Name="CredentialIcon"/>',
-        '                        <TextBox Grid.Column="3" Name="Credential"/>',
+        '                        <Button  Grid.Column="1"',
+        '                                 Content="Credential"',
+        '                                 Name="CredentialButton"/>',
+        '                        <Image   Grid.Column="2"',
+        '                                 Name="CredentialIcon"/>',
+        '                        <TextBox Grid.Column="3"',
+        '                                 Name="Credential"/>',
         '                    </Grid>',
-        '                    <Label Grid.Row="4" Content="[(DSRM/Domain Services Restore Mode) Key]"/>',
+        '                    <Label Grid.Row="4"',
+        '                           Content="[(DSRM/Domain Services Restore Mode) Key]"/>',
         '                    <Grid Grid.Row="6">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
@@ -753,9 +928,13 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label       Grid.Column="1" Content="Password" Style="{StaticResource LabelGray}"/>',
-        '                        <Image       Grid.Column="2" Name="SafeModeAdministratorPasswordIcon"/>',
-        '                        <PasswordBox Grid.Column="3" Name="SafeModeAdministratorPassword"/>',
+        '                        <Label Grid.Column="1"',
+        '                               Content="Password"',
+        '                               Style="{StaticResource LabelGray}"/>',
+        '                        <Image Grid.Column="2"',
+        '                               Name="SafeModeAdministratorPasswordIcon"/>',
+        '                        <PasswordBox Grid.Column="3"',
+        '                                     Name="SafeModeAdministratorPassword"/>',
         '                    </Grid>',
         '                    <Grid Grid.Row="7">',
         '                        <Grid.ColumnDefinitions>',
@@ -765,9 +944,13 @@ Function Get-FEDCPromo
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
-        '                        <Label       Grid.Column="1" Content="Confirm" Style="{StaticResource LabelGray}"/>',
-        '                        <Image       Grid.Column="2" Name="ConfirmIcon"/>',
-        '                        <PasswordBox Grid.Column="3" Name="Confirm"/>',
+        '                        <Label Grid.Column="1"',
+        '                               Content="Confirm"',
+        '                               Style="{StaticResource LabelGray}"/>',
+        '                        <Image Grid.Column="2"',
+        '                               Name="ConfirmIcon"/>',
+        '                        <PasswordBox Grid.Column="3"',
+        '                                     Name="Confirm"/>',
         '                    </Grid>',
         '                </Grid>',
         '            </TabItem>',
@@ -780,8 +963,12 @@ Function Get-FEDCPromo
         '                    <Label Grid.Row="0" Content="[Issues preventing promotion]"/>',
         '                    <DataGrid Grid.Row="1" Name="Summary">',
         '                        <DataGrid.Columns>',
-        '                            <DataGridTextColumn Header="Name"   Binding="{Binding Name}"   Width="150"/>',
-        '                            <DataGridTextColumn Header="Reason" Binding="{Binding Reason}" Width="*"/>',
+        '                            <DataGridTextColumn Header="Name"',
+        '                                                Binding="{Binding Name}"',
+        '                                                Width="150"/>',
+        '                            <DataGridTextColumn Header="Reason"',
+        '                                                Binding="{Binding Reason}"',
+        '                                                Width="*"/>',
         '                        </DataGrid.Columns>',
         '                    </DataGrid>',
         '                </Grid>',
@@ -793,12 +980,55 @@ Function Get-FEDCPromo
         '                <ColumnDefinition Width="*"/>',
         '                <ColumnDefinition Width="*"/>',
         '            </Grid.ColumnDefinitions>',
-        '            <Button      Grid.Column="0" Name="Start"  Content="Start"/>',
-        '            <Button      Grid.Column="1" Name="Test"   Content="Test"/>',
-        '            <Button      Grid.Column="2" Name="Cancel" Content="Cancel"/>',
+        '            <Button Grid.Column="0"',
+        '                    Name="Start"',
+        '                    Content="Start"/>',
+        '            <Button Grid.Column="1"',
+        '                    Name="Test"',
+        '                    Content="Test"/>',
+        '            <Button Grid.Column="2"',
+        '                    Name="Cancel"',
+        '                    Content="Cancel"/>',
         '        </Grid>',
         '    </Grid>',
         '</Window>' -join "`n")
+    }
+
+    # (1/1) [Input.Object.Controller]
+    Class InputObjectController
+    {
+        [UInt32]       $Slot
+        [Object]    $Feature
+        [Object]    $Profile
+        [Object] $Credential
+        [Object]       $Dsrm
+        InputObjectController([String]$Path)
+        {
+            $This.Slot       = $Null
+            $This.Feature    = @( )
+            $This.Profile    = $Null
+            $This.Credential = $Null
+            $This.Dsrm       = $Null
+
+            ForEach ($Item in Get-ChildItem $Path)
+            {
+                Switch -Regex ($Item.Name)
+                {
+                    Slot       { $This.Slot       = Get-Content $Item.Fullname                   }
+                    Feature    { $This.Feature    = Get-Content $Item.Fullname | ConvertFrom-Csv }
+                    Profile    { $This.Profile    = Get-Content $Item.Fullname | ConvertFrom-Csv }
+                    Credential { $This.Credential = Import-CliXml $Item.Fullname                 }
+                    Dsrm       { $This.Dsrm       = Import-CliXml $Item.Fullname                 }
+                }
+            }
+
+            If (Get-ScheduledTask -TaskName FEDCPromo -EA 0)
+            {
+                Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:$False
+            }
+
+            Get-Process -Name ServerManager -EA 0 | Stop-Process -EA 0
+        }
     }
 
     # (1/2) [Feature.Item]
@@ -1315,7 +1545,7 @@ Function Get-FEDCPromo
         {
             ForEach ($Item in $This.Slot.Output)
             {
-                $Item.Value = Switch ($Item.Name)
+                $Item.Value   = Switch ($Item.Name)
                 {
                     ForestMode           { 0 }
                     DomainMode           { 0 }
@@ -1354,6 +1584,23 @@ Function Get-FEDCPromo
         [Object] List([String]$Name)
         {
             Return $This.Get($Name).Output
+        }
+        [Object] Output()
+        {
+            $Out = @{ }
+            ForEach ($Item in $This.List("Slot") | ? IsEnabled)
+            {
+                $Out.Add($Item.Name,$Item.Value)
+            }
+            ForEach ($Item in $This.List("Role") | ? IsEnabled)
+            {
+                $Out.Add($Item.Name,$Item.Value)
+            }
+
+            $Out.Add("SafeModeAdministratorPassword",$Null)
+            $Out.Add("Credential",$Null)
+
+            Return $Out
         }
         [String] ToString()
         {
@@ -1714,6 +1961,7 @@ Function Get-FEDCPromo
         [Object]  $Summary
         [Object]  $Feature
         [Object]   $Result
+        [UInt32]  $Restart
         [Object]   $Output
         ExecutionController()
         {
@@ -1758,11 +2006,6 @@ Function Get-FEDCPromo
         [Object] $Credential
         [Object] $Validation
         [Object]  $Execution
-        FEDCPromoController()
-        {
-            $This.Mode     = 0
-            $This.Main()
-        }
         FEDCPromoController([UInt32]$Mode)
         {
             $This.Mode     = $Mode
@@ -1771,6 +2014,18 @@ Function Get-FEDCPromo
                 $This.Test = 1
             }
             $This.Main()
+        }
+        FEDCPromoController([UInt32]$Mode,[String]$InputPath)
+        {
+            $This.Mode     = $Mode
+            If ($This.Mode -ge 2)
+            {
+                $This.Test = 1
+            }
+            $This.Main()
+
+            $IO = $This.InputObjectController($InputPath)
+            $This.SetInputObject($IO)
         }
         Main()
         {   
@@ -1797,7 +2052,7 @@ Function Get-FEDCPromo
             {
                 0
                 {
-                    Write-Theme "Error [!] No network detected" 1
+                    $This.Module.Write(1,"Error [!] No network detected")
                     Break
                 }
                 1
@@ -1819,9 +2074,13 @@ Function Get-FEDCPromo
             # Check if system is a virtual machine
             If ($This.System.ComputerSystem.Model -match "Virtual")
             {
-                ForEach ($Item in $This.Features | ? Type -eq Veridian)
+                $This.Update(0,"Detected [!] Current system is a virtual machine")
+                $This.Module.Write(1,$This.Console.Last().Status)
+
+                ForEach ($Item in $This.Feature.Output | ? Type -eq Veridian)
                 {
-                    $Item.Enable = 0 
+                    $Item.Enable  = 0
+                    $Item.Install = 0
                 }
             }
 
@@ -1879,13 +2138,17 @@ Function Get-FEDCPromo
             $This.Console.Update($State,$Status)
             $This.Status()
         }
-        [String] Adds()
+        [Object] InputObjectController([String]$Path)
         {
-            Return "Module: [AddsDeployment]"
+            Return [InputObjectController]::New($Path)
         }
         [String] ProgramData()
         {
             Return [Environment]::GetEnvironmentVariable("ProgramData")
+        }
+        [String] MachineName()
+        {
+            Return [Environment]::MachineName
         }
         [UInt32] TestPath([String]$Path)
         {
@@ -1915,53 +2178,10 @@ Function Get-FEDCPromo
 
             Return $Path
         }
-        OutputFile([String]$FileName,[Object]$Object)
-        {
-            $Path     = $This.OutputFolder()
-            $Value    = ConvertTo-Json $Object
-
-            [System.IO.File]::WriteAllLines("$Path\$Filename",$Value)
-        }
-        ExportFile([String]$Type,[Object]$Object)
-        {
-            $FileName = Switch ($Type)
-            {
-                Feature     {     "Feature.json" }
-                Control     {     "Control.csv"  }
-                InputObject { "InputObject.csv"  }
-                Credential  {  "Credential.txt"  }
-                Dsrm        {        "Dsrm.txt"  }
-                Script      {      "Script.ps1"  }
-            }
-
-            $Path = "{0}\{1}" -f $This.OutputFolder(), $Filename
-            
-            Switch -Regex ($Type)
-            {
-                "(^Feature$|^Control$|^InputObject$)"
-                {
-                    $This.OutputFile($Path,$Object)
-                }
-                "(^Credential$|^Dsrm$)"
-                {
-                    Export-CliXml -Path $Path -InputObject $Object -Force
-                }
-                Script
-                {
-                    [System.IO.File]::WriteAllLines($Path,$Object)
-                }
-            }
-
-            Switch ([UInt32][System.IO.File]::Exists($Path))
-            {
-                0 { $This.Update(-1,"Failed [!] Type: [$Type], File: [$Path]") }
-                1 { $This.Update( 1, "Saved [+] Type: [$Type], File: [$Path]") }
-            }
-        }
         ValidateAdds()
         {
             # (Validates/installs) the [AddsDeployment] module
-            $AddsStr = $This.Adds()
+            $AddsStr =  "Module: [AddsDeployment]"
             $Adds    = $This.Feature.Output | ? Name -eq AD-Domain-Services
             Switch ($Adds.State)
             {
@@ -1974,20 +2194,20 @@ Function Get-FEDCPromo
                         {
                             # User did not proceed with [AddsDeployment] installation
                             $This.Update(-1,"Exception [!] Install -> $AddsStr")
-                            Throw $This.Console.Last()
+                            Throw $This.Console.Last().Status
                         }
                         1
                         {
                             # User did proceed with [AddsDeployment] installation
                             $This.Update(0,"Process [~] Install -> $AddsStr")
-                            Write-Theme $This.Status()
+                            Write-Theme $This.Console.Last().Status
                             $This.InstallAdds()
 
                             # Checks and handles whether the installation completed
                             If (!(Get-Module AddsDeployment))
                             {
                                 $This.Update(-1,"Exception [!] Install -> $AddsStr")
-                                Throw $This.Console.Last()
+                                Throw $This.Console.Last().Status
                             }
                             Else
                             {
@@ -2046,11 +2266,11 @@ Function Get-FEDCPromo
 
             Return $Item
         }
-        InstallDomainController([String]$Name,[Hashtable]$Splat)
+        [Object] InstallDomainController([String]$Name,[Hashtable]$Splat)
         {
             # Installs/Tests the domain controller promotion 
             $This.Update(0,"Attempting [~] [$Name]")
-            Switch ($Name)
+            $Item = Switch ($Name)
             {
                 AddsForest               {                    Install-ADDSForest @Splat -Confirm:$False }
                 AddsDomain               {                    Install-ADDSDomain @Splat -Confirm:$False }
@@ -2059,6 +2279,8 @@ Function Get-FEDCPromo
                 TestAddsDomain           {           Test-ADDSDomainInstallation @Splat                 }
                 TestAddsDomainController { Test-ADDSDomainControllerInstallation @Splat                 }
             }
+
+            Return $Item
         }
         [Object] GetConnection([Object]$Connect)
         {
@@ -2187,13 +2409,6 @@ Function Get-FEDCPromo
                     $This.Xaml.IO.ReplicationSourceDc.IsEnabled = 0
                     $This.Xaml.IO.SiteName.IsEnabled            = 0
                 }
-                Role
-                {
-                    $This.Xaml.IO.InstallDNS.IsEnabled                    = 0
-                    $This.Xaml.IO.CreateDNSDelegation.IsEnabled           = 0
-                    $This.Xaml.IO.NoGlobalCatalog.IsEnabled               = 0
-                    $This.Xaml.IO.CriticalReplicationOnly.IsEnabled       = 0
-                }
                 Credential
                 {
                     $This.Xaml.IO.Credential.IsEnabled                    = 0
@@ -2217,6 +2432,7 @@ Function Get-FEDCPromo
                 Button
                 {
                     $This.Xaml.IO.Start.IsEnabled                         = 0
+                    $This.Xaml.IO.Test.IsEnabled                          = 0
                     $This.Xaml.IO.CredentialButton.IsEnabled              = 0
                 }
             }
@@ -2294,16 +2510,18 @@ Function Get-FEDCPromo
         SetRoles()
         {
             $This.Update(0,"Setting [~] Roles")
-            ForEach ($Role in $This.Control.Profile.List("Role"))
+            ForEach ($Item in $This.Control.Profile.List("Role"))
             {
-                $Name           = $Role.Name
-                $This.Update(0,"Setting role: [$Name]")
+                $Name             = $Item.Name
+                $Enabled          = $Item.IsEnabled
+                $Checked          = $Item.IsChecked
+                $Mark             = @(" ","X")[$Enabled]
 
-                $Item           = $This.Xaml.IO.$Name
-                $Item.IsEnabled = $Role.IsEnabled
-                $Item.IsChecked = $Role.IsChecked
+                $This.Update(0,"Setting [~] Role [$Mark], Name: [$Name], Enabled: [$Enabled], Checked: [$Checked]")
 
-                $This.ToggleRole($Name)
+                $Object           = $This.Xaml.IO.$Name
+                $Object.IsEnabled = $Enabled
+                $Object.IsChecked = $Checked
             }
         }
         SetSlots()
@@ -2750,18 +2968,21 @@ Function Get-FEDCPromo
                 1 { $This.Update( 1,"Success $($Item.Reason)") }
             }
         }
-        CheckDSRMPassword()
+        CheckDsrmPassword()
         {
             $Pattern  = $This.Validation.Password()
-            $Password = $This.DSRM("Password")
+            $Password = $This.Dsrm("Password")
 
-            If ($Password.Value -notmatch $Pattern)
+            Switch -Regex ($Password.Value)
             {
-                $Password.Validate("[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number")
-            }
-            ElseIf ($Password.Value -match $Pattern)
-            {
-                $Password.Validate("[+] Passed")
+                Default
+                {
+                    $Password.Validate("[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number")
+                }
+                $Pattern
+                {
+                    $Password.Validate("[+] Passed")
+                }
             }
         }
         CheckDSRMConfirm()
@@ -2769,19 +2990,23 @@ Function Get-FEDCPromo
             $This.CheckDSRMPassword()
             $Password = $This.DSRM("Password")
             $Confirm  = $This.DSRM("Confirm")
-
-            If ($Confirm.Value -ne $Password.Value)
+            
+            If ($Password.Check -eq 0)
+            {
+                $Confirm.Validate("[!] Password not valid")
+            }
+            ElseIf ($Password.Check -eq 1 -and $Confirm.Value -ne $Password.Value)
             {
                 $Confirm.Validate("[!] Confirmation error")
             }
-            ElseIf ($Confirm.Value -eq $Password.Value -and $Password.Check -eq 1)
+            ElseIf ($Password.Check -eq 1 -and $Confirm.Value -eq $Password.Value)
             {
                 $Confirm.Validate("[+] Passed")
             }
         }
         Total()
         {
-            $This.Execution.ClearSummary()
+            $This.Execution.Clear("Summary")
             
             ForEach ($Item in $This.Control.Profile.List("Slot") | ? IsEnabled | ? Property -eq Text)
             {
@@ -2796,6 +3021,7 @@ Function Get-FEDCPromo
             $This.Reset($This.Xaml.IO.Summary,$This.Execution.Summary)
 
             $This.Xaml.IO.Start.IsEnabled = 0 -notin $This.Execution.Summary.Check
+            $This.Xaml.IO.Test.IsEnabled  = 0 -notin $This.Execution.Summary.Check
         }
         Complete()
         {
@@ -2837,8 +3063,11 @@ Function Get-FEDCPromo
                 $Item.Value     = $Item.Value.Replace($This.Connection.Domain,"").TrimEnd(".")
             }
 
-            $Item               = $This.DSRM("Password")
-            $Item.Value         = $Item.Value | ConvertTo-SecureString -AsPlainText -Force
+            $Item               = $This.Dsrm("Password")
+            $Item.Value         = $This.Xaml.IO.SafeModeAdministratorPassword.SecurePassword
+
+            $Item               = $This.Dsrm("Confirm")
+            $Item.Value         = $This.Xaml.IO.Confirm.SecurePassword
         }
         DumpConsole()
         {
@@ -2863,37 +3092,22 @@ Function Get-FEDCPromo
             }
             
             $FileName = "{0}\{1}.log" -f $Path, $This.Console.End.Time.ToString("yyyyMMdd")
+            $This.Update(100,"Console [+] Dumped to: [$FileName]")
             $Value    = $This.Console.Output | % ToString
-
             [System.IO.File]::WriteAllLines($FileName,$Value)
         }
         [Object] RestartScript()
         {
-            Return "Import-Module FightingEntropy",
-            '$Path            = Get-ChildItem "$Env:ProgramData\Secure Digits Plus LLC\FEDCPromo" | % Fullname',
-            '$InputObject     = Get-Content $Path\InputObject.json | ConvertFrom-Json',
-            '$Adds            = @{ }',
-            '$Adds.Credential = Import-CliXml $Path\Credential.txt',
-            '$Adds.SafeModeAdministratorPassword = Import-CliXml $Path\Dsrm.txt',
-            'ForEach ($Name in $InputObject.PSObject.Properties.Name)',
-            '{ ',
-            '    If ($Name.Length -gt 0 -and $Name -notin "Credential","SafeModeAdministratorPassword")',
-            '    { ',
-            '        $Adds.Add($Name,$InputObject.$Name)',
-            '    }',
-            '}',
-            'Get-ChildItem $Path | Remove-Item -Verbose',
-            'Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:$False',
-            'Get-Process -Name ServerManager -EA 0 | Stop-Process -EA 0',
-            'Get-FEDCPromo -InputObject $Adds'
+            $Path = "{0}\Secure Digits Plus LLC\FEDCPromo\{1}" -f $This.ProgramData(),
+                                                                  $This.Console.Start.Time.ToString("yyyyMMdd")
+            Return "Get-FEDCPromo -InputPath `"$Path`""
         }
         [Object] ScheduledTaskAction()
         {
-            $Path     = "$Env:ProgramData\Secure Digits Plus LLC\FEDCPromo"
-            $Command  = "Import-Module FightingEntropy;& '$Path\script.ps1'"
+            $Command  = $This.RestartScript()
             $Argument = "-NoExit -ExecutionPolicy Bypass -Command `"$Command`""
             
-            Return New-ScheduledTaskAction -Execute powershell -Argument $Argument
+            Return New-ScheduledTaskAction -Execute PowerShell -Argument $Argument
         }
         [Object] ScheduledTaskTrigger()
         {
@@ -2912,170 +3126,222 @@ Function Get-FEDCPromo
 
             Register-ScheduledTask @Splat -Verbose
         }
+        [String] ExportFileName([String]$Type)
+        {
+            $Item = Switch ($Type)
+            {
+                Slot        {        "Slot.txt" }
+                Feature     {     "Feature.csv" }
+                Profile     {     "Profile.csv" }
+                Credential  {  "Credential.txt" }
+                Dsrm        {        "Dsrm.txt" }
+            }
+
+            Return $Item
+        }
+        ExportFile([String]$Type,[Object]$Object)
+        {
+            $FileName = $This.ExportFileName($Type)
+            $Path     = "{0}\{1}" -f $This.OutputFolder(), $Filename
+            
+            Switch -Regex ($Type)
+            {
+                "(^Feature$|^Profile$)"
+                {
+                    $Value = ConvertTo-Csv $Object
+                    [System.IO.File]::WriteAllLines($Path,$Value)
+                }
+                "(^Credential$|^Dsrm$)"
+                {
+                    Export-CliXml -Path $Path -InputObject $Object -Force
+                }
+                "(^Slot$)"
+                {
+                    [System.IO.File]::WriteAllLines($Path,$Object)
+                }
+            }
+
+            Switch ([UInt32][System.IO.File]::Exists($Path))
+            {
+                0 { $This.Update(-1,"Failed [!] Type: [$Type], File: [$Path]") }
+                1 { $This.Update( 1, "Saved [+] Type: [$Type], File: [$Path]") }
+            }
+        }
         Execute()
         {
-            # <MUST WRITE RULES HERE FOR INPUTOBJECT>
-
             # [Clear/Install Features]
+            $This.Update(0,"Clearing [~] Execution Feature list")
             $This.Execution.Clear("Feature")
+
+            $This.Update(0,"Clearing [~] Execution Output table")            
             $This.Execution.Clear("Output")
-            $This.Execution.Feature = $This.Feature.Output | ? Enabled | ? Install
+
+            ForEach ($Item in $This.Feature.Output | ? Enable | ? Install)
+            {
+                $This.Update(1,"Adding [~] Execution Feature: [$($Item.Name)]")
+                $This.Execution.Feature += $Item
+            }
     
             If ($This.Control.Mode -in 1,2)
             {
-                $This.Execute.Output.Add("DomainType",$This.Control.Current("DomainType").Value)
+                $Value = $This.Control.Current("DomainType").Value
+                $This.Update(1,"Adding [~] Execution Output [Name: 'DomainType', Value: '$Value']")
+                $This.Execute.Output.Add("DomainType",$Value)
             }
     
             # [Profile Items]
             ForEach ($Item in $This.Control.Profile.List("Slot") | ? IsEnabled)
             {
-                $This.Execute.Output.Add($Item.Name,$Item.Value)
+                $Name  = $Item.Name
+                $Value = $Item.Value
+                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
+                $This.Execution.Output.Add($Name,$Value)
             }
     
             # [Profile Roles]
-            ForEach ($Item in $This.Control.Profile.List("Role"))
+            ForEach ($Item in $This.Control.Profile.List("Role") | ? IsEnabled)
             {
-                $This.Execute.Output.Add($Item.Name,$Item.IsChecked)
+                $Name  = $Item.Name
+                $Value = $Item.IsChecked
+                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
+                $This.Execution.Output.Add($Name,$Value)
             }
     
             # [Database/Sysvol/Log Paths]
             ForEach ($Name in "DatabasePath","SysvolPath","LogPath")
             {
-                $Item = $This.Xaml.Get($Name)
-                $This.Execute.Output.Add($Item.Name,$Item.Text)
+                $Value = $This.Xaml.Get($Name).Text
+                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
+                $This.Execution.Output.Add($Name,$Value)
             }
 
             # [DSRM/Password]
-            $This.Execute.Output.Add("SafeModeAdministratorPassword",$This.Dsrm("Password").Value)
+            $Name  = "SafeModeAdministratorPassword"
+            $Value = $This.Dsrm("Password").Value
+            $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
+            $This.Execution.Output.Add($Name,$Value)
     
             # [Credential]
             If ($This.Credential)
             {
-                $This.Execute.Output.Add("Credential",$This.Credential)
+                $This.Update(1,"Adding [~] Execution Output [Name: 'Credential', Value: '$($This.Credential)']")
+                $This.Execution.Output.Add("Credential",$This.Credential)
             }
     
-            If ($This.Execute.Output["ReplicationSourceDC"] -eq "<Any>")
+            # [Replication Source Domain Controller(s)]
+            If ($This.Execution.Output["ReplicationSourceDC"] -eq "<Any>")
             {
-                $This.Execute.Output["ReplicationSourceDC"] = $Null
+                $This.Execution.Output["ReplicationSourceDC"] = $Null
             }
-    
-            If ($This.Execute.Output)
+
+            If (!$This.Test)
             {
-                $This.ExportFile("Feature",$This.Execute.Feature)
-                $This.ExportFile("Control",$This.Execute.Output)
-            }
-    
-            $Splat = $This.Execute.Output
-            Switch ($This.Test)
-            {
-                0
+                $This.Update(0,"Installing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Feature installation")
+                $This.Module.Write($This.Console.Last().Status)
+
+                If ($This.Execution.Feature)
                 {
-                    $This.Update(0,"Installing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Feature installation")
-                    $This.Module.Write($This.Console.Last())
+                    $This.Execution.Clear("Result")
 
-                    If ($This.Execute.Feature)
+                    ForEach ($Item in $This.Execution.Feature)
                     {
-                        $This.Execute.Clear("Result")
+                        If ($Item.Name -notmatch "DNS")
+                        {                    
+                            $This.Update(0,"Installing [~] Name: [$($Item.Name)]")
 
-                        ForEach ($Item in $This.Execute.Feature)
-                        {
-                            If ($Item.Name -notmatch "DNS")
-                            {                    
-                                $This.Update(0,"Installing [~] Name: [$($Item.Name)]")
-
-                                $This.Execute.Result += $This.InstallWindowsFeature($Item.Name)
-                                
-                                $This.Update(1,"Installed [+] Name: [$($Item.Name)]")
-                            }
-                        }
-                    }
-        
-                    If (($This.Execute.Result | ? RestartNeeded -eq No).Count -gt 0)
-                    {
-                        $This.Update(0,"Reboot [!] required to proceed")
-                        $This.Module.Write($This.Console.Last())
-                        <# INPUTOBJECT LOGIC HERE
-                        If ($InputObject)
-                        {
-                            $This.ExportFile("InputObject",$InputObject)
-                            $This.ExportFile( "Credential",$InputObject.Credential)
-                            $This.ExportFile(       "Dsrm",$InputObject.SafeModeAdministratorPassword)        
-                            $This.ExportFile(     "Script",$This.RestartScript())
-                            $This.RegisterScheduledTask()
-
-                            $This.Update(0,"Restarting [~] $Env:ComputerName")
-                            $This.Module.Write($This.Console.Last())
-
-                            If ($This.Mode -eq 1)
+                            $This.Execution.Result += $This.InstallWindowsFeature($Item.Name)
+                            If ($? -eq $True)
                             {
-                                $This.DumpConsole()
+                                $Item.State   = 1
+                                $Item.Enable  = 0
+                                $Item.Install = 0
                             }
-
-                            $X = 5
-                            Do
-                            {
-                                Write-Host $X
-                                Start-Sleep 1
-                                $X --
-                            }
-                            Until ($X -eq 0)
-                            Restart-Computer
-                        }
-                        If (!$InputObject)
-                        {
-                            Throw "Write logic here"
-                        }
-                        #>
-                    }
-                    If (($This.Execute.Result | ? RestartNeeded -eq No).Count -eq 0)
-                    {
-                        $This.Update(0,"Installing [~] [FightingEntropy($([char]960))] Domain Controller")
-                        $This.Module.Write($This.Console.Last())
-
-                        Switch ($This.Command.Slot)
-                        {
-                            {$_ -eq 0}
-                            {
-                                $This.InstallDomainController("AddsForest",$Splat)
-                            }
-                            {$_ -in 1,2}
-                            {
-                                $This.InstallDomainController("AddsDomain",$Splat)
-                            }
-                            {$_ -eq 3}
-                            {
-                                $This.InstallDomainController("AddsDomainController",$Splat)
-                            }
+                            
+                            $This.Update(1,"Installed [+] Name: [$($Item.Name)]")
                         }
                     }
                 }
-                1
-                {
-                    $This.Update(0,"Testing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Feature installation")
-                    $This.Module.Write($This.Console.Last())
 
-                    ForEach ($Item in $This.Execute.Feature)
+                If (($This.Execution.Result | ? RestartNeeded -eq No).Count -gt 0)
+                {
+                    $This.Update(0,"Reboot [!] required to proceed")
+                    $This.Module.Write($This.Console.Last().Status)
+
+                    $This.ExportFile("Slot"       , $This.Control.Slot)
+                    $This.ExportFile("Feature"    , $This.Execution.Feature)
+                    $This.ExportFile("Profile"    , $This.Execution.Output)
+                    $This.ExportFile("Dsrm"       , $This.Xaml.IO.SafeModAdministratorPassword.Password)
+
+                    If ($This.Control.Slot -in 1..3)
                     {
-                        $This.Update(0,"Command [~] Install-WindowsFeature -Name $($_.Name) -IncludeAllSubFeature -IncludeManagementTools")
+                        $This.ExportFile("Credential" , $This.Credential)
                     }
 
-                    $This.Update(0,"Testing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Test [$($This.Control.Profile.Name)]")
-                    $This.Module.Write($This.Status())
+                    $This.RegisterScheduledTask()
 
-                    Switch ($This.Control.Slot)
+                    $This.Update(0,"Restarting [~] $($This.MachineName())")
+                    $This.Module.Write($This.Console.Last().Status)
+                    $This.Restart = 1
+                }
+
+                If (($This.Execution.Result | ? RestartNeeded -eq No).Count -eq 0)
+                {
+                    $This.Update(0,"Installing [~] [FightingEntropy($([Char]960))] Domain Controller")
+                    $This.Module.Write($This.Console.Last().Status)
+
+                    Switch ($This.Command.Slot)
                     {
                         {$_ -eq 0}
                         {
-                            $This.InstallDomainController("TestAddsForest",$Splat)
+                            $This.InstallDomainController("AddsForest",$This.Execution.Output)
                         }
                         {$_ -in 1,2}
                         {
-                            $This.InstallDomainController("TestAddsDomain",$Splat)
+                            $This.InstallDomainController("AddsDomain",$This.Execution.Output)
                         }
                         {$_ -eq 3}
                         {
-                            $This.InstallDomainController("TestAddsDomainController",$Splat)
+                            $This.InstallDomainController("AddsDomainController",$This.Execution.Output)
                         }
+                    }
+                }
+            }
+            If ($This.Test)
+            {
+                $This.Update(0,"Testing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Feature installation")
+                $This.Module.Write($This.Console.Last().Status)
+
+                ForEach ($Item in $This.Execution.Feature)
+                {
+                    $This.Update(0,"Command [~] Install-WindowsFeature -Name $($Item.Name) -IncludeAllSubFeature -IncludeManagementTools")
+                }
+
+                $This.Update(0,"Testing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Test [$($This.Control.Profile.Name)]")
+                $This.Module.Write($This.Console.Last().Status)
+
+                $This.ExportFile("Slot"       , $This.Control.Slot)
+                $This.ExportFile("Feature"    , $This.Execution.Feature)
+                $This.ExportFile("Profile"    , $This.Execution.Output)
+                $This.ExportFile("Dsrm"       , $This.Xaml.IO.SafeModAdministratorPassword.Password)
+
+                If ($This.Control.Slot -in 1..3)
+                {
+                    $This.ExportFile("Credential" , $This.Credential)
+                }
+
+                Switch ($This.Control.Slot)
+                {
+                    {$_ -eq 0}
+                    {
+                        $This.InstallDomainController("TestAddsForest",$This.Execution.Output)
+                    }
+                    {$_ -in 1,2}
+                    {
+                        $This.InstallDomainController("TestAddsDomain",$This.Execution.Output)
+                    }
+                    {$_ -eq 3}
+                    {
+                        $This.InstallDomainController("TestAddsDomainController",$This.Execution.Output)
                     }
                 }
             }
@@ -3387,7 +3653,7 @@ Function Get-FEDCPromo
                 $Ctrl.CheckDSRMConfirm()
                 $Pass                        = $Ctrl.Dsrm("Confirm")
 
-                $Ctrl.Xaml.IO.$Icon.Tooltip  = $Pass.Reason 
+                $Ctrl.Xaml.IO.$Icon.Tooltip  = $Pass.Reason
                 $Ctrl.Xaml.IO.$Icon.Source   = $Ctrl.Icon($Pass.Check)
                 $Ctrl.Total()
             })
@@ -3419,10 +3685,65 @@ Function Get-FEDCPromo
             })
 
             $Ctrl.Xaml.IO.CommandSlot.SelectedIndex = 0
+            $Ctrl.SetProfile(0)
+        }
+        SetInputObject([Object]$IO)
+        {
+            # Allows the function to resume from a (necessary reboot/answer file)
+            $This.SetProfile($IO.Slot)
+            Switch ($IO.Slot)
+            {
+                Default {}
+                3
+                {
+                    $Admin                               = "SafeModeAdministratorPassword"
+                    $This.Credential                     = $IO.Credential
+                    $This.Xaml.IO.Credential.Text        = $IO.Credential.Username
+
+                    $This.Reset($This.Xaml.IO.SiteName,$IO.Control.Sitename)
+                    
+                    $This.Xaml.IO.SiteName.SelectedIndex = 0
+                    $This.Xaml.IO.DomainName.Text        = $IO.Control.DomainName
+                    $This.Xaml.IO.$Admin.Password        = $IO.Dsrm
+                    $This.Xaml.IO.Confirm.Password       = $IO.$Admin.GetNetworkCredential().Password
+                }
+            }
         }
     }
 
-    $Ctrl = [FEDCPromoController]::New($Mode)
+    Switch ([UInt32]!!$InputPath)
+    {
+        0 
+        { 
+            $Ctrl = [FEDCPromoController]::New($Mode)
+            $Ctrl.Xaml.Invoke()
+        }
+        1
+        { 
+            $Ctrl = [FEDCPromoController]::New($Mode,$InputPath)
+            $Ctrl.Xaml.IO.Show()
+            Start-Sleep 3
+            $Ctrl.Complete()
+            $Ctrl.Xaml.IO.Close()
+            $Ctrl.Xaml.IO.DialogResult = 1
+        }
+    }
 
-    $Ctrl.Xaml.Invoke()
+    If ($Ctrl.Xaml.IO.DialogResult)
+    {
+        $Ctrl.Execute()
+        $Ctrl.DumpConsole()
+        If ($Ctrl.Execution.Restart -eq 1)
+        {
+            $Ctrl.Module.Write("Restarting [~] $($Ctrl.MachineName())")
+            $X = 5
+            Do
+            {
+                Start-Sleep 1
+                $X --
+            }
+            Until ($X -eq 0)
+            Restart-Computer
+        }
+    }
 }
