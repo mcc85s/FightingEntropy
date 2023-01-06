@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-04 14:28:05                                                                  //
+\\  Date       : 2023-01-05 19:49:47                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2022-12-14
-   Modified   : 2023-01-04
+   Modified   : 2023-01-05
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
