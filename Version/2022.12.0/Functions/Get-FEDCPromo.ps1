@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-04 14:23:21                                                                  //
+\\  Date       : 2023-01-05 19:07:53                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2023-01-04
+    Modified   : 2023-01-05
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : [~] Test each level and functionality across each mode
@@ -3281,7 +3281,7 @@ Function Get-FEDCPromo
 
                     $This.Update(0,"Restarting [~] $($This.MachineName())")
                     $This.Module.Write($This.Console.Last().Status)
-                    $This.Restart = 1
+                    $This.Execution.Restart = 1
                 }
 
                 If (($This.Execution.Result | ? RestartNeeded -eq No).Count -eq 0)
