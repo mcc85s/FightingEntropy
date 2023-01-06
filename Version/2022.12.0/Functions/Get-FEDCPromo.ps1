@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-05 19:39:08                                                                  //
+\\  Date       : 2023-01-05 20:58:26                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -2200,8 +2200,9 @@ Function Get-FEDCPromo
                         {
                             # User did proceed with [AddsDeployment] installation
                             $This.Update(0,"Process [~] Install -> $AddsStr")
-                            Write-Theme $This.Console.Last().Status
-                            $This.InstallAdds()
+                            $This.Module.Write($This.Console.Last().Status)
+
+                            Install-WindowsFeature Ad-Domain-Services -Confirm:$False
 
                             # Checks and handles whether the installation completed
                             If (!(Get-Module AddsDeployment))
@@ -2223,11 +2224,6 @@ Function Get-FEDCPromo
                     $This.Update(1,"Valid [+] $AddsStr")
                 }
             }
-        }
-        InstallAdds()
-        {
-            # Installs the [AddsDeployment] module
-            Install-WindowsFeature Ad-Domain-Services -Confirm:$False
         }
         [Object] InstallWindowsFeature([String]$Name)
         {
