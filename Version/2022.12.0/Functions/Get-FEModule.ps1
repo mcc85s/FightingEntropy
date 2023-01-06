@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-05 19:49:47                                                                  //
+\\  Date       : 2023-01-05 21:07:31                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -664,7 +664,7 @@ Function Get-FEModule
             ("Get-EventLogRecordExtension.ps1" , "46BDD7B43F1221E1691B2B9079AE8F62099099C2298F30AF050E576F8C818DDD") ,
             ("Get-EventLogXaml.ps1"            , "5BA7F7099DD7EF55498A889E7AC83CA5EAC1F335EDA53ACF1D7EA23864BF5180") ,
             ("Get-FEADLogin.ps1"               , "1EEA605D7181E9F1985FC012E7EABB1884B39B9D33D2E2E8AB6A8C21C3770B56") ,
-            ("Get-FEDCPromo.ps1"               , "B6D87EA815922BAD9DABBB0C061B28A8EF3A2667254EE6F03F606EDCE8D04D39") ,
+            ("Get-FEDCPromo.ps1"               , "5A0BD54B822DE085CCFCFA6612DE8BB8C1B0A3653EBC58B615E355EFE0F7C206") ,
             ("Get-FEImageManifest.ps1"         , "3665C48E2A0A947F6DDACF6F036ED88D33318595F67129718A1CB5F17D9A5D80") ,
             ("Get-FEModule.ps1"                , "") ,
             ("Get-FENetwork.ps1"               , "0048A6208F9DDF0CCCFBCEE0621426DE2B49ACCBDBED71FB1E5D8B027330CEFC") ,
