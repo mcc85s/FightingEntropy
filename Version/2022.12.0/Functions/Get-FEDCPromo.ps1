@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-05 21:37:02                                                                  //
+\\  Date       : 2023-01-05 21:58:02                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -2236,9 +2236,10 @@ Function Get-FEDCPromo
             Install-WindowsFeature Ad-Domain-Services -LogPath $LogPath -Confirm:$False
             Do
             {
+                $Content = [System.IO.File]::ReadAllLines($LogPath)
                 Start-Sleep 1
             }
-            Until ([System.IO.File]::Exists($LogPath))
+            Until ($Content[-1] -match "Get alteration state ended with Completed")
             [System.IO.File]::Delete($LogPath)
         }
         ImportAdds()
