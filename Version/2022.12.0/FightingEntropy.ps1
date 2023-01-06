@@ -1781,6 +1781,7 @@ $Module = FightingEntropy.Module -Mode 0
     | Suppose I'd like to see the current version of the module based on the script above...? |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     PS Prompt:\> $Module.GetFEVersion()
+
     Version   Date                Guid
     -------   ----                ----
     2022.12.0 12/14/2022 14:26:18 5e6c9634-1c88-49a2-8794-2970095d8793
