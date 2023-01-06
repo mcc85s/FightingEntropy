@@ -11,14 +11,12 @@
     | https://github.com/mcc85s/FightingEntropy/blob/main/Version/2022.12.0/FightingEntropy.ps1 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     [FightingEntropy(π)] is a modification for Windows PowerShell that is meant for various tasks related to:
-
     [+] system administration
     [+] networking
     [+] virtualization
     [+] security
     [+] graphic design
     [+] system management/maintenance
-
     ...it'll eventually be usable on ALL platforms where PowerShell is able to be deployed.
     _____________________________________________________________________________
     |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
@@ -41,7 +39,6 @@
     [+] viruses
     [+] ransomware
     [+] hackers who have malicious intent
-
     Many of the tools in the wild are able to be circumvented by some of these hackers and cybercriminals. 
     If you don't believe me...? That's fine. 
     
@@ -50,11 +47,8 @@
     | https://en.wikipedia.org/wiki/2020_United_States_federal_government_data_breach |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     Even the experts make mistakes.
-
     [FightingEntropy(π)] is meant to extend many of the capabilities that come with Windows.
-
     This file acts as the installation/removal process as well as for performing validation and testing purposes.
-
     It is effectively a shell of the entire module, and can be used to implement updates to the module itself, in a 
     similar manner to how (Continuous Integration/Continuous Development) works.
     __________________________________________________________________________
@@ -712,9 +706,9 @@ Function FightingEntropy.Module
             ("Get-EventLogRecordExtension.ps1" , "8B738D1B551BC14C6FD8D003A82E420CDA17ED865FFD83D6E3A392F40CF20145") ,
             ("Get-EventLogXaml.ps1"            , "18554029561A277AEB5AAA643CF88DC43F3A7C2D97281EEBD47A03BEE6018DB4") ,
             ("Get-FEADLogin.ps1"               , "1EEA605D7181E9F1985FC012E7EABB1884B39B9D33D2E2E8AB6A8C21C3770B56") ,
-            ("Get-FEDCPromo.ps1"               , "B6D87EA815922BAD9DABBB0C061B28A8EF3A2667254EE6F03F606EDCE8D04D39") ,
+            ("Get-FEDCPromo.ps1"               , "5A0BD54B822DE085CCFCFA6612DE8BB8C1B0A3653EBC58B615E355EFE0F7C206") ,
             ("Get-FEImageManifest.ps1"         , "03AD403FA17EE0702A8D8911F8B4BD7AABE5C6971363AF2FFADE6FF83918D57F") ,
-            ("Get-FEModule.ps1"                , "B9EDC95A5C31D75C112DF4762D20E171D29C32FC46A1B8AAE76DB32A6564D735") ,
+            ("Get-FEModule.ps1"                , "A9891E453B85BE94E8F8BB01B1EF729373AFA7A792CADEBCDEA04761EE7AAE08") ,
             ("Get-FENetwork.ps1"               , "0048A6208F9DDF0CCCFBCEE0621426DE2B49ACCBDBED71FB1E5D8B027330CEFC") ,
             ("Get-FERole.ps1"                  , "0016BDDB9B0BA9BB59652440FE0B758D88BF42A887F93B275F57016CCE4999C8") ,
             ("Get-FESystem.ps1"                , "47B1FF7BE39A95CEAFFD450336F01D3559B6E6059DA984A06D76980A391C7E2C") ,
@@ -1787,11 +1781,9 @@ $Module = FightingEntropy.Module -Mode 0
     | Suppose I'd like to see the current version of the module based on the script above...? |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
     PS Prompt:\> $Module.GetFEVersion()
-
     Version   Date                Guid
     -------   ----                ----
     2022.12.0 12/14/2022 14:26:18 5e6c9634-1c88-49a2-8794-2970095d8793
-
                                                                                                                _________/
 \_____________________________________________________________________________________________________________/ Example  
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
