@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-05 19:07:53                                                                  //
+\\  Date       : 2023-01-05 19:39:08                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -3097,16 +3097,14 @@ Function Get-FEDCPromo
             [System.IO.File]::WriteAllLines($FileName,$Value)
         }
         [Object] RestartScript()
-        {
-            $Path = "{0}\Secure Digits Plus LLC\FEDCPromo\{1}" -f $This.ProgramData(),
-                                                                  $This.Console.Start.Time.ToString("yyyyMMdd")
-            Return "Get-FEDCPromo -InputPath `"$Path`""
+        {                                                         
+            Return "{0}\Secure Digits Plus LLC\FEDCPromo\{1}" -f $This.ProgramData(),
+            $This.Console.Start.Time.ToString("yyyyMMdd")
         }
         [Object] ScheduledTaskAction()
         {
-            $Command  = $This.RestartScript()
-            $Argument = "-NoExit -ExecutionPolicy Bypass -Command `"$Command`""
-            
+            $Argument = "-NoExit -ExecutionPolicy Bypass -Command `"Get-FEDCPromo -InputPath '{0}'`"" -f $This.RestartScript()
+
             Return New-ScheduledTaskAction -Execute PowerShell -Argument $Argument
         }
         [Object] ScheduledTaskTrigger()
@@ -3124,7 +3122,7 @@ Function Get-FEDCPromo
                 Description = "Restart, then promote the system"
             }
 
-            Register-ScheduledTask @Splat -Verbose
+            Register-ScheduledTask @Splat | Out-Null
         }
         [String] ExportFileName([String]$Type)
         {
@@ -3725,11 +3723,11 @@ Function Get-FEDCPromo
             Start-Sleep 3
             $Ctrl.Complete()
             $Ctrl.Xaml.IO.Close()
-            $Ctrl.Xaml.IO.DialogResult = 1
+            $Alt  = 1
         }
     }
 
-    If ($Ctrl.Xaml.IO.DialogResult)
+    If ($Ctrl.Xaml.IO.DialogResult -or $Alt -eq 1)
     {
         $Ctrl.Execute()
         $Ctrl.DumpConsole()
