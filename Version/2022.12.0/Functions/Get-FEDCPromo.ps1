@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-05 21:58:02                                                                  //
+\\  Date       : 2023-01-06 22:52:00                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2023-01-05
+    Modified   : 2023-01-06
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : [~] Test each level and functionality across each mode
@@ -464,13 +464,11 @@ Function Get-FEDCPromo
         '            <Setter Property="BorderBrush" Value="Black"/>',
         '            <Setter Property="BorderThickness" Value="2"/>',
         '            <Setter Property="HorizontalContentAlignment" Value="Left"/>',
-        '',
         '            <Style.Resources>',
         '                <Style TargetType="Border">',
         '                    <Setter Property="CornerRadius" Value="5"/>',
         '                </Style>',
         '            </Style.Resources>',
-        '',
         '        </Style>',
         '        <Style x:Key="Line" TargetType="Border">',
         '            <Setter Property="Background" Value="Black"/>',
@@ -976,8 +974,11 @@ Function Get-FEDCPromo
         '        </TabControl>',
         '        <Grid Grid.Row="2">',
         '            <Grid.ColumnDefinitions>',
-        '                <ColumnDefinition Width="*"/>',
-        '                <ColumnDefinition Width="*"/>',
+        '                <ColumnDefinition Width="65"/>',
+        '                <ColumnDefinition Width="65"/>',
+        '                <ColumnDefinition Width="65"/>',
+        '                <ColumnDefinition Width="10"/>',
+        '                <ColumnDefinition Width="65"/>',
         '                <ColumnDefinition Width="*"/>',
         '            </Grid.ColumnDefinitions>',
         '            <Button Grid.Column="0"',
@@ -987,8 +988,13 @@ Function Get-FEDCPromo
         '                    Name="Test"',
         '                    Content="Test"/>',
         '            <Button Grid.Column="2"',
-        '                    Name="Cancel"',
-        '                    Content="Cancel"/>',
+        '                    Name="Save"',
+        '                    Content="Save"/>',
+        '            <Border Grid.Column="3" Background="Black" Margin="4"/>',
+        '            <Button Grid.Column="4"',
+        '                    Name="Load"',
+        '                    Content="Load"/>',
+        '            <TextBox Grid.Column="5" Name="InputPath" IsEnabled="False"/>',
         '        </Grid>',
         '    </Grid>',
         '</Window>' -join "`n")
@@ -998,14 +1004,12 @@ Function Get-FEDCPromo
     Class InputObjectController
     {
         [UInt32]       $Slot
-        [Object]    $Feature
         [Object]    $Profile
         [Object] $Credential
         [Object]       $Dsrm
         InputObjectController([String]$Path)
         {
             $This.Slot       = $Null
-            $This.Feature    = @( )
             $This.Profile    = $Null
             $This.Credential = $Null
             $This.Dsrm       = $Null
@@ -1014,11 +1018,10 @@ Function Get-FEDCPromo
             {
                 Switch -Regex ($Item.Name)
                 {
-                    Slot       { $This.Slot       = Get-Content $Item.Fullname                   }
-                    Feature    { $This.Feature    = Get-Content $Item.Fullname | ConvertFrom-Csv }
-                    Profile    { $This.Profile    = Get-Content $Item.Fullname | ConvertFrom-Csv }
-                    Credential { $This.Credential = Import-CliXml $Item.Fullname                 }
-                    Dsrm       { $This.Dsrm       = Import-CliXml $Item.Fullname                 }
+                    Slot       { $This.Slot       = Get-Content   $Item.Fullname }
+                    Profile    { $This.Profile    = Get-Content   $Item.Fullname | ConvertFrom-Json }
+                    Credential { $This.Credential = Import-CliXml $Item.Fullname }
+                    Dsrm       { $This.Dsrm       = Import-CliXml $Item.Fullname }
                 }
             }
 
@@ -1072,6 +1075,12 @@ Function Get-FEDCPromo
             $This.Name       = "Feature"
             $This.Clear()
             $This.Stage()
+        }
+        FeatureController([Object]$Feature)
+        {
+            $This.Name       = "Feature"
+            $This.Clear()
+
         }
         Clear()
         {
@@ -1294,7 +1303,7 @@ Function Get-FEDCPromo
         }
     }
 
-    # (3/10) [Profile.Slot.List]$
+    # (3/10) [Profile.Slot.List]
     Class ProfileSlotList
     {
         [UInt32]   $Mode
@@ -1514,7 +1523,69 @@ Function Get-FEDCPromo
         }
     }
 
-    # (10/10) [Profile.Controller]
+    # (10/13)
+    Enum ProfilePathType
+    {
+        DatabasePath
+        SysvolPath
+        LogPath
+    }
+
+    # (11/13)
+    Class ProfilePathItem
+    {
+        [UInt32] $Index
+        [String]  $Name
+        [String] $Value
+        ProfilePathItem([String]$Name)
+        {
+            $This.Index = [UInt32][ProfilePathType]::$Name
+            $This.Name  = $Name
+        }
+        [String] ToString()
+        {
+            Return "<FEDCPromo.ProfilePathItem>"
+        }
+    }
+    
+    # (12/13)
+    Class ProfilePathList
+    {
+        [String]   $Name
+        [Object] $Output
+        ProfilePathList()
+        {
+            $This.Name = "Paths"
+            $This.Stage()
+        }
+        Clear()
+        {
+            $This.Output = @( )
+        }
+        Stage()
+        {
+            $This.Clear()
+
+            ForEach ($Type in [System.Enum]::GetNames([ProfilePathType]))
+            {
+                $This.Add($Type)
+            }
+        }
+        [Object] ProfilePathItem([String]$Name)
+        {
+            Return [ProfilePathItem]::New($Name)
+        }
+        Add([String]$Name)
+        {
+            $This.Output += $This.ProfilePathItem($Name)
+        }
+        [String] ToString()
+        {
+            Return "({0}) <FEDCPromo.ProfilePathList>" -f $This.Output.Count
+        }
+    }
+
+    # (13/13) [Profile.Controller]
     Class ProfileController
     {
         [UInt32]       $Index
@@ -1524,6 +1595,7 @@ Function Get-FEDCPromo
         [Object]        $Slot
         [Object]        $Role
         [Object]        $DSRM
+        [Object]        $Path
         ProfileController([Object]$Command)
         {
             If ($Command.Index -notin 0,1,2,3)
@@ -1538,6 +1610,7 @@ Function Get-FEDCPromo
             $This.Slot        = $This.New("Slot")
             $This.Role        = $This.New("Role")
             $This.Dsrm        = $This.New("DSRM")
+            $This.Path        = $This.New("Path")
 
             $This.SlotDefault()
         }
@@ -1566,6 +1639,7 @@ Function Get-FEDCPromo
                 Slot {     [ProfileSlotList]::New($This.Index) }
                 Role {     [ProfileRoleList]::New($This.Index) }
                 Dsrm { [ProfilePasswordList]::New($This.Index) }
+                Path {     [ProfilePathList]::New() }
             }
 
             Return $Item
@@ -1577,6 +1651,7 @@ Function Get-FEDCPromo
                 Slot { $This.Slot }
                 Role { $This.Role }
                 Dsrm { $This.Dsrm }
+                Path { $This.Path }
             }
 
             Return $Item
@@ -1587,18 +1662,34 @@ Function Get-FEDCPromo
         }
         [Object] Output()
         {
-            $Out = @{ }
-            ForEach ($Item in $This.List("Slot") | ? IsEnabled)
+            $Out = New-Object PSObject
+
+            If ($This.Index -in 1,2)
             {
-                $Out.Add($Item.Name,$Item.Value)
-            }
-            ForEach ($Item in $This.List("Role") | ? IsEnabled)
-            {
-                $Out.Add($Item.Name,$Item.Value)
+                $Out | Add-Member -Membertype NoteProperty -Name DomainType -Value @{1="Tree";2="Child"}[$This.Index]
             }
 
-            $Out.Add("SafeModeAdministratorPassword",$Null)
-            $Out.Add("Credential",$Null)
+            ForEach ($Item in $This.Slot.Output | ? IsEnabled)
+            {
+                $Out | Add-Member -MemberType NoteProperty -Name $Item.Name -Value $Item.Value
+            }
+            
+            ForEach ($Item in $This.Role.Output | ? IsEnabled)
+            {
+                $Out | Add-Member -MemberType NoteProperty -Name $Item.Name -Value $Item.IsChecked
+            }
+
+            ForEach ($Item in $This.Path.Output)
+            {
+                $Out | Add-Member -MemberType NoteProperty -Name $Item.Name -Value $Item.Value
+            }
+
+            $Out | Add-Member -MemberType NoteProperty -Name SafeModeAdministratorPassword -Value $Null
+
+            If ($This.Index -gt 0)
+            {
+                $Out | Add-Member -MemberType NoteProperty -Name Credential -Value $Null
+            }
 
             Return $Out
         }
@@ -1795,6 +1886,10 @@ Function Get-FEDCPromo
                 DomainType { $This.DomainType }
                 ForestMode { $This.ForestMode }
                 DomainMode { $This.DomainMode }
+                Slot       { $This.Profile.Slot }
+                Role       { $This.Profile.Role }
+                Dsrm       { $This.Profile.Dsrm }
+                Path       { $This.Profile.Path }
             }
 
             Return $Item
@@ -1971,14 +2066,14 @@ Function Get-FEDCPromo
             $This.Clear("Result")
             $This.Clear("Output")
         }
-        Clear([String]$name)
+        Clear([String]$Name)
         {
             Switch ($Name)
             {
                 Summary { $This.Summary = @( ) }
                 Feature { $This.Feature = @( ) }
                 Result  { $This.Result  = @( ) }
-                Output  { $This.Output  = @{ } }
+                Output  { $This.Output  = [PSObject]::New() }
             }
         }
         [String] ToString()
@@ -2024,8 +2119,11 @@ Function Get-FEDCPromo
             }
             $This.Main()
 
-            $IO = $This.InputObjectController($InputPath)
-            $This.SetInputObject($IO)
+            $This.SetInputObject($InputPath)
+        }
+        FEDCPromoController([Switch]$Flags)
+        {
+            # This is meant for testing and using the embedded (methods/classes)
         }
         Main()
         {   
@@ -2034,12 +2132,6 @@ Function Get-FEDCPromo
 
             # Load features
             $This.Feature  = $This.New("FEFeatureList")
-            
-            # Validate Adds installation
-            $This.ValidateAdds()
-
-            # Import Adds Module
-            $This.ImportAdds()
 
             # Primary components
             $This.Module   = $This.New("FEModule")
@@ -2178,75 +2270,10 @@ Function Get-FEDCPromo
 
             Return $Path
         }
-        ValidateAdds()
-        {
-            # (Validates/installs) the [AddsDeployment] module
-            $AddsStr =  "Module: [AddsDeployment]"
-            $Adds    = $This.Feature.Output | ? Name -eq AD-Domain-Services
-            Switch ($Adds.State)
-            {
-                0
-                {
-                    # [AddsDeployment] not detected, prompt for choice
-                    (Get-Host).UI.PromptForChoice("$AddsStr was not detected.","Install $AddsStr",@("Yes","No"),0)
-                    {
-                        0
-                        {
-                            # User did not proceed with [AddsDeployment] installation
-                            $This.Update(-1,"Exception [!] Install -> $AddsStr")
-                            Throw $This.Console.Last().Status
-                        }
-                        1
-                        {
-                            # User did proceed with [AddsDeployment] installation
-                            $This.Update(0,"Process [~] Install -> $AddsStr")
-                            $This.Module.Write($This.Console.Last().Status)
-
-                            $This.InstallAdds()
-
-                            # Checks and handles whether the installation completed
-                            If (!(Get-Module AddsDeployment))
-                            {
-                                $This.Update(-1,"Exception [!] Install -> $AddsStr")
-                                Throw $This.Console.Last().Status
-                            }
-                            Else
-                            {
-                                $This.Update(1,"Success [+] Install -> $AddsStr")
-                                $Adds.State = 1
-                            }
-                        }
-                    }
-                }
-                1
-                {
-                    # [AddsDeployment] detected
-                    $This.Update(1,"Valid [+] $AddsStr")
-                }
-            }
-        }
         [Object] InstallWindowsFeature([String]$Name)
         {
             # Installs a specified feature
             Return Install-WindowsFeature -Name $Name -IncludeAllSubfeature -IncludeManagementTools
-        }
-        InstallAdds()
-        {
-            $LogPath = "{0}\Ad-Domain-Services.log" -f [Environment]::CurrentDirectory
-            Install-WindowsFeature Ad-Domain-Services -LogPath $LogPath -Confirm:$False
-            Do
-            {
-                $Content = [System.IO.File]::ReadAllLines($LogPath)
-                Start-Sleep 1
-            }
-            Until ($Content[-1] -match "Get alteration state ended with Completed")
-            [System.IO.File]::Delete($LogPath)
-        }
-        ImportAdds()
-        {
-            # Imports the [AddsDeployment] module
-            $This.Update(0,"Importing [~] Module: [AddsDeployment]")
-            Import-Module AddsDeployment
         }
         [Object] New([String]$Name)
         {
@@ -2309,6 +2336,11 @@ Function Get-FEDCPromo
         {
             # Returns the (password/confirm) item from profile controller
             Return $This.Control.Profile.Dsrm.Output | ? Name -eq $Name
+        }
+        [Object] Path([String]$Name)
+        {
+            # Returns the path item from profile controller
+            Return $This.Control.Profile.Path.Output | ? Name -eq $Name
         }
         [String] SystemRoot()
         {
@@ -2482,6 +2514,9 @@ Function Get-FEDCPromo
             # Roles
             $This.SetRoles()
 
+            # Paths
+            $This.SetPaths()
+
             # Slots
             $This.SetSlots()
 
@@ -2530,6 +2565,21 @@ Function Get-FEDCPromo
                 $Object           = $This.Xaml.IO.$Name
                 $Object.IsEnabled = $Enabled
                 $Object.IsChecked = $Checked
+            }
+        }
+        SetPaths()
+        {
+            $This.Update(0,"Setting [~] Paths")
+            ForEach ($Item in $This.Control.Profile.List("Path"))
+            {
+                $Name             = $Item.Name
+                $Value            = @($Item.Value,$This.DefaultPath($Name))[!$Item.Value]
+
+                $This.Update(0,"Setting [~] Path, Name: [$Name], Value: [$Value]")
+                
+                $Item.Value       = $Value
+                $Object           = $This.Xaml.IO.$Name
+                $Object.Text      = $Value
             }
         }
         SetSlots()
@@ -2607,7 +2657,7 @@ Function Get-FEDCPromo
             $This.Update(0,"Setting [~] Connection")
             If ($This.Connection)
             {
-                $This.Update(0,"Detected [+] Connction")
+                $This.Update(0,"Detected [+] Connection")
                 Switch ($This.Control.Slot)
                 {
                     0
@@ -3030,52 +3080,8 @@ Function Get-FEDCPromo
 
             $This.Xaml.IO.Start.IsEnabled = 0 -notin $This.Execution.Summary.Check
             $This.Xaml.IO.Test.IsEnabled  = 0 -notin $This.Execution.Summary.Check
-        }
-        Complete()
-        {
-            $Item               = $This.Slot("ForestMode")
-            If ($Item.IsEnabled)
-            {
-                $Index          = $This.Xaml.IO.ForestMode.SelectedIndex
-                $Item.Value     = @($Index,"WinThreshold")[$Index -ge 6]
-            }
+            $This.Xaml.IO.Save.IsEnabled  = 0 -notin $This.Execution.Summary.Check
 
-            $Item               = $This.Slot("DomainMode")
-            If ($Item.IsEnabled)
-            {
-                $Index          = $This.Xaml.IO.DomainMode.SelectedIndex
-                $Item.Value     = @($Index,"WinThreshold")[$Index -ge 6]
-            }
-
-            $Item               = $This.Slot("ReplicationSourceDC")
-            If ($Item.IsEnabled)
-            {
-                $Item.Value     = $This.Xaml.IO.ReplicationSourceDC.SelectedItem
-            }
-
-            $Item               = $This.Slot("SiteName")
-            If ($Item.IsEnabled)
-            {
-                $Item.Value     = $This.Xaml.IO.Sitename.SelectedItem
-            }
-
-            ForEach ($Item in $This.Control.Profile.List("Role"))
-            {
-                $Name           = $Item.Name
-                $Item.IsChecked = $Item.IsEnabled -and $This.Xaml.IO.$Name.IsChecked
-            }
-
-            If ($This.Control.Slot -eq 2)
-            {
-                $Item           = $This.Slot("NewDomainName")
-                $Item.Value     = $Item.Value.Replace($This.Connection.Domain,"").TrimEnd(".")
-            }
-
-            $Item               = $This.Dsrm("Password")
-            $Item.Value         = $This.Xaml.IO.SafeModeAdministratorPassword.SecurePassword
-
-            $Item               = $This.Dsrm("Confirm")
-            $Item.Value         = $This.Xaml.IO.Confirm.SecurePassword
         }
         DumpConsole()
         {
@@ -3137,13 +3143,23 @@ Function Get-FEDCPromo
             $Item = Switch ($Type)
             {
                 Slot        {        "Slot.txt" }
-                Feature     {     "Feature.csv" }
-                Profile     {     "Profile.csv" }
+                Profile     {     "Profile.txt" }
                 Credential  {  "Credential.txt" }
                 Dsrm        {        "Dsrm.txt" }
             }
 
             Return $Item
+        }
+        Save()
+        {
+            $This.ExportFile("Slot"       , $This.Control.Slot)
+            $This.ExportFile("Profile"    , $This.Control.Profile.Output())
+            $This.ExportFile("Dsrm"       , $This.Xaml.IO.SafeModeAdministratorPassword.Password)
+
+            If ($This.Control.Slot -in 1..3)
+            {
+                $This.ExportFile("Credential" , $This.Credential)
+            }
         }
         ExportFile([String]$Type,[Object]$Object)
         {
@@ -3152,10 +3168,9 @@ Function Get-FEDCPromo
             
             Switch -Regex ($Type)
             {
-                "(^Feature$|^Profile$)"
+                ^Profile$
                 {
-                    $Value = ConvertTo-Csv $Object
-                    [System.IO.File]::WriteAllLines($Path,$Value)
+                    [System.IO.File]::WriteAllLines($Path,($Object | ConvertTo-Json))
                 }
                 "(^Credential$|^Dsrm$)"
                 {
@@ -3173,8 +3188,114 @@ Function Get-FEDCPromo
                 1 { $This.Update( 1, "Saved [+] Type: [$Type], File: [$Path]") }
             }
         }
+        Complete()
+        {
+            $This.Update(0,"Completing [~] Process")
+
+            # Mode
+            $Item               = $This.Slot("ForestMode")
+            If ($Item.IsEnabled)
+            {
+                $Index          = $This.Xaml.IO.ForestMode.SelectedIndex
+                $Item.Value     = @($Index,"WinThreshold")[$Index -ge 6]
+            }
+
+            $Item               = $This.Slot("DomainMode")
+            If ($Item.IsEnabled)
+            {
+                $Index          = $This.Xaml.IO.DomainMode.SelectedIndex
+                $Item.Value     = @($Index,"WinThreshold")[$Index -ge 6]
+            }
+
+
+            $Item               = $This.Slot("ReplicationSourceDC")
+            If ($Item.IsEnabled)
+            {
+                $Item.Value     = $This.Xaml.IO.ReplicationSourceDC.SelectedItem
+            }
+
+            $Item               = $This.Slot("SiteName")
+            If ($Item.IsEnabled)
+            {
+                $Item.Value     = $This.Xaml.IO.Sitename.SelectedItem
+            }
+
+            ForEach ($Item in $This.Control.List("Role"))
+            {
+                $Name           = $Item.Name
+                $Item.IsChecked = $Item.IsEnabled -and $This.Xaml.IO.$Name.IsChecked
+            }
+
+            ForEach ($Item in $This.Control.List("Path"))
+            {
+                $Name           = $Item.Name
+                $Item.Value     = $This.Xaml.IO.$Name.Text
+            }
+
+            If ($This.Control.Slot -eq 2)
+            {
+                $Item           = $This.Slot("NewDomainName")
+                $Name           = $Item.Name
+                $Item.Value     = $This.Xaml.IO.$Name.Text -Replace $This.Connection.Domain, "" | % TrimEnd "."
+            }
+
+            $Item               = $This.Dsrm("Password")
+            $Item.Value         = $This.Xaml.IO.SafeModeAdministratorPassword.Password
+
+            $Item               = $This.Dsrm("Confirm")
+            $Item.Value         = $This.Xaml.IO.Confirm.Password
+        }
         Execute()
         {
+            $This.Complete()
+            $Prop = $This.Control.Profile.Output().PSObject.Properties
+
+            # [Profile Items]
+            ForEach ($Item in $This.Control.List("Slot") | ? Name -in $Prop.Name)
+            {
+                $Name  = $Item.Name
+                $Value = $Item.Value
+                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
+                $This.Execution.Output | Add-Member -MemberType NoteProperty -Name $Name -Value $Value
+            }
+    
+            # [Profile Roles]
+            ForEach ($Item in $This.Control.List("Role") | ? Name -in $Prop.Name)
+            {
+                $Name  = $Item.Name
+                $Value = $Item.IsChecked
+                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
+                $This.Execution.Output | Add-Member -MemberType NoteProperty -Name $Name -Value $Value
+            }
+    
+            # [Database/Sysvol/Log Paths]
+            ForEach ($Item in $This.Control.List("Path") | ? Name -in $Prop.Name)
+            {
+                $Name  = $Item.Name
+                $Value = $Item.Value
+                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
+                $This.Execution.Output | Add-Member -MemberType NoteProperty -Name $Name -Value $Value
+            }
+
+            # [DSRM/Password]
+            $Name  = "SafeModeAdministratorPassword"
+            $Value = $This.Dsrm("Password").Value
+            $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
+            $This.Execution.Output | Add-Member -MemberType NoteProperty -Name $Name -Value $Value
+    
+            # [Credential]
+            If ($This.Credential)
+            {
+                $This.Update(1,"Adding [~] Execution Output [Name: 'Credential', Value: '$($This.Credential)']")
+                $This.Execution.Output | Add-Member -MemberType NoteProperty -Name Credential -Value $This.Credential
+            }
+    
+            # [Replication Source Domain Controller(s)]
+            If ($This.Execution.Output.ReplicationSourceDC -eq "<Any>")
+            {
+                $This.Execution.Output.ReplicationSourceDC = $Null
+            }
+
             # [Clear/Install Features]
             $This.Update(0,"Clearing [~] Execution Feature list")
             $This.Execution.Clear("Feature")
@@ -3187,84 +3308,44 @@ Function Get-FEDCPromo
                 $This.Update(1,"Adding [~] Execution Feature: [$($Item.Name)]")
                 $This.Execution.Feature += $Item
             }
-    
-            If ($This.Control.Mode -in 1,2)
-            {
-                $Value = $This.Control.Current("DomainType").Value
-                $This.Update(1,"Adding [~] Execution Output [Name: 'DomainType', Value: '$Value']")
-                $This.Execute.Output.Add("DomainType",$Value)
-            }
-    
-            # [Profile Items]
-            ForEach ($Item in $This.Control.Profile.List("Slot") | ? IsEnabled)
-            {
-                $Name  = $Item.Name
-                $Value = $Item.Value
-                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
-                $This.Execution.Output.Add($Name,$Value)
-            }
-    
-            # [Profile Roles]
-            ForEach ($Item in $This.Control.Profile.List("Role") | ? IsEnabled)
-            {
-                $Name  = $Item.Name
-                $Value = $Item.IsChecked
-                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
-                $This.Execution.Output.Add($Name,$Value)
-            }
-    
-            # [Database/Sysvol/Log Paths]
-            ForEach ($Name in "DatabasePath","SysvolPath","LogPath")
-            {
-                $Value = $This.Xaml.Get($Name).Text
-                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
-                $This.Execution.Output.Add($Name,$Value)
-            }
 
-            # [DSRM/Password]
-            $Name  = "SafeModeAdministratorPassword"
-            $Value = $This.Dsrm("Password").Value
-            $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
-            $This.Execution.Output.Add($Name,$Value)
-    
-            # [Credential]
-            If ($This.Credential)
-            {
-                $This.Update(1,"Adding [~] Execution Output [Name: 'Credential', Value: '$($This.Credential)']")
-                $This.Execution.Output.Add("Credential",$This.Credential)
-            }
-    
-            # [Replication Source Domain Controller(s)]
-            If ($This.Execution.Output["ReplicationSourceDC"] -eq "<Any>")
-            {
-                $This.Execution.Output["ReplicationSourceDC"] = $Null
-            }
-
-            If (!$This.Test)
+            If ($This.Execution.Feature.Count -gt 0)
             {
                 $This.Update(0,"Installing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Feature installation")
                 $This.Module.Write($This.Console.Last().Status)
 
-                If ($This.Execution.Feature)
+                $This.Execution.Clear("Result")
+
+                $C = 1
+                $D = ([String]$This.Execution.Feature.Count).Length
+
+                ForEach ($Item in $This.Execution.Feature)
                 {
-                    $This.Execution.Clear("Result")
-
-                    ForEach ($Item in $This.Execution.Feature)
+                    If ($Item.Name -notmatch "DNS")
                     {
-                        If ($Item.Name -notmatch "DNS")
-                        {                    
-                            $This.Update(0,"Installing [~] Name: [$($Item.Name)]")
+                        $Rank = "{0:d$D}/{1}" -f $C, $This.Execution.Feature.Count
+                        $This.Update(0,"Installing ($Rank) [~] Name: [$($Item.Name)]")
 
-                            $This.Execution.Result += $This.InstallWindowsFeature($Item.Name)
-                            If ($? -eq $True)
+                        Switch ($This.Test)
+                        {
+                            0
                             {
-                                $Item.State   = 1
-                                $Item.Enable  = 0
-                                $Item.Install = 0
+                                $This.Execution.Result += $This.InstallWindowsFeature($Item.Name)
+                                If ($? -eq $True)
+                                {
+                                    $Item.State   = 1
+                                    $Item.Enable  = 0
+                                    $Item.Install = 0
+                                }
                             }
-                            
-                            $This.Update(1,"Installed [+] Name: [$($Item.Name)]")
+                            1
+                            {
+                                $This.Update(0,"Command [~] Install-WindowsFeature -Name $($Item.Name) -IncludeAllSubFeature -IncludeManagementTools")
+                            }
                         }
+                            
+                        $This.Update(1,"Installed ($Rank)  [+] Name: [$($Item.Name)]")
+                        $C ++
                     }
                 }
 
@@ -3273,84 +3354,45 @@ Function Get-FEDCPromo
                     $This.Update(0,"Reboot [!] required to proceed")
                     $This.Module.Write($This.Console.Last().Status)
 
-                    $This.ExportFile("Slot"       , $This.Control.Slot)
-                    $This.ExportFile("Feature"    , $This.Execution.Feature)
-                    $This.ExportFile("Profile"    , $This.Execution.Output)
-                    $This.ExportFile("Dsrm"       , $This.Xaml.IO.SafeModAdministratorPassword.Password)
-
-                    If ($This.Control.Slot -in 1..3)
-                    {
-                        $This.ExportFile("Credential" , $This.Credential)
-                    }
-
+                    $This.Save()
                     $This.RegisterScheduledTask()
 
                     $This.Update(0,"Restarting [~] $($This.MachineName())")
                     $This.Module.Write($This.Console.Last().Status)
-                    $This.Execution.Restart = 1
-                }
-
-                If (($This.Execution.Result | ? RestartNeeded -eq No).Count -eq 0)
-                {
-                    $This.Update(0,"Installing [~] [FightingEntropy($([Char]960))] Domain Controller")
-                    $This.Module.Write($This.Console.Last().Status)
-
-                    Switch ($This.Command.Slot)
+                    $X = 5
+                    Do
                     {
-                        {$_ -eq 0}
-                        {
-                            $This.InstallDomainController("AddsForest",$This.Execution.Output)
-                        }
-                        {$_ -in 1,2}
-                        {
-                            $This.InstallDomainController("AddsDomain",$This.Execution.Output)
-                        }
-                        {$_ -eq 3}
-                        {
-                            $This.InstallDomainController("AddsDomainController",$This.Execution.Output)
-                        }
+                        Start-Sleep 1
+                        $X --
                     }
+                    Until ($X -eq 0)
+                    Restart-Computer
                 }
             }
-            If ($This.Test)
+
+            $This.Update(0,"Installing [~] [FightingEntropy($([Char]960))] Domain Controller")
+            $This.Module.Write($This.Console.Last().Status)
+
+            Import-Module AddsDeployment
+
+            $Item = Switch ($This.Control.Slot)
             {
-                $This.Update(0,"Testing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Feature installation")
-                $This.Module.Write($This.Console.Last().Status)
-
-                ForEach ($Item in $This.Execution.Feature)
+                {$_ -eq 0}
                 {
-                    $This.Update(0,"Command [~] Install-WindowsFeature -Name $($Item.Name) -IncludeAllSubFeature -IncludeManagementTools")
+                    @("AddsForest","TestAddsForest")[$This.Test]
                 }
-
-                $This.Update(0,"Testing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Test [$($This.Control.Profile.Name)]")
-                $This.Module.Write($This.Console.Last().Status)
-
-                $This.ExportFile("Slot"       , $This.Control.Slot)
-                $This.ExportFile("Feature"    , $This.Execution.Feature)
-                $This.ExportFile("Profile"    , $This.Execution.Output)
-                $This.ExportFile("Dsrm"       , $This.Xaml.IO.SafeModAdministratorPassword.Password)
-
-                If ($This.Control.Slot -in 1..3)
+                {$_ -in 1,2}
                 {
-                    $This.ExportFile("Credential" , $This.Credential)
+
+                    @("AddsDomain","TestAddsDomain")[$This.Test]
                 }
-
-                Switch ($This.Control.Slot)
+                {$_ -eq 3}
                 {
-                    {$_ -eq 0}
-                    {
-                        $This.InstallDomainController("TestAddsForest",$This.Execution.Output)
-                    }
-                    {$_ -in 1,2}
-                    {
-                        $This.InstallDomainController("TestAddsDomain",$This.Execution.Output)
-                    }
-                    {$_ -eq 3}
-                    {
-                        $This.InstallDomainController("TestAddsDomainController",$This.Execution.Output)
-                    }
+                    @("AddsDomainController","TestAddsDomainController")[$This.Test]
                 }
             }
+
+            $This.InstallDomainController($Item,$This.Execution.Output)
         }
         StageXaml()
         {
@@ -3672,7 +3714,7 @@ Function Get-FEDCPromo
             $Ctrl.Xaml.IO.Start.Add_Click(
             {
                 $Ctrl.Test = 0
-                $Ctrl.Complete()
+                $Ctrl.CompleteGUI()
                 $Ctrl.Xaml.IO.DialogResult = 1
             })
 
@@ -3680,39 +3722,134 @@ Function Get-FEDCPromo
             $Ctrl.Xaml.IO.Test.Add_Click(
             {
                 $Ctrl.Test = 1
-                $Ctrl.Complete()
+                $Ctrl.CompleteGUI()
                 $Ctrl.Xaml.IO.DialogResult = 1
             })
-            
-            # [Button] Cancel (Event handler)
-            $Ctrl.Xaml.IO.Cancel.Add_Click(
+
+            # [Button] Save (Event handler)
+            $Ctrl.Xaml.IO.Save.Add_Click(
             {
-                $Ctrl.Xaml.IO.DialogResult = 0
+                $Ctrl.Save()
+            })
+
+            $Ctrl.Xaml.IO.Load.Add_Click(
+            {
+                $Item                    = New-Object System.Windows.Forms.FolderBrowserDialog
+                $Item.ShowDialog()
+        
+                If (!$Item.SelectedPath)
+                {
+                    $Item.SelectedPath                    = $Null
+                    $Ctrl.Xaml.IO.InputPath.IsEnabled     = 0
+                }
+                Else
+                {
+                    $IO = $Ctrl.InputObjectController($Item.SelectedPath)
+                    If (!!$IO.Profile)
+                    {
+                        $Ctrl.Xaml.IO.InputPath.IsEnabled = 1
+                        $Ctrl.Xaml.IO.InputPath.Text      = $Item.SelectedPath
+                    }
+                    Else
+                    {
+                        $Item.SelectedPath                = $Null
+                        $Ctrl.Xaml.IO.InputPath.IsEnabled = 0
+                    }
+                }
             })
 
             $Ctrl.Xaml.IO.CommandSlot.SelectedIndex = 0
             $Ctrl.SetProfile(0)
         }
-        SetInputObject([Object]$IO)
+        SetInputObject([String]$InputPath)
         {
+            $IO = $This.InputObjectController($InputPath)
+
             # Allows the function to resume from a (necessary reboot/answer file)
             $This.SetProfile($IO.Slot)
-            Switch ($IO.Slot)
-            {
-                Default {}
-                3
-                {
-                    $Admin                               = "SafeModeAdministratorPassword"
-                    $This.Credential                     = $IO.Credential
-                    $This.Xaml.IO.Credential.Text        = $IO.Credential.Username
 
-                    $This.Reset($This.Xaml.IO.SiteName,$IO.Control.Sitename)
-                    
-                    $This.Xaml.IO.SiteName.SelectedIndex = 0
-                    $This.Xaml.IO.DomainName.Text        = $IO.Control.DomainName
-                    $This.Xaml.IO.$Admin.Password        = $IO.Dsrm
-                    $This.Xaml.IO.Confirm.Password       = $IO.$Admin.GetNetworkCredential().Password
+            $This.Update(0,"Setting [~] InputObject")
+            # Credential
+            If ($IO.Credential)
+            {
+                $This.Credential = $IO.Credential
+                $This.Xaml.IO.Credential.Text = $IO.Credential.Username
+                # Todo: Perform testing...
+            }
+
+            $Prop = $IO.Profile.PSObject.Properties
+
+            # Slot
+            $This.Update(0,"Setting [~] Profile Slot")
+            ForEach ($Item in $This.Control.List("Slot") | ? Name -in $Prop.Name)
+            {
+                $Name       = $Item.Name
+                $Value      = $Item.Value = $Prop | ? Name -eq $Name | % Value
+                $Object     = $This.Xaml.IO.$Name
+                $Type       = $Object.GetType().Name
+
+                $This.Update(0,"Setting [~] Profile Slot -> Name: [$Name], Value: [$Value], Type: [$Type]")
+                Switch ($Item.Type)
+                {
+                    ComboBox 
+                    { 
+                        If ($Name -ne "SiteName")
+                        {
+                            $Object.SelectedIndex = $Value
+                        }
+                        Else
+                        {
+                            $This.Reset($Object,$Name)
+                            $Object.SelectedIndex = 0
+                        }
+                    }
+                    TextBox
+                    {
+                        $Object.Text  = $Value
+                    }
                 }
+            }
+
+            # Role
+            $This.Update(0,"Setting [~] Profile: Role")
+            ForEach ($Item in $This.Control.List("Role") | ? Name -in $Prop.Name)
+            {
+                $Name         = $Item.Name
+                $Value        = $Item.IsChecked = $Prop | ? Name -eq $Item.Name | % Value
+
+                $This.Update(0,"Setting [~] Profile Role -> Name: [$Name], Value: [$Value]")
+                $Object           = $This.Xaml.IO.$Name
+                $Object.IsEnabled = 1
+                $Object.IsChecked = $Value
+            }
+
+            # DSRM
+            $This.Update(0,"Setting [~] Profile: Dsrm")
+            ForEach ($Item in $This.Control.List("Dsrm"))
+            {
+                $Item.Value              = $IO.Dsrm
+                $Object                  = Switch ($Item.Name)
+                {
+                    Password
+                    {
+                        $This.Xaml.IO.SafeModeAdministratorPassword
+                    }
+                    Confirm
+                    {
+                        $This.Xaml.IO.Confirm
+                    }
+                }
+
+                $Object.Password          = $Item.Value
+            }
+
+            # Path
+            $This.Update(0,"Setting [~] Profile: Path")
+            ForEach ($Item in $This.Control.List("Path"))
+            {
+                $Name                    = $Item.Name
+                $Item.Value              = $IO.Profile.$Name
+                $This.Xaml.IO.$Name.Text = $Item.Value
             }
         }
     }
@@ -3725,7 +3862,7 @@ Function Get-FEDCPromo
             $Ctrl.Xaml.Invoke()
         }
         1
-        { 
+        {
             $Ctrl = [FEDCPromoController]::New($Mode,$InputPath)
             $Ctrl.Xaml.IO.Show()
             Start-Sleep 3
