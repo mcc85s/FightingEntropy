@@ -43,6 +43,8 @@ That is why I write as often as I do, AND record these various videos, and audio
 
 | Date         | Length     | File                           | Name                                                                                                        |
 |:-------------|:-----------|:-------------------------------|:------------------------------------------------------------------------------------------------------------|
+| **01/06/23** | 0h 28m 54s | **2023_01_06_00_45_53.mp3**    | [Sheep Dipped](https://drive.google.com/file/d/1K7Fz7JTZfj5mrrAcsfQuMUF1d3CxgvUo)
+| **01/01/23** | 0h 13m 56s | **2023_01_01_21_55_49.mp3**    | [Development](https://drive.google.com/file/d/1FR5uFAR1lcktkqKNpU209SqM8krAnJCK)
 | **01/01/23** | 2h 01m 55s | **2023_01_01_02_29_19.mp3**    | [New Year 2023](https://drive.google.com/file/d/1MQtWQCBUXKdLVsgrVtU89mZOaUS1BhUU)
 | **12/27/22** | 2h 30m 45s | **2022_12_27_16_15_34.mp3**    | [Unnamed](https://drive.google.com/file/d/1vN6DL4ZndLPkVSYwM3FeXqNwsTzR8ZKx)
 | **12/22/22** | 1h 45m 00s | **2022_12_22_19_21_02.mp3**    | [Perspective](https://drive.google.com/file/d/1t7bB8SUFIvqXn35gko7_ZowtQ1nJ9a3R)
