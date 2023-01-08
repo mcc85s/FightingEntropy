@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-06 22:52:00                                                                  //
+\\  Date       : 2023-01-08 18:33:48                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -1023,6 +1023,21 @@ Function Get-FEDCPromo
                     Credential { $This.Credential = Import-CliXml $Item.Fullname }
                     Dsrm       { $This.Dsrm       = Import-CliXml $Item.Fullname }
                 }
+            }
+
+            If ($This.Profile.ForestMode -match "WinThreshold")
+            {
+                $This.Profile.ForestMode = 6
+            }
+
+            If ($This.Profile.DomainMode -match "WinThreshold")
+            {
+                $This.Profile.DomainMode = 6
+            }
+
+            If ($This.Dsrm)
+            {
+                $This.Profile.SafeModeAdministratorPassword = $This.Dsrm | ConvertTo-SecureString -AsPlainText -Force
             }
 
             If (Get-ScheduledTask -TaskName FEDCPromo -EA 0)
@@ -2073,8 +2088,12 @@ Function Get-FEDCPromo
                 Summary { $This.Summary = @( ) }
                 Feature { $This.Feature = @( ) }
                 Result  { $This.Result  = @( ) }
-                Output  { $This.Output  = [PSObject]::New() }
+                Output  { $This.Output  = @{ } }
             }
+        }
+        [SecureString] Password([Object]$Object)
+        {
+            Return $Object | ConvertTo-SecureString -AsPlainText -Force
         }
         [String] ToString()
         {
@@ -2144,21 +2163,21 @@ Function Get-FEDCPromo
             {
                 0
                 {
-                    $This.Module.Write(1,"Error [!] No network detected")
+                    $This.Module.Write(1,"[!] No network detected")
                     Break
                 }
                 1
                 {
                     If ($Check[0].DhcpServer -notmatch "(\d+\.){3}\d+")
                     {
-                        $This.Update(0,"Warning [!] Static IP Address not set")
+                        $This.Update(0,"[!] Static IP Address not set")
                     }
                 }
                 Default
                 {
                     If ($Check.DhcpServer -notmatch "(\d+\.){3}\d+")
                     {
-                        $This.Update(0,"Warning [!] Static IP Address not set")
+                        $This.Update(0,"[!] Static IP Address not set")
                     }
                 }
             }
@@ -2166,7 +2185,7 @@ Function Get-FEDCPromo
             # Check if system is a virtual machine
             If ($This.System.ComputerSystem.Model -match "Virtual")
             {
-                $This.Update(0,"Detected [!] Current system is a virtual machine")
+                $This.Update(0,"[!] Current system is a virtual machine")
                 $This.Module.Write(1,$This.Console.Last().Status)
 
                 ForEach ($Item in $This.Feature.Output | ? Type -eq Veridian)
@@ -2187,7 +2206,7 @@ Function Get-FEDCPromo
 
             If ($This.Server -le 3)
             {
-                Write-Error "<This operating system may be too old to support this function>"
+                $This.Update(0,"[!] This operating system may not support this function")
             }
 
             # Get Command/Profile controller
@@ -2207,7 +2226,7 @@ Function Get-FEDCPromo
             $This.Xaml          = $This.New("FEDCPromoXaml")
 
             # Continue with [Xaml]
-            $This.StageXaml()
+            # $This.StageXaml()
         }
         StartConsole()
         {
@@ -2295,8 +2314,8 @@ Function Get-FEDCPromo
             # Logs the instantiation of the named (function/class)
             Switch ([UInt32]!!$Item)
             {
-                0 { $This.Update(-1,"Failed [!] [$Name]") }
-                1 { $This.Update( 1,"Loaded [+] [$Name]") }
+                0 { $This.Update(-1,"[!] Fail : [$Name]") }
+                1 { $This.Update( 1,"[+] Pass : [$Name]") }
             }
 
             Return $Item
@@ -2304,7 +2323,7 @@ Function Get-FEDCPromo
         [Object] InstallDomainController([String]$Name,[Hashtable]$Splat)
         {
             # Installs/Tests the domain controller promotion 
-            $This.Update(0,"Attempting [~] [$Name]")
+            $This.Update(0,"[~] Processing : [$Name]")
             $Item = Switch ($Name)
             {
                 AddsForest               {                    Install-ADDSForest @Splat -Confirm:$False }
@@ -2426,8 +2445,8 @@ Function Get-FEDCPromo
             # Resets the items within a given combobox or datagrid
             If ($This.Mode -gt 0)
             {
-                $Line = "Xaml.IO.{0} [{1}]" -f $xSender.Name, $xSender.GetType().Name
-                $This.Update(0,"Resetting [~] $Line")
+                $Line = "{0} [{1}]" -f $xSender.Name, $xSender.GetType().Name
+                $This.Update(0,"[~] $Line")
             }
 
             $xSender.Items.Clear()
@@ -2439,7 +2458,7 @@ Function Get-FEDCPromo
         XamlDefault([String]$Section)
         {
             # Sets various default settings for the Xaml controller
-            $This.Update(0,"Setting [~] Defaults: [$Section]")
+            $This.Update(0,"[~] Defaults : [$Section]")
             Switch ($Section)
             {
                 ComboBox
@@ -2484,7 +2503,7 @@ Function Get-FEDCPromo
 
             If ($Item.IsEnabled)
             {
-                $This.Update(0,"Toggling [~] [$Name]")
+                $This.Update(0,"[~] Toggling : [$Name]")
                 $Item.Toggle()
             }
         }
@@ -2496,7 +2515,7 @@ Function Get-FEDCPromo
         SetProfile([UInt32]$Index)
         {
             # Whenever the profile is changed, this recycles all of the controls
-            $This.Update(0,"Changed [+] Selection [$Index]")
+            $This.Update(0,"[+] Setting profile : [$Index]")
             $This.Control.SetProfile($Index)
 
             # Enabled staging mode [prevents event handler spamming]
@@ -2531,28 +2550,28 @@ Function Get-FEDCPromo
         }
         SetMode()
         {
-            $This.Update(0,"Setting [~] (Forest/Domain) modes")
+            $This.Update(0,"[~] (Forest/Domain) modes")
             $This.Slot("ForestMode").Value = $This.Control.Get("ForestMode").Selected
             $This.Slot("DomainMode").Value = $This.Control.Get("DomainMode").Selected
         }
         SetDomainType()
         {
-            $This.Update(0,"Setting [~] DomainType")
+            $This.Update(0,"[~] Domain Type")
             $This.Control.Get("DomainType").Selected = $This.Control.Slot
         }
         SetCredential()
         {
-            $This.Update(0,"Setting [~] Credential button")
+            $This.Update(0,"[~] Credential")
             $This.Xaml.IO.CredentialButton.IsEnabled = $This.Control.Slot -ne 0
             $This.Xaml.IO.CredentialBox.IsEnabled    = $This.Control.Slot -ne 0
         }
         SetFeatures()
         {
-            $This.Update(0,"Settings [~] Features")
+            $This.Update(0,"[~] Features")
         }
         SetRoles()
         {
-            $This.Update(0,"Setting [~] Roles")
+            $This.Update(0,"[~] Roles")
             ForEach ($Item in $This.Control.Profile.List("Role"))
             {
                 $Name             = $Item.Name
@@ -2560,7 +2579,7 @@ Function Get-FEDCPromo
                 $Checked          = $Item.IsChecked
                 $Mark             = @(" ","X")[$Enabled]
 
-                $This.Update(0,"Setting [~] Role [$Mark], Name: [$Name], Enabled: [$Enabled], Checked: [$Checked]")
+                $This.Update(0,"[$Mark] $Name | Enabled: [$Enabled], Checked: [$Checked]")
 
                 $Object           = $This.Xaml.IO.$Name
                 $Object.IsEnabled = $Enabled
@@ -2569,13 +2588,13 @@ Function Get-FEDCPromo
         }
         SetPaths()
         {
-            $This.Update(0,"Setting [~] Paths")
+            $This.Update(0,"[~] Paths")
             ForEach ($Item in $This.Control.Profile.List("Path"))
             {
                 $Name             = $Item.Name
                 $Value            = @($Item.Value,$This.DefaultPath($Name))[!$Item.Value]
 
-                $This.Update(0,"Setting [~] Path, Name: [$Name], Value: [$Value]")
+                $This.Update(0,"[~] $Name : [$Value]")
                 
                 $Item.Value       = $Value
                 $Object           = $This.Xaml.IO.$Name
@@ -2584,7 +2603,7 @@ Function Get-FEDCPromo
         }
         SetSlots()
         {
-            $This.Update(0,"Setting [~] Profile slot")
+            $This.Update(0,"[~] Profile Name Slots")
             ForEach ($Type in "ComboBox","TextBox")
             {
                 ForEach ($Item in $This.Control.Profile.List("Slot") | ? Type -eq $Type)
@@ -2595,7 +2614,7 @@ Function Get-FEDCPromo
                     $Rank               = $Item.IsEnabled
                     $Mark               = @(" ","X")[$Rank]
 
-                    $This.Update(0,"Setting [~] Profile [$Mark], Slot: [$Name], Type: [$Type]")
+                    $This.Update(0,"[$Mark] $Name : [$Type]")
 
                     $Object.Visibility  = @("Collapsed","Visible")[$Rank]
                     $Object.IsEnabled   = $Rank
@@ -2654,10 +2673,10 @@ Function Get-FEDCPromo
         }
         SetConnection()
         {
-            $This.Update(0,"Setting [~] Connection")
+            $This.Update(0,"[~] Connection")
             If ($This.Connection)
             {
-                $This.Update(0,"Detected [+] Connection")
+                $This.Update(0,"[+] Connection")
                 Switch ($This.Control.Slot)
                 {
                     0
@@ -2688,7 +2707,7 @@ Function Get-FEDCPromo
             # Connection Objects [Credential, Sitename, and ReplicationDCs]
             If ($This.Control.Slot -eq 0)
             {
-                $This.Update(0,"Clearing [~] Credential")
+                $This.Update(0,"[~] Credential")
                 $This.Xaml.IO.Credential.Text                       = ""
                 $This.Xaml.IO.CredentialButton.IsEnabled            = 0
                 $This.Credential                                    = $Null
@@ -2696,7 +2715,7 @@ Function Get-FEDCPromo
 
             If ($This.Control.Slot -ne 0 -and $This.Connection)
             {
-                $This.Update(0,"Selecting [~] Credential")
+                $This.Update(0,"[~] Credential")
                 $This.Xaml.IO.Credential.Text                       = $This.Connection.Credential.Username
                 $This.Credential                                    = $This.Connection.Credential
                 $This.Xaml.IO.CredentialButton.IsEnabled            = 1
@@ -2721,13 +2740,13 @@ Function Get-FEDCPromo
         }
         SetAdminPassword()
         {
-            $This.Update(0,"Setting [~] DSRM password")
+            $This.Update(0,"[~] Dsrm")
             $This.Xaml.IO.SafeModeAdministratorPassword.IsEnabled   = 1
             $This.Xaml.IO.Confirm.IsEnabled                         = 1
         }
         Login()
         {
-            $This.Update(0,"Initializing [~] Ad login")
+            $This.Update(0,"[~] Ad-Login")
             $This.Connection         = $Null
             $Dcs                     = $This.Network.NBT.Output
                                      # $Ctrl.Network.Compartment.Output[0].Extension.Nbt.Output.Output | FT
@@ -2742,12 +2761,12 @@ Function Get-FEDCPromo
                     {
                         0 
                         { 
-                            $This.Update(-1,"Failed [!] Ad login")
+                            $This.Update(-1,"[!] Ad-Login")
                             $Null 
                         }
                         1 
                         {
-                            $This.Update(1,"Success [+] Ad login")
+                            $This.Update(1,"[+] Ad-Login")
                             $This.GetConnection($Connect) 
                         }
                     }
@@ -2782,22 +2801,22 @@ Function Get-FEDCPromo
                     {
                         0
                         {
-                            $This.Update(-1,"Exception [!] Ad login: (user cancelled/dialog failed)")
+                            $This.Update(-1,"[!] Ad-Login [user cancelled/dialog failed)]")
                         }
                         1
                         {
-                            $This.Update(-1,"Attempting [~] Ad login: testing supplied credentials")
+                            $This.Update(-1,"[~] Ad-Login [testing supplied credentials]")
                             $Connect = Get-FEADLogin -Target $DC.IO.DomainControllers.SelectedItem
                             Switch ([UInt32]!!$Connect.Test.DistinguishedName)
                             {
                                 0
                                 {
-                                    $This.Update(-1,"Failed [!] Ad login: credential error")
+                                    $This.Update(-1,"[!] Ad-Login [credential error]")
                                     $This.Connection = $Null
                                 }
                                 1
                                 {
-                                    $This.Update(1,"Success [+] Ad login: credential good")
+                                    $This.Update(1,"[+] Ad-Login [credential good]")
                                     $This.Connection = $This.GetConnection($Connect)
                                     $This.Connection.AddReplicationDCs($DCs)
                                 }
@@ -2808,591 +2827,6 @@ Function Get-FEDCPromo
             }
 
             $This.SetProfile($This.Control.Slot)
-        }
-        Check([String]$Name)
-        {
-            $Item = $This.Slot($Name)
-            $This.Check($Item)
-        }
-        Check([Object]$Item)
-        {
-            If (!$Item)
-            {
-                Throw "Null entry"
-            }
-
-            $Name = $Item.Name
-            $Icon = "{0}Icon" -f $Name
-
-            If (!$This.Staging)
-            {
-                If ($Item.IsEnabled)
-                {
-                    $This.Update(0,"Checking [~] Field: [$Name]")
-                    $Item.Value                 = $This.Xaml.IO.$Name.Text
-
-                    Switch ($Name)
-                    {
-                        {$_ -in "ParentDomainName","DomainName"}
-                        { 
-                            $This.CheckItem("Domain",$Item) 
-                        }
-                        {$_ -in "DomainNetBIOSName","NewDomainNetBIOSName"}
-                        {
-                            $This.CheckItem("NetBIOS",$Item)
-                        }
-                        {$_ -eq "NewDomainName" -and $This.Control.Slot -eq 1}
-                        {
-                            $This.CheckItem("Tree",$Item)
-                        }
-                        {$_ -eq "NewDomainName" -and $This.Control.Slot -eq 2}
-                        {
-                            $This.CheckItem("Child",$Item)
-                        }
-                    }
-
-                    $This.Xaml.IO.$Name.Visibility = "Visible"
-                    $This.Xaml.IO.$Icon.Source     = $This.Icon($Item.Check)
-                    $This.Xaml.IO.$Icon.Tooltip    = $Item.Reason
-                    $This.Xaml.IO.$Icon.Visibility = "Visible"
-                }
-
-                If (!$Item.IsEnabled)
-                {
-                    $This.Xaml.IO.$Name.Visibility = "Collapsed"
-                    $This.Xaml.IO.$Icon.Source     = $Null
-                    $This.Xaml.IO.$Icon.Tooltip    = $Null
-                    $This.Xaml.IO.$Icon.Visibility = "Collapsed"
-                }
-
-                $This.Total()
-            }
-        }
-        CheckItem([String]$Type,[Object]$Item)
-        {
-            $X = $Null
-            Switch ($Type)
-            {
-                Domain
-                {
-                    If ($Item.Value.Length -lt 2 -or $Item.Value.Length -gt 63)
-                    {
-                        $X = "[!] Length not between 2 and 63 characters"
-                    }
-                    ElseIf ($Item.Value -in $This.Reserved())
-                    {
-                        $X = "[!] Entry is in reserved words list"
-                    }
-                    ElseIf ($Item.Value -in $This.Legacy())
-                    {
-                        $X = "[!] Entry is in the legacy words list"
-                    }
-                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
-                    { 
-                        $X = "[!] Invalid characters"
-                    }
-                    ElseIf ($Item.Value[0,-1] -match "(\W)")
-                    {
-                        $X = "[!] First/Last Character cannot be a '.' or '-'"
-                    }
-                    ElseIf ($Item.Value.Split(".").Count -lt 2)
-                    {
-                        $X = "[!] Single label domain names are disabled"
-                    }
-                    ElseIf ($Item.Value.Split('.')[-1] -notmatch "\w")
-                    {
-                        $X = "[!] Top Level Domain must contain a non-numeric"
-                    }
-                    Else
-                    {
-                        $X = "[+] Passed"
-                    }
-                }
-                NetBios
-                {
-                    If ($Item.Value -eq $This.Connection.NetBIOS)
-                    {
-                        $X = "[!] New NetBIOS ID cannot be the same as the parent domain NetBIOS"
-                    }
-                    ElseIf ($Item.Value.Length -lt 1 -or $Item.Value.Length -gt 15)
-                    {
-                        $X = "[!] Length not between 1 and 15 characters"
-                    }
-                    ElseIf ($Item.Value -in $This.Reserved())
-                    {
-                        $X = "[!] Entry is in reserved words list"
-                    }
-                    ElseIf ($Item.Value -in $This.Legacy())
-                    {
-                        $X = "[!] Entry is in the legacy words list"
-                    }
-                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
-                    { 
-                        $X = "[!] Invalid characters"
-                    }
-                    ElseIf ($Item.Value[0,-1] -match "(\W)")
-                    {
-                        $X = "[!] First/Last Character cannot be a '.' or '-'"
-                    }                        
-                    ElseIf ($Item.Value -match "\.")
-                    {
-                        $X = "[!] NetBIOS cannot contain a '.'"
-                    }
-                    ElseIf ($Item.Value -in $This.SecurityDescriptor())
-                    {
-                        $X = "[!] Matches a security descriptor"
-                    }
-                    Else
-                    {
-                        $X = "[+] Passed"
-                    }
-                }
-                Tree
-                {
-                    If ($Item.Value -match [Regex]::Escape($This.Xaml.IO.ParentDomainName.Text))
-                    {
-                        $X = "[!] Cannot be a (child/host) of the parent"
-                    }
-                    ElseIf ($Item.Value.Split(".").Count -lt 2)
-                    {
-                        $X = "[!] Single label domain names are disabled"
-                    }
-                    ElseIf ($Item.Value.Split('.')[-1] -notmatch "\w")
-                    {
-                        $X = "[!] Top Level Domain must contain a non-numeric"
-                    }
-                    ElseIf ($Item.Value.Length -lt 2 -or $Item.Value.Length -gt 63)
-                    {
-                        $X = "[!] Length not between 2 and 63 characters"
-                    }
-                    ElseIf ($Item.Value -in $This.Reserved())
-                    {
-                        $X = "[!] Entry is in reserved words list"
-                    }
-                    ElseIf ($Item.Value -in $This.Legacy())
-                    {
-                        $X = "[!] Entry is in the legacy words list"
-                    }
-                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
-                    { 
-                        $X = "[!] Invalid characters"
-                    }
-                    ElseIf ($Item.Value[0,-1] -match "(\W)")
-                    {
-                        $X = "[!] First/Last Character cannot be a '.' or '-'"
-                    }
-                    Else
-                    {
-                        $X = "[+] Passed"
-                    }
-                }
-                Child
-                {
-                    If ($Item.Value -notmatch ".$($This.Xaml.IO.ParentDomainName.Text)")
-                    {
-                        $X = "[!] Must be a (child/host) of the parent"
-                    }
-                    ElseIf ($Item.Value.Length -lt 2 -or $Item.Value.Length -gt 63)
-                    {
-                        $X = "[!] Length not between 2 and 63 characters"
-                    }
-                    ElseIf ($Item.Value -in $This.Reserved())
-                    {
-                        $X = "[!] Entry is in reserved words list"
-                    }
-                    ElseIf ($Item.Value -in $This.Legacy())
-                    {
-                        $X = "[!] Entry is in the legacy words list"
-                    }
-                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
-                    {
-                        $X = "[!] Invalid characters"
-                    }
-                    ElseIf ($Item.Value[0,-1] -match "(\W)")
-                    {
-                        $X = "[!] First/Last Character cannot be a '.' or '-'"
-                    }
-                    Else
-                    {
-                        $X = "[+] Passed"
-                    }
-                }
-            }
-
-            $Item.Validate($X)
-            Switch ([UInt32]!!$Item.Check)
-            {
-                0 { $This.Update(-1, "Failed $($Item.Reason)") }
-                1 { $This.Update( 1,"Success $($Item.Reason)") }
-            }
-        }
-        CheckDsrmPassword()
-        {
-            $Pattern  = $This.Validation.Password()
-            $Password = $This.Dsrm("Password")
-
-            Switch -Regex ($Password.Value)
-            {
-                Default
-                {
-                    $Password.Validate("[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number")
-                }
-                $Pattern
-                {
-                    $Password.Validate("[+] Passed")
-                }
-            }
-        }
-        CheckDSRMConfirm()
-        {
-            $This.CheckDSRMPassword()
-            $Password = $This.DSRM("Password")
-            $Confirm  = $This.DSRM("Confirm")
-            
-            If ($Password.Check -eq 0)
-            {
-                $Confirm.Validate("[!] Password not valid")
-            }
-            ElseIf ($Password.Check -eq 1 -and $Confirm.Value -ne $Password.Value)
-            {
-                $Confirm.Validate("[!] Confirmation error")
-            }
-            ElseIf ($Password.Check -eq 1 -and $Confirm.Value -eq $Password.Value)
-            {
-                $Confirm.Validate("[+] Passed")
-            }
-        }
-        Total()
-        {
-            $This.Execution.Clear("Summary")
-            
-            ForEach ($Item in $This.Control.Profile.List("Slot") | ? IsEnabled | ? Property -eq Text)
-            {
-                $This.Execution.Summary += $Item
-            }
-
-            ForEach ($Item in $This.Control.Profile.List("DSRM"))
-            {
-                $This.Execution.Summary += $Item
-            }
-
-            $This.Reset($This.Xaml.IO.Summary,$This.Execution.Summary)
-
-            $This.Xaml.IO.Start.IsEnabled = 0 -notin $This.Execution.Summary.Check
-            $This.Xaml.IO.Test.IsEnabled  = 0 -notin $This.Execution.Summary.Check
-            $This.Xaml.IO.Save.IsEnabled  = 0 -notin $This.Execution.Summary.Check
-
-        }
-        DumpConsole()
-        {
-            $This.Console.Finalize()
-            $List = $This.ProgramData(),
-                    "Secure Digits Plus LLC",
-                    "Logs"
-
-            $Path = $List -join "\"
-
-            If (!$This.TestPath($Path))
-            {
-                $Path = $List[0]
-                ForEach ($Item in $List[1..2])
-                {
-                    $Path += "\$Item"
-                    If (!$This.TestPath($Path))
-                    {
-                        [System.IO.Directory]::CreateDirectory($Path) | Out-Null
-                    }
-                }
-            }
-            
-            $FileName = "{0}\{1}.log" -f $Path, $This.Console.End.Time.ToString("yyyyMMdd")
-            $This.Update(100,"Console [+] Dumped to: [$FileName]")
-            $Value    = $This.Console.Output | % ToString
-            [System.IO.File]::WriteAllLines($FileName,$Value)
-        }
-        [Object] RestartScript()
-        {                                                         
-            Return "{0}\Secure Digits Plus LLC\FEDCPromo\{1}" -f $This.ProgramData(),
-            $This.Console.Start.Time.ToString("yyyyMMdd")
-        }
-        [Object] ScheduledTaskAction()
-        {
-            $Argument = "-NoExit -ExecutionPolicy Bypass -Command `"Get-FEDCPromo -InputPath '{0}'`"" -f $This.RestartScript()
-
-            Return New-ScheduledTaskAction -Execute PowerShell -Argument $Argument
-        }
-        [Object] ScheduledTaskTrigger()
-        {
-            Return New-ScheduledTaskTrigger -AtLogon
-        }
-        [Void] RegisterScheduledTask()
-        {
-            $Splat = @{ 
-
-                Action      = $This.ScheduledTaskAction()
-                Trigger     = $This.ScheduledTaskTrigger()
-                TaskName    = "FEDCPromo"
-                RunLevel    = "Highest"
-                Description = "Restart, then promote the system"
-            }
-
-            Register-ScheduledTask @Splat | Out-Null
-        }
-        [String] ExportFileName([String]$Type)
-        {
-            $Item = Switch ($Type)
-            {
-                Slot        {        "Slot.txt" }
-                Profile     {     "Profile.txt" }
-                Credential  {  "Credential.txt" }
-                Dsrm        {        "Dsrm.txt" }
-            }
-
-            Return $Item
-        }
-        Save()
-        {
-            $This.ExportFile("Slot"       , $This.Control.Slot)
-            $This.ExportFile("Profile"    , $This.Control.Profile.Output())
-            $This.ExportFile("Dsrm"       , $This.Xaml.IO.SafeModeAdministratorPassword.Password)
-
-            If ($This.Control.Slot -in 1..3)
-            {
-                $This.ExportFile("Credential" , $This.Credential)
-            }
-        }
-        ExportFile([String]$Type,[Object]$Object)
-        {
-            $FileName = $This.ExportFileName($Type)
-            $Path     = "{0}\{1}" -f $This.OutputFolder(), $Filename
-            
-            Switch -Regex ($Type)
-            {
-                ^Profile$
-                {
-                    [System.IO.File]::WriteAllLines($Path,($Object | ConvertTo-Json))
-                }
-                "(^Credential$|^Dsrm$)"
-                {
-                    Export-CliXml -Path $Path -InputObject $Object -Force
-                }
-                "(^Slot$)"
-                {
-                    [System.IO.File]::WriteAllLines($Path,$Object)
-                }
-            }
-
-            Switch ([UInt32][System.IO.File]::Exists($Path))
-            {
-                0 { $This.Update(-1,"Failed [!] Type: [$Type], File: [$Path]") }
-                1 { $This.Update( 1, "Saved [+] Type: [$Type], File: [$Path]") }
-            }
-        }
-        Complete()
-        {
-            $This.Update(0,"Completing [~] Process")
-
-            # Mode
-            $Item               = $This.Slot("ForestMode")
-            If ($Item.IsEnabled)
-            {
-                $Index          = $This.Xaml.IO.ForestMode.SelectedIndex
-                $Item.Value     = @($Index,"WinThreshold")[$Index -ge 6]
-            }
-
-            $Item               = $This.Slot("DomainMode")
-            If ($Item.IsEnabled)
-            {
-                $Index          = $This.Xaml.IO.DomainMode.SelectedIndex
-                $Item.Value     = @($Index,"WinThreshold")[$Index -ge 6]
-            }
-
-
-            $Item               = $This.Slot("ReplicationSourceDC")
-            If ($Item.IsEnabled)
-            {
-                $Item.Value     = $This.Xaml.IO.ReplicationSourceDC.SelectedItem
-            }
-
-            $Item               = $This.Slot("SiteName")
-            If ($Item.IsEnabled)
-            {
-                $Item.Value     = $This.Xaml.IO.Sitename.SelectedItem
-            }
-
-            ForEach ($Item in $This.Control.List("Role"))
-            {
-                $Name           = $Item.Name
-                $Item.IsChecked = $Item.IsEnabled -and $This.Xaml.IO.$Name.IsChecked
-            }
-
-            ForEach ($Item in $This.Control.List("Path"))
-            {
-                $Name           = $Item.Name
-                $Item.Value     = $This.Xaml.IO.$Name.Text
-            }
-
-            If ($This.Control.Slot -eq 2)
-            {
-                $Item           = $This.Slot("NewDomainName")
-                $Name           = $Item.Name
-                $Item.Value     = $This.Xaml.IO.$Name.Text -Replace $This.Connection.Domain, "" | % TrimEnd "."
-            }
-
-            $Item               = $This.Dsrm("Password")
-            $Item.Value         = $This.Xaml.IO.SafeModeAdministratorPassword.Password
-
-            $Item               = $This.Dsrm("Confirm")
-            $Item.Value         = $This.Xaml.IO.Confirm.Password
-        }
-        Execute()
-        {
-            $This.Complete()
-            $Prop = $This.Control.Profile.Output().PSObject.Properties
-
-            # [Profile Items]
-            ForEach ($Item in $This.Control.List("Slot") | ? Name -in $Prop.Name)
-            {
-                $Name  = $Item.Name
-                $Value = $Item.Value
-                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
-                $This.Execution.Output | Add-Member -MemberType NoteProperty -Name $Name -Value $Value
-            }
-    
-            # [Profile Roles]
-            ForEach ($Item in $This.Control.List("Role") | ? Name -in $Prop.Name)
-            {
-                $Name  = $Item.Name
-                $Value = $Item.IsChecked
-                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
-                $This.Execution.Output | Add-Member -MemberType NoteProperty -Name $Name -Value $Value
-            }
-    
-            # [Database/Sysvol/Log Paths]
-            ForEach ($Item in $This.Control.List("Path") | ? Name -in $Prop.Name)
-            {
-                $Name  = $Item.Name
-                $Value = $Item.Value
-                $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
-                $This.Execution.Output | Add-Member -MemberType NoteProperty -Name $Name -Value $Value
-            }
-
-            # [DSRM/Password]
-            $Name  = "SafeModeAdministratorPassword"
-            $Value = $This.Dsrm("Password").Value
-            $This.Update(1,"Adding [~] Execution Output [Name: '$Name', Value: '$Value']")
-            $This.Execution.Output | Add-Member -MemberType NoteProperty -Name $Name -Value $Value
-    
-            # [Credential]
-            If ($This.Credential)
-            {
-                $This.Update(1,"Adding [~] Execution Output [Name: 'Credential', Value: '$($This.Credential)']")
-                $This.Execution.Output | Add-Member -MemberType NoteProperty -Name Credential -Value $This.Credential
-            }
-    
-            # [Replication Source Domain Controller(s)]
-            If ($This.Execution.Output.ReplicationSourceDC -eq "<Any>")
-            {
-                $This.Execution.Output.ReplicationSourceDC = $Null
-            }
-
-            # [Clear/Install Features]
-            $This.Update(0,"Clearing [~] Execution Feature list")
-            $This.Execution.Clear("Feature")
-
-            $This.Update(0,"Clearing [~] Execution Output table")            
-            $This.Execution.Clear("Output")
-
-            ForEach ($Item in $This.Feature.Output | ? Enable | ? Install)
-            {
-                $This.Update(1,"Adding [~] Execution Feature: [$($Item.Name)]")
-                $This.Execution.Feature += $Item
-            }
-
-            If ($This.Execution.Feature.Count -gt 0)
-            {
-                $This.Update(0,"Installing [~] [FightingEntropy($([Char]960))] FEDCPromo -> Feature installation")
-                $This.Module.Write($This.Console.Last().Status)
-
-                $This.Execution.Clear("Result")
-
-                $C = 1
-                $D = ([String]$This.Execution.Feature.Count).Length
-
-                ForEach ($Item in $This.Execution.Feature)
-                {
-                    If ($Item.Name -notmatch "DNS")
-                    {
-                        $Rank = "{0:d$D}/{1}" -f $C, $This.Execution.Feature.Count
-                        $This.Update(0,"Installing ($Rank) [~] Name: [$($Item.Name)]")
-
-                        Switch ($This.Test)
-                        {
-                            0
-                            {
-                                $This.Execution.Result += $This.InstallWindowsFeature($Item.Name)
-                                If ($? -eq $True)
-                                {
-                                    $Item.State   = 1
-                                    $Item.Enable  = 0
-                                    $Item.Install = 0
-                                }
-                            }
-                            1
-                            {
-                                $This.Update(0,"Command [~] Install-WindowsFeature -Name $($Item.Name) -IncludeAllSubFeature -IncludeManagementTools")
-                            }
-                        }
-                            
-                        $This.Update(1,"Installed ($Rank)  [+] Name: [$($Item.Name)]")
-                        $C ++
-                    }
-                }
-
-                If (($This.Execution.Result | ? RestartNeeded -eq No).Count -gt 0)
-                {
-                    $This.Update(0,"Reboot [!] required to proceed")
-                    $This.Module.Write($This.Console.Last().Status)
-
-                    $This.Save()
-                    $This.RegisterScheduledTask()
-
-                    $This.Update(0,"Restarting [~] $($This.MachineName())")
-                    $This.Module.Write($This.Console.Last().Status)
-                    $X = 5
-                    Do
-                    {
-                        Start-Sleep 1
-                        $X --
-                    }
-                    Until ($X -eq 0)
-                    Restart-Computer
-                }
-            }
-
-            $This.Update(0,"Installing [~] [FightingEntropy($([Char]960))] Domain Controller")
-            $This.Module.Write($This.Console.Last().Status)
-
-            Import-Module AddsDeployment
-
-            $Item = Switch ($This.Control.Slot)
-            {
-                {$_ -eq 0}
-                {
-                    @("AddsForest","TestAddsForest")[$This.Test]
-                }
-                {$_ -in 1,2}
-                {
-
-                    @("AddsDomain","TestAddsDomain")[$This.Test]
-                }
-                {$_ -eq 3}
-                {
-                    @("AddsDomainController","TestAddsDomainController")[$This.Test]
-                }
-            }
-
-            $This.InstallDomainController($Item,$This.Execution.Output)
         }
         StageXaml()
         {
@@ -3714,7 +3148,7 @@ Function Get-FEDCPromo
             $Ctrl.Xaml.IO.Start.Add_Click(
             {
                 $Ctrl.Test = 0
-                $Ctrl.CompleteGUI()
+                $Ctrl.Complete()
                 $Ctrl.Xaml.IO.DialogResult = 1
             })
 
@@ -3722,7 +3156,7 @@ Function Get-FEDCPromo
             $Ctrl.Xaml.IO.Test.Add_Click(
             {
                 $Ctrl.Test = 1
-                $Ctrl.CompleteGUI()
+                $Ctrl.Complete()
                 $Ctrl.Xaml.IO.DialogResult = 1
             })
 
@@ -3761,6 +3195,596 @@ Function Get-FEDCPromo
             $Ctrl.Xaml.IO.CommandSlot.SelectedIndex = 0
             $Ctrl.SetProfile(0)
         }
+        Check([String]$Name)
+        {
+            $Item = $This.Slot($Name)
+            $This.Check($Item)
+        }
+        Check([Object]$Item)
+        {
+            If (!$Item)
+            {
+                Throw "Null entry"
+            }
+
+            $Name = $Item.Name
+            $Icon = "{0}Icon" -f $Name
+
+            If (!$This.Staging)
+            {
+                If ($Item.IsEnabled)
+                {
+                    $This.Update(0,"[~] Field [$Name]")
+                    $Item.Value                 = $This.Xaml.IO.$Name.Text
+
+                    Switch ($Name)
+                    {
+                        {$_ -in "ParentDomainName","DomainName"}
+                        { 
+                            $This.CheckItem("Domain",$Item) 
+                        }
+                        {$_ -in "DomainNetBIOSName","NewDomainNetBIOSName"}
+                        {
+                            $This.CheckItem("NetBIOS",$Item)
+                        }
+                        {$_ -eq "NewDomainName" -and $This.Control.Slot -eq 1}
+                        {
+                            $This.CheckItem("Tree",$Item)
+                        }
+                        {$_ -eq "NewDomainName" -and $This.Control.Slot -eq 2}
+                        {
+                            $This.CheckItem("Child",$Item)
+                        }
+                    }
+
+                    $This.Xaml.IO.$Name.Visibility = "Visible"
+                    $This.Xaml.IO.$Icon.Source     = $This.Icon($Item.Check)
+                    $This.Xaml.IO.$Icon.Tooltip    = $Item.Reason
+                    $This.Xaml.IO.$Icon.Visibility = "Visible"
+                }
+
+                If (!$Item.IsEnabled)
+                {
+                    $This.Xaml.IO.$Name.Visibility = "Collapsed"
+                    $This.Xaml.IO.$Icon.Source     = $Null
+                    $This.Xaml.IO.$Icon.Tooltip    = $Null
+                    $This.Xaml.IO.$Icon.Visibility = "Collapsed"
+                }
+
+                $This.Total()
+            }
+        }
+        CheckItem([String]$Type,[Object]$Item)
+        {
+            $X = $Null
+            Switch ($Type)
+            {
+                Domain
+                {
+                    If ($Item.Value.Length -lt 2 -or $Item.Value.Length -gt 63)
+                    {
+                        $X = "[!] Length not between 2 and 63 characters"
+                    }
+                    ElseIf ($Item.Value -in $This.Reserved())
+                    {
+                        $X = "[!] Entry is in reserved words list"
+                    }
+                    ElseIf ($Item.Value -in $This.Legacy())
+                    {
+                        $X = "[!] Entry is in the legacy words list"
+                    }
+                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    { 
+                        $X = "[!] Invalid characters"
+                    }
+                    ElseIf ($Item.Value[0,-1] -match "(\W)")
+                    {
+                        $X = "[!] First/Last Character cannot be a '.' or '-'"
+                    }
+                    ElseIf ($Item.Value.Split(".").Count -lt 2)
+                    {
+                        $X = "[!] Single label domain names are disabled"
+                    }
+                    ElseIf ($Item.Value.Split('.')[-1] -notmatch "\w")
+                    {
+                        $X = "[!] Top Level Domain must contain a non-numeric"
+                    }
+                    Else
+                    {
+                        $X = "[+] Passed"
+                    }
+                }
+                NetBios
+                {
+                    If ($Item.Value -eq $This.Connection.NetBIOS)
+                    {
+                        $X = "[!] New NetBIOS ID cannot be the same as the parent domain NetBIOS"
+                    }
+                    ElseIf ($Item.Value.Length -lt 1 -or $Item.Value.Length -gt 15)
+                    {
+                        $X = "[!] Length not between 1 and 15 characters"
+                    }
+                    ElseIf ($Item.Value -in $This.Reserved())
+                    {
+                        $X = "[!] Entry is in reserved words list"
+                    }
+                    ElseIf ($Item.Value -in $This.Legacy())
+                    {
+                        $X = "[!] Entry is in the legacy words list"
+                    }
+                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    { 
+                        $X = "[!] Invalid characters"
+                    }
+                    ElseIf ($Item.Value[0,-1] -match "(\W)")
+                    {
+                        $X = "[!] First/Last Character cannot be a '.' or '-'"
+                    }                        
+                    ElseIf ($Item.Value -match "\.")
+                    {
+                        $X = "[!] NetBIOS cannot contain a '.'"
+                    }
+                    ElseIf ($Item.Value -in $This.SecurityDescriptor())
+                    {
+                        $X = "[!] Matches a security descriptor"
+                    }
+                    Else
+                    {
+                        $X = "[+] Passed"
+                    }
+                }
+                Tree
+                {
+                    If ($Item.Value -match [Regex]::Escape($This.Xaml.IO.ParentDomainName.Text))
+                    {
+                        $X = "[!] Cannot be a (child/host) of the parent"
+                    }
+                    ElseIf ($Item.Value.Split(".").Count -lt 2)
+                    {
+                        $X = "[!] Single label domain names are disabled"
+                    }
+                    ElseIf ($Item.Value.Split('.')[-1] -notmatch "\w")
+                    {
+                        $X = "[!] Top Level Domain must contain a non-numeric"
+                    }
+                    ElseIf ($Item.Value.Length -lt 2 -or $Item.Value.Length -gt 63)
+                    {
+                        $X = "[!] Length not between 2 and 63 characters"
+                    }
+                    ElseIf ($Item.Value -in $This.Reserved())
+                    {
+                        $X = "[!] Entry is in reserved words list"
+                    }
+                    ElseIf ($Item.Value -in $This.Legacy())
+                    {
+                        $X = "[!] Entry is in the legacy words list"
+                    }
+                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    { 
+                        $X = "[!] Invalid characters"
+                    }
+                    ElseIf ($Item.Value[0,-1] -match "(\W)")
+                    {
+                        $X = "[!] First/Last Character cannot be a '.' or '-'"
+                    }
+                    Else
+                    {
+                        $X = "[+] Passed"
+                    }
+                }
+                Child
+                {
+                    If ($Item.Value -notmatch ".$($This.Xaml.IO.ParentDomainName.Text)")
+                    {
+                        $X = "[!] Must be a (child/host) of the parent"
+                    }
+                    ElseIf ($Item.Value.Length -lt 2 -or $Item.Value.Length -gt 63)
+                    {
+                        $X = "[!] Length not between 2 and 63 characters"
+                    }
+                    ElseIf ($Item.Value -in $This.Reserved())
+                    {
+                        $X = "[!] Entry is in reserved words list"
+                    }
+                    ElseIf ($Item.Value -in $This.Legacy())
+                    {
+                        $X = "[!] Entry is in the legacy words list"
+                    }
+                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    {
+                        $X = "[!] Invalid characters"
+                    }
+                    ElseIf ($Item.Value[0,-1] -match "(\W)")
+                    {
+                        $X = "[!] First/Last Character cannot be a '.' or '-'"
+                    }
+                    Else
+                    {
+                        $X = "[+] Passed"
+                    }
+                }
+            }
+
+            $Item.Validate($X)
+            Switch ([UInt32]!!$Item.Check)
+            {
+                0 { $This.Update(-1,"$($Item.Reason)") }
+                1 { $This.Update( 1,"$($Item.Reason)") }
+            }
+        }
+        CheckDsrmPassword()
+        {
+            $Pattern  = $This.Validation.Password()
+            $Password = $This.Dsrm("Password")
+
+            Switch -Regex ($Password.Value)
+            {
+                Default
+                {
+                    $Password.Validate("[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number")
+                }
+                $Pattern
+                {
+                    $Password.Validate("[+] Passed")
+                }
+            }
+        }
+        CheckDsrmConfirm()
+        {
+            $This.CheckDsrmPassword()
+            $Password = $This.DSRM("Password")
+            $Confirm  = $This.DSRM("Confirm")
+            
+            If ($Password.Check -eq 0)
+            {
+                $Confirm.Validate("[!] Password not valid")
+            }
+            ElseIf ($Password.Check -eq 1 -and $Confirm.Value -ne $Password.Value)
+            {
+                $Confirm.Validate("[!] Confirmation error")
+            }
+            ElseIf ($Password.Check -eq 1 -and $Confirm.Value -eq $Password.Value)
+            {
+                $Confirm.Validate("[+] Passed")
+            }
+        }
+        Total()
+        {
+            $This.Execution.Clear("Summary")
+            
+            ForEach ($Item in $This.Control.Profile.List("Slot") | ? IsEnabled | ? Property -eq Text)
+            {
+                $This.Execution.Summary += $Item
+            }
+
+            ForEach ($Item in $This.Control.Profile.List("DSRM"))
+            {
+                $This.Execution.Summary += $Item
+            }
+
+            $This.Reset($This.Xaml.IO.Summary,$This.Execution.Summary)
+
+            $This.Xaml.IO.Start.IsEnabled = 0 -notin $This.Execution.Summary.Check
+            $This.Xaml.IO.Test.IsEnabled  = 0 -notin $This.Execution.Summary.Check
+            $This.Xaml.IO.Save.IsEnabled  = 0 -notin $This.Execution.Summary.Check
+
+        }
+        DumpConsole()
+        {
+            $This.Console.Finalize()
+            $List = $This.ProgramData(),
+                    "Secure Digits Plus LLC",
+                    "Logs"
+
+            $Path = $List -join "\"
+
+            If (!$This.TestPath($Path))
+            {
+                $Path = $List[0]
+                ForEach ($Item in $List[1..2])
+                {
+                    $Path += "\$Item"
+                    If (!$This.TestPath($Path))
+                    {
+                        [System.IO.Directory]::CreateDirectory($Path) | Out-Null
+                    }
+                }
+            }
+            
+            $FileName = "{0}\{1}.log" -f $Path, $This.Console.End.Time.ToString("yyyyMMdd")
+            $This.Update(100,"[+] Console dumped: [$FileName]")
+
+            $Value    = $This.Console.Output | % ToString
+            [System.IO.File]::WriteAllLines($FileName,$Value)
+        }
+        [Object] RestartScript()
+        {                                                         
+            Return "{0}\Secure Digits Plus LLC\FEDCPromo\{1}" -f $This.ProgramData(),
+            $This.Console.Start.Time.ToString("yyyyMMdd")
+        }
+        [Object] ScheduledTaskAction()
+        {
+            $Argument = "-NoExit -ExecutionPolicy Bypass -Command `"Get-FEDCPromo -Mode 1 -InputPath '{0}'`"" -f $This.RestartScript()
+
+            Return New-ScheduledTaskAction -Execute PowerShell -Argument $Argument
+        }
+        [Object] ScheduledTaskTrigger()
+        {
+            Return New-ScheduledTaskTrigger -AtLogon
+        }
+        [Void] RegisterScheduledTask()
+        {
+            $Splat = @{ 
+
+                Action      = $This.ScheduledTaskAction()
+                Trigger     = $This.ScheduledTaskTrigger()
+                TaskName    = "FEDCPromo"
+                RunLevel    = "Highest"
+                Description = "Restart, then promote the system"
+            }
+
+            Register-ScheduledTask @Splat | Out-Null
+        }
+        [String] ExportFileName([String]$Type)
+        {
+            $Item = Switch ($Type)
+            {
+                Slot        {        "Slot.txt" }
+                Profile     {     "Profile.txt" }
+                Credential  {  "Credential.txt" }
+                Dsrm        {        "Dsrm.txt" }
+            }
+
+            Return $Item
+        }
+        Save()
+        {
+            $This.ExportFile("Slot"       , $This.Control.Slot)
+            $This.ExportFile("Profile"    , $This.Control.Profile.Output())
+            $This.ExportFile("Dsrm"       , $This.Xaml.IO.SafeModeAdministratorPassword.Password)
+
+            If ($This.Control.Slot -in 1..3)
+            {
+                $This.ExportFile("Credential" , $This.Credential)
+            }
+        }
+        ExportFile([String]$Type,[Object]$Object)
+        {
+            $FileName = $This.ExportFileName($Type)
+            $Path     = "{0}\{1}" -f $This.OutputFolder(), $Filename
+            
+            Switch -Regex ($Type)
+            {
+                ^Profile$
+                {
+                    [System.IO.File]::WriteAllLines($Path,($Object | ConvertTo-Json))
+                }
+                "(^Credential$|^Dsrm$)"
+                {
+                    Export-CliXml -Path $Path -InputObject $Object -Force
+                }
+                "(^Slot$)"
+                {
+                    [System.IO.File]::WriteAllLines($Path,$Object)
+                }
+            }
+
+            Switch ([UInt32][System.IO.File]::Exists($Path))
+            {
+                0 { $This.Update(-1,"[!] $Type : [$Path]") }
+                1 { $This.Update( 1,"[+] $Type : [$Path]") }
+            }
+        }
+        Complete()
+        {
+            $This.Update(0,"[~] Completing process")
+
+            # Mode
+            $Item               = $This.Slot("ForestMode")
+            If ($Item.IsEnabled)
+            {
+                $Index          = $This.Xaml.IO.ForestMode.SelectedIndex
+                $Item.Value     = @($Index,"WinThreshold")[$Index -ge 6]
+            }
+
+            $Item               = $This.Slot("DomainMode")
+            If ($Item.IsEnabled)
+            {
+                $Index          = $This.Xaml.IO.DomainMode.SelectedIndex
+                $Item.Value     = @($Index,"WinThreshold")[$Index -ge 6]
+            }
+
+            $Item               = $This.Slot("ReplicationSourceDC")
+            If ($Item.IsEnabled)
+            {
+                $Item.Value     = $This.Xaml.IO.ReplicationSourceDC.SelectedItem
+            }
+
+            $Item               = $This.Slot("SiteName")
+            If ($Item.IsEnabled)
+            {
+                $Item.Value     = $This.Xaml.IO.Sitename.SelectedItem
+            }
+
+            ForEach ($Item in $This.Control.List("Role"))
+            {
+                $Name           = $Item.Name
+                $Item.IsChecked = $Item.IsEnabled -and $This.Xaml.IO.$Name.IsChecked
+            }
+
+            ForEach ($Item in $This.Control.List("Path"))
+            {
+                $Name           = $Item.Name
+                $Item.Value     = $This.Xaml.IO.$Name.Text
+            }
+
+            If ($This.Control.Slot -eq 2)
+            {
+                $Item           = $This.Slot("NewDomainName")
+                $Name           = $Item.Name
+                $Item.Value     = $This.Xaml.IO.$Name.Text -Replace $This.Connection.Domain, "" | % TrimEnd "."
+            }
+
+            $Item               = $This.Dsrm("Password")
+            $Item.Value         = $This.Xaml.IO.SafeModeAdministratorPassword.Password
+
+            $Item               = $This.Dsrm("Confirm")
+            $Item.Value         = $This.Xaml.IO.Confirm.Password
+        }
+        Execute()
+        {
+            $This.Complete()
+            $Prop = $This.Control.Profile.Output().PSObject.Properties
+
+            $This.Update(0,"[_] Output table")            
+            $This.Execution.Clear("Output")
+
+            # [Profile Items]
+            ForEach ($Item in $This.Control.List("Slot") | ? Name -in $Prop.Name)
+            {
+                $Name  = $Item.Name
+                $Value = $Item.Value
+                $This.Update(1,"[~] $Name : $Value")
+                $This.Execution.Output.Add($Name,$Value)
+            }
+    
+            # [Profile Roles]
+            ForEach ($Item in $This.Control.List("Role") | ? Name -in $Prop.Name)
+            {
+                $Name  = $Item.Name
+                $Value = $Item.IsChecked
+                $This.Update(1,"[~] $Name : $Value")
+                $This.Execution.Output.Add($Name,$Value)
+            }
+    
+            # [Database/Sysvol/Log Paths]
+            ForEach ($Item in $This.Control.List("Path") | ? Name -in $Prop.Name)
+            {
+                $Name  = $Item.Name
+                $Value = $Item.Value
+                $This.Update(1,"[~] $Name : $Value")
+                $This.Execution.Output.Add($Name,$Value)
+            }
+
+            # [DSRM/Password]
+            $Name  = "SafeModeAdministratorPassword"
+            $Value = "<[System.Security.SecureString]>"
+            $This.Update(1,"[~] $Name : $Value")
+            $Value = $This.Dsrm("Password").Value
+            $This.Execution.Output.Add($Name,$Value)
+    
+            # [Credential]
+            If ($This.Credential)
+            {
+                $This.Update(1,"[~] Credential : $($This.Credential)]")
+                $This.Execution.Output.Add($Name,$Value)
+            }
+    
+            # [Replication Source Domain Controller(s)]
+            If ($This.Execution.Output.ReplicationSourceDC -eq "<Any>")
+            {
+                $This.Execution.Output.ReplicationSourceDC = $Null
+            }
+
+            # [Clear/Install Features]
+            $This.Update(0,"[_] Feature list")
+            $This.Execution.Clear("Feature")
+
+            ForEach ($Item in $This.Feature.Output | ? Name -ne Dns | ? Enable | ? Install)
+            {
+                $This.Update(1,"[~] Execution Feature: [$($Item.Name)]")
+                $This.Execution.Feature += $Item
+            }
+
+            If ($This.Execution.Feature.Count -gt 0)
+            {
+                $This.Update(0,"[~] [FightingEntropy($([Char]960))] FEDCPromo -> Feature installation")
+                $This.Module.Write($This.Console.Last().Status)
+
+                $This.Execution.Clear("Result")
+
+                $C = 1
+                $D = ([String]$This.Execution.Feature.Count).Length
+
+                ForEach ($Item in $This.Execution.Feature)
+                {
+                    If ($Item.Name -notmatch "DNS")
+                    {
+                        $Status = "{0:p}" -f ($C/$This.Execution.Feature.Count)
+                        $This.Update(0,"[~] ($Status) [$($Item.Name)]")
+
+                        Switch ($This.Test)
+                        {
+                            0
+                            {
+                                $This.Execution.Result += $This.InstallWindowsFeature($Item.Name)
+                                If ($? -eq $True)
+                                {
+                                    $Item.State   = 1
+                                    $Item.Enable  = 0
+                                    $Item.Install = 0
+                                }
+                            }
+                            1
+                            {
+                                $This.Update(0,"[~] Install-WindowsFeature -Name $($Item.Name) -IncludeAllSubFeature -IncludeManagementTools")
+                            }
+                        }
+                            
+                        $This.Update(1,"[+] ($Status) [$($Item.Name)]")
+                        $C ++
+                    }
+                }
+
+                If (($This.Execution.Result | ? RestartNeeded -eq No).Count -gt 0)
+                {
+                    $This.Update(0,"[!] Reboot required to proceed")
+                    $This.Module.Write($This.Console.Last().Status)
+
+                    $This.Save()
+                    $This.RegisterScheduledTask()
+
+                    $This.Update(0,"[~] Restarting: [$($This.MachineName())]")
+                    $This.Module.Write($This.Console.Last().Status)
+                    $X = 5
+                    Do
+                    {
+                        Start-Sleep 1
+                        $X --
+                    }
+                    Until ($X -eq 0)
+                    Restart-Computer
+                }
+            }
+
+            $This.Update(0,"[~] [FightingEntropy($([Char]960))] Domain Controller")
+            $This.Module.Write($This.Console.Last().Status)
+
+            Import-Module AddsDeployment
+
+            $Item = Switch ($This.Control.Slot)
+            {
+                {$_ -eq 0}
+                {
+                    @("AddsForest","TestAddsForest")[$This.Test]
+                }
+                {$_ -in 1,2}
+                {
+
+                    @("AddsDomain","TestAddsDomain")[$This.Test]
+                }
+                {$_ -eq 3}
+                {
+                    @("AddsDomainController","TestAddsDomainController")[$This.Test]
+                }
+            }
+
+            $Dsrm                        = "SafeModeAdministratorPassword"
+            $Pass                        = $This.Execution.Output.$Dsrm
+            $This.Execution.Output.$Dsrm = $This.Execution.Password($Pass)
+            
+            $This.InstallDomainController($Item,$This.Execution.Output)
+        }
         SetInputObject([String]$InputPath)
         {
             $IO = $This.InputObjectController($InputPath)
@@ -3768,7 +3792,7 @@ Function Get-FEDCPromo
             # Allows the function to resume from a (necessary reboot/answer file)
             $This.SetProfile($IO.Slot)
 
-            $This.Update(0,"Setting [~] InputObject")
+            $This.Update(0,"[~] InputObject")
             # Credential
             If ($IO.Credential)
             {
@@ -3780,7 +3804,7 @@ Function Get-FEDCPromo
             $Prop = $IO.Profile.PSObject.Properties
 
             # Slot
-            $This.Update(0,"Setting [~] Profile Slot")
+            $This.Update(0,"[~] Profile Slot")
             ForEach ($Item in $This.Control.List("Slot") | ? Name -in $Prop.Name)
             {
                 $Name       = $Item.Name
@@ -3788,8 +3812,8 @@ Function Get-FEDCPromo
                 $Object     = $This.Xaml.IO.$Name
                 $Type       = $Object.GetType().Name
 
-                $This.Update(0,"Setting [~] Profile Slot -> Name: [$Name], Value: [$Value], Type: [$Type]")
-                Switch ($Item.Type)
+                $This.Update(0,"[~] $Name : $Value [$Type]")
+                Switch ($Type)
                 {
                     ComboBox 
                     { 
@@ -3805,26 +3829,29 @@ Function Get-FEDCPromo
                     }
                     TextBox
                     {
-                        $Object.Text  = $Value
+                        If (!!$Value)
+                        {
+                            $Object.Text  = $Value
+                        }
                     }
                 }
             }
 
             # Role
-            $This.Update(0,"Setting [~] Profile: Role")
+            $This.Update(0,"[~] Role")
             ForEach ($Item in $This.Control.List("Role") | ? Name -in $Prop.Name)
             {
                 $Name         = $Item.Name
                 $Value        = $Item.IsChecked = $Prop | ? Name -eq $Item.Name | % Value
 
-                $This.Update(0,"Setting [~] Profile Role -> Name: [$Name], Value: [$Value]")
+                $This.Update(0,"[~] $Name : $Value")
                 $Object           = $This.Xaml.IO.$Name
                 $Object.IsEnabled = 1
                 $Object.IsChecked = $Value
             }
 
             # DSRM
-            $This.Update(0,"Setting [~] Profile: Dsrm")
+            $This.Update(0,"[~] Dsrm")
             ForEach ($Item in $This.Control.List("Dsrm"))
             {
                 $Item.Value              = $IO.Dsrm
@@ -3844,7 +3871,7 @@ Function Get-FEDCPromo
             }
 
             # Path
-            $This.Update(0,"Setting [~] Profile: Path")
+            $This.Update(0,"[~] Path")
             ForEach ($Item in $This.Control.List("Path"))
             {
                 $Name                    = $Item.Name
@@ -3876,17 +3903,5 @@ Function Get-FEDCPromo
     {
         $Ctrl.Execute()
         $Ctrl.DumpConsole()
-        If ($Ctrl.Execution.Restart -eq 1)
-        {
-            $Ctrl.Module.Write("Restarting [~] $($Ctrl.MachineName())")
-            $X = 5
-            Do
-            {
-                Start-Sleep 1
-                $X --
-            }
-            Until ($X -eq 0)
-            Restart-Computer
-        }
     }
 }
