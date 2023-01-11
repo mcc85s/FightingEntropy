@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-11 03:47:46
+    # Last edited : 2023-01-11 05:43:33
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (2) virtual servers to work together as an Active Directory domain controller cluster
@@ -806,7 +806,7 @@
 
             # Enable ICMPv4
             $B += '# Enable ICMPv4'
-            $B += 'Get-NetFirewallRule | ? Description -match "(Printer.+ICMPv4)" | Enable-NetFirewallRule'
+            $B += 'Get-NetFirewallRule | ? DisplayName -match "(Printer.+ICMPv4)" | Enable-NetFirewallRule'
             $B += ''
 
             # Get InterfaceIndex, get/remove current (IP address + Net Route)
@@ -836,9 +836,10 @@
             $B += 'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses $DnsAddress'
             $B += ''
 
-            # Assign to script, and process each line
+            # Assign to script, and process each line in this section
             $B | % { $This.Script += $_ }
 
+            # Process all lines
             ForEach ($Line in $B)
             {
                 $This.TypeText($Line)
@@ -852,18 +853,83 @@
                 }
             }
         }
-        SetWinRM()
+        SetWinRM() 
         {
-            # Enable WinRM/Remote management, Add TrustedHost
+            # Enable WinRM/Remote management
             $This.TypeText('winrm quickconfig')
             $This.TypeKey(13)
-
             $This.Timer(2)
+            
+            # Accept (yes)
             $This.TypeKey(89)
+            $This.TypeKey(13)
             $This.Timer(2)
 
+            # Add TrustedHost
             $This.TypeText('Set-Item WSMan:\localhost\Client\TrustedHosts -Value $TrustedHost')
             $This.TypeKey(13)
+            $This.Timer(2)
+
+            # Confirm
+            $This.TypeKey(89)
+            $This.TypeKey(13)
+            $This.Timer(2)
+
+            # Splat Self-Signed Certificate
+            $B += '# Create Self-Signed Certificate'
+            $B += '$Splat               = @{'
+            $B += ' '
+            $B += '   DnsName           = $IPAddress'
+            $B += '   CertStoreLocation = "Cert:\LocalMachine\My"'
+            $B += ' '
+            $B += '}'
+            $B += ''
+
+            # Create Self-Signed Certificate
+            $B += '# Create Self-Signed Certificate'
+            $B += '$Cert                = New-SelfSignedCertificate @Splat'
+            $B += '$Thumbprint          = $Cert.Thumbprint'
+            $B += ''
+            
+            # Create (hash/winrm) connection
+            $B += '$Hash = "@{Hostname=`"$IPAddress`";CertificateThumbprint=`"$Thumbprint`"}"'
+            $B += "`$Str  = `"winrm create winrm/config/Listener?Address=*+Transport=HTTPS '{0}'`""
+            $B += 'Invoke-Expression ($Str -f $Hash)'
+            $B += ''
+
+            # Splat New-NetFirewallRule
+            $B += '$Splat          = @{'
+            $B += ' '
+            $B += '    Name        = "WinRM/HTTPS"'
+            $B += '    DisplayName = "Windows Remote Management (HTTPS-In)"'
+            $B += '    Direction   = "In"'
+            $B += '    Action      = "Allow"'
+            $B += '    Protocol    = "TCP"'
+            $B += '    LocalPort   = 5986'
+            $B += '}'
+            $B += ''
+
+            # Create New-NetFirewallRule
+            $B += '# Create New-NetFirewallRule'
+            $B += 'New-NetFirewallRule @Splat -Verbose'
+            $B += ''
+
+            # Assign to script, and process each line in this section
+            $B | % { $This.Script += $_ }
+
+            # Process all lines
+            ForEach ($Line in $B)
+            {
+                $This.TypeText($Line)
+                If ($Line.Length -eq 0)
+                {
+                    $This.Idle(5,2)
+                }
+                Else
+                {
+                    $This.TypeKey(13)
+                }
+            }
         }
         InstallFightingEntropy()
         {
@@ -882,8 +948,10 @@
             $B += 'Import-Module FightingEntropy'
             $B += ''
 
+            # Assign to script, and process each line in this section
             $B | % { $This.Script += $_ }
 
+            # Process all lines
             ForEach ($Line in $B)
             {
                 $This.TypeText($Line)
@@ -904,8 +972,10 @@
             $B += 'Rename-Computer $ComputerName'
             $B += 'Restart-Computer'
 
+            # Assign to script, and process each line in this section
             $B | % { $This.Script += $_ }
 
+            # Process all lines
             ForEach ($Line in $B)
             {
                 $This.TypeText($Line)
@@ -1086,6 +1156,26 @@
     # Set WinRM
     $Vm.SetWinRM()
 
+    # Install FightingEntropy
+    $Vm.InstallFightingEntropy()
 
-    # Wait for reset
+    # Wait idle
     $Vm.Idle(5,5)
+
+    # Rename computer
+    $Vm.RenameRestart()
+
+    # Wait idle
+    $Vm.Idle(5,5)
+
+    # Attempt login
+    $Splat = @{ 
+
+        ComputerName  = $Vm.Network.Address
+        Port          = 5986
+        Credential    = $Admin.Credential
+        SessionOption = New-PSSessionOption -SkipCACheck
+        UseSSL        = $True
+    }
+
+    Enter-PSSession @Splat
