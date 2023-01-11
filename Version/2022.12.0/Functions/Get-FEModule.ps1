@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-08 13:38:16                                                                  //
+\\  Date       : 2023-01-11 01:05:03                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2022-12-14
-   Modified   : 2023-01-08
+   Modified   : 2023-01-11
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -1907,13 +1907,7 @@ Function Get-FEModule
                             $Com                 = New-Object -ComObject WScript.Shell
                             $Object              = $Com.CreateShortcut($Item.Fullname)
                             $Object.TargetPath   = "PowerShell"
-        
-                            $Command             = 'Add-Type -AssemblyName PresentationFramework',
-                                                   'Import-Module FightingEntropy',
-                                                   '$Module = Get-FEModule',
-                                                   '$Module' -join ";"
-                            $Object.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command $Command"
-                
+                            $Object.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command 'Get-FEModule -Mode 1'"
                             $Object.Description  = $This.Description
                             $Object.IconLocation = $This._Graphic("icon.ico").Fullname
                             $Object.Save()
