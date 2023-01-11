@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-10 14:14:47
+    # Last edited : 2023-01-10 22:05:27
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (2) virtual servers to work together as an Active Directory domain controller cluster
@@ -13,8 +13,69 @@
     # Even the guys at Microsoft will think this shit is WICKED cool...
     # https://github.com/mcc85s/FightingEntropy/blob/main/Docs/2023_0103-(Get-FEDCPromo).pdf
 
-    $Pass = Read-Host "Enter password" -AsSecureString
-    $Cred = [PSCredential]::New("Administrator",$Pass)
+    # // =====================================================
+    # // | Generates a random password for security purposes |
+    # // =====================================================
+
+    Class AdminCredential
+    {
+        [String]         $UserName
+        [PSCredential] $Credential
+        AdminCredential([String]$Username)
+        {
+            $This.Username   = $Username
+            $Length          = $This.Random(8,16)
+            $Bytes           = [Byte[]]::New($Length)
+
+            ForEach ($X in 0..($Length-1))
+            {
+                $Bytes[$X]   = $This.Random(32,126)
+            }
+
+            $Pass            = [Char[]]$Bytes -join '' | ConvertTo-SecureString -AsPlainText -Force
+            $This.Credential = [PSCredential]::New($This.Username,$Pass)
+        }
+        [UInt32] Random([UInt32]$Min,[UInt32]$Max)
+        {
+            Return Get-Random -Min $Min -Max $Max
+        }
+        [String] Password()
+        {
+            Return $This.Credential.GetNetworkCredential().Password
+        }
+    }
+
+    # // ========================================================
+    # // | Aggregates valid (static IP/prefix/gateway/dns) info |
+    # // ========================================================
+    
+    Class NetworkInformation
+    {
+        Hidden [Object] $Config
+        [String]       $Address
+        [UInt32]        $Prefix
+        [String]       $Gateway
+        [String]           $Dns
+        NetworkInformation([Object]$Config)
+        {
+            $This.Config    = $Config
+            $This.Address   = $This.GetIpAddress()
+            $This.Prefix    = $Config.IPv4Address.PrefixLength
+            $This.Gateway   = $Config.IPv4DefaultGateway.NextHop
+            $This.Dns       = $This.GetDns()
+        }
+        [String] GetIpAddress()
+        {
+            $S    = $This.Config.IPv4Address.IpAddress.ToString().Split(".")
+            $S[3] = [UInt32]$S[3] + 1
+            Return $S -join "."
+        }
+        [String] GetDns()
+        {
+            $S = $This.Config.DnsServer | ? AddressFamily -eq 2
+            Return $S.ServerAddresses | Select-Object -First 1
+        }
+    }
 
     # // =======================================================================
     # // | Used to convert the byte size of a drive or partition into a string |
@@ -64,8 +125,9 @@
         [Object]      $Generation
         [UInt32]            $Core
         [Object[]]    $SwitchName
+        [Object]         $Network
         Hidden [String]      $Iso
-        Hidden [String]   $Script
+        Hidden [String[]] $Script
         Hidden [Object] $Firmware
         [UInt32]          $Exists
         [Object]            $Guid
@@ -73,26 +135,35 @@
         Hidden [Object] $Keyboard
         VmObjectNode([String]$Name,[String]$Base,[UInt64]$Memory,[UInt64]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$Switch)
         {
-            $This.Mode = 1
+            $This.Mode = 0
+            $This.Main($Name,$Base,$Memory,$HDD,$Generation,$Core,$Switch)
+        }
+        VmObjectNode([UInt32]$Mode,[String]$Name,[String]$Base,[UInt64]$Memory,[UInt64]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$Switch)
+        {
+            $This.Mode = $Mode
+            $This.Main($Name,$Base,$Memory,$HDD,$Generation,$Core,$Switch)
+        }
+        Main([String]$Name,[String]$Base,[UInt64]$Memory,[UInt64]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$Switch)
+        {
             $This.StartConsole()
 
             $Item = Get-VM -Name $Name -EA 0
             If ($Item)
             {
-                $This.Console.Update(0,"[!] Virtual machine: $Name [exists]")
-                Throw $This.Console.Last().String
+                $This.Error(-1,"[!] Virtual machine: $Name [exists]")
             }
 
-            $This.Name               = $Name
-            $This.Memory             = $This.Size("Memory",$Memory)
-            $This.Path               = "$Base\$($This.Name)"
-            $This.Vhd                = "$Base\$($This.Name)\$($This.Name).vhdx"
-            $This.VhdSize            = $This.Size("HDD",$HDD)
-            $This.Generation         = $Generation
-            $This.Core               = $Core
-            $This.SwitchName         = @($Switch)
-            $This.Exists             = 0
-            $This.Guid               = $Null
+            $This.Name       = $Name
+            $This.Memory     = $This.Size("Memory",$Memory)
+            $This.Path       = "$Base\$($This.Name)"
+            $This.Vhd        = "$Base\$($This.Name)\$($This.Name).vhdx"
+            $This.VhdSize    = $This.Size("HDD",$HDD)
+            $This.Generation = $Generation
+            $This.Core       = $Core
+            $This.SwitchName = @($Switch)
+            $This.Exists     = 0
+            $This.Guid       = $Null
+            $This.Network    = $This.GetNetworkConfig()
         }
         StartConsole()
         {
@@ -114,6 +185,11 @@
             # Updates the console
             $This.Console.Update($State,$Status)
             $This.Status()
+        }
+        Error([UInt32]$State,[String]$Status)
+        {
+            $This.Console.Update($State,$Status)
+            Throw $This.Console.Last().Status
         }
         [Object] Get()
         {
@@ -148,8 +224,7 @@
             $Null = $This.Get()
             If ($This.Exists -ne 0)
             {
-                $This.Update(-1,"[!] Exists : $($This.Name)")
-                Throw $This.Console.Last().String
+                $This.Error(-1,"[!] Exists : $($This.Name)")
             }
 
             $Object                = @{
@@ -164,7 +239,13 @@
             }
 
             $This.Update(0,"[~] Creating : $($This.Name)")
-            New-VM @Object -Verbose
+
+            # Verbosity level
+            Switch ($This.Mode)
+            {
+                Default { New-VM @Object }
+                2       { New-VM @Object -Verbose }
+            }
 
             $This.Firmware         = $This.GetVmFirmware()
             $This.Exists           = 1
@@ -178,13 +259,18 @@
                 If ($Vm.State -ne "Running")
                 {
                     $This.Update(1,"[~] Starting : $($This.Name)")
-                    $Vm | Start-VM -Verbose
+
+                    # Verbosity level
+                    Switch ($This.Mode) 
+                    { 
+                        Default { $Vm | Start-VM }
+                        2 { $Vm | Start-VM -Verbose }
+                    }
                 }
             }
             ElseIf (!$Vm)
             {
-                $This.Update(-1,"[!] Exception : $($This.Name) [does not exist]")
-                Throw $This.Console.Last().String
+                $This.Error(-1,"[!] Exception : $($This.Name) [does not exist]")
             }
         }
         Remove()
@@ -192,8 +278,7 @@
             $Vm = $This.Get()
             If (!$Vm)
             {
-                $This.Update(-1,"[!] Exception : $($This.Name) [does not exist]")
-                Throw $this.Console.Last().String
+                $This.Error(-1,"[!] Exception : $($This.Name) [does not exist]")
             }
 
             $This.Update(0,"[~] Removing : $($This.Name)")
@@ -222,24 +307,52 @@
                 Until ($This.Get().State -eq "Off")
             }
 
-            $This.Get() | Remove-VM -Force -Confirm:$False -Verbose
+            # Verbosity level
+            Switch ($This.Mode)
+            {
+                Default { $This.Get() | Remove-VM -Confirm:$False -Force  } 
+                2       { $This.Get() | Remove-VM -Confirm:$False -Force -Verbose } 
+            }
+            
             $This.Firmware         = $Null
             $This.Exists           = 0
  
             $This.Update(0,"[~] Vhd  : [$($This.Vhd)]")
-            Remove-Item $This.Vhd -Force -Verbose -Confirm:$False
 
+            # Verbosity level
+            Switch ($This.Mode) 
+            { 
+                Default { Remove-Item $This.Vhd -Confirm:$False -Force } 
+                2       { Remove-Item $This.Vhd -Confirm:$False -Force -Verbose } 
+            }
+            
             $This.Update(0,"[~] Path : [$($This.Path)]")
-            ForEach ($Item in Get-ChildItem $This.Path -Recurse)
+            ForEach ($Item in Get-ChildItem $This.Path -Recurse | Sort-Object -Descending)
             {
                 $This.Update(0,"[~] $($Item.Fullname)")
-                Remove-Item $Item.Fullname -Confirm:$False
+
+                # Verbosity level
+                Switch ($This.Mode)
+                { 
+                    Default { Remove-Item $Item.Fullname -Confirm:$False } 
+                    2       { Remove-Item $Item.Fullname -Confirm:$False -Verbose } 
+                }
             }
+
+            $This.Update(1,"[ ] Removed : $($Item.Fullname)")
+
+            $This.DumpConsole()
         }
         Stop()
         {
             $This.Update(0,"[~] Stopping : $($This.Name)")
-            $This.Get() | ? State -ne Off | Stop-VM -Verbose -Force
+            
+            # Verbosity level
+            Switch ($This.Mode)
+            {
+                Default { $This.Get() | ? State -ne Off | Stop-VM -Force }
+                2       { $This.Get() | ? State -ne Off | Stop-VM -Force -Verbose }
+            }
         }
         [Object] GetVmFirmware()
         {
@@ -247,31 +360,139 @@
             $Item = Switch ($This.Generation) 
             { 
                 1 
-                { 
-                    Get-VmBios -VmName $This.Name 
+                {
+                    # Verbosity level
+                    Switch ($This.Mode)
+                    { 
+                        Default { Get-VmBios -VmName $This.Name } 
+                        2       { Get-VmBios -VmName $This.Name -Verbose } 
+                    }
                 } 
                 2 
-                { 
-                    Get-VmFirmware -VmName $This.Name
+                {
+                    # Verbosity level
+                    Switch ($This.Mode)
+                    {
+                        Default { Get-VmFirmware -VmName $This.Name }
+                        2       { Get-VmFirmware -VmName $This.Name -Verbose }
+                    }
                 } 
             }
 
             Return $Item
         }
+        SetVmProcessor()
+        {
+            $This.Update(0,"[~] Setting VmProcessor (Count): [$($This.Core)]")
+            
+            # Verbosity level
+            Switch ($This.Mode)
+            {
+                Default { Set-VmProcessor -VMName $This.Name -Count $This.Core }
+                2       { Set-VmProcessor -VMName $This.Name -Count $This.Core -Verbose }
+            }
+        }
+        SetVmDvdDrive([String]$Path)
+        {
+            If (![System.IO.File]::Exists($Path))
+            {
+                $This.Error(-1,"[!] Invalid path : [$Path]")
+            }
+
+            $This.Update(0,"[~] Setting VmDvdDrive (Path): [$Path]")
+
+            # Verbosity level
+            Switch ($This.Mode) 
+            { 
+                Default { Set-VmDvdDrive -VMName $This.Name -Path $Path } 
+                2       { Set-VmDvdDrive -VMName $This.Name -Path $Path -Verbose }
+            }
+        }
+        SetVmBootOrder([UInt32]$1,[UInt32]$2,[UInt32]$3)
+        {
+            $This.Update(0,"[~] Setting VmFirmware (Boot order) : [$1,$2,$3]")
+
+            $Fw = $This.GetVmFirmware()
+                
+            # Verbosity level
+            Switch ($This.Mode) 
+            { 
+                Default { Set-VMFirmware -VMName $This.Name -BootOrder $Fw.BootOrder[$1,$2,$3] } 
+                2       { Set-VMFirmware -VMName $This.Name -BootOrder $Fw.BootOrder[$1,$2,$3] -Verbose } 
+            }
+        }
+        AddVmDvdDrive()
+        {
+            $This.Update(0,"[+] Adding VmDvdDrive()")
+
+            # Verbosity level
+            Switch ($This.Mode)
+            {
+                Default { Add-VmDvdDrive -VMName $This.Name }
+                2       { Add-VmDvdDrive -VMName $This.Name -Verbose }
+            }
+        }
+        LoadIso([String]$Path)
+        {
+            If (![System.IO.File]::Exists($Path))
+            {
+                $This.Error(-1,"[!] Invalid ISO path : [$Path]")
+            }
+
+            Else
+            {
+                $This.Iso = $Path
+                $This.SetVmDvdDrive($This.Iso)
+            }
+        }
+        UnloadIso()
+        {
+            $This.Update(0,"[+] Unloading ISO")
+            
+            # Verbosity level
+            Switch ($This.Mode)
+            {
+                Default { Set-VmDvdDrive -VMName $This.Name -Path $Null }
+                2       { Set-VmDvdDrive -VMName $This.Name -Path $Null -Verbose }
+            }
+        }
+        SetIsoBoot()
+        {
+            If (!$This.Iso)
+            {
+                $This.Error(-1,"[!] No (*.iso) file loaded")
+            }
+
+            ElseIf ($This.Generation -eq 2)
+            {
+                $This.SetVmBootOrder(2,0,1)
+            }
+        }
+        TypeChain([UInt32[]]$Array)
+        {
+            ForEach ($Key in $Array)
+            {
+                $This.TypeKey($Key)
+                Start-Sleep -Milliseconds 125
+            }
+        }
         TypeKey([UInt32]$Index)
         {
             $This.Update(0,"[+] Typing key : [$Index]")
             $This.Keyboard.TypeKey($Index)
+            Start-Sleep -Milliseconds 125
         }
         TypeText([String]$String)
         {
             $This.Update(0,"[+] Typing text : [$String]")
             $This.Keyboard.TypeText($String)
+            Start-Sleep -Milliseconds 125
         }
         TypePassword([String]$Pass)
         {
             $This.Update(0,"[+] Typing password : [ActualPassword]")
             $This.Keyboard.TypeText($Pass)
+            Start-Sleep -Milliseconds 125
         }
         PressKey([UInt32]$Index)
         {
@@ -294,63 +515,202 @@
             $This.Update(0,"[+] Typing (CTRL + ALT + DEL)")
             $This.Keyboard.TypeCtrlAltDel()
         }
-        SetVmProcessor()
+        Idle([UInt32]$Percent,[UInt32]$Seconds)
         {
-            $This.Update(0,"[~] Setting VmProcessor (Count): [$($This.Core)]")
-            Set-VmProcessor -VMName $This.Name -Count $This.Core -Verbose
-        }
-        SetVmDvdDrive([String]$Path)
-        {
-            If (![System.IO.File]::Exists($Path))
+            $This.Update(0,"[~] Idle : $($This.Name) [CPU <= $Percent% for $Seconds second(s)]")
+            
+            $C = 0
+            Do
             {
-                $This.Update(-1,"[!] Invalid path : [$Path]")
-                Throw $This.Console.Last().String
+                Switch ([UInt32]($This.Get().CpuUsage -le $Percent))
+                {
+                    0 { $C = 0 } 1 { $C ++ }
+                }
+
+                Start-Sleep -Seconds 1
+            }
+            Until ($C -ge $Seconds)
+
+            $This.Update(1,"[+] Idle complete")
+        }
+        Uptime([UInt32]$Seconds)
+        {
+            $This.Update(0,"[~] Uptime : $($This.Name) [Uptime <= $Seconds second(s)]")
+            
+            Do
+            {
+                Start-Sleep -Seconds 1
+            }
+            Until ($This.Get().Uptime.TotalSeconds -le $Seconds)
+
+            $This.Update(1,"[+] Uptime complete")
+        }
+        Timer([UInt32]$Seconds)
+        {
+            $This.Update(0,"[~] Timer : $($This.Name) [Span = $Seconds]")
+
+            $C = 0
+            Do
+            {
+                Start-Sleep -Seconds 1
+                $C ++
+            }
+            Until ($C -ge $Seconds)
+
+            $This.Update(1,"[+] Timer")
+        }
+        SetAdmin([Object]$Admin)
+        {
+            $This.Update(0,"[~] Setting : Administrator password")
+            ForEach ($X in 0..1)
+            {
+                $This.TypePassword($Admin.Password())
+                $This.TypeKey(9)
+                Start-Sleep -Milliseconds 125
             }
 
-            $This.Update(0,"[~] Setting VmDvdDrive (Path): [$Path]")
-            Set-VmDvdDrive -VMName $This.Name -Path $Path -Verbose
+            $This.TypeKey(9)
+            Start-Sleep -Milliseconds 125
+            $This.TypeKey(13)
         }
-        SetVmBootOrder([UInt32]$1,[UInt32]$2,[UInt32]$3)
+        Login([Object]$Admin)
         {
-            $This.Update(0,"[~] Setting VmFirmware (Boot order) : [$1,$2,$3]")
-            $This.GetVmFirmware() | % { Set-VMFirmware -VMName $This.Name -BootOrder $_.BootOrder[$1,$2,$3] }
+            $This.Update(0,"[~] Login : Administrator")
+            $This.TypeCtrlAltDel()
+            $This.Timer(5)
+            $This.TypePassword($Admin.Password())
+            Start-Sleep -Milliseconds 125
+            $This.TypeKey(13)
         }
-        AddVmDvdDrive()
+        [Object] GetNetworkConfig()
         {
-            $This.Update(0,"[+] Adding VmDvdDrive()")
-            Add-VmDvdDrive -VMName $This.Name -Verbose
-        }
-        LoadIso([String]$Path)
-        {
-            If (![System.IO.File]::Exists($Path))
+            $This.Update(0,"[~] Getting Network Configuration")
+            $Cfg  = Get-NetIPConfiguration -Detailed | ? InterfaceAlias -match $This.SwitchName[0]
+            $Item = [NetworkInformation]::New($Cfg)
+
+            ForEach ($Prop in $Item.PSObject.Properties)
             {
-                $This.Update(-1,"[!] Invalid ISO path : [$Path]")
-                Throw $This.Console.Last().String
+                $This.Update(1,"[+] $($Prop.Name.PadRight(8," ")) : $($Prop.Value)")
             }
 
-            Else
+            Return $Item
+        }
+        SetSystemInfo()
+        {
+            $B = @( )
+
+            # Set Computer Info
+            $B += '# Set Computer Info'
+            $B += '$ComputerName   = "{0}"' -f $This.Name
+            $B += '$IPAddress      = "{0}"' -f $This.Network.Address
+            $B += '$PrefixLength   = "{0}"' -f $This.Network.Prefix
+            $B += '$DefaultGateway = "{0}"' -f $This.Network.Gateway
+            $B += '$DnsAddress     = "{0}"' -f $This.Network.Dns
+            $B += ''
+
+            # Enable ICMPv4
+            $B += '# Enable ICMPv4'
+            $B += 'Get-NetFirewallRule | ? Description -match "(Printer.+ICMPv4)" | Enable-NetFirewallRule'
+            $B += ''
+
+            # Get InterfaceIndex, get/remove current (IP address + Net Route)
+            $B += '# Get InterfaceIndex, get/remove current (IP address + Net Route)'
+            $B += '$Index = Get-NetAdapter | ? Status -eq Up | % InterfaceIndex'
+            $B += '$Interface = Get-NetIPAddress -AddressFamily IPv4 -InterfaceIndex $Index'
+            $B += '$Interface | Remove-NetIPAddress -AddressFamily IPv4 -Confirm:$False -Verbose'
+            $B += '$Interface | Remove-NetRoute     -AddressFamily IPv4 -Confirm:$False -Verbose'
+            $B += ''
+            
+            # Splat static IP Address
+            $B += '# Splat static IP Address'
+            $B += '$Splat             = @{'
+            $B += ' '
+            $B += '    InterfaceIndex = $Index'
+            $B += '    AddressFamily  = "IPv4"'
+            $B += '    PrefixLength   = $PrefixLength'
+            $B += '    ValidLifetime  = [Timespan]::MaxValue'
+            $B += '    IPAddress      = $IPAddress'
+            $B += '    DefaultGateway = $DefaultGateway'
+            $B += '}'
+            $B += ''
+
+            # Assign (static IP Address + Dns server)
+            $B += '# Assign (static IP Address + Dns server)'
+            $B += 'New-NetIPAddress @Splat'
+            $B += 'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses $DnsAddress'
+            $B += ''
+
+            # Set (service point manager/TLS), execution policy
+            $B += '# Set (service point manager/TLS), execution policy'
+            $B += '[Net.ServicePointManager]::SecurityProtocol = 3072'
+            $B += 'Set-ExecutionPolicy Bypass -Scope Process -Force'
+            $B += ''
+
+            # (Download/Instantiate/Execute/Import) FightingEntropy
+            $B += '# (Download/Instantiate/Execute/Import) FightingEntropy'
+            $B += '$Install = "https://github.com/mcc85s/FightingEntropy"'
+            $B += '$Full    = "$Install/blob/main/Version/2022.12.0/FightingEntropy.ps1?raw=true"'
+            $B += 'Invoke-RestMethod $Full | Invoke-Expression'
+            $B += '$Module.Install()'
+            $B += 'Import-Module FightingEntropy'
+            $B += ''
+
+            # (Rename + restart) computer
+            $B += '# (Rename + restart) computer'
+            $B += 'Rename-Computer $ComputerName'
+            $B += 'Restart-Computer'
+
+            $This.Script = $B
+
+            ForEach ($Line in $This.Script)
             {
-                $This.Iso = $Path
-                $This.SetVmDvdDrive($This.Iso)
+                $This.TypeText($Line)
+                If ($Line.Length -eq 0)
+                {
+                    $This.Idle(5,2)
+                }
+                Else
+                {
+                    $This.TypeKey(13)
+                }
             }
         }
-        UnloadIso()
+        [String] ProgramData()
         {
-            $This.Update(0,"[+] Unloading ISO")
-            Set-VmDvdDrive -VMName $This.Name -Path $Null -Verbose
+            Return [Environment]::GetEnvironmentVariable("ProgramData")
         }
-        SetIsoBoot()
+        [String] Author()
         {
-            If (!$This.Iso)
+            Return "Secure Digits Plus LLC"
+        }
+        [Object] Now()
+        {
+            Return [DateTime]::Now.ToString("yyyy-MMdd_HHmmss")
+        }
+        [String] LogPath()
+        {
+            $xPath = $This.ProgramData()
+
+            ForEach ($Folder in $This.Author(), "Logs")
             {
-                $This.Update(-1,"[!] No (*.iso) file loaded")
-                Throw $This.Console.Last().String
+                $xPath = $xPath, $Folder -join "\"
+                If (![System.IO.Directory]::Exists($xPath))
+                {
+                    [System.IO.Directory]::CreateDirectory($xPath)
+                }
             }
 
-            ElseIf ($This.Generation -eq 2)
-            {
-                $This.SetVmBootOrder(2,0,1)
-            }
+            Return $xPath
+        }
+        DumpConsole()
+        {
+            $This.Console.Finalize()
+            $xPath = "{0}\{1}-{2}.log" -f $This.LogPath(), $This.Now(), $This.Name
+            $This.Update(99,"[+] Dumping console: [$xPath]")
+            
+            $Value = $This.Console.Output | % ToString
+
+            [System.IO.File]::WriteAllLines($xPath,$Value)
         }
         [String] ToString()
         {
@@ -358,46 +718,19 @@
         }
     }
 
-    Function Wait-Idle ([Object]$Vm,[UInt32]$Percent,[UInt32]$Count)
-    {
-        $Vm.Update(0,"[~] Wait condition : $($Vm.Name), [CpuUsage : -le $Percent % | Seconds : $Count]")
-        $C = 0
-        Do
-        {
-            Switch ([UInt32]($Vm.Get().CpuUsage -le $Percent))
-            {
-                0 { $C = 0 } 1 { $C ++ }
-            }
-
-            Start-Sleep 1
-        }
-        Until ($C -ge $Count)
-        $Vm.Update(1,"[+] Wait condition : Succeeded")
-    }
-
-    Function Wait-Uptime ([Object]$Vm,[UInt32]$Count)
-    {
-        $Vm.Update(0,"[~] Wait condition : $($Vm.Name), [Uptime : -le $Count seconds]")
-        Do
-        {
-            Start-Sleep 1
-        }
-        Until ($Vm.Get().Uptime.TotalSeconds -le $Count)
-        $Vm.Update(0,"[~] Wait condition : Succeeded")
-    }
-
     # // Initial information
-    $Name   = "server02"
-    $Base   = "C:\VDI"
-    $Memory = 2048MB
-    $Hdd    = 64GB
-    $Gen    = 2
-    $Core   = 2
-    $Switch = "External"
-    $Image  = "C:\Images\Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO"
+    $Admin    = [AdminCredential]::New("Administrator")
+    $Name     = "server02"
+    $Base     = "C:\VDI"
+    $Memory   = 2048MB
+    $Hdd      = 64GB
+    $Gen      = 2
+    $Core     = 2
+    $SwitchID = "External"
+    $Image    = "C:\Images\Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO"
 
     # // Object instantiation
-    $Vm     = [VmObjectNode]::New($Name,$Base,$Memory,$Hdd,$Gen,$Core,$Switch)
+    $Vm       = [VmObjectNode]::New(1,$Name,$Base,$Memory,$Hdd,$Gen,$Core,$SwitchID)
     $Vm.New()
     $Vm.AddVmDvdDrive()
     $Vm.LoadIso($Image)
@@ -409,88 +742,66 @@
     $Vm.Control  = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $Vm.Name
     $Vm.Keyboard = Get-WmiObject -Query "ASSOCIATORS OF {$($Vm.Control.Path.Path)} WHERE resultClass = Msvm_Keyboard" -NS Root\Virtualization\V2
 
-    # $Vm.Stop()
-    Start-Sleep 2
+    # Wait for "Press enter to boot from CD/DVD", then press enter
+    $Vm.Timer(2)
     $Vm.TypeKey(13)
 
-    # Wait for menu
-    Wait-Idle $Vm 5 2
+    # Wait for "Install Windows" menu
+    $Vm.Idle(5,2)
 
     # Enter Menu
     $Vm.TypeKey(13)
-    Start-Sleep 5
+    $Vm.Timer(5)
     $Vm.TypeKey(13)
 
     # Wait to select installation
-    Wait-Idle $Vm 5 5
+    $Vm.Idle(5,5)
 
     # Select installation
-    40,40,40,13 | % {
-
-        $Vm.TypeKey($_)
-        Start-Sleep -Milliseconds 250
-    }
+    $Vm.TypeChain(@(40,40,40,13))
 
     # Wait to accept license terms
-    Wait-Idle $Vm 5 2
+    $Vm.Idle(5,2)
 
     # Accept license terms
-    32,9,9,9,9,13 | % {
-
-        $Vm.TypeKey($_)
-        Start-Sleep -Milliseconds 250
-    }
+    $Vm.TypeChain(@(32,9,9,9,9,13))
 
     # Wait Windows Setup
-    Wait-Idle $Vm 5 2
+    $Vm.Idle(5,2)
 
     # Windows Setup
     $Vm.SpecialKey(67)
 
     # Wait partition
-    Wait-Idle $Vm 5 2
+    $Vm.Idle(5,2)
 
     # Set partition
     $Vm.SpecialKey(78)
 
     # Wait until Windows installation completes
-    Wait-Idle $Vm 5 5
+    $Vm.Idle(5,5)
 
     # When inactivity rises, it is about to reboot, catch and release ISO
-    Wait-Uptime $Vm 5
+    $Vm.Uptime(5)
     $Vm.UnloadIso()
 
     # Wait for the login screen
-    Wait-Idle $Vm 5 10
+    $Vm.Idle(5,8)
 
     # Administrator creation, type somewhat secure password (2) times (or else)
-    0..1 | % {
-
-        $Vm.TypePassword($Cred.GetNetworkCredential().Password)
-        $Vm.TypeKey(9)
-        Start-Sleep -Milliseconds 250
-    }
-    
-    $Vm.TypeKey(9)
-    Start-Sleep -Milliseconds 250
-    $Vm.TypeKey(13)
+    $Vm.SetAdmin($Admin)
 
     # Wait for actual login
-    Wait-Idle $Vm 5 5
+    $Vm.Idle(5,5)
 
     # Enter (CTRL + ALT + DEL) to sign into Windows
-    $Vm.TypeCtrlAltDel()
-    Start-Sleep 5
-    $Vm.TypePassword($Cred.GetNetworkCredential().Password)
-    Start-Sleep -Milliseconds 250
-    $Vm.TypeKey(13)
+    $Vm.Login($Admin)
 
     # Wait for operating system to do [FirstRun/FirstLogin] stuff
-    Wait-Idle $Vm 5 5
+    $Vm.Idle(5,5)
 
     # Press enter for Network to allow pc to be discoverable
     $Vm.TypeKey(13)
-    Start-Sleep -Milliseconds 250
 
     # Open Start Menu
     $Vm.TypeKey(91)
@@ -498,142 +809,29 @@
 
     # Launch task manager
     $Vm.TypeText("taskmgr")
-    Start-Sleep 3
+    $Vm.Timer(3)
     $Vm.TypeKey(13)
-    Start-Sleep 1
+    $Vm.Timer(1)
     
     # [D]etails
     $Vm.SpecialKey(68)
-    Start-Sleep 2
+    $Vm.Timer(2)
 
     # [F]ile
     $Vm.SpecialKey(70)
-    Start-Sleep 2
+    $Vm.Timer(2)
 
     # New Task
     $Vm.TypeKey(13)
-    Start-Sleep 2
+    $Vm.Timer(2)
 
     # Launch PowerShell w/ Administrative privileges
     $Vm.TypeText("PowerShell")
-    Start-Sleep 1
+    $Vm.Timer(1)
+    $Vm.TypeChain(@(9,32,9,13))
 
-    ForEach ($Key in 9,32,9,13)
-    {
-        $Vm.TypeKey($Key)
-        Start-Sleep -Milliseconds 250
-    }
+    # Wait for PowerShell engine to get ready for input
+    $Vm.Idle(5,5)
 
-    # Begin scripting
-
-    # Enable ICMPv4
-    $Vm.TypeText('Get-NetFirewallRule | ? Description -match "(Printer.+ICMPv4)" | Enable-NetFirewallRule')
-    $Vm.TypeKey(13)
-    Start-Sleep 3
-
-    # IPConfig info
-    $Kb.TypeText('$IPAddress      = "192.168.1.105"')
-    $Kb.TypeKey(13)
-
-    $Kb.TypeText('$DefaultGateway = "192.168.1.1"')
-    $Kb.TypeKey(13)
-
-    $Kb.TypeText('$DnsAddress     = $DefaultGateway')
-    $Kb.TypeKey(13)
-
-    # Get InterfaceIndex
-    $Kb.TypeText('$InterfaceIndex = Get-NetAdapter | ? Status -eq Up | % InterfaceIndex')
-    $Kb.TypeKey(13)
-
-    # Get current IP address (if any), and remove it
-    $Kb.TypeText('Get-NetIPAddress -AddressFamily IPv4 -InterfaceIndex $InterfaceIndex | Remove-NetIPAddress -Confirm:$False -Verbose')
-    $Kb.TypeKey(13)
-
-    # Get current Net Route (if any), and remove it
-    $Kb.TypeText('Remove-NetRoute -InterfaceIndex $InterfaceIndex -Confirm:$False')
-    $Kb.TypeKey(13)
-
-    # Splat static IP Address
-    $Kb.TypeText('$Splat = @{')
-    $Kb.TypeKey(13)
-
-    $Kb.TypeText('InterfaceIndex = $InterfaceIndex')
-    $Kb.TypeKey(13)
-
-    $Kb.TypeText('IPAddress = $IPAddress')
-    $Kb.TypeKey(13)
-
-    $Kb.TypeText('PrefixLength   = 24')
-    $Kb.TypeKey(13)
-
-    $Kb.TypeText('DefaultGateway = $DefaultGateway }')
-    $Kb.TypeKey(13)
-
-    # Assign static IP Address
-    $Kb.TypeText('New-NetIPAddress @Splat')
-    $Kb.TypeKey(13)
-
-    # DnsAddress
-    $Kb.TypeText('Set-DnsClientServerAddress -InterfaceIndex $InterfaceIndex -ServerAddresses $DnsAddress')
-    $Kb.TypeKey(13)
-
-    # Service Point Manager/TLS
-    $Kb.TypeText('[Net.ServicePointManager]::SecurityProtocol = 3072')
-    $Kb.TypeKey(13)
-
-    # Set Execution Policy 
-    $Kb.TypeText('Set-ExecutionPolicy Bypass -Scope Process -Force')
-    $Kb.TypeKey(13)
-    
-    # Download FightingEntropy
-    $Kb.TypeText('Invoke-RestMethod github.com/mcc85s/FightingEntropy/blob/main/Version/2022.12.0/FightingEntropy.ps1?raw=true | iex')
-    $Kb.TypeKey(13)
-
-    # Install FightingEntropy
-    $Kb.TypeText('$Module.Install()')
-    $Kb.TypeKey(13)
-
-    # Import FightingEntropy
-    $Kb.TypeText('Import-Module FightingEntropy')
-    $Kb.TypeKey(13)
-
-    # Rename computer
-    $Kb.TypeText('Rename-Computer $Name')
-    $Kb.TypeKey(13)
-
-    # Restart
-    $Kb.TypeText('Restart-Computer')
-    $Kb.TypeKey(13)
-
-    
-
-    # Desktop
-    $Kb.PressKey(91)
-    $Kb.TypeKey(68)
-    $Kb.ReleaseKey(91)
-
-    # FightingEntropy icon
-    $Kb.TypeKey(40)
-    
-    $Kb.TypeKey(13)
-    Start-Sleep 20
-    
-    $Kb.TypeKey(9)
-    $Kb.TypeKey(27)
-
-    $Kb.TypeKey(13)
-
-    $Kb.TypeText("Rename-Computer $Name")
-    $Kb.TypeKey(13)
-
-    $Kb.TypeText("Restart-Computer")
-    $Kb.TypeKey(13)
-
-
-    # Enter CTRL + ALT + DEL to sign into Windows
-    $Kb.TypeCtrlAltDel()
-    Start-Sleep 5
-    $Kb.TypeText($Cred.GetNetworkCredential().Password)
-    Start-Sleep -Milliseconds 250
-    $Kb.TypeKey(13)
-    Start-Sleep 30
+    # Set System Info
+    $Vm.SetSystemInfo()
