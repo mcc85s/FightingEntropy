@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-11 01:05:03                                                                  //
+\\  Date       : 2023-01-11 06:20:59                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -1907,7 +1907,7 @@ Function Get-FEModule
                             $Com                 = New-Object -ComObject WScript.Shell
                             $Object              = $Com.CreateShortcut($Item.Fullname)
                             $Object.TargetPath   = "PowerShell"
-                            $Object.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command 'Get-FEModule -Mode 1'"
+                            $Object.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command `"Get-FEModule -Mode 1`""
                             $Object.Description  = $This.Description
                             $Object.IconLocation = $This._Graphic("icon.ico").Fullname
                             $Object.Save()
