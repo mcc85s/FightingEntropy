@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-11 05:43:33
+    # Last edited : 2023-01-11 05:53:27
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (2) virtual servers to work together as an Active Directory domain controller cluster
@@ -875,6 +875,8 @@
             $This.TypeKey(13)
             $This.Timer(2)
 
+            $B = @( )
+
             # Splat Self-Signed Certificate
             $B += '# Create Self-Signed Certificate'
             $B += '$Splat               = @{'
@@ -933,6 +935,8 @@
         }
         InstallFightingEntropy()
         {
+            $B = @( )
+
             # Set (service point manager/TLS), execution policy
             $B += '# Set (service point manager/TLS), execution policy'
             $B += '[Net.ServicePointManager]::SecurityProtocol = 3072'
@@ -967,6 +971,8 @@
         }
         RenameRestart()
         {
+            $B = @( )
+            
             # (Rename + restart) computer
             $B += '# (Rename + restart) computer'
             $B += 'Rename-Computer $ComputerName'
