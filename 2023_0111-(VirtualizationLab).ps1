@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-10 22:05:27
+    # Last edited : 2023-01-11 03:47:46
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (2) virtual servers to work together as an Active Directory domain controller cluster
@@ -45,6 +45,46 @@
         }
     }
 
+    # // ============================================
+    # // | Object returned from a ping (sweep/scan) |
+    # // ============================================
+
+    Class V4PingResponse
+    {
+        Hidden [UInt32]   $Index
+        Hidden [UInt32]  $Status
+        [String]      $IpAddress
+        [String]       $Hostname
+        V4PingResponse([UInt32]$Index,[String]$Address,[Object]$Reply)
+        {
+            $This.Index          = $Index
+            $This.Status         = $Reply.Result.Status -match "Success"
+            $This.IPAddress      = $Address
+        }
+        GetHostname()
+        {
+            $This.Hostname       = Try 
+            { 
+                [System.Net.Dns]::Resolve($This.IPAddress).Hostname 
+            } 
+            Catch 
+            { 
+                "<Unknown>" 
+            }
+        }
+        Domain([String]$Domain)
+        {
+            If ($This.Hostname -match $Domain)
+            {
+                $This.Hostname = ("{0}.{1}" -f $This.Hostname, $Domain)
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.IPAddress
+        }
+    }
+
     # // ========================================================
     # // | Aggregates valid (static IP/prefix/gateway/dns) info |
     # // ========================================================
@@ -52,6 +92,7 @@
     Class NetworkInformation
     {
         Hidden [Object] $Config
+        [String]       $Trusted
         [String]       $Address
         [UInt32]        $Prefix
         [String]       $Gateway
@@ -59,16 +100,112 @@
         NetworkInformation([Object]$Config)
         {
             $This.Config    = $Config
-            $This.Address   = $This.GetIpAddress()
+            $This.Trusted   = $Config.IPv4Address.IpAddress.ToString()
             $This.Prefix    = $Config.IPv4Address.PrefixLength
             $This.Gateway   = $Config.IPv4DefaultGateway.NextHop
             $This.Dns       = $This.GetDns()
+            $This.Address   = $This.GetIpAddress()
         }
         [String] GetIpAddress()
         {
-            $S    = $This.Config.IPv4Address.IpAddress.ToString().Split(".")
-            $S[3] = [UInt32]$S[3] + 1
-            Return $S -join "."
+            $PF       = $This.Config.IPv4Address.PrefixLength
+            $IP       = [UInt32[]]($This.Config.IPv4Address.IPAddress -Split "\.")
+
+            # Convert IP and PrefixLength into binary, netmask, and wildcard
+            $Binary   = (0..31 | % { [Int32]($_ -lt $PF); If ($_ -in 7,15,23) {"."} }) -join ''
+            $Netmask  = [UInt32[]]($Binary -Split "\." | % { [Convert]::ToInt32($_,2 ) })
+            $Wildcard = $Netmask | % { (256-$_) - 1 }
+
+            # Convert wildcard into total host range
+            $Hash     = @{ } 
+            ForEach ($X in 0..3)
+            {
+                Switch ($Wildcard[$X])
+                {
+                    0 
+                    { 
+                        $Hash.Add($X,$IP[$X])
+                    }
+                    Default
+                    {
+                        $Hash.Add($X,($Netmask[$X])..($Netmask[$X]+$Wildcard[$X]))
+                    }
+                }
+            }
+
+            # Build host range
+            $Range   = @{ }
+            ForEach ($0 in $Hash[0])
+            {
+                ForEach ($1 in $Hash[1])
+                {
+                    ForEach ($2 in $Hash[2])
+                    {
+                        ForEach ($3 in $Hash[3])
+                        {
+                            $Range.Add($Range.Count,"$0.$1.$2.$3")
+                        }
+                    }
+                }
+            }
+
+            # Subtract network + broadcast addresses
+            $Range = $Range[1..($Range.Count-2)]
+
+            # Ping asynchronously
+            If ($Range.Count -gt 0)
+            {
+                $List = $This.V4PingSweep($Range) | ? Status
+            }
+
+            Return ($Range | ? {$_ -notin $List.IpAddress})[0]
+        }
+        [Object] V4PingOptions()
+        {
+            Return [System.Net.NetworkInformation.PingOptions]::New()
+        }
+        [Object] V4PingBuffer()
+        {
+            Return 97..119 + 97..105 | % { "0x{0:X}" -f $_ }
+        }
+        [Object] V4Ping([String]$Ip)
+        {
+            $Item = [System.Net.NetworkInformation.Ping]::New()
+            Return $Item.SendPingAsync($Ip,100,$This.V4PingBuffer(),$This.V4PingOptions())
+        }
+        [Object] V4PingResponse([UInt32]$Index,[Object]$Ip,[Object]$Ping)
+        {
+            Return [V4PingResponse]::New($Index,$Ip,$Ping)
+        }
+        [Object[]] V4PingSweep([String[]]$Hosts)
+        {
+            $Ping                = @{ }
+            $Response            = @{ }
+
+            If ($Hosts.Count -eq 1)
+            {
+                $Ping.Add(0,$This.V4Ping($Hosts[0]))
+                $Response.Add(0,$This.V4PingResponse(0,$Hosts[0],$Ping[0]))
+                Return $Response[0]
+            }
+            ElseIf ($Hosts.Count -gt 1)
+            {
+                ForEach ($X in 0..($Hosts.Count-1))
+                { 
+                    $Ping.Add($Ping.Count,$This.V4Ping($Hosts[$X]))
+                }
+        
+                ForEach ($X in 0..($Ping.Count-1)) 
+                {
+                    $Response.Add($X,$This.V4PingResponse($X,$Hosts[$X],$Ping[$X]))
+                }
+        
+                Return $Response[0..($Response.Count-1)]
+            }
+            Else
+            {
+                Return $Null
+            }
         }
         [String] GetDns()
         {
@@ -133,6 +270,14 @@
         [Object]            $Guid
         Hidden [Object]  $Control
         Hidden [Object] $Keyboard
+        VmObjectNode([Object]$Vm)
+        {
+            $This.Mode = 1
+            $This.StartConsole()
+            $This.Name = $Vm.Name
+            $This.Path = $Vm.Path | Split-Path 
+            $This.Vhd  = $Vm.HardDrives[0] | Get-Vhd | % Path
+        }
         VmObjectNode([String]$Name,[String]$Base,[UInt64]$Memory,[UInt64]$HDD,[UInt32]$Generation,[UInt32]$Core,[String]$Switch)
         {
             $This.Mode = 0
@@ -254,23 +399,72 @@
         Start()
         {
             $Vm = $This.Get()
-            If (!!$Vm)
-            {
-                If ($Vm.State -ne "Running")
-                {
-                    $This.Update(1,"[~] Starting : $($This.Name)")
-
-                    # Verbosity level
-                    Switch ($This.Mode) 
-                    { 
-                        Default { $Vm | Start-VM }
-                        2 { $Vm | Start-VM -Verbose }
-                    }
-                }
-            }
-            ElseIf (!$Vm)
+            If (!$Vm)
             {
                 $This.Error(-1,"[!] Exception : $($This.Name) [does not exist]")
+            }
+            
+            ElseIf ($Vm.State -eq "Running")
+            {
+                $This.Error(-1,"[!] Exception : $($This.Name) [already started]")
+            }
+
+            Else
+            {
+                $This.Update(1,"[~] Starting : $($This.Name)")
+
+                # Verbosity level
+                Switch ($This.Mode) 
+                { 
+                    Default { $Vm | Start-VM }
+                    2       { $Vm | Start-VM -Verbose }
+                }
+            }
+        }
+        Stop()
+        {
+            $Vm = $This.Get()
+            If (!$Vm)
+            {
+                $This.Error(-1,"[!] Exception : $($This.Name) [does not exist]")
+            }
+
+            ElseIf ($Vm.State -ne "Running")
+            {
+                $This.Error(-1,"[!] Exception : $($This.Name) [not running]")
+            }
+
+            Else
+            {
+                $This.Update(0,"[~] Stopping : $($This.Name)")
+            
+                # Verbosity level
+                Switch ($This.Mode)
+                {
+                    Default { $This.Get() | ? State -ne Off | Stop-VM -Force }
+                    2       { $This.Get() | ? State -ne Off | Stop-VM -Force -Verbose }
+                }
+            }
+        }
+        Reset()
+        {
+            $Vm = $This.Get()
+            If (!$Vm)
+            {
+                $This.Error(-1,"[!] Exception : $($This.Name) [does not exist]")
+            }
+
+            ElseIf ($Vm.State -ne "Running")
+            {
+                $This.Error(-1,"[!] Exception : $($This.Name) [not running]")
+            }
+
+            Else
+            {
+                $This.Update(0,"[~] Restarting : $($This.Name)")
+                $This.Stop()
+                $This.Start()
+                $This.Idle(5,5)
             }
         }
         Remove()
@@ -342,17 +536,6 @@
             $This.Update(1,"[ ] Removed : $($Item.Fullname)")
 
             $This.DumpConsole()
-        }
-        Stop()
-        {
-            $This.Update(0,"[~] Stopping : $($This.Name)")
-            
-            # Verbosity level
-            Switch ($This.Mode)
-            {
-                Default { $This.Get() | ? State -ne Off | Stop-VM -Force }
-                2       { $This.Get() | ? State -ne Off | Stop-VM -Force -Verbose }
-            }
         }
         [Object] GetVmFirmware()
         {
@@ -559,6 +742,18 @@
 
             $This.Update(1,"[+] Timer")
         }
+        Connection()
+        {
+            $This.Update(0,"[~] Connection : $($This.Name) [Await response]")
+
+            Do
+            {
+                Start-Sleep 1
+            }
+            Until (Test-Connection $This.Network.Address -EA 0)
+
+            $This.Update(1,"[+] Connection")
+        }
         SetAdmin([Object]$Admin)
         {
             $This.Update(0,"[~] Setting : Administrator password")
@@ -597,11 +792,12 @@
         }
         SetSystemInfo()
         {
-            $B = @( )
+            $B          = @( )
 
             # Set Computer Info
             $B += '# Set Computer Info'
             $B += '$ComputerName   = "{0}"' -f $This.Name
+            $B += '$TrustedHost    = "{0}"' -f $This.Network.Trusted
             $B += '$IPAddress      = "{0}"' -f $This.Network.Address
             $B += '$PrefixLength   = "{0}"' -f $This.Network.Prefix
             $B += '$DefaultGateway = "{0}"' -f $This.Network.Gateway
@@ -640,6 +836,37 @@
             $B += 'Set-DnsClientServerAddress -InterfaceIndex $Index -ServerAddresses $DnsAddress'
             $B += ''
 
+            # Assign to script, and process each line
+            $B | % { $This.Script += $_ }
+
+            ForEach ($Line in $B)
+            {
+                $This.TypeText($Line)
+                If ($Line.Length -eq 0)
+                {
+                    $This.Idle(5,2)
+                }
+                Else
+                {
+                    $This.TypeKey(13)
+                }
+            }
+        }
+        SetWinRM()
+        {
+            # Enable WinRM/Remote management, Add TrustedHost
+            $This.TypeText('winrm quickconfig')
+            $This.TypeKey(13)
+
+            $This.Timer(2)
+            $This.TypeKey(89)
+            $This.Timer(2)
+
+            $This.TypeText('Set-Item WSMan:\localhost\Client\TrustedHosts -Value $TrustedHost')
+            $This.TypeKey(13)
+        }
+        InstallFightingEntropy()
+        {
             # Set (service point manager/TLS), execution policy
             $B += '# Set (service point manager/TLS), execution policy'
             $B += '[Net.ServicePointManager]::SecurityProtocol = 3072'
@@ -655,14 +882,31 @@
             $B += 'Import-Module FightingEntropy'
             $B += ''
 
+            $B | % { $This.Script += $_ }
+
+            ForEach ($Line in $B)
+            {
+                $This.TypeText($Line)
+                If ($Line.Length -eq 0)
+                {
+                    $This.Idle(5,2)
+                }
+                Else
+                {
+                    $This.TypeKey(13)
+                }
+            }
+        }
+        RenameRestart()
+        {
             # (Rename + restart) computer
             $B += '# (Rename + restart) computer'
             $B += 'Rename-Computer $ComputerName'
             $B += 'Restart-Computer'
 
-            $This.Script = $B
+            $B | % { $This.Script += $_ }
 
-            ForEach ($Line in $This.Script)
+            ForEach ($Line in $B)
             {
                 $This.TypeText($Line)
                 If ($Line.Length -eq 0)
@@ -720,7 +964,7 @@
 
     # // Initial information
     $Admin    = [AdminCredential]::New("Administrator")
-    $Name     = "server02"
+    $Name     = "server01"
     $Base     = "C:\VDI"
     $Memory   = 2048MB
     $Hdd      = 64GB
@@ -742,53 +986,53 @@
     $Vm.Control  = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $Vm.Name
     $Vm.Keyboard = Get-WmiObject -Query "ASSOCIATORS OF {$($Vm.Control.Path.Path)} WHERE resultClass = Msvm_Keyboard" -NS Root\Virtualization\V2
 
-    # Wait for "Press enter to boot from CD/DVD", then press enter
+    # // Wait for "Press enter to boot from CD/DVD", then press enter
     $Vm.Timer(2)
     $Vm.TypeKey(13)
 
-    # Wait for "Install Windows" menu
+    # // Wait for "Install Windows" menu
     $Vm.Idle(5,2)
 
-    # Enter Menu
+    # // Enter menu
     $Vm.TypeKey(13)
     $Vm.Timer(5)
     $Vm.TypeKey(13)
 
-    # Wait to select installation
+    # // Wait to select installation
     $Vm.Idle(5,5)
 
-    # Select installation
+    # // Select installation
     $Vm.TypeChain(@(40,40,40,13))
 
-    # Wait to accept license terms
+    # // Wait to accept license terms
     $Vm.Idle(5,2)
 
-    # Accept license terms
+    # // Accept license terms
     $Vm.TypeChain(@(32,9,9,9,9,13))
 
-    # Wait Windows Setup
+    # // Wait Windows Setup
     $Vm.Idle(5,2)
 
-    # Windows Setup
+    # // Windows Setup
     $Vm.SpecialKey(67)
 
-    # Wait partition
+    # // Wait partition
     $Vm.Idle(5,2)
 
-    # Set partition
+    # // Set partition
     $Vm.SpecialKey(78)
 
-    # Wait until Windows installation completes
+    # // Wait until Windows installation completes
     $Vm.Idle(5,5)
 
-    # When inactivity rises, it is about to reboot, catch and release ISO
+    # // Catch and release ISO upon reboot
     $Vm.Uptime(5)
     $Vm.UnloadIso()
 
-    # Wait for the login screen
+    # // Wait for the login screen
     $Vm.Idle(5,8)
 
-    # Administrator creation, type somewhat secure password (2) times (or else)
+    # // Establish administrator account
     $Vm.SetAdmin($Admin)
 
     # Wait for actual login
@@ -805,7 +1049,7 @@
 
     # Open Start Menu
     $Vm.TypeKey(91)
-    Start-Sleep 3
+    $Vm.Timer(3)
 
     # Launch task manager
     $Vm.TypeText("taskmgr")
@@ -835,3 +1079,13 @@
 
     # Set System Info
     $Vm.SetSystemInfo()
+
+    # Wait until connection is successful
+    $Vm.Connection()
+    
+    # Set WinRM
+    $Vm.SetWinRM()
+
+
+    # Wait for reset
+    $Vm.Idle(5,5)
