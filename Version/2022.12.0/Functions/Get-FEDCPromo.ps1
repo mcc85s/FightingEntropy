@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-11 07:42:30                                                                  //
+\\  Date       : 2023-01-11 12:03:30                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -2320,22 +2320,6 @@ Function Get-FEDCPromo
 
             Return $Item
         }
-        [Object] InstallDomainController([String]$Name,[Hashtable]$Splat)
-        {
-            # Installs/Tests the domain controller promotion 
-            $This.Update(0,"[~] Processing : [$Name]")
-            $Item = Switch ($Name)
-            {
-                AddsForest               {                    Install-ADDSForest @Splat -Confirm:$False }
-                AddsDomain               {                    Install-ADDSDomain @Splat -Confirm:$False }
-                AddsDomainController     {          Install-ADDSDomainController @Splat -Confirm:$False }
-                TestAddsForest           {           Test-ADDSForestInstallation @Splat                 }
-                TestAddsDomain           {           Test-ADDSDomainInstallation @Splat                 }
-                TestAddsDomainController { Test-ADDSDomainControllerInstallation @Splat                 }
-            }
-
-            Return $Item
-        }
         [Object] GetConnection([Object]$Connect)
         {
             # Returns a connection object from a successful AD connection
@@ -3664,19 +3648,12 @@ Function Get-FEDCPromo
                 $This.Update(1,"[~] $Name : $Value")
                 $This.Execution.Output.Add($Name,$Value)
             }
-
-            # [DSRM/Password]
-            $Name  = "SafeModeAdministratorPassword"
-            $Value = "<[System.Security.SecureString]>"
-            $This.Update(1,"[~] $Name : $Value")
-            $Value = $This.Dsrm("Password").Value
-            $This.Execution.Output.Add($Name,$Value)
     
             # [Credential]
             If ($This.Credential)
             {
                 $This.Update(1,"[~] Credential : $($This.Credential)]")
-                $This.Execution.Output.Add($Name,$Value)
+                $This.Execution.Output.Add("Credential",$This.Credential)
             }
     
             # [Replication Source Domain Controller(s)]
@@ -3740,6 +3717,7 @@ Function Get-FEDCPromo
                     $This.Update(0,"[!] Reboot required to proceed")
                     $This.Module.Write($This.Console.Last().Status)
 
+                    $This.Execution.Output.Add("SafeModeAdministratorPassword",$This.Dsrm("Password").Password)
                     $This.Save()
                     $This.RegisterScheduledTask()
 
@@ -3760,29 +3738,31 @@ Function Get-FEDCPromo
             $This.Module.Write($This.Console.Last().Status)
 
             Import-Module AddsDeployment
+            $Splat = $This.Execution.Output.Add("SafeModeAdministratorPassword",$This.Xaml.IO.SafeModeAdministratorPassword.SecurePassword)
 
-            $Item = Switch ($This.Control.Slot)
+            $This.Update(0,"[~] Admin   password: [$($Splat.SafeModeAdministratorPassword)]")
+            $This.Update(0,"[~] Confirm password: [$($This.Xaml.IO.Confirm.Password)]")
+            Switch (!$This.Test)
             {
-                {$_ -eq 0}
+                0
                 {
-                    @("AddsForest","TestAddsForest")[$This.Test]
+                    Switch ($This.Control.Slot)
+                    {
+                        {$_ -eq   0} { Test-ADDSForestInstallation           @Splat }
+                        {$_ -in 1,2} { Test-ADDSDomainInstallation           @Splat }
+                        {$_ -eq   3} { Test-ADDSDomainControllerInstallation @Splat }
+                    }
                 }
-                {$_ -in 1,2}
+                1
                 {
-
-                    @("AddsDomain","TestAddsDomain")[$This.Test]
-                }
-                {$_ -eq 3}
-                {
-                    @("AddsDomainController","TestAddsDomainController")[$This.Test]
+                    Switch ($This.Control.Slot)
+                    {
+                        {$_ -eq   0} { Install-ADDSForest                    @Splat -Confirm:$False }
+                        {$_ -in 1,2} { Install-ADDSDomain                    @Splat -Confirm:$False }
+                        {$_ -eq   3} { Install-ADDSDomainController          @Splat -Confirm:$False }
+                    }
                 }
             }
-
-            $Dsrm                        = "SafeModeAdministratorPassword"
-            $Pass                        = $This.Execution.Output.$Dsrm
-            $This.Execution.Output.$Dsrm = $This.Execution.Password($Pass)
-            
-            $This.InstallDomainController($Item,$This.Execution.Output)
         }
         SetInputObject([String]$InputPath)
         {
