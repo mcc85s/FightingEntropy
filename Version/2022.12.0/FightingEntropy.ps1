@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-01-11 00:52:05                                           ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-01-11 06:21:36                                           ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -1650,7 +1650,7 @@ Function FightingEntropy.Module
                     ("Get-FEADLogin.ps1"               , "1EEA605D7181E9F1985FC012E7EABB1884B39B9D33D2E2E8AB6A8C21C3770B56") ,
                     ("Get-FEDCPromo.ps1"               , "2EB79E6325ED4967B5882E11C3DD8A874B8DE321902AB0FEA974E52FFEABD605") ,
                     ("Get-FEImageManifest.ps1"         , "03AD403FA17EE0702A8D8911F8B4BD7AABE5C6971363AF2FFADE6FF83918D57F") ,
-                    ("Get-FEModule.ps1"                , "5C9025F91691D75166FBC4ED657A36E2D62F284FD0D75A89C7D4E4AAF0FD94A8") ,
+                    ("Get-FEModule.ps1"                , "DB502420E73A8CAEADFB2949B6BA8FB11B8F4AF909D99C1DF39AFA10F140D8A4") ,
                     ("Get-FENetwork.ps1"               , "0048A6208F9DDF0CCCFBCEE0621426DE2B49ACCBDBED71FB1E5D8B027330CEFC") ,
                     ("Get-FERole.ps1"                  , "0016BDDB9B0BA9BB59652440FE0B758D88BF42A887F93B275F57016CCE4999C8") ,
                     ("Get-FESystem.ps1"                , "47B1FF7BE39A95CEAFFD450336F01D3559B6E6059DA984A06D76980A391C7E2C") ,
@@ -1955,7 +1955,7 @@ Function FightingEntropy.Module
                             $Com                 = New-Object -ComObject WScript.Shell
                             $Object              = $Com.CreateShortcut($Item.Fullname)
                             $Object.TargetPath   = "PowerShell"
-                            $Object.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command 'Get-FEModule -Mode 1'"
+                            $Object.Arguments    = "-NoExit -ExecutionPolicy Bypass -Command `"Get-FEModule -Mode 1`""
                             $Object.Description  = $This.Description
                             $Object.IconLocation = $This._Graphic("icon.ico").Fullname
                             $Object.Save()
@@ -2317,7 +2317,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-01-11 00:52:05 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-01-11 06:21:36 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
