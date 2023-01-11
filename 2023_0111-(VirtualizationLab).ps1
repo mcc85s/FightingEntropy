@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-11 05:53:27
+    # Last edited : 2023-01-11 05:43:33
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (2) virtual servers to work together as an Active Directory domain controller cluster
@@ -972,7 +972,7 @@
         RenameRestart()
         {
             $B = @( )
-            
+
             # (Rename + restart) computer
             $B += '# (Rename + restart) computer'
             $B += 'Rename-Computer $ComputerName'
@@ -1022,11 +1022,26 @@
 
             Return $xPath
         }
+        [Object] PSSession([Object]$Admin)
+        {
+            # Attempt login
+            $This.Update(0,"[~] PSSession")
+            $Splat = @{
+
+                ComputerName  = $This.Network.Address
+                Port          = 5986
+                Credential    = $Admin.Credential
+                SessionOption = New-PSSessionOption -SkipCACheck
+                UseSSL        = $True
+            }
+
+            Return $Splat
+        }
         DumpConsole()
         {
-            $This.Console.Finalize()
             $xPath = "{0}\{1}-{2}.log" -f $This.LogPath(), $This.Now(), $This.Name
             $This.Update(99,"[+] Dumping console: [$xPath]")
+            $This.Console.Finalize()
             
             $Value = $This.Console.Output | % ToString
 
@@ -1174,14 +1189,60 @@
     # Wait idle
     $Vm.Idle(5,5)
 
-    # Attempt login
-    $Splat = @{ 
+    # Login
+    $Vm.Login($Admin)
 
-        ComputerName  = $Vm.Network.Address
-        Port          = 5986
-        Credential    = $Admin.Credential
-        SessionOption = New-PSSessionOption -SkipCACheck
-        UseSSL        = $True
-    }
+    # Wait idle
+    $Vm.Idle(5,5)
 
-    Enter-PSSession @Splat
+    # Flip to desktop
+    $Vm.PressKey(91)
+    $Vm.TypeKey(68)
+    $Vm.ReleaseKey(91)
+
+    # Up to FightingEntropy icon
+    $Vm.TypeKey(40)
+    $Vm.Timer(1)
+    $Vm.TypeKey(13)
+    
+    # Wait idle
+    $Vm.Idle(5,5)
+
+    ################# [Resume from here] #################
+
+    # Security protocol for downloading
+    $Vm.TypeText("[Net.ServicePointManager]::SecurityProtocol = 3072")
+    $Vm.TypeKey(13)
+
+    # Launch chocolatey
+    $Vm.TypeText("Invoke-RestMethod chocolatey.org/install.ps1 | Invoke-Expression")
+    $Vm.TypeKey(13)
+
+    # Wait idle
+    $Vm.Idle(5,5)
+
+    # Install Visual Studio Code via Chocolatey
+    $Vm.TypeText("choco install vscode -y")
+    $Vm.TypeKey(13)
+
+    # Wait idle
+    $Vm.Idle(5,5)
+
+    # Install-BossMode
+    $Vm.TypeText("Install-BossMode")
+    $Vm.TypeKey(13)
+
+    # Wait idle
+    $Vm.Idle(5,5)
+
+
+    ################# [Resume from here] #################
+    # Launch FEDCPromo
+    $Vm.TypeText("Get-FEDCPromo -Mode 1")
+    $Vm.TypeKey(13)
+
+    # Wait idle
+    $Vm.Idle(5,5)
+
+    # Login
+    $Vm.Login($Admin)
