@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-08 18:33:48                                                                  //
+\\  Date       : 2023-01-11 06:30:56                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2023-01-06
+    Modified   : 2023-01-11
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : [~] Test each level and functionality across each mode
@@ -2226,7 +2226,7 @@ Function Get-FEDCPromo
             $This.Xaml          = $This.New("FEDCPromoXaml")
 
             # Continue with [Xaml]
-            # $This.StageXaml()
+            $This.StageXaml()
         }
         StartConsole()
         {
@@ -3579,7 +3579,6 @@ Function Get-FEDCPromo
         {
             $This.Update(0,"[~] Completing process")
 
-            # Mode
             $Item               = $This.Slot("ForestMode")
             If ($Item.IsEnabled)
             {
