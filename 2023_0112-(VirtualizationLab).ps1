@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-11 05:43:33
+    # Last edited : 2023-01-12 15:56:17
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (2) virtual servers to work together as an Active Directory domain controller cluster
@@ -794,6 +794,11 @@
         {
             $B          = @( )
 
+            # Set Timezone
+            $B += '# Set Timezone'
+            $B += 'Set-Timezone -Name "{0}"' -f (Get-Timezone).Id
+            $B += ''
+
             # Set Computer Info
             $B += '# Set Computer Info'
             $B += '$ComputerName   = "{0}"' -f $This.Name
@@ -1040,7 +1045,7 @@
         DumpConsole()
         {
             $xPath = "{0}\{1}-{2}.log" -f $This.LogPath(), $This.Now(), $This.Name
-            $This.Update(99,"[+] Dumping console: [$xPath]")
+            $This.Update(100,"[+] Dumping console: [$xPath]")
             $This.Console.Finalize()
             
             $Value = $This.Console.Output | % ToString
@@ -1055,7 +1060,15 @@
 
     # // Initial information
     $Admin    = [AdminCredential]::New("Administrator")
-    $Name     = "server01"
+    $Name     = "server02"
+
+    $Vm       = Get-VM -Name $Name -EA 0
+    If ($Vm)
+    {
+        $Vm = [VmObjectNode]::New($VM)
+        $Vm.Remove()
+    }
+
     $Base     = "C:\VDI"
     $Memory   = 2048MB
     $Hdd      = 64GB
@@ -1235,6 +1248,19 @@
     # Wait idle
     $Vm.Idle(5,5)
 
+    # Splat VSCode Powershell extension 
+    $Vm.TypeText('$Splat = @{ FilePath = "$Env:ProgramFiles\Microsoft VS Code\bin\code.cmd" }')
+    $Vm.TypeKey(13)
+
+    $Vm.TypeText('$Splat.ArgumentList = "--install-extension ms-vscode.PowerShell"')
+    $Vm.TypeKey(13)
+
+    # Install VSCode PowerShell extension
+    $Vm.TypeText('Start-Process @Splat -WindowStyle Hidden | Wait-Process')
+    $Vm.TypeKey(13)
+
+    # Wait idle
+    $Vm.Idle(5,5)
 
     ################# [Resume from here] #################
     # Launch FEDCPromo
