@@ -1942,11 +1942,18 @@
         }
         [String] ProgramData()
         {
+            # Returns the program data path
             Return [Environment]::GetEnvironmentVariable("ProgramData")
         }
         [String] MachineName()
         {
+            # Returns the machine name
             Return [Environment]::MachineName
+        }
+        [String] SystemRoot()
+        {
+            # Returns the system root path
+            Return [Environment]::GetEnvironmentVariable("SystemRoot")
         }
         [UInt32] TestPath([String]$Path)
         {
@@ -1981,21 +1988,96 @@
             # Installs a specified feature
             Return Install-WindowsFeature -Name $Name -IncludeAllSubfeature -IncludeManagementTools
         }
+        [String] InsertLine([String]$Char)
+        {
+            $Line = "$($Char[0])"
+            Return $Line.PadRight(80,$Line)
+        }
         [String] ProfileControlStatus([Object]$Item)
         {
-            $Line = "#{0:d2} {1} [{2}] {3} {4}[{5}] : {6}" 
+            $Line = "[{0}] {1:d2} {2} {3} {4} {5} {6}" 
             
-            Return $Line -f $Item.Index, 
+            Return $Line -f @(" ","X")[$Item.State],
+                            $Item.Index, 
                             $Item.Slot, 
-                            @(" ","X")[$Item.State], 
                             $Item.Name.PadRight($This.Profile.Max.Name.Length," "),
                             $Item.Type.PadRight($This.Profile.Max.Type.Length," "),
-                            $Item.Type.PadRight($This.Profile.Max.Property.Length," "),
+                            $Item.Property.PadRight($This.Profile.Max.Property.Length," "),
                             $Item.Value
+        }
+        [String] Icon([UInt32]$Type)
+        {
+            # Returns the (success/failure) graphic based on the type 
+            Return $This.Module._Control(@("failure.png","success.png")[$Type]).Fullname
+        }
+        [Object] Validate([String]$Type)
+        {
+            # Retrieves a list of specific item types from the validation controller
+            Return $This.Validation.Output | ? Type -eq $Type | % Value
+        }
+        [Object] Reserved()
+        {
+            # Returns reserved items from the validation controller
+            Return $This.Validate("Reserved")
+        }
+        [Object] Legacy()
+        {
+            # Returns legacy items from the validation controller
+            Return $This.Validate("Legacy")
+        }
+        [Object] SecurityDescriptor()
+        {
+            # Returns security descriptor items from the validation controller
+            Return $This.Validate("SecurityDescriptor")
+        }
+        [String] DefaultText([String]$Name)
+        {
+            # Returns the default string for the properties below
+            $Item = Switch ($Name)
+            {
+                ParentDomainName     { "<Enter Domain Name> or <Credential>"  }
+                DomainName           { "<Enter Domain Name> or <Credential>"  }
+                DomainNetBIOSName    { "<Enter NetBIOS Name> or <Credential>" }
+                NewDomainName        { "<Enter New Domain Name>"              }
+                NewDomainNetBIOSName { "<Enter New NetBIOS Name>"             }
+            }
+
+            Return $Item
+        }
+        ToggleStaging()
+        {
+            # Toggles whether event handlers are (engaged/suppressed)
+            $This.Staging = !$This.Staging
+        }
+        SetForestMode([UInt32]$Index)
+        {
+            $Item = $This.Profile.ForestMode
+            If ($Index -in $Item.Output.Index)
+            {
+                $Item.Selected = $Index
+            }
+            Else
+            {
+                $Item.Selected = ($Item.Output | ? Enable)[0].Index
+            }
+        }
+        SetDomainMode([UInt32]$Index)
+        {
+            $Item = $This.Profile.ForestMode
+            If ($Index -in $Item.Output.Index)
+            {
+                $Item.Selected = $Index
+            }
+            Else
+            {
+                $Item.Selected = ($Item.Output | ? Enable)[0].Index
+            }
         }
         SetProfile([UInt32]$Index)
         {
-            $This.Update(0,"[~] Setting profile -> [$Index]")
+            $This.Update(0,$This.InsertLine("="))
+            $This.Update(0,"[~] Profile -> [Command]")
+            $This.Update(0,$This.InsertLine(" "))
 
             # Sets the currently selected profile
             $This.Control.Slot                = $Index
@@ -2013,8 +2095,6 @@
 
             # Collects the current selection
             $Line  = @( )
-            $Line += " "
-            $Line += "[Command]"
             $Line += "Index       : {0}" -f $Command.Index
             $Line += "Type        : {0}" -f $Command.Type
             $Line += "Name        : {0}" -f $Command.Name
@@ -2022,8 +2102,15 @@
 
             # Writes the current selection collection to console
             $Line  | % { $This.Update(1,$_) }
+            $This.Update(0,$This.InsertLine(" "))
     
             # Process each (profile/Xaml) object
+            $This.Update(0,$This.InsertLine("="))
+            $This.Update(0,"[~] Profile -> [Xaml]")
+            $This.Update(0,$This.InsertLine(" "))
+
+            $This.ToggleStaging()
+
             ForEach ($Item in $This.Profile.Output)
             {
                 $Item.State           = Switch ($Item.Name)
@@ -2056,17 +2143,6 @@
                     {
                         0
                     }
-                    Name
-                    {
-                        Switch ($Item.Name)
-                        {
-                            ParentDomainName     { "<Enter Domain Name> or <Credential>"  }
-                            DomainName           { "<Enter Domain Name> or <Credential>"  }
-                            DomainNetBIOSName    { "<Enter NetBIOS Name> or <Credential>" }
-                            NewDomainName        { "<Enter New Domain Name>"              }
-                            NewDomainNetBIOSName { "<Enter New NetBIOS Name>"             }
-                        }
-                    }
                     Role
                     {
                         Switch ($Item.Name)
@@ -2086,6 +2162,17 @@
                             LogPath      { "{0}\NTDS"   -f $This.SystemRoot() }
                         }
                     }
+                    Name
+                    {
+                        Switch ($Item.Name)
+                        {
+                            ParentDomainName     { "<Enter Domain Name> or <Credential>"  }
+                            DomainName           { "<Enter Domain Name> or <Credential>"  }
+                            DomainNetBIOSName    { "<Enter NetBIOS Name> or <Credential>" }
+                            NewDomainName        { "<Enter New Domain Name>"              }
+                            NewDomainNetBIOSName { "<Enter New NetBIOS Name>"             }
+                        }
+                    }
                     Pass
                     {
                         $Null
@@ -2094,10 +2181,687 @@
 
                 $Item.SetValue($Value)
 
+                $Box = $This.Xaml.Get(($Item.Name + "Box"))
+                
+
                 $This.Update(1,$This.ProfileControlStatus($Item))
             }
+
+            $This.Update(0,$This.InsertLine(" "))
+
+            $This.ToggleStaging()
+        }
+        Reset([Object]$xSender,[Object]$Object)
+        {
+            # Resets the items within a given combobox or datagrid
+            If ($This.Mode -gt 0)
+            {
+                $Line = "{0} [{1}]" -f $xSender.Name, $xSender.GetType().Name
+                $This.Update(0,"[~] $Line")
+            }
+
+            $xSender.Items.Clear()
+            ForEach ($Item in $Object)
+            {
+                $xSender.Items.Add($Item)
+            }
+        }
+        [Object] Get([String]$Name)
+        {
+            # Returns the specified profile item from profile controller
+            Return $This.Profile.Output | ? Name -eq $Name
+        }
+        Toggle([String]$Name)
+        {
+            $Item = $This.Get($Name)
+            If ($Item.Type -eq "CheckBox")
+            {
+                $Item.SetValue(!$Item.GetValue())
+            }
+
+            $Line = "[{0}] {1}" -f @(" ","X")[$Item.State], $Item.Name
+            $This.Update(1,$Line)
+        }
+        Validate([Object]$Item,[String]$Reason)
+        {
+            If ($Item.Type -in "TextBox","PasswordBox")
+            {
+                $Item.Check  = [UInt32]($Reason -eq "[+] Passed")
+                $Item.Reason = $Reason
+            }
+        }
+        Check([String]$Name)
+        {
+            $Item       = $This.Get($Name)
+            $Item.Value = $Item.Control.Text
+            $Icon       = $This.Xaml.Get("${Name}Icon")
+
+            If (!$This.Staging)
+            {
+                Switch ($Item.State)
+                {
+                    0
+                    {
+                        $Item.Control.Visibility = "Collapsed"
+                        $Icon.Source             = $Null
+                        $Icon.Tooltip            = $Null
+                        $Icon.Visibility         = "Collapsed"
+                    }
+                    1
+                    {
+                        $This.Update(0,"[~] Field [$Name]")
+
+                        Switch ($Name)
+                        {
+                            {$_ -in "ParentDomainName","DomainName"}
+                            { 
+                                $This.CheckItem("Domain",$Item) 
+                            }
+                            {$_ -in "DomainNetBiosName","NewDomainNetBiosName"}
+                            {
+                                $This.CheckItem("NetBios",$Item)
+                            }
+                            {$_ -eq "NewDomainName" -and $This.Control.Slot -eq 1}
+                            {
+                                $This.CheckItem("Tree",$Item)
+                            }
+                            {$_ -eq "NewDomainName" -and $This.Control.Slot -eq 2}
+                            {
+                                $This.CheckItem("Child",$Item)
+                            }
+                        }
+    
+                        $Item.Control.Visibility = "Visible"
+                        $Icon.Source             = $This.Icon($Item.Check)
+                        $Icon.Tooltip            = $Item.Reason
+                        $Icon.Visibility         = "Visible"
+                    }
+                }
+
+                $This.Total()
+            }
+        }
+        CheckItem([String]$Type,[Object]$Item)
+        {
+            $X = $Null
+            Switch ($Type)
+            {
+                Domain
+                {
+                    If ($Item.Value.Length -lt 2 -or $Item.Value.Length -gt 63)
+                    {
+                        $X = "[!] Length not between 2 and 63 characters"
+                    }
+                    ElseIf ($Item.Value -in $This.Reserved())
+                    {
+                        $X = "[!] Entry is in reserved words list"
+                    }
+                    ElseIf ($Item.Value -in $This.Legacy())
+                    {
+                        $X = "[!] Entry is in the legacy words list"
+                    }
+                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    { 
+                        $X = "[!] Invalid characters"
+                    }
+                    ElseIf ($Item.Value[0,-1] -match "(\W)")
+                    {
+                        $X = "[!] First/Last Character cannot be a '.' or '-'"
+                    }
+                    ElseIf ($Item.Value.Split(".").Count -lt 2)
+                    {
+                        $X = "[!] Single label domain names are disabled"
+                    }
+                    ElseIf ($Item.Value.Split('.')[-1] -notmatch "\w")
+                    {
+                        $X = "[!] Top Level Domain must contain a non-numeric"
+                    }
+                    Else
+                    {
+                        $X = "[+] Passed"
+                    }
+                }
+                NetBios
+                {
+                    If ($Item.Value -eq $This.Connection.NetBIOS)
+                    {
+                        $X = "[!] New NetBIOS ID cannot be the same as the parent domain NetBIOS"
+                    }
+                    ElseIf ($Item.Value.Length -lt 1 -or $Item.Value.Length -gt 15)
+                    {
+                        $X = "[!] Length not between 1 and 15 characters"
+                    }
+                    ElseIf ($Item.Value -in $This.Reserved())
+                    {
+                        $X = "[!] Entry is in reserved words list"
+                    }
+                    ElseIf ($Item.Value -in $This.Legacy())
+                    {
+                        $X = "[!] Entry is in the legacy words list"
+                    }
+                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    { 
+                        $X = "[!] Invalid characters"
+                    }
+                    ElseIf ($Item.Value[0,-1] -match "(\W)")
+                    {
+                        $X = "[!] First/Last Character cannot be a '.' or '-'"
+                    }                        
+                    ElseIf ($Item.Value -match "\.")
+                    {
+                        $X = "[!] NetBIOS cannot contain a '.'"
+                    }
+                    ElseIf ($Item.Value -in $This.SecurityDescriptor())
+                    {
+                        $X = "[!] Matches a security descriptor"
+                    }
+                    Else
+                    {
+                        $X = "[+] Passed"
+                    }
+                }
+                Tree
+                {
+                    If ($Item.Value -match [Regex]::Escape($This.Get("ParentDomainName").Text))
+                    {
+                        $X = "[!] Cannot be a (child/host) of the parent"
+                    }
+                    ElseIf ($Item.Value.Split(".").Count -lt 2)
+                    {
+                        $X = "[!] Single label domain names are disabled"
+                    }
+                    ElseIf ($Item.Value.Split('.')[-1] -notmatch "\w")
+                    {
+                        $X = "[!] Top Level Domain must contain a non-numeric"
+                    }
+                    ElseIf ($Item.Value.Length -lt 2 -or $Item.Value.Length -gt 63)
+                    {
+                        $X = "[!] Length not between 2 and 63 characters"
+                    }
+                    ElseIf ($Item.Value -in $This.Reserved())
+                    {
+                        $X = "[!] Entry is in reserved words list"
+                    }
+                    ElseIf ($Item.Value -in $This.Legacy())
+                    {
+                        $X = "[!] Entry is in the legacy words list"
+                    }
+                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    { 
+                        $X = "[!] Invalid characters"
+                    }
+                    ElseIf ($Item.Value[0,-1] -match "(\W)")
+                    {
+                        $X = "[!] (First/Last) character cannot be either: (./-)"
+                    }
+                    Else
+                    {
+                        $X = "[+] Passed"
+                    }
+                }
+                Child
+                {
+                    If ($Item.Value -notmatch ".$($This.Get("ParentDomainName").Text)")
+                    {
+                        $X = "[!] Must be a (child/host) of the parent"
+                    }
+                    ElseIf ($Item.Value.Length -lt 2 -or $Item.Value.Length -gt 63)
+                    {
+                        $X = "[!] Length not between (2-63) characters"
+                    }
+                    ElseIf ($Item.Value -in $This.Reserved())
+                    {
+                        $X = "[!] Entry is reserved"
+                    }
+                    ElseIf ($Item.Value -in $This.Legacy())
+                    {
+                        $X = "[!] Entry is legacy"
+                    }
+                    ElseIf ($Item.Value -notmatch "([\.\-0-9a-zA-Z])")
+                    {
+                        $X = "[!] Invalid characters"
+                    }
+                    ElseIf ($Item.Value[0,-1] -match "(\W)")
+                    {
+                        $X = "[!] (First/Last) character cannot be either: (./-)"
+                    }
+                    Else
+                    {
+                        $X = "[+] Passed"
+                    }
+                }
+            }
+
+            $This.Validate($Item,$X)
+
+            $This.Update($Item.Check,$Item.Reason)
+        }
+        CheckPassword()
+        {
+            $Pattern        = $This.Validation.Password()
+            $Password       = $This.Get("SafeModeAdministratorPassword")
+            $Password.Value = $Password.Control.Password
+
+            $Confirm        = $This.Get("Confirm")
+            $Confirm.Value  = $Confirm.Control.Password
+
+            Switch -Regex ($Password.Value)
+            {
+                Default
+                {
+                    $This.Validate($Password,"[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number")
+                }
+                $Pattern
+                {
+                    $This.Validate($Password,"[+] Passed")
+                }
+            }
+
+            Switch ($Password.Check)
+            {
+                0
+                {
+                    $This.Validate($Confirm,"[!] Password not valid")
+                }
+                1
+                {
+                    If ($Confirm.Value -ne $Password.Value)
+                    {
+                        $This.Validate($Confirm,"[!] Confirmation error")
+                    }
+                    ElseIf ($Confirm.Value -eq $Password.Value)
+                    {
+                        $This.Validate($Confirm,"[+] Passed")
+                    }
+                }
+            }
+
+            ForEach ($Item in $Password, $Confirm)
+            {
+                $Name         = $Item.Name + "Icon"
+                $Icon         = $This.Get("${Name}Icon")
+
+                $Icon.Source  = $This.Icon($Item.Check)
+                $Icon.Tooltip = $Item.Reason
+            }
+
+            $This.Total()
+        }
+        Browse([String]$Name)
+        {
+            $List = $This.Profile | ? Slot -eq Path | % Name
+            If ($Name -notin $List)
+            {
+                $This.Error(-1,"[!] Invalid <browse> option")
+            }
+
+            $Object                  = $This.Get($Name)
+            $Item                    = New-Object System.Windows.Forms.FolderBrowserDialog
+            $Item.ShowDialog()
+        
+            If (!$Item.SelectedPath)
+            {
+                $Item.SelectedPath   = $Object.Value
+            }
+            Else
+            {
+                $Object.SetValue($Item.SelectedPath)
+            }
+        }
+        Total()
+        {
+            $This.Execution.Clear("Summary")
+            
+            ForEach ($Item in $This.Control.Profile.List("Slot") | ? IsEnabled | ? Property -eq Text)
+            {
+                $This.Execution.Summary += $Item
+            }
+
+            ForEach ($Item in $This.Control.Profile.List("DSRM"))
+            {
+                $This.Execution.Summary += $Item
+            }
+
+            $This.Reset($This.Xaml.IO.Summary,$This.Execution.Summary)
+
+            $This.Xaml.IO.Start.IsEnabled = 0 -notin $This.Execution.Summary.Check
+            $This.Xaml.IO.Test.IsEnabled  = 0 -notin $This.Execution.Summary.Check
+            $This.Xaml.IO.Save.IsEnabled  = 0 -notin $This.Execution.Summary.Check
+
+        }
+        StageXaml()
+        {
+            $Ctrl          = $This
+
+            # // ===========
+            # // | Command |
+            # // ===========
+
+            # [ComboBox] Command slot 
+            $Ctrl.Reset($Ctrl.Xaml.IO.CommandSlot,$Ctrl.Control.Command.Output.Type)
+
+            # [ComboBox] Command slot (Event handler)
+            $Ctrl.Xaml.IO.CommandSlot.Add_SelectionChanged(
+            {
+                $Index = $Ctrl.Xaml.IO.CommandSlot.SelectedIndex
+                $Ctrl.SetProfile($Index)
+                $Ctrl.Reset($Ctrl.Xaml.IO.Command,$Ctrl.Control.Profile)
+            })
+
+            # // ========
+            # // | Mode |
+            # // ========
+
+            # [DataGrid] OS Caption
+            $Ctrl.Reset($Ctrl.Xaml.IO.OperatingSystemCaption,$Ctrl.System.OperatingSystem)
+
+            # [Datagrid] OS Properties 
+            $Ctrl.Reset($Ctrl.Xaml.IO.OperatingSystemExtension,$Ctrl.System.OperatingSystem)
+
+            # [ComboBox] Forest mode
+            $Ctrl.Reset($Ctrl.Xaml.IO.ForestMode,$Ctrl.Control.ForestMode.Output)
+
+            # [ComboBox -> Ctrl.Control -> Datagrid] Forest mode (Event handler)
+            $Ctrl.Xaml.IO.ForestMode.Add_SelectionChanged(
+            {
+                $Ctrl.Control.ForestMode.Selected = $Ctrl.Xaml.IO.ForestMode.SelectedIndex
+                $Ctrl.Reset($Ctrl.Xaml.IO.ForestModeExtension,$Ctrl.Control.ForestMode.Current())
+            })
+
+            # [ComboBox] Domain mode
+            $Ctrl.Reset($Ctrl.Xaml.IO.DomainMode,$Ctrl.Control.DomainMode.Output)
+
+            # [ComboBox -> Ctrl.Control -> Datagrid] Domain mode (Event handler)
+            $Ctrl.Xaml.IO.DomainMode.Add_SelectionChanged(
+            {
+                $Ctrl.Control.DomainMode.Selected = $Ctrl.Xaml.IO.DomainMode.SelectedIndex
+                $Ctrl.Reset($Ctrl.Xaml.IO.DomainModeExtension,$Ctrl.Control.DomainMode.Current())
+            })
+
+            # [ComboBox] Replication Source DC
+            $Ctrl.Reset($Ctrl.Xaml.IO.ReplicationSourceDC,$Null)
+
+            # // ============
+            # // | Features |
+            # // ============
+
+            # [DataGrid] Windows Features
+            $Ctrl.Reset($Ctrl.Xaml.IO.Feature,$Ctrl.Feature.Output)
+
+            # // =========
+            # // | Roles |
+            # // =========
+
+            # [CheckBox] Install Dns (Event handler)
+            $Ctrl.Xaml.IO.InstallDNS.Add_IsEnabledChanged(
+            {
+                $Ctrl.Toggle("InstallDns")
+            })
+
+            # [CheckBox] Create Dns Delegation (Event handler)
+            $Ctrl.Xaml.IO.CreateDnsDelegation.Add_IsEnabledChanged(
+            {
+                $Ctrl.Toggle("CreateDnsDelegation")
+            })
+
+            # [CheckBox] No Global Catalog (Event handler)
+            $Ctrl.Xaml.IO.NoGlobalCatalog.Add_IsEnabledChanged(
+            {
+                $Ctrl.Toggle("NoGlobalCatalog")
+            })
+
+            # [CheckBox] Critical Replication Only (Event handler)
+            $Ctrl.Xaml.IO.CriticalReplicationOnly.Add_IsEnabledChanged(
+            {
+                $Ctrl.Toggle("CriticalReplicationOnly")
+            })
+
+            # // =========
+            # // | Paths |
+            # // =========
+
+            # [Button] Database path (Event handler)
+            $Ctrl.Xaml.IO.DatabaseBrowse.Add_Click(
+            {
+                $Ctrl.Browse("DatabasePath")
+            })
+            
+            # [Button] Sysvol path (Event handler)
+            $Ctrl.Xaml.IO.SysvolBrowse.Add_Click(
+            {
+                $Ctrl.Browse("SysvolPath")
+            })
+
+            # [Button] Log path (Event handler)
+            $Ctrl.Xaml.IO.LogBrowse.Add_Click(
+            {
+                $Ctrl.Browse("LogPath")
+            })
+
+            # // =========
+            # // | Names |
+            # // =========
+
+            # [TextBox] ParentDomainName (Text changed event handler)
+            $Ctrl.Xaml.IO.ParentDomainName.Add_TextChanged(
+            {
+                $Ctrl.Check("ParentDomainName")
+            })
+
+            # [TextBox] ParentDomainName (Got focus event handler)
+            $Ctrl.Xaml.IO.ParentDomainName.Add_GotFocus(
+            {
+                If ($Ctrl.Xaml.IO.ParentDomainName.Text -eq $Ctrl.DefaultText("ParentDomainName"))
+                {
+                    $Ctrl.ToggleStaging()
+                    $Ctrl.Get("ParentDomainName").SetValue("")
+                    $Ctrl.ToggleStaging()
+                }
+            })
+
+            # [TextBox] ParentDomainName (Lost focus event handler)
+            $Ctrl.Xaml.IO.ParentDomainName.Add_LostFocus(
+            {
+                If ($Ctrl.Xaml.IO.ParentDomainName.Text -eq "")
+                {
+                    $Ctrl.ToggleStaging()
+                    $Ctrl.Get("ParentDomainName").SetValue($Ctrl.DefaultText("ParentDomainName"))
+                    $Ctrl.ToggleStaging()
+                }
+            })
+            
+            # [TextBox] DomainName (Text changed event handler)
+            $Ctrl.Xaml.IO.DomainName.Add_TextChanged(
+            {
+                $Ctrl.Check("DomainName")
+            })
+
+            # [TextBox] DomainName (Got focus event handler)
+            $Ctrl.Xaml.IO.DomainName.Add_GotFocus(
+            {
+                If ($Ctrl.Xaml.IO.DomainName.Text -eq $Ctrl.DefaultText("DomainName"))
+                {
+                    $Ctrl.ToggleStaging()
+                    $Ctrl.Get("DomainName").SetValue("")
+                    $Ctrl.ToggleStaging()
+                }
+            })
+
+            # [TextBox] DomainName (Lost focus event handler)
+            $Ctrl.Xaml.IO.DomainName.Add_LostFocus(
+            {
+                If ($Ctrl.Xaml.IO.DomainName.Text -eq "")
+                {
+                    $Ctrl.ToggleStaging()
+                    $Ctrl.Get("DomainName").SetValue($Ctrl.DefaultText("DomainName"))
+                    $Ctrl.ToggleStaging()
+                }
+            })
+            
+            # [TextBox] NewDomainName (Event handler)
+            $Ctrl.Xaml.IO.NewDomainName.Add_TextChanged(
+            {
+                $Ctrl.Check("NewDomainName")
+            })
+
+            # [TextBox] NewDomainName (Got focus event handler)
+            $Ctrl.Xaml.IO.NewDomainName.Add_GotFocus(
+            {
+                If ($Ctrl.Xaml.IO.NewDomainName.Text -eq $Ctrl.DefaultText("NewDomainName"))
+                {
+                    $Ctrl.ToggleStaging()
+                    $Ctrl.Get("NewDomainName").SetValue("")
+                    $Ctrl.ToggleStaging()
+                }
+            })
+
+            # [TextBox] NewDomainName (Lost focus event handler)
+            $Ctrl.Xaml.IO.NewDomainName.Add_LostFocus(
+            {
+                If ($Ctrl.Xaml.IO.NewDomainName.Text -eq "")
+                {
+                    $Ctrl.ToggleStaging()
+                    $Ctrl.Get("NewDomainName").SetValue($Ctrl.DefaultText("NewDomainName"))
+                    $Ctrl.ToggleStaging()
+                }
+            })
+            
+            # [TextBox] DomainNetBiosName (Event handler)
+            $Ctrl.Xaml.IO.DomainNetBIOSName.Add_TextChanged(
+            {
+                $Ctrl.Check("DomainNetBiosName")
+            })
+
+            # [TextBox] DomainNetBiosName (Got focus event handler)
+            $Ctrl.Xaml.IO.DomainNetBiosName.Add_GotFocus(
+            {
+                If ($Ctrl.Xaml.IO.DomainNetBiosName.Text -eq $Ctrl.DefaultText("DomainNetBiosName"))
+                {
+                    $Ctrl.ToggleStaging()
+                    $Ctrl.Get("DomainNetBiosName").SetValue("")
+                    $Ctrl.ToggleStaging()
+                }
+            })
+
+            # [TextBox] DomainNetBiosName (Lost focus event handler)
+            $Ctrl.Xaml.IO.DomainNetBiosName.Add_LostFocus(
+            {
+                If ($Ctrl.Xaml.IO.DomainNetBiosName.Text -eq "")
+                {
+                    $Ctrl.ToggleStaging()
+                    $Ctrl.Get("DomainNetBiosName").SetValue($Ctrl.DefaultText("DomainNetBiosName"))
+                    $Ctrl.ToggleStaging()
+                }
+            })
+        
+            # [TextBox] NewDomainNetBiosName (Event handler)
+            $Ctrl.Xaml.IO.NewDomainNetBiosName.Add_TextChanged(
+            {
+                $Ctrl.Check("NewDomainNetBiosName")
+            })
+
+            # [TextBox] NewDomainNetBiosName (Got focus event handler)
+            $Ctrl.Xaml.IO.NewDomainNetBiosName.Add_GotFocus(
+            {
+                If ($Ctrl.Xaml.IO.NewDomainNetBiosName.Text -eq $Ctrl.DefaultText("NewDomainNetBiosName"))
+                {
+                    $Ctrl.ToggleStaging()
+                    $Ctrl.Get("NewDomainNetBiosName").SetValue("")
+                    $Ctrl.ToggleStaging()
+                }
+            })
+
+            # [TextBox] NewDomainNetBiosName (Lost focus event handler)
+            $Ctrl.Xaml.IO.NewDomainNetBiosName.Add_LostFocus(
+            {
+                If ($Ctrl.Xaml.IO.NewDomainNetBiosName.Text -eq "")
+                {
+                    $Ctrl.ToggleStaging()
+                    $Ctrl.Get("NewDomainNetBiosName").SetValue($Ctrl.DefaultText("NewDomainNetBiosName"))
+                    $Ctrl.ToggleStaging()
+                }
+            })
+
+            # // ==============
+            # // | Credential |
+            # // ==============
+
+            # [Button] Login (Event handler)
+            $Ctrl.Xaml.IO.CredentialButton.Add_Click(
+            {
+                $Ctrl.Login()
+            })
+
+            # [TextBox] Dsrm Password (Event handler)
+            $Ctrl.Xaml.IO.SafeModeAdministratorPassword.Add_PasswordChanged(
+            {
+                $Ctrl.CheckPassword()
+            })
+            
+            # [TextBox] Dsrm Confirm (Event handler)
+            $Ctrl.Xaml.IO.Confirm.Add_PasswordChanged(
+            {
+                $Ctrl.CheckPassword()
+            })
+
+            # // ==========
+            # // | Bottom |
+            # // ==========
+            
+            # [Button] Start (Event handler)
+            $Ctrl.Xaml.IO.Start.Add_Click(
+            {
+                $Ctrl.Test = 0
+                $Ctrl.Complete()
+                $Ctrl.Xaml.IO.DialogResult = 1
+            })
+
+            # [Button] Test (Event handler)
+            $Ctrl.Xaml.IO.Test.Add_Click(
+            {
+                $Ctrl.Test = 1
+                $Ctrl.Complete()
+                $Ctrl.Xaml.IO.DialogResult = 1
+            })
+
+            # [Button] Save (Event handler)
+            $Ctrl.Xaml.IO.Save.Add_Click(
+            {
+                $Ctrl.Save()
+            })
+
+            $Ctrl.Xaml.IO.Load.Add_Click(
+            {
+                $Item                    = New-Object System.Windows.Forms.FolderBrowserDialog
+                $Item.ShowDialog()
+        
+                If (!$Item.SelectedPath)
+                {
+                    $Item.SelectedPath                    = $Null
+                    $Ctrl.Xaml.IO.InputPath.IsEnabled     = 0
+                }
+                Else
+                {
+                    $IO = $Ctrl.InputObjectController($Item.SelectedPath)
+                    If (!!$IO.Profile)
+                    {
+                        $Ctrl.Xaml.IO.InputPath.IsEnabled = 1
+                        $Ctrl.Xaml.IO.InputPath.Text      = $Item.SelectedPath
+                    }
+                    Else
+                    {
+                        $Item.SelectedPath                = $Null
+                        $Ctrl.Xaml.IO.InputPath.IsEnabled = 0
+                    }
+                }
+            })
+
+            $Ctrl.SetForestMode($Ctrl.Server)
+            $Ctrl.SetDomainMode($Ctrl.Server)
         }
     }
 #}
 
 $Ctrl = [FEDCPromoController]::New(1)
+$Ctrl.StageXaml()
+$Ctrl.Xaml.Invoke()
