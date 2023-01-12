@@ -2016,9 +2016,9 @@
             $Line += " "
             $Line += "[Command]"
             $Line += "Index       : {0}" -f $Command.Index
-            $Line += "Type        : {1}" -f $Command.Type
-            $Line += "Name        : {2}" -f $Command.Name
-            $Line += "Description : {3}" -f $Command.Description
+            $Line += "Type        : {0}" -f $Command.Type
+            $Line += "Name        : {0}" -f $Command.Name
+            $Line += "Description : {0}" -f $Command.Description
 
             # Writes the current selection collection to console
             $Line  | % { $This.Update(1,$_) }
