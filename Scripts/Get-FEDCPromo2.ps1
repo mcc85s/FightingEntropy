@@ -10,7 +10,11 @@
         Throw "Must use Windows Server operating system"
     }
 
-    # (1/4) [Xaml.Property]
+    # // =======================================================================
+    # // | [Xaml.Property]: Allows each Xaml control to be indexed, uniquely   |
+    # // | named, filterable by type, and its control may be directly accessed |
+    # // =======================================================================
+
     Class XamlProperty
     {
         [UInt32]   $Index
@@ -30,7 +34,10 @@
         }
     }
 
-    # (2/4) [Xaml.Window]
+    # // ============================================================================
+    # // | [Xaml.Window]: Provides an object for a chunk of Xaml to be instantiated |
+    # // ============================================================================
+
     Class XamlWindow
     {
         Hidden [Object]        $Xaml
@@ -104,7 +111,10 @@
         }
     }
 
-    # (3/4) [Xaml.FEDCFound]
+    # // ===============================================================================
+    # // | [Xaml.FEDCFound]: Xaml for found domain controllers (likely to be replaced) |
+    # // ===============================================================================
+
     Class FEDCFoundXaml
     {
         Static [String] $Content = @(
@@ -230,7 +240,10 @@
         '</Window>' -join "`n")
     }
 
-    # (4/4) [Xaml.FEDCPromo]
+    # // =====================================================
+    # // | [Xaml.FEDCPromo]: Xaml for the utiilty, FEDCPromo |
+    # // =====================================================
+    
     Class FEDCPromoXaml
     {
         Static [String] $Content = @(
@@ -600,33 +613,34 @@
         '                            </DataGrid.Columns>',
         '                        </DataGrid>',
         '                    </Grid>',
-        '                    <Grid Grid.Row="6" Name="ParentDomainNameBox">',
+        '                    <Grid Grid.Row="6" Name="ReplicationSourceDCBox">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
         '                            <ColumnDefinition Width="120"/>',
-        '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="25"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <Label   Grid.Column="1"',
-        '                                 Content="Parent Domain"',
-        '                                 Style="{StaticResource LabelGray}"/>',
-        '                        <Image   Grid.Column="2"',
-        '                                 Name="ParentDomainNameIcon"/>',
-        '                        <TextBox Grid.Column="3" ',
-        '                                 Name="ParentDomainName"/>',
-        '                    </Grid>',
-        '                    <Grid Grid.Row="8" Name="ReplicationSourceDCBox">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="120"/>',
+        '                            <ColumnDefinition Width="50"/>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                        </Grid.ColumnDefinitions>',
         '                        <Label    Grid.Column="1"',
         '                                  Content="Replication DC"',
         '                                  Style="{StaticResource LabelGray}"/>',
-        '                        <ComboBox Grid.Column="2" Name="ReplicationSourceDC"/>',
+        '                        <ComboBox Grid.Column="3" Name="ReplicationSourceDC"/>',
+        '                    </Grid>',
+        '                    <Grid Grid.Row="8" Name="SiteNameBox">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="120"/>',
+        '                            <ColumnDefinition Width="50"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label    Grid.Column="1"',
+        '                                  Content="Site Name"',
+        '                                  Style="{StaticResource LabelGray}"/>',
+        '                        <Image    Grid.Column="2"',
+        '                                  Name="SiteNameIcon"/>',
+        '                        <ComboBox Grid.Column="3"',
+        '                                  Name="SiteName"/>',
         '                    </Grid>',
         '                </Grid>',
         '            </TabItem>',
@@ -775,10 +789,26 @@
         '                    </Grid.RowDefinitions>',
         '                    <Label Grid.Row="0"',
         '                           Content="[Necessary fields vary by command selection]"/>',
-        '                    <Grid   Grid.Row="2" Name="DomainNameBox">',
+        '                    <Grid Grid.Row="2" Name="ParentDomainNameBox">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="120"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="*"/>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                        </Grid.ColumnDefinitions>',
+        '                        <Label   Grid.Column="1"',
+        '                                 Content="Parent Domain"',
+        '                                 Style="{StaticResource LabelGray}"/>',
+        '                        <Image   Grid.Column="2"',
+        '                                 Name="ParentDomainNameIcon"/>',
+        '                        <TextBox Grid.Column="3" ',
+        '                                 Name="ParentDomainName"/>',
+        '                    </Grid>',
+        '                    <Grid   Grid.Row="3" Name="DomainNameBox">',
+        '                        <Grid.ColumnDefinitions>',
+        '                            <ColumnDefinition Width="25"/>',
+        '                            <ColumnDefinition Width="120"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
@@ -791,10 +821,10 @@
         '                        <TextBox Grid.Column="3"',
         '                                 Name="DomainName"/>',
         '                    </Grid>',
-        '                    <Grid Grid.Row="3" Name="NewDomainNameBox">',
+        '                    <Grid Grid.Row="4" Name="NewDomainNameBox">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="120"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
@@ -807,10 +837,10 @@
         '                        <TextBox Grid.Column="3"',
         '                                 Name="NewDomainName"/>',
         '                    </Grid>',
-        '                    <Grid Grid.Row="4" Name="DomainNetBiosNameBox">',
+        '                    <Grid Grid.Row="5" Name="DomainNetBiosNameBox">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="120"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
@@ -823,10 +853,10 @@
         '                        <TextBox Grid.Column="3"',
         '                                 Name="DomainNetBIOSName"/>',
         '                    </Grid>',
-        '                    <Grid Grid.Row="5" Name="NewDomainNetBiosNameBox">',
+        '                    <Grid Grid.Row="6" Name="NewDomainNetBiosNameBox">',
         '                        <Grid.ColumnDefinitions>',
         '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="100"/>',
+        '                            <ColumnDefinition Width="120"/>',
         '                            <ColumnDefinition Width="25"/>',
         '                            <ColumnDefinition Width="*"/>',
         '                            <ColumnDefinition Width="25"/>',
@@ -838,22 +868,6 @@
         '                                 Name="NewDomainNetBIOSNameIcon"/>',
         '                        <TextBox Grid.Column="3"',
         '                                 Name="NewDomainNetBIOSName"/>',
-        '                    </Grid>',
-        '                    <Grid Grid.Row="6" Name="SiteNameBox">',
-        '                        <Grid.ColumnDefinitions>',
-        '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="100"/>',
-        '                            <ColumnDefinition Width="25"/>',
-        '                            <ColumnDefinition Width="*"/>',
-        '                            <ColumnDefinition Width="25"/>',
-        '                        </Grid.ColumnDefinitions>',
-        '                        <Label    Grid.Column="1"',
-        '                                  Content="Site Name"',
-        '                                  Style="{StaticResource LabelGray}"/>',
-        '                        <Image    Grid.Column="2"',
-        '                                  Name="SiteNameIcon"/>',
-        '                        <ComboBox Grid.Column="3"',
-        '                                  Name="SiteName"/>',
         '                    </Grid>',
         '                </Grid>',
         '            </TabItem>',
@@ -972,7 +986,10 @@
         '</Window>' -join "`n")
     }
 
-    # (1/1) [Input.Object.Controller]
+    # // ===============================================================
+    # // | [InputObject.Controller]: Meant to instantiate an InputPath |
+    # // ===============================================================
+
     Class InputObjectController
     {
         [UInt32]       $Slot
@@ -1021,7 +1038,10 @@
         }
     }
 
-    # (1/2) [Feature.Item]
+    # // =====================================================================
+    # // | [Feature.Item]: Windows optional features slated for installation |
+    # // =====================================================================
+
     Class FeatureItem
     {
         [UInt32]   $Index
@@ -1052,7 +1072,10 @@
         }
     }
     
-    # (2/2) [Feature.Controller]
+    # // ==================================================================
+    # // | [Feature.Controller]: Creates a template for specific features |
+    # // ==================================================================
+
     Class FeatureController
     {
         [String]     $Name
@@ -1146,7 +1169,10 @@
         }
     }
 
-    # (1/3) [Windows.Server.Type]
+    # // ==================================================================
+    # // | [Windows.Server.Type]: Enum type meant for Forest/Domain modes |
+    # // ==================================================================
+
     Enum WindowsServerType
     {
         Win2K
@@ -1160,7 +1186,10 @@
         Win2022
     }
 
-    # (2/3) [Windows.Server.Item]
+    # // =================================================================
+    # // | [Windows.Server.Item]: Item for detailing Windows Server mode |
+    # // =================================================================
+
     Class WindowsServerItem
     {
         [UInt32]       $Index
@@ -1178,7 +1207,10 @@
         }
     }
 
-    # (3/3) [Windows.Server.List]
+    # // ==================================================
+    # // | [Windows.Server.List]: List of the above items |
+    # // ==================================================
+
     Class WindowsServerList
     {
         [String]     $Name
@@ -1238,6 +1270,10 @@
         }
     }
 
+    # // =======================================================
+    # // | [Profile.Type]: Enum type for profile Xaml controls |
+    # // =======================================================
+
     Enum ProfileType
     {
         ForestMode
@@ -1260,16 +1296,20 @@
         Confirm
     }
 
+    # // ======================================================================
+    # // | [Profile.Item]: Provides control over a profile (item/Xaml object) |
+    # // ======================================================================
+
     Class ProfileItem
     {
         [UInt32]          $Index
         [String]           $Slot
         [UInt32]          $State
         [String]           $Name
+        Hidden [Object] $Control
         [String]           $Type
         [String]       $Property
         [Object]          $Value
-        Hidden [Object] $Control
         [UInt32]          $Check
         [String]         $Reason
         ProfileItem([UInt32]$Index,[String]$Slot,[String]$Name,[Object]$Control)
@@ -1277,6 +1317,7 @@
             $This.Index    = $Index
             $This.Slot     = $Slot
             $This.Name     = $Name
+            $This.Control  = $Control
             $This.Type     = $Control.GetType().Name
             $This.Property = Switch ($This.Type)
             {
@@ -1286,7 +1327,6 @@
                 PasswordBox {      "Password" }
             }
             
-            $This.Control  = $Control
             $This.Value    = $This.GetValue()
         }
         [Object] GetValue()
@@ -1300,13 +1340,72 @@
         }
     }
 
+    # // ===================================================================================
+    # // | [ProfileBox.Type]: Enum type for boxes of objects that may need to be collapsed |
+    # // ===================================================================================
+
+    Enum ProfileBoxType
+    {
+        ForestModeBox
+        DomainModeBox
+        ReplicationSourceDCBox
+        SiteNameBox
+        ParentDomainNameBox
+        DomainNameBox
+        NewDomainNameBox
+        DomainNetBiosNameBox
+        NewDomainNetBiosNameBox
+    }
+
+    # // =====================================================================
+    # // | [ProfileBox.Item]: Boxes of objects that may need to be collapsed |
+    # // =====================================================================
+
+    Class ProfileBoxItem
+    {
+        [UInt32]          $Index
+        [String]           $Slot
+        [UInt32]          $State
+        [String]           $Name
+        [String]           $Root
+        Hidden [Object] $Control
+        [String]           $Type
+        [String]       $Property
+        [Object]          $Value
+        ProfileBoxItem([UInt32]$Index,[String]$Slot,[String]$Name,[Object]$Control)
+        {
+            $This.Index    = $Index
+            $This.Slot     = $Slot
+            $This.Name     = $Name
+            $This.Root     = $Name -Replace "Box", ""
+            $This.Control  = $Control
+            $This.Type     = $Control.GetType().Name
+            $This.Property = "Visibility"
+            $This.Value    = $This.GetValue()
+        }
+        [Object] GetValue()
+        {
+            Return $This.Control.$($This.Property)
+        }
+        SetValue([Object]$Value)
+        {
+            $This.Value                     = $Value
+            $This.Control.$($This.Property) = $Value
+        }
+    }
+
+    # // =================================================================
+    # // | [Profile.Controller]: Provides control over all profile items |
+    # // =================================================================
+
     Class ProfileController
     {
         [Int32]        $Index
         [String]        $Type
         [String]        $Name
         [String] $Description
-        [Object]      $Output
+        [Object]        $Item
+        [Object]         $Box
         Hidden [Object]  $Max
         ProfileController([Object]$Xaml)
         {
@@ -1314,19 +1413,21 @@
             
             $This.Max    = @{ 
 
-                Name     = ($This.Output.Name     | Sort-Object Length)[-1]
-                Type     = ($This.Output.Type     | Sort-Object Length)[-1]
-                Property = ($This.Output.Property | Sort-Object Length)[-1]
+                Name     = ($This.Item.Name     | Sort-Object Length)[-1]
+                Type     = ($This.Item.Type     | Sort-Object Length)[-1]
+                Property = ($This.Item.Property | Sort-Object Length)[-1]
             }
         }
         Clear()
         {
-            $This.Output = @( )
+            $This.Item   = @( )
+            $This.Box    = @( )
         }
         Refresh([Object]$Xaml)
         {
             $This.Clear()
 
+            # Add items
             ForEach ($Name in [System.Enum]::GetNames([ProfileType]))
             {
                 $Slot = Switch -Regex ($Name)
@@ -1355,6 +1456,34 @@
 
                 $This.Add($Slot,$Name,$Xaml.Get($Name))
             }
+
+            # Add Boxes
+            ForEach ($Name in [System.Enum]::GetNames([ProfileBoxType]))
+            {
+                $Slot = Switch -Regex ($Name)
+                {
+                    "(ForestModeBox|DomainModeBox|ReplicationSourceDCBox|SiteNameBox)"
+                    {
+                        "Mode"
+                    }
+                    "(ParentDomainNameBox|DomainNameBox|DomainNetBiosNameBox|NewDomainNameBox|NewDomainNetBiosNameBox)"
+                    {
+                        "Name"
+                    }
+                }
+
+                $This.AddBox($Slot,$Name,$Xaml.Get($Name))
+            }
+        }
+        [Object] Output()
+        {
+            $Out = @{ }
+            ForEach ($Item in $This.Item | ? State -eq 1)
+            {
+                $Out.Add($Item.Name,$This.Item.Value)
+            }
+
+            Return $Out
         }
         [String] SystemRoot()
         {
@@ -1364,9 +1493,17 @@
         {
             Return [ProfileItem]::New($Index,$Slot,$Name,$Control)
         }
+        [Object] ProfileBoxItem([UInt32]$Index,[String]$Slot,[String]$Name,[Object]$Control)
+        {
+            Return [ProfileBoxItem]::New($Index,$Slot,$Name,$Control)
+        }
         Add([String]$Slot,[String]$Name,[Object]$Control)
         {
-            $This.Output += $This.ProfileItem($This.Output.Count,$Slot,$Name,$Control)
+            $This.Item += $This.ProfileItem($This.Item.Count,$Slot,$Name,$Control)
+        }
+        AddBox([String]$Slot,[String]$Name,[Object]$Control)
+        {
+            $This.Box  += $This.ProfileBoxItem($This.Box.Count,$Slot,$Name,$Control)
         }
         [String] ToString()
         {
@@ -1374,7 +1511,10 @@
         }
     }
 
-    # (1/3) [Command.Type]
+    # // ===================================================
+    # // | [Command.Type]: Enum type for each command type |
+    # // ===================================================
+
     Enum CommandType
     {
         Forest
@@ -1383,7 +1523,10 @@
         Clone
     }
 
-    # (1/2) [Domain.Type.Item]
+    # // ==============================================================================
+    # // | [Domain.Type.Item]: Rides off of the CommandType enum to select DomainType |
+    # // ==============================================================================
+
     Class DomainTypeItem
     {
         [UInt32] $Index
@@ -1401,7 +1544,10 @@
         }
     }
 
-    # (2/2) [Domain.Type.List]
+    # // ==========================================================
+    # // | [Domain.Type.List]: List of the above DomainType items |
+    # // ==========================================================
+
     Class DomainTypeList
     {
         [String]     $Name
@@ -1435,7 +1581,10 @@
         }
     }
     
-    # (2/3) [Command.Type.Item]
+    # // ===========================================================================
+    # // | [Command.Type.Item]: Extends the CommandType enum with name/description |
+    # // ===========================================================================
+
     Class CommandTypeItem
     {
         [UInt32]       $Index
@@ -1455,7 +1604,10 @@
         }
     }
 
-    # (2/3) [Command.Type.List]
+    # // =======================================================================
+    # // | [Command.Type.List]: A list of the available DC Promo command types |
+    # // =======================================================================
+
     Class CommandTypeList
     {
         [String]     $Name
@@ -1509,7 +1661,10 @@
         }
     }
     
-    # (1/1) [Connection.Item]
+    # // =====================================================================================
+    # // | [Connection.Item]: Returned info from a successful connection to Active Directory |
+    # // =====================================================================================
+
     Class ConnectionItem
     {
         [String]        $IPAddress
@@ -1548,7 +1703,10 @@
         }
     }
 
-    # (1/2) [Validation.Item]
+    # // ===================================================================
+    # // | [Validation.Item]: A single object for (domain/type) validation |
+    # // ===================================================================
+    
     Class ValidationItem
     {
         [UInt32] $Index
@@ -1566,7 +1724,10 @@
         }
     }
 
-    # (2/2) [Validation.Controller]
+    # // ==========================================================
+    # // | [Validation.Controller]: Contains all validation items |
+    # // ==========================================================
+
     Class ValidationController
     {
         [String]   $Name
@@ -1639,7 +1800,10 @@
         }
     }
 
-    # (1/1) [Execution.Controller]
+    # // ========================================================================================
+    # // | [Execution.Controller]: Provides a controller specifically meant for execution phase |
+    # // ========================================================================================
+
     Class ExecutionController
     {
         [String]     $Name
@@ -1676,7 +1840,10 @@
         }
     }
 
-    # (3/3) [Command.Controller]
+    # // =========================================================================================
+    # // | [Command.Controller]: Controller for (command/domain) type, and (forest/domain) modes |
+    # // =========================================================================================
+
     Class CommandController
     {
         [String]       $Name
@@ -1730,6 +1897,10 @@
             Return "<FEDCPromo.CommandController>"
         }
     }
+
+    # // ====================================================================
+    # // | [FEDCPromo.Controller]: Orchestrates all components of FEDCPromo |
+    # // ====================================================================
 
     Class FEDCPromoController
     {
@@ -1923,7 +2094,6 @@
                 Feature    {         [FeatureController]::New()             }
                 Validation {      [ValidationController]::New()             }
                 Execution  {       [ExecutionController]::New()             }
-                
                 FEDCFound  { [XamlWindow][FEDCFoundXaml]::Content           }
             }
 
@@ -2051,7 +2221,7 @@
         }
         SetForestMode([UInt32]$Index)
         {
-            $Item = $This.Profile.ForestMode
+            $Item = $This.Control.ForestMode
             If ($Index -in $Item.Output.Index)
             {
                 $Item.Selected = $Index
@@ -2060,10 +2230,12 @@
             {
                 $Item.Selected = ($Item.Output | ? Enable)[0].Index
             }
+
+            $This.Get("ForestMode").SetValue($Item.Current().Index)
         }
         SetDomainMode([UInt32]$Index)
         {
-            $Item = $This.Profile.ForestMode
+            $Item = $This.Control.DomainMode
             If ($Index -in $Item.Output.Index)
             {
                 $Item.Selected = $Index
@@ -2072,6 +2244,8 @@
             {
                 $Item.Selected = ($Item.Output | ? Enable)[0].Index
             }
+
+            $This.Get("DomainMode").SetValue($Item.Current().Index)
         }
         SetProfile([UInt32]$Index)
         {
@@ -2102,6 +2276,10 @@
 
             # Writes the current selection collection to console
             $Line  | % { $This.Update(1,$_) }
+            
+            # Changes the selected command
+            $Item                             = $This.Xaml.Get("CommandSlot")
+            $Item.SelectedIndex               = $Index
             $This.Update(0,$This.InsertLine(" "))
     
             # Process each (profile/Xaml) object
@@ -2133,6 +2311,7 @@
                     NewDomainNetBiosName          { @(0,1,1,0)[$Index] }
                     SafeModeAdministratorPassword { @(1,1,1,1)[$Index] }
                     Confirm                       { @(1,1,1,1)[$Index] }
+                    Credential                    { @(0,1,1,1)[$Index] }
                 }
 
                 $Item.Control.IsEnabled = $Item.State
@@ -2181,8 +2360,11 @@
 
                 $Item.SetValue($Value)
 
-                $Box = $This.Xaml.Get(($Item.Name + "Box"))
-                
+                $Box = $This.Profile.Box | ? Root -eq $Item.Name
+                If ($Box)
+                {
+                    $Box.SetValue(@("Collapsed","Visible")[$Item.State])
+                }
 
                 $This.Update(1,$This.ProfileControlStatus($Item))
             }
@@ -2858,6 +3040,8 @@
 
             $Ctrl.SetForestMode($Ctrl.Server)
             $Ctrl.SetDomainMode($Ctrl.Server)
+
+            $Ctrl.SetProfile(0)
         }
     }
 #}
