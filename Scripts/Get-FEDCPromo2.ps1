@@ -949,7 +949,7 @@
         '                        <DataGrid.Columns>',
         '                            <DataGridTextColumn Header="Name"',
         '                                                Binding="{Binding Name}"',
-        '                                                Width="150"/>',
+        '                                                Width="200"/>',
         '                            <DataGridTextColumn Header="Reason"',
         '                                                Binding="{Binding Reason}"',
         '                                                Width="*"/>',
@@ -1023,18 +1023,6 @@
             {
                 $This.Profile.DomainMode = 6
             }
-
-            If ($This.Dsrm)
-            {
-                $This.Profile.SafeModeAdministratorPassword = $This.Dsrm | ConvertTo-SecureString -AsPlainText -Force
-            }
-
-            If (Get-ScheduledTask -TaskName FEDCPromo -EA 0)
-            {
-                Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:$False
-            }
-
-            Get-Process -Name ServerManager -EA 0 | Stop-Process -EA 0
         }
     }
 
@@ -1477,10 +1465,11 @@
         }
         [Object] Output()
         {
-            $Out = @{ }
+            $Out = [PSCustomObject]::New()
+
             ForEach ($Item in $This.Item | ? State -eq 1)
             {
-                $Out.Add($Item.Name,$This.Item.Value)
+                $Out | Add-Member -MemberType NoteProperty -Name $Item.Name -Value $Item.Value
             }
 
             Return $Out
@@ -1933,6 +1922,13 @@
         }
         FEDCPromoController([UInt32]$Mode,[String]$InputPath)
         {
+            If (Get-ScheduledTask -TaskName FEDCPromo -EA 0)
+            {
+                Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:$False
+            }
+
+            Get-Process -Name ServerManager -EA 0 | Stop-Process -EA 0
+
             $This.Mode     = $Mode
             If ($This.Mode -ge 2)
             {
@@ -1972,6 +1968,10 @@
         {
             $This.Console.Update(-1,$Status)
             Throw $This.Console.Last().Status
+        }
+        [String] Label([String]$Status)
+        {
+            Return "[~] [FightingEntropy($([Char]960))] $Status"
         }
         Main()
         {
@@ -2753,6 +2753,9 @@
             {
                 $Ctrl.Control.ForestMode.Selected = $Ctrl.Xaml.IO.ForestMode.SelectedIndex
                 $Ctrl.Reset($Ctrl.Xaml.IO.ForestModeExtension,$Ctrl.Control.ForestMode.Current())
+                $Item        = $Ctrl.Get("ForestMode")
+                $Item.Check  = 1
+                $Item.Reason = "[+] Passed"
             })
 
             # [ComboBox] Domain mode
@@ -2763,10 +2766,38 @@
             {
                 $Ctrl.Control.DomainMode.Selected = $Ctrl.Xaml.IO.DomainMode.SelectedIndex
                 $Ctrl.Reset($Ctrl.Xaml.IO.DomainModeExtension,$Ctrl.Control.DomainMode.Current())
+                $Item        = $Ctrl.Get("DomainMode")
+                $Item.Check  = 1
+                $Item.Reason = "[+] Passed"
             })
 
-            # [ComboBox] Replication Source DC
+            # [ComboBox] Replication Source Dc
             $Ctrl.Reset($Ctrl.Xaml.IO.ReplicationSourceDC,$Null)
+
+            # [ComboBox -> Ctrl.Control -> Datagrid] Replication Source Dc (Event handler)
+            $Ctrl.Xaml.IO.ReplicationSourceDc.Add_SelectionChanged(
+            {
+                If ($Ctrl.Xaml.IO.ReplicationSourceDc.SelectedIndex -ne -1)
+                {
+                    $Item        = $Ctrl.Get("ReplicationSourceDc")
+                    $Item.Check  = 1
+                    $Item.Reason = "[+] Passed"
+                }
+            })
+
+            # [ComboBox] Sitename
+            $Ctrl.Reset($Ctrl.Xaml.IO.ReplicationSourceDC,$Null)
+
+            # [ComboBox -> Ctrl.Control -> Datagrid] Domain mode (Event handler)
+            $Ctrl.Xaml.IO.Sitename.Add_SelectionChanged(
+            {
+                If ($Ctrl.Xaml.IO.Sitename.SelectedIndex -ne -1)
+                {
+                    $Item        = $Ctrl.Get("Sitename")
+                    $Item.Check  = 1
+                    $Item.Reason = "[+] Passed"
+                }
+            })
 
             # // ============
             # // | Features |
@@ -2780,7 +2811,7 @@
             # // =========
 
             # [CheckBox] Install Dns (Event handler)
-            $Ctrl.Xaml.IO.InstallDNS.Add_IsEnabledChanged(
+            $Ctrl.Xaml.IO.InstallDns.Add_IsEnabledChanged(
             {
                 $Ctrl.Toggle("InstallDns")
             })
@@ -3045,8 +3076,324 @@
 
             $Ctrl.SetForestMode($Ctrl.Server)
             $Ctrl.SetDomainMode($Ctrl.Server)
+        }
+        DumpConsole()
+        {
+            $This.Console.Finalize()
+            $Path = $This.ProgramData()
 
-            $Ctrl.SetProfile(0)
+            ForEach ($Item in "Secure Digits Plus LLC", "Logs")
+            {
+                $Path = $Path, $Item -join "\"
+                If (!$This.TestPath($Path))
+                {
+                    [System.IO.Directory]::CreateDirectory($Path) | Out-Null
+                }
+            }
+            
+            $FileName = "{0}\{1}-{2}.log" -f $Path, 
+                                             $This.Console.End.Time.ToString("yyyy-MMdd-HHmmss"), 
+                                             $This.MachineName()
+
+            $This.Update(100,"[+] Console dumped: [$FileName]")
+
+            $Value    = $This.Console.Output | % ToString
+            [System.IO.File]::WriteAllLines($FileName,$Value)
+        }
+        [Object] RestartScript()
+        {
+            $Item = "{0}\Secure Digits Plus LLC\FEDCPromo\{1}"
+
+            Return $Item -f $This.ProgramData(), $This.Console.Start.Time.ToString("yyyyMMdd")
+        }
+        [Object] ScheduledTaskAction()
+        {
+            $Argument = "-NoExit -ExecutionPolicy Bypass -Command `"Get-FEDCPromo -Mode 1 -InputPath '{0}'`"" -f $This.RestartScript()
+
+            Return New-ScheduledTaskAction -Execute PowerShell -Argument $Argument
+        }
+        [Object] ScheduledTaskTrigger()
+        {
+            Return New-ScheduledTaskTrigger -AtLogon
+        }
+        [Void] RegisterScheduledTask()
+        {
+            $Splat = @{ 
+
+                Action      = $This.ScheduledTaskAction()
+                Trigger     = $This.ScheduledTaskTrigger()
+                TaskName    = "FEDCPromo"
+                RunLevel    = "Highest"
+                Description = "Restart, then promote the system"
+            }
+
+            Register-ScheduledTask @Splat | Out-Null
+        }
+        [String] ExportFileName([String]$Type)
+        {
+            $Item = Switch ($Type)
+            {
+                Slot        {        "Slot.txt" }
+                Profile     {     "Profile.txt" }
+                Credential  {  "Credential.txt" }
+                Dsrm        {        "Dsrm.txt" }
+            }
+
+            Return $Item
+        }
+        ExportFile([String]$Type,[Object]$Object)
+        {
+            $FileName = $This.ExportFileName($Type)
+            $Path     = "{0}\{1}" -f $This.OutputFolder(), $Filename
+            
+            Switch -Regex ($Type)
+            {
+                ^Profile$
+                {
+                    [System.IO.File]::WriteAllLines($Path,($Object | ConvertTo-Json))
+                }
+                "(^Credential$|^Dsrm$)"
+                {
+                    $Object | Export-CliXml -Path $Path -Force
+                }
+                "(^Slot$)"
+                {
+                    [System.IO.File]::WriteAllLines($Path,$Object)
+                }
+            }
+
+            Switch ([UInt32][System.IO.File]::Exists($Path))
+            {
+                0 { $This.Update(-1,"[!] $Type : [$Path]") }
+                1 { $This.Update( 1,"[+] $Type : [$Path]") }
+            }
+        }
+        Save()
+        {
+            $This.ExportFile("Slot"       , $This.Control.Slot)
+
+            $Out  = @{ }
+            $Dsrm = $Null
+            ForEach ($Item in $This.Execution.Output.GetEnumerator())
+            {
+                If ($Item.Name -notmatch "(Confirm|SafeModeAdministratorPassword)")
+                {
+                    $Out.Add($Item.Name,$Item.Value)
+                }
+
+                If ($Item.Name -eq "SafeModeAdministratorPassword")
+                {
+                    $Dsrm = [PSCredential]::New($Item.Name,$Item.Value)
+                }
+            }
+
+            $This.ExportFile("Profile"    , $Out)
+            $This.ExportFile("Dsrm"       , $Dsrm)
+
+            If ($This.Control.Slot -in 1..3)
+            {
+                $This.ExportFile("Credential" , $This.Credential)
+            }
+        }
+        Complete()
+        {
+            $This.Update(0,"[~] Completing process")
+
+            $Prop = $This.Profile.Output()
+
+            $Out  = @{ }
+            If ($This.Profile.Index -in 1,2)
+            {
+                $Out.Add("DomainType",$This.Control.DomainType.Current().Value)
+            }
+
+            ForEach ($Item in @($Prop.PSObject.Properties))
+            {
+                Switch -Regex ($Item.Name)
+                {
+                    ^ForestMode$
+                    {
+                        If ($Item.Value -ge 6)
+                        {
+                            $Item.Value = "WinThreshold"
+                        }
+                    }
+                    ^DomainMode$
+                    {
+                        If ($Item.Value -ge 6)
+                        {
+                            $Item.Value = "WinThreshold"
+                        }
+                    }
+                    ^ReplicationSourceDc$
+                    {
+                        If ($Item.Value -match "\d+")
+                        {
+                            $Item.Value = $This.Get("ReplicationSourceDc").Control.Items[$Item.Value]
+                        }
+                    }
+                    ^Sitename$
+                    {
+                        If ($Item.Value -match "\d+")
+                        {
+                            $Item.Value = $This.Get("Sitename").Control.Items[$Item.Value]
+                        }
+                    }
+                }
+
+                Switch ($Item.Name)
+                {
+                    Default 
+                    { 
+                        $Out.Add($Item.Name,$Item.Value)
+                    }
+                    SafeModeAdministratorPassword
+                    {
+                        $Value = $Item.Value | ConvertTo-SecureString -AsPlainText -Force
+                        $Out.Add("SafeModeAdministratorPassword",$Value)
+                    }
+                }
+            }
+
+            $This.Execution.Output = $Out
+        }
+        Execute()
+        {
+            $This.Execution.Clear("Feature")
+
+            If ($This.Feature.Output | ? Name -eq Dns | ? State)
+            {
+                $This.Error("[!] Dns currently installed, it is highly recommended to remove it first")
+            }
+            
+            ForEach ($Item in $This.Feature.Output | ? Name -ne Dns | ? Enable | ? Install)
+            {
+                $This.Update(1,"[~] Execution Feature: [$($Item.Name)]")
+                $This.Execution.Feature += $Item
+            }
+
+            If ($This.Execution.Feature.Count -gt 0)
+            {
+                $This.Update(0,$This.Label("FEDCPromo -> Feature installation"))
+                $This.Module.Write($This.Console.Last().Status)
+
+                $This.Execution.Clear("Result")
+
+                $C = 1
+                $D = ([String]$This.Execution.Feature.Count).Length
+
+                ForEach ($Item in $This.Execution.Feature)
+                {
+                    $Status = "{0:p}" -f ($C/$This.Execution.Feature.Count)
+                    $This.Update(0,"[~] ($Status) [$($Item.Name)]")
+                    Switch ($This.Test)
+                    {
+                        0
+                        {
+                            $This.Execution.Result += $This.InstallWindowsFeature($Item.Name)
+                            If ($? -eq $True)
+                            {
+                                $Item.State   = 1
+                                $Item.Enable  = 0
+                                $Item.Install = 0
+                            }
+                        }
+                        1
+                        {
+                            $This.Update(0,"[~] Install-WindowsFeature -Name $($Item.Name) -IncludeAllSubFeature -IncludeManagementTools")
+                        }
+                    }
+                        
+                    $This.Update(1,"[+] ($Status) [$($Item.Name)]")
+                    $C ++
+                }
+
+                If (($This.Execution.Result | ? RestartNeeded -eq No).Count -gt 0)
+                {
+                    $This.Update(0,"[!] Reboot required to proceed, writing progress to disk")
+
+                    $This.Save()
+                    $This.RegisterScheduledTask()
+
+                    $This.Update(0,$This.Label("Restarting [$($This.MachineName())]"))
+                    $This.Module.Write($This.Console.Last().Status)
+                    $X = 5
+                    Do
+                    {
+                        Start-Sleep 1
+                        $X --
+                    }
+                    Until ($X -eq 0)
+                    Restart-Computer
+                }
+            }
+
+            Import-Module AddsDeployment
+            $Splat = $This.Execution.Output
+
+            Switch (!$This.Test)
+            {
+                0
+                {
+                    $This.Update(0,$This.Label("Testing -> Domain Controller Installation"))
+                    $This.Module.Write($This.Console.Last().Status)
+                    
+                    Switch ($This.Control.Slot)
+                    {
+                        {$_ -eq   0} { Test-ADDSForestInstallation           @Splat }
+                        {$_ -in 1,2} { Test-ADDSDomainInstallation           @Splat }
+                        {$_ -eq   3} { Test-ADDSDomainControllerInstallation @Splat }
+                    }
+                }
+                1
+                {
+                    $This.Update(0,$This.Label("Executing -> Domain Controller Installation"))
+                    $This.Module.Write($This.Console.Last().Status)
+
+                    Switch ($This.Control.Slot)
+                    {
+                        {$_ -eq   0} { Install-ADDSForest                    @Splat -Confirm:$False }
+                        {$_ -in 1,2} { Install-ADDSDomain                    @Splat -Confirm:$False }
+                        {$_ -eq   3} { Install-ADDSDomainController          @Splat -Confirm:$False }
+                    }
+                }
+            }
+        }
+        SetInputObject([String]$InputPath)
+        {
+            # Allows the function to resume from a (necessary reboot/answer file)
+            $This.Update(0,"[~] Processing InputObject")
+            $IO              = $This.InputObjectController($InputPath)
+
+            # Slot
+            $This.SetProfile($IO.Slot)
+
+            # Profile
+            $List            = @($IO.Profile.PSObject.Properties) | Select Name, Value
+            ForEach ($Item in $This.Profile.Item | ? State)
+            {
+                $Prop        = $List | ? Name -eq $Item.Name
+                $Item.SetValue($Prop.Value)
+                $Item.Check  = 1
+                $Item.Reason = "[+] Passed"
+            }
+
+            # Credential
+            If ($IO.Credential)
+            {
+                $This.Credential = $IO.Credential
+                $This.Xaml.IO.Credential.Text = $IO.Credential.Username
+                # Todo: Perform testing...
+            }
+
+            # SafeModeAdministratorPassword
+            ForEach ($Name in "SafeModeAdministratorPassword","Confirm")
+            {
+                $Item        = $This.Get($Name)
+                $Item.SetValue($IO.Dsrm.GetNetworkCredential().Password)
+                $Item.Check  = 1
+                $Item.Reason = "[+] Passed"
+            }
         }
     }
 #}
