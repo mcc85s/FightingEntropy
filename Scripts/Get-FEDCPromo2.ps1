@@ -1310,8 +1310,8 @@
         [String]           $Type
         [String]       $Property
         [Object]          $Value
-        [UInt32]          $Check
-        [String]         $Reason
+        [UInt32]          $Check = 0
+        [String]         $Reason = "[!] Unset"
         ProfileItem([UInt32]$Index,[String]$Slot,[String]$Name,[Object]$Control)
         {
             $This.Index    = $Index
@@ -2063,8 +2063,12 @@
             }
 
             # Stage command (Forest/Domain) modes
-            $This.Control.ForestMode.SetMin($This.Server)
-            $This.Control.DomainMode.SetMin($This.Server)
+            ForEach ($Name in "ForestMode","DomainMode")
+            {
+                $Item          = $This.Control.$Name
+                $Item.Selected = $This.Server
+                $Item.SetMin($This.Server)
+            }
 
             # ================================================ #
             # Validation | Execution | Connection | Credential #
@@ -2180,7 +2184,7 @@
             # Returns the (success/failure) graphic based on the type 
             Return $This.Module._Control(@("failure.png","success.png")[$Type]).Fullname
         }
-        [Object] Validate([String]$Type)
+        [Object] ValidationType([String]$Type)
         {
             # Retrieves a list of specific item types from the validation controller
             Return $This.Validation.Output | ? Type -eq $Type | % Value
@@ -2188,17 +2192,17 @@
         [Object] Reserved()
         {
             # Returns reserved items from the validation controller
-            Return $This.Validate("Reserved")
+            Return $This.ValidationType("Reserved")
         }
         [Object] Legacy()
         {
             # Returns legacy items from the validation controller
-            Return $This.Validate("Legacy")
+            Return $This.ValidationType("Legacy")
         }
         [Object] SecurityDescriptor()
         {
             # Returns security descriptor items from the validation controller
-            Return $This.Validate("SecurityDescriptor")
+            Return $This.ValidationType("SecurityDescriptor")
         }
         [String] DefaultText([String]$Name)
         {
@@ -2289,7 +2293,7 @@
 
             $This.ToggleStaging()
 
-            ForEach ($Item in $This.Profile.Output)
+            ForEach ($Item in $This.Profile.Item)
             {
                 $Item.State           = Switch ($Item.Name)
                 {
@@ -2320,7 +2324,12 @@
                 {
                     Mode 
                     {
-                        0
+                        Switch ($Item.Name)
+                        {
+                            ForestMode { $This.Control.ForestMode.Selected }
+                            DomainMode { $This.Control.DomainMode.Selected }
+                            Default    { 0 }
+                        }
                     }
                     Role
                     {
@@ -2359,6 +2368,11 @@
                 }
 
                 $Item.SetValue($Value)
+                If ($Item.Slot -eq "Path")
+                {
+                    $Item.Check  = 1
+                    $Item.Reason = "[+] Passed"
+                }
 
                 $Box = $This.Profile.Box | ? Root -eq $Item.Name
                 If ($Box)
@@ -2375,13 +2389,6 @@
         }
         Reset([Object]$xSender,[Object]$Object)
         {
-            # Resets the items within a given combobox or datagrid
-            If ($This.Mode -gt 0)
-            {
-                $Line = "{0} [{1}]" -f $xSender.Name, $xSender.GetType().Name
-                $This.Update(0,"[~] $Line")
-            }
-
             $xSender.Items.Clear()
             ForEach ($Item in $Object)
             {
@@ -2391,7 +2398,7 @@
         [Object] Get([String]$Name)
         {
             # Returns the specified profile item from profile controller
-            Return $This.Profile.Output | ? Name -eq $Name
+            Return $This.Profile.Item | ? Name -eq $Name
         }
         Toggle([String]$Name)
         {
@@ -2620,6 +2627,8 @@
         }
         CheckPassword()
         {
+            $This.Update(0,"[~] Checking password")
+
             $Pattern        = $This.Validation.Password()
             $Password       = $This.Get("SafeModeAdministratorPassword")
             $Password.Value = $Password.Control.Password
@@ -2631,7 +2640,7 @@
             {
                 Default
                 {
-                    $This.Validate($Password,"[!] 10 chars, and at least: (1) Uppercase, (1) Lowercase, (1) Special, (1) Number")
+                    $This.Validate($Password,"[!] 10 chars: (1+) Upper/Lower/Special/Numeric")
                 }
                 $Pattern
                 {
@@ -2658,11 +2667,12 @@
                 }
             }
 
+            $This.Update($Password.Check,$Password.Reason)
+            $This.Update( $Confirm.Check, $Confirm.Reason)
+
             ForEach ($Item in $Password, $Confirm)
             {
-                $Name         = $Item.Name + "Icon"
-                $Icon         = $This.Get("${Name}Icon")
-
+                $Icon         = $This.Xaml.Get("$($Item.Name)Icon")
                 $Icon.Source  = $This.Icon($Item.Check)
                 $Icon.Tooltip = $Item.Reason
             }
@@ -2671,7 +2681,7 @@
         }
         Browse([String]$Name)
         {
-            $List = $This.Profile | ? Slot -eq Path | % Name
+            $List = $This.Profile.Item | ? Slot -eq Path | % Name
             If ($Name -notin $List)
             {
                 $This.Error(-1,"[!] Invalid <browse> option")
@@ -2694,12 +2704,7 @@
         {
             $This.Execution.Clear("Summary")
             
-            ForEach ($Item in $This.Control.Profile.List("Slot") | ? IsEnabled | ? Property -eq Text)
-            {
-                $This.Execution.Summary += $Item
-            }
-
-            ForEach ($Item in $This.Control.Profile.List("DSRM"))
+            ForEach ($Item in $This.Profile.Item | ? State | ? Property -match "(Text|Password)")
             {
                 $This.Execution.Summary += $Item
             }
@@ -2727,7 +2732,7 @@
             {
                 $Index = $Ctrl.Xaml.IO.CommandSlot.SelectedIndex
                 $Ctrl.SetProfile($Index)
-                $Ctrl.Reset($Ctrl.Xaml.IO.Command,$Ctrl.Control.Profile)
+                $Ctrl.Reset($Ctrl.Xaml.IO.Command,$Ctrl.Profile)
             })
 
             # // ========
