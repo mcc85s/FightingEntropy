@@ -1,8 +1,37 @@
-#Function Get-FEDCPromo2
-#{
-#    [CmdLetBinding()]Param(
-#    [Parameter()][UInt32]$Mode=0,
-#    [Parameter()][String]$InputPath)
+<#
+.SYNOPSIS
+.DESCRIPTION
+.LINK
+.NOTES
+
+ //==================================================================================================\\ 
+//  Module     : [FightingEntropy()][2022.12.0]                                                       \\
+\\  Date       : 2023-01-13 22:01:36                                                                  //
+ \\==================================================================================================// 
+
+    FileName   : Get-FEDCPromo.ps1
+    Solution   : [FightingEntropy()][2022.12.0]
+    Purpose    : For the promotion of a FightingEntropy (ADDS/Various) Domain Controller
+    Author     : Michael C. Cook Sr.
+    Contact    : @mcc85s
+    Primary    : @mcc85s
+    Created    : 2022-12-14
+    Modified   : 2023-01-13
+    Demo       : N/A
+    Version    : 0.0.0 - () - Finalized functional version 1
+    TODO       : [~] Test each level and functionality across each mode
+                 [~] Nbt scanner (modes 1..3)
+                 [+] Test the new way that this thing works, via -InputPath
+                     Basically, the function exports various properties to a folder
+
+.Example
+#>
+
+Function Get-FEDCPromo
+{
+    [CmdLetBinding()]Param(
+    [Parameter()][UInt32]$Mode=0,
+    [Parameter()][String]$InputPath)
 
     # Check for server operating system
     If (Get-CimInstance Win32_OperatingSystem | ? Caption -notmatch Server)
@@ -498,7 +527,7 @@
         '                </DataGrid.Columns>',
         '            </DataGrid>',
         '        </Grid>',
-        '        <TabControl Grid.Row="1">',
+        '        <TabControl Grid.Row="1" Name="Main">',
         '            <TabItem Header="Mode">',
         '                <Grid>',
         '                    <Grid.RowDefinitions>',
@@ -900,7 +929,7 @@
         '                        <Image   Grid.Column="2"',
         '                                 Name="CredentialIcon"/>',
         '                        <TextBox Grid.Column="3"',
-        '                                 Name="Credential"/>',
+        '                                 Name="CredentialText"/>',
         '                    </Grid>',
         '                    <Label Grid.Row="4"',
         '                           Content="[(DSRM/Domain Services Restore Mode) Key]"/>',
@@ -949,7 +978,7 @@
         '                        <DataGrid.Columns>',
         '                            <DataGridTextColumn Header="Name"',
         '                                                Binding="{Binding Name}"',
-        '                                                Width="200"/>',
+        '                                                Width="150"/>',
         '                            <DataGridTextColumn Header="Reason"',
         '                                                Binding="{Binding Reason}"',
         '                                                Width="*"/>',
@@ -960,11 +989,9 @@
         '        </TabControl>',
         '        <Grid Grid.Row="2">',
         '            <Grid.ColumnDefinitions>',
-        '                <ColumnDefinition Width="65"/>',
-        '                <ColumnDefinition Width="65"/>',
-        '                <ColumnDefinition Width="65"/>',
-        '                <ColumnDefinition Width="10"/>',
-        '                <ColumnDefinition Width="65"/>',
+        '                <ColumnDefinition Width="*"/>',
+        '                <ColumnDefinition Width="*"/>',
+        '                <ColumnDefinition Width="*"/>',
         '                <ColumnDefinition Width="*"/>',
         '            </Grid.ColumnDefinitions>',
         '            <Button Grid.Column="0"',
@@ -976,11 +1003,9 @@
         '            <Button Grid.Column="2"',
         '                    Name="Save"',
         '                    Content="Save"/>',
-        '            <Border Grid.Column="3" Background="Black" Margin="4"/>',
-        '            <Button Grid.Column="4"',
+        '            <Button Grid.Column="3"',
         '                    Name="Load"',
         '                    Content="Load"/>',
-        '            <TextBox Grid.Column="5" Name="InputPath" IsEnabled="False"/>',
         '        </Grid>',
         '    </Grid>',
         '</Window>' -join "`n")
@@ -1415,7 +1440,7 @@
         {
             $This.Clear()
 
-            # Add items
+            # Add Item
             ForEach ($Name in [System.Enum]::GetNames([ProfileType]))
             {
                 $Slot = Switch -Regex ($Name)
@@ -1445,7 +1470,7 @@
                 $This.Add($Slot,$Name,$Xaml.Get($Name))
             }
 
-            # Add Boxes
+            # Add Box
             ForEach ($Name in [System.Enum]::GetNames([ProfileBoxType]))
             {
                 $Slot = Switch -Regex ($Name)
@@ -1919,6 +1944,7 @@
             }
 
             $This.Main()
+            $This.StageXaml()
         }
         FEDCPromoController([UInt32]$Mode,[String]$InputPath)
         {
@@ -1936,6 +1962,7 @@
             }
 
             $This.Main()
+            $This.StageXaml()
 
             $This.SetInputObject($InputPath)
         }
@@ -1981,6 +2008,8 @@
 
             # Initialize console
             $This.StartConsole()
+
+            $This.Update(0,"[~] Staging : Main")
 
             # ======================== #
             # Xaml | Control | Profile #
@@ -2083,6 +2112,8 @@
             # Set (connection + credential) to $Null
             $This.Connection    = $Null
             $This.Credential    = $Null
+
+            $This.Update(0,"[+] Staged  : Main")
         }
         [Object] New([String]$Name)
         {
@@ -2135,23 +2166,14 @@
         }
         [String] OutputFolder()
         {
-            $List = $This.ProgramData(),
-                    "Secure Digits Plus LLC",
-                    "FEDCPromo",
-                    $This.Console.Start.Time.ToString("yyyyMMdd")
+            $Path = $This.ProgramData()
 
-            $Path = $List -join "\"
-
-            If (!$This.TestPath($Path))
+            ForEach ($Item in "Secure Digits Plus LLC", "FEDCPromo", $This.Console.Start.Time.ToString("yyyyMMdd"))
             {
-                $Path = $List[0]
-                ForEach ($Item in $List[1..3])
+                $Path = $Path, $Item -join "\"
+                If (!$This.TestPath($Path))
                 {
-                    $Path += "\$Item"
-                    If (!$This.TestPath($Path))
-                    {
-                        [System.IO.Directory]::CreateDirectory($Path) | Out-Null
-                    }
+                    [System.IO.Directory]::CreateDirectory($Path) | Out-Null
                 }
             }
 
@@ -2381,6 +2403,32 @@
                 }
 
                 $This.Update(1,$This.ProfileControlStatus($Item))
+            }
+
+            $This.Update(0,$This.InsertLine(" "))
+
+            # Credential
+            $This.Update(0,$This.InsertLine("="))
+            $This.Update(0,"[~] Profile -> [Credential]")
+            $This.Update(0,$This.InsertLine(" "))
+
+            ForEach ($Name in $This.Xaml.Types | ? Name -match "Credential")
+            {
+                $Item            = $This.Xaml.Get($Name)
+                $State           = [UInt32]($This.Profile.Index -gt 0)
+                $Item.Visibility = @("Collapsed","Visible")[$State]
+                $Item.IsEnabled  = $State
+
+                If ($Item.Type -eq "Image")
+                {
+                    $Item.Source = $Null
+                }
+                If ($Item.Type -eq "TextBox")
+                {
+                    $Item.Text   = $Null
+                }
+
+                $This.Update(0,("[{0}] {1}" -f @(" ","X")[$State], $Name))
             }
 
             $This.Update(0,$This.InsertLine(" "))
@@ -2720,6 +2768,8 @@
         {
             $Ctrl          = $This
 
+            $This.Update(0,"[~] Staging : Xaml")
+
             # // ===========
             # // | Command |
             # // ===========
@@ -2730,9 +2780,8 @@
             # [ComboBox] Command slot (Event handler)
             $Ctrl.Xaml.IO.CommandSlot.Add_SelectionChanged(
             {
-                $Index = $Ctrl.Xaml.IO.CommandSlot.SelectedIndex
-                $Ctrl.SetProfile($Index)
-                $Ctrl.Reset($Ctrl.Xaml.IO.Command,$Ctrl.Profile)
+                $Ctrl.SetProfile($Ctrl.Xaml.IO.CommandSlot.SelectedIndex)
+                $Ctrl.Reset($Ctrl.Xaml.IO.Command,$Ctrl.Profile)          
             })
 
             # // ========
@@ -3050,32 +3099,22 @@
 
             $Ctrl.Xaml.IO.Load.Add_Click(
             {
-                $Item                    = New-Object System.Windows.Forms.FolderBrowserDialog
+                $Item              = New-Object System.Windows.Forms.FolderBrowserDialog
+                $Item.SelectedPath = "{0}\{1}\{2}" -f $Ctrl.ProgramData(), "Secure Digits Plus LLC", "FEDCPromo"
                 $Item.ShowDialog()
-        
-                If (!$Item.SelectedPath)
+
+                If ($Item.SelectedPath)
                 {
-                    $Item.SelectedPath                    = $Null
-                    $Ctrl.Xaml.IO.InputPath.IsEnabled     = 0
-                }
-                Else
-                {
-                    $IO = $Ctrl.InputObjectController($Item.SelectedPath)
-                    If (!!$IO.Profile)
-                    {
-                        $Ctrl.Xaml.IO.InputPath.IsEnabled = 1
-                        $Ctrl.Xaml.IO.InputPath.Text      = $Item.SelectedPath
-                    }
-                    Else
-                    {
-                        $Item.SelectedPath                = $Null
-                        $Ctrl.Xaml.IO.InputPath.IsEnabled = 0
-                    }
+                    $IO            = $Ctrl.SetInputObject($Item.SelectedPath)
                 }
             })
 
             $Ctrl.SetForestMode($Ctrl.Server)
             $Ctrl.SetDomainMode($Ctrl.Server)
+
+            $Ctrl.Xaml.Get("CommandSlot").SelectedIndex = 0
+
+            $This.Update(1,"[+] Staged  : Xaml")
         }
         DumpConsole()
         {
@@ -3363,41 +3402,233 @@
         {
             # Allows the function to resume from a (necessary reboot/answer file)
             $This.Update(0,"[~] Processing InputObject")
-            $IO              = $This.InputObjectController($InputPath)
+            $IO                  = $This.InputObjectController($InputPath)
 
             # Slot
             $This.SetProfile($IO.Slot)
 
             # Profile
-            $List            = @($IO.Profile.PSObject.Properties) | Select Name, Value
+            $List                = @($IO.Profile.PSObject.Properties) | Select Name, Value
             ForEach ($Item in $This.Profile.Item | ? State)
             {
-                $Prop        = $List | ? Name -eq $Item.Name
-                $Item.SetValue($Prop.Value)
-                $Item.Check  = 1
-                $Item.Reason = "[+] Passed"
+                $Prop            = $List | ? Name -eq $Item.Name
+                Switch ($Item.Type)
+                {
+                    ComboBox    
+                    { 
+                        $Item.Control.SelectedIndex = $Prop.Value
+                    }
+                    CheckBox
+                    {
+                        $Item.Control.IsChecked     = $Prop.Value
+                    }
+                    TextBox
+                    {
+                        $Item.Control.Text          = $Prop.Value
+                    }
+                    PasswordBox
+                    {
+                        $Item.Control.Password      = $IO.Dsrm.GetNetworkCredential().Password
+                    }
+                }
+
+                $Item.Value      = $Item.GetValue()
+
+                If ($Item.Slot -eq "Name")
+                {
+                    $This.Check($Item.Name)
+                }
+                Else
+                {
+                    $Item.Check      = 1
+                    $Item.Reason     = "[+] Passed"
+                }
             }
 
             # Credential
             If ($IO.Credential)
             {
                 $This.Credential = $IO.Credential
-                $This.Xaml.IO.Credential.Text = $IO.Credential.Username
-                # Todo: Perform testing...
+                $Item            = $This.Xaml.Get("CredentialText")
+                $Item.Text       = $IO.Credential.Username
             }
 
-            # SafeModeAdministratorPassword
-            ForEach ($Name in "SafeModeAdministratorPassword","Confirm")
+            $This.CheckPassword()
+            $This.Total()
+        }
+        SetConnection()
+        {
+            <# [~!!!! Complete !!!!~]
+            $This.Update(0,"[~] Connection")
+            If ($This.Connection)
             {
-                $Item        = $This.Get($Name)
-                $Item.SetValue($IO.Dsrm.GetNetworkCredential().Password)
-                $Item.Check  = 1
-                $Item.Reason = "[+] Passed"
+                $This.Update(0,"[+] Connection")
+                Switch ($This.Control.Slot)
+                {
+                    1
+                    {
+                        $This.Get( "ParentDomainName").SetValue($This.Connection.Domain)
+                        $This.Get("DomainNetBIOSName").SetValue($This.Connection.NetBios)
+                    }
+                    2
+                    {
+                        $This.Get("ParentDomainName" ).SetValue($This.Connection.Domain)
+                        $This.Get("DomainNetBIOSName").SetValue($This.Connection.NetBios)
+                    }
+                    3
+                    {
+                        $This.Get("DomainName"       ).SetValue($This.Connection.Domain)
+                        $This.Get("DomainNetBIOSName").SetValue($This.Connection.NetBios)
+                    }
+                }
+
+                $Item = Switch ($This.Connection.Sitename.Count)
+                {
+                    0 { "-" } Default { $This.Connection.Sitename }
+                }
+
+                $This.Reset($This.Xaml.Get("SiteName"),$Item)
+
+                $Item = Switch ($This.Connection.ReplicationSourceDC.Count)
+                {
+                    0 { "<Any>" } Default { @($This.Connection.ReplicationDC;"<Any>") }
+                }
+
+                $This.Reset($This.Xaml.Get("ReplicationSourceDC"),$Item)
             }
+
+            # Connection Objects [Credential, Sitename, and ReplicationDCs]
+            If ($This.Control.Slot -eq 0)
+            {
+                $This.Update(0,"[~] Credential")
+                $This.Xaml.IO.Credential.Text                       = ""
+                $This.Xaml.IO.CredentialButton.IsEnabled            = 0
+                $This.Credential                                    = $Null
+            }
+
+            If ($This.Control.Slot -ne 0 -and $This.Connection)
+            {
+                $This.Update(0,"[~] Credential")
+                $This.Xaml.IO.Credential.Text                       = $This.Connection.Credential.Username
+                $This.Credential                                    = $This.Connection.Credential
+                $This.Xaml.IO.CredentialButton.IsEnabled            = 1
+
+                
+
+                $This.Xaml.IO.Sitename.SelectedIndex                = 0
+                $This.Xaml.IO.ReplicationSourceDC.SelectedIndex     = 0
+            }
+            #>
+        }
+        Login()
+        {
+            <# [~!!!! Complete !!!!~]
+            $This.Update(0,"[~] Ad-Login")
+            $This.Connection         = $Null
+            $Dcs                     = $This.Network.NBT.Output
+                                     # $Ctrl.Network.Compartment.Output[0].Extension.Nbt.Output.Output | FT
+                                     # $This.Network.Nbt.Output | ? {$_.Output.Id -match "(1B|1C)" }
+                                     # $This.Network.Compartment
+            Switch ([UInt32]!!$Dcs)
+            {
+                0
+                {
+                    $Connect         = $This.Get("FEADLogin")
+                    $This.Connection = Switch ([UInt32]!!$Connect.Test.DistinguishedName)
+                    {
+                        0 
+                        { 
+                            $This.Update(-1,"[!] Ad-Login")
+                            $Null 
+                        }
+                        1 
+                        {
+                            $This.Update(1,"[+] Ad-Login")
+                            $This.GetConnection($Connect) 
+                        }
+                    }
+                }
+                1
+                {
+                    $DC              = $This.Get("FDCFound")
+
+                    $This.Reset($DC.IO.DomainControllers,$DCs)
+                    $DC.IO.DomainControllers.Add_SelectionChanged(
+                    {
+                        If ($DC.IO.DomainControllers.SelectedIndex -ne -1)
+                        {
+                            $DC.IO.Ok.IsEnabled = 1
+                        }
+                    })
+    
+                    $DC.IO.Ok.IsEnabled     = 0
+                    $DC.IO.Cancel.Add_Click(
+                    {
+                        $DC.IO.DialogResult = 0
+                    })
+    
+                    $DC.IO.Ok.Add_Click(
+                    {
+                        $DC.IO.DialogResult = 1
+                    })
+    
+                    $DC.Invoke()
+    
+                    Switch ($DC.IO.DialogResult)
+                    {
+                        0
+                        {
+                            $This.Update(-1,"[!] Ad-Login [user cancelled/dialog failed)]")
+                        }
+                        1
+                        {
+                            $This.Update(-1,"[~] Ad-Login [testing supplied credentials]")
+                            $Connect = Get-FEADLogin -Target $DC.IO.DomainControllers.SelectedItem
+                            Switch ([UInt32]!!$Connect.Test.DistinguishedName)
+                            {
+                                0
+                                {
+                                    $This.Update(-1,"[!] Ad-Login [credential error]")
+                                    $This.Connection = $Null
+                                }
+                                1
+                                {
+                                    $This.Update(1,"[+] Ad-Login [credential good]")
+                                    $This.Connection = $This.GetConnection($Connect)
+                                    $This.Connection.AddReplicationDCs($DCs)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            $This.SetProfile($This.Control.Slot)
+            #>
         }
     }
-#}
+    
+    Switch ([UInt32]!!$InputPath)
+    {
+        0 
+        { 
+            $Ctrl = [FEDCPromoController]::New($Mode)
+            $Ctrl.Xaml.Invoke()
+        }
+        1
+        {
+            $Ctrl = [FEDCPromoController]::New($Mode,$InputPath)
+            $Ctrl.Xaml.IO.Show()
+            Start-Sleep 3
+            $Ctrl.Complete()
+            $Ctrl.Xaml.IO.Close()
+            $Alt  = 1
+        }
+    }
 
-$Ctrl = [FEDCPromoController]::New(1)
-$Ctrl.StageXaml()
-$Ctrl.Xaml.Invoke()
+    If ($Ctrl.Xaml.IO.DialogResult -or $Alt -eq 1)
+    {
+        $Ctrl.Execute()
+        $Ctrl.DumpConsole()
+    }
+}
