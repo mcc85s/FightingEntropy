@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-12 15:56:17
+    # Last edited : 2023-01-13 22:27:17
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (2) virtual servers to work together as an Active Directory domain controller cluster
@@ -1232,14 +1232,14 @@
     $Vm.TypeKey(13)
 
     # Wait idle
-    $Vm.Idle(5,5)
+    $Vm.Idle(5,8)
 
     # Install Visual Studio Code via Chocolatey
     $Vm.TypeText("choco install vscode -y")
     $Vm.TypeKey(13)
 
     # Wait idle
-    $Vm.Idle(5,5)
+    $Vm.Idle(5,8)
 
     # Install-BossMode
     $Vm.TypeText("Install-BossMode")
@@ -1260,7 +1260,7 @@
     $Vm.TypeKey(13)
 
     # Wait idle
-    $Vm.Idle(5,5)
+    $Vm.Idle(5,8)
 
     ################# [Resume from here] #################
     # Launch FEDCPromo
