@@ -1,7 +1,7 @@
 <#
      ____    ____________________________________________________________________________________________________        
     //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-01-14 13:08:51                                           ___//¯¯\\   
+    \\__//¯¯¯ [FightingEntropy(π)][2022.12.0]: 2023-01-14 14:32:56                                           ___//¯¯\\   
      ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 \_______________________________________________________________________________________________________________________/
@@ -1461,7 +1461,7 @@ Function FightingEntropy.Module
             # If enabled, shows the last item added to the console
             If ($This.Mode -eq 0)
             {
-                [Console]::WriteLine($This.Console.Last())
+                [Console]::WriteLine($This.Console.Last().Status)
             }
         }
         [Void] Update([Int32]$State,[String]$Status)
@@ -1648,9 +1648,9 @@ Function FightingEntropy.Module
                     ("Get-EventLogRecordExtension.ps1" , "8B738D1B551BC14C6FD8D003A82E420CDA17ED865FFD83D6E3A392F40CF20145") ,
                     ("Get-EventLogXaml.ps1"            , "18554029561A277AEB5AAA643CF88DC43F3A7C2D97281EEBD47A03BEE6018DB4") ,
                     ("Get-FEADLogin.ps1"               , "1EEA605D7181E9F1985FC012E7EABB1884B39B9D33D2E2E8AB6A8C21C3770B56") ,
-                    ("Get-FEDCPromo.ps1"               , "BEB3D543D8D710CE966C8A920F8F9E6BD2F27F0D1E33D2D91E1D28AC215ABDBE") ,
+                    ("Get-FEDCPromo.ps1"               , "13E071F8FD6F5E8D6CD86FA251F150B64B2EB99862A1D611E26E3BAEFF1DD7A7") ,
                     ("Get-FEImageManifest.ps1"         , "03AD403FA17EE0702A8D8911F8B4BD7AABE5C6971363AF2FFADE6FF83918D57F") ,
-                    ("Get-FEModule.ps1"                , "7ABF8D3EC9D5524F727027137F3381F8FAC1F30D48AB8FB24818211CEBCFA975") ,
+                    ("Get-FEModule.ps1"                , "2249671C759F67D3C160277CC54DF0EB65C254157BAC06B816526C2FCFE7E177") ,
                     ("Get-FENetwork.ps1"               , "0048A6208F9DDF0CCCFBCEE0621426DE2B49ACCBDBED71FB1E5D8B027330CEFC") ,
                     ("Get-FERole.ps1"                  , "0016BDDB9B0BA9BB59652440FE0B758D88BF42A887F93B275F57016CCE4999C8") ,
                     ("Get-FESystem.ps1"                , "47B1FF7BE39A95CEAFFD450336F01D3559B6E6059DA984A06D76980A391C7E2C") ,
@@ -2317,7 +2317,7 @@ $Module = FightingEntropy.Module -Mode 0
   Signature /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
 /¯¯¯¯¯¯¯¯¯¯¯                                                                                                             
     __________________________________________________________________________________________
-    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-01-14 13:08:51 |
+    | Michael C. Cook Sr. | Security Engineer | Secure Digits Plus LLC | 2023-01-14 14:32:56 |
     ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯               ___________/
 \___________________________________________________________________________________________________________/ Signature
 /¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\
