@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-14 13:05:13                                                                  //
+\\  Date       : 2023-01-14 14:31:30                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -2326,7 +2326,7 @@ Function Get-FEDCPromo
                     InstallDns                    { @(1,1,1,1)[$Index] }
                     CreateDnsDelegation           { @(1,1,1,1)[$Index] }
                     CriticalReplicationOnly       { @(0,0,0,1)[$Index] }
-                    NoGlobalCatalog               { @(1,1,1,1)[$Index] }
+                    NoGlobalCatalog               { @(0,1,1,1)[$Index] }
                     DatabasePath                  { @(1,1,1,1)[$Index] }
                     SysvolPath                    { @(1,1,1,1)[$Index] }
                     LogPath                       { @(1,1,1,1)[$Index] }
@@ -3237,6 +3237,7 @@ Function Get-FEDCPromo
         Complete()
         {
             $This.Update(0,"[~] Completing process")
+            $This.Execution.Clear("Output")
 
             $Prop = $This.Profile.Output()
 
@@ -3296,13 +3297,134 @@ Function Get-FEDCPromo
 
             $This.Execution.Output = $Out
         }
+        Features()
+        {
+            $This.Update(0,$This.Label("FEDCPromo -> Feature installation"))
+            $This.Module.Write($This.Console.Last().Status)
+
+            $This.Execution.Clear("Result")
+
+            $C = 1
+            $D = ([String]$This.Execution.Feature.Count).Length
+
+            ForEach ($Item in $This.Execution.Feature)
+            {
+                $Status = "{0:p}" -f ($C/$This.Execution.Feature.Count)
+                $This.Update(0,"[~] ($Status) [$($Item.Name)]")
+                Switch ($This.Test)
+                {
+                    0
+                    {
+                        $This.Execution.Result += $This.InstallWindowsFeature($Item.Name)
+                        If ($? -eq $True)
+                        {
+                            $Item.State   = 1
+                            $Item.Enable  = 0
+                            $Item.Install = 0
+                        }
+                    }
+                    1
+                    {
+                        $This.Update(0,"[~] Install-WindowsFeature -Name $($Item.Name) -IncludeAllSubFeature -IncludeManagementTools")
+                    }
+                }
+                    
+                $This.Update(1,"[+] ($Status) [$($Item.Name)]")
+                $C ++
+            }
+
+            If (($This.Execution.Result | ? RestartNeeded -eq No).Count -gt 0)
+            {
+                $This.Update(0,"[!] Reboot required to proceed, writing progress to disk")
+
+                $This.Save()
+                $This.RegisterScheduledTask()
+
+                $This.Update(0,$This.Label("Restarting [$($This.MachineName())]"))
+                $This.Module.Write($This.Console.Last().Status)
+                $X = 5
+                Do
+                {
+                    Start-Sleep 1
+                    $X --
+                }
+                Until ($X -eq 0)
+                Restart-Computer
+            }
+        }
+        Promote()
+        {
+            Import-Module AddsDeployment -Verbose
+            $Splat = @{ SafeModeAdministratorPassword = $This.Execution.Output.SafeModeAdministratorPassword }
+            
+            # Remove the Confirm/SafeModeAdministratorPassword flags
+            ForEach ($Item in $This.Execution.Output.GetEnumerator())
+            {
+                Switch ($Item.Name)
+                {
+                    Default 
+                    { 
+                        $Splat.Add($Item.Name,$Item.Value)
+                    }
+                    Confirm
+                    {
+
+                    }
+                    SafeModeAdministratorPassword
+                    {
+
+                    }
+                }
+            }
+
+            If ($This.Test -eq 1)
+            {
+                $This.Update(0,$This.Label("Testing -> Domain Controller Installation"))
+                $This.Module.Write($This.Console.Last().Status)
+                
+                Switch ($This.Control.Slot)
+                {
+                    {$_ -eq 0} 
+                    { 
+                        Test-ADDSForestInstallation @Splat
+                    }
+                    {$_ -in 1,2}
+                    { 
+                        Test-ADDSDomainInstallation @Splat
+                    }
+                    {$_ -eq 3}
+                    {
+                        Test-ADDSDomainControllerInstallation @Splat
+                    }
+                }
+            }
+            If ($This.Test -eq 0)
+            {
+                $This.Update(0,$This.Label("Executing -> Domain Controller Installation"))
+                $This.Module.Write($This.Console.Last().Status)
+
+                Switch ($This.Control.Slot)
+                {
+                    {$_ -eq   0}
+                    {
+                        Install-ADDSForest @Splat -Confirm:$False
+                    }
+                    {$_ -in 1,2}
+                    {
+                        Install-ADDSDomain @Splat -Confirm:$False
+                    }
+                    {$_ -eq   3}
+                    { 
+                        Install-ADDSDomainController @Splat -Confirm:$False
+                    }
+                }
+            }
+        }
         Execute()
         {
-            $This.Execution.Clear("Feature")
-
-            If ($This.Feature.Output | ? Name -eq Dns | ? State)
+            Switch ($This.Feature.Output | ? Name -eq Dns | ? State)
             {
-                $This.Error("[!] Dns currently installed, it is highly recommended to remove it first")
+                $True { $This.Error("[!] Dns currently installed, it is highly recommended to remove it first") }
             }
             
             ForEach ($Item in $This.Feature.Output | ? Name -ne Dns | ? Enable | ? Install)
@@ -3311,91 +3433,9 @@ Function Get-FEDCPromo
                 $This.Execution.Feature += $Item
             }
 
-            If ($This.Execution.Feature.Count -gt 0)
+            Switch ($This.Execution.Feature.Count)
             {
-                $This.Update(0,$This.Label("FEDCPromo -> Feature installation"))
-                $This.Module.Write($This.Console.Last().Status)
-
-                $This.Execution.Clear("Result")
-
-                $C = 1
-                $D = ([String]$This.Execution.Feature.Count).Length
-
-                ForEach ($Item in $This.Execution.Feature)
-                {
-                    $Status = "{0:p}" -f ($C/$This.Execution.Feature.Count)
-                    $This.Update(0,"[~] ($Status) [$($Item.Name)]")
-                    Switch ($This.Test)
-                    {
-                        0
-                        {
-                            $This.Execution.Result += $This.InstallWindowsFeature($Item.Name)
-                            If ($? -eq $True)
-                            {
-                                $Item.State   = 1
-                                $Item.Enable  = 0
-                                $Item.Install = 0
-                            }
-                        }
-                        1
-                        {
-                            $This.Update(0,"[~] Install-WindowsFeature -Name $($Item.Name) -IncludeAllSubFeature -IncludeManagementTools")
-                        }
-                    }
-                        
-                    $This.Update(1,"[+] ($Status) [$($Item.Name)]")
-                    $C ++
-                }
-
-                If (($This.Execution.Result | ? RestartNeeded -eq No).Count -gt 0)
-                {
-                    $This.Update(0,"[!] Reboot required to proceed, writing progress to disk")
-
-                    $This.Save()
-                    $This.RegisterScheduledTask()
-
-                    $This.Update(0,$This.Label("Restarting [$($This.MachineName())]"))
-                    $This.Module.Write($This.Console.Last().Status)
-                    $X = 5
-                    Do
-                    {
-                        Start-Sleep 1
-                        $X --
-                    }
-                    Until ($X -eq 0)
-                    Restart-Computer
-                }
-            }
-
-            Import-Module AddsDeployment
-            $Splat = $This.Execution.Output
-
-            Switch (!$This.Test)
-            {
-                0
-                {
-                    $This.Update(0,$This.Label("Testing -> Domain Controller Installation"))
-                    $This.Module.Write($This.Console.Last().Status)
-                    
-                    Switch ($This.Control.Slot)
-                    {
-                        {$_ -eq   0} { Test-ADDSForestInstallation           @Splat }
-                        {$_ -in 1,2} { Test-ADDSDomainInstallation           @Splat }
-                        {$_ -eq   3} { Test-ADDSDomainControllerInstallation @Splat }
-                    }
-                }
-                1
-                {
-                    $This.Update(0,$This.Label("Executing -> Domain Controller Installation"))
-                    $This.Module.Write($This.Console.Last().Status)
-
-                    Switch ($This.Control.Slot)
-                    {
-                        {$_ -eq   0} { Install-ADDSForest                    @Splat -Confirm:$False }
-                        {$_ -in 1,2} { Install-ADDSDomain                    @Splat -Confirm:$False }
-                        {$_ -eq   3} { Install-ADDSDomainController          @Splat -Confirm:$False }
-                    }
-                }
+                0 { $This.Promote() } Default { $This.Features() }
             }
         }
         SetInputObject([String]$InputPath)
@@ -3403,6 +3443,8 @@ Function Get-FEDCPromo
             # Allows the function to resume from a (necessary reboot/answer file)
             $This.Update(0,"[~] Staging : InputObject")
             $IO                  = $This.InputObjectController($InputPath)
+
+            $This.ToggleStaging()
 
             # Slot
             $This.Update(0,"[~] Slot    : [$($IO.Slot)]")
@@ -3435,13 +3477,16 @@ Function Get-FEDCPromo
             }
 
             # Credential
-            $This.Update(0,"[~] Dsrm")
+            $This.Update(0,"[~] Credential")
             If ($IO.Credential)
             {
                 $This.Credential = $IO.Credential
                 $Item            = $This.Xaml.Get("CredentialText")
                 $Item.Text       = $IO.Credential.Username
             }
+
+            
+            $This.ToggleStaging()
 
             $This.CheckPassword()
             $This.Total()
@@ -3607,16 +3652,20 @@ Function Get-FEDCPromo
         }
         1
         {
-            $Ctrl = [FEDCPromoController]::New($Mode,$InputPath)
+            $Ctrl = [FEDCPromoController]::New([Switch]$True)
+            $Ctrl.Mode = $Mode
+            $Ctrl.Main()
+            $Ctrl.StageXaml()
+            $Ctrl.SetInputObject($InputPath)
             $Ctrl.Xaml.IO.Show()
             Start-Sleep 3
-            $Ctrl.Complete()
             $Ctrl.Xaml.IO.Close()
+            $Ctrl.Complete()
             $Alt  = 1
         }
     }
 
-    If ($Ctrl.Xaml.IO.DialogResult -or $Alt -eq 1)
+    If ($Ctrl.Xaml.IO.DialogResult -or $Alt)
     {
         $Ctrl.Execute()
         $Ctrl.DumpConsole()
