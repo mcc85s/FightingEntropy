@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-11 07:43:21                                                                  //
+\\  Date       : 2023-01-13 22:21:30                                                                  //
  \\==================================================================================================// 
 
    FileName   : Get-FEModule.ps1
@@ -16,7 +16,7 @@
    Contact    : @mcc85s
    Primary    : @mcc85s
    Created    : 2022-12-14
-   Modified   : 2023-01-11
+   Modified   : 2023-01-13
    Demo       : N/A
    Version    : 0.0.0 - () - Finalized functional version 1
    TODO       : Have the hash values restore themselves from registry
@@ -1600,7 +1600,7 @@ Function Get-FEModule
                     ("Get-EventLogRecordExtension.ps1" , "8B738D1B551BC14C6FD8D003A82E420CDA17ED865FFD83D6E3A392F40CF20145") ,
                     ("Get-EventLogXaml.ps1"            , "18554029561A277AEB5AAA643CF88DC43F3A7C2D97281EEBD47A03BEE6018DB4") ,
                     ("Get-FEADLogin.ps1"               , "1EEA605D7181E9F1985FC012E7EABB1884B39B9D33D2E2E8AB6A8C21C3770B56") ,
-                    ("Get-FEDCPromo.ps1"               , "F9A289717D101AB3A4CDD4FE27F740CA92DF0840A539D5A32431F500A57FD9DC") ,
+                    ("Get-FEDCPromo.ps1"               , "6D6741250EC1D564055D6B062E83AE632391A6F9E06A719F111887E81BAFB04B") ,
                     ("Get-FEImageManifest.ps1"         , "03AD403FA17EE0702A8D8911F8B4BD7AABE5C6971363AF2FFADE6FF83918D57F") ,
                     ("Get-FEModule.ps1"                , "6B2B11BCF3AFE6F6F8EBDB02E8F84CF4CF08F58083A7489BBFD58B6D53443806") ,
                     ("Get-FENetwork.ps1"               , "0048A6208F9DDF0CCCFBCEE0621426DE2B49ACCBDBED71FB1E5D8B027330CEFC") ,
