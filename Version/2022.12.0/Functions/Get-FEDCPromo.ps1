@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-13 22:19:15                                                                  //
+\\  Date       : 2023-01-14 13:05:13                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2023-01-13
+    Modified   : 2023-01-14
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : [~] Test each level and functionality across each mode
@@ -3401,38 +3401,20 @@ Function Get-FEDCPromo
         SetInputObject([String]$InputPath)
         {
             # Allows the function to resume from a (necessary reboot/answer file)
-            $This.Update(0,"[~] Processing InputObject")
+            $This.Update(0,"[~] Staging : InputObject")
             $IO                  = $This.InputObjectController($InputPath)
 
             # Slot
+            $This.Update(0,"[~] Slot    : [$($IO.Slot)]")
             $This.SetProfile($IO.Slot)
 
             # Profile
-            $List                = @($IO.Profile.PSObject.Properties) | Select Name, Value
-            ForEach ($Item in $This.Profile.Item | ? State)
+            $This.Update(0,"[~] Profile")
+            ForEach ($Property in @($IO.Profile.PSObject.Properties))
             {
-                $Prop            = $List | ? Name -eq $Item.Name
-                Switch ($Item.Type)
-                {
-                    ComboBox    
-                    { 
-                        $Item.Control.SelectedIndex = $Prop.Value
-                    }
-                    CheckBox
-                    {
-                        $Item.Control.IsChecked     = $Prop.Value
-                    }
-                    TextBox
-                    {
-                        $Item.Control.Text          = $Prop.Value
-                    }
-                    PasswordBox
-                    {
-                        $Item.Control.Password      = $IO.Dsrm.GetNetworkCredential().Password
-                    }
-                }
+                $Item            = $This.Profile.Item | ? Name -eq $Property.Name
 
-                $Item.Value      = $Item.GetValue()
+                $Item.SetValue($Property.Value)
 
                 If ($Item.Slot -eq "Name")
                 {
@@ -3440,12 +3422,20 @@ Function Get-FEDCPromo
                 }
                 Else
                 {
-                    $Item.Check      = 1
-                    $Item.Reason     = "[+] Passed"
+                    $Item.Check  = 1
+                    $Item.Reason = "[+] Passed"
                 }
             }
 
+            # Dsrm
+            $This.Update(0,"[~] Dsrm")
+            ForEach ($Name in "SafeModeAdministratorPassword","Confirm")
+            {
+                $This.Get($Name).SetValue($IO.Dsrm.GetNetworkCredential().Password)
+            }
+
             # Credential
+            $This.Update(0,"[~] Dsrm")
             If ($IO.Credential)
             {
                 $This.Credential = $IO.Credential
