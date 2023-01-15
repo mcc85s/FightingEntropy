@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-14 20:44:22
+    # Last edited : 2023-01-14 21:04:24
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -549,7 +549,7 @@
         }
         [PSCredential] SetAdmin()
         {
-            $Password    = Get-ChildItem $This.Path | ? Name -match admin.txt | ConvertTo-SecureString -AsPlainText -Force
+            $Password    = Get-ChildItem $This.Path | ? Name -match admin.txt | Get-Content | ConvertTo-SecureString -AsPlainText -Force
             Return [PSCredential]::New("Administrator",$Password)
         }
     }
@@ -1395,7 +1395,7 @@
     #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
     # // Reinstantiates the file system information
-    $File        = [InstantiateVmObjectFile]::New(2,"\\lobby-comp2\Files")
+    $File        = [InstantiateVmObjectFile]::New(0,"\\lobby-comp2\Files")
     $Admin       = [AdminCredential]::New($File)
 
     # // Checks for existence of virtual machine by that name
