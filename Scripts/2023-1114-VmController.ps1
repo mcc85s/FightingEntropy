@@ -1,9 +1,9 @@
 
-    # Last edited : 2023-01-13 22:27:17
+    # Last edited : 2023-01-14 20:34:56
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
-    # [Objective]: Get (2) virtual servers to work together as an Active Directory domain controller cluster
-    # by using [FightingEntropy(π)] Get-FEDCPromo.
+    # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
+    # cluster by using [FightingEntropy(π)] Get-FEDCPromo.
 
     # Be really clever about it, too.
     # Use a mixture of virtualization, graphic design, networking, and programming...
@@ -50,48 +50,43 @@
         }
     }
 
-    # // ==================================================================================
-    # // | Instructions for each of these machines to be able to turn output file into VM |
-    # // ==================================================================================
+    # // ============================================
+    # // | Object returned from a ping (sweep/scan) |
+    # // ============================================
 
-    Class InstantiateVmObjectFile
+    Class V4PingResponse
     {
-        [String]   $Path
-        [Object] $Object
-        [Object]  $Admin
-        InstantiateVmObjectFile([UInt32]$Index,[String]$Path)
+        Hidden [UInt32]   $Index
+        Hidden [UInt32]  $Status
+        [String]      $IpAddress
+        [String]       $Hostname
+        V4PingResponse([UInt32]$Index,[String]$Address,[Object]$Reply)
         {
-            $This.Path   = $Path
-            $This.Object = Get-ChildItem $This.Path | ? Name -match "0$Index" | Get-Content | ConvertFrom-Json
-            $This.Admin  = $This.SetAdmin()
+            $This.Index          = $Index
+            $This.Status         = $Reply.Result.Status -match "Success"
+            $This.IPAddress      = $Address
         }
-        [PSCredential] SetAdmin()
+        GetHostname()
         {
-            $Password    = Get-ChildItem $This.Path | ? Name -match admin.txt | ConvertTo-SecureString -AsPlainText -Force
-            Return [PSCredential]::New("Administrator",$Password)
+            $This.Hostname       = Try 
+            { 
+                [System.Net.Dns]::Resolve($This.IPAddress).Hostname 
+            } 
+            Catch 
+            { 
+                "<Unknown>" 
+            }
         }
-    }
-
-    # // ========================================================
-    # // | Aggregates valid (static IP/prefix/gateway/dns) info |
-    # // ========================================================
-    
-    Class NetworkInformation
-    {
-        [String]          $Name
-        [String]     $IpAddress
-        [UInt32]        $Prefix
-        [String]       $Gateway
-        [String[]]           $Dns
-        [String]       $Trusted
-        NetworkInformation([Object]$File)
+        Domain([String]$Domain)
         {
-            $This.Name      = $File.Name
-            $This.IpAddress = $File.IpAddress
-            $This.Prefix    = $File.Prefix
-            $This.Gateway   = $File.Gateway
-            $This.Dns       = $File.Dns
-            $This.Trusted   = $File.Trusted
+            If ($This.Hostname -match $Domain)
+            {
+                $This.Hostname = ("{0}.{1}" -f $This.Hostname, $Domain)
+            }
+        }
+        [String] ToString()
+        {
+            Return $This.IPAddress
         }
     }
 
@@ -127,9 +122,419 @@
         }
     }
 
-    # // ==========================================
-    # // | Virtual Machine controller for Hyper-V |
-    # // ==========================================
+
+    # // ===============================================
+    # // | Creates a network node for an individual VM |
+    # // ===============================================
+
+    Class NetworkNode
+    {
+        [UInt32]     $Index
+        [String]    $Domain
+        [String]   $NetBios
+        [String]      $Name
+        [String] $IpAddress
+        [UInt32]    $Prefix
+        [String]   $Gateway
+        [String[]]     $Dns
+        [String]   $Trusted
+        NetworkNode([UInt32]$Index,[String]$Name,[String]$IpAddress,[Object]$Hive)
+        {
+            $This.Index     = $Index
+            $This.Domain    = $Hive.Domain
+            $This.NetBios   = $Hive.NetBios
+            $This.Name      = $Name
+            $This.IpAddress = $IpAddress
+            $This.Prefix    = $Hive.Prefix
+            $This.Gateway   = $Hive.Gateway
+            $This.Dns       = $Hive.Dns
+            $This.Trusted   = $Hive.Trusted
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtualLab.NetworkNode>"
+        }
+    }
+    
+    # // ===============================================
+    # // | Creates a hive of possible VM network nodes |
+    # // ===============================================
+
+    Class NetworkHive
+    {
+        Hidden [Object] $Config
+        [String]        $Domain
+        [String]       $NetBios
+        [String]       $Trusted
+        [UInt32]        $Prefix
+        [String]       $Gateway
+        [String[]]         $Dns
+        [Object]         $Range
+        [Object]        $Output
+        NetworkHive([Object]$Config,[String]$Domain,[String]$NetBios)
+        {
+            $This.Config    = $Config
+            $This.Domain    = $Domain
+            $This.NetBios   = $NetBios
+            $This.Trusted   = $This.Config.IPV4Address.IpAddress.ToString()
+            $This.Prefix    = $This.Config.IPv4Address.PrefixLength
+            $This.Gateway   = $This.Config.IPV4DefaultGateway.NextHop
+            $This.Dns       = $This.Config.DnsServer | ? AddressFamily -eq 2 | % ServerAddresses
+            $This.Range     = @( )
+            $This.Output    = @( )
+
+            $This.GetIPAddressRange()
+        }
+        [Object] NetworkNode([UInt32]$Index,[String]$Name,[String]$IpAddress,[Object]$Hive)
+        {
+            Return [NetworkNode]::New($Index,$Name,$IpAddress,$Hive)
+        }
+        AddNode([String]$Name)
+        {
+            $IpAddress      = $This.Range | ? { $_ -notin $This.Output.IpAddress } | Select-Object -First 1
+            $This.Output += $This.NetworkNode($This.Output.Count,$Name,$IpAddress,$This)
+        }
+        GetIPAddressRange()
+        {
+            $PF       = $This.Config.IPv4Address.PrefixLength
+            $IP       = [UInt32[]]($This.Config.IPv4Address.IPAddress -Split "\.")
+
+            # Convert IP and PrefixLength into binary, netmask, and wildcard
+            $Binary   = (0..31 | % { [Int32]($_ -lt $PF); If ($_ -in 7,15,23) {"."} }) -join ''
+            $Netmask  = [UInt32[]]($Binary -Split "\." | % { [Convert]::ToInt32($_,2 ) })
+            $Wildcard = $Netmask | % { (256-$_) - 1 }
+
+            # Convert wildcard into total host range
+            $Hash     = @{ } 
+            ForEach ($X in 0..3)
+            {
+                Switch ($Wildcard[$X])
+                {
+                    0 
+                    { 
+                        $Hash.Add($X,$IP[$X])
+                    }
+                    Default
+                    {
+                        $Hash.Add($X,($Netmask[$X])..($Netmask[$X]+$Wildcard[$X]))
+                    }
+                }
+            }
+
+            # Build host range
+            $xRange   = @{ }
+            ForEach ($0 in $Hash[0])
+            {
+                ForEach ($1 in $Hash[1])
+                {
+                    ForEach ($2 in $Hash[2])
+                    {
+                        ForEach ($3 in $Hash[3])
+                        {
+                            $xRange.Add($xRange.Count,"$0.$1.$2.$3")
+                        }
+                    }
+                }
+            }
+
+            # Subtract network + broadcast addresses
+            $xRange = $xRange[1..($xRange.Count-2)]
+
+            # Ping asynchronously
+            If ($xRange.Count -gt 0)
+            {
+                $List = $This.V4PingSweep($xRange) | ? Status
+            }
+
+            ForEach ($Item in $xRange | ? {$_ -notin $List.IpAddress})
+            {
+                $This.Range += $Item
+            }
+        }
+        [Object] V4PingOptions()
+        {
+            Return [System.Net.NetworkInformation.PingOptions]::New()
+        }
+        [Object] V4PingBuffer()
+        {
+            Return 97..119 + 97..105 | % { "0x{0:X}" -f $_ }
+        }
+        [Object] V4Ping([String]$Ip)
+        {
+            $Item = [System.Net.NetworkInformation.Ping]::New()
+            Return $Item.SendPingAsync($Ip,100,$This.V4PingBuffer(),$This.V4PingOptions())
+        }
+        [Object] V4PingResponse([UInt32]$Index,[Object]$Ip,[Object]$Ping)
+        {
+            Return [V4PingResponse]::New($Index,$Ip,$Ping)
+        }
+        [Object[]] V4PingSweep([String[]]$Hosts)
+        {
+            $Ping                = @{ }
+            $Response            = @{ }
+
+            If ($Hosts.Count -eq 1)
+            {
+                $Ping.Add(0,$This.V4Ping($Hosts[0]))
+                $Response.Add(0,$This.V4PingResponse(0,$Hosts[0],$Ping[0]))
+                Return $Response[0]
+            }
+            ElseIf ($Hosts.Count -gt 1)
+            {
+                ForEach ($X in 0..($Hosts.Count-1))
+                { 
+                    $Ping.Add($Ping.Count,$This.V4Ping($Hosts[$X]))
+                }
+        
+                ForEach ($X in 0..($Ping.Count-1)) 
+                {
+                    $Response.Add($X,$This.V4PingResponse($X,$Hosts[$X],$Ping[$X]))
+                }
+        
+                Return $Response[0..($Response.Count-1)]
+            }
+            Else
+            {
+                Return $Null
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtualLab.NetworkHive>"
+        }
+    }
+
+    # // ===========================================
+    # // | Holds information for a virtual machine |
+    # // ===========================================
+
+    Class VmNode
+    {
+        [UInt32]      $Index
+        [Object]       $Name
+        [Object]     $Memory
+        [Object]       $Path
+        [Object]        $Vhd
+        [Object]    $VhdSize
+        [Object] $Generation
+        [UInt32]       $Core
+        [Object] $SwitchName
+        [Object]    $Network
+        VmNode([Object]$Node,[Object]$Hive)
+        {
+            $This.Index      = $Node.Index
+            $This.Name       = $Node.Name
+            $This.Memory     = $Hive.Memory
+            $This.Path       = $Hive.Base, $This.Name -join '\'
+            $This.Vhd        = "{0}\{1}\{1}.vhdx" -f $Hive.Base, $This.Name
+            $This.VhdSize    = $This.Size("HDD",$Hive.HDD)
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtualLab.VmNode>"
+        }
+    }
+
+    # // ===================================================================
+    # // | Carries standard template information for a new virtual machine |
+    # // ===================================================================
+
+    Class VmTemplate
+    {
+        [String]     $Base
+        [UInt64]   $Memory
+        [UInt64]      $Hdd
+        [UInt32]      $Gen
+        [UInt32]     $Core
+        [String] $SwitchId
+        [String]    $Image
+        VmTemplate([String]$Path,[UInt64]$Ram,[UInt64]$Hdd,[UInt32]$Gen,[UInt32]$Core,[String]$Switch,[String]$Img)
+        {
+            $This.Base     = $Path
+            $This.Memory   = $Ram
+            $This.Hdd      = $Hdd
+            $This.Gen      = $Gen
+            $This.Core     = $Core
+            $This.SwitchId = $Switch
+            $This.Image    = $Img
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtualLab.VmTemplate>"
+        }
+    }
+
+    # // =====================================================================
+    # // | Writes the network and virtual machine node information to a file |
+    # // =====================================================================
+
+    Class VmObjectFile
+    {
+        [UInt32]     $Index
+        [String]    $Domain
+        [String]   $NetBios
+        [String]      $Name
+        [String] $IpAddress
+        [UInt32]    $Prefix
+        [String]   $Gateway
+        [String[]]     $Dns
+        [String]   $Trusted
+        [String]      $Base
+        [UInt64]    $Memory
+        [UInt64]       $Hdd
+        [UInt32]       $Gen
+        [UInt32]      $Core
+        [String]  $SwitchId
+        [String]     $Image
+        VmObjectFile([Object]$Node,[String]$Admin,[Object]$Template)
+        {
+            $This.Index     = $Node.Index
+            $This.Domain    = $Node.Domain
+            $This.NetBios   = $Node.NetBios
+            $This.Name      = $Node.Name
+            $This.IpAddress = $Node.IpAddress
+            $This.Prefix    = $Node.Prefix
+            $This.Gateway   = $Node.Gateway
+            $This.Dns       = $Node.Dns
+            $This.Trusted   = $Node.Trusted
+            $This.Base      = $Template.Base
+            $This.Memory    = $Template.Memory
+            $This.Hdd       = $Template.Hdd
+            $This.Gen       = $Template.Gen
+            $This.Core      = $Template.Core
+            $This.SwitchId  = $Template.SwitchId
+            $This.Image     = $Template.Image
+        }
+    }
+
+    # // =================================================================================
+    # // | Spins up all of the necessary information for a range of VM's w/ network info |
+    # // =================================================================================
+
+    Class VmController
+    {
+        [String]     $Path
+        [String]   $Domain
+        [String]  $NetBios
+        [Object]    $Admin
+        [Object]   $Config
+        [Object]  $Network
+        [Object] $Template
+        VmController([String]$Path,[String]$Domain,[String]$NetBios)
+        {
+            If (![System.IO.Directory]::Exists($Path))
+            {
+                [System.IO.Directory]::CreateDirectory($Path)
+            }
+
+            $This.Path     = $Path
+            $This.Domain   = $Domain
+            $This.NetBios  = $NetBios
+            $This.Admin    = $This.NewAdminCredential()
+            $This.Config   = $This.GetNetIPConfiguration()
+            $This.Network  = $This.NewNetworkHive()
+            $This.Template = $This.NewVmTemplate()
+        }
+        [Object] NewAdminCredential()
+        {
+            Return [AdminCredential]::New("Administrator")
+        }
+        [Object] GetNetIPConfiguration()
+        {
+            Return Get-NetIPConfiguration -Detailed | ? IPV4DefaultGateway | Select-Object -First 1
+        }
+        [Object] NewNetworkHive()
+        {
+            Return [NetworkHive]::New($This.Config,$This.Domain,$This.NetBios)
+        }
+        [Object] NewVmTemplate()
+        {
+            Return [VmTemplate]::New("C:\VDI",
+                                     2048MB,
+                                     64GB,
+                                     2,
+                                     2,
+                                     "External",
+                                     "C:\Images\Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO")
+        }
+        [Object] NewVmObjectFile([Object]$Node)
+        {
+            Return [VmObjectFile]::New($Node,$This.Template)
+        }
+        AddNode([String]$Name)
+        {
+            If ($Name -notin $This.Network.Output)
+            {
+                $This.Network.AddNode($Name)
+            }
+        }
+        Export()
+        {
+            ForEach ($Node in $This.Network.Output)
+            {
+                $FilePath = "{0}\{1}-{2}.txt" -f $This.Path, $Node.Index, $Node.Name
+
+                [Console]::WriteLine("Exporting [~] File: [$FilePath]")
+
+                $Value    = $This.NewVmObjectFile($Node) | ConvertTo-Json
+
+                [System.IO.File]::WriteAllLines($FilePath,$Value)
+
+                If ([System.IO.File]::Exists($FilePath))
+                {
+                    [Console]::WriteLine("Exported  [+] File: [$FilePath]")
+                }
+                Else
+                {
+                    Throw "Something failed... bye."
+                }
+            }
+        }
+        WriteAdmin()
+        {
+            $FilePath = "{0}\admin.txt" -f $This.Path 
+            $Value    = $This.Admin.Credential.GetNetworkCredential().Password
+            [System.IO.File]::WriteAllLines($FilePath,$Value)
+            If ([System.IO.File]::Exists($FilePath))
+            {
+                [Console]::WriteLine("Exported  [+] File: [$FilePath]")
+            }
+            Else
+            {
+                Throw "Something failed... bye."
+            }
+        }
+        [String] ToString()
+        {
+            Return "<FEVirtualLab.VmController>"
+        }
+    }
+
+    # // ==================================================================================
+    # // | Instructions for each of these machines to be able to turn output file into VM |
+    # // ==================================================================================
+
+    Class InstantiateVmObjectFile
+    {
+        [String]   $Path
+        [Object] $Object
+        [Object]  $Admin
+        InstantiateVmObjectFile([UInt32]$Index,[String]$Path)
+        {
+            $This.Path   = $Path
+            $This.Object = Get-ChildItem $This.Path | ? Name -match "0$Index" | Get-Content | ConvertFrom-Json
+            $This.Admin  = $This.SetAdmin()
+        }
+        [PSCredential] SetAdmin()
+        {
+            $Password    = Get-ChildItem $This.Path | ? Name -match admin.txt | ConvertTo-SecureString -AsPlainText -Force
+            Return [PSCredential]::New("Administrator",$Password)
+        }
+    }
+
+    # // ===========================================================================
+    # // | Virtual Machine controller for Hyper-V, end result of the above classes |
+    # // ===========================================================================
 
     Class VmObjectNode
     {
@@ -663,7 +1068,7 @@
             $B += '# Set Computer Info'
             $B += '$ComputerName   = "{0}"' -f $This.Name
             $B += '$TrustedHost    = "{0}"' -f $This.Network.Trusted
-            $B += '$IPAddress      = "{0}"' -f $This.Network.IpAddress
+            $B += '$IPAddress      = "{0}"' -f $This.Network.Address
             $B += '$PrefixLength   = "{0}"' -f $This.Network.Prefix
             $B += '$DefaultGateway = "{0}"' -f $This.Network.Gateway
 
@@ -940,25 +1345,53 @@
         }
     }
 
-    # // Reinstantiated information
-    $File  = [InstantiateVmObjectFile]::New(2,"\\lobby-comp2\Files")
-    $Admin = [AdminCredential]::New($File)
+    #    ____    ____________________________________________________________________________________________________        
+    #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+    #   \\__//¯¯¯ Creation Area [~]                                                                              ___//¯¯\\   
+    #    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+    #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
 
-    $Vm       = Get-VM -Name $File.Object.Name -EA 0
+    # // ==================================================================================
+    # // | Spawn up a hive controller to create file system objects for each Hyper-V host |
+    # // | to automate all of the stuff each VM node will be reproducing                  |
+    # // ==================================================================================
+
+    # // Generates the factory class
+    $Hive  = [VmController]::New("C:\Files","securedigitsplus.com","secured")
+
+    # // Populates the factory class with (3) nodes (0, 1, 2)
+    0..2 | % { $Hive.AddNode("server0$_") }
+
+    # // Exports the file system objects
+    $Hive.Export()
+    $Hive.WriteAdmin()
+
+    #    ____    ____________________________________________________________________________________________________        
+    #   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+    #   \\__//¯¯¯ Action Area [~]                                                                                ___//¯¯\\   
+    #    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+    #        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+
+    # // Reinstantiates the file system information
+    $File        = [InstantiateVmObjectFile]::New(2,"\\lobby-comp2\Files")
+    $Admin       = [AdminCredential]::New($File)
+
+    # // Checks for existence of virtual machine by that name
+    $Vm          = Get-VM -Name $File.Object.Name -EA 0
     If ($Vm)
     {
-        $Vm = [VmObjectNode]::New([Switch]$True,$VM)
+        $Vm      = [VmObjectNode]::New([Switch]$True,$VM)
         $Vm.Remove()
     }
 
     # // Object instantiation
-    $Vm       = [VmObjectNode]::New($File.Object)
+    $Vm          = [VmObjectNode]::New($File.Object)
     $Vm.New()
     $Vm.AddVmDvdDrive()
     $Vm.LoadIso($Vm.Iso)
     $Vm.SetIsoBoot()
     $Vm.Connect()
-
+    
     # // Start Machine
     $Vm.Start()
     $Vm.Control  = Get-WmiObject MSVM_ComputerSystem -NS Root\Virtualization\V2 | ? ElementName -eq $Vm.Name
@@ -1146,3 +1579,4 @@
 
     # Login
     $Vm.Login($Admin)
+    
