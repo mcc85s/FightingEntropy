@@ -590,7 +590,7 @@
         VmObjectNode([Object]$File)
         {
             # Meant to build a new VM
-            $This.Mode       = 0
+            $This.Mode       = 1
             $This.StartConsole()
 
             $This.Name       = $File.Name
