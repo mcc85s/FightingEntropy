@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-14 20:34:56
+    # Last edited : 2023-01-14 20:37:07
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -1024,7 +1024,7 @@
             {
                 Start-Sleep 1
             }
-            Until (Test-Connection $This.Network.Address -EA 0)
+            Until (Test-Connection $This.Network.IpAddress -EA 0)
 
             $This.Update(1,"[+] Connection")
         }
@@ -1068,7 +1068,7 @@
             $B += '# Set Computer Info'
             $B += '$ComputerName   = "{0}"' -f $This.Name
             $B += '$TrustedHost    = "{0}"' -f $This.Network.Trusted
-            $B += '$IPAddress      = "{0}"' -f $This.Network.Address
+            $B += '$IPAddress      = "{0}"' -f $This.Network.IpAddress
             $B += '$PrefixLength   = "{0}"' -f $This.Network.Prefix
             $B += '$DefaultGateway = "{0}"' -f $This.Network.Gateway
 
@@ -1320,7 +1320,7 @@
             $This.Update(0,"[~] PSSession")
             $Splat = @{
 
-                ComputerName  = $This.Network.Address
+                ComputerName  = $This.Network.IpAddress
                 Port          = 5986
                 Credential    = $Admin.Credential
                 SessionOption = New-PSSessionOption -SkipCACheck
