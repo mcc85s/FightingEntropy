@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-14 21:04:24
+    # Last edited : 2023-01-14 21:39:09
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -590,7 +590,7 @@
         VmObjectNode([Object]$File)
         {
             # Meant to build a new VM
-            $This.Mode       = 1
+            $This.Mode       = 0
             $This.StartConsole()
 
             $This.Name       = $File.Name
@@ -690,6 +690,7 @@
 
             $This.Firmware         = $This.GetVmFirmware()
             $This.Exists           = 1
+            $This.Guid             = $This.Get().Id
             $This.SetVMProcessor()
         }
         Start()
