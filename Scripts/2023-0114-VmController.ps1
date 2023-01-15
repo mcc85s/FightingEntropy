@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-14 20:39:52
+    # Last edited : 2023-01-14 20:44:22
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -122,6 +122,28 @@
         }
     }
 
+    # // =====================================================================================
+    # // | Information for the network adapter in the virtual machine guest operating system |
+    # // =====================================================================================
+
+    Class NetworkInformation
+    {
+        [String]          $Name
+        [String]     $IpAddress
+        [UInt32]        $Prefix
+        [String]       $Gateway
+        [String[]]         $Dns
+        [String]       $Trusted
+        NetworkInformation([Object]$File)
+        {
+            $This.Name      = $File.Name
+            $This.IpAddress = $File.IpAddress
+            $This.Prefix    = $File.Prefix
+            $This.Gateway   = $File.Gateway
+            $This.Dns       = $File.Dns
+            $This.Trusted   = $File.Trusted
+        }
+    }
 
     # // ===============================================
     # // | Creates a network node for an individual VM |
