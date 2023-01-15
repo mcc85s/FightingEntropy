@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-14 20:37:07
+    # Last edited : 2023-01-14 20:39:52
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -386,7 +386,7 @@
         [UInt32]      $Core
         [String]  $SwitchId
         [String]     $Image
-        VmObjectFile([Object]$Node,[String]$Admin,[Object]$Template)
+        VmObjectFile([Object]$Node,[Object]$Template)
         {
             $This.Index     = $Node.Index
             $This.Domain    = $Node.Domain
