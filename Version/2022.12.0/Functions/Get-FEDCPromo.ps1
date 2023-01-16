@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-14 14:31:30                                                                  //
+\\  Date       : 2023-01-16 17:45:33                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -16,7 +16,7 @@
     Contact    : @mcc85s
     Primary    : @mcc85s
     Created    : 2022-12-14
-    Modified   : 2023-01-14
+    Modified   : 2023-01-16
     Demo       : N/A
     Version    : 0.0.0 - () - Finalized functional version 1
     TODO       : [~] Test each level and functionality across each mode
@@ -1048,7 +1048,7 @@ Function Get-FEDCPromo
             {
                 $This.Profile.DomainMode = 6
             }
-        }
+        }    
     }
 
     # // =====================================================================
@@ -1948,13 +1948,6 @@ Function Get-FEDCPromo
         }
         FEDCPromoController([UInt32]$Mode,[String]$InputPath)
         {
-            If (Get-ScheduledTask -TaskName FEDCPromo -EA 0)
-            {
-                Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:$False
-            }
-
-            Get-Process -Name ServerManager -EA 0 | Stop-Process -EA 0
-
             $This.Mode     = $Mode
             If ($This.Mode -ge 2)
             {
@@ -3168,6 +3161,18 @@ Function Get-FEDCPromo
 
             Register-ScheduledTask @Splat | Out-Null
         }
+        [Object] GetScheduledTask()
+        {
+            Return Get-Scheduledtask -TaskName FEDCPromo -EA 0
+        }
+        [Void] UnregisterScheduledTask()
+        {
+            Unregister-ScheduledTask -TaskName FEDCPromo -Confirm:$False
+        }
+        StopServerManager()
+        {
+            Get-Process -Name ServerManager -EA 0 | Stop-Process -EA 0
+        }    
         [String] ExportFileName([String]$Type)
         {
             $Item = Switch ($Type)
@@ -3642,7 +3647,7 @@ Function Get-FEDCPromo
             #>
         }
     }
-    
+
     Switch ([UInt32]!!$InputPath)
     {
         0 
@@ -3654,9 +3659,16 @@ Function Get-FEDCPromo
         {
             $Ctrl = [FEDCPromoController]::New([Switch]$True)
             $Ctrl.Mode = $Mode
+            $Ctrl.StopServerManager()
+            If ($Ctrl.GetScheduledTask())
+            {
+                $Ctrl.UnregisterScheduledTask()
+            }
+
             $Ctrl.Main()
             $Ctrl.StageXaml()
             $Ctrl.SetInputObject($InputPath)
+
             $Ctrl.Xaml.IO.Show()
             Start-Sleep 3
             $Ctrl.Xaml.IO.Close()
