@@ -6,7 +6,7 @@
 
  //==================================================================================================\\ 
 //  Module     : [FightingEntropy()][2022.12.0]                                                       \\
-\\  Date       : 2023-01-18 14:05:22                                                                  //
+\\  Date       : 2023-01-18 15:31:37                                                                  //
  \\==================================================================================================// 
 
     FileName   : Get-FEDCPromo.ps1
@@ -2271,7 +2271,6 @@ Function Get-FEDCPromo
                     NewDomainNetBiosName          { @(0,1,1,0)[$Index] }
                     SafeModeAdministratorPassword { @(1,1,1,1)[$Index] }
                     Confirm                       { @(1,1,1,1)[$Index] }
-                    Credential                    { @(0,1,1,1)[$Index] }
                 }
 
                 $Item.Control.IsEnabled = $Item.State
@@ -2341,10 +2340,26 @@ Function Get-FEDCPromo
 
             $This.Update(0,$This.InsertLine(" "))
 
-            # Credential
+            # (Credential/Server/Connection)
             $This.Update(0,$This.InsertLine("="))
             $This.Update(0,"[~] Profile -> [Credential]")
             $This.Update(0,$This.InsertLine(" "))
+
+            ForEach ($Name in "CredentialBox",
+                              "ServerText",
+                              "ServerPort",
+                              "ServerConnect",
+                              "ServerList",
+                              "CredentialText",
+                              "CredentialPassword",
+                              "CredentialConfirm",
+                              "ConnectionBox",
+                              "Connection",
+                              "ConnectionExtension")
+            {
+                $Item            = $This.Xaml.Get($Name)
+                $Item.IsEnabled  = $Index -gt 0
+            }
 
             ForEach ($Name in $This.Xaml.Types | ? Name -match "Credential")
             {
@@ -2987,11 +3002,6 @@ Function Get-FEDCPromo
             # // | Credential |
             # // ==============
 
-            # [Button] Login (Event handler)
-            $Ctrl.Xaml.IO.CredentialButton.Add_Click(
-            {
-                $Ctrl.Login()
-            })
 
             # [TextBox] Dsrm Password (Event handler)
             $Ctrl.Xaml.IO.SafeModeAdministratorPassword.Add_PasswordChanged(
@@ -3421,7 +3431,6 @@ Function Get-FEDCPromo
 
             
             $This.ToggleStaging()
-
             $This.CheckPassword()
             $This.Total()
         }
@@ -3471,7 +3480,6 @@ Function Get-FEDCPromo
             {
                 $This.Update(0,"[~] Credential")
                 $This.Xaml.IO.Credential.Text                       = ""
-                $This.Xaml.IO.CredentialButton.IsEnabled            = 0
                 $This.Credential                                    = $Null
             }
 
@@ -3480,7 +3488,6 @@ Function Get-FEDCPromo
                 $This.Update(0,"[~] Credential")
                 $This.Xaml.IO.Credential.Text                       = $This.Connection.Credential.Username
                 $This.Credential                                    = $This.Connection.Credential
-                $This.Xaml.IO.CredentialButton.IsEnabled            = 1
 
                 
 
@@ -3591,17 +3598,20 @@ Function Get-FEDCPromo
             $Ctrl.Main()
             $Ctrl.StageXaml()
             $Ctrl.SetInputObject($InputPath)
-            $Ctrl.Xaml.IO.Show()
-            Start-Sleep 3
-            $Ctrl.Xaml.IO.Close()
-            $Ctrl.Complete()
-            $Alt  = 1
+            $Ctrl.Xaml.Invoke()
         }
     }
 
-    If ($Ctrl.Xaml.IO.DialogResult -or $Alt)
+    Switch ([UInt32]$Ctrl.Xaml.IO.DialogResult)
     {
-        $Ctrl.Execute()
-        $Ctrl.DumpConsole()
+        0
+        {
+            $Ctrl.Module.Write(1,"Either the user canceled, or the dialog failed")
+        }
+        1
+        {
+            $Ctrl.Complete()
+            $Ctrl.Execute()
+        }
     }
 }
