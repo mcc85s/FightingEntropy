@@ -1,5 +1,5 @@
 
-    # Last edited : 2023-01-18 07:52:15
+    # Last edited : 2023-01-18 15:59:49
     # Purpose     : Automatically installs a Windows Server 2016 instance for configuration
 
     # [Objective]: Get (3) virtual servers to work together as an Active Directory domain controller
@@ -1955,20 +1955,24 @@
     $Vm.RunScript()
     $Vm.Idle(5,5)
 
+#    ____    ____________________________________________________________________________________________________        
+#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
+#   \\__//¯¯¯ Option 1) -> Launch PowerShell and Get-FEDCPromo -Mode [~]                                     ___//¯¯\\   
+#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
+#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
+
     # Login
     $Vm.Login($Admin)
 
     # Wait idle
     $Vm.Idle(5,5)
 
-#    ____    ____________________________________________________________________________________________________        
-#   //¯¯\\__//¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯\\___    
-#   \\__//¯¯¯ Option 1) -> Launch PowerShell and Get-FEDCPromo -Mode [~]                                     ___//¯¯\\   
-#    ¯¯¯\\__________________________________________________________________________________________________//¯¯\\__//   
-#        ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯    ¯¯¯¯    
-    
     # Launch PowerShell
     $Vm.LaunchPs()
+
+    # Kill Server Manager
+    $Vm.TypeText("Get-Process -Name ServerManager -EA 0 | Stop-Process -Force -Confirm:`$False")
+    $Vm.TypeKey(13)
 
     # Launch FEDCPromo
     $Vm.TypeText("Get-FEDCPromo -Mode 1")
@@ -1976,6 +1980,11 @@
 
     # Wait idle
     $Vm.Idle(5,5)
+
+    # 
+    $Vm.PressKey(18)
+    $Vm.TypeKey(9)
+    $Vm.ReleaseKey(18)
 
     # Command Tab
     $Vm.TypeKey(9)
@@ -1998,9 +2007,11 @@
     $Vm.PressKey(16)
     $Vm.TypeKey(9)
     $Vm.TypeKey(9)
+    $Vm.TypeKey(9)
     $Vm.ReleaseKey(16)
 
-    # Cycle over to credential tab, tab into DSRM
+    # Cycle over to connection/Dsrm tab, tab into DSRM
+    $Vm.TypeKey(39)
     $Vm.TypeKey(39)
     $Vm.TypeKey(9)
     
